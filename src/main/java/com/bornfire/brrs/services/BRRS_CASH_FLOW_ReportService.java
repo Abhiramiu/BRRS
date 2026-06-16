@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -55,8 +56,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 @Service
@@ -70,9 +69,6 @@ public class BRRS_CASH_FLOW_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
-	@Autowired
-	AuditService auditService;
 
 	// ENTITY MANAGER (Acts like Repository)
 	@PersistenceContext
@@ -80,6 +76,9 @@ public class BRRS_CASH_FLOW_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	AuditService auditService;
 
 	// Fetch data by report date
 	public List<CASH_FLOW_Summary_Entity> getDataByDate(Date reportDate) {
@@ -142,13 +141,6 @@ public class BRRS_CASH_FLOW_ReportService {
 				new CashFlowRowDetailMapper());
 	}
 
-	public CASH_FLOW_Detail_Entity findBySno(String sno) {
-
-		String sql = "SELECT * FROM BRRS_CASH_FLOW_DETAILTABLE WHERE SNO = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CashFlowRowDetailMapper());
-	}
-
 // 2. GET ALL (BY DATE - simple)
 
 	public List<CASH_FLOW_Detail_Entity> getDetaildatabydateList(Date reportdate) {
@@ -199,28 +191,66 @@ public class BRRS_CASH_FLOW_ReportService {
 
 // 1. GET BY DATE + VERSION
 
-	public List<CASH_FLOW_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
-			String dataEntryVersion) {
-
-		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL "
-				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new CashFlowRowArchivalDetailMapper());
-	}
+//	public List<CASH_FLOW_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+//			String dataEntryVersion) {
+//
+//		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL "
+//				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+//				new CashFlowRowArchivalDetailMapper());
+//	}
 
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
 
+//	public List<CASH_FLOW_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+//			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+//
+//		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+//				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+//				new CashFlowRowArchivalDetailMapper());
+//	}
+
+//For Resubmission
+	public CASH_FLOW_Detail_Entity findBySno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CashFlowRowDetailMapper());
+	}
+
+	public CASH_FLOW_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CashFlowRowDetailMapper());
+	}
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
+	}
+
 	public List<CASH_FLOW_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+			String reportAddlCriteria1, Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? ";
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new CashFlowRowArchivalDetailMapper());
 	}
 
+	public List<CASH_FLOW_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ?  ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new CashFlowRowArchivalDetailMapper());
+	}
 	// ROW MAPPER
 
 	class CashFlowRowMapper implements RowMapper<CASH_FLOW_Summary_Entity> {
@@ -3613,7 +3643,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -3942,7 +3972,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -4212,17 +4242,22 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		// ARCHIVAL MODE
 
-		if ("ARCHIVAL".equals(type) && version != null) {
+		// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<CASH_FLOW_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
 			try {
+
 				Date dt = dateformat.parse(todate);
-				// SUMMARY ARCHIVAL
+
 				T1Master = getdatabydateListarchival(dt, version);
-				System.out.println("Archival Summary size = " + T1Master.size());
+
+				System.out.println(type + " Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
+				mv.addObject("allowdetail", getishighestversion(dt, version));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -4289,33 +4324,29 @@ public class BRRS_CASH_FLOW_ReportService {
 				}
 			}
 
-			// ARCHIVAL MODE
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type + " DETAIL MODE");
 
-				System.out.println("ARCHIVAL DETAIL MODE");
-
-				List<CASH_FLOW_Archival_Detail_Entity> archivalDetailList;
+				List<CASH_FLOW_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
-
 			else {
 
 				List<CASH_FLOW_Detail_Entity> currentDetailList;
@@ -4327,7 +4358,6 @@ public class BRRS_CASH_FLOW_ReportService {
 				} else {
 
 					currentDetailList = getDetaildatabydateList(parsedDate);
-
 				}
 
 				mv.addObject("reportdetails", currentDetailList);
@@ -4380,19 +4410,30 @@ public class BRRS_CASH_FLOW_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String SNO, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/CASH_FLOW");
 
 		System.out.println("sno is : " + SNO);
+		System.out.println("Type: " + type);
 		if (SNO != null) {
-			CASH_FLOW_Detail_Entity CASH_FLOWEntity = findBySno(SNO);
-			if (CASH_FLOWEntity != null && CASH_FLOWEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(CASH_FLOWEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+			if (type == "RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				CASH_FLOW_Detail_Entity CASH_FLOWEntity = findBySnoArch(SNO);
+				if (CASH_FLOWEntity != null && CASH_FLOWEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(CASH_FLOWEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("CASH_FLOWData", CASH_FLOWEntity);
+			} else {
+				CASH_FLOW_Detail_Entity CASH_FLOWEntity = findBySno(SNO);
+				if (CASH_FLOWEntity != null && CASH_FLOWEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(CASH_FLOWEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("CASH_FLOWData", CASH_FLOWEntity);
 			}
-			mv.addObject("CASH_FLOWData", CASH_FLOWEntity);
 		}
-
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -4414,9 +4455,20 @@ public class BRRS_CASH_FLOW_ReportService {
 			String reportDateStr = request.getParameter("reportDate");
 
 			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
 
 			// Load Existing Record
-			CASH_FLOW_Detail_Entity existing = findBySno(Sno);
+			CASH_FLOW_Detail_Entity existing = null;
+
+			System.out.println("type is : " + type);
+			if ((type == "RESUB") || (type.equals("RESUB"))) {
+				existing = findBySnoArch(Sno);
+			} else {
+				existing = findBySno(Sno);
+			}
+			CASH_FLOW_Detail_Entity oldcopy = new CASH_FLOW_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			if (existing == null) {
 
@@ -4463,45 +4515,39 @@ public class BRRS_CASH_FLOW_ReportService {
 			}
 			// Save using JDBC
 			if (isChanged) {
-
-				String sql = "UPDATE BRRS_CASH_FLOW_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, "
-						+ // ✅ comma added
-						"AVERAGE = ? " + // ✅ proper concatenation
-						"WHERE SNO = ?";
-
+				String sql;
+				System.out.println("Type in update block : " + type);
+				if (type == "RESUB" || type.equals("RESUB")) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				} else {
+					sql = "UPDATE BRRS_CASH_FLOW_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, " + // ✅
+																														// comma
+																														// added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
 						Sno);
-
+				if ((type == "RESUB") || (type.equals("RESUB"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "CASH_FLOW Archival Screen",
+							"BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "CASH_FLOW Screen",
+							"BRRS_CASH_FLOW_DETAILTABLE");
+				}
 				System.out.println("Record updated using JDBC");
 
-				// Format Date
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+				Run_CASH_FLOW_Procudure(reportDateStr, type, entry);
 
-				// Call Procedure After Commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_CASH_FLOW_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				if ((type == "RESUB" || type.equals("RESUB")) && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
-			}
-
-			else {
-
+			} else {
 				return ResponseEntity.ok("No changes were made.");
 			}
 
@@ -4516,13 +4562,140 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_CASH_FLOW_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+
+	private void Run_CASH_FLOW_Procudure(String reportDateStr, String type, String entry) {
+
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM BRRS_CASH_FLOW_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO BRRS_CASH_FLOW_DETAILTABLE "
+								+ " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_CASH_FLOW_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM BRRS_CASH_FLOW_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						String finalsql = "INSERT INTO BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY ( "
+								+ "R9_PRODUCT, R9_LC_AS_ON_MAR, R9_LC_AS_ON_SEP, R10_PRODUCT, R10_LC_AS_ON_MAR, R10_LC_AS_ON_SEP, "
+								+ "R11_PRODUCT, R11_LC_AS_ON_MAR, R11_LC_AS_ON_SEP, R12_PRODUCT, R12_LC_AS_ON_MAR, R12_LC_AS_ON_SEP, "
+								+ "R13_PRODUCT, R13_LC_AS_ON_MAR, R13_LC_AS_ON_SEP, R14_PRODUCT, R14_LC_AS_ON_MAR, R14_LC_AS_ON_SEP, "
+								+ "R15_PRODUCT, R15_LC_AS_ON_MAR, R15_LC_AS_ON_SEP, R16_PRODUCT, R16_LC_AS_ON_MAR, R16_LC_AS_ON_SEP, "
+								+ "R17_PRODUCT, R17_LC_AS_ON_MAR, R17_LC_AS_ON_SEP, R18_PRODUCT, R18_LC_AS_ON_MAR, R18_LC_AS_ON_SEP, "
+								+ "R19_PRODUCT, R19_LC_AS_ON_MAR, R19_LC_AS_ON_SEP, R20_PRODUCT, R20_LC_AS_ON_MAR, R20_LC_AS_ON_SEP, "
+								+ "R21_PRODUCT, R21_LC_AS_ON_MAR, R21_LC_AS_ON_SEP, R22_PRODUCT, R22_LC_AS_ON_MAR, R22_LC_AS_ON_SEP, "
+								+ "R23_PRODUCT, R23_LC_AS_ON_MAR, R23_LC_AS_ON_SEP, R24_PRODUCT, R24_LC_AS_ON_MAR, R24_LC_AS_ON_SEP, "
+								+ "R25_PRODUCT, R25_LC_AS_ON_MAR, R25_LC_AS_ON_SEP, R26_PRODUCT, R26_LC_AS_ON_MAR, R26_LC_AS_ON_SEP, "
+								+ "R27_PRODUCT, R27_LC_AS_ON_MAR, R27_LC_AS_ON_SEP, R28_PRODUCT, R28_LC_AS_ON_MAR, R28_LC_AS_ON_SEP, "
+								+ "R29_PRODUCT, R29_LC_AS_ON_MAR, R29_LC_AS_ON_SEP, R30_PRODUCT, R30_LC_AS_ON_MAR, R30_LC_AS_ON_SEP, "
+								+ "R31_PRODUCT, R31_LC_AS_ON_MAR, R31_LC_AS_ON_SEP, R32_PRODUCT, R32_LC_AS_ON_MAR, R32_LC_AS_ON_SEP, "
+								+ "R33_PRODUCT, R33_LC_AS_ON_MAR, R33_LC_AS_ON_SEP, R34_PRODUCT, R34_LC_AS_ON_MAR, R34_LC_AS_ON_SEP, "
+								+ "R35_PRODUCT, R35_LC_AS_ON_MAR, R35_LC_AS_ON_SEP, R36_PRODUCT, R36_LC_AS_ON_MAR, R36_LC_AS_ON_SEP, "
+								+ "R37_PRODUCT, R37_LC_AS_ON_MAR, R37_LC_AS_ON_SEP, R38_PRODUCT, R38_LC_AS_ON_MAR, R38_LC_AS_ON_SEP, "
+								+ "R39_PRODUCT, R39_LC_AS_ON_MAR, R39_LC_AS_ON_SEP, R40_PRODUCT, R40_LC_AS_ON_MAR, R40_LC_AS_ON_SEP, "
+								+ "R41_PRODUCT, R41_LC_AS_ON_MAR, R41_LC_AS_ON_SEP, R42_PRODUCT, R42_LC_AS_ON_MAR, R42_LC_AS_ON_SEP, "
+								+ "R43_PRODUCT, R43_LC_AS_ON_MAR, R43_LC_AS_ON_SEP, R44_PRODUCT, R44_LC_AS_ON_MAR, R44_LC_AS_ON_SEP, "
+								+ "R45_PRODUCT, R45_LC_AS_ON_MAR, R45_LC_AS_ON_SEP, R46_PRODUCT, R46_LC_AS_ON_MAR, R46_LC_AS_ON_SEP, "
+								+ "R47_PRODUCT, R47_LC_AS_ON_MAR, R47_LC_AS_ON_SEP, R48_PRODUCT, R48_LC_AS_ON_MAR, R48_LC_AS_ON_SEP, "
+								+ "R49_PRODUCT, R49_LC_AS_ON_MAR, R49_LC_AS_ON_SEP, R50_PRODUCT, R50_LC_AS_ON_MAR, R50_LC_AS_ON_SEP, "
+								+ "R51_PRODUCT, R51_LC_AS_ON_MAR, R51_LC_AS_ON_SEP, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+								+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT "
+								+ "R9_PRODUCT, R9_LC_AS_ON_MAR, R9_LC_AS_ON_SEP, R10_PRODUCT, R10_LC_AS_ON_MAR, R10_LC_AS_ON_SEP, "
+								+ "R11_PRODUCT, R11_LC_AS_ON_MAR, R11_LC_AS_ON_SEP, R12_PRODUCT, R12_LC_AS_ON_MAR, R12_LC_AS_ON_SEP, "
+								+ "R13_PRODUCT, R13_LC_AS_ON_MAR, R13_LC_AS_ON_SEP, R14_PRODUCT, R14_LC_AS_ON_MAR, R14_LC_AS_ON_SEP, "
+								+ "R15_PRODUCT, R15_LC_AS_ON_MAR, R15_LC_AS_ON_SEP, R16_PRODUCT, R16_LC_AS_ON_MAR, R16_LC_AS_ON_SEP, "
+								+ "R17_PRODUCT, R17_LC_AS_ON_MAR, R17_LC_AS_ON_SEP, R18_PRODUCT, R18_LC_AS_ON_MAR, R18_LC_AS_ON_SEP, "
+								+ "R19_PRODUCT, R19_LC_AS_ON_MAR, R19_LC_AS_ON_SEP, R20_PRODUCT, R20_LC_AS_ON_MAR, R20_LC_AS_ON_SEP, "
+								+ "R21_PRODUCT, R21_LC_AS_ON_MAR, R21_LC_AS_ON_SEP, R22_PRODUCT, R22_LC_AS_ON_MAR, R22_LC_AS_ON_SEP, "
+								+ "R23_PRODUCT, R23_LC_AS_ON_MAR, R23_LC_AS_ON_SEP, R24_PRODUCT, R24_LC_AS_ON_MAR, R24_LC_AS_ON_SEP, "
+								+ "R25_PRODUCT, R25_LC_AS_ON_MAR, R25_LC_AS_ON_SEP, R26_PRODUCT, R26_LC_AS_ON_MAR, R26_LC_AS_ON_SEP, "
+								+ "R27_PRODUCT, R27_LC_AS_ON_MAR, R27_LC_AS_ON_SEP, R28_PRODUCT, R28_LC_AS_ON_MAR, R28_LC_AS_ON_SEP, "
+								+ "R29_PRODUCT, R29_LC_AS_ON_MAR, R29_LC_AS_ON_SEP, R30_PRODUCT, R30_LC_AS_ON_MAR, R30_LC_AS_ON_SEP, "
+								+ "R31_PRODUCT, R31_LC_AS_ON_MAR, R31_LC_AS_ON_SEP, R32_PRODUCT, R32_LC_AS_ON_MAR, R32_LC_AS_ON_SEP, "
+								+ "R33_PRODUCT, R33_LC_AS_ON_MAR, R33_LC_AS_ON_SEP, R34_PRODUCT, R34_LC_AS_ON_MAR, R34_LC_AS_ON_SEP, "
+								+ "R35_PRODUCT, R35_LC_AS_ON_MAR, R35_LC_AS_ON_SEP, R36_PRODUCT, R36_LC_AS_ON_MAR, R36_LC_AS_ON_SEP, "
+								+ "R37_PRODUCT, R37_LC_AS_ON_MAR, R37_LC_AS_ON_SEP, R38_PRODUCT, R38_LC_AS_ON_MAR, R38_LC_AS_ON_SEP, "
+								+ "R39_PRODUCT, R39_LC_AS_ON_MAR, R39_LC_AS_ON_SEP, R40_PRODUCT, R40_LC_AS_ON_MAR, R40_LC_AS_ON_SEP, "
+								+ "R41_PRODUCT, R41_LC_AS_ON_MAR, R41_LC_AS_ON_SEP, R42_PRODUCT, R42_LC_AS_ON_MAR, R42_LC_AS_ON_SEP, "
+								+ "R43_PRODUCT, R43_LC_AS_ON_MAR, R43_LC_AS_ON_SEP, R44_PRODUCT, R44_LC_AS_ON_MAR, R44_LC_AS_ON_SEP, "
+								+ "R45_PRODUCT, R45_LC_AS_ON_MAR, R45_LC_AS_ON_SEP, R46_PRODUCT, R46_LC_AS_ON_MAR, R46_LC_AS_ON_SEP, "
+								+ "R47_PRODUCT, R47_LC_AS_ON_MAR, R47_LC_AS_ON_SEP, R48_PRODUCT, R48_LC_AS_ON_MAR, R48_LC_AS_ON_SEP, "
+								+ "R49_PRODUCT, R49_LC_AS_ON_MAR, R49_LC_AS_ON_SEP, R50_PRODUCT, R50_LC_AS_ON_MAR, R50_LC_AS_ON_SEP, "
+								+ "R51_PRODUCT, R51_LC_AS_ON_MAR, R51_LC_AS_ON_SEP, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_CASH_FLOW_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						String adsumsql = "DELETE FROM BRRS_CASH_FLOW_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public byte[] getCASH_FLOWDetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for  CASH_FLOW Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)))  {
 				byte[] ARCHIVALreport = getCASH_FLOWDetailNewExcelARCHIVAL(filename, fromdate, todate, currency,
 						dtltype, type, version);
 				return ARCHIVALreport;
@@ -4658,7 +4831,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		try {
 			logger.info("Generating Excel for CASH_FLOW ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)))  {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -4722,7 +4895,7 @@ public class BRRS_CASH_FLOW_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<CASH_FLOW_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
+			List<CASH_FLOW_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -4788,7 +4961,8 @@ public class BRRS_CASH_FLOW_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.CommonDisclosure");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelCASH_FLOWARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -5751,12 +5925,7 @@ public class BRRS_CASH_FLOW_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-			if (attrs != null) {
-				HttpServletRequest request = attrs.getRequest();
-				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "BRRS_CASH_FLOW  SUMMARY", null, "BRRS_CASH_FLOW_SUMMARYTABLE");
-			}
+
 			return out.toByteArray();
 		}
 
@@ -5767,7 +5936,7 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 
@@ -6726,15 +6895,39 @@ public class BRRS_CASH_FLOW_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-			if (attrs != null) {
-				HttpServletRequest request = attrs.getRequest();
-				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "BRRS_CASH_FLOW ARCHIVAL SUMMARY", null, "BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY");
-			}
+
 			return out.toByteArray();
 		}
 
 	}
 
+	// Resubmission
+	public List<Object[]> getCASH_FLOWResub() {
+		List<Object[]> resubList = new ArrayList<>();
+
+		try {
+
+			List<CASH_FLOW_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (CASH_FLOW_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					resubList.add(row);
+				}
+
+				System.out.println("Fetched " + resubList.size() + " Resub records");
+				CASH_FLOW_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest Resub version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No Resub data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  CASH_FLOW  Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return resubList;
+	}
 }

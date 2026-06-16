@@ -3591,5 +3591,35 @@ public class BRRS_ADISB1_ReportService {
 		}
 
 	}
+	
+	// Resubmission
+	public List<Object[]> getADISB1Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+
+		try {
+
+			List<ADISB1_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (ADISB1_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getREPORT_RESUBDATE() };
+					resubList.add(row);
+				}
+
+				System.out.println("Fetched " + resubList.size() + " Resub records");
+				ADISB1_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest Resub version: " + first.getReport_version());
+			} else {
+				System.out.println("No Resub data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  ADISB1  Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return resubList;
+	}
 
 }

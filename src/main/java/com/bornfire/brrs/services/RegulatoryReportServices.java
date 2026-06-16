@@ -430,7 +430,8 @@ public class RegulatoryReportServices {
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
 			String currency, String dtltype, String subreportid, String secid, String reportingTime, Pageable pageable,
-			BigDecimal srl_no, String userid, String type, BigDecimal version,HttpServletRequest req,Model md) throws ParseException {
+			BigDecimal srl_no, String userid, String type, BigDecimal version, HttpServletRequest req, Model md)
+			throws ParseException {
 
 		ModelAndView repsummary = new ModelAndView();
 
@@ -458,10 +459,6 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 			break;
-		
-		
-
-		
 
 		case "M_SRWA_12A_New":
 
@@ -1400,7 +1397,7 @@ public class RegulatoryReportServices {
 		case "M_PI":
 
 			repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
@@ -1485,26 +1482,24 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_MDISB5_ReportService.getBRRS_MDISB5View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-			
+
 		case "BDISB1":
 
 			repsummary = brrs_bdisb1_reportservice.getBRRS_BDISB1View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
-			
 		case "BDISB2":
 			repsummary = BRRS_BDISB2_ReportService.getBRRS_BDISB2View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 
 			break;
-			
+
 		case "BDISB3":
 			repsummary = brrs_bdisb3_reportservice.getBRRS_BDISB3View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
-			
 		case "Q_SMME_LA_NEW":
 
 			repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
@@ -1673,33 +1668,31 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
-			
-			
+
 		case "AML":
 			repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 
 			break;
-			
+
 		case "CPR_STRUCT_LIQ":
-			repsummary = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
 
 			break;
-			
-			
+
 		case "EXPOSURES":
-			repsummary = BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 
 			break;
-			
+
 		case "FORMAT_NEW_CPR":
-			repsummary = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
 
 			break;
-			
+
 		/*
 		 * case "AML":
 		 * 
@@ -1926,8 +1919,6 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
-		
-
 		case "M_OR1":
 			repdetail = brrs_m_or1_reportservice.getM_OR1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
@@ -1937,8 +1928,6 @@ public class RegulatoryReportServices {
 			repdetail = brrs_m_liqgap_reportservice.getM_LIQGAPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-
-		
 
 		case "M_SP":
 			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2224,7 +2213,6 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_EXPOSURES_ReportService.getEXPOSUREScurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
-			
 
 		case "FORMAT_NEW_CPR":
 
@@ -2328,17 +2316,11 @@ public class RegulatoryReportServices {
 					dtltype, pageable, Filter, type, version);
 			break;
 
-		
-
-		
 		case "M_OPTR_NEW":
 
 			repdetail = BRRS_M_OPTR_NEW_ReportService.getM_OPTRNEWcurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
-
-		
-		
 
 		case "M_P_L":
 
@@ -2559,8 +2541,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
-		
 
 		case "Q_SMME_LA":
 			try {
@@ -3149,10 +3129,9 @@ public class RegulatoryReportServices {
 						currency, dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
-				
+
 			}
-				break;
-			
+			break;
 
 		case "RWA":
 			try {
@@ -3703,17 +3682,16 @@ public class RegulatoryReportServices {
 		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
 		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
 		 */
-			
-			
+
 		case "FORMAT_NEW_CPR":
 			try {
-				repfile = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "EXPOSURES":
 			try {
 				repfile = BRRS_EXPOSURES_ReportService.getEXPOSURESExcel(filename, reportId, fromdate, todate, currency,
@@ -3722,27 +3700,25 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
 
 		case "AML":
 			try {
-				repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "CPR_STRUCT_LIQ":
 			try {
-				repfile = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, version);
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
-			
+
 		case "M_LA1":
 			try {
 				repfile = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, reportId, fromdate, todate, currency,
@@ -4756,19 +4732,15 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 
-		
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
 
-		
-
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-
 
 		return new byte[0];
 	}
@@ -4814,8 +4786,6 @@ public class RegulatoryReportServices {
 			archivalData.addAll(MDISB4List);
 			System.out.println("Fetched MDISB4 archival data: " + MDISB4List.size());
 			break;
-
-		
 
 		case "M_DEP4":
 			List<Object[]> M_DEP4List = BRRS_M_DEP4_ReportService.getM_DEP4Archival();
@@ -5481,13 +5451,12 @@ public class RegulatoryReportServices {
 //				e.printStackTrace();
 //			}
 //			break;
-			
+
 		case "AML":
 			List<Object[]> amlList = brrs_aml_reportservice.getAMLArchival();
 			archivalData.addAll(amlList);
 			System.out.println("Fetched SCOPE_OF_APP archival data: " + amlList.size());
 			break;
-
 
 //		case "AML":
 //			try {
@@ -5502,7 +5471,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(EXPANDED_REGU_BSList);
 			System.out.println("Fetched EXPANDED_REGU_BSList archival data: " + EXPANDED_REGU_BSList.size());
 			break;
-			
+
 		case "COMMON_DISCLOSURE":
 			List<Object[]> Common_DisclosureList = BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureArchival();
 			archivalData.addAll(Common_DisclosureList);
@@ -5514,7 +5483,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(MarketRiskList);
 			System.out.println("Fetched MarketRiskList archival data: " + MarketRiskList.size());
 			break;
-			
+
 		case "Main_Features":
 			List<Object[]> MainFeaturesList = BRRS_Main_Features_Reportservice.getMain_FeaturesArchival();
 			archivalData.addAll(MainFeaturesList);
@@ -5522,7 +5491,7 @@ public class RegulatoryReportServices {
 			break;
 
 		case "Recon_Of_FS":
-			List<Object[]>Recon_Of_FSList = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
+			List<Object[]> Recon_Of_FSList = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSArchival();
 			archivalData.addAll(Recon_Of_FSList);
 			System.out.println("Fetched Recon_Of_FSList archival data: " + Recon_Of_FSList.size());
 			break;
@@ -5592,9 +5561,9 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "M_P_L":
-			
+
 			try {
 				archivalData = BRRS_M_P_L_ReportService.getM_P_LArchival();
 			} catch (Exception e) {
@@ -5602,7 +5571,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
 
 		case "M_GP":
 			List<Object[]> gpList = BRRS_M_GP_ReportService.getM_GPArchival();
@@ -5755,7 +5723,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(BDISB1List);
 			System.out.println("Fetched BDISB1 archival data: " + BDISB1List.size());
 			break;
-			
+
 		case "BDISB2":
 			List<Object[]> BDISB2List = BRRS_BDISB2_ReportService.getBRRS_BDISB2Archival();
 			archivalData.addAll(BDISB2List);
@@ -5869,9 +5837,6 @@ public class RegulatoryReportServices {
 			archivalData.addAll(pdList);
 			System.out.println("Fetched M_PD archival data: " + pdList.size());
 			break;
-		
-
-		
 
 		case "ADISB1":
 			List<Object[]> ADISB11List = BRRS_ADISB1_ReportService.getADISB1Archival();
@@ -5903,8 +5868,6 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 
-	
-
 //		case "EXPOSURES":
 //			try {
 //				archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
@@ -5922,15 +5885,13 @@ public class RegulatoryReportServices {
 //				e.printStackTrace();
 //			}
 //			break;
-			
-			
-			
+
 		case "FORMAT_NEW_CPR":
 			List<Object[]> fnaList = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRArchival();
 			archivalData.addAll(fnaList);
 			System.out.println("Fetched rwaList archival data: " + fnaList.size());
 			break;
-			
+
 		case "EXPOSURES":
 			List<Object[]> expoList = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
 			archivalData.addAll(expoList);
@@ -5938,27 +5899,25 @@ public class RegulatoryReportServices {
 			break;
 
 		case "MDISB1":
-		
+
 			List<Object[]> MDISB1List = brrs_mdisb1_reportservice.getMDISB1Archival();
 			archivalData.addAll(MDISB1List);
 			System.out.println("Fetched MDISB1 archival data: " + MDISB1List.size());
 			break;
-			
-			
+
 		case "MDISB2":
-			
+
 			List<Object[]> MDISB2List = brrs_mdisb2_reportservice.getMDISB2Archival();
 			archivalData.addAll(MDISB2List);
 			System.out.println("Fetched MDISB2 archival data: " + MDISB2List.size());
 			break;
 
-case "MDISB3":
-			
+		case "MDISB3":
+
 			List<Object[]> MDISB3List = brrs_mdisb3_reportservice.getMDISB3Archival();
 			archivalData.addAll(MDISB3List);
 			System.out.println("Fetched MDISB3 archival data: " + MDISB3List.size());
 			break;
-
 
 		case "MASTER":
 			try {
@@ -5977,8 +5936,7 @@ case "MDISB3":
 //				e.printStackTrace();
 //			}
 //			break;
-			
-			
+
 //		case "CPR_STRUCT_LIQ":
 //			try {
 //				archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
@@ -5987,7 +5945,6 @@ case "MDISB3":
 //				e.printStackTrace();
 //			}
 //			break;
-			
 
 		case "CPR_STRUCT_LIQ":
 			List<Object[]> cslList = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
@@ -6427,20 +6384,17 @@ case "MDISB3":
 					dtltype, type, version);
 		}
 
-		
 		else if ("M_OPTR_NEWDetail".equals(filename)) {
 
 			fileData = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
 
-		
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
 			fileData = brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
-
 
 		if (fileData == null) {
 			// logger.warn("Excel generation failed or no data for jobId: {}", jobId);
@@ -6682,8 +6636,8 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 			case "Recon_Of_FS":
-				modelAndView = BRRS_RECON_OF_FS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_RECON_OF_FS_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 			case "ADISB1":
 				modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -6691,8 +6645,12 @@ case "MDISB3":
 				break;
 
 			case "ADISB2":
-				modelAndView = BRRS_ADISB2_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_ADISB2_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
+				break;
+			case "CASH_FLOW":
+				modelAndView = BRRS_CASH_FLOW_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 			case "AML":
 				modelAndView = brrs_aml_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -6704,10 +6662,9 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 			case "COMMON_DISCLOSURE":
-			    modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(
-			            request.getParameter("SNO"),
-			            request.getParameter("formmode"), request.getParameter("type"));
-			    break;
+				modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
+				break;
 
 			case "Market_Risk":
 				modelAndView = BRRS_Market_Risk_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -6727,10 +6684,7 @@ case "MDISB3":
 				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-			case "CASH_FLOW":
-				modelAndView = BRRS_CASH_FLOW_ReportService.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"));
-				break;
+
 			case "B_III_CETD":
 				modelAndView = b_III_cetd_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6785,7 +6739,7 @@ case "MDISB3":
 				modelAndView = BRRS_M_P_L_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-				
+
 			case "FSI":
 				modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6809,13 +6763,6 @@ case "MDISB3":
 			case "FORMAT_NEW_CPR":
 				modelAndView = BRRS_FORMAT_NEW_CPR_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
-				break;
-
-			default:
-				logger.warn("No detail service found for reportId: {}", reportId);
-				modelAndView = new ModelAndView("error/report_not_found");
-				modelAndView.addObject("errorMessage",
-						"Details view for report '" + reportId + "' is not implemented.");
 				break;
 
 			case "MDISB1":
@@ -6853,8 +6800,6 @@ case "MDISB3":
 						request.getParameter("formmode"));
 				break;
 
-			
-
 			case "GL_SCH":
 				modelAndView = brrs_gl_sch_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6873,7 +6818,12 @@ case "MDISB3":
 				modelAndView = BRRS_M_SFINP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-
+			default:
+				logger.warn("No detail service found for reportId: {}", reportId);
+				modelAndView = new ModelAndView("error/report_not_found");
+				modelAndView.addObject("errorMessage",
+						"Details view for report '" + reportId + "' is not implemented.");
+				break;
 			}
 		} catch (Exception e) {
 			logger.error("Error processing details for reportId: {}", reportId, e);
@@ -6893,7 +6843,7 @@ case "MDISB3":
 		try {
 			switch (reportId) {
 			case "COMMON_DISCLOSURE":
-				response=BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
+				response = BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
 				break;
 
 			default:
@@ -6911,7 +6861,7 @@ case "MDISB3":
 
 		return response;
 	}
-				
+
 	public ResponseEntity<?> updateReportDetails(String reportId, HttpServletRequest request) {
 		logger.info("Routing POST update request for Report ID: {}", reportId);
 
@@ -7658,7 +7608,7 @@ case "MDISB3":
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "BDISB2":
 			try {
 				List<Object[]> resubList = BRRS_BDISB2_ReportService.getBRRS_BDISB2Resub();
@@ -7670,7 +7620,7 @@ case "MDISB3":
 			}
 
 			break;
-			
+
 		case "BDISB3":
 			try {
 				List<Object[]> resubList = brrs_bdisb3_reportservice.getBRRS_BDISB3Resub();
@@ -7827,16 +7777,6 @@ case "MDISB3":
 			}
 			break;
 
-//		case "PL_SCHS":
-//			try {
-//				List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
-//				resubmissionData.addAll(resubList);
-//				System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
-//			} catch (Exception e) {
-//				System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
-//				e.printStackTrace();
-//			}
-//			break;
 		case "M_DEP3":
 			try {
 				List<Object[]> resubList = BRRS_M_DEP3_reportservice.getM_DEP3Resub();
@@ -7847,9 +7787,6 @@ case "MDISB3":
 				e.printStackTrace();
 			}
 			break;
-
-		
-		
 
 		case "M_OPTR_NEW":
 			try {
@@ -7925,8 +7862,50 @@ case "MDISB3":
 				System.err.println("Error fetching resubmission data for COMMON_DISCLOSURE: " + e.getMessage());
 				e.printStackTrace();
 			}
-
 			break;
+		case "Recon_Of_FS":
+			try {
+				List<Object[]> resubList = BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Recon_Of_FS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Recon_Of_FS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "CASH_FLOW":
+			try {
+				List<Object[]> resubList = BRRS_CASH_FLOW_ReportService.getCASH_FLOWResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for CASH_FLOW: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for CASH_FLOW: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "ADISB1":
+			try {
+				List<Object[]> resubList = BRRS_ADISB1_ReportService.getADISB1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for ADISB1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for ADISB1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "ADISB2":
+			try {
+				List<Object[]> resubList = BRRS_ADISB2_ReportService.getADISB2Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for ADISB2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for ADISB2: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}
@@ -8771,88 +8750,74 @@ case "MDISB3":
 
 		switch (reportId) {
 		case "M_PI":
- 		    try {
- 		        if ("EMAIL_M_PI.xlsx".equals(filename)) {
- 		            excelBytes = BRRS_M_PI_reportservice.BRRS_M_PIEmailExcel(
- 		                    "EMAIL_M_PI.xlsx", reportId, fromdate, todate,
- 		                    currency, dtltype, null, null);
- 		        } else {
- 		            excelBytes = BRRS_M_PI_reportservice.getBRRS_M_PIExcel(
- 		                    "M_PI.xlsx", reportId, fromdate, todate,
- 		                    currency, dtltype, null, "excel", null);
- 		        }
+			try {
+				if ("EMAIL_M_PI.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_PI_reportservice.BRRS_M_PIEmailExcel("EMAIL_M_PI.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, null);
+				} else {
+					excelBytes = BRRS_M_PI_reportservice.getBRRS_M_PIExcel("M_PI.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, "excel", null);
+				}
 
- 		        if (excelBytes == null || excelBytes.length == 0) {
- 		            logger.warn("M_PI: No Excel data found for PDF generation → todate={}", todate);
- 		            return new byte[0];
- 		        }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_PI: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
- 		        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
- 		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
- 		        if (pdfBytes == null || pdfBytes.length == 0) {
- 		            logger.error("M_PI: PDF conversion returned empty bytes");
- 		            return new byte[0];
- 		        }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_PI: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
- 		        logger.info("M_PI: PDF conversion successful → {} bytes", pdfBytes.length);
- 		        return pdfBytes;
+				logger.info("M_PI: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
- 		    } catch (Exception e) {
- 		        logger.error("M_PI: PDF generation failed", e);
- 		        return new byte[0];
- 		    }
- 		    
+			} catch (Exception e) {
+				logger.error("M_PI: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_SFINP1":
-            try {
-                if ("EMAIL_M_SFINP1.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_SFINP1_reportservice.BRRS_M_SFINP1EmailExcel(
-                            "EMAIL_M_SFINP1.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(
-                            "M_SFINP1.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
+			try {
+				if ("EMAIL_M_SFINP1.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_SFINP1_reportservice.BRRS_M_SFINP1EmailExcel("EMAIL_M_SFINP1.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_SFINP1_reportservice.getM_SFINP1Excel("M_SFINP1.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_SFINP1: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SFINP1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                logger.info("M_SFINP1: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_SFINP1: Excel generated → {} bytes", excelBytes.length);
 
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_SFINP1: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SFINP1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-                logger.info("M_SFINP1: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				logger.info("M_SFINP1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-            } catch (Exception e) {
-                logger.error("M_SFINP1: PDF generation failed", e);
-                return new byte[0];
-            }
-            
+			} catch (Exception e) {
+				logger.error("M_SFINP1: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_CR":
 			try {
 				excelBytes = BRRS_M_CR_reportservice.getBRRS_M_CRExcel(filename, reportId, fromdate, todate, currency,
@@ -8880,7 +8845,7 @@ case "MDISB3":
 				logger.error("M_CR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP3":
 			try {
 				excelBytes = BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate, todate, currency,
@@ -8908,7 +8873,7 @@ case "MDISB3":
 				logger.error("M_DEP3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_EPR":
 			try {
 				excelBytes = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId, fromdate, todate, currency,
@@ -8936,11 +8901,11 @@ case "MDISB3":
 				logger.error("M_EPR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		}
 		return pdfBytes;
 	}
-	
+
 	public byte[] getEmailPdfDownloadFile(String reportId, String filename, String asondate, String fromdate,
 			String todate, String currency, String subreportid, String secid, String dtltype, String reportingTime,
 			String instancecode, String filter) {
@@ -8951,65 +8916,51 @@ case "MDISB3":
 		logger.info("PDF request → reportId={} fromdate={} todate={}", reportId, fromdate, todate);
 
 		switch (reportId) {
-		
+
 		case "M_SFINP1":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_SFINP1_reportservice.BRRS_M_SFINP1EmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_SFINP1_reportservice.BRRS_M_SFINP1EmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_SFINP1: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_SFINP1: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SFINP1: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_SFINP1: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 });
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_SFINP1: PDF conversion returned empty bytes");
+					logger.error("M_SFINP1: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SFINP1: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_SFINP1: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_SFINP1: PDF generation failed", e);
+				logger.error("M_SFINP1: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_CR":
 			try {
 				excelBytes = BRRS_M_CR_reportservice.BRRS_M_CREmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,  null);
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_CR: No Excel data found for PDF generation → todate={}", todate);
@@ -9033,11 +8984,11 @@ case "MDISB3":
 				logger.error("M_CR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP3":
 			try {
-				excelBytes = BRRS_M_DEP3_reportservice.BRRS_M_DEP3EmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,  null);
+				excelBytes = BRRS_M_DEP3_reportservice.BRRS_M_DEP3EmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_DEP3: No Excel data found for PDF generation → todate={}", todate);
@@ -9061,11 +9012,11 @@ case "MDISB3":
 				logger.error("M_DEP3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_EPR":
 			try {
-				excelBytes = brrs_m_epr_reportservice.BRRS_M_EPREmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,  null);
+				excelBytes = brrs_m_epr_reportservice.BRRS_M_EPREmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_EPR: No Excel data found for PDF generation → todate={}", todate);
@@ -9089,10 +9040,9 @@ case "MDISB3":
 				logger.error("M_EPR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		    
+
 		}
-		
+
 		return pdfBytes;
 	}
 
@@ -9101,12 +9051,8 @@ case "MDISB3":
 		return BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView("SLS", fromdate, todate, currency, dtltype, pageable);
 	}
 
-	
-
-	
-
 	public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
-			String currency, String subreportid, String secid, String dtltype,String type, BigDecimal version) {
+			String currency, String subreportid, String secid, String dtltype, String type, BigDecimal version) {
 
 		byte[] repfile = null;
 
@@ -9157,275 +9103,178 @@ case "MDISB3":
 		return repfile;
 	}
 
-	
-	
-	public byte[] getConsolidatedDownloadMDISBFile(String filename, String asondate, String fromdate,
-	        String todate, String currency, String type, String format,
-	        BigDecimal version, String dtltype) throws ParseException {
+	public byte[] getConsolidatedDownloadMDISBFile(String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
-	    List<String> reportList = Arrays.asList(
-	            "MDISB1",
-	            "MDISB2",
-	            "MDISB3",
-	            "MDISB4",
-	            "MDISB5"
-	    );
+		List<String> reportList = Arrays.asList("MDISB1", "MDISB2", "MDISB3", "MDISB4", "MDISB5");
 
-	    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-	    Date date = inputFormat.parse(todate);
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		Date date = inputFormat.parse(todate);
 
-	    SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-	    String formattedDate = outputFormat.format(date);
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		String formattedDate = outputFormat.format(date);
 
-	    XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFWorkbook workbook = new XSSFWorkbook();
 
-	    Sheet errorSheet = workbook.createSheet("Status");
+		Sheet errorSheet = workbook.createSheet("Status");
 
-	    Row headerRow = errorSheet.createRow(0);
-	    headerRow.createCell(0).setCellValue("Report Name");
-	    headerRow.createCell(1).setCellValue("Status");
-	    headerRow.createCell(2).setCellValue("Remarks");
+		Row headerRow = errorSheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Report Name");
+		headerRow.createCell(1).setCellValue("Status");
+		headerRow.createCell(2).setCellValue("Remarks");
 
-	    int errorRowNum = 1;
+		int errorRowNum = 1;
 
-	    for (String report : reportList) {
+		for (String report : reportList) {
 
-	        try {
+			try {
 
-	            byte[] fileData = generateMDISBReport(
-	                    report,
-	                    filename,
-	                    asondate,
-	                    fromdate,
-	                    formattedDate,
-	                    currency,
-	                    dtltype,
-	                    type,
-	                    format,
-	                    version);
+				byte[] fileData = generateMDISBReport(report, filename, asondate, fromdate, formattedDate, currency,
+						dtltype, type, format, version);
 
-	            System.out.println(report + " fileData : "
-	                    + (fileData != null ? fileData.length : "NULL"));
+				System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
 
-	            if (fileData != null && fileData.length > 0) {
+				if (fileData != null && fileData.length > 0) {
 
-	                try (Workbook reportWorkbook =
-	                        new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+					try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
 
-	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
 
-	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
+							Sheet srcSheet = reportWorkbook.getSheetAt(i);
 
-	                        String sheetName = report;
+							String sheetName = report;
 
-	                        if (workbook.getSheet(sheetName) != null) {
-	                            sheetName = report + "_" + (i + 1);
-	                        }
+							if (workbook.getSheet(sheetName) != null) {
+								sheetName = report + "_" + (i + 1);
+							}
 
-	                        Sheet newSheet = workbook.createSheet(sheetName);
+							Sheet newSheet = workbook.createSheet(sheetName);
 
-	                        copySheet(srcSheet, newSheet);
-	                    }
-	                }
+							copySheet(srcSheet, newSheet);
+						}
+					}
 
-	                // SUCCESS ENTRY
-	                Row successRow = errorSheet.createRow(errorRowNum++);
-	                successRow.createCell(0).setCellValue(report);
-	                successRow.createCell(1).setCellValue("SUCCESS");
-	                successRow.createCell(2).setCellValue("Downloaded Successfully");
+					// SUCCESS ENTRY
+					Row successRow = errorSheet.createRow(errorRowNum++);
+					successRow.createCell(0).setCellValue(report);
+					successRow.createCell(1).setCellValue("SUCCESS");
+					successRow.createCell(2).setCellValue("Downloaded Successfully");
 
-	            } else {
+				} else {
 
-	                // FAILED ENTRY
-	                Row failRow = errorSheet.createRow(errorRowNum++);
-	                failRow.createCell(0).setCellValue(report);
-	                failRow.createCell(1).setCellValue("FAILED");
-	                failRow.createCell(2).setCellValue("No data found");
-	            }
+					// FAILED ENTRY
+					Row failRow = errorSheet.createRow(errorRowNum++);
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("No data found");
+				}
 
-	        } catch (Exception e) {
+			} catch (Exception e) {
 
-	            Row failRow = errorSheet.createRow(errorRowNum++);
-	            failRow.createCell(0).setCellValue(report);
-	            failRow.createCell(1).setCellValue("FAILED");
-	            failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+				Row failRow = errorSheet.createRow(errorRowNum++);
+				failRow.createCell(0).setCellValue(report);
+				failRow.createCell(1).setCellValue("FAILED");
+				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
 
-	            e.printStackTrace();
-	        }
-	    }
+				e.printStackTrace();
+			}
+		}
 
-	    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
-	        workbook.write(bos);
-	        workbook.close();
+			workbook.write(bos);
+			workbook.close();
 
-	        return bos.toByteArray();
+			return bos.toByteArray();
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	    return null;
-	}
-	
-	private byte[] generateMDISBReport(String reportName, String filename, String asondate,
-	        String fromdate, String todate, String currency,
-	        String dtltype, String type, String format,
-	        BigDecimal version) {
-
-	    try {
-
-	        System.out.println("Service: Generating report for " + reportName);
-	        System.out.println("Converted Dates: From "
-	                + fromdate + " To "
-	                + todate + " Ason "
-	                + asondate);
-
-	        if ("email".equalsIgnoreCase(format) && version == null) {
-
-	            switch (reportName) {
-
-	            case "MDISB1":
-	                return brrs_mdisb1_reportservice.getMDISB1Excel(
-	                        "MDISB1.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB2":
-	                return brrs_mdisb2_reportservice.getMDISB2Excel(
-	                        "MDISB2.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB3":
-	                return brrs_mdisb3_reportservice.getMDISB3Excel(
-	                        "MDISB3.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB4":
-	                return BRRS_MDISB4_ReportService.getMDISB4Excel(
-	                        "MDISB4.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB5":
-	                return BRRS_MDISB5_ReportService.getMDISB5Excel(
-	                        "MDISB5.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            default:
-	                System.out.println("Unknown report: " + reportName);
-	                return null;
-	            }
-
-	        } else {
-
-	            switch (reportName) {
-
-	            case "MDISB1":
-	                return brrs_mdisb1_reportservice.getMDISB1Excel(
-	                        "MDISB1.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB2":
-	                return brrs_mdisb2_reportservice.getMDISB2Excel(
-	                        "MDISB2.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB3":
-	                return brrs_mdisb3_reportservice.getMDISB3Excel(
-	                        "MDISB3.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB4":
-	                return BRRS_MDISB4_ReportService.getMDISB4Excel(
-	                        "MDISB4.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            case "MDISB5":
-	                return BRRS_MDISB5_ReportService.getMDISB5Excel(
-	                        "MDISB5.xlsx",
-	                        reportName,
-	                        fromdate,
-	                        todate,
-	                        currency,
-	                        dtltype,
-	                        type,
-	                        version);
-
-	            default:
-	                System.out.println("Unknown report: " + reportName);
-	                return null;
-	            }
-	        }
-
-	    } catch (FileNotFoundException fe) {
-
-	        System.err.println("Template file not found: " + fe.getMessage());
-	        fe.printStackTrace();
-	        return null;
-
-	    } catch (Exception e) {
-
-	        System.err.println("Error generating report: " + e.getMessage());
-	        e.printStackTrace();
-	        return null;
-	    }
+		return null;
 	}
 
-	
-	
+	private byte[] generateMDISBReport(String reportName, String filename, String asondate, String fromdate,
+			String todate, String currency, String dtltype, String type, String format, BigDecimal version) {
+
+		try {
+
+			System.out.println("Service: Generating report for " + reportName);
+			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+			if ("email".equalsIgnoreCase(format) && version == null) {
+
+				switch (reportName) {
+
+				case "MDISB1":
+					return brrs_mdisb1_reportservice.getMDISB1Excel("MDISB1.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB2":
+					return brrs_mdisb2_reportservice.getMDISB2Excel("MDISB2.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB3":
+					return brrs_mdisb3_reportservice.getMDISB3Excel("MDISB3.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB4":
+					return BRRS_MDISB4_ReportService.getMDISB4Excel("MDISB4.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB5":
+					return BRRS_MDISB5_ReportService.getMDISB5Excel("MDISB5.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				default:
+					System.out.println("Unknown report: " + reportName);
+					return null;
+				}
+
+			} else {
+
+				switch (reportName) {
+
+				case "MDISB1":
+					return brrs_mdisb1_reportservice.getMDISB1Excel("MDISB1.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB2":
+					return brrs_mdisb2_reportservice.getMDISB2Excel("MDISB2.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB3":
+					return brrs_mdisb3_reportservice.getMDISB3Excel("MDISB3.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB4":
+					return BRRS_MDISB4_ReportService.getMDISB4Excel("MDISB4.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "MDISB5":
+					return BRRS_MDISB5_ReportService.getMDISB5Excel("MDISB5.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				default:
+					System.out.println("Unknown report: " + reportName);
+					return null;
+				}
+			}
+
+		} catch (FileNotFoundException fe) {
+
+			System.err.println("Template file not found: " + fe.getMessage());
+			fe.printStackTrace();
+			return null;
+
+		} catch (Exception e) {
+
+			System.err.println("Error generating report: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public byte[] getConsolidatedDownloadADISBFile(String filename, String asondate, String fromdate, String todate,
 			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
@@ -9519,8 +9368,6 @@ case "MDISB3":
 		try { // ✅ Convert date formats if needed (example: 30/09/2025 → 30-Sep-2025)
 			SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
 			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
-
-			
 
 			System.out.println("Service: Generating report for " + reportName);
 			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);

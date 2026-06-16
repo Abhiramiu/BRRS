@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,23 +128,23 @@ public class BRRS_Common_Disclosure_ReportService {
 		return jdbcTemplate.query(sql, new CommonDisclosureArchivalRowMapper());
 	}
 
-	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListResub1(Date REPORT_DATE,
-			BigDecimal REPORT_VERSION) {
-
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
-				+ "AND REPORT_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION },
-				new CommonDisclosureResubRowMapper());
-	}
-
-	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListWithVersion1() {
-
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
-
-		return jdbcTemplate.query(sql, new CommonDisclosureResubRowMapper());
-	}
+//	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListResub1(Date REPORT_DATE,
+//			BigDecimal REPORT_VERSION) {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+//				+ "AND REPORT_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION },
+//				new CommonDisclosureResubRowMapper());
+//	}
+//
+//	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListWithVersion1() {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+//				+ "ORDER BY REPORT_VERSION ASC";
+//
+//		return jdbcTemplate.query(sql, new CommonDisclosureResubRowMapper());
+//	}
 //GET MAX VERSION BY DATE
 
 	public BigDecimal findMaxVersion(Date REPORT_DATE) {
@@ -238,12 +237,12 @@ public class BRRS_Common_Disclosure_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureDetailRowMapper());
 	}
 	
-	public Common_Disclosure_Resub_Detail_Entity findBySno1(String sno) {
-
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE SNO = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureResubDetailRowMapper());
-	}
+//	public Common_Disclosure_Resub_Detail_Entity findBySno1(String sno) {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL WHERE SNO = ?";
+//
+//		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new CommonDisclosureResubDetailRowMapper());
+//	}
 // 1. GET BY DATE + VERSION
 
 	public List<Common_Disclosure_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
@@ -269,35 +268,35 @@ public class BRRS_Common_Disclosure_ReportService {
 
 	// 1. GET BY DATE + VERSION
 
-	public List<Common_Disclosure_Resub_Detail_Entity> getResubDetaildatabydateList(Date reportDate, String version) {
-
-		String sql = "SELECT * " + "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE REPORT_DATE = ? "
-				+ "AND DATA_ENTRY_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportDate, version },
-				new CommonDisclosureResubDetailRowMapper());
-	}
-
-	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
-
-	public List<Common_Disclosure_Resub_Detail_Entity> GetResubDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportDate, String version) {
-
-		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportDate, version },
-				new CommonDisclosureResubDetailRowMapper());
-	}
-	// Resubmission
-
-	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListResub(Date reportDate, BigDecimal version) {
-
-		String sql = "SELECT * " + "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
-				+ "AND REPORT_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new CommonDisclosureResubRowMapper());
-	}
+//	public List<Common_Disclosure_Resub_Detail_Entity> getResubDetaildatabydateList(Date reportDate, String version) {
+//
+//		String sql = "SELECT * " + "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE REPORT_DATE = ? "
+//				+ "AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportDate, version },
+//				new CommonDisclosureResubDetailRowMapper());
+//	}
+//
+//	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+//
+//	public List<Common_Disclosure_Resub_Detail_Entity> GetResubDataByRowIdAndColumnId(String reportLabel,
+//			String reportAddlCriteria1, Date reportDate, String version) {
+//
+//		String sql = "SELECT * FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+//				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportDate, version },
+//				new CommonDisclosureResubDetailRowMapper());
+//	}
+//	// Resubmission
+//
+//	public List<Common_Disclosure_Resub_Summary_Entity> getdatabydateListResub(Date reportDate, BigDecimal version) {
+//
+//		String sql = "SELECT * " + "FROM BRRS_COMMON_DISCLOSURE_RESUBTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+//				+ "AND REPORT_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new CommonDisclosureResubRowMapper());
+//	}
 	// ROW MAPPER
 
 	class CommonDisclosureRowMapper implements RowMapper<Common_Disclosure_Summary_Entity> {
@@ -1151,435 +1150,435 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 	}
 
-	class CommonDisclosureResubRowMapper implements RowMapper<Common_Disclosure_Resub_Summary_Entity> {
-
-		@Override
-		public Common_Disclosure_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-			Common_Disclosure_Resub_Summary_Entity obj = new Common_Disclosure_Resub_Summary_Entity();
-
-			// R7
-			obj.setR7_PRODUCT(rs.getString("R7_PRODUCT"));
-			obj.setR7_COMPONENT_OF_REGU(rs.getBigDecimal("R7_COMPONENT_OF_REGU"));
-			obj.setR7_SOURCE_REF(rs.getString("R7_SOURCE_REF"));
-
-			// R8
-			obj.setR8_PRODUCT(rs.getString("R8_PRODUCT"));
-			obj.setR8_COMPONENT_OF_REGU(rs.getBigDecimal("R8_COMPONENT_OF_REGU"));
-			obj.setR8_SOURCE_REF(rs.getString("R8_SOURCE_REF"));
-
-			// R9
-			obj.setR9_PRODUCT(rs.getString("R9_PRODUCT"));
-			obj.setR9_COMPONENT_OF_REGU(rs.getBigDecimal("R9_COMPONENT_OF_REGU"));
-			obj.setR9_SOURCE_REF(rs.getString("R9_SOURCE_REF"));
-
-			// R10
-			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT"));
-			obj.setR10_COMPONENT_OF_REGU(rs.getBigDecimal("R10_COMPONENT_OF_REGU"));
-			obj.setR10_SOURCE_REF(rs.getString("R10_SOURCE_REF"));
-
-			// R11
-			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT"));
-			obj.setR11_COMPONENT_OF_REGU(rs.getBigDecimal("R11_COMPONENT_OF_REGU"));
-			obj.setR11_SOURCE_REF(rs.getString("R11_SOURCE_REF"));
-
-			// R12
-			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT"));
-			obj.setR12_COMPONENT_OF_REGU(rs.getBigDecimal("R12_COMPONENT_OF_REGU"));
-			obj.setR12_SOURCE_REF(rs.getString("R12_SOURCE_REF"));
-
-			// R13
-			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT"));
-			obj.setR13_COMPONENT_OF_REGU(rs.getBigDecimal("R13_COMPONENT_OF_REGU"));
-			obj.setR13_SOURCE_REF(rs.getString("R13_SOURCE_REF"));
-
-			// R14
-			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT"));
-			obj.setR14_COMPONENT_OF_REGU(rs.getBigDecimal("R14_COMPONENT_OF_REGU"));
-			obj.setR14_SOURCE_REF(rs.getString("R14_SOURCE_REF"));
-
-			// COMMON FIELDS
-			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
-			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
-			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
-			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
-			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
-			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
-			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
-			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
-			obj.setDEL_FLG(rs.getString("DEL_FLG"));
-
-			return obj;
-		}
-	}
-
-	@IdClass(Common_Disclosure_PK.class)
-	public class Common_Disclosure_Resub_Summary_Entity {
-
-		@Id
-		@Temporal(TemporalType.DATE)
-		@Column(name = "REPORT_DATE")
-		private Date REPORT_DATE;
-
-		@Column(name = "R7_PRODUCT", length = 100)
-		private String R7_PRODUCT;
-
-		@Column(name = "R7_COMPONENT_OF_REGU")
-		private BigDecimal R7_COMPONENT_OF_REGU;
-
-		@Column(name = "R7_SOURCE_REF", length = 200)
-		private String R7_SOURCE_REF;
-
-		@Column(name = "R8_PRODUCT", length = 100)
-		private String R8_PRODUCT;
-
-		@Column(name = "R8_COMPONENT_OF_REGU")
-		private BigDecimal R8_COMPONENT_OF_REGU;
-
-		@Column(name = "R8_SOURCE_REF", length = 100)
-		private String R8_SOURCE_REF;
-
-		@Column(name = "R9_PRODUCT", length = 100)
-		private String R9_PRODUCT;
-
-		@Column(name = "R9_COMPONENT_OF_REGU")
-		private BigDecimal R9_COMPONENT_OF_REGU;
-
-		@Column(name = "R9_SOURCE_REF", length = 100)
-		private String R9_SOURCE_REF;
-
-		@Column(name = "R10_PRODUCT", length = 200)
-		private String R10_PRODUCT;
-
-		@Column(name = "R10_COMPONENT_OF_REGU")
-		private BigDecimal R10_COMPONENT_OF_REGU;
-
-		@Column(name = "R10_SOURCE_REF", length = 100)
-		private String R10_SOURCE_REF;
-
-		@Column(name = "R11_PRODUCT", length = 200)
-		private String R11_PRODUCT;
-
-		@Column(name = "R11_COMPONENT_OF_REGU")
-		private BigDecimal R11_COMPONENT_OF_REGU;
-
-		@Column(name = "R11_SOURCE_REF", length = 100)
-		private String R11_SOURCE_REF;
-
-		@Column(name = "R12_PRODUCT", length = 100)
-		private String R12_PRODUCT;
-
-		@Column(name = "R12_COMPONENT_OF_REGU")
-		private BigDecimal R12_COMPONENT_OF_REGU;
-
-		@Column(name = "R12_SOURCE_REF", length = 100)
-		private String R12_SOURCE_REF;
-
-		@Column(name = "R13_PRODUCT", length = 100)
-		private String R13_PRODUCT;
-
-		@Column(name = "R13_COMPONENT_OF_REGU")
-		private BigDecimal R13_COMPONENT_OF_REGU;
-
-		@Column(name = "R13_SOURCE_REF", length = 100)
-		private String R13_SOURCE_REF;
-
-		@Column(name = "R14_PRODUCT", length = 100)
-		private String R14_PRODUCT;
-
-		@Column(name = "R14_COMPONENT_OF_REGU")
-		private BigDecimal R14_COMPONENT_OF_REGU;
-
-		@Column(name = "R14_SOURCE_REF", length = 100)
-		private String R14_SOURCE_REF;
-		@Id
-		@Column(name = "REPORT_VERSION", length = 100)
-		private BigDecimal REPORT_VERSION;
-
-		@Column(name = "REPORT_FREQUENCY", length = 100)
-		private String REPORT_FREQUENCY;
-
-		@Column(name = "REPORT_CODE", length = 100)
-		private String REPORT_CODE;
-
-		@Column(name = "REPORT_DESC", length = 100)
-		private String REPORT_DESC;
-
-		@Column(name = "ENTITY_FLG", length = 1)
-		private String ENTITY_FLG;
-
-		@Column(name = "MODIFY_FLG", length = 1)
-		private String MODIFY_FLG;
-
-		@Column(name = "DEL_FLG", length = 1)
-		private String DEL_FLG;
-
-		private Date REPORT_RESUBDATE;
-
-		public Date getREPORT_DATE() {
-			return REPORT_DATE;
-		}
-
-		public void setREPORT_DATE(Date REPORT_DATE) {
-			this.REPORT_DATE = REPORT_DATE;
-		}
-
-		public String getR7_PRODUCT() {
-			return R7_PRODUCT;
-		}
-
-		public void setR7_PRODUCT(String r7_PRODUCT) {
-			R7_PRODUCT = r7_PRODUCT;
-		}
-
-		public BigDecimal getR7_COMPONENT_OF_REGU() {
-			return R7_COMPONENT_OF_REGU;
-		}
-
-		public void setR7_COMPONENT_OF_REGU(BigDecimal r7_COMPONENT_OF_REGU) {
-			R7_COMPONENT_OF_REGU = r7_COMPONENT_OF_REGU;
-		}
-
-		public String getR7_SOURCE_REF() {
-			return R7_SOURCE_REF;
-		}
-
-		public void setR7_SOURCE_REF(String r7_SOURCE_REF) {
-			R7_SOURCE_REF = r7_SOURCE_REF;
-		}
-
-		public String getR8_PRODUCT() {
-			return R8_PRODUCT;
-		}
-
-		public void setR8_PRODUCT(String r8_PRODUCT) {
-			R8_PRODUCT = r8_PRODUCT;
-		}
-
-		public BigDecimal getR8_COMPONENT_OF_REGU() {
-			return R8_COMPONENT_OF_REGU;
-		}
-
-		public void setR8_COMPONENT_OF_REGU(BigDecimal r8_COMPONENT_OF_REGU) {
-			R8_COMPONENT_OF_REGU = r8_COMPONENT_OF_REGU;
-		}
-
-		public String getR8_SOURCE_REF() {
-			return R8_SOURCE_REF;
-		}
-
-		public void setR8_SOURCE_REF(String r8_SOURCE_REF) {
-			R8_SOURCE_REF = r8_SOURCE_REF;
-		}
-
-		public String getR9_PRODUCT() {
-			return R9_PRODUCT;
-		}
-
-		public void setR9_PRODUCT(String r9_PRODUCT) {
-			R9_PRODUCT = r9_PRODUCT;
-		}
-
-		public BigDecimal getR9_COMPONENT_OF_REGU() {
-			return R9_COMPONENT_OF_REGU;
-		}
-
-		public void setR9_COMPONENT_OF_REGU(BigDecimal r9_COMPONENT_OF_REGU) {
-			R9_COMPONENT_OF_REGU = r9_COMPONENT_OF_REGU;
-		}
-
-		public String getR9_SOURCE_REF() {
-			return R9_SOURCE_REF;
-		}
-
-		public void setR9_SOURCE_REF(String r9_SOURCE_REF) {
-			R9_SOURCE_REF = r9_SOURCE_REF;
-		}
-
-		public String getR10_PRODUCT() {
-			return R10_PRODUCT;
-		}
-
-		public void setR10_PRODUCT(String r10_PRODUCT) {
-			R10_PRODUCT = r10_PRODUCT;
-		}
-
-		public BigDecimal getR10_COMPONENT_OF_REGU() {
-			return R10_COMPONENT_OF_REGU;
-		}
-
-		public void setR10_COMPONENT_OF_REGU(BigDecimal r10_COMPONENT_OF_REGU) {
-			R10_COMPONENT_OF_REGU = r10_COMPONENT_OF_REGU;
-		}
-
-		public String getR10_SOURCE_REF() {
-			return R10_SOURCE_REF;
-		}
-
-		public void setR10_SOURCE_REF(String r10_SOURCE_REF) {
-			R10_SOURCE_REF = r10_SOURCE_REF;
-		}
-
-		public String getR11_PRODUCT() {
-			return R11_PRODUCT;
-		}
-
-		public void setR11_PRODUCT(String r11_PRODUCT) {
-			R11_PRODUCT = r11_PRODUCT;
-		}
-
-		public BigDecimal getR11_COMPONENT_OF_REGU() {
-			return R11_COMPONENT_OF_REGU;
-		}
-
-		public void setR11_COMPONENT_OF_REGU(BigDecimal r11_COMPONENT_OF_REGU) {
-			R11_COMPONENT_OF_REGU = r11_COMPONENT_OF_REGU;
-		}
-
-		public String getR11_SOURCE_REF() {
-			return R11_SOURCE_REF;
-		}
-
-		public void setR11_SOURCE_REF(String r11_SOURCE_REF) {
-			R11_SOURCE_REF = r11_SOURCE_REF;
-		}
-
-		public String getR12_PRODUCT() {
-			return R12_PRODUCT;
-		}
-
-		public void setR12_PRODUCT(String r12_PRODUCT) {
-			R12_PRODUCT = r12_PRODUCT;
-		}
-
-		public BigDecimal getR12_COMPONENT_OF_REGU() {
-			return R12_COMPONENT_OF_REGU;
-		}
-
-		public void setR12_COMPONENT_OF_REGU(BigDecimal r12_COMPONENT_OF_REGU) {
-			R12_COMPONENT_OF_REGU = r12_COMPONENT_OF_REGU;
-		}
-
-		public String getR12_SOURCE_REF() {
-			return R12_SOURCE_REF;
-		}
-
-		public void setR12_SOURCE_REF(String r12_SOURCE_REF) {
-			R12_SOURCE_REF = r12_SOURCE_REF;
-		}
-
-		public String getR13_PRODUCT() {
-			return R13_PRODUCT;
-		}
-
-		public void setR13_PRODUCT(String r13_PRODUCT) {
-			R13_PRODUCT = r13_PRODUCT;
-		}
-
-		public BigDecimal getR13_COMPONENT_OF_REGU() {
-			return R13_COMPONENT_OF_REGU;
-		}
-
-		public void setR13_COMPONENT_OF_REGU(BigDecimal r13_COMPONENT_OF_REGU) {
-			R13_COMPONENT_OF_REGU = r13_COMPONENT_OF_REGU;
-		}
-
-		public String getR13_SOURCE_REF() {
-			return R13_SOURCE_REF;
-		}
-
-		public void setR13_SOURCE_REF(String r13_SOURCE_REF) {
-			R13_SOURCE_REF = r13_SOURCE_REF;
-		}
-
-		public String getR14_PRODUCT() {
-			return R14_PRODUCT;
-		}
-
-		public void setR14_PRODUCT(String r14_PRODUCT) {
-			R14_PRODUCT = r14_PRODUCT;
-		}
-
-		public BigDecimal getR14_COMPONENT_OF_REGU() {
-			return R14_COMPONENT_OF_REGU;
-		}
-
-		public void setR14_COMPONENT_OF_REGU(BigDecimal r14_COMPONENT_OF_REGU) {
-			R14_COMPONENT_OF_REGU = r14_COMPONENT_OF_REGU;
-		}
-
-		public String getR14_SOURCE_REF() {
-			return R14_SOURCE_REF;
-		}
-
-		public void setR14_SOURCE_REF(String r14_SOURCE_REF) {
-			R14_SOURCE_REF = r14_SOURCE_REF;
-		}
-
-		public BigDecimal getREPORT_VERSION() {
-			return REPORT_VERSION;
-		}
-
-		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
-			REPORT_VERSION = rEPORT_VERSION;
-		}
-
-		public String getREPORT_FREQUENCY() {
-			return REPORT_FREQUENCY;
-		}
-
-		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
-			REPORT_FREQUENCY = rEPORT_FREQUENCY;
-		}
-
-		public String getREPORT_CODE() {
-			return REPORT_CODE;
-		}
-
-		public void setREPORT_CODE(String rEPORT_CODE) {
-			REPORT_CODE = rEPORT_CODE;
-		}
-
-		public String getREPORT_DESC() {
-			return REPORT_DESC;
-		}
-
-		public void setREPORT_DESC(String rEPORT_DESC) {
-			REPORT_DESC = rEPORT_DESC;
-		}
-
-		public String getENTITY_FLG() {
-			return ENTITY_FLG;
-		}
-
-		public void setENTITY_FLG(String eNTITY_FLG) {
-			ENTITY_FLG = eNTITY_FLG;
-		}
-
-		public String getMODIFY_FLG() {
-			return MODIFY_FLG;
-		}
-
-		public void setMODIFY_FLG(String mODIFY_FLG) {
-			MODIFY_FLG = mODIFY_FLG;
-		}
-
-		public String getDEL_FLG() {
-			return DEL_FLG;
-		}
-
-		public void setDEL_FLG(String dEL_FLG) {
-			DEL_FLG = dEL_FLG;
-		}
-
-		public Date getREPORT_RESUBDATE() {
-			return REPORT_RESUBDATE;
-		}
-
-		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
-			REPORT_RESUBDATE = rEPORT_RESUBDATE;
-		}
-	}
+//	class CommonDisclosureResubRowMapper implements RowMapper<Common_Disclosure_Resub_Summary_Entity> {
+//
+//		@Override
+//		public Common_Disclosure_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+//
+//			Common_Disclosure_Resub_Summary_Entity obj = new Common_Disclosure_Resub_Summary_Entity();
+//
+//			// R7
+//			obj.setR7_PRODUCT(rs.getString("R7_PRODUCT"));
+//			obj.setR7_COMPONENT_OF_REGU(rs.getBigDecimal("R7_COMPONENT_OF_REGU"));
+//			obj.setR7_SOURCE_REF(rs.getString("R7_SOURCE_REF"));
+//
+//			// R8
+//			obj.setR8_PRODUCT(rs.getString("R8_PRODUCT"));
+//			obj.setR8_COMPONENT_OF_REGU(rs.getBigDecimal("R8_COMPONENT_OF_REGU"));
+//			obj.setR8_SOURCE_REF(rs.getString("R8_SOURCE_REF"));
+//
+//			// R9
+//			obj.setR9_PRODUCT(rs.getString("R9_PRODUCT"));
+//			obj.setR9_COMPONENT_OF_REGU(rs.getBigDecimal("R9_COMPONENT_OF_REGU"));
+//			obj.setR9_SOURCE_REF(rs.getString("R9_SOURCE_REF"));
+//
+//			// R10
+//			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT"));
+//			obj.setR10_COMPONENT_OF_REGU(rs.getBigDecimal("R10_COMPONENT_OF_REGU"));
+//			obj.setR10_SOURCE_REF(rs.getString("R10_SOURCE_REF"));
+//
+//			// R11
+//			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT"));
+//			obj.setR11_COMPONENT_OF_REGU(rs.getBigDecimal("R11_COMPONENT_OF_REGU"));
+//			obj.setR11_SOURCE_REF(rs.getString("R11_SOURCE_REF"));
+//
+//			// R12
+//			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT"));
+//			obj.setR12_COMPONENT_OF_REGU(rs.getBigDecimal("R12_COMPONENT_OF_REGU"));
+//			obj.setR12_SOURCE_REF(rs.getString("R12_SOURCE_REF"));
+//
+//			// R13
+//			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT"));
+//			obj.setR13_COMPONENT_OF_REGU(rs.getBigDecimal("R13_COMPONENT_OF_REGU"));
+//			obj.setR13_SOURCE_REF(rs.getString("R13_SOURCE_REF"));
+//
+//			// R14
+//			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT"));
+//			obj.setR14_COMPONENT_OF_REGU(rs.getBigDecimal("R14_COMPONENT_OF_REGU"));
+//			obj.setR14_SOURCE_REF(rs.getString("R14_SOURCE_REF"));
+//
+//			// COMMON FIELDS
+//			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+//			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+//			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+//			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+//			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+//			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+//			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+//			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+//			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+//
+//			return obj;
+//		}
+//	}
+//
+//	@IdClass(Common_Disclosure_PK.class)
+//	public class Common_Disclosure_Resub_Summary_Entity {
+//
+//		@Id
+//		@Temporal(TemporalType.DATE)
+//		@Column(name = "REPORT_DATE")
+//		private Date REPORT_DATE;
+//
+//		@Column(name = "R7_PRODUCT", length = 100)
+//		private String R7_PRODUCT;
+//
+//		@Column(name = "R7_COMPONENT_OF_REGU")
+//		private BigDecimal R7_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R7_SOURCE_REF", length = 200)
+//		private String R7_SOURCE_REF;
+//
+//		@Column(name = "R8_PRODUCT", length = 100)
+//		private String R8_PRODUCT;
+//
+//		@Column(name = "R8_COMPONENT_OF_REGU")
+//		private BigDecimal R8_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R8_SOURCE_REF", length = 100)
+//		private String R8_SOURCE_REF;
+//
+//		@Column(name = "R9_PRODUCT", length = 100)
+//		private String R9_PRODUCT;
+//
+//		@Column(name = "R9_COMPONENT_OF_REGU")
+//		private BigDecimal R9_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R9_SOURCE_REF", length = 100)
+//		private String R9_SOURCE_REF;
+//
+//		@Column(name = "R10_PRODUCT", length = 200)
+//		private String R10_PRODUCT;
+//
+//		@Column(name = "R10_COMPONENT_OF_REGU")
+//		private BigDecimal R10_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R10_SOURCE_REF", length = 100)
+//		private String R10_SOURCE_REF;
+//
+//		@Column(name = "R11_PRODUCT", length = 200)
+//		private String R11_PRODUCT;
+//
+//		@Column(name = "R11_COMPONENT_OF_REGU")
+//		private BigDecimal R11_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R11_SOURCE_REF", length = 100)
+//		private String R11_SOURCE_REF;
+//
+//		@Column(name = "R12_PRODUCT", length = 100)
+//		private String R12_PRODUCT;
+//
+//		@Column(name = "R12_COMPONENT_OF_REGU")
+//		private BigDecimal R12_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R12_SOURCE_REF", length = 100)
+//		private String R12_SOURCE_REF;
+//
+//		@Column(name = "R13_PRODUCT", length = 100)
+//		private String R13_PRODUCT;
+//
+//		@Column(name = "R13_COMPONENT_OF_REGU")
+//		private BigDecimal R13_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R13_SOURCE_REF", length = 100)
+//		private String R13_SOURCE_REF;
+//
+//		@Column(name = "R14_PRODUCT", length = 100)
+//		private String R14_PRODUCT;
+//
+//		@Column(name = "R14_COMPONENT_OF_REGU")
+//		private BigDecimal R14_COMPONENT_OF_REGU;
+//
+//		@Column(name = "R14_SOURCE_REF", length = 100)
+//		private String R14_SOURCE_REF;
+//		@Id
+//		@Column(name = "REPORT_VERSION", length = 100)
+//		private BigDecimal REPORT_VERSION;
+//
+//		@Column(name = "REPORT_FREQUENCY", length = 100)
+//		private String REPORT_FREQUENCY;
+//
+//		@Column(name = "REPORT_CODE", length = 100)
+//		private String REPORT_CODE;
+//
+//		@Column(name = "REPORT_DESC", length = 100)
+//		private String REPORT_DESC;
+//
+//		@Column(name = "ENTITY_FLG", length = 1)
+//		private String ENTITY_FLG;
+//
+//		@Column(name = "MODIFY_FLG", length = 1)
+//		private String MODIFY_FLG;
+//
+//		@Column(name = "DEL_FLG", length = 1)
+//		private String DEL_FLG;
+//
+//		private Date REPORT_RESUBDATE;
+//
+//		public Date getREPORT_DATE() {
+//			return REPORT_DATE;
+//		}
+//
+//		public void setREPORT_DATE(Date REPORT_DATE) {
+//			this.REPORT_DATE = REPORT_DATE;
+//		}
+//
+//		public String getR7_PRODUCT() {
+//			return R7_PRODUCT;
+//		}
+//
+//		public void setR7_PRODUCT(String r7_PRODUCT) {
+//			R7_PRODUCT = r7_PRODUCT;
+//		}
+//
+//		public BigDecimal getR7_COMPONENT_OF_REGU() {
+//			return R7_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR7_COMPONENT_OF_REGU(BigDecimal r7_COMPONENT_OF_REGU) {
+//			R7_COMPONENT_OF_REGU = r7_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR7_SOURCE_REF() {
+//			return R7_SOURCE_REF;
+//		}
+//
+//		public void setR7_SOURCE_REF(String r7_SOURCE_REF) {
+//			R7_SOURCE_REF = r7_SOURCE_REF;
+//		}
+//
+//		public String getR8_PRODUCT() {
+//			return R8_PRODUCT;
+//		}
+//
+//		public void setR8_PRODUCT(String r8_PRODUCT) {
+//			R8_PRODUCT = r8_PRODUCT;
+//		}
+//
+//		public BigDecimal getR8_COMPONENT_OF_REGU() {
+//			return R8_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR8_COMPONENT_OF_REGU(BigDecimal r8_COMPONENT_OF_REGU) {
+//			R8_COMPONENT_OF_REGU = r8_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR8_SOURCE_REF() {
+//			return R8_SOURCE_REF;
+//		}
+//
+//		public void setR8_SOURCE_REF(String r8_SOURCE_REF) {
+//			R8_SOURCE_REF = r8_SOURCE_REF;
+//		}
+//
+//		public String getR9_PRODUCT() {
+//			return R9_PRODUCT;
+//		}
+//
+//		public void setR9_PRODUCT(String r9_PRODUCT) {
+//			R9_PRODUCT = r9_PRODUCT;
+//		}
+//
+//		public BigDecimal getR9_COMPONENT_OF_REGU() {
+//			return R9_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR9_COMPONENT_OF_REGU(BigDecimal r9_COMPONENT_OF_REGU) {
+//			R9_COMPONENT_OF_REGU = r9_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR9_SOURCE_REF() {
+//			return R9_SOURCE_REF;
+//		}
+//
+//		public void setR9_SOURCE_REF(String r9_SOURCE_REF) {
+//			R9_SOURCE_REF = r9_SOURCE_REF;
+//		}
+//
+//		public String getR10_PRODUCT() {
+//			return R10_PRODUCT;
+//		}
+//
+//		public void setR10_PRODUCT(String r10_PRODUCT) {
+//			R10_PRODUCT = r10_PRODUCT;
+//		}
+//
+//		public BigDecimal getR10_COMPONENT_OF_REGU() {
+//			return R10_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR10_COMPONENT_OF_REGU(BigDecimal r10_COMPONENT_OF_REGU) {
+//			R10_COMPONENT_OF_REGU = r10_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR10_SOURCE_REF() {
+//			return R10_SOURCE_REF;
+//		}
+//
+//		public void setR10_SOURCE_REF(String r10_SOURCE_REF) {
+//			R10_SOURCE_REF = r10_SOURCE_REF;
+//		}
+//
+//		public String getR11_PRODUCT() {
+//			return R11_PRODUCT;
+//		}
+//
+//		public void setR11_PRODUCT(String r11_PRODUCT) {
+//			R11_PRODUCT = r11_PRODUCT;
+//		}
+//
+//		public BigDecimal getR11_COMPONENT_OF_REGU() {
+//			return R11_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR11_COMPONENT_OF_REGU(BigDecimal r11_COMPONENT_OF_REGU) {
+//			R11_COMPONENT_OF_REGU = r11_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR11_SOURCE_REF() {
+//			return R11_SOURCE_REF;
+//		}
+//
+//		public void setR11_SOURCE_REF(String r11_SOURCE_REF) {
+//			R11_SOURCE_REF = r11_SOURCE_REF;
+//		}
+//
+//		public String getR12_PRODUCT() {
+//			return R12_PRODUCT;
+//		}
+//
+//		public void setR12_PRODUCT(String r12_PRODUCT) {
+//			R12_PRODUCT = r12_PRODUCT;
+//		}
+//
+//		public BigDecimal getR12_COMPONENT_OF_REGU() {
+//			return R12_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR12_COMPONENT_OF_REGU(BigDecimal r12_COMPONENT_OF_REGU) {
+//			R12_COMPONENT_OF_REGU = r12_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR12_SOURCE_REF() {
+//			return R12_SOURCE_REF;
+//		}
+//
+//		public void setR12_SOURCE_REF(String r12_SOURCE_REF) {
+//			R12_SOURCE_REF = r12_SOURCE_REF;
+//		}
+//
+//		public String getR13_PRODUCT() {
+//			return R13_PRODUCT;
+//		}
+//
+//		public void setR13_PRODUCT(String r13_PRODUCT) {
+//			R13_PRODUCT = r13_PRODUCT;
+//		}
+//
+//		public BigDecimal getR13_COMPONENT_OF_REGU() {
+//			return R13_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR13_COMPONENT_OF_REGU(BigDecimal r13_COMPONENT_OF_REGU) {
+//			R13_COMPONENT_OF_REGU = r13_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR13_SOURCE_REF() {
+//			return R13_SOURCE_REF;
+//		}
+//
+//		public void setR13_SOURCE_REF(String r13_SOURCE_REF) {
+//			R13_SOURCE_REF = r13_SOURCE_REF;
+//		}
+//
+//		public String getR14_PRODUCT() {
+//			return R14_PRODUCT;
+//		}
+//
+//		public void setR14_PRODUCT(String r14_PRODUCT) {
+//			R14_PRODUCT = r14_PRODUCT;
+//		}
+//
+//		public BigDecimal getR14_COMPONENT_OF_REGU() {
+//			return R14_COMPONENT_OF_REGU;
+//		}
+//
+//		public void setR14_COMPONENT_OF_REGU(BigDecimal r14_COMPONENT_OF_REGU) {
+//			R14_COMPONENT_OF_REGU = r14_COMPONENT_OF_REGU;
+//		}
+//
+//		public String getR14_SOURCE_REF() {
+//			return R14_SOURCE_REF;
+//		}
+//
+//		public void setR14_SOURCE_REF(String r14_SOURCE_REF) {
+//			R14_SOURCE_REF = r14_SOURCE_REF;
+//		}
+//
+//		public BigDecimal getREPORT_VERSION() {
+//			return REPORT_VERSION;
+//		}
+//
+//		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+//			REPORT_VERSION = rEPORT_VERSION;
+//		}
+//
+//		public String getREPORT_FREQUENCY() {
+//			return REPORT_FREQUENCY;
+//		}
+//
+//		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+//			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+//		}
+//
+//		public String getREPORT_CODE() {
+//			return REPORT_CODE;
+//		}
+//
+//		public void setREPORT_CODE(String rEPORT_CODE) {
+//			REPORT_CODE = rEPORT_CODE;
+//		}
+//
+//		public String getREPORT_DESC() {
+//			return REPORT_DESC;
+//		}
+//
+//		public void setREPORT_DESC(String rEPORT_DESC) {
+//			REPORT_DESC = rEPORT_DESC;
+//		}
+//
+//		public String getENTITY_FLG() {
+//			return ENTITY_FLG;
+//		}
+//
+//		public void setENTITY_FLG(String eNTITY_FLG) {
+//			ENTITY_FLG = eNTITY_FLG;
+//		}
+//
+//		public String getMODIFY_FLG() {
+//			return MODIFY_FLG;
+//		}
+//
+//		public void setMODIFY_FLG(String mODIFY_FLG) {
+//			MODIFY_FLG = mODIFY_FLG;
+//		}
+//
+//		public String getDEL_FLG() {
+//			return DEL_FLG;
+//		}
+//
+//		public void setDEL_FLG(String dEL_FLG) {
+//			DEL_FLG = dEL_FLG;
+//		}
+//
+//		public Date getREPORT_RESUBDATE() {
+//			return REPORT_RESUBDATE;
+//		}
+//
+//		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+//			REPORT_RESUBDATE = rEPORT_RESUBDATE;
+//		}
+//	}
 // COMPOSITE KEY CLASS INSIDE SERVICE
 
 	public static class Common_Disclosure_PK implements Serializable {
@@ -2214,298 +2213,298 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 	}
 
-	class CommonDisclosureResubDetailRowMapper implements RowMapper<Common_Disclosure_Resub_Detail_Entity> {
-
-		@Override
-		public Common_Disclosure_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-			Common_Disclosure_Resub_Detail_Entity obj = new Common_Disclosure_Resub_Detail_Entity();
-			obj.setSno(rs.getLong("SNO"));
-			obj.setCustId(rs.getString("CUST_ID"));
-			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
-			obj.setAcctName(rs.getString("ACCT_NAME"));
-			obj.setDataType(rs.getString("DATA_TYPE"));
-			obj.setReportName(rs.getString("REPORT_NAME"));
-			obj.setReportLabel(rs.getString("REPORT_LABEL"));
-			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
-			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
-			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
-			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
-			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
-			obj.setAverage(rs.getBigDecimal("AVERAGE"));
-			obj.setReportDate(rs.getDate("REPORT_DATE"));
-			obj.setCreateUser(rs.getString("CREATE_USER"));
-			obj.setCreateTime(rs.getDate("CREATE_TIME"));
-			obj.setModifyUser(rs.getString("MODIFY_USER"));
-			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
-			obj.setVerifyUser(rs.getString("VERIFY_USER"));
-			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
-			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
-
-			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
-
-			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
-
-			return obj;
-		}
-	}
-
-	public class Common_Disclosure_Resub_Detail_Entity {
-		private Long sno;
-		@Column(name = "CUST_ID")
-		private String custId;
-
-		@Column(name = "ACCT_NUMBER")
-		private String acctNumber;
-
-		@Column(name = "ACCT_NAME")
-		private String acctName;
-
-		@Column(name = "DATA_TYPE")
-		private String dataType;
-
-		@Column(name = "REPORT_NAME")
-		private String reportName;
-
-		@Column(name = "REPORT_LABEL")
-		private String reportLabel;
-
-		@Column(name = "REPORT_ADDL_CRITERIA_1")
-		private String reportAddlCriteria1;
-
-		@Column(name = "REPORT_REMARKS")
-		private String reportRemarks;
-
-		@Column(name = "MODIFICATION_REMARKS")
-		private String modificationRemarks;
-
-		@Column(name = "DATA_ENTRY_VERSION")
-		private String dataEntryVersion;
-
-		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
-
-		@Column(name = "AVERAGE", precision = 24, scale = 3)
-		private BigDecimal average;
-
-		@Column(name = "REPORT_DATE")
-		@DateTimeFormat(pattern = "dd-MM-yyyy")
-		private Date reportDate;
-
-		@Column(name = "CREATE_USER")
-		private String createUser;
-
-		@Column(name = "CREATE_TIME")
-		@DateTimeFormat(pattern = "dd-MM-yyyy")
-		private Date createTime;
-
-		@Column(name = "MODIFY_USER")
-		private String modifyUser;
-
-		@Column(name = "MODIFY_TIME")
-		@DateTimeFormat(pattern = "dd-MM-yyyy")
-		private Date modifyTime;
-
-		@Column(name = "VERIFY_USER")
-		private String verifyUser;
-
-		@Column(name = "VERIFY_TIME")
-		@DateTimeFormat(pattern = "dd-MM-yyyy")
-		private Date verifyTime;
-
-		@Column(name = "ENTITY_FLG")
-		private char entityFlg;
-
-		@Column(name = "MODIFY_FLG")
-		private char modifyFlg;
-
-		@Column(name = "DEL_FLG")
-		private char delFlg;
-
-		public Long getSno() {
-			return sno;
-		}
-
-		public void setSno(Long sno) {
-			this.sno = sno;
-		}
-
-		public String getCustId() {
-			return custId;
-		}
-
-		public void setCustId(String custId) {
-			this.custId = custId;
-		}
-
-		public String getAcctNumber() {
-			return acctNumber;
-		}
-
-		public void setAcctNumber(String acctNumber) {
-			this.acctNumber = acctNumber;
-		}
-
-		public String getAcctName() {
-			return acctName;
-		}
-
-		public void setAcctName(String acctName) {
-			this.acctName = acctName;
-		}
-
-		public String getDataType() {
-			return dataType;
-		}
-
-		public void setDataType(String dataType) {
-			this.dataType = dataType;
-		}
-
-		public String getReportName() {
-			return reportName;
-		}
-
-		public void setReportName(String reportName) {
-			this.reportName = reportName;
-		}
-
-		public String getReportLabel() {
-			return reportLabel;
-		}
-
-		public void setReportLabel(String reportLabel) {
-			this.reportLabel = reportLabel;
-		}
-
-		public String getReportAddlCriteria1() {
-			return reportAddlCriteria1;
-		}
-
-		public void setReportAddlCriteria1(String reportAddlCriteria1) {
-			this.reportAddlCriteria1 = reportAddlCriteria1;
-		}
-
-		public String getReportRemarks() {
-			return reportRemarks;
-		}
-
-		public void setReportRemarks(String reportRemarks) {
-			this.reportRemarks = reportRemarks;
-		}
-
-		public String getModificationRemarks() {
-			return modificationRemarks;
-		}
-
-		public void setModificationRemarks(String modificationRemarks) {
-			this.modificationRemarks = modificationRemarks;
-		}
-
-		public String getDataEntryVersion() {
-			return dataEntryVersion;
-		}
-
-		public void setDataEntryVersion(String dataEntryVersion) {
-			this.dataEntryVersion = dataEntryVersion;
-		}
-
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
-		}
-
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
-		}
-
-		public Date getReportDate() {
-			return reportDate;
-		}
-
-		public void setReportDate(Date reportDate) {
-			this.reportDate = reportDate;
-		}
-
-		public String getCreateUser() {
-			return createUser;
-		}
-
-		public void setCreateUser(String createUser) {
-			this.createUser = createUser;
-		}
-
-		public Date getCreateTime() {
-			return createTime;
-		}
-
-		public void setCreateTime(Date createTime) {
-			this.createTime = createTime;
-		}
-
-		public String getModifyUser() {
-			return modifyUser;
-		}
-
-		public void setModifyUser(String modifyUser) {
-			this.modifyUser = modifyUser;
-		}
-
-		public Date getModifyTime() {
-			return modifyTime;
-		}
-
-		public void setModifyTime(Date modifyTime) {
-			this.modifyTime = modifyTime;
-		}
-
-		public String getVerifyUser() {
-			return verifyUser;
-		}
-
-		public void setVerifyUser(String verifyUser) {
-			this.verifyUser = verifyUser;
-		}
-
-		public Date getVerifyTime() {
-			return verifyTime;
-		}
-
-		public void setVerifyTime(Date verifyTime) {
-			this.verifyTime = verifyTime;
-		}
-
-		public char getEntityFlg() {
-			return entityFlg;
-		}
-
-		public void setEntityFlg(char entityFlg) {
-			this.entityFlg = entityFlg;
-		}
-
-		public char getModifyFlg() {
-			return modifyFlg;
-		}
-
-		public void setModifyFlg(char modifyFlg) {
-			this.modifyFlg = modifyFlg;
-		}
-
-		public char getDelFlg() {
-			return delFlg;
-		}
-
-		public void setDelFlg(char delFlg) {
-			this.delFlg = delFlg;
-		}
-
-		public BigDecimal getAverage() {
-			return average;
-		}
-
-		public void setAverage(BigDecimal average) {
-			this.average = average;
-		}
-	}
+//	class CommonDisclosureResubDetailRowMapper implements RowMapper<Common_Disclosure_Resub_Detail_Entity> {
+//
+//		@Override
+//		public Common_Disclosure_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+//
+//			Common_Disclosure_Resub_Detail_Entity obj = new Common_Disclosure_Resub_Detail_Entity();
+//			obj.setSno(rs.getLong("SNO"));
+//			obj.setCustId(rs.getString("CUST_ID"));
+//			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+//			obj.setAcctName(rs.getString("ACCT_NAME"));
+//			obj.setDataType(rs.getString("DATA_TYPE"));
+//			obj.setReportName(rs.getString("REPORT_NAME"));
+//			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+//			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+//			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+//			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+//			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+//			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+//			obj.setAverage(rs.getBigDecimal("AVERAGE"));
+//			obj.setReportDate(rs.getDate("REPORT_DATE"));
+//			obj.setCreateUser(rs.getString("CREATE_USER"));
+//			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+//			obj.setModifyUser(rs.getString("MODIFY_USER"));
+//			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+//			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+//			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+//			obj.setEntityFlg(rs.getString("ENTITY_FLG") != null ? rs.getString("ENTITY_FLG").charAt(0) : ' ');
+//
+//			obj.setModifyFlg(rs.getString("MODIFY_FLG") != null ? rs.getString("MODIFY_FLG").charAt(0) : ' ');
+//
+//			obj.setDelFlg(rs.getString("DEL_FLG") != null ? rs.getString("DEL_FLG").charAt(0) : ' ');
+//
+//			return obj;
+//		}
+//	}
+//
+//	public class Common_Disclosure_Resub_Detail_Entity {
+//		private Long sno;
+//		@Column(name = "CUST_ID")
+//		private String custId;
+//
+//		@Column(name = "ACCT_NUMBER")
+//		private String acctNumber;
+//
+//		@Column(name = "ACCT_NAME")
+//		private String acctName;
+//
+//		@Column(name = "DATA_TYPE")
+//		private String dataType;
+//
+//		@Column(name = "REPORT_NAME")
+//		private String reportName;
+//
+//		@Column(name = "REPORT_LABEL")
+//		private String reportLabel;
+//
+//		@Column(name = "REPORT_ADDL_CRITERIA_1")
+//		private String reportAddlCriteria1;
+//
+//		@Column(name = "REPORT_REMARKS")
+//		private String reportRemarks;
+//
+//		@Column(name = "MODIFICATION_REMARKS")
+//		private String modificationRemarks;
+//
+//		@Column(name = "DATA_ENTRY_VERSION")
+//		private String dataEntryVersion;
+//
+//		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
+//		private BigDecimal acctBalanceInpula;
+//
+//		@Column(name = "AVERAGE", precision = 24, scale = 3)
+//		private BigDecimal average;
+//
+//		@Column(name = "REPORT_DATE")
+//		@DateTimeFormat(pattern = "dd-MM-yyyy")
+//		private Date reportDate;
+//
+//		@Column(name = "CREATE_USER")
+//		private String createUser;
+//
+//		@Column(name = "CREATE_TIME")
+//		@DateTimeFormat(pattern = "dd-MM-yyyy")
+//		private Date createTime;
+//
+//		@Column(name = "MODIFY_USER")
+//		private String modifyUser;
+//
+//		@Column(name = "MODIFY_TIME")
+//		@DateTimeFormat(pattern = "dd-MM-yyyy")
+//		private Date modifyTime;
+//
+//		@Column(name = "VERIFY_USER")
+//		private String verifyUser;
+//
+//		@Column(name = "VERIFY_TIME")
+//		@DateTimeFormat(pattern = "dd-MM-yyyy")
+//		private Date verifyTime;
+//
+//		@Column(name = "ENTITY_FLG")
+//		private char entityFlg;
+//
+//		@Column(name = "MODIFY_FLG")
+//		private char modifyFlg;
+//
+//		@Column(name = "DEL_FLG")
+//		private char delFlg;
+//
+//		public Long getSno() {
+//			return sno;
+//		}
+//
+//		public void setSno(Long sno) {
+//			this.sno = sno;
+//		}
+//
+//		public String getCustId() {
+//			return custId;
+//		}
+//
+//		public void setCustId(String custId) {
+//			this.custId = custId;
+//		}
+//
+//		public String getAcctNumber() {
+//			return acctNumber;
+//		}
+//
+//		public void setAcctNumber(String acctNumber) {
+//			this.acctNumber = acctNumber;
+//		}
+//
+//		public String getAcctName() {
+//			return acctName;
+//		}
+//
+//		public void setAcctName(String acctName) {
+//			this.acctName = acctName;
+//		}
+//
+//		public String getDataType() {
+//			return dataType;
+//		}
+//
+//		public void setDataType(String dataType) {
+//			this.dataType = dataType;
+//		}
+//
+//		public String getReportName() {
+//			return reportName;
+//		}
+//
+//		public void setReportName(String reportName) {
+//			this.reportName = reportName;
+//		}
+//
+//		public String getReportLabel() {
+//			return reportLabel;
+//		}
+//
+//		public void setReportLabel(String reportLabel) {
+//			this.reportLabel = reportLabel;
+//		}
+//
+//		public String getReportAddlCriteria1() {
+//			return reportAddlCriteria1;
+//		}
+//
+//		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+//			this.reportAddlCriteria1 = reportAddlCriteria1;
+//		}
+//
+//		public String getReportRemarks() {
+//			return reportRemarks;
+//		}
+//
+//		public void setReportRemarks(String reportRemarks) {
+//			this.reportRemarks = reportRemarks;
+//		}
+//
+//		public String getModificationRemarks() {
+//			return modificationRemarks;
+//		}
+//
+//		public void setModificationRemarks(String modificationRemarks) {
+//			this.modificationRemarks = modificationRemarks;
+//		}
+//
+//		public String getDataEntryVersion() {
+//			return dataEntryVersion;
+//		}
+//
+//		public void setDataEntryVersion(String dataEntryVersion) {
+//			this.dataEntryVersion = dataEntryVersion;
+//		}
+//
+//		public BigDecimal getAcctBalanceInpula() {
+//			return acctBalanceInpula;
+//		}
+//
+//		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
+//			this.acctBalanceInpula = acctBalanceInpula;
+//		}
+//
+//		public Date getReportDate() {
+//			return reportDate;
+//		}
+//
+//		public void setReportDate(Date reportDate) {
+//			this.reportDate = reportDate;
+//		}
+//
+//		public String getCreateUser() {
+//			return createUser;
+//		}
+//
+//		public void setCreateUser(String createUser) {
+//			this.createUser = createUser;
+//		}
+//
+//		public Date getCreateTime() {
+//			return createTime;
+//		}
+//
+//		public void setCreateTime(Date createTime) {
+//			this.createTime = createTime;
+//		}
+//
+//		public String getModifyUser() {
+//			return modifyUser;
+//		}
+//
+//		public void setModifyUser(String modifyUser) {
+//			this.modifyUser = modifyUser;
+//		}
+//
+//		public Date getModifyTime() {
+//			return modifyTime;
+//		}
+//
+//		public void setModifyTime(Date modifyTime) {
+//			this.modifyTime = modifyTime;
+//		}
+//
+//		public String getVerifyUser() {
+//			return verifyUser;
+//		}
+//
+//		public void setVerifyUser(String verifyUser) {
+//			this.verifyUser = verifyUser;
+//		}
+//
+//		public Date getVerifyTime() {
+//			return verifyTime;
+//		}
+//
+//		public void setVerifyTime(Date verifyTime) {
+//			this.verifyTime = verifyTime;
+//		}
+//
+//		public char getEntityFlg() {
+//			return entityFlg;
+//		}
+//
+//		public void setEntityFlg(char entityFlg) {
+//			this.entityFlg = entityFlg;
+//		}
+//
+//		public char getModifyFlg() {
+//			return modifyFlg;
+//		}
+//
+//		public void setModifyFlg(char modifyFlg) {
+//			this.modifyFlg = modifyFlg;
+//		}
+//
+//		public char getDelFlg() {
+//			return delFlg;
+//		}
+//
+//		public void setDelFlg(char delFlg) {
+//			this.delFlg = delFlg;
+//		}
+//
+//		public BigDecimal getAverage() {
+//			return average;
+//		}
+//
+//		public void setAverage(BigDecimal average) {
+//			this.average = average;
+//		}
+//	}
 	// MODEL AND VIEW METHOD summary
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
@@ -3269,12 +3268,12 @@ public class BRRS_Common_Disclosure_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<Common_Disclosure_Resub_Detail_Entity> reportData = getResubDetaildatabydateList(parsedToDate,
-					version);
+			List<Common_Disclosure_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate
+					);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
-				for (Common_Disclosure_Resub_Detail_Entity item : reportData) {
+				for (Common_Disclosure_Archival_Detail_Entity item : reportData) {
 					XSSFRow row = sheet.createRow(rowIndex++);
 
 					row.createCell(0).setCellValue(item.getCustId());
@@ -3737,7 +3736,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
 
-		List<Common_Disclosure_Resub_Summary_Entity> dataList = getdatabydateListResub1(dateformat.parse(todate),
+		List<Common_Disclosure_Archival_Summary_Entity> dataList = getdatabydateListarchival(dateformat.parse(todate),
 				version);
 
 		if (dataList.isEmpty()) {
@@ -3805,7 +3804,7 @@ public class BRRS_Common_Disclosure_ReportService {
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
-					Common_Disclosure_Resub_Summary_Entity record = dataList.get(i);
+					Common_Disclosure_Archival_Summary_Entity record = dataList.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {

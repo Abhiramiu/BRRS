@@ -450,6 +450,11 @@ PURPOSE  : BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				// Call your custom styled modal instead of the alert window
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -460,11 +465,13 @@ PURPOSE  : BRRSREPORT
 		}
 
 		function showsummary() {
-			$('#loader').modal('show');
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
+			loader.show();
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 
 		}
+
 	</script>
 
 	<script>
@@ -730,62 +737,6 @@ PURPOSE  : BRRSREPORT
 	</script>
 
 
-
-
-	<!-- 
-<script>
-function showmodify(btn) {
-    // Enable editable fields
-    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-
-    // ===== GROUP 1 =====
-    let rows1 = [23,25,26,30,35,42,43,44,46];
-    let fields1 = ["total_value", "total_no_of_acct"];
-
-    rows1.forEach(r => {
-        fields1.forEach(f => {
-            const selector = `#r${r}_${f}`;
-            if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
-        });
-    });
-
-
-
-    // Show buttons
-    $("#submitButton").show();
-    $("#cancelRecord").show();
-
-    // Hide the modify button clicked
-    $(btn).hide();
-}
-
-
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
-
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
-
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
-
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
-
-</script>
-
- -->
-
-
-
 	<script>
 
 
@@ -802,80 +753,98 @@ function cancelModify() {
 		}
 
 
- function fileuploads(btn) {
-     const asondate = btn.getAttribute("data-todate");
-     const type = btn.getAttribute("data-type");
+		function fileuploads(btn) {
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
 
-     // Show loader
-     $('#loader').modal('show');
+			// Show loader
+			$('#loader').modal('show');
 
-     try {
-         // ✅ Step 1: Calculate totals
+			try {
+				// ✅ Step 1: Calculate totals
 
-         // ✅ Step 2: Remove commas from all text inputs
-         $("#fileupload input[type='text']").each(function () {
-             $(this).val($(this).val().replace(/,/g, ''));
-         });
+				// ✅ Step 2: Remove commas from all text inputs
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
 
-         // ✅ Step 3: Validate form
-         if (!$("#fileupload").valid()) {
-             $('#loader').modal('hide');
-             return;
-         }
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-         // ✅ Step 4: Build FormData
-         const formData = new FormData();
-         formData.append("asondate", asondate);
-         formData.append("type", type);
+				// ✅ Step 4: Build FormData
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+				formData.append("type", type);
 
-         $('#fileupload').find(':input').each(function () {
-             const name = $(this).attr('name');
-             if (name) {
-                 formData.append(name, $(this).val());
-             }
-         });
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('name');
+					if (name) {
+						formData.append(name, $(this).val());
+					}
+				});
 
-         // ✅ Step 5: AJAX submission
-         $.ajax({
-             url: './FNCupdateAll',
-             type: 'POST',
-             data: formData,
-             processData: false,
-             contentType: false,
-             dataType: 'text',
-             success: function () {
-                 $("#resultModalLabel").text("BRRS");
-                 $("#resultModalBody").text(" Updated Successfully.");
-                 $("#resultModal").modal("show");
-             },
-             error: function (jqXHR) {
-                 console.error("Error response:", jqXHR.responseText);
-                 $("#resultModalLabel").text("Error");
-                 $("#resultModalBody").text("Update failed. Check console for details.");
-                 $("#resultModal").modal("show");
-             },
-             complete: function () {
-                 $('#loader').modal('hide');
-             }
-         });
+				// ✅ Step 5: AJAX submission
+				$.ajax({
+					url: './FNCupdateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(" Updated Successfully.");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
 
-     } catch (error) {
-         console.error("Error in fileuploads function:", error);
-         $('#loader').modal('hide');
-         $("#resultModalLabel").text("Error");
-         $("#resultModalBody").text("Unexpected error occurred. Check console.");
-         $("#resultModal").modal("show");
-     }
- }
+			} catch (error) {
+				console.error("Error in fileuploads function:", error);
+				$('#loader').modal('hide');
+				$("#resultModalLabel").text("Error");
+				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModal").modal("show");
+			}
+		}
 	</script>
 
 	<script th:inline="javascript">
-       /*<![CDATA[*/
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
+		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
+		let isDetailsModal = false;
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
 	</script>
 
 	<script>
+
 		function openDetail(elem, mode) {
 
 			var type = elem.getAttribute('data-type');
@@ -884,9 +853,15 @@ function cancelModify() {
 				showResultModal('BRRS', "Archived Data cannot be modified");
 				return;
 			}
+
 			const acctNo = elem.getAttribute("data-acctNo");
+			const SNO = elem.getAttribute("data-SNo");
 			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+
+			location.href =
+				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+
+
 		}
 	</script>
 
@@ -973,42 +948,115 @@ function cancelModify() {
 
 	<script>
 		let previousUrl = document.referrer;
+
 		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#DetailForm').serialize();
+			let userAnswer = null;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-			// Show loader while processing
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
+
 			$('#loader').modal('show');
 
 			$.ajax({
-				url: `/BRRS/Reports/${reportId}/update`,
+				url: '/BRRS/Reports/' + reportId + '/update',
 				type: 'POST',
 				data: formData,
+
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// ✅ Handle SUCCESS & NON-SUCCESS (Information)
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModalDU('BRRS', response);
+
+						if (userAnswer === 'NO') {
+							let title = 'Success';
+							let message = response;
+							document.getElementById('resultModalLabel2').innerText = title;
+							document.getElementById('resultModalBody2').innerText = message;
+
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
+						} else {
+							showResultModalDU('Success', response);
+						}
+
 					} else {
 						showResultModalDU('Information', response || 'No data updated.');
 					}
-
-
 				},
 
-				error: function (xhr, status, error) {
+				error: function () {
 					$('#loader').modal('hide');
-					console.error("Update error:", error);
-
-					// ✅ Handle ERROR
 					showResultModalDU('Error', 'Failed to update record. Please try again.');
-
-
 				}
 			});
+		}
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+
+			let cleanDate = rawDate.replace(/['"]/g, '');
+
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						let title = 'Success';
+						let message = response;
+						document.getElementById('resultModalLabel2').innerText = title;
+						document.getElementById('resultModalBody2').innerText = message;
+
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to process request. Please try again.');
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
 		}
 
 		function showResultModalDU(title, message) {
@@ -1067,6 +1115,8 @@ function cancelModify() {
 							style="color: white !important; font-size: 16px; margin-right: 20px;margin-left: 10px;">
 							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">30-06-2025</span>
 						</span>
+						<button type="button" class="custom-tab-btn" onclick="regenerateProcedure()"
+							th:if="${displaymode == 'Details' and type == 'RESUB' }">Regenerate</button>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1559,11 +1609,13 @@ function cancelModify() {
 
 								<tbody style="font-family: Arial;">
 									<tr th:each="report, srlno : ${reportdetails}">
+
 										<td>
 											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
-                      data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-													onclick="openDetail(this, 'edit')"></i>
+												<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
+																					            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+																					            data-type=${type}" onclick="openDetail(this, 'edit')">
+												</i>
 
 											</a>
 										</td>
@@ -1666,7 +1718,13 @@ function cancelModify() {
 									th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly />
 							</div>
 						</div>
+						<div class="col-sm-1"></div>
 
+						<div class="col-sm-3">
+							<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
+							<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
+								readonly />
+						</div>
 						<!-- Update Button -->
 						<div style="text-align:center; margin-top:20px;">
 							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
@@ -1732,7 +1790,8 @@ function cancelModify() {
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody1"></p>
 
-					<button type="button" class="custom-tab-btn" onclick="redirectBack()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()"
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
@@ -1764,6 +1823,44 @@ function cancelModify() {
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+								data-dismiss="modal">Modify</button>
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+								Regenerate</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 
 </body>
 
