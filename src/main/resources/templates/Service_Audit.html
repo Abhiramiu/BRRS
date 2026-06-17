@@ -375,7 +375,43 @@
 	       
 	    });
 	}
+	function modifypopup(rowId) {
+	    
+		const myModal = document.getElementById('modifyModal');
+		myModal.classList.add('show');
+		myModal.style.display = 'block';
+		document.body.classList.add('modal-open'); 
+	    
+	    const tableBody = document.getElementById('modalTableBody');
+	    tableBody.innerHTML = '<tr><td colspan="3" class="text-center p-4">Loading...</td></tr>';
+	    fetch(`./details?id=${rowId}`)
+	        .then(response => {
+	            if (!response.ok) throw new Error("Network response was not ok");
+	            return response.json(); 
+	        })
+	        .then(data => {
+	            tableBody.innerHTML = '';
+	            
+	            if (!data || data.length === 0) {
+	                tableBody.innerHTML = '<tr><td colspan="3" class="text-center p-4">No modifications found.</td></tr>';
+	                return;
+	            }
 
+	            data.forEach(item => {
+	                const tr = document.createElement('tr');
+	                tr.innerHTML = `
+	                    <td >${item.columnName}</td>
+	                    <td >${item.oldValue}</td>
+	                    <td >${item.newValue}</td>
+	                `;
+	                tableBody.appendChild(tr);
+	            });
+	        })
+	        .catch(error => {
+	            console.error('Error fetching details:', error);
+	            tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger p-4">Failed to load data.</td></tr>';
+	        });
+	}
 	
 </script>
 
@@ -539,8 +575,8 @@
 							</thead>
 							<tbody>
 								<tr th:each="auditdata : ${AuditList}" class="userlist"
-									th:attr="data-custid=${auditdata.audit_ref_no ?: 'N/A'}"
-									onclick="navigateToid(this)" style="cursor: pointer;">
+									th:attr="onclick=${auditdata.func_code == 'MODIFY' ? 'modifypopup(''' + auditdata.audit_ref_no + ''')' : null}"
+									>
 									<td th:text="${auditdata.report_id ?: 'N/A'}"></td>
 									<td th:text="${auditdata.audit_table ?: 'N/A'}"></td>
 									<td th:text="${auditdata.func_code ?: 'N/A'}"></td>
@@ -557,12 +593,12 @@
 										th:text="${auditdata.auth_time != null ? #dates.format(auditdata.auth_time, 'dd-MM-yyyy') : 'N/A'}">
 									</td>
 									<td class="truncate-text" style="white-space: nowrap;"
-									    th:text="${auditdata.func_code == 'DOWNLOAD' ? 'Report Downloaded' :
+										th:text="${auditdata.func_code == 'DOWNLOAD' ? 'Report Downloaded' :
 									             (auditdata.func_code == 'MODIFY' ?
 									             (auditdata.modi_details != null ? auditdata.modi_details : 'No details available') :
 									             (auditdata.change_details != null ? auditdata.change_details : 'No details available'))}">
 									</td>
-									</tr>
+								</tr>
 
 							</tbody>
 						</table>
@@ -587,33 +623,39 @@
 				</div>
 			</div>
 
-			<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-				aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal fade" id="modifyModal" tabindex="-1" role="dialog"
+				style="padding-top: 100px;">
+				<div
+					class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
+					style="max-width: 550px;">
 					<div class="modal-content">
-						<!-- <div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLongTitle"></h5>
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div> -->
-						<div class="modal-body">
-							<table class="table table-striped table-bordered table-hover " id="usertablemodel">
-								<thead>
+
+						<div class="menu-title-header"
+							style="padding: 5px; background-color: #6b7a8f;">
+							<div class="modal-title" id="exampleModalLabel"
+								style="text-align: center; color: white; font-weight: bold; background-color: #6b7a8f;">
+								BRRS</div>
+						</div>
+
+						<div class="modal-body"
+							style="text-align: center; padding: 20px; max-height: 500px">
+							<p id="alertpopupmsg1" class="text-wrap text-break"
+								style="display: none;"></p>
+
+							<table
+								class="table table-bordered table-hover w-100 mb-4 text-left">
+								<thead class="thead-light">
 									<tr>
 										<th>Field Name</th>
 										<th>Old Value</th>
 										<th>New Value</th>
 									</tr>
 								</thead>
-								<tbody>
-
+								<tbody id="modalTableBody">
 								</tbody>
 							</table>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="close();">Close</button>
+							<button type="button" class="custom-tab-btn"
+								onclick="document.getElementById('modifyModal').classList.remove('show'); document.getElementById('modifyModal').style.display='none'; document.querySelector('.modal-backdrop').remove(); document.body.classList.remove('modal-open');">Close</button>
 						</div>
 					</div>
 				</div>
