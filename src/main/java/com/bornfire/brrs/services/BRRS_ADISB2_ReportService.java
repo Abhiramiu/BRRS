@@ -1801,10 +1801,10 @@ public class BRRS_ADISB2_ReportService {
 	}
 
 	public class ADISB2_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -1853,6 +1853,14 @@ public class BRRS_ADISB2_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -2030,7 +2038,7 @@ public class BRRS_ADISB2_ReportService {
 		public ADISB2_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			ADISB2_Detail_Entity obj = new ADISB2_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -2071,7 +2079,7 @@ public class BRRS_ADISB2_ReportService {
 		public ADISB2_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			ADISB2_Archival_Detail_Entity obj = new ADISB2_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -2107,10 +2115,10 @@ public class BRRS_ADISB2_ReportService {
 	}
 
 	public class ADISB2_Archival_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -2159,6 +2167,14 @@ public class BRRS_ADISB2_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -2685,9 +2701,11 @@ public class BRRS_ADISB2_ReportService {
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
 						String sqltransfer = "INSERT INTO BRRS_ADISB2_DETAILTABLE "
-								+ " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
-								+ "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA,REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
-								+ "FROM BRRS_ADISB2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+								+ "(SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, REPORT_NAME, REPORT_DATE) "
+								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, REPORT_NAME, REPORT_DATE "
+								+ "FROM BRRS_ADISB2_ARCHIVALTABLE_DETAIL "
+								+ "WHERE REPORT_DATE = ?";
+
 						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
 						System.out.println("Successfully transferred " + rowsInserted + " rows.");
 					}

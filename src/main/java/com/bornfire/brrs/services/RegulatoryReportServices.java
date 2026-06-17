@@ -1874,7 +1874,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
+		case "FSI":
+			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version);
 
+			break;
 		}
 
 		return repsummary;
@@ -3021,7 +3025,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "FSI":
+			try {
+				repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
 
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		case "M_MRC":
 			try {
 				repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
@@ -5851,12 +5863,9 @@ public class RegulatoryReportServices {
 			break;
 
 		case "FSI":
-			try {
-				archivalData = BRRS_FSI_ReportService.getFSIArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> FSIList = BRRS_FSI_ReportService.getFSIArchival();
+			archivalData.addAll(FSIList);
+			System.out.println("Fetched FSI archival data: " + FSIList.size());
 			break;
 
 //		case "RWA":
@@ -6500,8 +6509,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LA5":
-				modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+					modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+					request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_CA2":
@@ -6741,8 +6750,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "FSI":
-				modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_FSI_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "RWA":
@@ -6853,6 +6862,9 @@ public class RegulatoryReportServices {
 				break;
 			case "ADISB2":
 				response = BRRS_ADISB2_ReportService.callregenprocedure(request);
+				break;
+			case "FSI":
+				response = BRRS_FSI_ReportService.callregenprocedure(request);
 				break;
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
@@ -7773,7 +7785,16 @@ public class RegulatoryReportServices {
 			}
 
 			break;
-
+		case "FSI":
+			try {
+				List<Object[]> resubList = BRRS_FSI_ReportService.getFSIResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for	 FSI: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for FSI: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		case "M_SFINP1":
 			try {
 				List<Object[]> resubList = BRRS_M_SFINP1_reportservice.getM_SFINP1Resub();
