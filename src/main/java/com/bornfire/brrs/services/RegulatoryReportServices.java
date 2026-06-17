@@ -10484,7 +10484,205 @@ public class RegulatoryReportServices {
                            logger.error("Q_STAFF: PDF generation failed", e);
                            return new byte[0];
                        }
+                       
+        case "Q_RLFA1":
+            try {
+                excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(
+                        filename,
+                        reportId,
+                        fromdate,
+                        todate,
+                        currency,
+                        dtltype,
+                        null,   // type
+                        null    // version
+                );
+
+                if (excelBytes == null || excelBytes.length == 0) {
+                    logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
+                    return new byte[0];
+                }
+
+                logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
+
+                List<int[]> tableRanges = Arrays.asList(new int[]{0, 65});
+                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+                if (pdfBytes == null || pdfBytes.length == 0) {
+                    logger.error("Q_RLFA1: PDF conversion returned empty bytes");
+                    return new byte[0];
+                }
+
+                logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
+                return pdfBytes;
+
+            } catch (Exception e) {
+                logger.error("Q_RLFA1: PDF generation failed", e);
+                return new byte[0];
+            }    
             
+            	 
+    	case "Q_SMME":
+                    try {
+                        excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(
+                                filename,   // Q_SMME_INT.xlsx or EMAIL_Q_SMME_INT.xlsx
+                                reportId,
+                                fromdate,
+                                todate,
+                                currency,
+                                dtltype,
+                                null,       // type
+                                null        // version
+                        );
+
+                        if (excelBytes == null || excelBytes.length == 0) {
+                            logger.warn("Q_SMME_INT: No Excel data found for PDF generation → todate={}", todate);
+                            return new byte[0];
+                        }
+
+                        logger.info("Q_SMME_INT: Excel generated → {} bytes", excelBytes.length);
+
+                        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
+                        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+                        if (pdfBytes == null || pdfBytes.length == 0) {
+                            logger.error("Q_SMME_INT: PDF conversion returned empty bytes");
+                            return new byte[0];
+                        }
+
+                        logger.info("Q_SMME_INT: PDF conversion successful → {} bytes", pdfBytes.length);
+                        return pdfBytes;
+
+                    } catch (Exception e) {
+                        logger.error("Q_SMME_INT: PDF generation failed", e);
+                        return new byte[0];
+                    }
+                    
+
+        case "Q_SMME_LOANS":
+            try {
+                excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(
+                        filename,
+                        reportId,
+                        fromdate,
+                        todate,
+                        currency,
+                        dtltype,
+                        null,   // type
+                        null    // version
+                );
+
+                if (excelBytes == null || excelBytes.length == 0) {
+                    logger.warn("Q_SMME_LOANS: No Excel data found for PDF generation → todate={}", todate);
+                    return new byte[0];
+                }
+
+                logger.info("Q_SMME_LOANS: Excel generated → {} bytes", excelBytes.length);
+
+                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
+                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+                if (pdfBytes == null || pdfBytes.length == 0) {
+                    logger.error("Q_SMME_LOANS: PDF conversion returned empty bytes");
+                    return new byte[0];
+                }
+
+                logger.info("Q_SMME_LOANS: PDF conversion successful → {} bytes", pdfBytes.length);
+                return pdfBytes;
+
+            } catch (Exception e) {
+                logger.error("Q_SMME_LOANS: PDF generation failed", e);
+                return new byte[0];
+            }
+            
+
+        case "M_LIQ":
+           		    try {
+           		        if ("EMAIL_M_LIQ.xlsx".equals(filename)) {
+           		            excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
+           		                    "EMAIL_M_LIQ.xlsx", reportId, fromdate, todate,
+           		                    currency, dtltype, null, "email", null);
+           		        } else {
+           		            excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
+           		                    "M_LIQ.xlsx", reportId, fromdate, todate,
+           		                    currency, dtltype, null, "excel", null);
+           		        }
+
+           		        if (excelBytes == null || excelBytes.length == 0) {
+           		            logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
+           		            return new byte[0];
+           		        }
+
+           		        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
+           		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+           		        if (pdfBytes == null || pdfBytes.length == 0) {
+           		            logger.error("M_LIQ: PDF conversion returned empty bytes");
+           		            return new byte[0];
+           		        }
+
+           		        logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
+           		        return pdfBytes;
+
+           		    } catch (Exception e) {
+           		        logger.error("M_LIQ: PDF generation failed", e);
+           		        return new byte[0];
+           		    }
+           		    
+
+        case "M_OB":
+                        try {
+                            if ("EMAIL_M_OB.xlsx".equals(filename)) {
+                                excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel(
+                                        "EMAIL_M_OB.xlsx",
+                                        reportId,
+                                        fromdate,
+                                        todate,
+                                        currency,
+                                        dtltype,
+                                        null,   // type
+                                        null    // version
+                                );
+                            } else {
+                                excelBytes = BRRS_M_OB_ReportService.getBRRS_M_OBExcel(
+                                        "M_OB.xlsx",
+                                        reportId,
+                                        fromdate,
+                                        todate,
+                                        currency,
+                                        dtltype,
+                                        null,     // type
+                                        "excel",  // format
+                                        null      // version
+                                );
+                            }
+
+                            if (excelBytes == null || excelBytes.length == 0) {
+                                logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
+                                return new byte[0];
+                            }
+
+                            logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
+
+                            List<int[]> tableRanges = Arrays.asList(
+                                    new int[]{0, 80}
+                            );
+                            pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+                            if (pdfBytes == null || pdfBytes.length == 0) {
+                                logger.error("M_OB: PDF conversion returned empty bytes");
+                                return new byte[0];
+                            }
+
+                            logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
+                            return pdfBytes;
+
+                        } catch (Exception e) {
+                            logger.error("M_OB: PDF generation failed", e);
+                            return new byte[0];
+                        }
+
+                        
 		}
 		return pdfBytes;
 	}
@@ -11996,6 +12194,169 @@ public class RegulatoryReportServices {
 		    } catch (Exception e) {
 
 		        logger.error("Q_STAFF: PDF generation failed", e);
+
+		        return new byte[0];
+		    }
+		    
+		case "Q_RLFA1":
+		    try {
+
+		        excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(
+		                "Q_RLFA1.xlsx",
+		                reportId,
+		                fromdate,
+		                todate,
+		                currency,
+		                dtltype,
+		                null,
+		                null
+		        );
+
+		        // Excel validation
+		        if (excelBytes == null || excelBytes.length == 0) {
+
+		            logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
+
+		            return new byte[0];
+		        }
+
+		        logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
+
+		        // PDF Conversion
+		        List<int[]> tableRanges = Arrays.asList(
+		                new int[] { 0, 135 }   // adjust range if required
+		        );
+
+		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
+		                excelBytes,
+		                tableRanges,
+		                false
+		        );
+
+		        // PDF validation
+		        if (pdfBytes == null || pdfBytes.length == 0) {
+
+		            logger.error("Q_RLFA1: PDF conversion returned empty bytes");
+
+		            return new byte[0];
+		        }
+
+		        logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
+
+		        return pdfBytes;
+
+		    } catch (Exception e) {
+
+		        logger.error("Q_RLFA1: PDF generation failed", e);
+
+		        return new byte[0];
+		    }
+		    
+		case "M_LIQ":
+		    try {
+
+		        excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
+		                "EMAIL_M_LIQ.xlsx",
+		                reportId,
+		                fromdate,
+		                todate,
+		                currency,
+		                dtltype,
+		                null,
+		                "email",
+		                null
+		        );
+
+		        // Excel validation
+		        if (excelBytes == null || excelBytes.length == 0) {
+
+		            logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
+
+		            return new byte[0];
+		        }
+
+		        logger.info("M_LIQ: Excel generated → {} bytes", excelBytes.length);
+
+		        // PDF Conversion
+		        List<int[]> tableRanges = Arrays.asList(
+		                new int[] { 0, 135 }   // adjust range if required
+		        );
+
+		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
+		                excelBytes,
+		                tableRanges,
+		                false
+		        );
+
+		        // PDF validation
+		        if (pdfBytes == null || pdfBytes.length == 0) {
+
+		            logger.error("M_LIQ: PDF conversion returned empty bytes");
+
+		            return new byte[0];
+		        }
+
+		        logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
+
+		        return pdfBytes;
+
+		    } catch (Exception e) {
+
+		        logger.error("M_LIQ: PDF generation failed", e);
+
+		        return new byte[0];
+		    }
+		    
+		case "M_OB":
+		    try {
+
+		        excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel(
+		                "EMAIL_M_OB.xlsx",
+		                reportId,
+		                fromdate,
+		                todate,
+		                currency,
+		                dtltype,
+		                null,
+		                null
+		        );
+
+		        // Excel validation
+		        if (excelBytes == null || excelBytes.length == 0) {
+
+		            logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
+
+		            return new byte[0];
+		        }
+
+		        logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
+
+		        // PDF Conversion
+		        List<int[]> tableRanges = Arrays.asList(
+		                new int[] { 0, 135 }   // adjust range if required
+		        );
+
+		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
+		                excelBytes,
+		                tableRanges,
+		                false
+		        );
+
+		        // PDF validation
+		        if (pdfBytes == null || pdfBytes.length == 0) {
+
+		            logger.error("M_OB: PDF conversion returned empty bytes");
+
+		            return new byte[0];
+		        }
+
+		        logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
+
+		        return pdfBytes;
+
+		    } catch (Exception e) {
+
+		        logger.error("M_OB: PDF generation failed", e);
 
 		        return new byte[0];
 		    }
