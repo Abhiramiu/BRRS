@@ -199,7 +199,7 @@ public class BRRS_BDISB2_ReportService {
 
 	public BigDecimal RESUBfindMaxVersion1(Date REPORT_DATE) {
 
-		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB2_RESUBTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB2_RESUB_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
 
 		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
 	}
@@ -12869,100 +12869,457 @@ public class BRRS_BDISB2_ReportService {
 	
 
 	
-	public void updateResubReport(
-	        BDISB2_RESUB_Summary_Entity updatedEntity1) {
+//	public void updateResubReport(
+//	        BDISB2_RESUB_Summary_Entity updatedEntity1) {
+//
+//	    // ====================================================
+//	    // 1️⃣ GET REPORT DATE
+//	    // ====================================================
+//
+//	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
+//
+//	    if (reportDate1 == null ) {
+//	        throw new RuntimeException("Report date cannot be null");
+//	    }
+//
+//	    // ====================================================
+//	    // 2️⃣ FETCH MAX VERSION
+//	    // ====================================================
+//
+//	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
+//
+//	    if (maxVer1 == null)
+//	        maxVer1 = BigDecimal.ZERO;
+//
+//	   
+//
+//	    BigDecimal currentMax = maxVer1;
+//	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+//
+//	    Date now = new Date();
+//
+//	    // ====================================================
+//	    // 3️⃣ RESUB SUMMARY
+//	    // ====================================================
+//
+//	    BDISB2_RESUB_Summary_Entity resubSummary1 = new BDISB2_RESUB_Summary_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+//
+//	    resubSummary1.setREPORT_DATE(reportDate1);
+//	    resubSummary1.setREPORT_VERSION(newVersion);
+//	    resubSummary1.setREPORT_RESUBDATE(now);
+//
+//	    // ====================================================
+//	    // 4️⃣ RESUB DETAIL
+//	    // ====================================================
+//
+//	    BDISB2_RESUB_Detail_Entity resubDetail1 = new BDISB2_RESUB_Detail_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+//
+//	    resubDetail1.setREPORT_DATE(reportDate1);
+//	    resubDetail1.setREPORT_VERSION(newVersion);
+//	    resubDetail1.setREPORT_RESUBDATE(now);
+//
+//	    // ====================================================
+//	    // 5️⃣ ARCHIVAL SUMMARY
+//	    // ====================================================
+//
+//	    BDISB2_Archival_Summary_Entity archSummary1 = new BDISB2_Archival_Summary_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+//
+//	    archSummary1.setREPORT_DATE(reportDate1);
+//	    archSummary1.setREPORT_VERSION(newVersion);
+//	    archSummary1.setREPORT_RESUBDATE(now);
+//
+//
+//	    // ====================================================
+//	    // 6️⃣ ARCHIVAL DETAIL
+//	    // ====================================================
+//
+//	    BDISB2_Archival_Detail_Entity archDetail1 = new BDISB2_Archival_Detail_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
+//
+//	    archDetail1.setREPORT_DATE(reportDate1);
+//	    archDetail1.setREPORT_VERSION(newVersion);
+//	    archDetail1.setREPORT_RESUBDATE(now);
+//
+//	   
+//
+//	    // ====================================================
+//	    // 7️⃣ SAVE ALL
+//	    // ====================================================
+//
+//	    sessionFactory.getCurrentSession().merge(resubSummary1);
+//
+//	    sessionFactory.getCurrentSession().merge(resubDetail1);
+//
+//	    sessionFactory.getCurrentSession().merge(archSummary1);
+//
+//	    sessionFactory.getCurrentSession().merge(archDetail1);
+//	}
 
-	    // ====================================================
-	    // 1️⃣ GET REPORT DATE
-	    // ====================================================
+	@Transactional
+	public void updateResubReport(BDISB2_RESUB_Summary_Entity updatedEntity1) {
 
 	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
 
-	    if (reportDate1 == null ) {
+	    if (reportDate1 == null) {
 	        throw new RuntimeException("Report date cannot be null");
 	    }
 
-	    // ====================================================
-	    // 2️⃣ FETCH MAX VERSION
-	    // ====================================================
-
 	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
 
-	    if (maxVer1 == null)
+	    if (maxVer1 == null) {
 	        maxVer1 = BigDecimal.ZERO;
+	    }
 
-	   
-
-	    BigDecimal currentMax = maxVer1;
-	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+	    BigDecimal newVersion = maxVer1.add(BigDecimal.ONE);
 
 	    Date now = new Date();
 
-	    // ====================================================
-	    // 3️⃣ RESUB SUMMARY
-	    // ====================================================
+	    // RESUB SUMMARY
+	    updatedEntity1.setREPORT_VERSION(newVersion);
+	    updatedEntity1.setREPORT_RESUBDATE(now);
 
-	    BDISB2_RESUB_Summary_Entity resubSummary1 = new BDISB2_RESUB_Summary_Entity();
+	    insertResubSummary(updatedEntity1);
 
-	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+	    // RESUB DETAIL
+	    BDISB2_RESUB_Detail_Entity detailEntity =
+	            new BDISB2_RESUB_Detail_Entity();
 
-	    resubSummary1.setREPORT_DATE(reportDate1);
-	    resubSummary1.setREPORT_VERSION(newVersion);
-	    resubSummary1.setREPORT_RESUBDATE(now);
+	    BeanUtils.copyProperties(updatedEntity1, detailEntity);
 
-	    // ====================================================
-	    // 4️⃣ RESUB DETAIL
-	    // ====================================================
+	    detailEntity.setREPORT_DATE(reportDate1);
+	    detailEntity.setREPORT_VERSION(newVersion);
+	    detailEntity.setREPORT_RESUBDATE(now);
 
-	    BDISB2_RESUB_Detail_Entity resubDetail1 = new BDISB2_RESUB_Detail_Entity();
+	    insertResubDetail(detailEntity);
 
-	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+	    // ARCHIVAL SUMMARY
+	    BDISB2_Archival_Summary_Entity archivalSummary =
+	            new BDISB2_Archival_Summary_Entity();
 
-	    resubDetail1.setREPORT_DATE(reportDate1);
-	    resubDetail1.setREPORT_VERSION(newVersion);
-	    resubDetail1.setREPORT_RESUBDATE(now);
+	    BeanUtils.copyProperties(updatedEntity1, archivalSummary);
 
-	    // ====================================================
-	    // 5️⃣ ARCHIVAL SUMMARY
-	    // ====================================================
+	    archivalSummary.setREPORT_DATE(reportDate1);
+	    archivalSummary.setREPORT_VERSION(newVersion);
+	    archivalSummary.setREPORT_RESUBDATE(now);
 
-	    BDISB2_Archival_Summary_Entity archSummary1 = new BDISB2_Archival_Summary_Entity();
+	    insertArchivalSummary(archivalSummary);
 
-	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+	    // ARCHIVAL DETAIL
+	    BDISB2_Archival_Detail_Entity archivalDetail =
+	            new BDISB2_Archival_Detail_Entity();
 
-	    archSummary1.setREPORT_DATE(reportDate1);
-	    archSummary1.setREPORT_VERSION(newVersion);
-	    archSummary1.setREPORT_RESUBDATE(now);
+	    BeanUtils.copyProperties(updatedEntity1, archivalDetail);
 
+	    archivalDetail.setREPORT_DATE(reportDate1);
+	    archivalDetail.setREPORT_VERSION(newVersion);
+	    archivalDetail.setREPORT_RESUBDATE(now);
 
-	    // ====================================================
-	    // 6️⃣ ARCHIVAL DETAIL
-	    // ====================================================
+	    insertArchivalDetail(archivalDetail);
 
-	    BDISB2_Archival_Detail_Entity archDetail1 = new BDISB2_Archival_Detail_Entity();
-
-	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
-
-	    archDetail1.setREPORT_DATE(reportDate1);
-	    archDetail1.setREPORT_VERSION(newVersion);
-	    archDetail1.setREPORT_RESUBDATE(now);
-
-	   
-
-	    // ====================================================
-	    // 7️⃣ SAVE ALL
-	    // ====================================================
-
-	    sessionFactory.getCurrentSession().merge(resubSummary1);
-
-	    sessionFactory.getCurrentSession().merge(resubDetail1);
-
-	    sessionFactory.getCurrentSession().merge(archSummary1);
-
-	    sessionFactory.getCurrentSession().merge(archDetail1);
+	    System.out.println("Resubmission Version Created : " + newVersion);
 	}
+	
+	
+	private void insertResubSummary(BDISB2_RESUB_Summary_Entity entity) {
 
+	    try {
 
+	        StringBuilder columns = new StringBuilder(
+	                "INSERT INTO BRRS_BDISB2_RESUB_SUMMARYTABLE (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+
+	        StringBuilder values = new StringBuilder(
+	                " VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 6; i <= 12; i++) {
+
+	            columns.append("R").append(i).append("_BANK_SPEC_SINGLE_CUST_REC_NUM,")
+	                   .append("R").append(i).append("_COMPANY_NAME,")
+	                   .append("R").append(i).append("_COMPANY_REG_NUM,")
+	                   .append("R").append(i).append("_BUSINEES_PHY_ADDRESS,")
+	                   .append("R").append(i).append("_POSTAL_ADDRESS,")
+	                   .append("R").append(i).append("_COUNTRY_OF_REG,")
+	                   .append("R").append(i).append("_COMPANY_EMAIL,")
+	                   .append("R").append(i).append("_COMPANY_LANDLINE,")
+	                   .append("R").append(i).append("_COMPANY_MOB_PHONE_NUM,")
+	                   .append("R").append(i).append("_PRODUCT_TYPE,")
+	                   .append("R").append(i).append("_ACCT_NUM,")
+	                   .append("R").append(i).append("_STATUS_OF_ACCT,")
+	                   .append("R").append(i).append("_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT,")
+	                   .append("R").append(i).append("_ACCT_BRANCH,")
+	                   .append("R").append(i).append("_ACCT_BALANCE_PULA,")
+	                   .append("R").append(i).append("_CURRENCY_OF_ACCT,")
+	                   .append("R").append(i).append("_EXCHANGE_RATE,");
+
+	            for (int j = 1; j <= 17; j++) {
+	                values.append("?,");
+	            }
+
+	            params.add(getValue(entity, "getR" + i + "_BANK_SPEC_SINGLE_CUST_REC_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_NAME"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_REG_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_BUSINEES_PHY_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_POSTAL_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_COUNTRY_OF_REG"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_EMAIL"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_LANDLINE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_MOB_PHONE_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_PRODUCT_TYPE"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_STATUS_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BRANCH"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BALANCE_PULA"));
+	            params.add(getValue(entity, "getR" + i + "_CURRENCY_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_EXCHANGE_RATE"));
+	        }
+
+	        columns.deleteCharAt(columns.length() - 1);
+	        values.deleteCharAt(values.length() - 1);
+
+	        columns.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(
+	                columns.toString() + values.toString(),
+	                params.toArray());
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error inserting BDISB2 RESUB SUMMARY", e);
+	    }
+	}
+	
+	private void insertResubDetail(BDISB2_RESUB_Detail_Entity entity) {
+
+	    try {
+
+	        StringBuilder columns = new StringBuilder(
+	                "INSERT INTO BRRS_BDISB2_RESUB_DETAILTABLE (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+
+	        StringBuilder values = new StringBuilder(
+	                " VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 6; i <= 12; i++) {
+
+	            columns.append("R").append(i).append("_BANK_SPEC_SINGLE_CUST_REC_NUM,")
+	                   .append("R").append(i).append("_COMPANY_NAME,")
+	                   .append("R").append(i).append("_COMPANY_REG_NUM,")
+	                   .append("R").append(i).append("_BUSINEES_PHY_ADDRESS,")
+	                   .append("R").append(i).append("_POSTAL_ADDRESS,")
+	                   .append("R").append(i).append("_COUNTRY_OF_REG,")
+	                   .append("R").append(i).append("_COMPANY_EMAIL,")
+	                   .append("R").append(i).append("_COMPANY_LANDLINE,")
+	                   .append("R").append(i).append("_COMPANY_MOB_PHONE_NUM,")
+	                   .append("R").append(i).append("_PRODUCT_TYPE,")
+	                   .append("R").append(i).append("_ACCT_NUM,")
+	                   .append("R").append(i).append("_STATUS_OF_ACCT,")
+	                   .append("R").append(i).append("_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT,")
+	                   .append("R").append(i).append("_ACCT_BRANCH,")
+	                   .append("R").append(i).append("_ACCT_BALANCE_PULA,")
+	                   .append("R").append(i).append("_CURRENCY_OF_ACCT,")
+	                   .append("R").append(i).append("_EXCHANGE_RATE,");
+
+	            for (int j = 1; j <= 17; j++) {
+	                values.append("?,");
+	            }
+
+	            params.add(getValue(entity, "getR" + i + "_BANK_SPEC_SINGLE_CUST_REC_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_NAME"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_REG_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_BUSINEES_PHY_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_POSTAL_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_COUNTRY_OF_REG"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_EMAIL"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_LANDLINE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_MOB_PHONE_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_PRODUCT_TYPE"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_STATUS_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BRANCH"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BALANCE_PULA"));
+	            params.add(getValue(entity, "getR" + i + "_CURRENCY_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_EXCHANGE_RATE"));
+	        }
+
+	        columns.deleteCharAt(columns.length() - 1);
+	        values.deleteCharAt(values.length() - 1);
+
+	        columns.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting RESUB DETAIL", e);
+	    }
+	}
+	
+	private void insertArchivalSummary(BDISB2_Archival_Summary_Entity entity) {
+
+	    try {
+
+	        StringBuilder columns = new StringBuilder(
+	                "INSERT INTO BRRS_BDISB2_ARCHIVALTABLE_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+
+	        StringBuilder values = new StringBuilder(
+	                " VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 6; i <= 12; i++) {
+
+	            columns.append("R").append(i).append("_BANK_SPEC_SINGLE_CUST_REC_NUM,")
+	                   .append("R").append(i).append("_COMPANY_NAME,")
+	                   .append("R").append(i).append("_COMPANY_REG_NUM,")
+	                   .append("R").append(i).append("_BUSINEES_PHY_ADDRESS,")
+	                   .append("R").append(i).append("_POSTAL_ADDRESS,")
+	                   .append("R").append(i).append("_COUNTRY_OF_REG,")
+	                   .append("R").append(i).append("_COMPANY_EMAIL,")
+	                   .append("R").append(i).append("_COMPANY_LANDLINE,")
+	                   .append("R").append(i).append("_COMPANY_MOB_PHONE_NUM,")
+	                   .append("R").append(i).append("_PRODUCT_TYPE,")
+	                   .append("R").append(i).append("_ACCT_NUM,")
+	                   .append("R").append(i).append("_STATUS_OF_ACCT,")
+	                   .append("R").append(i).append("_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT,")
+	                   .append("R").append(i).append("_ACCT_BRANCH,")
+	                   .append("R").append(i).append("_ACCT_BALANCE_PULA,")
+	                   .append("R").append(i).append("_CURRENCY_OF_ACCT,")
+	                   .append("R").append(i).append("_EXCHANGE_RATE,");
+
+	            for (int j = 1; j <= 17; j++) {
+	                values.append("?,");
+	            }
+
+	            params.add(getValue(entity, "getR" + i + "_BANK_SPEC_SINGLE_CUST_REC_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_NAME"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_REG_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_BUSINEES_PHY_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_POSTAL_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_COUNTRY_OF_REG"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_EMAIL"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_LANDLINE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_MOB_PHONE_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_PRODUCT_TYPE"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_STATUS_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BRANCH"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BALANCE_PULA"));
+	            params.add(getValue(entity, "getR" + i + "_CURRENCY_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_EXCHANGE_RATE"));
+	        }
+
+	        columns.deleteCharAt(columns.length() - 1);
+	        values.deleteCharAt(values.length() - 1);
+
+	        columns.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting ARCHIVAL SUMMARY", e);
+	    }
+	}
+	
+	private void insertArchivalDetail(BDISB2_Archival_Detail_Entity entity) {
+
+	    try {
+
+	        StringBuilder columns = new StringBuilder(
+	                "INSERT INTO BRRS_BDISB2_ARCHIVALTABLE_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+
+	        StringBuilder values = new StringBuilder(
+	                " VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 6; i <= 12; i++) {
+
+	            columns.append("R").append(i).append("_BANK_SPEC_SINGLE_CUST_REC_NUM,")
+	                   .append("R").append(i).append("_COMPANY_NAME,")
+	                   .append("R").append(i).append("_COMPANY_REG_NUM,")
+	                   .append("R").append(i).append("_BUSINEES_PHY_ADDRESS,")
+	                   .append("R").append(i).append("_POSTAL_ADDRESS,")
+	                   .append("R").append(i).append("_COUNTRY_OF_REG,")
+	                   .append("R").append(i).append("_COMPANY_EMAIL,")
+	                   .append("R").append(i).append("_COMPANY_LANDLINE,")
+	                   .append("R").append(i).append("_COMPANY_MOB_PHONE_NUM,")
+	                   .append("R").append(i).append("_PRODUCT_TYPE,")
+	                   .append("R").append(i).append("_ACCT_NUM,")
+	                   .append("R").append(i).append("_STATUS_OF_ACCT,")
+	                   .append("R").append(i).append("_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT,")
+	                   .append("R").append(i).append("_ACCT_BRANCH,")
+	                   .append("R").append(i).append("_ACCT_BALANCE_PULA,")
+	                   .append("R").append(i).append("_CURRENCY_OF_ACCT,")
+	                   .append("R").append(i).append("_EXCHANGE_RATE,");
+
+	            for (int j = 1; j <= 17; j++) {
+	                values.append("?,");
+	            }
+
+	            params.add(getValue(entity, "getR" + i + "_BANK_SPEC_SINGLE_CUST_REC_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_NAME"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_REG_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_BUSINEES_PHY_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_POSTAL_ADDRESS"));
+	            params.add(getValue(entity, "getR" + i + "_COUNTRY_OF_REG"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_EMAIL"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_LANDLINE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPANY_MOB_PHONE_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_PRODUCT_TYPE"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_NUM"));
+	            params.add(getValue(entity, "getR" + i + "_STATUS_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_STATUS_FIT_OR_NOT_FIT_FOR_STRAIGHT_THROU_PAYOUT"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BRANCH"));
+	            params.add(getValue(entity, "getR" + i + "_ACCT_BALANCE_PULA"));
+	            params.add(getValue(entity, "getR" + i + "_CURRENCY_OF_ACCT"));
+	            params.add(getValue(entity, "getR" + i + "_EXCHANGE_RATE"));
+	        }
+
+	        columns.deleteCharAt(columns.length() - 1);
+	        values.deleteCharAt(values.length() - 1);
+
+	        columns.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting ARCHIVAL DETAIL", e);
+	    }
+	}
+	
+	
+	
 	@Transactional
 	public void updateReport(BDISB2_Summary_Entity request1) {
 

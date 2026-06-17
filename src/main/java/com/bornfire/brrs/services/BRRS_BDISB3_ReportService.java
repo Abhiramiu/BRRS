@@ -206,7 +206,7 @@ public class BRRS_BDISB3_ReportService {
 
  	public BigDecimal RESUBfindMaxVersion1(Date REPORT_DATE) {
 
- 		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB3_RESUBTABLE_SUMMARY "
+ 		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_BDISB3_RESUB_SUMMARYTABLE "
  				+ "WHERE REPORT_DATE = ?";
 
  		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
@@ -2312,99 +2312,329 @@ public class BRRS_BDISB3_ReportService {
 	
 
 	
-	public void updateResubReport(
-	        BDISB3_RESUB_Summary_Entity updatedEntity1) {
-
-	    // ====================================================
-	    // 1️⃣ GET REPORT DATE
-	    // ====================================================
+//	public void updateResubReport(
+//	        BDISB3_RESUB_Summary_Entity updatedEntity1) {
+//
+//	    // ====================================================
+//	    // 1️⃣ GET REPORT DATE
+//	    // ====================================================
+//
+//	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
+//
+//	    if (reportDate1 == null ) {
+//	        throw new RuntimeException("Report date cannot be null");
+//	    }
+//
+//	    // ====================================================
+//	    // 2️⃣ FETCH MAX VERSION
+//	    // ====================================================
+//
+//	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
+//
+//	    if (maxVer1 == null)
+//	        maxVer1 = BigDecimal.ZERO;
+//
+//	   
+//
+//	    BigDecimal currentMax = maxVer1;
+//	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+//
+//	    Date now = new Date();
+//
+//	    // ====================================================
+//	    // 3️⃣ RESUB SUMMARY
+//	    // ====================================================
+//
+//	    BDISB3_RESUB_Summary_Entity resubSummary1 = new BDISB3_RESUB_Summary_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+//
+//	    resubSummary1.setREPORT_DATE(reportDate1);
+//	    resubSummary1.setREPORT_VERSION(newVersion);
+//	    resubSummary1.setREPORT_RESUBDATE(now);
+//
+//	    // ====================================================
+//	    // 4️⃣ RESUB DETAIL
+//	    // ====================================================
+//
+//	    BDISB3_RESUB_Detail_Entity resubDetail1 = new BDISB3_RESUB_Detail_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+//
+//	    resubDetail1.setREPORT_DATE(reportDate1);
+//	    resubDetail1.setREPORT_VERSION(newVersion);
+//	    resubDetail1.setREPORT_RESUBDATE(now);
+//
+//	    // ====================================================
+//	    // 5️⃣ ARCHIVAL SUMMARY
+//	    // ====================================================
+//
+//	    BDISB3_Archival_Summary_Entity archSummary1 = new BDISB3_Archival_Summary_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
+//
+//	    archSummary1.setREPORT_DATE(reportDate1);
+//	    archSummary1.setREPORT_VERSION(newVersion);
+//	    archSummary1.setREPORT_RESUBDATE(now);
+//
+//
+//	    // ====================================================
+//	    // 6️⃣ ARCHIVAL DETAIL
+//	    // ====================================================
+//
+//	    BDISB3_Archival_Detail_Entity archDetail1 = new BDISB3_Archival_Detail_Entity();
+//
+//	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
+//
+//	    archDetail1.setREPORT_DATE(reportDate1);
+//	    archDetail1.setREPORT_VERSION(newVersion);
+//	    archDetail1.setREPORT_RESUBDATE(now);
+//
+//	   
+//
+//	    // ====================================================
+//	    // 7️⃣ SAVE ALL
+//	    // ====================================================
+//
+//	    sessionFactory.getCurrentSession().merge(resubSummary1);
+//
+//	    sessionFactory.getCurrentSession().merge(resubDetail1);
+//
+//	    sessionFactory.getCurrentSession().merge(archSummary1);
+//
+//	    sessionFactory.getCurrentSession().merge(archDetail1);
+//	}
+	
+	@Transactional
+	public void updateResubReport(BDISB3_RESUB_Summary_Entity updatedEntity1) {
 
 	    Date reportDate1 = updatedEntity1.getREPORT_DATE();
 
-	    if (reportDate1 == null ) {
+	    if (reportDate1 == null) {
 	        throw new RuntimeException("Report date cannot be null");
 	    }
 
-	    // ====================================================
-	    // 2️⃣ FETCH MAX VERSION
-	    // ====================================================
-
 	    BigDecimal maxVer1 = RESUBfindMaxVersion1(reportDate1);
 
-	    if (maxVer1 == null)
+	    if (maxVer1 == null) {
 	        maxVer1 = BigDecimal.ZERO;
+	    }
 
-	   
-
-	    BigDecimal currentMax = maxVer1;
-	    BigDecimal newVersion = currentMax.add(BigDecimal.ONE);
+	    BigDecimal newVersion = maxVer1.add(BigDecimal.ONE);
 
 	    Date now = new Date();
 
-	    // ====================================================
-	    // 3️⃣ RESUB SUMMARY
-	    // ====================================================
+	    // ==========================
+	    // RESUB SUMMARY
+	    // ==========================
+	    updatedEntity1.setREPORT_VERSION(newVersion);
+	    updatedEntity1.setREPORT_RESUBDATE(now);
 
-	    BDISB3_RESUB_Summary_Entity resubSummary1 = new BDISB3_RESUB_Summary_Entity();
+	    insertResubSummary(updatedEntity1);
 
-	    BeanUtils.copyProperties(updatedEntity1, resubSummary1);
+	    // ==========================
+	    // RESUB DETAIL
+	    // ==========================
+	    BDISB3_RESUB_Detail_Entity detail = new BDISB3_RESUB_Detail_Entity();
+	    BeanUtils.copyProperties(updatedEntity1, detail);
+	    detail.setREPORT_DATE(reportDate1);
+	    detail.setREPORT_VERSION(newVersion);
+	    detail.setREPORT_RESUBDATE(now);
 
-	    resubSummary1.setREPORT_DATE(reportDate1);
-	    resubSummary1.setREPORT_VERSION(newVersion);
-	    resubSummary1.setREPORT_RESUBDATE(now);
+	    insertResubDetail(detail);
 
-	    // ====================================================
-	    // 4️⃣ RESUB DETAIL
-	    // ====================================================
+	    // ==========================
+	    // ARCHIVAL SUMMARY
+	    // ==========================
+	    BDISB3_Archival_Summary_Entity archSummary = new BDISB3_Archival_Summary_Entity();
+	    BeanUtils.copyProperties(updatedEntity1, archSummary);
+	    archSummary.setREPORT_DATE(reportDate1);
+	    archSummary.setREPORT_VERSION(newVersion);
+	    archSummary.setREPORT_RESUBDATE(now);
 
-	    BDISB3_RESUB_Detail_Entity resubDetail1 = new BDISB3_RESUB_Detail_Entity();
+	    insertArchivalSummary(archSummary);
 
-	    BeanUtils.copyProperties(updatedEntity1, resubDetail1);
+	    // ==========================
+	    // ARCHIVAL DETAIL
+	    // ==========================
+	    BDISB3_Archival_Detail_Entity archDetail = new BDISB3_Archival_Detail_Entity();
+	    BeanUtils.copyProperties(updatedEntity1, archDetail);
+	    archDetail.setREPORT_DATE(reportDate1);
+	    archDetail.setREPORT_VERSION(newVersion);
+	    archDetail.setREPORT_RESUBDATE(now);
 
-	    resubDetail1.setREPORT_DATE(reportDate1);
-	    resubDetail1.setREPORT_VERSION(newVersion);
-	    resubDetail1.setREPORT_RESUBDATE(now);
+	    insertArchivalDetail(archDetail);
 
-	    // ====================================================
-	    // 5️⃣ ARCHIVAL SUMMARY
-	    // ====================================================
-
-	    BDISB3_Archival_Summary_Entity archSummary1 = new BDISB3_Archival_Summary_Entity();
-
-	    BeanUtils.copyProperties(updatedEntity1, archSummary1);
-
-	    archSummary1.setREPORT_DATE(reportDate1);
-	    archSummary1.setREPORT_VERSION(newVersion);
-	    archSummary1.setREPORT_RESUBDATE(now);
-
-
-	    // ====================================================
-	    // 6️⃣ ARCHIVAL DETAIL
-	    // ====================================================
-
-	    BDISB3_Archival_Detail_Entity archDetail1 = new BDISB3_Archival_Detail_Entity();
-
-	    BeanUtils.copyProperties(updatedEntity1, archDetail1);
-
-	    archDetail1.setREPORT_DATE(reportDate1);
-	    archDetail1.setREPORT_VERSION(newVersion);
-	    archDetail1.setREPORT_RESUBDATE(now);
-
-	   
-
-	    // ====================================================
-	    // 7️⃣ SAVE ALL
-	    // ====================================================
-
-	    sessionFactory.getCurrentSession().merge(resubSummary1);
-
-	    sessionFactory.getCurrentSession().merge(resubDetail1);
-
-	    sessionFactory.getCurrentSession().merge(archSummary1);
-
-	    sessionFactory.getCurrentSession().merge(archDetail1);
+	    System.out.println("Resubmission Version Created : " + newVersion);
 	}
 	
+	private void insertResubSummary(BDISB3_RESUB_Summary_Entity entity) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	            "INSERT INTO BRRS_BDISB3_RESUB_SUMMARYTABLE (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,"
+	        );
+
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 5; i <= 10; i++) {
+
+	            sql.append("R").append(i).append("_SCVRN,")
+	               .append("R").append(i).append("_AGGREGATE_BALANCE,")
+	               .append("R").append(i).append("_COMPENSATABLE_AMOUNT,");
+
+	            values.append("?,?,?,");
+
+	            params.add(getValue(entity, "getR" + i + "_SCVRN"));
+	            params.add(getValue(entity, "getR" + i + "_AGGREGATE_BALANCE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPENSATABLE_AMOUNT"));
+	        }
+
+	        sql.setLength(sql.length() - 1);
+	        values.setLength(values.length() - 1);
+
+	        sql.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(sql.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting RESUB SUMMARY", e);
+	    }
+	}
+	
+	private void insertResubDetail(BDISB3_RESUB_Detail_Entity entity) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	            "INSERT INTO BRRS_BDISB3_RESUB_DETAILTABLE (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,"
+	        );
+
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 5; i <= 10; i++) {
+
+	            sql.append("R").append(i).append("_SCVRN,")
+	               .append("R").append(i).append("_AGGREGATE_BALANCE,")
+	               .append("R").append(i).append("_COMPENSATABLE_AMOUNT,");
+
+	            values.append("?,?,?,");
+
+	            params.add(getValue(entity, "getR" + i + "_SCVRN"));
+	            params.add(getValue(entity, "getR" + i + "_AGGREGATE_BALANCE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPENSATABLE_AMOUNT"));
+	        }
+
+	        sql.setLength(sql.length() - 1);
+	        values.setLength(values.length() - 1);
+
+	        sql.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(sql.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting RESUB DETAIL", e);
+	    }
+	}
+	
+	private void insertArchivalSummary(BDISB3_Archival_Summary_Entity entity) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	            "INSERT INTO BRRS_BDISB3_ARCHIVALTABLE_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,"
+	        );
+
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 5; i <= 10; i++) {
+
+	            sql.append("R").append(i).append("_SCVRN,")
+	               .append("R").append(i).append("_AGGREGATE_BALANCE,")
+	               .append("R").append(i).append("_COMPENSATABLE_AMOUNT,");
+
+	            values.append("?,?,?,");
+
+	            params.add(getValue(entity, "getR" + i + "_SCVRN"));
+	            params.add(getValue(entity, "getR" + i + "_AGGREGATE_BALANCE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPENSATABLE_AMOUNT"));
+	        }
+
+	        sql.setLength(sql.length() - 1);
+	        values.setLength(values.length() - 1);
+
+	        sql.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(sql.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting ARCHIVAL SUMMARY", e);
+	    }
+	}
+	
+	private void insertArchivalDetail(BDISB3_Archival_Detail_Entity entity) {
+
+	    try {
+
+	        StringBuilder sql = new StringBuilder(
+	            "INSERT INTO BRRS_BDISB3_ARCHIVALTABLE_DETAIL (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,"
+	        );
+
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
+
+	        List<Object> params = new ArrayList<>();
+
+	        params.add(entity.getREPORT_DATE());
+	        params.add(entity.getREPORT_VERSION());
+	        params.add(entity.getREPORT_RESUBDATE());
+
+	        for (int i = 5; i <= 10; i++) {
+
+	            sql.append("R").append(i).append("_SCVRN,")
+	               .append("R").append(i).append("_AGGREGATE_BALANCE,")
+	               .append("R").append(i).append("_COMPENSATABLE_AMOUNT,");
+
+	            values.append("?,?,?,");
+
+	            params.add(getValue(entity, "getR" + i + "_SCVRN"));
+	            params.add(getValue(entity, "getR" + i + "_AGGREGATE_BALANCE"));
+	            params.add(getValue(entity, "getR" + i + "_COMPENSATABLE_AMOUNT"));
+	        }
+
+	        sql.setLength(sql.length() - 1);
+	        values.setLength(values.length() - 1);
+
+	        sql.append(")");
+	        values.append(")");
+
+	        jdbcTemplate.update(sql.toString() + values.toString(), params.toArray());
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error inserting ARCHIVAL DETAIL", e);
+	    }
+	}
 	@Transactional
 	public void updateReport(BDISB3_Summary_Entity request) {
 
