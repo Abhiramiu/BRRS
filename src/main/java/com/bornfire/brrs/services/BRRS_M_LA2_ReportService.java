@@ -191,65 +191,87 @@ public class BRRS_M_LA2_ReportService {
 	
 	public void updateReport(M_LA2_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_LA2_Summary_Entity existingSummary = brrs_M_LA2_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    // Fetch existing SUMMARY
+	    M_LA2_Summary_Entity existingSummary = brrs_M_LA2_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		// 2️⃣ Fetch or create DETAIL
-		M_LA2_Detail_Entity existingDetail = brrs_M_LA2_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_LA2_Detail_Entity d = new M_LA2_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    // Audit old copy
+	    M_LA2_Summary_Entity oldcopy = new M_LA2_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    // Fetch existing DETAIL
+	    M_LA2_Detail_Entity existingDetail = brrs_M_LA2_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_LA2_Detail_Entity d = new M_LA2_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-			// 🔁 Loop R11 → R23
-			for (int i = 11; i <= 25; i++) {
+	    try {
 
-				String prefix = "R" + i + "_";
+	        // Loop R11 -> R25
+	        for (int i = 11; i <= 25; i++) {
 
-				String[] fields = { "TOTAL" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            String[] fields = { "TOTAL" };
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            for (String field : fields) {
 
-					try {
-						Method getter = M_LA2_Summary_Entity.class.getMethod(getterName);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Method summarySetter = M_LA2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                try {
 
-						Method detailSetter = M_LA2_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    Method getter = M_LA2_Summary_Entity.class.getMethod(getterName);
 
-						Object newValue = getter.invoke(updatedEntity);
+	                    Method summarySetter = M_LA2_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	                    Method detailSetter = M_LA2_Detail_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	                    Object newValue = getter.invoke(updatedEntity);
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	                    // Update Summary
+	                    summarySetter.invoke(existingSummary, newValue);
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	                    // Update Detail
+	                    detailSetter.invoke(existingDetail, newValue);
 
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_LA2_summary_repo.save(existingSummary);
-		brrs_M_LA2_detail_repo.save(existingDetail);
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // Check changes like CA4
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_LA2_summary_repo.save(existingSummary);
+	        brrs_M_LA2_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M LA2 Summary Screen",
+	                "BRRS_M_LA2_SUMMARY"
+	        );
+	    }
 	}
 
 
