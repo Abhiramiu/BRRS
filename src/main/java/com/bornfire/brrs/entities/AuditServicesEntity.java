@@ -4,8 +4,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,9 +19,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 @Table(name = "BRRS_AUDIT")
 public class AuditServicesEntity {
-
-    @Id
-    private String audit_ref_no;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "audit_seq_gen")
+	@SequenceGenerator(name = "audit_seq_gen", sequenceName = "AUDIT_SNO_SEQ", allocationSize = 1)
+	@Column(name = "SNO")
+	private Long sno;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
     private Date audit_date;
     private String audit_table;
@@ -38,11 +44,12 @@ public class AuditServicesEntity {
     private String report_id;
     private String entry_user_name;
     private String auth_user_name;
-	public String getAudit_ref_no() {
-		return audit_ref_no;
+
+	public Long getSno() {
+		return sno;
 	}
-	public void setAudit_ref_no(String audit_ref_no) {
-		this.audit_ref_no = audit_ref_no;
+	public void setSno(Long sno) {
+		this.sno = sno;
 	}
 	public Date getAudit_date() {
 		return audit_date;
@@ -142,13 +149,13 @@ public class AuditServicesEntity {
 	}
 	@Override
 	public String toString() {
-		return "AuditServicesEntity [audit_ref_no=" + audit_ref_no + ", audit_date=" + audit_date + ", audit_table="
+		return "AuditServicesEntity [audit_ref_no=" + sno + ", audit_date=" + audit_date + ", audit_table="
 				+ audit_table + ", audit_screen=" + audit_screen + ", event_id=" + event_id + ", event_name="
 				+ event_name + ", modi_details=" + modi_details + ", entry_user=" + entry_user + ", entry_time="
 				+ entry_time + ", remarks=" + remarks + ", auth_user=" + auth_user + ", auth_time=" + auth_time
 				+ ", func_code=" + func_code + ", change_details=" + change_details + ", report_id=" + report_id
-				+ ", entry_user_name=" + entry_user_name + ", auth_user_name=" + auth_user_name + ", getAudit_ref_no()="
-				+ getAudit_ref_no() + ", getAudit_date()=" + getAudit_date() + ", getAudit_table()=" + getAudit_table()
+				+ ", entry_user_name=" + entry_user_name + ", auth_user_name=" + auth_user_name + ", getSno()="
+				+ getSno() + ", getAudit_date()=" + getAudit_date() + ", getAudit_table()=" + getAudit_table()
 				+ ", getAudit_screen()=" + getAudit_screen() + ", getEvent_id()=" + getEvent_id() + ", getEvent_name()="
 				+ getEvent_name() + ", getModi_details()=" + getModi_details() + ", getEntry_user()=" + getEntry_user()
 				+ ", getEntry_time()=" + getEntry_time() + ", getRemarks()=" + getRemarks() + ", getAuth_user()="

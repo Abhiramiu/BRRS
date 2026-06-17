@@ -89,7 +89,7 @@ public class AuditService {
 			final Date currentDate = new Date();
 
 			AuditServicesEntity audit = new AuditServicesEntity();
-			audit.setAudit_ref_no(auditID.toString());
+			//audit.setAudit_ref_no(auditID.toString());
 			audit.setAudit_date(currentDate);
 			audit.setEntry_time(currentDate);
 			audit.setEntry_user(userId);
@@ -1085,7 +1085,7 @@ public class AuditService {
 		final Date currentDate = new Date();
 
 		AuditServicesEntity audit = new AuditServicesEntity();
-		audit.setAudit_ref_no(auditID.toString());
+		//audit.setAudit_ref_no(auditID.toString());
 		audit.setAudit_date(currentDate);
 		audit.setEntry_time(currentDate);
 		audit.setEntry_user(userId);
@@ -1168,7 +1168,7 @@ public class AuditService {
 		final Date currentDate = new Date();
 
 		AuditServicesEntity audit = new AuditServicesEntity();
-		audit.setAudit_ref_no(auditID.toString());
+		//audit.setAudit_ref_no(auditID.toString());
 		audit.setAudit_date(currentDate);
 		audit.setEntry_time(currentDate);
 		audit.setEntry_user(userId);

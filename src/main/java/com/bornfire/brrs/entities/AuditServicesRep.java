@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Repository
-public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , String>{
+public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , Long>{
 	@Query(value = "select * from BRRS_AUDIT ", nativeQuery = true)
 	List<AuditServicesEntity> getauditService();
 
@@ -24,8 +24,11 @@ public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , St
 	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
 		List<AuditServicesEntity> getUserAudit();
 
-		@Query(value = "SELECT change_details FROM BRRS_AUDIT  WHERE audit_ref_no = ?1", nativeQuery = true)
+		@Query(value = "SELECT change_details FROM BRRS_AUDIT  WHERE sno = ?1", nativeQuery = true)
 		String getchanges(String audit_ref_no);
+		
+		@Query(value = "SELECT * FROM BRRS_AUDIT  WHERE sno = ?1", nativeQuery = true)
+		AuditServicesEntity getdata(Long sno);
 
 
 		@Query(value = "SELECT BRRS_AUDIT_SEQ.NEXTVAL FROM dual", nativeQuery = true)

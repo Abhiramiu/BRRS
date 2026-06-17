@@ -563,7 +563,7 @@
 						<table class="table table-striped table-bordered table-hover" id="usertable">
 							<thead>
 								<tr>
-									<th>Cust ID</th>
+									<th>Sno</th>
 									<th>Table Name</th>
 									<th>Function</th>
 									<th>Entry User</th>
@@ -575,9 +575,9 @@
 							</thead>
 							<tbody>
 								<tr th:each="auditdata : ${AuditList}" class="userlist"
-									th:attr="onclick=${auditdata.func_code == 'MODIFY' ? 'modifypopup(''' + auditdata.audit_ref_no + ''')' : null}"
+									th:attr="onclick=${auditdata.func_code == 'MODIFY' ? 'modifypopup(''' + auditdata.sno + ''')' : null}"
 									>
-									<td th:text="${auditdata.report_id ?: 'N/A'}"></td>
+									<td th:text="${auditdata.sno ?: 'N/A'}"></td>
 									<td th:text="${auditdata.audit_table ?: 'N/A'}"></td>
 									<td th:text="${auditdata.func_code ?: 'N/A'}"></td>
 									<td

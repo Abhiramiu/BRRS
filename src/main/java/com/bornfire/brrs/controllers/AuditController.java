@@ -82,11 +82,11 @@ public class AuditController {
 	}
 
 	@GetMapping("/details")
-    public ResponseEntity<List<Map<String, String>>> getModifyDetails(@RequestParam("id") String id) {
+    public ResponseEntity<List<Map<String, String>>> getModifyDetails(@RequestParam("id") Long id) {
         
-		Optional<AuditServicesEntity> entity=Service_audit_table_Reps.findById(id);
-		System.out.println(entity.get().getModi_details());
-        String modify_details = entity.get().getModi_details(); 
+		AuditServicesEntity entity=Service_audit_table_Reps.getdata(id);
+		System.out.println(entity.getModi_details());
+        String modify_details = entity.getModi_details(); 
         List<Map<String, String>> parsedList = new ArrayList<>();
 
         if (modify_details != null && !modify_details.trim().isEmpty()) {
