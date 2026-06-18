@@ -1286,7 +1286,7 @@ public class RegulatoryReportServices {
 
 		case "M_BOP":
 
-			repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate, todate, currency, dtltype,
+			repsummary = BRRS_M_BOP_ReportService.getM_BOPView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
