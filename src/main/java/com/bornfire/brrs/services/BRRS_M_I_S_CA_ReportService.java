@@ -38,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +66,7 @@ import com.bornfire.brrs.entities.M_I_S_CA_Arcihval_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_Detail_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_I_S_CA_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 
 @Component
 @Service
@@ -612,49 +614,77 @@ public List<Object[]> getM_I_S_CAResub() {
 	
 	
 	
-	public void updateReport(M_I_S_CA_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-	    M_I_S_CA_Summary_Entity existing =
-	            brrs_m_i_s_ca_summary_repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() ->
-	                    new RuntimeException("Record not found for REPORT_DATE: "
-	                            + updatedEntity.getReport_date()));
-
-	    try {
-
-	        // -----------------------------
-	        // 1️⃣ WRITE_OFFS (R11 – R64)
-	        // -----------------------------
-	        for (int i = 11; i <= 64; i++) {
-
-	            String field = "write_offs";
-
-	            String getterName = "getR" + i + "_" + field;
-	            String setterName = "setR" + i + "_" + field;
-
-	            try {
-	                Method getter = M_I_S_CA_Summary_Entity.class.getMethod(getterName);
-
-	                Method setter = M_I_S_CA_Summary_Entity.class.getMethod(
-	                        setterName,
-	                        getter.getReturnType()
-	                );
-
-	                Object newValue = getter.invoke(updatedEntity);
-	                setter.invoke(existing, newValue);
-
-	            } catch (NoSuchMethodException e) {
-	                continue;
-	            }
-	        }
-
+//	public void updateReport(M_I_S_CA_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//	    M_I_S_CA_Summary_Entity existing =
+//	            brrs_m_i_s_ca_summary_repo.findById(updatedEntity.getReport_date())
+//	            .orElseThrow(() ->
+//	                    new RuntimeException("Record not found for REPORT_DATE: "
+//	                            + updatedEntity.getReport_date()));
+//
+//	    try {
+//
 //	        // -----------------------------
-//	        // 2️⃣ TOTAL (R11 – R64)
+//	        // 1️⃣ WRITE_OFFS (R11 – R64)
 //	        // -----------------------------
 //	        for (int i = 11; i <= 64; i++) {
+//
+//	            String field = "write_offs";
+//
+//	            String getterName = "getR" + i + "_" + field;
+//	            String setterName = "setR" + i + "_" + field;
+//
+//	            try {
+//	                Method getter = M_I_S_CA_Summary_Entity.class.getMethod(getterName);
+//
+//	                Method setter = M_I_S_CA_Summary_Entity.class.getMethod(
+//	                        setterName,
+//	                        getter.getReturnType()
+//	                );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//	                continue;
+//	            }
+//	        }
+//
+////	        // -----------------------------
+////	        // 2️⃣ TOTAL (R11 – R64)
+////	        // -----------------------------
+////	        for (int i = 11; i <= 64; i++) {
+////
+////	            String field = "total";
+////
+////	            String getterName = "getR" + i + "_" + field;
+////	            String setterName = "setR" + i + "_" + field;
+////
+////	            try {
+////	                Method getter = M_I_S_CA_Summary_Entity.class.getMethod(getterName);
+////
+////	                Method setter = M_I_S_CA_Summary_Entity.class.getMethod(
+////	                        setterName,
+////	                        getter.getReturnType()
+////	                );
+////
+////	                Object newValue = getter.invoke(updatedEntity);
+////	                setter.invoke(existing, newValue);
+////
+////	            } catch (NoSuchMethodException e) {
+////	                continue;
+////	            }
+////	        } {65, 67, 68, 69, 70};
+//
+//	        // -----------------------------
+//	        // 3️⃣ EXTRA TOTAL FIELDS
+//	        // -----------------------------
+//	        int[] extraTotals = { 67, 68 };
+//
+//	        for (int i : extraTotals) {
 //
 //	            String field = "total";
 //
@@ -675,12 +705,73 @@ public List<Object[]> getM_I_S_CAResub() {
 //	            } catch (NoSuchMethodException e) {
 //	                continue;
 //	            }
-//	        } {65, 67, 68, 69, 70};
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // Save
+//	    brrs_m_i_s_ca_summary_repo.save(existing);
+//	}
+	
+	@Transactional
+	public void updateReport(M_I_S_CA_Summary_Entity updatedEntity) {
+
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+	    M_I_S_CA_Summary_Entity existing =
+	            brrs_m_i_s_ca_summary_repo.findById(updatedEntity.getReport_date())
+	            .orElseThrow(() ->
+	                    new RuntimeException("Record not found for REPORT_DATE: "
+	                            + updatedEntity.getReport_date()));
+
+	    // =========================================
+	    // AUDIT OLD COPY
+	    // =========================================
+
+	    M_I_S_CA_Summary_Entity oldcopy =
+	            new M_I_S_CA_Summary_Entity();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
 
 	        // -----------------------------
-	        // 3️⃣ EXTRA TOTAL FIELDS
+	        // 1️⃣ WRITE_OFFS (R11 – R64)
 	        // -----------------------------
-	        int[] extraTotals = { 67, 68 };
+	        for (int i = 11; i <= 64; i++) {
+
+	            String field = "write_offs";
+
+	            String getterName = "getR" + i + "_" + field;
+	            String setterName = "setR" + i + "_" + field;
+
+	            try {
+
+	                Method getter =
+	                        M_I_S_CA_Summary_Entity.class.getMethod(getterName);
+
+	                Method setter =
+	                        M_I_S_CA_Summary_Entity.class.getMethod(
+	                                setterName,
+	                                getter.getReturnType()
+	                        );
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                setter.invoke(existing, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	        // -----------------------------
+	        // 2️⃣ EXTRA TOTAL FIELDS
+	        // -----------------------------
+	        int[] extraTotals = {67, 68};
 
 	        for (int i : extraTotals) {
 
@@ -690,14 +781,18 @@ public List<Object[]> getM_I_S_CAResub() {
 	            String setterName = "setR" + i + "_" + field;
 
 	            try {
-	                Method getter = M_I_S_CA_Summary_Entity.class.getMethod(getterName);
 
-	                Method setter = M_I_S_CA_Summary_Entity.class.getMethod(
-	                        setterName,
-	                        getter.getReturnType()
-	                );
+	                Method getter =
+	                        M_I_S_CA_Summary_Entity.class.getMethod(getterName);
+
+	                Method setter =
+	                        M_I_S_CA_Summary_Entity.class.getMethod(
+	                                setterName,
+	                                getter.getReturnType()
+	                        );
 
 	                Object newValue = getter.invoke(updatedEntity);
+
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
@@ -706,11 +801,40 @@ public List<Object[]> getM_I_S_CAResub() {
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
 	    }
 
-	    // Save
+	    // =========================================
+	    // CHECK CHANGES
+	    // =========================================
+
+	    String changes =
+	            auditService.getChanges(
+	                    oldcopy,
+	                    existing);
+
+	    // =========================================
+	    // SAVE ENTITY
+	    // =========================================
+
 	    brrs_m_i_s_ca_summary_repo.save(existing);
+
+	    // =========================================
+	    // AUDIT ONLY IF CHANGES FOUND
+	    // =========================================
+
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getReport_date().toString(),
+	                "M I S CA Summary Screen",
+	                "BRRS_M_I_S_CA_SUMMARY"
+	        );
+	    }
 	}
 
 	 @Autowired BRRS_M_I_S_CA_Detail_Repo m_i_s_ca_detail_repo;
@@ -751,6 +875,11 @@ public List<Object[]> getM_I_S_CAResub() {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			M_I_S_CA_Detail_Entity oldcopy = new M_I_S_CA_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
+
 
 			boolean isChanged = false;
 
@@ -774,6 +903,16 @@ public List<Object[]> getM_I_S_CAResub() {
 		        
 			if (isChanged) {
 				m_i_s_ca_detail_repo.save(existing);
+				
+				   // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M_I_S_CA Detail Screen",
+	                    "BRRS_M_I_S_CA_DETAIL"
+	            );
+				
 				logger.info("Record updated successfully for account {}", acctNo);
 
 				// Format date for procedure

@@ -38,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +69,7 @@ import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 
 @Component
 @Service
@@ -673,6 +675,58 @@ public class BRRS_M_SCI_E_ReportService {
 	
 	
 	
+//	public void updateReport(M_SCI_E_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//	    M_SCI_E_Summary_Entity existing =
+//	            brrs_m_sci_e_summary_repo.findById(updatedEntity.getReport_date())
+//	            .orElseThrow(() ->
+//	                    new RuntimeException("Record not found for REPORT_DATE: "
+//	                            + updatedEntity.getReport_date()));
+//	    
+//	    
+//
+//	    // ✅ Only allowed R-numbers
+//	     int[] allowedIndexes = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
+//
+//	    try {
+//	        for (int i : allowedIndexes) {
+//
+//	            String field = "month";
+//
+//	            String getterName = "getR" + i + "_" + field;
+//	            String setterName = "setR" + i + "_" + field;
+//
+//	            try {
+//	                Method getter =
+//	                        M_SCI_E_Summary_Entity.class.getMethod(getterName);
+//
+//	                Method setter =
+//	                        M_SCI_E_Summary_Entity.class.getMethod(
+//	                                setterName,
+//	                                getter.getReturnType()
+//	                        );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//	                // Safely skip if field doesn't exist
+//	                continue;
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // ✅ Save only intended updates
+//	    brrs_m_sci_e_summary_repo.save(existing);
+//	}
+	
+	@Transactional
 	public void updateReport(M_SCI_E_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
@@ -684,10 +738,15 @@ public class BRRS_M_SCI_E_ReportService {
 	                    new RuntimeException("Record not found for REPORT_DATE: "
 	                            + updatedEntity.getReport_date()));
 
-	    // ✅ Only allowed R-numbers
-	     int[] allowedIndexes = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
+	    // Audit old copy
+	    M_SCI_E_Summary_Entity oldcopy = new M_SCI_E_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    // Only allowed R-numbers
+	    int[] allowedIndexes = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
 
 	    try {
+
 	        for (int i : allowedIndexes) {
 
 	            String field = "month";
@@ -696,6 +755,7 @@ public class BRRS_M_SCI_E_ReportService {
 	            String setterName = "setR" + i + "_" + field;
 
 	            try {
+
 	                Method getter =
 	                        M_SCI_E_Summary_Entity.class.getMethod(getterName);
 
@@ -706,20 +766,39 @@ public class BRRS_M_SCI_E_ReportService {
 	                        );
 
 	                Object newValue = getter.invoke(updatedEntity);
+
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
+
 	                // Safely skip if field doesn't exist
 	                continue;
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
 	    }
 
-	    // ✅ Save only intended updates
+	    // Check changes before save
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    // Save entity
 	    brrs_m_sci_e_summary_repo.save(existing);
+
+	    // Audit only if changes found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getReport_date().toString(),
+	                "M SCI E Summary Screen",
+	                "BRRS_M_SCI_E_SUMMARY"
+	        );
+	    }
 	}
 		
 	 @Autowired BRRS_M_SCI_E_Detail_Repo m_sci_e_detail_repo;
@@ -750,7 +829,8 @@ public class BRRS_M_SCI_E_ReportService {
 		try {
 			String acctNo = request.getParameter("acctNumber");
 			String monthlyInt = request.getParameter("monthlyInt");
-			String balanceAmt = request.getParameter("balanceAmt");
+			String creditEquivalent = request.getParameter("creditEquivalent");
+			String debitEquivalent = request.getParameter("debitEquivalent");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
 
@@ -761,6 +841,10 @@ public class BRRS_M_SCI_E_ReportService {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			M_SCI_E_Detail_Entity oldcopy = new M_SCI_E_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -782,18 +866,40 @@ public class BRRS_M_SCI_E_ReportService {
 		            }
 		        }
 		        
-			 if (balanceAmt != null && !balanceAmt.isEmpty()) {
-		            BigDecimal newbalanceAmt = new BigDecimal(balanceAmt);
-		            if (existing.getBalanceAmt()  == null ||
-		                existing.getBalanceAmt().compareTo(newbalanceAmt) != 0) {
-		            	 existing.setBalanceAmt(newbalanceAmt);
+			 if (creditEquivalent != null && !creditEquivalent.isEmpty()) {
+		            BigDecimal newbalanceAmt = new BigDecimal(creditEquivalent);
+		            if (existing.getCreditEquivalent()  == null ||
+		                existing.getCreditEquivalent().compareTo(newbalanceAmt) != 0) {
+		            	 existing.setCreditEquivalent(newbalanceAmt);
 		                isChanged = true;
 		                logger.info("Balance updated to {}", newbalanceAmt);
 		            }
 		        }
 			 
+			   
+			 if (debitEquivalent != null && !debitEquivalent.isEmpty()) {
+		            BigDecimal newdebitEquivalent = new BigDecimal(debitEquivalent);
+		            if (existing.getDebitEquivalent()  == null ||
+		                existing.getDebitEquivalent().compareTo(newdebitEquivalent) != 0) {
+		            	 existing.setDebitEquivalent(newdebitEquivalent);
+		                isChanged = true;
+		                logger.info("Balance updated to {}", newdebitEquivalent);
+		            }
+		        }
+			 
 			if (isChanged) {
 				m_sci_e_detail_repo.save(existing);
+				
+				  // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M_SCI_E Detail Screen",
+	                    "BRRS_M_SCI_E_DETAIL"
+	            );
+				
+				
 				logger.info("Record updated successfully for account {}", acctNo);
 
 				// Format date for procedure
@@ -801,19 +907,32 @@ public class BRRS_M_SCI_E_ReportService {
 						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
 				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_SCI_E_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_SCI_E_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
+				
+				TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_M_SCI_E_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_M_SCI_E_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info("Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+	                                logger.error("Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
+				
+				
+
 
 				return ResponseEntity.ok("Record updated successfully!");
 			} else {

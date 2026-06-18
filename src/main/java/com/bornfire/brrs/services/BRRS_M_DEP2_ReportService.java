@@ -37,6 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +60,7 @@ import com.bornfire.brrs.entities.M_DEP2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_DEP2_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP2_Summary_Entity;
+
 
 @Component
 @Service
@@ -11174,6 +11176,10 @@ public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
             logger.warn("No record found for ACCT_NO: {}", acctNo);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
         }
+        
+        // Create old copy for audit comparison
+        M_DEP2_Detail_Entity oldcopy = new M_DEP2_Detail_Entity();
+        BeanUtils.copyProperties(existing, oldcopy);
 
         boolean isChanged = false;
 
@@ -11199,6 +11205,16 @@ public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 
         if (isChanged) {
         	M_DEP2_Detail_Repo.save(existing);
+        	
+        	  // Audit comparison
+            auditService.compareEntitiesmanual(
+                    oldcopy,
+                    existing,
+                    acctNo,
+                    "M_DEP2 Detail Screen",
+                    "BRRS_M_DEP2_DETAIL"
+            );
+        	
             logger.info("Record updated successfully for account {}", acctNo);
 
             // Format date for procedure

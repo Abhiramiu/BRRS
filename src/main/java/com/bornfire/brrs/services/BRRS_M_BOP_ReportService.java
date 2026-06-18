@@ -63,6 +63,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService.BASEL_III_COM_EQUITY_DISC_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService.B_III_CETD_RowMapper;
+
 
 @Service
 
@@ -102,6 +105,24 @@ public class BRRS_M_BOP_ReportService {
             new M_BOP_Summary_RowMapper()
     );
 }
+	
+	//findbyreportdate
+
+	public M_BOP_Summary_Entity findByReportDate(Date reportDate) {
+
+	    String sql =
+	            "SELECT * FROM BRRS_M_BOP_SUMMARYTABLE " +
+	            "WHERE REPORT_DATE = ?";
+
+	    List<M_BOP_Summary_Entity> list =
+	            jdbcTemplate.query(
+	                    sql,
+	                    new Object[] { reportDate },
+	                    new M_BOP_Summary_RowMapper()
+	            );
+
+	    return list.isEmpty() ? null : list.get(0);
+	}
 	
 // =====================================================
 // ARCHIVAL  SUMAMRY REPO
@@ -11007,11 +11028,110 @@ public List<Object[]> getM_BOPArchival() {
 // UPDATE REPORT
 //=====================================================
 
+//@Transactional
+//public void updateReport(M_BOP_Summary_Entity updatedEntity) {
+//
+//    System.out.println("Came to M_BOP Update");
+//    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//    String[] fields = {
+//            "product",
+//            "open_position",
+//            "cpdm_dt_inc",
+//            "cpdm_dt_dec",
+//            "net",
+//            "cpdm_dt_der",
+//            "cpdm_dt_dto",
+//            "cp"
+//    };
+//
+//    try {
+//
+//        for (int i = 13; i <= 36; i++) {
+//
+//            for (String field : fields) {
+//
+//                String getterName = "getR" + i + "_" + field;
+//                String columnName = "R" + i + "_" + field;
+//
+//                try {
+//
+//                    Method getter =
+//                            M_BOP_Summary_Entity.class.getMethod(getterName);
+//
+//                    Object value = getter.invoke(updatedEntity);
+//
+//                    if (value == null) {
+//                        continue;
+//                    }
+//
+//                    // ===========================
+//                    // UPDATE SUMMARY TABLE
+//                    // ===========================
+//
+//                    String summarySql =
+//                            "UPDATE BRRS_M_BOP_SUMMARYTABLE " +
+//                            "SET " + columnName + " = ? " +
+//                            "WHERE REPORT_DATE = ?";
+//
+//                    jdbcTemplate.update(
+//                            summarySql,
+//                            value,
+//                            updatedEntity.getReport_date()
+//                    );
+//
+//                    // ===========================
+//                    // UPDATE DETAIL TABLE
+//                    // ===========================
+//
+//                    String detailSql =
+//                            "UPDATE BRRS_M_BOP_DETAILTABLE " +
+//                            "SET " + columnName + " = ? " +
+//                            "WHERE REPORT_DATE = ?";
+//
+//                    jdbcTemplate.update(
+//                            detailSql,
+//                            value,
+//                            updatedEntity.getReport_date()
+//                    );
+//
+//                } catch (NoSuchMethodException e) {
+//                    continue;
+//                }
+//            }
+//        }
+//
+//        System.out.println("M_BOP Summary & Detail Update Completed");
+//
+//    } catch (Exception e) {
+//
+//        throw new RuntimeException(
+//                "Error while updating M_BOP fields", e);
+//    }
+//}
+
+
 @Transactional
 public void updateReport(M_BOP_Summary_Entity updatedEntity) {
 
     System.out.println("Came to M_BOP Update");
     System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+    // Fetch existing summary record for audit
+    M_BOP_Summary_Entity existingSummary =
+            findByReportDate(updatedEntity.getReport_date());
+
+    if (existingSummary == null) {
+        throw new RuntimeException(
+                "Record not found for REPORT_DATE : "
+                        + updatedEntity.getReport_date());
+    }
+
+    // Audit old copy
+    M_BOP_Summary_Entity oldcopy =
+            new M_BOP_Summary_Entity();
+
+    BeanUtils.copyProperties(existingSummary, oldcopy);
 
     String[] fields = {
             "product",
@@ -11031,6 +11151,7 @@ public void updateReport(M_BOP_Summary_Entity updatedEntity) {
             for (String field : fields) {
 
                 String getterName = "getR" + i + "_" + field;
+                String setterName = "setR" + i + "_" + field;
                 String columnName = "R" + i + "_" + field;
 
                 try {
@@ -11043,6 +11164,14 @@ public void updateReport(M_BOP_Summary_Entity updatedEntity) {
                     if (value == null) {
                         continue;
                     }
+
+                    // Update existing object for audit
+                    Method setter =
+                            M_BOP_Summary_Entity.class.getMethod(
+                                    setterName,
+                                    getter.getReturnType());
+
+                    setter.invoke(existingSummary, value);
 
                     // ===========================
                     // UPDATE SUMMARY TABLE
@@ -11080,7 +11209,25 @@ public void updateReport(M_BOP_Summary_Entity updatedEntity) {
             }
         }
 
-        System.out.println("M_BOP Summary & Detail Update Completed");
+        // Audit only if changes found
+        String changes =
+                auditService.getChanges(
+                        oldcopy,
+                        existingSummary);
+
+        if (!changes.isEmpty()) {
+
+            auditService.compareEntitiesmanual(
+                    oldcopy,
+                    existingSummary,
+                    updatedEntity.getReport_date().toString(),
+                    "M BOP Summary Screen",
+                    "BRRS_M_BOP_SUMMARY"
+            );
+        }
+
+        System.out.println(
+                "M_BOP Summary & Detail Update Completed");
 
     } catch (Exception e) {
 
@@ -11088,6 +11235,8 @@ public void updateReport(M_BOP_Summary_Entity updatedEntity) {
                 "Error while updating M_BOP fields", e);
     }
 }
+
+
 
 //=====================================================
 // VIEW AND EDIT
@@ -11152,6 +11301,131 @@ public List<Object[]> getM_BOPResub() {
 // UPDATE RESUB 
 //=====================================================
 
+
+//@Transactional
+//public void updateResubReport(
+//        M_BOP_RESUB_Summary_Entity updatedEntity) {
+//
+//    System.out.println("Came to M_BOP Resub Update");
+//
+//    Date reportDate = updatedEntity.getReport_date();
+//
+//    // ====================================================
+//    // GET MAX VERSION
+//    // ====================================================
+//
+//    BigDecimal maxVersion = findMaxVersion(reportDate);
+//
+//    if (maxVersion == null) {
+//        throw new RuntimeException(
+//                "No record found for REPORT_DATE : "
+//                        + reportDate);
+//    }
+//
+//    BigDecimal newVersion =
+//            maxVersion.add(BigDecimal.ONE);
+//
+//    Date now = new Date();
+//
+//    try {
+//
+//        // ====================================================
+//        // RESUB SUMMARY
+//        // ====================================================
+//
+//        M_BOP_RESUB_Summary_Entity resubSummary =
+//                new M_BOP_RESUB_Summary_Entity();
+//
+//        BeanUtils.copyProperties(
+//                updatedEntity,
+//                resubSummary);
+//
+//        resubSummary.setReport_date(reportDate);
+//        resubSummary.setReport_version(newVersion);
+//        resubSummary.setReportResubDate(now);
+//
+//        // ====================================================
+//        // RESUB DETAIL
+//        // ====================================================
+//
+//        M_BOP_RESUB_Detail_Entity resubDetail =
+//                new M_BOP_RESUB_Detail_Entity();
+//
+//        BeanUtils.copyProperties(
+//                updatedEntity,
+//                resubDetail);
+//
+//        resubDetail.setReport_date(reportDate);
+//        resubDetail.setReport_version(newVersion);
+//        resubDetail.setReportResubDate(now);
+//
+//        // ====================================================
+//        // ARCHIVAL SUMMARY
+//        // ====================================================
+//
+//        M_BOP_Archival_Summary_Entity archivalSummary =
+//                new M_BOP_Archival_Summary_Entity();
+//
+//        BeanUtils.copyProperties(
+//                updatedEntity,
+//                archivalSummary);
+//
+//        archivalSummary.setReport_date(reportDate);
+//        archivalSummary.setReport_version(newVersion);
+//        archivalSummary.setReportResubDate(now);
+//
+//        // ====================================================
+//        // ARCHIVAL DETAIL
+//        // ====================================================
+//
+//        M_BOP_Archival_Detail_Entity archivalDetail =
+//                new M_BOP_Archival_Detail_Entity();
+//
+//        BeanUtils.copyProperties(
+//                updatedEntity,
+//                archivalDetail);
+//
+//        archivalDetail.setReport_date(reportDate);
+//        archivalDetail.setReport_version(newVersion);
+//        archivalDetail.setReportResubDate(now);
+//
+//        // ====================================================
+//        // INSERT INTO RESUB SUMMARY TABLE
+//        // ====================================================
+//
+//        insertResubSummary(resubSummary);
+//
+//        // ====================================================
+//        // INSERT INTO RESUB DETAIL TABLE
+//        // ====================================================
+//
+//        insertResubDetail(resubDetail);
+//
+//        // ====================================================
+//        // INSERT INTO ARCHIVAL SUMMARY TABLE
+//        // ====================================================
+//
+//        insertArchivalSummary(archivalSummary);
+//
+//        // ====================================================
+//        // INSERT INTO ARCHIVAL DETAIL TABLE
+//        // ====================================================
+//
+//        insertArchivalDetail(archivalDetail);
+//
+//        System.out.println(
+//                "M_BOP Resub Version Created Successfully : "
+//                        + newVersion);
+//
+//    } catch (Exception e) {
+//
+//        e.printStackTrace();
+//
+//        throw new RuntimeException(
+//                "Error while creating M_BOP Resub Version",
+//                e);
+//    }
+//}
 
 @Transactional
 public void updateResubReport(
@@ -11263,6 +11537,30 @@ public void updateResubReport(
         // ====================================================
 
         insertArchivalDetail(archivalDetail);
+
+        // ====================================================
+        // AUDIT
+        // ====================================================
+
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        if (attrs != null) {
+
+            HttpServletRequest request = attrs.getRequest();
+
+            String userid =
+                    (String) request.getSession()
+                            .getAttribute("USERID");
+
+            auditService.createBusinessAudit(
+                    userid,
+                    "RESUBMIT",
+                    "M BOP Resub Summary",
+                    null,
+                    "BRRS_M_BOP_RESUB_SUMMARYTABLE"
+            );
+        }
 
         System.out.println(
                 "M_BOP Resub Version Created Successfully : "

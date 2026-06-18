@@ -944,8 +944,8 @@ PURPOSE		: BWRBRREPORT
 			[
 				"#R34_MONTH_END",
 				"#R35_MONTH_END",
-				"#R39_MONTH_END",
-				"#R40_MONTH_END",
+				/*"#R39_MONTH_END",
+				"#R40_MONTH_END",*/
 				"#R43_MONTH_END",
 				"#R47_MONTH_END",
 				"#R48_MONTH_END",
@@ -1777,17 +1777,17 @@ PURPOSE		: BWRBRREPORT
 												<td style="padding-left: 20px;" th:text="${report.R39_PRODUCT}"></td>
 												<td style="text-align: right;" th:text="${report.R39_CROSS_REFERENCE}">
 												</td>
-												<!-- <td style="text-align: right;" th:attr="RowId='R39', ColumnId='C3'"
+											 <td style="text-align: right;" th:attr="RowId='R39', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R39_MONTH_END}"></td> -->
+												th:text="${report.R39_MONTH_END}"></td> 
 
-												<td id="ROW39"
+												<!--<td id="ROW39"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R39_MONTH_END != null ? #numbers.formatDecimal(report.R39_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R39_MONTH_END" name="R39_MONTH_END"
 														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+														readonly /></td>-->
 
 
 												<td style="text-align: right;" 
@@ -1798,17 +1798,17 @@ PURPOSE		: BWRBRREPORT
 												<td style="padding-left: 20px;" th:text="${report.R40_PRODUCT}"></td>
 												<td style="text-align: right;" th:text="${report.R40_CROSS_REFERENCE}">
 												</td>
-												<!-- <td style="text-align: right;" th:attr="RowId='R40', ColumnId='C3'"
+											 <td style="text-align: right;" th:attr="RowId='R40', ColumnId='C3'"
 												onclick="showdetailsbyRowAndColumn(this)"
-												th:text="${report.R40_MONTH_END}"></td> -->
+												th:text="${report.R40_MONTH_END}"></td> 
 
-												<td id="ROW40"
+												<!--<td id="ROW40"
 													style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R40_MONTH_END != null ? #numbers.formatDecimal(report.R40_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R40_MONTH_END" name="R40_MONTH_END"
 														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
-														readonly /></td>
+														readonly /></td>-->
 
 
 												<td style="text-align: right;" 

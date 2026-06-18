@@ -220,86 +220,234 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	    return mv;
 	}
 	
+//	@Transactional
+//	public void updateReport(  M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     M_INT_RATES_FCA_Summary_Entity existingSummary =
+//	            M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_INT_RATES_FCA_Detail_Entity existingDetail =
+//	            M_INT_RATES_FCA_Detail_Repo.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_INT_RATES_FCA_Detail_Entity d = new   M_INT_RATES_FCA_Detail_Entity();
+//	                        d.setReport_date(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	   try {
+//			// 1️⃣ Loop through R14 to R100
+//			for (int i = 10; i <= 15; i++) {
+//				String prefix = "R" + i + "_";
+//
+//				String[] fields = {"CURRENT",
+//				        "CALL",
+//				        "SAVINGS",
+//				        "NOTICE_0_31_DAYS",
+//				        "NOTICE_32_88_DAYS",
+//				        "91_DEPOSIT_DAY",
+//				        "FD_1_6_MONTHS",
+//				        "FD_7_12_MONTHS",
+//				        "FD_13_18_MONTHS",
+//				        "FD_19_24_MONTHS",
+//				        "FD_OVER_24_MONTHS",
+//				        "TOTAL"};
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_INT_RATES_FCA_Detail_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    M_INT_RATES_FCA_Summary_Repo.save(existingSummary);
+//	    M_INT_RATES_FCA_Detail_Repo.save(existingDetail);
+//	}
+
 	@Transactional
-	public void updateReport(  M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     M_INT_RATES_FCA_Summary_Entity existingSummary =
+	    M_INT_RATES_FCA_Summary_Entity existingSummary =
 	            M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
+
+	    // =========================================
+	    // AUDIT OLD COPY
+	    // =========================================
+
+	    M_INT_RATES_FCA_Summary_Entity oldcopy =
+	            new M_INT_RATES_FCA_Summary_Entity();
+
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
 	    // 2️⃣ Fetch or create DETAIL
-	      M_INT_RATES_FCA_Detail_Entity existingDetail =
+	    M_INT_RATES_FCA_Detail_Entity existingDetail =
 	            M_INT_RATES_FCA_Detail_Repo.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_INT_RATES_FCA_Detail_Entity d = new   M_INT_RATES_FCA_Detail_Entity();
-	                        d.setReport_date(updatedEntity.getReportDate());
+
+	                        M_INT_RATES_FCA_Detail_Entity d =
+	                                new M_INT_RATES_FCA_Detail_Entity();
+
+	                        d.setReport_date(
+	                                updatedEntity.getReportDate());
+
 	                        return d;
 	                    });
 
-	   try {
-			// 1️⃣ Loop through R14 to R100
-			for (int i = 10; i <= 15; i++) {
-				String prefix = "R" + i + "_";
+	    try {
 
-				String[] fields = {"CURRENT",
-				        "CALL",
-				        "SAVINGS",
-				        "NOTICE_0_31_DAYS",
-				        "NOTICE_32_88_DAYS",
-				        "91_DEPOSIT_DAY",
-				        "FD_1_6_MONTHS",
-				        "FD_7_12_MONTHS",
-				        "FD_13_18_MONTHS",
-				        "FD_19_24_MONTHS",
-				        "FD_OVER_24_MONTHS",
-				        "TOTAL"};
+	        // 3️⃣ Loop through rows
+
+	        for (int i = 10; i <= 15; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "CURRENT",
+	                    "CALL",
+	                    "SAVINGS",
+	                    "NOTICE_0_31_DAYS",
+	                    "NOTICE_32_88_DAYS",
+	                    "91_DEPOSIT_DAY",
+	                    "FD_1_6_MONTHS",
+	                    "FD_7_12_MONTHS",
+	                    "FD_13_18_MONTHS",
+	                    "FD_19_24_MONTHS",
+	                    "FD_OVER_24_MONTHS",
+	                    "TOTAL"
+	            };
 
 	            for (String field : fields) {
 
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+	                String getterName =
+	                        "get" + prefix + field;
+
+	                String setterName =
+	                        "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+	                            M_INT_RATES_FCA_Summary_Entity.class
+	                                    .getMethod(getterName);
 
 	                    Method summarySetter =
-	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_INT_RATES_FCA_Summary_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_INT_RATES_FCA_Detail_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_INT_RATES_FCA_Detail_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // Update SUMMARY
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // Update DETAIL
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
+
+	                    // Skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
+	    // =========================================
+	    // CHECK CHANGES
+	    // =========================================
+
+	    String changes =
+	            auditService.getChanges(
+	                    oldcopy,
+	                    existingSummary);
+
+	    // =========================================
+	    // SAVE BOTH TABLES
+	    // =========================================
+
 	    M_INT_RATES_FCA_Summary_Repo.save(existingSummary);
 	    M_INT_RATES_FCA_Detail_Repo.save(existingDetail);
-	}
 
+	    // =========================================
+	    // AUDIT ONLY IF CHANGES FOUND
+	    // =========================================
+
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M INT RATES FCA Summary Screen",
+	                "BRRS_M_INT_RATES_FCA_SUMMARY"
+	        );
+	    }
+
+	    System.out.println(
+	            "M_INT_RATES_FCA Summary & Detail Updated Successfully");
+	}
+	
 	
 	// RESUB VIEW
 
@@ -331,91 +479,229 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		}
 
 		
+//		@Transactional
+//	    public void updateResubReport(M_INT_RATES_FCA_RESUB_Summary_Entity updatedEntity) {
+//
+//	        Date reportDate = updatedEntity.getReport_date();
+//
+//	        // ----------------------------------------------------
+//	        // GET CURRENT VERSION FROM RESUB TABLE
+//	        // ----------------------------------------------------
+//
+//	        BigDecimal maxResubVer =
+//	            M_INT_RATES_FCA_resub_summary_repo.findMaxVersion(reportDate);
+//
+//	        if (maxResubVer == null)
+//	            throw new RuntimeException("No record for: " + reportDate);
+//
+//	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+//
+//	        Date now = new Date();
+//
+//	        // ====================================================
+//	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+//	        // ====================================================
+//
+//	        M_INT_RATES_FCA_RESUB_Summary_Entity resubSummary =
+//	            new M_INT_RATES_FCA_RESUB_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubSummary.setReport_date(reportDate);
+//	        resubSummary.setReport_version(newVersion);
+//	        resubSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+//	        // ====================================================
+//
+//	        M_INT_RATES_FCA_RESUB_Detail_Entity resubDetail =
+//	            new M_INT_RATES_FCA_RESUB_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubDetail.setReport_date(reportDate);
+//	        resubDetail.setReport_version(newVersion);
+//	        resubDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        M_INT_RATES_FCA_Archival_Summary_Entity archSummary =
+//	            new M_INT_RATES_FCA_Archival_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archSummary.setReport_date(reportDate);
+//	        archSummary.setReport_version(newVersion);   // SAME VERSION
+//	        archSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        M_INT_RATES_FCA_Archival_Detail_Entity archDetail =
+//	            new M_INT_RATES_FCA_Archival_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archDetail.setReport_date(reportDate);
+//	        archDetail.setReport_version(newVersion);    // SAME VERSION
+//	        archDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 6️⃣ SAVE ALL WITH SAME DATA
+//	        // ====================================================
+//
+//	        M_INT_RATES_FCA_resub_summary_repo.save(resubSummary);
+//	        M_INT_RATES_FCA_resub_detail_repo.save(resubDetail);
+//
+//	        M_INT_RATES_FCA_Archival_Summary_Repo.save(archSummary);
+//	        M_INT_RATES_FCA_Archival_Detail_Repo.save(archDetail);
+//	    }
+//		
+	
 		@Transactional
-	    public void updateResubReport(M_INT_RATES_FCA_RESUB_Summary_Entity updatedEntity) {
+		public void updateResubReport(
+		        M_INT_RATES_FCA_RESUB_Summary_Entity updatedEntity) {
 
-	        Date reportDate = updatedEntity.getReport_date();
+		    Date reportDate = updatedEntity.getReport_date();
 
-	        // ----------------------------------------------------
-	        // GET CURRENT VERSION FROM RESUB TABLE
-	        // ----------------------------------------------------
+		    // ----------------------------------------------------
+		    // GET CURRENT VERSION FROM RESUB TABLE
+		    // ----------------------------------------------------
 
-	        BigDecimal maxResubVer =
-	            M_INT_RATES_FCA_resub_summary_repo.findMaxVersion(reportDate);
+		    BigDecimal maxResubVer =
+		            M_INT_RATES_FCA_resub_summary_repo
+		                    .findMaxVersion(reportDate);
 
-	        if (maxResubVer == null)
-	            throw new RuntimeException("No record for: " + reportDate);
+		    if (maxResubVer == null) {
+		        throw new RuntimeException(
+		                "No record for: " + reportDate);
+		    }
 
-	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+		    BigDecimal newVersion =
+		            maxResubVer.add(BigDecimal.ONE);
 
-	        Date now = new Date();
+		    Date now = new Date();
 
-	        // ====================================================
-	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-	        // ====================================================
+		    // ====================================================
+		    // RESUB SUMMARY
+		    // ====================================================
 
-	        M_INT_RATES_FCA_RESUB_Summary_Entity resubSummary =
-	            new M_INT_RATES_FCA_RESUB_Summary_Entity();
+		    M_INT_RATES_FCA_RESUB_Summary_Entity resubSummary =
+		            new M_INT_RATES_FCA_RESUB_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            resubSummary,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        resubSummary.setReport_date(reportDate);
-	        resubSummary.setReport_version(newVersion);
-	        resubSummary.setReportResubDate(now);
+		    resubSummary.setReport_date(reportDate);
+		    resubSummary.setReport_version(newVersion);
+		    resubSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-	        // ====================================================
+		    // ====================================================
+		    // RESUB DETAIL
+		    // ====================================================
 
-	        M_INT_RATES_FCA_RESUB_Detail_Entity resubDetail =
-	            new M_INT_RATES_FCA_RESUB_Detail_Entity();
+		    M_INT_RATES_FCA_RESUB_Detail_Entity resubDetail =
+		            new M_INT_RATES_FCA_RESUB_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            resubDetail,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        resubDetail.setReport_date(reportDate);
-	        resubDetail.setReport_version(newVersion);
-	        resubDetail.setReportResubDate(now);
+		    resubDetail.setReport_date(reportDate);
+		    resubDetail.setReport_version(newVersion);
+		    resubDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-	        // ====================================================
+		    // ====================================================
+		    // ARCHIVAL SUMMARY
+		    // ====================================================
 
-	        M_INT_RATES_FCA_Archival_Summary_Entity archSummary =
-	            new M_INT_RATES_FCA_Archival_Summary_Entity();
+		    M_INT_RATES_FCA_Archival_Summary_Entity archSummary =
+		            new M_INT_RATES_FCA_Archival_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            archSummary,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        archSummary.setReport_date(reportDate);
-	        archSummary.setReport_version(newVersion);   // SAME VERSION
-	        archSummary.setReportResubDate(now);
+		    archSummary.setReport_date(reportDate);
+		    archSummary.setReport_version(newVersion);
+		    archSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-	        // ====================================================
+		    // ====================================================
+		    // ARCHIVAL DETAIL
+		    // ====================================================
 
-	        M_INT_RATES_FCA_Archival_Detail_Entity archDetail =
-	            new M_INT_RATES_FCA_Archival_Detail_Entity();
+		    M_INT_RATES_FCA_Archival_Detail_Entity archDetail =
+		            new M_INT_RATES_FCA_Archival_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            archDetail,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        archDetail.setReport_date(reportDate);
-	        archDetail.setReport_version(newVersion);    // SAME VERSION
-	        archDetail.setReportResubDate(now);
+		    archDetail.setReport_date(reportDate);
+		    archDetail.setReport_version(newVersion);
+		    archDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 6️⃣ SAVE ALL WITH SAME DATA
-	        // ====================================================
+		    // ====================================================
+		    // SAVE ALL
+		    // ====================================================
 
-	        M_INT_RATES_FCA_resub_summary_repo.save(resubSummary);
-	        M_INT_RATES_FCA_resub_detail_repo.save(resubDetail);
+		    M_INT_RATES_FCA_resub_summary_repo.save(resubSummary);
+		    M_INT_RATES_FCA_resub_detail_repo.save(resubDetail);
 
-	        M_INT_RATES_FCA_Archival_Summary_Repo.save(archSummary);
-	        M_INT_RATES_FCA_Archival_Detail_Repo.save(archDetail);
-	    }
+		    M_INT_RATES_FCA_Archival_Summary_Repo.save(archSummary);
+		    M_INT_RATES_FCA_Archival_Detail_Repo.save(archDetail);
+
+		    // ====================================================
+		    // AUDIT
+		    // ====================================================
+
+		    ServletRequestAttributes attrs =
+		            (ServletRequestAttributes)
+		                    RequestContextHolder.getRequestAttributes();
+
+		    if (attrs != null) {
+
+		        HttpServletRequest request =
+		                attrs.getRequest();
+
+		        String userid =
+		                (String) request.getSession()
+		                        .getAttribute("USERID");
+
+		        auditService.createBusinessAudit(
+		                userid,
+		                "RESUBMIT",
+		                "M INT RATES FCA Resub Summary",
+		                null,
+		                "BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE"
+		        );
+		    }
+
+		    System.out.println(
+		            "M_INT_RATES_FCA Resub Version Created Successfully : "
+		                    + newVersion);
+		}	
 		
 		
 		//Archival View

@@ -376,6 +376,150 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	    return mv;
 	}
 	
+//	@Transactional
+//	public void updateReport(BRRS_M_SEC_Summary_Entity1 updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     BRRS_M_SEC_Summary_Entity1 existingSummary =
+//	            secSummaryRepo1.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_SEC_Detail1_Entity existingDetail =
+//	            secDetailRepo1.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_SEC_Detail1_Entity d = new   M_SEC_Detail1_Entity();
+//	                        d.setReportDate(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	  try {
+//	        // 1️⃣ Loop from R11 to R18 and copy fields
+//	    	
+//	        for (int i = 11; i <= 19; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = { "TCA" };
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              BRRS_M_SEC_Summary_Entity1.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              BRRS_M_SEC_Summary_Entity1.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_SEC_Detail1_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    secSummaryRepo1.save(existingSummary);
+//	    secDetailRepo1.save(existingDetail);
+//		
+//		}
+		
+//		@Transactional
+//	public void updateReport1(BRRS_M_SEC_Summary_Entity2 updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     BRRS_M_SEC_Summary_Entity2 existingSummary =
+//	            secSummaryRepo2.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_SEC_Detail2_Entity existingDetail =
+//	            secDetailRepo2.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_SEC_Detail2_Entity d = new   M_SEC_Detail2_Entity();
+//	                        d.setReportDate(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	  try {
+//	        // 1️⃣ Loop from R11 to R16 and copy fields
+//	    	
+//	        for (int i = 11; i <= 16; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = { "TCA2" };
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              BRRS_M_SEC_Summary_Entity2.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              BRRS_M_SEC_Summary_Entity2.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_SEC_Detail2_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    secSummaryRepo2.save(existingSummary);
+//	    secDetailRepo2.save(existingDetail);
+//		
+//		}
+	
 	@Transactional
 	public void updateReport(BRRS_M_SEC_Summary_Entity1 updatedEntity) {
 
@@ -383,26 +527,37 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     BRRS_M_SEC_Summary_Entity1 existingSummary =
+	    BRRS_M_SEC_Summary_Entity1 existingSummary =
 	            secSummaryRepo1.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	      M_SEC_Detail1_Entity existingDetail =
+	    // 2️⃣ Audit old copy
+	    BRRS_M_SEC_Summary_Entity1 oldcopy =
+	            new BRRS_M_SEC_Summary_Entity1();
+
+	    BeanUtils.copyProperties(
+	            existingSummary,
+	            oldcopy);
+
+	    // 3️⃣ Fetch or create DETAIL
+	    M_SEC_Detail1_Entity existingDetail =
 	            secDetailRepo1.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_SEC_Detail1_Entity d = new   M_SEC_Detail1_Entity();
-	                        d.setReportDate(updatedEntity.getReportDate());
+	                        M_SEC_Detail1_Entity d =
+	                                new M_SEC_Detail1_Entity();
+	                        d.setReportDate(
+	                                updatedEntity.getReportDate());
 	                        return d;
 	                    });
 
-	  try {
-	        // 1️⃣ Loop from R11 to R18 and copy fields
-	    	
+	    try {
+
+	        // Loop R11 → R19
 	        for (int i = 11; i <= 19; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+
+	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "TCA" };
 
@@ -412,69 +567,113 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              BRRS_M_SEC_Summary_Entity1.class.getMethod(getterName);
+	                            BRRS_M_SEC_Summary_Entity1.class
+	                                    .getMethod(getterName);
 
 	                    Method summarySetter =
-	                              BRRS_M_SEC_Summary_Entity1.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            BRRS_M_SEC_Summary_Entity1.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_SEC_Detail1_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_SEC_Detail1_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // Update Summary
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // Update Detail
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
+	    // 4️⃣ Check Changes
+	    String changes =
+	            auditService.getChanges(
+	                    oldcopy,
+	                    existingSummary);
+
+	    // 5️⃣ Save Summary & Detail
 	    secSummaryRepo1.save(existingSummary);
 	    secDetailRepo1.save(existingDetail);
-		
-		}
-		
-		@Transactional
+
+	    // 6️⃣ Audit Only If Changes Found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M SEC Summary Screen",
+	                "BRRS_M_SEC_SUMMARYTABLE1"
+	        );
+	    }
+
+	    System.out.println(
+	            "M_SEC Summary1 & Detail1 Update Completed");
+	}
+	
+	@Transactional
 	public void updateReport1(BRRS_M_SEC_Summary_Entity2 updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     BRRS_M_SEC_Summary_Entity2 existingSummary =
+	    BRRS_M_SEC_Summary_Entity2 existingSummary =
 	            secSummaryRepo2.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	      M_SEC_Detail2_Entity existingDetail =
+	    // 2️⃣ Audit old copy
+	    BRRS_M_SEC_Summary_Entity2 oldcopy =
+	            new BRRS_M_SEC_Summary_Entity2();
+
+	    BeanUtils.copyProperties(
+	            existingSummary,
+	            oldcopy);
+
+	    // 3️⃣ Fetch or create DETAIL
+	    M_SEC_Detail2_Entity existingDetail =
 	            secDetailRepo2.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_SEC_Detail2_Entity d = new   M_SEC_Detail2_Entity();
-	                        d.setReportDate(updatedEntity.getReportDate());
+	                        M_SEC_Detail2_Entity d =
+	                                new M_SEC_Detail2_Entity();
+	                        d.setReportDate(
+	                                updatedEntity.getReportDate());
 	                        return d;
 	                    });
 
-	  try {
-	        // 1️⃣ Loop from R11 to R16 and copy fields
-	    	
+	    try {
+
+	        // Loop R11 → R16
 	        for (int i = 11; i <= 16; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+
+	            String prefix = "R" + i + "_";
 
 	            String[] fields = { "TCA2" };
 
@@ -484,73 +683,128 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              BRRS_M_SEC_Summary_Entity2.class.getMethod(getterName);
+	                            BRRS_M_SEC_Summary_Entity2.class
+	                                    .getMethod(getterName);
 
 	                    Method summarySetter =
-	                              BRRS_M_SEC_Summary_Entity2.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            BRRS_M_SEC_Summary_Entity2.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_SEC_Detail2_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_SEC_Detail2_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // Update Summary
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // Update Detail
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
+	    // 4️⃣ Check Changes
+	    String changes =
+	            auditService.getChanges(
+	                    oldcopy,
+	                    existingSummary);
+
+	    // 5️⃣ Save Summary & Detail
 	    secSummaryRepo2.save(existingSummary);
 	    secDetailRepo2.save(existingDetail);
+
+	    // 6️⃣ Audit Only If Changes Found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M SEC Summary Screen",
+	                "BRRS_M_SEC_SUMMARYTABLE2"
+	        );
+	    }
+
+	    System.out.println(
+	            "M_SEC Summary & Detail Update Completed");
+	}
 		
-		}
-		
-		
-		@Transactional
+	@Transactional
 	public void updateReport2(BRRS_M_SEC_Summary_Entity3 updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     BRRS_M_SEC_Summary_Entity3 existingSummary =
+	    BRRS_M_SEC_Summary_Entity3 existingSummary =
 	            secSummaryRepo3.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	      M_SEC_Detail3_Entity existingDetail =
+	    // 2️⃣ Audit old copy
+	    BRRS_M_SEC_Summary_Entity3 oldcopy =
+	            new BRRS_M_SEC_Summary_Entity3();
+
+	    BeanUtils.copyProperties(
+	            existingSummary,
+	            oldcopy);
+
+	    // 3️⃣ Fetch or create DETAIL
+	    M_SEC_Detail3_Entity existingDetail =
 	            secDetailRepo3.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_SEC_Detail3_Entity d = new   M_SEC_Detail3_Entity();
-	                        d.setReportDate(updatedEntity.getReportDate());
+	                        M_SEC_Detail3_Entity d =
+	                                new M_SEC_Detail3_Entity();
+	                        d.setReportDate(
+	                                updatedEntity.getReportDate());
 	                        return d;
 	                    });
 
-	  try {
-	        // 1️⃣ Loop from R26 to R30 and copy fields
-	    	
-	        for (int i = 26; i <= 31; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+	    try {
 
-	            String[] fields = {"0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
-						"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL"};
+	        // Loop R26 → R31
+	        for (int i = 26; i <= 31; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "0_1Y_FT",
+	                    "0_1Y_HTM",
+	                    "0_1Y_TOTAL",
+	                    "1_5Y_FT",
+	                    "1_5Y_HTM",
+	                    "1_5Y_TOTAL",
+	                    "O5Y_FT",
+	                    "O5Y_HTM",
+	                    "O5Y_TOTAL",
+	                    "T_FT",
+	                    "T_HTM",
+	                    "T_TOTAL"
+	            };
 
 	            for (String field : fields) {
 
@@ -558,73 +812,119 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              BRRS_M_SEC_Summary_Entity3.class.getMethod(getterName);
+	                            BRRS_M_SEC_Summary_Entity3.class
+	                                    .getMethod(getterName);
 
 	                    Method summarySetter =
-	                              BRRS_M_SEC_Summary_Entity3.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            BRRS_M_SEC_Summary_Entity3.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_SEC_Detail3_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_SEC_Detail3_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // Update Summary
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // Update Detail
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
+	    // 4️⃣ Check Changes
+	    String changes =
+	            auditService.getChanges(
+	                    oldcopy,
+	                    existingSummary);
+
+	    // 5️⃣ Save Summary & Detail
 	    secSummaryRepo3.save(existingSummary);
 	    secDetailRepo3.save(existingDetail);
-		
-		}
-		
-		
-			@Transactional
+
+	    // 6️⃣ Audit Only If Changes Found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M SEC Summary Screen",
+	                "BRRS_M_SEC_SUMMARYTABLE3"
+	        );
+	    }
+
+	    System.out.println(
+	            "M_SEC Summary3 & Detail3 Update Completed");
+	}
+	
+	
+	@Transactional
 	public void updateReport3(BRRS_M_SEC_Summary_Entity4 updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     BRRS_M_SEC_Summary_Entity4 existingSummary =
+	    BRRS_M_SEC_Summary_Entity4 existingSummary =
 	            secSummaryRepo4.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
 
 	    // 2️⃣ Fetch or create DETAIL
-	      M_SEC_Detail4_Entity existingDetail =
+	    M_SEC_Detail4_Entity existingDetail =
 	            secDetailRepo4.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_SEC_Detail4_Entity d = new   M_SEC_Detail4_Entity();
+	                        M_SEC_Detail4_Entity d = new M_SEC_Detail4_Entity();
 	                        d.setReportDate(updatedEntity.getReportDate());
 	                        return d;
 	                    });
 
-	  try {
-	        // 1️⃣ Loop from R36 to R43 and copy fields
-	    	
-	        for (int i = 36; i <= 43; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+	    // ==========================
+	    // AUDIT OLD COPY
+	    // ==========================
+	    BRRS_M_SEC_Summary_Entity4 oldSummary =
+	            new BRRS_M_SEC_Summary_Entity4();
 
-	            String[] fields = {"0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
-					"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL"};
+	    BeanUtils.copyProperties(existingSummary, oldSummary);
+
+	    try {
+
+	        // 1️⃣ Loop from R36 to R43 and copy fields
+	        for (int i = 36; i <= 43; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL",
+	                    "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
+	                    "O5Y_FT", "O5Y_HTM", "O5Y_TOTAL",
+	                    "T_FT", "T_HTM", "T_TOTAL"
+	            };
 
 	            for (String field : fields) {
 
@@ -632,41 +932,224 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              BRRS_M_SEC_Summary_Entity4.class.getMethod(getterName);
+	                            BRRS_M_SEC_Summary_Entity4.class
+	                                    .getMethod(getterName);
 
 	                    Method summarySetter =
-	                              BRRS_M_SEC_Summary_Entity4.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            BRRS_M_SEC_Summary_Entity4.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_SEC_Detail4_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_SEC_Detail4_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // Update SUMMARY
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // Update DETAIL
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
+
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
+	    // ==========================
+	    // SAVE BOTH
+	    // ==========================
 	    secSummaryRepo4.save(existingSummary);
 	    secDetailRepo4.save(existingDetail);
+
+	    // ==========================
+	    // AUDIT
+	    // ==========================
+	    String changes =
+	            auditService.getChanges(
+	                    oldSummary,
+	                    existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldSummary,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M SEC Screen 4",
+	                "BRRS_M_SEC_SUMMARYTABLE4"
+	        );
+	    }
+	}
+	
+	
 		
-		}
+//		@Transactional
+//	public void updateReport2(BRRS_M_SEC_Summary_Entity3 updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     BRRS_M_SEC_Summary_Entity3 existingSummary =
+//	            secSummaryRepo3.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_SEC_Detail3_Entity existingDetail =
+//	            secDetailRepo3.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_SEC_Detail3_Entity d = new   M_SEC_Detail3_Entity();
+//	                        d.setReportDate(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	  try {
+//	        // 1️⃣ Loop from R26 to R30 and copy fields
+//	    	
+//	        for (int i = 26; i <= 31; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = {"0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
+//						"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL"};
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              BRRS_M_SEC_Summary_Entity3.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              BRRS_M_SEC_Summary_Entity3.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_SEC_Detail3_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    secSummaryRepo3.save(existingSummary);
+//	    secDetailRepo3.save(existingDetail);
+//		
+//		}
+//		
+		
+//			@Transactional
+//	public void updateReport3(BRRS_M_SEC_Summary_Entity4 updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     BRRS_M_SEC_Summary_Entity4 existingSummary =
+//	            secSummaryRepo4.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_SEC_Detail4_Entity existingDetail =
+//	            secDetailRepo4.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_SEC_Detail4_Entity d = new   M_SEC_Detail4_Entity();
+//	                        d.setReportDate(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	  try {
+//	        // 1️⃣ Loop from R36 to R43 and copy fields
+//	    	
+//	        for (int i = 36; i <= 43; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = {"0_1Y_FT", "0_1Y_HTM", "0_1Y_TOTAL", "1_5Y_FT", "1_5Y_HTM", "1_5Y_TOTAL",
+//					"O5Y_FT", "O5Y_HTM", "O5Y_TOTAL", "T_FT", "T_HTM", "T_TOTAL"};
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              BRRS_M_SEC_Summary_Entity4.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              BRRS_M_SEC_Summary_Entity4.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_SEC_Detail4_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    secSummaryRepo4.save(existingSummary);
+//	    secDetailRepo4.save(existingDetail);
+//		
+//		}
 		
 
 			public void updateResubReport(M_SEC_RESUB_Summary_Entity1 updatedEntity1,
@@ -857,6 +1340,30 @@ List<M_SEC_Archival_Detail4_Entity> T4Master =
 				archivalDetailRepo2.save(archDetail2);
 				archivalDetailRepo3.save(archDetail3);
 				archivalDetailRepo4.save(archDetail4);
+				
+				// ====================================================
+				// AUDIT
+				// ====================================================
+
+				ServletRequestAttributes attrs =
+				        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+				if (attrs != null) {
+
+				    HttpServletRequest request = attrs.getRequest();
+
+				    String userid =
+				            (String) request.getSession()
+				                    .getAttribute("USERID");
+
+				    auditService.createBusinessAudit(
+				            userid,
+				            "RESUBMIT",
+				            "M SEC Resub Summary",
+				            null,
+				            "BRRS_M_SEC_RESUB_SUMMARYTABLE"
+				    );
+				}
 
 			}
 		
