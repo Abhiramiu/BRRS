@@ -9173,7 +9173,7 @@ public class RegulatoryReportServices {
 
 				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 25 }, new int[] { 27, 35 },
 						new int[] { 36, 49 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("M_CA2: PDF conversion returned empty bytes");
@@ -11183,7 +11183,288 @@ public class RegulatoryReportServices {
             } catch (Exception e) {
                 logger.error("M_SECL: PDF generation failed", e);
                 return new byte[0];
-            }       
+            }  
+            
+		case "ADISB1":
+			try {
+				excelBytes = BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("ADISB1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("ADISB1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 45 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("ADISB1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("ADISB1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("ADISB1: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "ADISB2":
+			try {
+				excelBytes = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("ADISB2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("ADISB2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 14 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("ADISB2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("ADISB2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("ADISB2: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "BDISB1":
+			try {
+				excelBytes = brrs_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("BDISB1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("BDISB1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 15 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("BDISB1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("BDISB1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("BDISB1: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "BDISB2":
+			try {
+				excelBytes = BRRS_BDISB2_ReportService.getBDISB2Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("BDISB2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("BDISB2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 11 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("BDISB2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("BDISB2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("BDISB2: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "BDISB3":
+			try {
+				excelBytes = brrs_bdisb3_reportservice.getBDISB3Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, null,  null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("BDISB3: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("BDISB3: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 9 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("BDISB3: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("BDISB3: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("BDISB3: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "MDISB1":
+			try {
+				excelBytes = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("MDISB1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("MDISB1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 110 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("MDISB1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("MDISB1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("MDISB1: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "MDISB2":
+			try {
+				excelBytes = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("MDISB2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("MDISB2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 110 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("MDISB2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("MDISB2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("MDISB2: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "MDISB3":
+			try {
+				excelBytes = brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("MDISB3: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("MDISB3: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 111 } );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("MDISB3: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("MDISB3: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("MDISB3: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "MDISB4":
+			try {
+				excelBytes = BRRS_MDISB4_ReportService.getMDISB4Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("MDISB4: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("MDISB4: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 11 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("MDISB4: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("MDISB4: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("MDISB4: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "MDISB5":
+			try {
+				excelBytes = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("MDISB5: No Excel data found for PDF generation → todate={}: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("MDISB5: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 14 }, new int[] { 16, 34}, new int[] { 34, 44});
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("MDISB5: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("MDISB5: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("MDISB5: PDF generation failed", e);
+				return new byte[0];
+			}
+
                         
 		}
 		return pdfBytes;
@@ -11566,7 +11847,7 @@ public class RegulatoryReportServices {
 
 				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 22 }, new int[] { 25, 33 },
 						new int[] { 35, 46 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("EMAIL_M_CA2: PDF conversion returned empty bytes");
@@ -11595,7 +11876,7 @@ public class RegulatoryReportServices {
 
 				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 19 }, new int[] { 21, 30 }, new int[] { 31, 37 },
 						new int[] { 39, 42 }, new int[] { 44, 50 }, new int[] { 52, 55 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("EMAIL_M_CA3: PDF conversion returned empty bytes");
