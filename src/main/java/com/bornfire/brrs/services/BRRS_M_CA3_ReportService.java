@@ -185,411 +185,391 @@ public class BRRS_M_CA3_ReportService {
 	}
 
 	public void updateReport(M_CA3_Summary_Entity updatedEntity) {
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException("Record not found"));
 
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElse(new M_CA3_Detail_Entity());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		try {
-			// Use "AMOUNT" because that is what is in your Entity class
-			String[] fields = { "AMOUNT" };
+	    // Fetch existing SUMMARY
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-			// Update the loop to cover all your rows (10 to 60)
-			for (int i = 10; i <= 60; i++) {
-				String prefix = "R" + i + "_";
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    // Audit old copy
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	    // Fetch existing DETAIL
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-						if (newValue != null) {
-							Method sumSetter = M_CA3_Summary_Entity.class.getMethod(setterName, BigDecimal.class);
-							sumSetter.invoke(existingSummary, newValue);
+	    try {
 
-							Method detSetter = M_CA3_Detail_Entity.class.getMethod(setterName, BigDecimal.class);
-							detSetter.invoke(existingDetail, newValue);
-						}
-					} catch (NoSuchMethodException e) {
-						continue; // Skip if R-number doesn't exist (e.g., R21, R22)
-					}
-				}
-			}
+	        String[] fields = { "AMOUNT" };
 
-			brrs_M_CA3_summary_repo.save(existingSummary);
-			brrs_M_CA3_detail_repo.save(existingDetail);
+	        // Loop R10 -> R60
+	        for (int i = 10; i <= 60; i++) {
 
-		} catch (Exception e) {
-			throw new RuntimeException("Update failed", e);
-		}
+	            String prefix = "R" + i + "_";
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	                    Object newValue = getter.invoke(updatedEntity);
+
+	                    if (newValue != null) {
+
+	                        Method summarySetter = M_CA3_Summary_Entity.class
+	                                .getMethod(setterName, BigDecimal.class);
+
+	                        Method detailSetter = M_CA3_Detail_Entity.class
+	                                .getMethod(setterName, BigDecimal.class);
+
+	                        // Update Summary
+	                        summarySetter.invoke(existingSummary, newValue);
+
+	                        // Update Detail
+	                        detailSetter.invoke(existingDetail, newValue);
+	                    }
+
+	                } catch (NoSuchMethodException e) {
+	                    continue; // Skip missing rows
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // Check changes
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
-
+	
 	public void updateReport2(M_CA3_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		// 2️⃣ Fetch or create DETAIL
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-			// 🔁 Loop R24 → R27 (AMOUNT)
-			for (int i = 24; i <= 27; i++) {
+	    try {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	        for (int i = 24; i <= 29; i++) {
 
-				for (String field : fields) {
+	            String prefix = "R" + i + "_";
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            Method getter = M_CA3_Summary_Entity.class.getMethod(
+	                    "get" + prefix + "AMOUNT");
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedEntity);
+	            Object value = getter.invoke(updatedEntity);
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	            summarySetter.invoke(existingSummary, value);
+	            detailSetter.invoke(existingDetail, value);
+	        }
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
 
-			// 🔁 Handle R28 and R29 (AMOUNT)
-			int[] totals = { 28, 29 };
-			for (int i : totals) {
+	    if (!changes.isEmpty()) {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
 
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
-
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_CA3_summary_repo.save(existingSummary);
-		brrs_M_CA3_detail_repo.save(existingDetail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
-
+	
 	public void updateReport3(M_CA3_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		// 2️⃣ Fetch or create DETAIL
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-			// 🔁 Loop R36 → R40 (AMOUNT)
-			for (int i = 36; i <= 40; i++) {
+	    try {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	        for (int i = 36; i <= 41; i++) {
 
-				for (String field : fields) {
+	            String prefix = "R" + i + "_";
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            Method getter = M_CA3_Summary_Entity.class.getMethod(
+	                    "get" + prefix + "AMOUNT");
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedEntity);
+	            Object value = getter.invoke(updatedEntity);
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	            summarySetter.invoke(existingSummary, value);
+	            detailSetter.invoke(existingDetail, value);
+	        }
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
 
-			// 🔁 Handle R41 (AMOUNT)
-			String[] totalFields = { "AMOUNT" };
-			for (String field : totalFields) {
+	    if (!changes.isEmpty()) {
 
-				String getterName = "getR41_" + field;
-				String setterName = "setR41_" + field;
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
 
-				try {
-					Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-
-					Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-					Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					// ✅ set into SUMMARY
-					summarySetter.invoke(existingSummary, newValue);
-
-					// ✅ set into DETAIL
-					detailSetter.invoke(existingDetail, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_CA3_summary_repo.save(existingSummary);
-		brrs_M_CA3_detail_repo.save(existingDetail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
-
+	
 	public void updateReport4(M_CA3_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException("Record not found"));
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		// 2️⃣ Fetch or create DETAIL
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-		try {
+	    try {
 
-			// 🔁 Copy R44, R45, R46 (AMOUNT)
-			int[] rows = { 44, 45, 46 };
+	        int[] rows = {44,45,46};
 
-			for (int i : rows) {
+	        for (int i : rows) {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            Method getter = M_CA3_Summary_Entity.class.getMethod(
+	                    "get" + prefix + "AMOUNT");
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Object value = getter.invoke(updatedEntity);
 
-						Object newValue = getter.invoke(updatedEntity);
+	            summarySetter.invoke(existingSummary, value);
+	            detailSetter.invoke(existingDetail, value);
+	        }
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	    if (!changes.isEmpty()) {
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
 
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_CA3_summary_repo.save(existingSummary);
-		brrs_M_CA3_detail_repo.save(existingDetail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
-
+	
 	public void updateReport5(M_CA3_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException("Record not found"));
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		// 2️⃣ Fetch or create DETAIL
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-		try {
+	    try {
 
-			// 🔁 Loop R50 → R55 (AMOUNT)
-			for (int i = 50; i <= 55; i++) {
+	        for (int i = 50; i <= 55; i++) {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            Method getter = M_CA3_Summary_Entity.class.getMethod(
+	                    "get" + prefix + "AMOUNT");
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Object value = getter.invoke(updatedEntity);
 
-						Object newValue = getter.invoke(updatedEntity);
+	            summarySetter.invoke(existingSummary, value);
+	            detailSetter.invoke(existingDetail, value);
+	        }
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	    if (!changes.isEmpty()) {
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
 
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_CA3_summary_repo.save(existingSummary);
-		brrs_M_CA3_detail_repo.save(existingDetail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
-
+	
 	public void updateReport6(M_CA3_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException("Record not found"));
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		// 2️⃣ Fetch or create DETAIL
-		M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo.findById(updatedEntity.getREPORT_DATE())
-				.orElseGet(() -> {
-					M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-					d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-					return d;
-				});
+	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
+	            .findById(updatedEntity.getREPORT_DATE())
+	            .orElseGet(() -> {
+	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
+	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	                return d;
+	            });
 
-		try {
+	    try {
 
-			// 🔁 Loop R58 → R60 (AMOUNT)
-			for (int i = 58; i <= 60; i++) {
+	        for (int i = 58; i <= 60; i++) {
 
-				String prefix = "R" + i + "_";
-				String[] fields = { "AMOUNT" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            Method getter = M_CA3_Summary_Entity.class.getMethod(
+	                    "get" + prefix + "AMOUNT");
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-					try {
-						Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
+	                    "set" + prefix + "AMOUNT", getter.getReturnType());
 
-						Method summarySetter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_CA3_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            Object value = getter.invoke(updatedEntity);
 
-						Object newValue = getter.invoke(updatedEntity);
+	            summarySetter.invoke(existingSummary, value);
+	            detailSetter.invoke(existingDetail, value);
+	        }
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	    if (!changes.isEmpty()) {
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        brrs_M_CA3_summary_repo.save(existingSummary);
+	        brrs_M_CA3_detail_repo.save(existingDetail);
 
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_CA3_summary_repo.save(existingSummary);
-		brrs_M_CA3_detail_repo.save(existingDetail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M CA3 Summary Screen",
+	                "BRRS_M_CA3_SUMMARY");
+	    }
 	}
 
 	public void updateResubReport(M_CA3_Resub_Summary_Entity updatedEntity) {

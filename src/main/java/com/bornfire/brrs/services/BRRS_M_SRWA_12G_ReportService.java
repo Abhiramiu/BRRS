@@ -186,127 +186,153 @@ public class BRRS_M_SRWA_12G_ReportService {
 
 	public void updateReport(M_SRWA_12G_Summary_Entity updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_SRWA_12G_Summary_Entity existingSummary = brrs_M_SRWA_12G_summary_repo
-				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	    // Fetch existing SUMMARY
+	    M_SRWA_12G_Summary_Entity existingSummary = brrs_M_SRWA_12G_summary_repo
+	            .findById(updatedEntity.getReport_date())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getReport_date()));
 
-		// 2️⃣ Fetch or create DETAIL
-		M_SRWA_12G_Detail_Entity existingDetail = brrs_M_SRWA_12G_detail_repo.findById(updatedEntity.getReport_date())
-				.orElseGet(() -> {
-					M_SRWA_12G_Detail_Entity d = new M_SRWA_12G_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+	    // Audit old copy
+	    M_SRWA_12G_Summary_Entity oldcopy = new M_SRWA_12G_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    // Fetch existing DETAIL
+	    M_SRWA_12G_Detail_Entity existingDetail = brrs_M_SRWA_12G_detail_repo
+	            .findById(updatedEntity.getReport_date())
+	            .orElseGet(() -> {
+	                M_SRWA_12G_Detail_Entity d = new M_SRWA_12G_Detail_Entity();
+	                d.setReport_date(updatedEntity.getReport_date());
+	                return d;
+	            });
 
-			// 🔁 Loop R11 → R60 (normal fields)
-			for (int i = 11; i <= 60; i++) {
-				String prefix = "R" + i + "_";
+	    try {
 
-				String[] fields = { "credit_rating", "security_firm", "exposure_amount", "risk_weight",
-						"rating_agency" };
+	        // R11 → R60 (normal fields)
+	        for (int i = 11; i <= 60; i++) {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            String prefix = "R" + i + "_";
 
-					try {
-						Method getter = M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+	            String[] fields = {
+	                    "credit_rating",
+	                    "security_firm",
+	                    "exposure_amount",
+	                    "risk_weight",
+	                    "rating_agency"
+	            };
 
-						Method summarySetter = M_SRWA_12G_Summary_Entity.class.getMethod(setterName,
-								getter.getReturnType());
+	            for (String field : fields) {
 
-						Method detailSetter = M_SRWA_12G_Detail_Entity.class.getMethod(setterName,
-								getter.getReturnType());
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Object newValue = getter.invoke(updatedEntity);
+	                try {
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	                    Method getter = M_SRWA_12G_Summary_Entity.class
+	                            .getMethod(getterName);
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	                    Method summarySetter = M_SRWA_12G_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-					} catch (NoSuchMethodException e) {
-						// skip missing fields safely
-						continue;
-					}
-				}
-			}
+	                    Method detailSetter = M_SRWA_12G_Detail_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-			// 🔁 Loop R11 → R60 (formula column)
-			for (int i = 11; i <= 60; i++) {
-				String prefix = "R" + i + "_";
-				String field = "risk_weighted_amount";
+	                    Object newValue = getter.invoke(updatedEntity);
 
-				String getterName = "get" + prefix + field;
-				String setterName = "set" + prefix + field;
+	                    summarySetter.invoke(existingSummary, newValue);
+	                    detailSetter.invoke(existingDetail, newValue);
 
-				try {
-					Method getter = M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-					Method summarySetter = M_SRWA_12G_Summary_Entity.class.getMethod(setterName,
-							getter.getReturnType());
+	        // R11 → R60 (risk_weighted_amount)
+	        for (int i = 11; i <= 60; i++) {
 
-					Method detailSetter = M_SRWA_12G_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	            String prefix = "R" + i + "_";
 
-					Object newValue = getter.invoke(updatedEntity);
+	            try {
 
-					// ✅ set into SUMMARY
-					summarySetter.invoke(existingSummary, newValue);
+	                Method getter = M_SRWA_12G_Summary_Entity.class
+	                        .getMethod("get" + prefix + "risk_weighted_amount");
 
-					// ✅ set into DETAIL
-					detailSetter.invoke(existingDetail, newValue);
+	                Method summarySetter = M_SRWA_12G_Summary_Entity.class
+	                        .getMethod("set" + prefix + "risk_weighted_amount",
+	                                getter.getReturnType());
 
-				} catch (NoSuchMethodException e) {
-					// skip missing fields safely
-					continue;
-				}
-			}
+	                Method detailSetter = M_SRWA_12G_Detail_Entity.class
+	                        .getMethod("set" + prefix + "risk_weighted_amount",
+	                                getter.getReturnType());
 
-			// 🔁 Handle R61 totals
-			String[] totalFields = { "exposure_amount", "risk_weighted_amount" };
+	                Object newValue = getter.invoke(updatedEntity);
 
-			for (String field : totalFields) {
-				String getterName = "getR61_" + field;
-				String setterName = "setR61_" + field;
+	                summarySetter.invoke(existingSummary, newValue);
+	                detailSetter.invoke(existingDetail, newValue);
 
-				try {
-					Method getter = M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
 
-					Method summarySetter = M_SRWA_12G_Summary_Entity.class.getMethod(setterName,
-							getter.getReturnType());
+	        // R61 Totals
+	        String[] totalFields = {
+	                "exposure_amount",
+	                "risk_weighted_amount"
+	        };
 
-					Method detailSetter = M_SRWA_12G_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	        for (String field : totalFields) {
 
-					Object newValue = getter.invoke(updatedEntity);
+	            try {
 
-					// ✅ set into SUMMARY
-					summarySetter.invoke(existingSummary, newValue);
+	                String getterName = "getR61_" + field;
+	                String setterName = "setR61_" + field;
 
-					// ✅ set into DETAIL
-					detailSetter.invoke(existingDetail, newValue);
+	                Method getter = M_SRWA_12G_Summary_Entity.class
+	                        .getMethod(getterName);
 
-				} catch (NoSuchMethodException e) {
-					// skip if not present
-					continue;
-				}
-			}
+	                Method summarySetter = M_SRWA_12G_Summary_Entity.class
+	                        .getMethod(setterName, getter.getReturnType());
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	                Method detailSetter = M_SRWA_12G_Detail_Entity.class
+	                        .getMethod(setterName, getter.getReturnType());
 
-		// 3️⃣ Save BOTH (same transaction)
-		brrs_M_SRWA_12G_summary_repo.save(existingSummary);
-		brrs_M_SRWA_12G_detail_repo.save(existingDetail);
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                summarySetter.invoke(existingSummary, newValue);
+	                detailSetter.invoke(existingDetail, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // Audit check
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_SRWA_12G_summary_repo.save(existingSummary);
+	        brrs_M_SRWA_12G_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReport_date().toString(),
+	                "SRWA 12G Summary Screen",
+	                "BRRS_M_SRWA_12G_SUMMARY"
+	        );
+	    }
 	}
-
+	
 	public void updateResubReport(M_SRWA_12G_Resub_Summary_Entity updatedEntity) {
 
 		Date reportDate = updatedEntity.getReportDate();

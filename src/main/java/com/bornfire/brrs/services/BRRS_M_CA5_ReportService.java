@@ -361,136 +361,184 @@ public class BRRS_M_CA5_ReportService {
 
 	public void updateReport(M_CA5_Summary_Entity1 updatedSummary) {
 
-		System.out.println("Came to M_CA5 Service");
-		System.out.println("Report Date: " + updatedSummary.getReportDate());
+	    System.out.println("Came to M_CA5 Service");
+	    System.out.println("Report Date: " + updatedSummary.getReportDate());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA5_Summary_Entity1 existingSummary = M_CA5_Summary_Repo1.findById(updatedSummary.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedSummary.getReportDate()));
+	    // Fetch existing SUMMARY
+	    M_CA5_Summary_Entity1 existingSummary = M_CA5_Summary_Repo1
+	            .findById(updatedSummary.getReportDate())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedSummary.getReportDate()));
 
-		// 2️⃣ Fetch or CREATE DETAIL (like LA2)
-		M_CA5_Detail_Entity1 existingDetail = M_CA5_DETAIL_Repo1.findById(updatedSummary.getReportDate())
-				.orElseGet(() -> {
-					M_CA5_Detail_Entity1 d = new M_CA5_Detail_Entity1();
-					d.setReportDate(updatedSummary.getReportDate());
-					return d;
-				});
+	    // Audit old copy
+	    M_CA5_Summary_Entity1 oldcopy = new M_CA5_Summary_Entity1();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    // Fetch existing DETAIL
+	    M_CA5_Detail_Entity1 existingDetail = M_CA5_DETAIL_Repo1
+	            .findById(updatedSummary.getReportDate())
+	            .orElseGet(() -> {
+	                M_CA5_Detail_Entity1 d = new M_CA5_Detail_Entity1();
+	                d.setReportDate(updatedSummary.getReportDate());
+	                return d;
+	            });
 
-			// 🔁 Loop R14 → R100
-			for (int i = 14; i <= 100; i++) {
+	    try {
 
-				String prefix = "R" + i + "_";
+	        for (int i = 14; i <= 100; i++) {
 
-				String[] fields = { "line_no", "note_holders", "name_of_instrument_programe",
-						"issuing_entity_if_issued_throughan_spv", "issuance_date", "contractual_maturity_date",
-						"effective_maturity_date_if_date", "amount", "amount_derecognised_p000", "total_p000" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            String[] fields = {
+	                    "line_no",
+	                    "note_holders",
+	                    "name_of_instrument_programe",
+	                    "issuing_entity_if_issued_throughan_spv",
+	                    "issuance_date",
+	                    "contractual_maturity_date",
+	                    "effective_maturity_date_if_date",
+	                    "amount",
+	                    "amount_derecognised_p000",
+	                    "total_p000"
+	            };
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            for (String field : fields) {
 
-					try {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Method getter = M_CA5_Summary_Entity1.class.getMethod(getterName);
+	                try {
 
-						Method summarySetter = M_CA5_Summary_Entity1.class.getMethod(setterName,
-								getter.getReturnType());
+	                    Method getter = M_CA5_Summary_Entity1.class.getMethod(getterName);
 
-						Method detailSetter = M_CA5_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+	                    Method summarySetter = M_CA5_Summary_Entity1.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedSummary);
+	                    Method detailSetter = M_CA5_Detail_Entity1.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	                    Object newValue = getter.invoke(updatedSummary);
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	                    summarySetter.invoke(existingSummary, newValue);
+	                    detailSetter.invoke(existingDetail, newValue);
 
-					} catch (NoSuchMethodException e) {
-						continue; // skip missing safely
-					}
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating M_CA5 Report 1", e);
-		}
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating M_CA5 Report 1", e);
+	    }
 
-		// 3️⃣ Save BOTH
-		M_CA5_Summary_Repo1.save(existingSummary);
-		M_CA5_DETAIL_Repo1.save(existingDetail);
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        M_CA5_Summary_Repo1.save(existingSummary);
+	        M_CA5_DETAIL_Repo1.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedSummary.getReportDate().toString(),
+	                "M CA5 Summary Screen",
+	                "M_CA5_SUMMARY_1");
+	    }
 	}
-
+	
 	public void updateReport2(M_CA5_Summary_Entity2 updatedSummary) {
 
-		System.out.println("Came to M_CA5 Service - Part 2");
-		System.out.println("Report Date: " + updatedSummary.getReportDate());
+	    System.out.println("Came to M_CA5 Service - Part 2");
+	    System.out.println("Report Date: " + updatedSummary.getReportDate());
 
-		// 1️⃣ Fetch existing SUMMARY
-		M_CA5_Summary_Entity2 existingSummary = M_CA5_Summary_Repo2.findById(updatedSummary.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedSummary.getReportDate()));
+	    // Fetch existing SUMMARY
+	    M_CA5_Summary_Entity2 existingSummary = M_CA5_Summary_Repo2
+	            .findById(updatedSummary.getReportDate())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedSummary.getReportDate()));
 
-		// 2️⃣ Fetch or CREATE DETAIL
-		M_CA5_Detail_Entity2 existingDetail = M_CA5_DETAIL_Repo2.findById(updatedSummary.getReportDate())
-				.orElseGet(() -> {
-					M_CA5_Detail_Entity2 d = new M_CA5_Detail_Entity2();
-					d.setReportDate(updatedSummary.getReportDate());
-					return d;
-				});
+	    // Audit old copy
+	    M_CA5_Summary_Entity2 oldcopy = new M_CA5_Summary_Entity2();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-		try {
+	    // Fetch existing DETAIL
+	    M_CA5_Detail_Entity2 existingDetail = M_CA5_DETAIL_Repo2
+	            .findById(updatedSummary.getReportDate())
+	            .orElseGet(() -> {
+	                M_CA5_Detail_Entity2 d = new M_CA5_Detail_Entity2();
+	                d.setReportDate(updatedSummary.getReportDate());
+	                return d;
+	            });
 
-			// 🔁 Loop R101 → R150
-			for (int i = 101; i <= 150; i++) {
+	    try {
 
-				String prefix = "R" + i + "_";
+	        for (int i = 101; i <= 150; i++) {
 
-				String[] fields = { "line_no", "note_holders", "name_of_instrument_programe",
-						"issuing_entity_if_issued_throughan_spv", "issuance_date", "contractual_maturity_date",
-						"effective_maturity_date_if_date", "amount", "amount_derecognised_p000", "total_p000" };
+	            String prefix = "R" + i + "_";
 
-				for (String field : fields) {
+	            String[] fields = {
+	                    "line_no",
+	                    "note_holders",
+	                    "name_of_instrument_programe",
+	                    "issuing_entity_if_issued_throughan_spv",
+	                    "issuance_date",
+	                    "contractual_maturity_date",
+	                    "effective_maturity_date_if_date",
+	                    "amount",
+	                    "amount_derecognised_p000",
+	                    "total_p000"
+	            };
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	            for (String field : fields) {
 
-					try {
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-						Method getter = M_CA5_Summary_Entity2.class.getMethod(getterName);
+	                try {
 
-						Method summarySetter = M_CA5_Summary_Entity2.class.getMethod(setterName,
-								getter.getReturnType());
+	                    Method getter = M_CA5_Summary_Entity2.class.getMethod(getterName);
 
-						Method detailSetter = M_CA5_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
+	                    Method summarySetter = M_CA5_Summary_Entity2.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedSummary);
+	                    Method detailSetter = M_CA5_Detail_Entity2.class
+	                            .getMethod(setterName, getter.getReturnType());
 
-						// ✅ set into SUMMARY
-						summarySetter.invoke(existingSummary, newValue);
+	                    Object newValue = getter.invoke(updatedSummary);
 
-						// ✅ set into DETAIL
-						detailSetter.invoke(existingDetail, newValue);
+	                    summarySetter.invoke(existingSummary, newValue);
+	                    detailSetter.invoke(existingDetail, newValue);
 
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating M_CA5 Report 2", e);
-		}
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating M_CA5 Report 2", e);
+	    }
 
-		// 3️⃣ Save BOTH
-		M_CA5_Summary_Repo2.save(existingSummary);
-		M_CA5_DETAIL_Repo2.save(existingDetail);
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        M_CA5_Summary_Repo2.save(existingSummary);
+	        M_CA5_DETAIL_Repo2.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedSummary.getReportDate().toString(),
+	                "M CA5 Summary Screen",
+	                "M_CA5_SUMMARY_2");
+	    }
 	}
-
+	
 ////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
 /// Report Date | Report Version | Domain
 /// RESUB VIEW

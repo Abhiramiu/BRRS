@@ -185,65 +185,97 @@ public class BRRS_M_OPTR_ReportService {
 	}
 
 	public void updateReport(M_OPTR_Summary_Entity updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    M_OPTR_Summary_Entity existing = brrs_M_OPTR_summary_repo.findById(updatedEntity.getReportDate())
+	    // Fetch existing SUMMARY
+	    M_OPTR_Summary_Entity existingSummary = brrs_M_OPTR_summary_repo
+	            .findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getReportDate()));
 
-	    M_OPTR_Detail_Entity existingDetail =
-	    		brrs_M_OPTR_detail_repo.findById(updatedEntity.getReportDate())
-	                    .orElseGet(() -> {
-	                        M_OPTR_Detail_Entity d = new M_OPTR_Detail_Entity();
-	                        d.setReportDate(updatedEntity.getReportDate());
-	                        return d;
-	                    });
-	    
+	    // Audit old copy
+	    M_OPTR_Summary_Entity oldcopy = new M_OPTR_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
+
+	    // Fetch existing DETAIL
+	    M_OPTR_Detail_Entity existingDetail = brrs_M_OPTR_detail_repo
+	            .findById(updatedEntity.getReportDate())
+	            .orElseGet(() -> {
+	                M_OPTR_Detail_Entity d = new M_OPTR_Detail_Entity();
+	                d.setReportDate(updatedEntity.getReportDate());
+	                return d;
+	            });
+
 	    try {
-	        // 1️⃣ Loop from R10 to R58 and copy fields
-	    	
-	        for (int i = 10; i <= 14; i++) {
-				
-	        	 String prefix = "R" + i + "_";
 
-	            String[] fields = {"INTEREST_RATES", "EQUITIES", "FOREIGN_EXC_GOLD", "COMMODITIES","TOTAL" };
+	        // Loop R10 -> R14
+	        for (int i = 10; i <= 14; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "INTEREST_RATES",
+	                    "EQUITIES",
+	                    "FOREIGN_EXC_GOLD",
+	                    "COMMODITIES",
+	                    "TOTAL"
+	            };
 
 	            for (String field : fields) {
-	            	   String getterName = "get" + prefix + field; // e.g., getR10_item
-	                   String setterName = "set" + prefix + field; // e.g., setR10_item
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
 	                try {
-	                    Method getter = M_OPTR_Summary_Entity.class.getMethod(getterName);
-	                    Method setter = M_OPTR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    
-	                    Method detailSetter =
-	                            M_OPTR_Detail_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+
+	                    Method getter = M_OPTR_Summary_Entity.class
+	                            .getMethod(getterName);
+
+	                    Method summarySetter = M_OPTR_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
+
+	                    Method detailSetter = M_OPTR_Detail_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
-	                    setter.invoke(existing, newValue);
+
+	                    // Update Summary
+	                    summarySetter.invoke(existingSummary, newValue);
+
+	                    // Update Detail
 	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
 	                    continue;
 	                }
 	            }
 	        }
 
-	       
-
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    brrs_M_OPTR_detail_repo.save(existingDetail);
-	    brrs_M_OPTR_summary_repo.save(existing);
-	    
-		
+	    // Check changes like LA2
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_OPTR_summary_repo.save(existingSummary);
+	        brrs_M_OPTR_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M OPTR Summary Screen",
+	                "BRRS_M_OPTR_SUMMARY"
+	        );
+	    }
 	}
+	
 	
 	public void updateResubReport(M_OPTR_Resub_Summary_Entity updatedEntity) {
 

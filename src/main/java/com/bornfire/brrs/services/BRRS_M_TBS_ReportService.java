@@ -192,13 +192,18 @@ public class BRRS_M_TBS_ReportService {
 	    System.out.println("Came to TBS Summary services");
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-	    // 1️⃣ Fetch existing SUMMARY
+	    // Fetch existing SUMMARY
 	    M_TBS_Summary_Entity existingSummary = brrs_M_TBS_summary_repo
 	            .findById(updatedEntity.getReportDate())
 	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getReportDate()));
 
-	    // 2️⃣ Fetch or create DETAIL (LA2 style)
+	    // Audit old copy
+	    M_TBS_Summary_Entity oldcopy = new M_TBS_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
+
+	    // Fetch existing DETAIL
 	    M_TBS_Detail_Entity existingDetail = brrs_M_TBS_detail_repo
 	            .findById(updatedEntity.getReportDate())
 	            .orElseGet(() -> {
@@ -209,31 +214,44 @@ public class BRRS_M_TBS_ReportService {
 
 	    try {
 
-	        String[] fields = { "NV_LONG", "NV_SHORT", "FV_LONG", "FV_SHORT", "QFHA" };
+	        String[] fields = {
+	                "NV_LONG",
+	                "NV_SHORT",
+	                "FV_LONG",
+	                "FV_SHORT",
+	                "QFHA"
+	        };
 
-	        // ---------- Helper: copy rows into BOTH ----------
+	        // Helper: copy rows into Summary + Detail
 	        java.util.function.Consumer<int[]> copyRows = (rows) -> {
+
 	            for (int row : rows) {
+
 	                String prefix = "R" + row + "_";
+
 	                for (String field : fields) {
+
 	                    String getterName = "get" + prefix + field;
 	                    String setterName = "set" + prefix + field;
-	                    try {
-	                        Method getter = M_TBS_Summary_Entity.class.getMethod(getterName);
 
-	                        Method summarySetter = M_TBS_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                        Method detailSetter  = M_TBS_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	                    try {
+
+	                        Method getter = M_TBS_Summary_Entity.class
+	                                .getMethod(getterName);
+
+	                        Method summarySetter = M_TBS_Summary_Entity.class
+	                                .getMethod(setterName, getter.getReturnType());
+
+	                        Method detailSetter = M_TBS_Detail_Entity.class
+	                                .getMethod(setterName, getter.getReturnType());
 
 	                        Object newValue = getter.invoke(updatedEntity);
 
-	                        // set into SUMMARY
 	                        summarySetter.invoke(existingSummary, newValue);
-
-	                        // set into DETAIL
 	                        detailSetter.invoke(existingDetail, newValue);
 
 	                    } catch (NoSuchMethodException e) {
-	                        // skip missing safely
+	                        continue;
 	                    } catch (Exception e) {
 	                        throw new RuntimeException(e);
 	                    }
@@ -241,81 +259,101 @@ public class BRRS_M_TBS_ReportService {
 	            }
 	        };
 
-	        // ---------- Helper: copy total row into BOTH ----------
+	        // Helper: copy total rows
 	        java.util.function.Consumer<Integer> copyTotal = (row) -> {
+
 	            String prefix = "R" + row + "_";
+
 	            for (String field : fields) {
+
 	                String getterName = "get" + prefix + field;
 	                String setterName = "set" + prefix + field;
-	                try {
-	                    Method getter = M_TBS_Summary_Entity.class.getMethod(getterName);
 
-	                    Method summarySetter = M_TBS_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailSetter  = M_TBS_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	                try {
+
+	                    Method getter = M_TBS_Summary_Entity.class
+	                            .getMethod(getterName);
+
+	                    Method summarySetter = M_TBS_Summary_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
+
+	                    Method detailSetter = M_TBS_Detail_Entity.class
+	                            .getMethod(setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 
-	                    // set into SUMMARY
 	                    summarySetter.invoke(existingSummary, newValue);
-
-	                    // set into DETAIL
 	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip
+	                    continue;
 	                } catch (Exception e) {
 	                    throw new RuntimeException(e);
 	                }
 	            }
 	        };
 
-	        // 3️⃣ R11 = SUM(C12:C16) + C21
-	        copyRows.accept(new int[] { 12, 13, 14, 15, 16, 21 });
+	        // R11 = SUM(C12:C16) + C21
+	        copyRows.accept(new int[] {12, 13, 14, 15, 16, 21});
 	        copyTotal.accept(11);
 
-	        // 4️⃣ R16 = SUM(C17:C20)
-	        copyRows.accept(new int[] { 17, 18, 19, 20 });
+	        // R16 = SUM(C17:C20)
+	        copyRows.accept(new int[] {17, 18, 19, 20});
 	        copyTotal.accept(16);
 
-	        // 5️⃣ R22 = SUM(C23:C27) + C33
-	        copyRows.accept(new int[] { 23, 24, 25, 26, 27, 33 });
+	        // R22 = SUM(C23:C27) + C33
+	        copyRows.accept(new int[] {23, 24, 25, 26, 27, 33});
 	        copyTotal.accept(22);
 
-	        // 6️⃣ R27 = SUM(C28:C32)
-	        copyRows.accept(new int[] { 28, 29, 30, 31, 32 });
+	        // R27 = SUM(C28:C32)
+	        copyRows.accept(new int[] {28, 29, 30, 31, 32});
 	        copyTotal.accept(27);
 
-	        // 7️⃣ R34 = C35 + C36 + C40
-	        copyRows.accept(new int[] { 35, 36, 40 });
+	        // R34 = C35 + C36 + C40
+	        copyRows.accept(new int[] {35, 36, 40});
 	        copyTotal.accept(34);
 
-	        // 8️⃣ R36 = SUM(C37:C39)
-	        copyRows.accept(new int[] { 37, 38, 39 });
+	        // R36 = SUM(C37:C39)
+	        copyRows.accept(new int[] {37, 38, 39});
 	        copyTotal.accept(36);
 
-	        // 9️⃣ R41 = C42 + C43 + C44 + C49
-	        copyRows.accept(new int[] { 42, 43, 44, 49 });
+	        // R41 = C42 + C43 + C44 + C49
+	        copyRows.accept(new int[] {42, 43, 44, 49});
 	        copyTotal.accept(41);
 
-	        // 🔟 R44 = SUM(C45:C48)
-	        copyRows.accept(new int[] { 45, 46, 47, 48 });
+	        // R44 = SUM(C45:C48)
+	        copyRows.accept(new int[] {45, 46, 47, 48});
 	        copyTotal.accept(44);
 
-	        // 1️⃣1️⃣ R50 = SUM(C51:C54)
-	        copyRows.accept(new int[] { 51, 52, 53, 54 });
+	        // R50 = SUM(C51:C54)
+	        copyRows.accept(new int[] {51, 52, 53, 54});
 	        copyTotal.accept(50);
 
-	        // 1️⃣2️⃣ R55 = C50 + C41 + C34 + C22 + C11
-	        copyRows.accept(new int[] { 50, 41, 34, 22, 11 });
+	        // R55 = C50 + C41 + C34 + C22 + C11
+	        copyRows.accept(new int[] {50, 41, 34, 22, 11});
 	        copyTotal.accept(55);
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating M_TBS Summary & Detail report fields", e);
+	        throw new RuntimeException(
+	                "Error while updating M_TBS Summary & Detail report fields", e);
 	    }
 
-	    // 4️⃣ Save BOTH in same transaction
-	    brrs_M_TBS_summary_repo.save(existingSummary);
-	    brrs_M_TBS_detail_repo.save(existingDetail);
+	    // Audit check
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_TBS_summary_repo.save(existingSummary);
+	        brrs_M_TBS_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReportDate().toString(),
+	                "M TBS Summary Screen",
+	                "BRRS_M_TBS_SUMMARY"
+	        );
+	    }
 	}
 
 

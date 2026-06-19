@@ -192,13 +192,18 @@ public class BRRS_M_CR_ReportService {
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    // 1️⃣ Fetch existing SUMMARY
+	    // Fetch existing SUMMARY
 	    M_CR_Summary_Entity existingSummary =
 	            brrs_M_CR_summary_repo.findById(updatedEntity.getReport_date())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReport_date()));
 
-	    // 2️⃣ Fetch or create DETAIL
+	    // Audit old copy
+	    M_CR_Summary_Entity oldcopy = new M_CR_Summary_Entity();
+	    BeanUtils.copyProperties(existingSummary, oldcopy);
+
+	    // Fetch existing DETAIL
 	    M_CR_Detail_Entity existingDetail =
 	            brrs_M_CR_detail_repo.findById(updatedEntity.getReport_date())
 	                    .orElseGet(() -> {
@@ -206,16 +211,26 @@ public class BRRS_M_CR_ReportService {
 	                        d.setReport_date(updatedEntity.getReport_date());
 	                        return d;
 	                    });
-	    
+
 	    try {
-			// 1️⃣ Loop from R11 to R50 and copy fields
-			for (int i = 10; i <= 17; i++) {
-				String prefix = "R" + i + "_";
 
-				String[] fields = { "PRODUCT", "TOTAL_LONG_POS", "TOTAL_SHORT_POS", "GROSS_OPEN_POS",
-						"CHARGE_BASIS_RISK", "CAPITAL_CHARGE_BASIS_RISK", "NET_OPEN_POS", "CHARGE_DIR_RISK",
-						"CAPITAL_CHARGE_DIR_RISK", "TOTAL_CAPITAL_CHARGE" };
+	        // Loop R10 → R17
+	        for (int i = 10; i <= 17; i++) {
 
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "PRODUCT",
+	                    "TOTAL_LONG_POS",
+	                    "TOTAL_SHORT_POS",
+	                    "GROSS_OPEN_POS",
+	                    "CHARGE_BASIS_RISK",
+	                    "CAPITAL_CHARGE_BASIS_RISK",
+	                    "NET_OPEN_POS",
+	                    "CHARGE_DIR_RISK",
+	                    "CAPITAL_CHARGE_DIR_RISK",
+	                    "TOTAL_CAPITAL_CHARGE"
+	            };
 
 	            for (String field : fields) {
 
@@ -223,6 +238,7 @@ public class BRRS_M_CR_ReportService {
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
 	                            M_CR_Summary_Entity.class.getMethod(getterName);
 
@@ -236,14 +252,13 @@ public class BRRS_M_CR_ReportService {
 
 	                    Object newValue = getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
+	                    // Update SUMMARY
 	                    summarySetter.invoke(existingSummary, newValue);
 
-	                    // ✅ set into DETAIL
+	                    // Update DETAIL
 	                    detailSetter.invoke(existingDetail, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
@@ -253,12 +268,24 @@ public class BRRS_M_CR_ReportService {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_M_CR_summary_repo.save(existingSummary);
-	    brrs_M_CR_detail_repo.save(existingDetail);
+	    // Audit comparison
+	    String changes = auditService.getChanges(oldcopy, existingSummary);
+
+	    if (!changes.isEmpty()) {
+
+	        brrs_M_CR_summary_repo.save(existingSummary);
+	        brrs_M_CR_detail_repo.save(existingDetail);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existingSummary,
+	                updatedEntity.getReport_date().toString(),
+	                "M CR Summary Screen",
+	                "BRRS_M_CR_SUMMARY"
+	        );
+	    }
 	}
-
-
+	
 	public void updateResubReport(M_CR_Resub_Summary_Entity updatedEntity) {
 
 		Date reportDate = updatedEntity.getReportDate();
