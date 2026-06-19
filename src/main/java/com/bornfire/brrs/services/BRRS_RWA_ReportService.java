@@ -40,6 +40,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -55,6 +56,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService.FORMAT_II_Detail_Entity;
 
 
 @Service
@@ -9346,6 +9349,10 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			RWA_Detail_Entity oldcopy = new RWA_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -9385,6 +9392,15 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
   
     existing.getAcctNumber()
 );
+		           
+		        // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "RWA Detail Screen",
+		                    "BRRS_RWA_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")

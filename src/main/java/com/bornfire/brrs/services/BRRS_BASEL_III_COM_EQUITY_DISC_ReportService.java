@@ -41,6 +41,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -56,6 +57,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 
 
 
@@ -101,6 +104,24 @@ public List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> getSummaryDataByDate(Date 
             new Object[]{reportDate},
             new B_III_CETD_RowMapper()
     );
+}
+
+//findbyreportdate
+
+public BASEL_III_COM_EQUITY_DISC_Summary_Entity findByReportDate(Date reportDate) {
+
+    String sql =
+            "SELECT * FROM BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE " +
+            "WHERE REPORT_DATE = ?";
+
+    List<BASEL_III_COM_EQUITY_DISC_Summary_Entity> list =
+            jdbcTemplate.query(
+                    sql,
+                    new Object[] { reportDate },
+                    new B_III_CETD_RowMapper()
+            );
+
+    return list.isEmpty() ? null : list.get(0);
 }
 
 // Fetch data by report date ARCHIVAL
@@ -3605,24 +3626,103 @@ public void setSno(BigDecimal sno) {
 			return archivalList;
 		}
 	
+//		public void updateReport(
+//		        BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
+//
+//		    System.out.println("Came to BASEL_III_COM_EQUITY_DISC Manual Update");
+//		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//		   int[] rows = {73 };
+//
+//		String[] fields = { "amount"};
+//
+//		    try {
+//
+//		        // Loop rows
+//		      for (int i : rows) {
+//				for (String field : fields) {
+//
+//					String getterName = "getR" + i + "_" + field;
+//					String setterName = "setR" + i + "_" + field;
+//
+//		                try {
+//
+//		                    Method getter =
+//		                            BASEL_III_COM_EQUITY_DISC_Summary_Entity.class
+//		                                    .getMethod(getterName);
+//
+//		                    Object value =
+//		                            getter.invoke(updatedEntity);
+//
+//		                    // Skip null values
+//		                    if (value == null) continue;
+//
+//		                    // Column name in DB
+//		                    String columnName =
+//		                    		"R" + i + "_" + field;
+//
+//		                    String sql =
+//		                            "UPDATE BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE " +
+//		                            "SET " + columnName + " = ? " +
+//		                            "WHERE REPORT_DATE = ?";
+//
+//		                    jdbcTemplate.update(
+//		                            sql,
+//		                            value,
+//		                            updatedEntity.getReport_date()
+//		                    );
+//
+//		                } catch (NoSuchMethodException e) {
+//		                    // Skip if method not exists
+//		                    continue;
+//		                }
+//		            }
+//		        }
+//
+//		        System.out.println("B_III_CETD Manual Update Completed");
+//
+//		    } catch (Exception e) {
+//		        throw new RuntimeException(
+//		                "Error while updating B_III_CETD Manual fields", e);
+//		    }
+//		}
+		
+		
+		@Transactional
 		public void updateReport(
 		        BASEL_III_COM_EQUITY_DISC_Summary_Entity updatedEntity) {
 
 		    System.out.println("Came to BASEL_III_COM_EQUITY_DISC Manual Update");
 		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		   int[] rows = {73 };
+		    // Fetch existing SUMMARY
+		    BASEL_III_COM_EQUITY_DISC_Summary_Entity existingSummary =
+		            findByReportDate(updatedEntity.getReport_date());
 
-		String[] fields = { "amount"};
+		    if (existingSummary == null) {
+		        throw new RuntimeException(
+		                "Summary record not found for REPORT_DATE: "
+		                        + updatedEntity.getReport_date());
+		    }
+
+		    // Audit old copy
+		    BASEL_III_COM_EQUITY_DISC_Summary_Entity oldcopy =
+		            new BASEL_III_COM_EQUITY_DISC_Summary_Entity();
+
+		    BeanUtils.copyProperties(existingSummary, oldcopy);
+
+		    int[] rows = { 73 };
+
+		    String[] fields = { "amount" };
 
 		    try {
 
 		        // Loop rows
-		      for (int i : rows) {
-				for (String field : fields) {
+		        for (int i : rows) {
+		            for (String field : fields) {
 
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+		                String getterName = "getR" + i + "_" + field;
+		                String setterName = "setR" + i + "_" + field;
 
 		                try {
 
@@ -3630,32 +3730,52 @@ public void setSno(BigDecimal sno) {
 		                            BASEL_III_COM_EQUITY_DISC_Summary_Entity.class
 		                                    .getMethod(getterName);
 
-		                    Object value =
-		                            getter.invoke(updatedEntity);
+		                    Object value = getter.invoke(updatedEntity);
 
 		                    // Skip null values
-		                    if (value == null) continue;
+		                    if (value == null)
+		                        continue;
+
+		                    // Update existing object for audit comparison
+		                    Method setter =
+		                            BASEL_III_COM_EQUITY_DISC_Summary_Entity.class
+		                                    .getMethod(setterName,
+		                                            getter.getReturnType());
+
+		                    setter.invoke(existingSummary, value);
 
 		                    // Column name in DB
-		                    String columnName =
-		                    		"R" + i + "_" + field;
+		                    String columnName = "R" + i + "_" + field;
 
 		                    String sql =
-		                            "UPDATE BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE " +
-		                            "SET " + columnName + " = ? " +
-		                            "WHERE REPORT_DATE = ?";
+		                            "UPDATE BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARYTABLE "
+		                                    + "SET " + columnName + " = ? "
+		                                    + "WHERE REPORT_DATE = ?";
 
 		                    jdbcTemplate.update(
 		                            sql,
 		                            value,
-		                            updatedEntity.getReport_date()
-		                    );
+		                            updatedEntity.getReport_date());
 
 		                } catch (NoSuchMethodException e) {
-		                    // Skip if method not exists
 		                    continue;
 		                }
 		            }
+		        }
+
+		        // Audit only if changes found
+		        String changes =
+		                auditService.getChanges(oldcopy, existingSummary);
+
+		        if (!changes.isEmpty()) {
+
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existingSummary,
+		                    updatedEntity.getReport_date().toString(),
+		                    "B_III_CETD Summary Screen",
+		                    "BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY"
+		            );
 		        }
 
 		        System.out.println("B_III_CETD Manual Update Completed");
@@ -3699,6 +3819,10 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			BASEL_III_COM_EQUITY_DISC_Detail_Entity oldcopy = new BASEL_III_COM_EQUITY_DISC_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -3746,25 +3870,59 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
     existing.getAverage(),
     existing.getAcctNumber()
 );
+		           
+		        // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "BASEL_III_COM_EQUITY_DISC Detail Screen",
+		                    "BRRS_BASEL_III_COM_EQUITY_DISC_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
 						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
 				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
+				
+				TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info("Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+	                                logger.error("Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
+				
+				
+//				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+//					@Override
+//					public void afterCommit() {
+//						try {
+//							logger.info("Transaction committed — calling BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE({})",
+//									formattedDate);
+//							jdbcTemplate.update("BEGIN BRRS_BASEL_III_COM_EQUITY_DISC_SUMMARY_PROCEDURE(?); END;", formattedDate);
+//							logger.info("Procedure executed successfully after commit.");
+//						} catch (Exception e) {
+//							logger.error("Error executing procedure after commit", e);
+//						}
+//					}
+//				});
 
 				return ResponseEntity.ok("Record updated successfully!");
 			} else {

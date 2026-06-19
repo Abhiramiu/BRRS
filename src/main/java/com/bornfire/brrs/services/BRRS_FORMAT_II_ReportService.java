@@ -41,6 +41,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -56,6 +57,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
 
 @Service
 
@@ -94,6 +96,17 @@ public List<FORMAT_II_Summary_Entity> getDataByDate(Date reportDate) {
     );
 }
 
+private FORMAT_II_Summary_Entity getFormatIIRecord(Date reportDate) {
+
+    String sql =
+        "SELECT * FROM BRRS_FORMAT_II_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+    return jdbcTemplate.queryForObject(
+        sql,
+        new Object[] { reportDate },
+        new FORMAT_II_RowMapper()
+    );
+}
 
 //---------archival summary 
 
@@ -2676,23 +2689,92 @@ public class FORMAT_II_Archival_Detail_Entity {
 	//UPDate report
 	
 	
+//		public void updateReport(FORMAT_II_Summary_Entity updatedEntity) {
+//
+//		    System.out.println("Came to format_II Manual Update");
+//		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//		    int[] rows = {21, 25};
+//
+//		    try {
+//
+//		        for (int row : rows) {
+//
+//		            String[] fields;
+//
+//		            if (row == 21) {
+//		                fields = new String[] { "amt" };              // R21_amt
+//		            } else if (row == 25) {
+//		                fields = new String[] { "amt_sub_del" };      // R25_amt_sub_del
+//		            } else {
+//		                continue;
+//		            }
+//
+//		            for (String field : fields) {
+//
+//		                String getterName = "getR" + row + "_" + field;
+//
+//		                try {
+//		                    Method getter =
+//		                            FORMAT_II_Summary_Entity.class.getMethod(getterName);
+//
+//		                    Object value = getter.invoke(updatedEntity);
+//
+//		                    if (value == null) continue;
+//
+//		                    // ✅ FIXED HERE
+//		                    String columnName = "R" + row + "_" + field;
+//
+//		                    String sql =
+//		                            "UPDATE BRRS_FORMAT_II_SUMMARYTABLE " +
+//		                            "SET " + columnName + " = ? " +
+//		                            "WHERE REPORT_DATE = ?";
+//
+//		                    jdbcTemplate.update(
+//		                            sql,
+//		                            value,
+//		                            updatedEntity.getReport_date()
+//		                    );
+//
+//		                } catch (NoSuchMethodException e) {
+//		                    continue;
+//		                }
+//		            }
+//		        }
+//
+//		        System.out.println("FORMAT_II Manual Update Completed");
+//
+//		    } catch (Exception e) {
+//		        throw new RuntimeException(
+//		                "Error while updating FORMAT_II Manual fields", e);
+//		    }
+//		}
+		
+		@Transactional
 		public void updateReport(FORMAT_II_Summary_Entity updatedEntity) {
 
 		    System.out.println("Came to format_II Manual Update");
 		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		    int[] rows = {21, 25};
-
 		    try {
+
+		        // ==========================================
+		        // FETCH OLD RECORD FOR AUDIT
+		        // ==========================================
+
+		        FORMAT_II_Summary_Entity oldcopy =
+		                getFormatIIRecord(updatedEntity.getReport_date());
+
+		        int[] rows = {21, 25};
 
 		        for (int row : rows) {
 
 		            String[] fields;
 
 		            if (row == 21) {
-		                fields = new String[] { "amt" };              // R21_amt
+		                fields = new String[] { "amt" };
 		            } else if (row == 25) {
-		                fields = new String[] { "amt_sub_del" };      // R25_amt_sub_del
+		                fields = new String[] { "amt_sub_del" };
 		            } else {
 		                continue;
 		            }
@@ -2702,14 +2784,15 @@ public class FORMAT_II_Archival_Detail_Entity {
 		                String getterName = "getR" + row + "_" + field;
 
 		                try {
+
 		                    Method getter =
 		                            FORMAT_II_Summary_Entity.class.getMethod(getterName);
 
 		                    Object value = getter.invoke(updatedEntity);
 
-		                    if (value == null) continue;
+		                    if (value == null)
+		                        continue;
 
-		                    // ✅ FIXED HERE
 		                    String columnName = "R" + row + "_" + field;
 
 		                    String sql =
@@ -2729,14 +2812,34 @@ public class FORMAT_II_Archival_Detail_Entity {
 		            }
 		        }
 
+		        // ==========================================
+		        // FETCH NEW RECORD AFTER UPDATE
+		        // ==========================================
+
+		        FORMAT_II_Summary_Entity newcopy =
+		                getFormatIIRecord(updatedEntity.getReport_date());
+
+		        // ==========================================
+		        // AUDIT
+		        // ==========================================
+
+		        auditService.compareEntitiesmanual(
+		                oldcopy,
+		                newcopy,
+		                updatedEntity.getReport_date().toString(),
+		                "FORMAT II Summary Screen",
+		                "BRRS_FORMAT_II_SUMMARYTABLE"
+		        );
+
 		        System.out.println("FORMAT_II Manual Update Completed");
 
 		    } catch (Exception e) {
+
 		        throw new RuntimeException(
-		                "Error while updating FORMAT_II Manual fields", e);
+		                "Error while updating FORMAT_II Manual fields",
+		                e);
 		    }
 		}
-	
 	//---------------getViewOrEditPage
 	
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
@@ -2774,6 +2877,10 @@ public class FORMAT_II_Archival_Detail_Entity {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			FORMAT_II_Detail_Entity oldcopy = new FORMAT_II_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -2821,6 +2928,16 @@ public class FORMAT_II_Archival_Detail_Entity {
     existing.getAverage(),
     existing.getAcctNumber()
 );
+		           
+		           
+		           // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "FORMAT_II Detail Screen",
+		                    "BRRS_FORMAT_II_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")

@@ -41,6 +41,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -56,6 +57,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService.FORMAT_II_Detail_Entity;
 
 
 @Service
@@ -3582,64 +3585,154 @@ public List<Object[]> getDTAXArchival() {
 // UPDATE REPORT
 //=====================================================
 
-public void updateReport(
-		        DEFERRED_TAX_Summary_Entity updatedEntity) {
+//public void updateReport(
+//		        DEFERRED_TAX_Summary_Entity updatedEntity) {
+//
+//		    System.out.println("Came to DTAX Manual Update");
+//		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//		 	int[] rows = { };
+//
+//		String[] fields = { " "};
+//		    try {
+//
+//		      for (int i : rows) {
+//				for (String field : fields) {
+//
+//					String getterName = "getR" + i + "_" + field;
+//					String setterName = "setR" + i + "_" + field;
+//
+//		                try {
+//
+//		                    Method getter =
+//		                            DEFERRED_TAX_Summary_Entity.class
+//		                                    .getMethod(getterName);
+//
+//		                    Object value =
+//		                            getter.invoke(updatedEntity);
+//
+//		                    // Skip null values
+//		                    if (value == null) continue;
+//
+//		                    // Column name in DB
+//		                    String columnName =
+//		                    		"R" + i + "_" + field;
+//
+//		                    String sql =
+//		                            "UPDATE BRRS_FORMAT_II_SUMMARYTABLE " +
+//		                            "SET " + columnName + " = ? " +
+//		                            "WHERE REPORT_DATE = ?";
+//
+//		                    jdbcTemplate.update(
+//		                            sql,
+//		                            value,
+//		                            updatedEntity.getReport_date()
+//		                    );
+//
+//		                } catch (NoSuchMethodException e) {
+//		                    // Skip if method not exists
+//		                    continue;
+//		                }
+//		            }
+//		        }
+//
+//		        System.out.println("DTAX Manual Update Completed");
+//
+//		    } catch (Exception e) {
+//		        throw new RuntimeException(
+//		                "Error while updating DTAX Manual fields", e);
+//		    }
+//		}
 
-		    System.out.println("Came to DTAX Manual Update");
-		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+@Transactional
+public void updateReport(DEFERRED_TAX_Summary_Entity updatedEntity) {
 
-		 	int[] rows = { };
+    System.out.println("Came to DTAX Manual Update");
+    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		String[] fields = { " "};
-		    try {
+    // ====================================================
+    // 1️⃣ OLD COPY (BEFORE UPDATE)
+    // ====================================================
 
-		      for (int i : rows) {
-				for (String field : fields) {
+    String selectSql =
+            "SELECT * FROM BRRS_DEFERRED_TAX_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+    DEFERRED_TAX_Summary_Entity oldcopy =
+            jdbcTemplate.queryForObject(
+                    selectSql,
+                    new Object[]{updatedEntity.getReport_date()},
+                    new DEFERRED_TAX_RowMapper()
+            );
 
-		                try {
+    try {
 
-		                    Method getter =
-		                            DEFERRED_TAX_Summary_Entity.class
-		                                    .getMethod(getterName);
+        int[] rows = { /* your rows */ };
+        String[] fields = { /* your fields */ };
 
-		                    Object value =
-		                            getter.invoke(updatedEntity);
+        for (int i : rows) {
+            for (String field : fields) {
 
-		                    // Skip null values
-		                    if (value == null) continue;
+                String getterName = "getR" + i + "_" + field;
 
-		                    // Column name in DB
-		                    String columnName =
-		                    		"R" + i + "_" + field;
+                try {
 
-		                    String sql =
-		                            "UPDATE BRRS_FORMAT_II_SUMMARYTABLE " +
-		                            "SET " + columnName + " = ? " +
-		                            "WHERE REPORT_DATE = ?";
+                    Method getter =
+                            DEFERRED_TAX_Summary_Entity.class
+                                    .getMethod(getterName);
 
-		                    jdbcTemplate.update(
-		                            sql,
-		                            value,
-		                            updatedEntity.getReport_date()
-		                    );
+                    Object value = getter.invoke(updatedEntity);
 
-		                } catch (NoSuchMethodException e) {
-		                    // Skip if method not exists
-		                    continue;
-		                }
-		            }
-		        }
+                    if (value == null) continue;
 
-		        System.out.println("DTAX Manual Update Completed");
+                    String columnName = "R" + i + "_" + field;
 
-		    } catch (Exception e) {
-		        throw new RuntimeException(
-		                "Error while updating DTAX Manual fields", e);
-		    }
-		}
+                    String sql =
+                            "UPDATE BRRS_DEFERRED_TAX_SUMMARYTABLE " +
+                            "SET " + columnName + " = ? " +
+                            "WHERE REPORT_DATE = ?";
+
+                    jdbcTemplate.update(
+                            sql,
+                            value,
+                            updatedEntity.getReport_date()
+                    );
+
+                } catch (NoSuchMethodException e) {
+                    continue;
+                }
+            }
+        }
+
+        System.out.println("DTAX Manual Update Completed");
+
+    } catch (Exception e) {
+        throw new RuntimeException(
+                "Error while updating DTAX Manual fields", e);
+    }
+
+    // ====================================================
+    // 2️⃣ NEW COPY (AFTER UPDATE)
+    // ====================================================
+
+    DEFERRED_TAX_Summary_Entity newcopy =
+            jdbcTemplate.queryForObject(
+                    selectSql,
+                    new Object[]{updatedEntity.getReport_date()},
+                    new DEFERRED_TAX_RowMapper()
+            );
+
+    // ====================================================
+    // 3️⃣ AUDIT COMPARE
+    // ====================================================
+
+    auditService.compareEntitiesmanual(
+            oldcopy,
+            newcopy,
+            updatedEntity.getReport_date().toString(),
+            "DEFERRED TAX Summary Screen",
+            "BRRS_DEFERRED_TAX_SUMMARYTABLE"
+    );
+}
 		
 //=====================================================
 // VIEW AND EDIT
@@ -3681,6 +3774,10 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			DEFERRED_TAX_Detail_Entity oldcopy = new DEFERRED_TAX_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -3720,6 +3817,16 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
   
     existing.getAcctNumber()
 );
+		           
+		           
+		           // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "DEFERRED_TAX Detail Screen",
+		                    "BRRS_DEFERRED_TAX_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")

@@ -42,6 +42,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -54047,70 +54048,175 @@ public List<Object[]> getGL_SCHArchival() {
 // UPDATE REPORT
 //=====================================================
 
-public void updateReport(
-		        GL_SCH_Manual_Summary_Entity updatedEntity) {
+//public void updateReport(
+//		        GL_SCH_Manual_Summary_Entity updatedEntity) {
+//
+//		    System.out.println("Came to GL_SCH Manual Update");
+//		    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//
+//		 		int[] rows = { 61, 103, 130, 139, 241, 243, 245 };
+//
+//		// Common fields for all these rows
+//			String[] fields = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1", "AMT_ADJ_BWP2",
+//					"NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
+//					"BAL_ACT_SUB_BWP2" };
+//		    try {
+//
+//		      for (int i : rows) {
+//				for (String field : fields) {
+//
+//					String getterName = "getR" + i + "_" + field;
+//					String setterName = "setR" + i + "_" + field;
+//
+//		                try {
+//
+//		                    Method getter =
+//		                            GL_SCH_Manual_Summary_Entity.class
+//		                                    .getMethod(getterName);
+//
+//		                    Object value =
+//		                            getter.invoke(updatedEntity);
+//
+//		                    // Skip null values
+//		                    if (value == null) continue;
+//
+//		                    // Column name in DB
+//		                    String columnName =
+//		                    		"R" + i + "_" + field;
+//
+//		                    String sql =
+//		                            "UPDATE BRRS_GL_SCH_MANUAL_SUMMARYTABLE " +
+//		                            "SET " + columnName + " = ? " +
+//		                            "WHERE REPORT_DATE = ?";
+//
+//		                    jdbcTemplate.update(
+//		                            sql,
+//		                            value,
+//		                            updatedEntity.getREPORT_DATE()
+//		                    );
+//
+//		                } catch (NoSuchMethodException e) {
+//		                    // Skip if method not exists
+//		                    continue;
+//		                }
+//		            }
+//		        }
+//
+//		        System.out.println("GL_SCH Manual Update Completed");
+//
+//		    } catch (Exception e) {
+//		        throw new RuntimeException(
+//		                "Error while updating GL_SCH Manual fields", e);
+//		    }
+//		}
 
-		    System.out.println("Came to GL_SCH Manual Update");
-		    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		 		int[] rows = { 61, 103, 130, 139, 241, 243, 245 };
+@Transactional
+public void updateReport(GL_SCH_Manual_Summary_Entity updatedEntity) {
 
-		// Common fields for all these rows
-			String[] fields = { "PRODUCT", "FIG_BAL_BWP1", "FIG_BAL_BWP2", "AMT_ADJ_BWP1", "AMT_ADJ_BWP2",
-					"NET_AMT_BWP1", "NET_AMT_BWP2", "BAL_SUB_BWP1", "BAL_SUB_BWP2", "BAL_ACT_SUB_BWP1",
-					"BAL_ACT_SUB_BWP2" };
-		    try {
+    System.out.println("Came to GL_SCH Manual Update");
+    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		      for (int i : rows) {
-				for (String field : fields) {
+    String sqlSelect =
+            "SELECT * FROM BRRS_GL_SCH_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
+    try {
 
-		                try {
+        // ====================================================
+        // 1️⃣ OLD COPY (BEFORE UPDATE)
+        // ====================================================
 
-		                    Method getter =
-		                            GL_SCH_Manual_Summary_Entity.class
-		                                    .getMethod(getterName);
+        GL_SCH_Manual_Summary_Entity oldcopy =
+                jdbcTemplate.queryForObject(
+                        sqlSelect,
+                        new Object[]{updatedEntity.getREPORT_DATE()},
+                        new GL_SCH_Summary_RowMapper4()
+                );
 
-		                    Object value =
-		                            getter.invoke(updatedEntity);
+        int[] rows = {61, 103, 130, 139, 241, 243, 245};
 
-		                    // Skip null values
-		                    if (value == null) continue;
+        String[] fields = {
+                "PRODUCT",
+                "FIG_BAL_BWP1",
+                "FIG_BAL_BWP2",
+                "AMT_ADJ_BWP1",
+                "AMT_ADJ_BWP2",
+                "NET_AMT_BWP1",
+                "NET_AMT_BWP2",
+                "BAL_SUB_BWP1",
+                "BAL_SUB_BWP2",
+                "BAL_ACT_SUB_BWP1",
+                "BAL_ACT_SUB_BWP2"
+        };
 
-		                    // Column name in DB
-		                    String columnName =
-		                    		"R" + i + "_" + field;
+        // ====================================================
+        // 2️⃣ UPDATE USING JDBC
+        // ====================================================
 
-		                    String sql =
-		                            "UPDATE BRRS_GL_SCH_MANUAL_SUMMARYTABLE " +
-		                            "SET " + columnName + " = ? " +
-		                            "WHERE REPORT_DATE = ?";
+        for (int i : rows) {
+            for (String field : fields) {
 
-		                    jdbcTemplate.update(
-		                            sql,
-		                            value,
-		                            updatedEntity.getREPORT_DATE()
-		                    );
+                String getterName = "getR" + i + "_" + field;
 
-		                } catch (NoSuchMethodException e) {
-		                    // Skip if method not exists
-		                    continue;
-		                }
-		            }
-		        }
+                try {
 
-		        System.out.println("GL_SCH Manual Update Completed");
+                    Method getter =
+                            GL_SCH_Manual_Summary_Entity.class
+                                    .getMethod(getterName);
 
-		    } catch (Exception e) {
-		        throw new RuntimeException(
-		                "Error while updating GL_SCH Manual fields", e);
-		    }
-		}
+                    Object value = getter.invoke(updatedEntity);
 
+                    if (value == null) continue;
 
+                    String columnName = "R" + i + "_" + field;
 
+                    String sqlUpdate =
+                            "UPDATE BRRS_GL_SCH_MANUAL_SUMMARYTABLE " +
+                            "SET " + columnName + " = ? " +
+                            "WHERE REPORT_DATE = ?";
+
+                    jdbcTemplate.update(
+                            sqlUpdate,
+                            value,
+                            updatedEntity.getREPORT_DATE()
+                    );
+
+                } catch (NoSuchMethodException e) {
+                    continue;
+                }
+            }
+        }
+
+        System.out.println("GL_SCH Manual Update Completed");
+
+        // ====================================================
+        // 3️⃣ NEW COPY (AFTER UPDATE)
+        // ====================================================
+
+        GL_SCH_Manual_Summary_Entity newcopy =
+                jdbcTemplate.queryForObject(
+                        sqlSelect,
+                        new Object[]{updatedEntity.getREPORT_DATE()},
+                        new GL_SCH_Summary_RowMapper4()
+                );
+
+        // ====================================================
+        // 4️⃣ AUDIT COMPARE
+        // ====================================================
+
+        auditService.compareEntitiesmanual(
+                oldcopy,
+                newcopy,
+                updatedEntity.getREPORT_DATE().toString(),
+                "GL SCH Manual Screen",
+                "BRRS_GL_SCH_MANUAL_SUMMARYTABLE"
+        );
+
+    } catch (Exception e) {
+        throw new RuntimeException(
+                "Error while updating GL_SCH Manual fields", e);
+    }
+}
 //=====================================================
 // VIEW AND EDIT
 //=====================================================
@@ -54152,6 +54258,10 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			GL_SCH_Detail_Entity oldcopy = new GL_SCH_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -54195,6 +54305,15 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
     existing.getAverage(),
     existing.getAcctNumber()
 );
+		           
+		        // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "GL_SCH Detail Screen",
+		                    "BRRS_GL_SCH_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")

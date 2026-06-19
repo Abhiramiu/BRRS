@@ -41,6 +41,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -2202,68 +2203,160 @@ public void setDelFlg(char delFlg) {
 	//==================================update report
 	
 	
-		public void updateReport(
-		        CAP_RATIO_BUFFER_Summary_Entity updatedEntity) {
+//		public void updateReport(
+//		        CAP_RATIO_BUFFER_Summary_Entity updatedEntity) {
+//
+//		    System.out.println("Came to CAP_RATIO_BUFFER Manual Update");
+//		    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//		 
+//
+//		    try {
+//
+//		         // ✅ Target Rows
+//	        int[] targetRows = {2, 3, 4, 11, 12, 13};
+//
+//	        for (int i : targetRows) {
+//
+//	            String field = "cap_ratio_buff_amt";
+//
+//	            String getterName = "getR" + i + "_" + field;
+//	            String setterName = "setR" + i + "_" + field;
+//
+//		                try {
+//
+//		                    Method getter =
+//		                            CAP_RATIO_BUFFER_Summary_Entity.class
+//		                                    .getMethod(getterName);
+//
+//		                    Object value =
+//		                            getter.invoke(updatedEntity);
+//
+//		                    // Skip null values
+//		                    if (value == null) continue;
+//
+//		                    // Column name in DB
+//		                    String columnName =
+//		                    		"R" + i + "_" + field;
+//
+//		                    String sql =
+//		                            "UPDATE BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE " +
+//		                            "SET " + columnName + " = ? " +
+//		                            "WHERE REPORT_DATE = ?";
+//
+//		                    jdbcTemplate.update(
+//		                            sql,
+//		                            value,
+//		                            updatedEntity.getReport_date()
+//		                    );
+//
+//		                } catch (NoSuchMethodException e) {
+//		                    // Skip if method not exists
+//		                    continue;
+//		                }
+//		            }
+//		       
+//
+//		        System.out.println("CAP_RATIO_BUFFER Manual Update Completed");
+//
+//		    } catch (Exception e) {
+//		        throw new RuntimeException(
+//		                "Error while updating CAP_RATIO_BUFFER Manual fields", e);
+//		    }
+//		}
+		
+		
+		@Transactional
+		public void updateReport(CAP_RATIO_BUFFER_Summary_Entity updatedEntity) {
 
 		    System.out.println("Came to CAP_RATIO_BUFFER Manual Update");
 		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		 
+		    String sqlSelect =
+		            "SELECT * FROM BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
 		    try {
 
-		         // ✅ Target Rows
-	        int[] targetRows = {2, 3, 4, 11, 12, 13};
+		        // ====================================================
+		        // 1️⃣ OLD COPY (BEFORE UPDATE)
+		        // ====================================================
 
-	        for (int i : targetRows) {
+		        CAP_RATIO_BUFFER_Summary_Entity oldcopy =
+		                jdbcTemplate.queryForObject(
+		                        sqlSelect,
+		                        new Object[]{updatedEntity.getReport_date()},
+		                        new CAP_RATIO_BUFFER_RowMapper()
+		                );
 
-	            String field = "cap_ratio_buff_amt";
+		        // ====================================================
+		        // 2️⃣ UPDATE TABLE
+		        // ====================================================
 
-	            String getterName = "getR" + i + "_" + field;
-	            String setterName = "setR" + i + "_" + field;
+		        int[] targetRows = {2, 3, 4, 11, 12, 13};
+		        String field = "cap_ratio_buff_amt";
 
-		                try {
+		        for (int i : targetRows) {
 
-		                    Method getter =
-		                            CAP_RATIO_BUFFER_Summary_Entity.class
-		                                    .getMethod(getterName);
+		            String getterName = "getR" + i + "_" + field;
 
-		                    Object value =
-		                            getter.invoke(updatedEntity);
+		            try {
 
-		                    // Skip null values
-		                    if (value == null) continue;
+		                Method getter =
+		                        CAP_RATIO_BUFFER_Summary_Entity.class
+		                                .getMethod(getterName);
 
-		                    // Column name in DB
-		                    String columnName =
-		                    		"R" + i + "_" + field;
+		                Object value = getter.invoke(updatedEntity);
 
-		                    String sql =
-		                            "UPDATE BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE " +
-		                            "SET " + columnName + " = ? " +
-		                            "WHERE REPORT_DATE = ?";
+		                if (value == null) continue;
 
-		                    jdbcTemplate.update(
-		                            sql,
-		                            value,
-		                            updatedEntity.getReport_date()
-		                    );
+		                String columnName = "R" + i + "_" + field;
 
-		                } catch (NoSuchMethodException e) {
-		                    // Skip if method not exists
-		                    continue;
-		                }
+		                String sqlUpdate =
+		                        "UPDATE BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE " +
+		                        "SET " + columnName + " = ? " +
+		                        "WHERE REPORT_DATE = ?";
+
+		                jdbcTemplate.update(
+		                        sqlUpdate,
+		                        value,
+		                        updatedEntity.getReport_date()
+		                );
+
+		            } catch (NoSuchMethodException e) {
+		                continue;
 		            }
-		       
+		        }
 
 		        System.out.println("CAP_RATIO_BUFFER Manual Update Completed");
+
+		        // ====================================================
+		        // 3️⃣ NEW COPY (AFTER UPDATE)
+		        // ====================================================
+
+		        CAP_RATIO_BUFFER_Summary_Entity newcopy =
+		                jdbcTemplate.queryForObject(
+		                        sqlSelect,
+		                        new Object[]{updatedEntity.getReport_date()},
+		                        new CAP_RATIO_BUFFER_RowMapper()
+		                );
+
+		        // ====================================================
+		        // 4️⃣ AUDIT
+		        // ====================================================
+
+		        auditService.compareEntitiesmanual(
+		                oldcopy,
+		                newcopy,
+		                updatedEntity.getReport_date().toString(),
+		                "CAP RATIO BUFFER Screen",
+		                "BRRS_CAP_RATIO_BUFFER_SUMMARYTABLE"
+		        );
 
 		    } catch (Exception e) {
 		        throw new RuntimeException(
 		                "Error while updating CAP_RATIO_BUFFER Manual fields", e);
 		    }
 		}
-		
 		
 		//-------------getViewOrEditPage
 		
@@ -2302,6 +2395,10 @@ public void setDelFlg(char delFlg) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			CAP_RATIO_BUFFER_Detail_Entity oldcopy = new CAP_RATIO_BUFFER_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -2340,6 +2437,15 @@ public void setDelFlg(char delFlg) {
   
     existing.getAcctNumber()
 );
+		           
+		           // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "CAP_RATIO_BUFFER Detail Screen",
+		                    "BRRS_CAP_RATIO_BUFFER_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")

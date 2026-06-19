@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import org.springframework.beans.BeanUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22471,6 +22472,11 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
 
+			// Create old copy for audit comparison
+			OFF_BS_ITEMS_Detail_Entity oldcopy = new OFF_BS_ITEMS_Detail_Entity();
+				        BeanUtils.copyProperties(existing, oldcopy);
+
+			
 			boolean isChanged = false;
 
 			if (acctName != null && !acctName.isEmpty()) {
@@ -22518,6 +22524,15 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
     existing.getAverage(),
     existing.getAcctNumber()
 );
+		           
+		           // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "OFF_BS_ITEMS Detail Screen",
+		                    "BRRS_OFF_BS_ITEMS_DETAIL"
+		            );
 
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
