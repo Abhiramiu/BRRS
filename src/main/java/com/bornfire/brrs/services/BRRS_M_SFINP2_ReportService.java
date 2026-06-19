@@ -40,6 +40,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +63,7 @@ import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Resub_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SFINP2_Summary_Repo;
+
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
@@ -380,7 +382,7 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	    if (list.isEmpty()) {
 
-	        // 🔹 INSERT
+	        // INSERT
 	        existing = new M_SFINP2_Summary_Entity();
 	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
 
@@ -388,16 +390,20 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	    } else {
 
-	        // 🔹 UPDATE
+	        // UPDATE
 	        existing = list.get(0);
 
 	        System.out.println("Updating existing record");
 	    }
 
+	    // Audit old copy
+	    M_SFINP2_Summary_Entity oldcopy = new M_SFINP2_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    int[] allowedIndexes = {
-	        34, 35, 39, 40, 43, 47, 48,
-	        51, 52, 53, 54, 55, 56, 57, 58,
-	        61, 62
+	            34, 35, 43, 47, 48,
+	            51, 52, 53, 54, 55, 56, 57, 58,
+	            61, 62
 	    };
 
 	    try {
@@ -417,8 +423,7 @@ public ModelAndView getM_SFINP2currentDtl(
 	                Method setter =
 	                        M_SFINP2_Summary_Entity.class.getMethod(
 	                                setterName,
-	                                getter.getReturnType()
-	                        );
+	                                getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 
@@ -426,19 +431,36 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	            } catch (NoSuchMethodException e) {
 
-	                // skip missing fields
+	                // Skip missing fields
+	                continue;
 	            }
 	        }
 
 	    } catch (Exception e) {
 
-	        throw new RuntimeException("Error while updating report fields", e);
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
 	    }
 
-	    // ✅ SAVE ENTITY
+	    // Check changes before save
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    // Save entity
 	    M_SFINP2_Summary_Repo.save(existing);
 
-	    // 🔥 CALL PROCEDURE AFTER COMMIT
+	    // Audit only if changes found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M SFINP2 Summary Screen",
+	                "BRRS_M_SFINP2_SUMMARY"
+	        );
+	    }
+
+	    // CALL PROCEDURE AFTER COMMIT
 	    TransactionSynchronizationManager.registerSynchronization(
 	            new TransactionSynchronizationAdapter() {
 
@@ -453,30 +475,140 @@ public ModelAndView getM_SFINP2currentDtl(
 
 	                        logger.info(
 	                                "Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
-	                                formattedDate
-	                        );
+	                                formattedDate);
 
 	                        jdbcTemplate.update(
 	                                "BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;",
-	                                formattedDate
-	                        );
+	                                formattedDate);
 
-	                        logger.info("Procedure executed successfully after commit.");
+	                        logger.info(
+	                                "Procedure executed successfully after commit.");
 
 	                    } catch (Exception e) {
 
-	                        logger.error("Procedure execution failed", e);
+	                        logger.error(
+	                                "Procedure execution failed", e);
 
 	                        throw new RuntimeException(
-	                                "Procedure execution failed",
-	                                e
-	                        );
+	                                "Procedure execution failed", e);
 	                    }
 	                }
-	            }
-	    );
+	            });
 	}
 	
+
+//	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+//
+//	    List<M_SFINP2_Summary_Entity> list =
+//	            M_SFINP2_Summary_Repo.getdatabydateList(updatedEntity.getREPORT_DATE());
+//
+//	    M_SFINP2_Summary_Entity existing;
+//
+//	    if (list.isEmpty()) {
+//
+//	        // 🔹 INSERT
+//	        existing = new M_SFINP2_Summary_Entity();
+//	        existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+//
+//	        System.out.println("Creating new record");
+//
+//	    } else {
+//
+//	        // 🔹 UPDATE
+//	        existing = list.get(0);
+//
+//	        System.out.println("Updating existing record");
+//	    }
+//
+//	    
+//	    
+//	    
+//	    int[] allowedIndexes = {
+//	        34, 35, 39, 40, 43, 47, 48,
+//	        51, 52, 53, 54, 55, 56, 57, 58,
+//	        61, 62
+//	    };
+//
+//	    try {
+//
+//	        for (int i : allowedIndexes) {
+//
+//	            String field = "MONTH_END";
+//
+//	            String getterName = "getR" + i + "_" + field;
+//	            String setterName = "setR" + i + "_" + field;
+//
+//	            try {
+//
+//	                Method getter =
+//	                        M_SFINP2_Summary_Entity.class.getMethod(getterName);
+//
+//	                Method setter =
+//	                        M_SFINP2_Summary_Entity.class.getMethod(
+//	                                setterName,
+//	                                getter.getReturnType()
+//	                        );
+//
+//	                Object newValue = getter.invoke(updatedEntity);
+//
+//	                setter.invoke(existing, newValue);
+//
+//	            } catch (NoSuchMethodException e) {
+//
+//	                // skip missing fields
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // ✅ SAVE ENTITY
+//	    M_SFINP2_Summary_Repo.save(existing);
+//
+//	    // 🔥 CALL PROCEDURE AFTER COMMIT
+//	    TransactionSynchronizationManager.registerSynchronization(
+//	            new TransactionSynchronizationAdapter() {
+//
+//	                @Override
+//	                public void afterCommit() {
+//
+//	                    try {
+//
+//	                        String formattedDate =
+//	                                new SimpleDateFormat("dd-MM-yyyy")
+//	                                        .format(updatedEntity.getREPORT_DATE());
+//
+//	                        logger.info(
+//	                                "Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
+//	                                formattedDate
+//	                        );
+//
+//	                        jdbcTemplate.update(
+//	                                "BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;",
+//	                                formattedDate
+//	                        );
+//
+//	                        logger.info("Procedure executed successfully after commit.");
+//
+//	                    } catch (Exception e) {
+//
+//	                        logger.error("Procedure execution failed", e);
+//
+//	                        throw new RuntimeException(
+//	                                "Procedure execution failed",
+//	                                e
+//	                        );
+//	                    }
+//	                }
+//	            }
+//	    );
+//	}
+//	
 
 	@Autowired BRRS_M_SFINP2_Detail_Repo M_SFINP2_detail_repo;
 	
@@ -516,6 +648,10 @@ public ModelAndView getM_SFINP2currentDtl(
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			M_SFINP2_Detail_Entity oldcopy = new M_SFINP2_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -549,6 +685,18 @@ public ModelAndView getM_SFINP2currentDtl(
 		        
 			if (isChanged) {
 				M_SFINP2_detail_repo.save(existing);
+				
+
+	            // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M_SFINP2 Detail Screen",
+	                    "BRRS_M_SFINP2_DETAIL"
+	            );
+
+				
 				logger.info("Record updated successfully for account {}", acctNo);
 
 				// Format date for procedure
@@ -556,19 +704,44 @@ public ModelAndView getM_SFINP2currentDtl(
 						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
 				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
+				
+				TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info("Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+	                                logger.error("Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
+				
+				
+//				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+//					@Override
+//					public void afterCommit() {
+//						try {
+//							logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
+//									formattedDate);
+//							jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+//							logger.info("Procedure executed successfully after commit.");
+//						} catch (Exception e) {
+//							logger.error("Error executing procedure after commit", e);
+//						}
+//					}
+//				});
 
 				return ResponseEntity.ok("Record updated successfully!");
 			} else {

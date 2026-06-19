@@ -35,6 +35,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -311,6 +312,15 @@ public class BRRS_M_PD_ReportService {
 		        existing = list.get(0);
 		    }
 		    
+		 // =========================================
+		 // AUDIT OLD COPY
+		 // =========================================
+
+		 M_PD_Manual_Summary_Entity oldcopy =
+		         new M_PD_Manual_Summary_Entity();
+
+		 BeanUtils.copyProperties(existing, oldcopy);
+		    
 
 		    try {
 
@@ -448,12 +458,37 @@ public class BRRS_M_PD_ReportService {
 		            }
 		        }
 
-		        // ---------------------------
-		        // SAVE TO DATABASE
-		        // ---------------------------
-		        BRRS_M_PD_Manual_Summary_Repo.save(existing);
+		     // =========================================
+		     // CHECK CHANGES
+		     // =========================================
 
-		        System.out.println("Record Updated Successfully");
+		     String changes =
+		             auditService.getChanges(
+		                     oldcopy,
+		                     existing);
+
+		     // =========================================
+		     // SAVE TO DATABASE
+		     // =========================================
+
+		     BRRS_M_PD_Manual_Summary_Repo.save(existing);
+
+		     // =========================================
+		     // AUDIT ONLY IF CHANGES FOUND
+		     // =========================================
+
+		     if (!changes.isEmpty()) {
+
+		         auditService.compareEntitiesmanual(
+		                 oldcopy,
+		                 existing,
+		                 updatedEntity.getReport_date().toString(),
+		                 "M PD Manual Summary Screen",
+		                 "BRRS_M_PD_MANUAL_SUMMARY"
+		         );
+		     }
+
+		     System.out.println("Record Updated Successfully");
 
 		    } catch (Exception e) {
 		        throw new RuntimeException("Error while updating report fields", e);
@@ -850,6 +885,10 @@ return new byte[0];
 	            logger.warn("No record found for ACCT_NO: {}", acctNo);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 	        }
+	        
+	        // Create old copy for audit comparison
+	        M_PD_Detail_Entity oldcopy = new M_PD_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 	        boolean isChanged = false;
 
@@ -883,6 +922,16 @@ return new byte[0];
 
 	        if (isChanged) {
 	            BRRS_M_PD_Detail_Repo.save(existing);
+	            
+	            // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M_PD Detail Screen",
+	                    "BRRS_M_PD_DETAIL"
+	            );
+	            
 	            logger.info("Record updated successfully for account {}", acctNo);
 
 	            // Format date for procedure

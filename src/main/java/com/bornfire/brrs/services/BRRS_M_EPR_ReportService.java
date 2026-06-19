@@ -7410,96 +7410,228 @@ public class BRRS_M_EPR_ReportService {
 			}
 		}
 	
-	@Transactional
-	public void updateReport(M_EPR_Summary_Entity updatedEntity) {
+//	@Transactional
+//	public void updateReport(M_EPR_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	    M_EPR_Summary_Entity existingSummary =
+//	            brrs_m_epr_summary_repo.findById(updatedEntity.getReport_date())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	    M_EPR_Detail_Entity existingDetail =
+//	            brrs_m_epr_detail_repo.findById(updatedEntity.getReport_date())
+//	                    .orElseGet(() -> {
+//	                        M_EPR_Detail_Entity d = new M_EPR_Detail_Entity();
+//	                        d.setReport_date(updatedEntity.getReport_date());
+//	                        return d;
+//	                    });
+//
+//	    try {
+//
+//	        // 🔁 Loop R11 → R23
+//	        for (int i = 11; i <= 23; i++) {
+//
+//	            String prefix = "R" + i + "_";
+//
+//	            String[] fields = {
+//	                "market",
+//	                "gpfsr_nom_amt",
+//	                "gpfsr_pos_att8_per_spe_ris",
+//	                "gpfsr_chrg",
+//	                "gpfsr_nom_amt1",
+//	                "gpfsr_pos_att4_per_spe_ris",
+//	                "gpfsr_chrg1",
+//	                "gpfsr_nom_amt2",
+//	                "gpfsr_pos_att2_per_spe_ris",
+//	                "gpfsr_chrg2",
+//	                "tot_spe_ris_chrg",
+//	                "net_pos_gen_mar_ris",
+//	                "gen_mar_ris_chrg_8per",
+//	                "2per_gen_mar_ris_chrg_div_port",
+//	                "tot_gen_mar_risk_chrg",
+//	                "tot_mar_ris_chrg"
+//	            };
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                            M_EPR_Summary_Entity.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                            M_EPR_Summary_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                            M_EPR_Detail_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    brrs_m_epr_summary_repo.save(existingSummary);
+//	    brrs_m_epr_detail_repo.save(existingDetail);
+//	}
+		
+		@Transactional
+		public void updateReport(M_EPR_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+		    System.out.println("Came to services");
+		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    // 1️⃣ Fetch existing SUMMARY
-	    M_EPR_Summary_Entity existingSummary =
-	            brrs_m_epr_summary_repo.findById(updatedEntity.getReport_date())
-	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		    // 1️⃣ Fetch existing SUMMARY
+		    M_EPR_Summary_Entity existingSummary =
+		            brrs_m_epr_summary_repo.findById(updatedEntity.getReport_date())
+		                    .orElseThrow(() -> new RuntimeException(
+		                            "Summary record not found for REPORT_DATE: "
+		                                    + updatedEntity.getReport_date()));
 
-	    // 2️⃣ Fetch or create DETAIL
-	    M_EPR_Detail_Entity existingDetail =
-	            brrs_m_epr_detail_repo.findById(updatedEntity.getReport_date())
-	                    .orElseGet(() -> {
-	                        M_EPR_Detail_Entity d = new M_EPR_Detail_Entity();
-	                        d.setReport_date(updatedEntity.getReport_date());
-	                        return d;
-	                    });
+		    // =========================================
+		    // AUDIT OLD COPY
+		    // =========================================
+		    M_EPR_Summary_Entity oldcopy =
+		            new M_EPR_Summary_Entity();
 
-	    try {
+		    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	        // 🔁 Loop R11 → R23
-	        for (int i = 11; i <= 23; i++) {
+		    // 2️⃣ Fetch or create DETAIL
+		    M_EPR_Detail_Entity existingDetail =
+		            brrs_m_epr_detail_repo.findById(updatedEntity.getReport_date())
+		                    .orElseGet(() -> {
+		                        M_EPR_Detail_Entity d = new M_EPR_Detail_Entity();
+		                        d.setReport_date(updatedEntity.getReport_date());
+		                        return d;
+		                    });
 
-	            String prefix = "R" + i + "_";
+		    try {
 
-	            String[] fields = {
-	                "market",
-	                "gpfsr_nom_amt",
-	                "gpfsr_pos_att8_per_spe_ris",
-	                "gpfsr_chrg",
-	                "gpfsr_nom_amt1",
-	                "gpfsr_pos_att4_per_spe_ris",
-	                "gpfsr_chrg1",
-	                "gpfsr_nom_amt2",
-	                "gpfsr_pos_att2_per_spe_ris",
-	                "gpfsr_chrg2",
-	                "tot_spe_ris_chrg",
-	                "net_pos_gen_mar_ris",
-	                "gen_mar_ris_chrg_8per",
-	                "2per_gen_mar_ris_chrg_div_port",
-	                "tot_gen_mar_risk_chrg",
-	                "tot_mar_ris_chrg"
-	            };
+		        // 🔁 Loop R11 → R23
+		        for (int i = 11; i <= 23; i++) {
 
-	            for (String field : fields) {
+		            String prefix = "R" + i + "_";
 
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+		            String[] fields = {
+		                    "market",
+		                    "gpfsr_nom_amt",
+		                    "gpfsr_pos_att8_per_spe_ris",
+		                    "gpfsr_chrg",
+		                    "gpfsr_nom_amt1",
+		                    "gpfsr_pos_att4_per_spe_ris",
+		                    "gpfsr_chrg1",
+		                    "gpfsr_nom_amt2",
+		                    "gpfsr_pos_att2_per_spe_ris",
+		                    "gpfsr_chrg2",
+		                    "tot_spe_ris_chrg",
+		                    "net_pos_gen_mar_ris",
+		                    "gen_mar_ris_chrg_8per",
+		                    "2per_gen_mar_ris_chrg_div_port",
+		                    "tot_gen_mar_risk_chrg",
+		                    "tot_mar_ris_chrg"
+		            };
 
-	                try {
-	                    Method getter =
-	                            M_EPR_Summary_Entity.class.getMethod(getterName);
+		            for (String field : fields) {
 
-	                    Method summarySetter =
-	                            M_EPR_Summary_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+		                String getterName = "get" + prefix + field;
+		                String setterName = "set" + prefix + field;
 
-	                    Method detailSetter =
-	                            M_EPR_Detail_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+		                try {
 
-	                    Object newValue = getter.invoke(updatedEntity);
+		                    Method getter =
+		                            M_EPR_Summary_Entity.class.getMethod(getterName);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+		                    Method summarySetter =
+		                            M_EPR_Summary_Entity.class.getMethod(
+		                                    setterName,
+		                                    getter.getReturnType());
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+		                    Method detailSetter =
+		                            M_EPR_Detail_Entity.class.getMethod(
+		                                    setterName,
+		                                    getter.getReturnType());
 
-	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
+		                    Object newValue = getter.invoke(updatedEntity);
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+		                    // Update SUMMARY
+		                    summarySetter.invoke(existingSummary, newValue);
 
-	    // 3️⃣ Save BOTH (same transaction)
-	    brrs_m_epr_summary_repo.save(existingSummary);
-	    brrs_m_epr_detail_repo.save(existingDetail);
-	}
+		                    // Update DETAIL
+		                    detailSetter.invoke(existingDetail, newValue);
+
+		                } catch (NoSuchMethodException e) {
+
+		                    // Skip missing fields
+		                    continue;
+		                }
+		            }
+		        }
+
+		    } catch (Exception e) {
+
+		        throw new RuntimeException(
+		                "Error while updating report fields", e);
+		    }
+
+		    // =========================================
+		    // CHECK CHANGES
+		    // =========================================
+
+		    String changes =
+		            auditService.getChanges(
+		                    oldcopy,
+		                    existingSummary);
+
+		    System.out.println("EPR Changes Length = " + changes.length());
+
+		    brrs_m_epr_summary_repo.save(existingSummary);
+		    brrs_m_epr_detail_repo.save(existingDetail);
+
+		    if (!changes.isEmpty()) {
+
+		        if (changes.length() > 1900) {
+
+		            System.out.println(
+		                    "Audit skipped. MODI_DETAILS length = "
+		                            + changes.length());
+
+		        } else {
+
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existingSummary,
+		                    updatedEntity.getReport_date().toString(),
+		                    "M EPR Summary Screen",
+		                    "BRRS_M_EPR_SUMMARY"
+		            );
+		        }
+		    }
 
 
-  
+		}
 	
 
 	public List<Object[]> getM_EPRResub() {
@@ -8863,94 +8995,222 @@ public class BRRS_M_EPR_ReportService {
 
 		}
 		
+//		@Transactional
+//	    public void updateResubReport(M_EPR_RESUB_Summary_Entity updatedEntity) {
+//
+//	        Date reportDate = updatedEntity.getReport_date();
+//
+//	        // ----------------------------------------------------
+//	        // GET CURRENT VERSION FROM RESUB TABLE
+//	        // ----------------------------------------------------
+//
+//	        BigDecimal maxResubVer =
+//	            brrs_m_epr_resub_summary_repo.findMaxVersion(reportDate);
+//
+//	        if (maxResubVer == null)
+//	            throw new RuntimeException("No record for: " + reportDate);
+//
+//	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+//
+//	        Date now = new Date();
+//
+//	        // ====================================================
+//	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+//	        // ====================================================
+//
+//	        M_EPR_RESUB_Summary_Entity resubSummary =
+//	            new M_EPR_RESUB_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubSummary.setReport_date(reportDate);
+//	        resubSummary.setReport_version(newVersion);
+//	        resubSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+//	        // ====================================================
+//
+//	        M_EPR_RESUB_Detail_Entity resubDetail =
+//	            new M_EPR_RESUB_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubDetail.setReport_date(reportDate);
+//	        resubDetail.setReport_version(newVersion);
+//	        resubDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        M_EPR_Archival_Summary_Entity archSummary =
+//	            new M_EPR_Archival_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archSummary.setReport_date(reportDate);
+//	        archSummary.setReport_version(newVersion);   // SAME VERSION
+//	        archSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        M_EPR_Archival_Detail_Entity archDetail =
+//	            new M_EPR_Archival_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archDetail.setReport_date(reportDate);
+//	        archDetail.setReport_version(newVersion);    // SAME VERSION
+//	        archDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 6️⃣ SAVE ALL WITH SAME DATA
+//	        // ====================================================
+//
+//	        brrs_m_epr_resub_summary_repo.save(resubSummary);
+//	        brrs_m_epr_resub_detail_repo.save(resubDetail);
+//
+//	        m_epr_Archival_Summary_Repo.save(archSummary);
+//	        m_epr_Archival_Detail_Repo.save(archDetail);
+//	    }
+//
+//		
+		
+		
 		@Transactional
-	    public void updateResubReport(M_EPR_RESUB_Summary_Entity updatedEntity) {
+		public void updateResubReport(M_EPR_RESUB_Summary_Entity updatedEntity) {
 
-	        Date reportDate = updatedEntity.getReport_date();
+		    Date reportDate = updatedEntity.getReport_date();
 
-	        // ----------------------------------------------------
-	        // GET CURRENT VERSION FROM RESUB TABLE
-	        // ----------------------------------------------------
+		    // ----------------------------------------------------
+		    // GET CURRENT VERSION FROM RESUB TABLE
+		    // ----------------------------------------------------
 
-	        BigDecimal maxResubVer =
-	            brrs_m_epr_resub_summary_repo.findMaxVersion(reportDate);
+		    BigDecimal maxResubVer =
+		            brrs_m_epr_resub_summary_repo.findMaxVersion(reportDate);
 
-	        if (maxResubVer == null)
-	            throw new RuntimeException("No record for: " + reportDate);
+		    if (maxResubVer == null)
+		        throw new RuntimeException("No record for: " + reportDate);
 
-	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+		    BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
 
-	        Date now = new Date();
+		    Date now = new Date();
 
-	        // ====================================================
-	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-	        // ====================================================
+		    // ====================================================
+		    // RESUB SUMMARY
+		    // ====================================================
 
-	        M_EPR_RESUB_Summary_Entity resubSummary =
-	            new M_EPR_RESUB_Summary_Entity();
+		    M_EPR_RESUB_Summary_Entity resubSummary =
+		            new M_EPR_RESUB_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            resubSummary,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        resubSummary.setReport_date(reportDate);
-	        resubSummary.setReport_version(newVersion);
-	        resubSummary.setReportResubDate(now);
+		    resubSummary.setReport_date(reportDate);
+		    resubSummary.setReport_version(newVersion);
+		    resubSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-	        // ====================================================
+		    // ====================================================
+		    // RESUB DETAIL
+		    // ====================================================
 
-	        M_EPR_RESUB_Detail_Entity resubDetail =
-	            new M_EPR_RESUB_Detail_Entity();
+		    M_EPR_RESUB_Detail_Entity resubDetail =
+		            new M_EPR_RESUB_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            resubDetail,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        resubDetail.setReport_date(reportDate);
-	        resubDetail.setReport_version(newVersion);
-	        resubDetail.setReportResubDate(now);
+		    resubDetail.setReport_date(reportDate);
+		    resubDetail.setReport_version(newVersion);
+		    resubDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-	        // ====================================================
+		    // ====================================================
+		    // ARCHIVAL SUMMARY
+		    // ====================================================
 
-	        M_EPR_Archival_Summary_Entity archSummary =
-	            new M_EPR_Archival_Summary_Entity();
+		    M_EPR_Archival_Summary_Entity archSummary =
+		            new M_EPR_Archival_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            archSummary,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        archSummary.setReport_date(reportDate);
-	        archSummary.setReport_version(newVersion);   // SAME VERSION
-	        archSummary.setReportResubDate(now);
+		    archSummary.setReport_date(reportDate);
+		    archSummary.setReport_version(newVersion);
+		    archSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-	        // ====================================================
+		    // ====================================================
+		    // ARCHIVAL DETAIL
+		    // ====================================================
 
-	        M_EPR_Archival_Detail_Entity archDetail =
-	            new M_EPR_Archival_Detail_Entity();
+		    M_EPR_Archival_Detail_Entity archDetail =
+		            new M_EPR_Archival_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+		    BeanUtils.copyProperties(
+		            updatedEntity,
+		            archDetail,
+		            "reportDate",
+		            "reportVersion",
+		            "reportResubDate");
 
-	        archDetail.setReport_date(reportDate);
-	        archDetail.setReport_version(newVersion);    // SAME VERSION
-	        archDetail.setReportResubDate(now);
+		    archDetail.setReport_date(reportDate);
+		    archDetail.setReport_version(newVersion);
+		    archDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 6️⃣ SAVE ALL WITH SAME DATA
-	        // ====================================================
+		    // ====================================================
+		    // SAVE ALL
+		    // ====================================================
 
-	        brrs_m_epr_resub_summary_repo.save(resubSummary);
-	        brrs_m_epr_resub_detail_repo.save(resubDetail);
+		    brrs_m_epr_resub_summary_repo.save(resubSummary);
+		    brrs_m_epr_resub_detail_repo.save(resubDetail);
 
-	        m_epr_Archival_Summary_Repo.save(archSummary);
-	        m_epr_Archival_Detail_Repo.save(archDetail);
-	    }
+		    m_epr_Archival_Summary_Repo.save(archSummary);
+		    m_epr_Archival_Detail_Repo.save(archDetail);
 
-		
-		
+		    // ====================================================
+		    // AUDIT
+		    // ====================================================
+
+		    ServletRequestAttributes attrs =
+		            (ServletRequestAttributes)
+		                    RequestContextHolder.getRequestAttributes();
+
+		    if (attrs != null) {
+
+		        HttpServletRequest request =
+		                attrs.getRequest();
+
+		        String userid =
+		                (String) request.getSession()
+		                        .getAttribute("USERID");
+
+		        auditService.createBusinessAudit(
+		                userid,
+		                "RESUBMIT",
+		                "M EPR Resub Summary",
+		                null,
+		                "BRRS_M_EPR_RESUB_SUMMARYTABLE"
+		        );
+		    }
+		}
 		
 		
 		

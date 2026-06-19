@@ -37,6 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +66,7 @@ import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA2_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA2_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
+import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 
 @Component
 @Service
@@ -336,6 +338,249 @@ public class BRRS_M_CA2_ReportService {
 		return resubList;
 	}
 
+//	@Transactional
+//	public ResponseEntity<?> updateReport(
+//	        M_CA2_Summary_Entity updatedEntity) {
+//
+//	    try {
+//
+//	        System.out.println("Updating CA2 Summary table");
+//
+//	        // =========================================
+//	        // FETCH EXISTING RECORD
+//	        // =========================================
+//
+//	        List<M_CA2_Summary_Entity> list =
+//	                BRRS_M_CA2_Summary_Repo
+//	                        .getdatabydateList(
+//	                                updatedEntity.getReport_date());
+//
+//	        M_CA2_Summary_Entity existing;
+//
+//	        if (list.isEmpty()) {
+//
+//	            System.out.println(
+//	                    "No record found for REPORT_DATE : "
+//	                            + updatedEntity.getReport_date());
+//
+//	            existing = new M_CA2_Summary_Entity();
+//
+//	            existing.setReport_date(
+//	                    updatedEntity.getReport_date());
+//
+//	        } else {
+//
+//	            existing = list.get(0);
+//	        }
+//
+//	        boolean isChanged = false;
+//
+//	        // =========================================
+//	        // ALLOWED ROWS
+//	        // =========================================
+//
+//	        int[] amount2Indexes =
+//	                {11, 32, 42, 44, 43, 46};
+//
+//	        int[] amount1Indexes =
+//	                {14, 15, 16, 18, 19, 21};
+//
+//	        // =========================================
+//	        // AMOUNT_2 UPDATE
+//	        // =========================================
+//
+//	        for (int i : amount2Indexes) {
+//
+//	            String getterName =
+//	                    "getR" + i + "_amount_2";
+//
+//	            String setterName =
+//	                    "setR" + i + "_amount_2";
+//
+//	            try {
+//
+//	                Method getter =
+//	                        M_CA2_Summary_Entity.class
+//	                                .getMethod(getterName);
+//
+//	                Method setter =
+//	                        M_CA2_Summary_Entity.class
+//	                                .getMethod(
+//	                                        setterName,
+//	                                        getter.getReturnType());
+//
+//	                Object newValue =
+//	                        getter.invoke(updatedEntity);
+//
+//	                Object oldValue =
+//	                        getter.invoke(existing);
+//
+//	                System.out.println(
+//	                        "Updating R"
+//	                                + i
+//	                                + "_amount_2 : "
+//	                                + newValue);
+//
+//	                if (newValue != null &&
+//	                        !newValue.equals(oldValue)) {
+//
+//	                    setter.invoke(existing, newValue);
+//
+//	                    isChanged = true;
+//	                }
+//
+//	            } catch (NoSuchMethodException e) {
+//
+//	                continue;
+//	            }
+//	        }
+//
+//	        // =========================================
+//	        // AMOUNT_1 UPDATE
+//	        // =========================================
+//
+//	        for (int i : amount1Indexes) {
+//
+//	            String getterName =
+//	                    "getR" + i + "_amount_1";
+//
+//	            String setterName =
+//	                    "setR" + i + "_amount_1";
+//
+//	            try {
+//
+//	                Method getter =
+//	                        M_CA2_Summary_Entity.class
+//	                                .getMethod(getterName);
+//
+//	                Method setter =
+//	                        M_CA2_Summary_Entity.class
+//	                                .getMethod(
+//	                                        setterName,
+//	                                        getter.getReturnType());
+//
+//	                Object newValue =
+//	                        getter.invoke(updatedEntity);
+//
+//	                Object oldValue =
+//	                        getter.invoke(existing);
+//
+//	                System.out.println(
+//	                        "Updating R"
+//	                                + i
+//	                                + "_amount_1 : "
+//	                                + newValue);
+//
+//	                if (newValue != null &&
+//	                        !newValue.equals(oldValue)) {
+//
+//	                    setter.invoke(existing, newValue);
+//
+//	                    isChanged = true;
+//	                }
+//
+//	            } catch (NoSuchMethodException e) {
+//
+//	                continue;
+//	            }
+//	        }
+//
+//	        // =========================================
+//	        // METADATA
+//	        // =========================================
+//
+//	        existing.setReport_version(
+//	                updatedEntity.getReport_version());
+//
+//	        existing.setReport_frequency(
+//	                updatedEntity.getReport_frequency());
+//
+//	        existing.setReport_code(
+//	                updatedEntity.getReport_code());
+//
+//	        existing.setReport_desc(
+//	                updatedEntity.getReport_desc());
+//
+//	        existing.setEntity_flg(
+//	                updatedEntity.getEntity_flg());
+//
+//	        existing.setModify_flg(
+//	                updatedEntity.getModify_flg());
+//
+//	        existing.setDel_flg(
+//	                updatedEntity.getDel_flg());
+//
+//	        // =========================================
+//	        // SAVE ONLY IF CHANGED
+//	        // =========================================
+//
+//	        if (isChanged) {
+//
+//	            BRRS_M_CA2_Summary_Repo.save(existing);
+//
+//	            System.out.println(
+//	                    "CA2 Summary updated successfully");
+//
+//	            // =========================================
+//	            // FORMAT DATE
+//	            // =========================================
+//
+//	            String formattedDate =
+//	                    new SimpleDateFormat("dd-MM-yyyy")
+//	                            .format(
+//	                                    updatedEntity.getReport_date());
+//
+//	            // =========================================
+//	            // CALL PROCEDURE AFTER COMMIT
+//	            // =========================================
+//
+//	            TransactionSynchronizationManager
+//	                    .registerSynchronization(
+//	                            new TransactionSynchronizationAdapter() {
+//
+//	                                @Override
+//	                                public void afterCommit() {
+//
+//	                                    try {
+//
+//	                                        System.out.println(
+//	                                                "Transaction committed - calling procedure");
+//
+//	                                        jdbcTemplate.update(
+//	                                                "BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;",
+//	                                                formattedDate);
+//
+//	                                        System.out.println(
+//	                                                "Procedure executed successfully");
+//
+//	                                    } catch (Exception e) {
+//
+//	                                        e.printStackTrace();
+//	                                    }
+//	                                }
+//	                            });
+//
+//	            return ResponseEntity.ok(
+//	                    "CA2 Summary updated successfully");
+//
+//	        } else {
+//
+//	            return ResponseEntity.ok(
+//	                    "No changes detected");
+//	        }
+//
+//	    } catch (Exception e) {
+//
+//	        e.printStackTrace();
+//
+//	        return ResponseEntity
+//	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//	                .body(
+//	                        "Error updating CA2 Summary : "
+//	                                + e.getMessage());
+//	    }
+//	}
+	
 	@Transactional
 	public ResponseEntity<?> updateReport(
 	        M_CA2_Summary_Entity updatedEntity) {
@@ -370,6 +615,15 @@ public class BRRS_M_CA2_ReportService {
 
 	            existing = list.get(0);
 	        }
+
+	        // =========================================
+	        // AUDIT OLD COPY
+	        // =========================================
+
+	        M_CA2_Summary_Entity oldcopy =
+	                new M_CA2_Summary_Entity();
+
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 	        boolean isChanged = false;
 
@@ -514,7 +768,23 @@ public class BRRS_M_CA2_ReportService {
 
 	        if (isChanged) {
 
+	            String changes =
+	                    auditService.getChanges(
+	                            oldcopy,
+	                            existing);
+
 	            BRRS_M_CA2_Summary_Repo.save(existing);
+
+	            if (!changes.isEmpty()) {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        existing,
+	                        updatedEntity.getReport_date().toString(),
+	                        "M CA2 Summary Screen",
+	                        "BRRS_M_CA2_SUMMARY"
+	                );
+	            }
 
 	            System.out.println(
 	                    "CA2 Summary updated successfully");
@@ -577,9 +847,7 @@ public class BRRS_M_CA2_ReportService {
 	                        "Error updating CA2 Summary : "
 	                                + e.getMessage());
 	    }
-	}
-	
-	
+	}	
 	
 //	@Transactional
 //	public void updateReport(M_CA2_Summary_Entity updatedEntity) {
@@ -1087,6 +1355,11 @@ public class BRRS_M_CA2_ReportService {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			M_CA2_Detail_Entity oldcopy = new M_CA2_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
+
 
 			boolean isChanged = false;
 
@@ -1110,6 +1383,17 @@ public class BRRS_M_CA2_ReportService {
 
 			if (isChanged) {
 				BRRS_M_CA2_Detail_Repo.save(existing);
+				
+				 // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M_CA2 Detail Screen",
+	                    "BRRS_M_CA2_DETAIL"
+	            );
+				
+				
 				logger.info("Record updated successfully for account {}", acctNo);
 
 				// Format date for procedure
@@ -1117,19 +1401,31 @@ public class BRRS_M_CA2_ReportService {
 						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
 
 				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_CA2_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
+				
+				TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+	                            try {
+
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_M_CA2_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info("Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+	                                logger.error("Error executing procedure after commit", e);
+	                            }
+	                        }
+	                    });
+				
+
 
 				return ResponseEntity.ok("Record updated successfully!");
 			} else {

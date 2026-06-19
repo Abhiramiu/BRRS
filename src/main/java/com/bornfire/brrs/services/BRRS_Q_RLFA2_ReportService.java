@@ -260,58 +260,165 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 
-	public void updateReport(Q_RLFA2_Summary_Entity updatedEntity) {
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//	public void updateReport(Q_RLFA2_Summary_Entity updatedEntity) {
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
+//
+//	    Q_RLFA2_Summary_Entity existing = brrs_q_rlfa2_summary_repo.findById(updatedEntity.getReport_date())
+//	            .orElseThrow(() -> new RuntimeException(
+//	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+//
+//	    Q_RLFA2_Detail_Entity detailexisting = brrs_q_rlfa2_detail_repo.findById(updatedEntity.getReport_date())
+//	            .orElseThrow(() -> new RuntimeException(
+//	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+//	    
+//	    try {
+//	        // 1️⃣ Loop from R10 to R63 and copy fields
+//	    	
+//	        for (int i = 10; i <= 64; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = { "sche_fore_ass", "orig_amt", "fore_amt", "no_of_acc" };
+//
+//	            for (String field : fields) {
+//	            	   String getterName = "get" + prefix + field; // e.g., getR10_orig_amt
+//	                   String setterName = "set" + prefix + field; // e.g., setR10_orig_amt
+//
+//	                try {
+//	                    Method getter = Q_RLFA2_Summary_Entity.class.getMethod(getterName);
+//	                    Object newValue = getter.invoke(updatedEntity);
+//	                    
+//	                    Method setter = Q_RLFA2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+//	                    Method detailsetter = Q_RLFA2_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+//	                   
+//	                    setter.invoke(existing, newValue);
+//	                    detailsetter.invoke(detailexisting, newValue);
+//	                } catch (NoSuchMethodException e) {
+//	                    // Skip missing fields
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	       
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save updated entity
+//	    brrs_q_rlfa2_summary_repo.save(existing);
+//	    
+//	}
 
-	    Q_RLFA2_Summary_Entity existing = brrs_q_rlfa2_summary_repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		@Transactional
+		public void updateReport(Q_RLFA2_Summary_Entity updatedEntity) {
 
-	    Q_RLFA2_Detail_Entity detailexisting = brrs_q_rlfa2_detail_repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-	    
-	    try {
-	        // 1️⃣ Loop from R10 to R63 and copy fields
-	    	
-	        for (int i = 10; i <= 64; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+		    System.out.println("Came to services");
+		    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	            String[] fields = { "sche_fore_ass", "orig_amt", "fore_amt", "no_of_acc" };
+		    Q_RLFA2_Summary_Entity existing =
+		            brrs_q_rlfa2_summary_repo.findById(updatedEntity.getReport_date())
+		            .orElseThrow(() -> new RuntimeException(
+		                    "Record not found for REPORT_DATE: "
+		                            + updatedEntity.getReport_date()));
 
-	            for (String field : fields) {
-	            	   String getterName = "get" + prefix + field; // e.g., getR10_orig_amt
-	                   String setterName = "set" + prefix + field; // e.g., setR10_orig_amt
+		    Q_RLFA2_Detail_Entity detailexisting =
+		            brrs_q_rlfa2_detail_repo.findById(updatedEntity.getReport_date())
+		            .orElseThrow(() -> new RuntimeException(
+		                    "Record not found for REPORT_DATE: "
+		                            + updatedEntity.getReport_date()));
 
-	                try {
-	                    Method getter = Q_RLFA2_Summary_Entity.class.getMethod(getterName);
-	                    Object newValue = getter.invoke(updatedEntity);
-	                    
-	                    Method setter = Q_RLFA2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-	                    Method detailsetter = Q_RLFA2_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-	                   
-	                    setter.invoke(existing, newValue);
-	                    detailsetter.invoke(detailexisting, newValue);
-	                } catch (NoSuchMethodException e) {
-	                    // Skip missing fields
-	                    continue;
-	                }
-	            }
-	        }
+		    // ==========================
+		    // AUDIT OLD COPY
+		    // ==========================
+		    Q_RLFA2_Summary_Entity oldcopy =
+		            new Q_RLFA2_Summary_Entity();
 
-	       
+		    BeanUtils.copyProperties(existing, oldcopy);
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+		    try {
 
-	    // 3️⃣ Save updated entity
-	    brrs_q_rlfa2_summary_repo.save(existing);
-	}
+		        // 1️⃣ Loop from R10 to R64 and copy fields
+		        for (int i = 10; i <= 64; i++) {
 
+		            String prefix = "R" + i + "_";
 
+		            String[] fields = {
+		                    "sche_fore_ass",
+		                    "orig_amt",
+		                    "fore_amt",
+		                    "no_of_acc"
+		            };
+
+		            for (String field : fields) {
+
+		                String getterName = "get" + prefix + field;
+		                String setterName = "set" + prefix + field;
+
+		                try {
+
+		                    Method getter =
+		                            Q_RLFA2_Summary_Entity.class
+		                                    .getMethod(getterName);
+
+		                    Object newValue =
+		                            getter.invoke(updatedEntity);
+
+		                    Method setter =
+		                            Q_RLFA2_Summary_Entity.class
+		                                    .getMethod(
+		                                            setterName,
+		                                            getter.getReturnType());
+
+		                    Method detailSetter =
+		                            Q_RLFA2_Detail_Entity.class
+		                                    .getMethod(
+		                                            setterName,
+		                                            getter.getReturnType());
+
+		                    setter.invoke(existing, newValue);
+		                    detailSetter.invoke(detailexisting, newValue);
+
+		                } catch (NoSuchMethodException e) {
+
+		                    continue;
+		                }
+		            }
+		        }
+
+		    } catch (Exception e) {
+
+		        throw new RuntimeException(
+		                "Error while updating report fields", e);
+		    }
+
+		    // ==========================
+		    // SAVE BOTH
+		    // ==========================
+		    brrs_q_rlfa2_summary_repo.save(existing);
+		    brrs_q_rlfa2_detail_repo.save(detailexisting);
+
+		    // ==========================
+		    // AUDIT
+		    // ==========================
+		    String changes =
+		            auditService.getChanges(
+		                    oldcopy,
+		                    existing);
+
+		    if (!changes.isEmpty()) {
+
+		        auditService.compareEntitiesmanual(
+		                oldcopy,
+		                existing,
+		                updatedEntity.getReport_date().toString(),
+		                "Q RLFA2 Summary Screen",
+		                "BRRS_Q_RLFA2_SUMMARYTABLE"
+		        );
+		    }
+		}
 
 
 	
@@ -343,94 +450,221 @@ public class BRRS_Q_RLFA2_ReportService {
 
 
 	
+//	@Transactional
+//	    public void updateResubReport(Q_RLFA2_RESUB_Summary_Entity updatedEntity) {
+//
+//	        Date reportDate = updatedEntity.getReport_date();
+//
+//	        // ----------------------------------------------------
+//	        // GET CURRENT VERSION FROM RESUB TABLE
+//	        // ----------------------------------------------------
+//
+//	        BigDecimal maxResubVer =
+//	            Q_RLFA2_resub_summary_repo.findMaxVersion(reportDate);
+//
+//	        if (maxResubVer == null)
+//	            throw new RuntimeException("No record for: " + reportDate);
+//
+//	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+//
+//	        Date now = new Date();
+//
+//	        // ====================================================
+//	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+//	        // ====================================================
+//
+//	        Q_RLFA2_RESUB_Summary_Entity resubSummary =
+//	            new Q_RLFA2_RESUB_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubSummary.setReport_date(reportDate);
+//	        resubSummary.setReport_version(newVersion);
+//	        resubSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+//	        // ====================================================
+//
+//	        Q_RLFA2_RESUB_Detail_Entity resubDetail =
+//	            new Q_RLFA2_RESUB_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, resubDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        resubDetail.setReport_date(reportDate);
+//	        resubDetail.setReport_version(newVersion);
+//	        resubDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        Q_RLFA2_Archival_Summary_Entity archSummary =
+//	            new Q_RLFA2_Archival_Summary_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archSummary,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archSummary.setReport_date(reportDate);
+//	        archSummary.setReport_version(newVersion);   // SAME VERSION
+//	        archSummary.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+//	        // ====================================================
+//
+//	        Q_RLFA2_Archival_Detail_Entity archDetail =
+//	            new Q_RLFA2_Archival_Detail_Entity();
+//
+//	        BeanUtils.copyProperties(updatedEntity, archDetail,
+//	            "reportDate", "reportVersion", "reportResubDate");
+//
+//	        archDetail.setReport_date(reportDate);
+//	        archDetail.setReport_version(newVersion);    // SAME VERSION
+//	        archDetail.setReportResubDate(now);
+//
+//	        // ====================================================
+//	        // 6️⃣ SAVE ALL WITH SAME DATA
+//	        // ====================================================
+//
+//	        Q_RLFA2_resub_summary_repo.save(resubSummary);
+//	        Q_RLFA2_resub_detail_repo.save(resubDetail);
+//
+//	        brrs_q_rlfa2_archival_summary_repo.save(archSummary);
+//	        brrs_q_rlfa2_archival_detail_repo.save(archDetail);
+//	    }
+//	  
+//	  
+	  
 	@Transactional
-	    public void updateResubReport(Q_RLFA2_RESUB_Summary_Entity updatedEntity) {
+	public void updateResubReport(Q_RLFA2_RESUB_Summary_Entity updatedEntity) {
 
-	        Date reportDate = updatedEntity.getReport_date();
+	    Date reportDate = updatedEntity.getReport_date();
 
-	        // ----------------------------------------------------
-	        // GET CURRENT VERSION FROM RESUB TABLE
-	        // ----------------------------------------------------
+	    // ----------------------------------------------------
+	    // GET CURRENT VERSION FROM RESUB TABLE
+	    // ----------------------------------------------------
 
-	        BigDecimal maxResubVer =
+	    BigDecimal maxResubVer =
 	            Q_RLFA2_resub_summary_repo.findMaxVersion(reportDate);
 
-	        if (maxResubVer == null)
-	            throw new RuntimeException("No record for: " + reportDate);
+	    if (maxResubVer == null)
+	        throw new RuntimeException("No record for: " + reportDate);
 
-	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	    BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
 
-	        Date now = new Date();
+	    Date now = new Date();
 
-	        // ====================================================
-	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-	        // ====================================================
+	    // ====================================================
+	    // RESUB SUMMARY
+	    // ====================================================
 
-	        Q_RLFA2_RESUB_Summary_Entity resubSummary =
+	    Q_RLFA2_RESUB_Summary_Entity resubSummary =
 	            new Q_RLFA2_RESUB_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            resubSummary,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-	        resubSummary.setReport_date(reportDate);
-	        resubSummary.setReport_version(newVersion);
-	        resubSummary.setReportResubDate(now);
+	    resubSummary.setReport_date(reportDate);
+	    resubSummary.setReport_version(newVersion);
+	    resubSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-	        // ====================================================
+	    // ====================================================
+	    // RESUB DETAIL
+	    // ====================================================
 
-	        Q_RLFA2_RESUB_Detail_Entity resubDetail =
+	    Q_RLFA2_RESUB_Detail_Entity resubDetail =
 	            new Q_RLFA2_RESUB_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, resubDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            resubDetail,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-	        resubDetail.setReport_date(reportDate);
-	        resubDetail.setReport_version(newVersion);
-	        resubDetail.setReportResubDate(now);
+	    resubDetail.setReport_date(reportDate);
+	    resubDetail.setReport_version(newVersion);
+	    resubDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-	        // ====================================================
+	    // ====================================================
+	    // ARCHIVAL SUMMARY
+	    // ====================================================
 
-	        Q_RLFA2_Archival_Summary_Entity archSummary =
+	    Q_RLFA2_Archival_Summary_Entity archSummary =
 	            new Q_RLFA2_Archival_Summary_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archSummary,
-	            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            archSummary,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-	        archSummary.setReport_date(reportDate);
-	        archSummary.setReport_version(newVersion);   // SAME VERSION
-	        archSummary.setReportResubDate(now);
+	    archSummary.setReport_date(reportDate);
+	    archSummary.setReport_version(newVersion);
+	    archSummary.setReportResubDate(now);
 
-	        // ====================================================
-	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-	        // ====================================================
+	    // ====================================================
+	    // ARCHIVAL DETAIL
+	    // ====================================================
 
-	        Q_RLFA2_Archival_Detail_Entity archDetail =
+	    Q_RLFA2_Archival_Detail_Entity archDetail =
 	            new Q_RLFA2_Archival_Detail_Entity();
 
-	        BeanUtils.copyProperties(updatedEntity, archDetail,
-	            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            archDetail,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-	        archDetail.setReport_date(reportDate);
-	        archDetail.setReport_version(newVersion);    // SAME VERSION
-	        archDetail.setReportResubDate(now);
+	    archDetail.setReport_date(reportDate);
+	    archDetail.setReport_version(newVersion);
+	    archDetail.setReportResubDate(now);
 
-	        // ====================================================
-	        // 6️⃣ SAVE ALL WITH SAME DATA
-	        // ====================================================
+	    // ====================================================
+	    // SAVE ALL
+	    // ====================================================
 
-	        Q_RLFA2_resub_summary_repo.save(resubSummary);
-	        Q_RLFA2_resub_detail_repo.save(resubDetail);
+	    Q_RLFA2_resub_summary_repo.save(resubSummary);
+	    Q_RLFA2_resub_detail_repo.save(resubDetail);
 
-	        brrs_q_rlfa2_archival_summary_repo.save(archSummary);
-	        brrs_q_rlfa2_archival_detail_repo.save(archDetail);
+	    brrs_q_rlfa2_archival_summary_repo.save(archSummary);
+	    brrs_q_rlfa2_archival_detail_repo.save(archDetail);
+
+	    // ====================================================
+	    // AUDIT
+	    // ====================================================
+
+	    ServletRequestAttributes attrs =
+	            (ServletRequestAttributes)
+	                    RequestContextHolder.getRequestAttributes();
+
+	    if (attrs != null) {
+
+	        HttpServletRequest request =
+	                attrs.getRequest();
+
+	        String userid =
+	                (String) request.getSession()
+	                        .getAttribute("USERID");
+
+	        auditService.createBusinessAudit(
+	                userid,
+	                "RESUBMIT",
+	                "Q RLFA2 Resub Summary",
+	                null,
+	                "BRRS_Q_RLFA2_RESUB_SUMMARYTABLE"
+	        );
 	    }
-	  
-	  
-	  
+	}
 		
 	  
 	// Normal format Excel Q_RLFA2

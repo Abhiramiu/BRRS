@@ -252,6 +252,85 @@ public class BRRS_M_OR2_ReportService {
 	}
 
 	
+//	@Transactional
+//	public void updateReport(M_OR2_Summary_Entity updatedEntity) {
+//
+//	    System.out.println("Came to services");
+//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+//
+//	    // 1️⃣ Fetch existing SUMMARY
+//	     M_OR2_Summary_Entity existingSummary =
+//	            M_OR2_Summary_Repo.findById(updatedEntity.getReportDate())
+//	                    .orElseThrow(() -> new RuntimeException(
+//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+//
+//	    // 2️⃣ Fetch or create DETAIL
+//	      M_OR2_Detail_Entity existingDetail =
+//	            M_OR2_Detail_Repo.findById(updatedEntity.getReportDate())
+//	                    .orElseGet(() -> {
+//	                          M_OR2_Detail_Entity d = new   M_OR2_Detail_Entity();
+//	                        d.setReportDate(updatedEntity.getReportDate());
+//	                        return d;
+//	                    });
+//
+//	  try {
+//	        // 1️⃣ Loop from R12 to R65 and copy fields
+//	    	
+//	        for (int i = 12; i <= 65; i++) {
+//				
+//	        	 String prefix = "R" + i + "_";
+//
+//	            String[] fields = { "corporate_finance",
+//	            		"trading_and_sales",
+//	            		"retail_banking",
+//	            		"commercial_banking",
+//	            		"payments_and_settlements",
+//	            		"agency_services",
+//	            		"asset_management",
+//	            		"retail_brokerage" };
+//
+//	            for (String field : fields) {
+//
+//	                String getterName = "get" + prefix + field;
+//	                String setterName = "set" + prefix + field;
+//
+//	                try {
+//	                    Method getter =
+//	                              M_OR2_Summary_Entity.class.getMethod(getterName);
+//
+//	                    Method summarySetter =
+//	                              M_OR2_Summary_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Method detailSetter =
+//	                              M_OR2_Detail_Entity.class.getMethod(
+//	                                    setterName, getter.getReturnType());
+//
+//	                    Object newValue = getter.invoke(updatedEntity);
+//
+//	                    // ✅ set into SUMMARY
+//	                    summarySetter.invoke(existingSummary, newValue);
+//
+//	                    // ✅ set into DETAIL
+//	                    detailSetter.invoke(existingDetail, newValue);
+//
+//	                } catch (NoSuchMethodException e) {
+//	                    // skip missing fields safely
+//	                    continue;
+//	                }
+//	            }
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw new RuntimeException("Error while updating report fields", e);
+//	    }
+//
+//	    // 3️⃣ Save BOTH (same transaction)
+//	    M_OR2_Summary_Repo.save(existingSummary);
+//	    M_OR2_Detail_Repo.save(existingDetail);
+//		
+//		}
+	
 	@Transactional
 	public void updateReport(M_OR2_Summary_Entity updatedEntity) {
 
@@ -259,35 +338,38 @@ public class BRRS_M_OR2_ReportService {
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	     M_OR2_Summary_Entity existingSummary =
+	    M_OR2_Summary_Entity existingSummary =
 	            M_OR2_Summary_Repo.findById(updatedEntity.getReportDate())
 	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	                            "Summary record not found for REPORT_DATE: "
+	                                    + updatedEntity.getReportDate()));
 
 	    // 2️⃣ Fetch or create DETAIL
-	      M_OR2_Detail_Entity existingDetail =
+	    M_OR2_Detail_Entity existingDetail =
 	            M_OR2_Detail_Repo.findById(updatedEntity.getReportDate())
 	                    .orElseGet(() -> {
-	                          M_OR2_Detail_Entity d = new   M_OR2_Detail_Entity();
+	                        M_OR2_Detail_Entity d = new M_OR2_Detail_Entity();
 	                        d.setReportDate(updatedEntity.getReportDate());
 	                        return d;
 	                    });
 
-	  try {
-	        // 1️⃣ Loop from R12 to R65 and copy fields
-	    	
-	        for (int i = 12; i <= 65; i++) {
-				
-	        	 String prefix = "R" + i + "_";
+	    try {
 
-	            String[] fields = { "corporate_finance",
-	            		"trading_and_sales",
-	            		"retail_banking",
-	            		"commercial_banking",
-	            		"payments_and_settlements",
-	            		"agency_services",
-	            		"asset_management",
-	            		"retail_brokerage" };
+	        // 1️⃣ Loop from R12 to R65 and copy fields
+	        for (int i = 12; i <= 65; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "corporate_finance",
+	                    "trading_and_sales",
+	                    "retail_banking",
+	                    "commercial_banking",
+	                    "payments_and_settlements",
+	                    "agency_services",
+	                    "asset_management",
+	                    "retail_brokerage"
+	            };
 
 	            for (String field : fields) {
 
@@ -295,128 +377,293 @@ public class BRRS_M_OR2_ReportService {
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter =
-	                              M_OR2_Summary_Entity.class.getMethod(getterName);
+	                            M_OR2_Summary_Entity.class.getMethod(getterName);
 
 	                    Method summarySetter =
-	                              M_OR2_Summary_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_OR2_Summary_Entity.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
 
 	                    Method detailSetter =
-	                              M_OR2_Detail_Entity.class.getMethod(
-	                                    setterName, getter.getReturnType());
+	                            M_OR2_Detail_Entity.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
 
-	                    Object newValue = getter.invoke(updatedEntity);
+	                    Object newValue =
+	                            getter.invoke(updatedEntity);
 
-	                    // ✅ set into SUMMARY
-	                    summarySetter.invoke(existingSummary, newValue);
+	                    // ✅ Set into SUMMARY
+	                    summarySetter.invoke(
+	                            existingSummary,
+	                            newValue);
 
-	                    // ✅ set into DETAIL
-	                    detailSetter.invoke(existingDetail, newValue);
+	                    // ✅ Set into DETAIL
+	                    detailSetter.invoke(
+	                            existingDetail,
+	                            newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    // skip missing fields safely
 	                    continue;
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating report fields",
+	                e);
 	    }
 
 	    // 3️⃣ Save BOTH (same transaction)
 	    M_OR2_Summary_Repo.save(existingSummary);
 	    M_OR2_Detail_Repo.save(existingDetail);
-		
-		}
+
+	    // ====================================================
+	    // AUDIT
+	    // ====================================================
+
+	    ServletRequestAttributes attrs =
+	            (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+	    if (attrs != null) {
+
+	        HttpServletRequest request =
+	                attrs.getRequest();
+
+	        String userid =
+	                (String) request.getSession()
+	                        .getAttribute("USERID");
+
+	        auditService.createBusinessAudit(
+	                userid,
+	                "UPDATE",
+	                "M OR2 Summary",
+	                null,
+	                "BRRS_M_OR2_SUMMARYTABLE"
+	        );
+	    }
+
+	    System.out.println("M_OR2 Summary Updated Successfully");
+	}
 	
+//	@Transactional
+//    public void updateResubReport(M_OR2_RESUB_Summary_Entity updatedEntity) {
+//
+//        Date reportDate = updatedEntity.getReport_date();
+//
+//        // ----------------------------------------------------
+//        // GET CURRENT VERSION FROM RESUB TABLE
+//        // ----------------------------------------------------
+//
+//        BigDecimal maxResubVer =
+//            M_OR2_resub_summary_repo.findMaxVersion(reportDate);
+//
+//        if (maxResubVer == null)
+//            throw new RuntimeException("No record for: " + reportDate);
+//
+//        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+//
+//        Date now = new Date();
+//
+//        // ====================================================
+//        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+//        // ====================================================
+//
+//        M_OR2_RESUB_Summary_Entity resubSummary =
+//            new M_OR2_RESUB_Summary_Entity();
+//
+//        BeanUtils.copyProperties(updatedEntity, resubSummary,
+//            "reportDate", "reportVersion", "reportResubDate");
+//
+//        resubSummary.setReport_date(reportDate);
+//        resubSummary.setReport_version(newVersion);
+//        resubSummary.setReportResubDate(now);
+//
+//        // ====================================================
+//        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+//        // ====================================================
+//
+//        M_OR2_RESUB_Detail_Entity resubDetail =
+//            new M_OR2_RESUB_Detail_Entity();
+//
+//        BeanUtils.copyProperties(updatedEntity, resubDetail,
+//            "reportDate", "reportVersion", "reportResubDate");
+//
+//        resubDetail.setReport_date(reportDate);
+//        resubDetail.setReport_version(newVersion);
+//        resubDetail.setReportResubDate(now);
+//
+//        // ====================================================
+//        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+//        // ====================================================
+//
+//        M_OR2_Archival_Summary_Entity archSummary =
+//            new M_OR2_Archival_Summary_Entity();
+//
+//        BeanUtils.copyProperties(updatedEntity, archSummary,
+//            "reportDate", "reportVersion", "reportResubDate");
+//
+//        archSummary.setReport_date(reportDate);
+//        archSummary.setReport_version(newVersion);   // SAME VERSION
+//        archSummary.setReportResubDate(now);
+//
+//        // ====================================================
+//        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+//        // ====================================================
+//
+//        M_OR2_Archival_Detail_Entity archDetail =
+//            new M_OR2_Archival_Detail_Entity();
+//
+//        BeanUtils.copyProperties(updatedEntity, archDetail,
+//            "reportDate", "reportVersion", "reportResubDate");
+//
+//        archDetail.setReport_date(reportDate);
+//        archDetail.setReport_version(newVersion);    // SAME VERSION
+//        archDetail.setReportResubDate(now);
+//
+//        // ====================================================
+//        // 6️⃣ SAVE ALL WITH SAME DATA
+//        // ====================================================
+//
+//        M_OR2_resub_summary_repo.save(resubSummary);
+//        M_OR2_resub_detail_repo.save(resubDetail);
+//
+//        M_OR2_Archival_Summary_Repo.save(archSummary);
+//        M_OR2_Archival_Detail_Repo.save(archDetail);
+//    }
 	@Transactional
-    public void updateResubReport(M_OR2_RESUB_Summary_Entity updatedEntity) {
+	public void updateResubReport(M_OR2_RESUB_Summary_Entity updatedEntity) {
 
-        Date reportDate = updatedEntity.getReport_date();
+	    Date reportDate = updatedEntity.getReport_date();
 
-        // ----------------------------------------------------
-        // GET CURRENT VERSION FROM RESUB TABLE
-        // ----------------------------------------------------
+	    // ----------------------------------------------------
+	    // GET CURRENT VERSION FROM RESUB TABLE
+	    // ----------------------------------------------------
 
-        BigDecimal maxResubVer =
-            M_OR2_resub_summary_repo.findMaxVersion(reportDate);
+	    BigDecimal maxResubVer =
+	            M_OR2_resub_summary_repo.findMaxVersion(reportDate);
 
-        if (maxResubVer == null)
-            throw new RuntimeException("No record for: " + reportDate);
+	    if (maxResubVer == null)
+	        throw new RuntimeException("No record for: " + reportDate);
 
-        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
+	    BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
 
-        Date now = new Date();
+	    Date now = new Date();
 
-        // ====================================================
-        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-        // ====================================================
+	    // ====================================================
+	    // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
+	    // ====================================================
 
-        M_OR2_RESUB_Summary_Entity resubSummary =
-            new M_OR2_RESUB_Summary_Entity();
+	    M_OR2_RESUB_Summary_Entity resubSummary =
+	            new M_OR2_RESUB_Summary_Entity();
 
-        BeanUtils.copyProperties(updatedEntity, resubSummary,
-            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            resubSummary,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-        resubSummary.setReport_date(reportDate);
-        resubSummary.setReport_version(newVersion);
-        resubSummary.setReportResubDate(now);
+	    resubSummary.setReport_date(reportDate);
+	    resubSummary.setReport_version(newVersion);
+	    resubSummary.setReportResubDate(now);
 
-        // ====================================================
-        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-        // ====================================================
+	    // ====================================================
+	    // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
+	    // ====================================================
 
-        M_OR2_RESUB_Detail_Entity resubDetail =
-            new M_OR2_RESUB_Detail_Entity();
+	    M_OR2_RESUB_Detail_Entity resubDetail =
+	            new M_OR2_RESUB_Detail_Entity();
 
-        BeanUtils.copyProperties(updatedEntity, resubDetail,
-            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            resubDetail,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-        resubDetail.setReport_date(reportDate);
-        resubDetail.setReport_version(newVersion);
-        resubDetail.setReportResubDate(now);
+	    resubDetail.setReport_date(reportDate);
+	    resubDetail.setReport_version(newVersion);
+	    resubDetail.setReportResubDate(now);
 
-        // ====================================================
-        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-        // ====================================================
+	    // ====================================================
+	    // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
+	    // ====================================================
 
-        M_OR2_Archival_Summary_Entity archSummary =
-            new M_OR2_Archival_Summary_Entity();
+	    M_OR2_Archival_Summary_Entity archSummary =
+	            new M_OR2_Archival_Summary_Entity();
 
-        BeanUtils.copyProperties(updatedEntity, archSummary,
-            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            archSummary,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-        archSummary.setReport_date(reportDate);
-        archSummary.setReport_version(newVersion);   // SAME VERSION
-        archSummary.setReportResubDate(now);
+	    archSummary.setReport_date(reportDate);
+	    archSummary.setReport_version(newVersion);
+	    archSummary.setReportResubDate(now);
 
-        // ====================================================
-        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-        // ====================================================
+	    // ====================================================
+	    // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
+	    // ====================================================
 
-        M_OR2_Archival_Detail_Entity archDetail =
-            new M_OR2_Archival_Detail_Entity();
+	    M_OR2_Archival_Detail_Entity archDetail =
+	            new M_OR2_Archival_Detail_Entity();
 
-        BeanUtils.copyProperties(updatedEntity, archDetail,
-            "reportDate", "reportVersion", "reportResubDate");
+	    BeanUtils.copyProperties(
+	            updatedEntity,
+	            archDetail,
+	            "reportDate",
+	            "reportVersion",
+	            "reportResubDate");
 
-        archDetail.setReport_date(reportDate);
-        archDetail.setReport_version(newVersion);    // SAME VERSION
-        archDetail.setReportResubDate(now);
+	    archDetail.setReport_date(reportDate);
+	    archDetail.setReport_version(newVersion);
+	    archDetail.setReportResubDate(now);
 
-        // ====================================================
-        // 6️⃣ SAVE ALL WITH SAME DATA
-        // ====================================================
+	    // ====================================================
+	    // 6️⃣ SAVE ALL WITH SAME DATA
+	    // ====================================================
 
-        M_OR2_resub_summary_repo.save(resubSummary);
-        M_OR2_resub_detail_repo.save(resubDetail);
+	    M_OR2_resub_summary_repo.save(resubSummary);
+	    M_OR2_resub_detail_repo.save(resubDetail);
 
-        M_OR2_Archival_Summary_Repo.save(archSummary);
-        M_OR2_Archival_Detail_Repo.save(archDetail);
-    }
-	
+	    M_OR2_Archival_Summary_Repo.save(archSummary);
+	    M_OR2_Archival_Detail_Repo.save(archDetail);
+
+	    // ====================================================
+	    // AUDIT
+	    // ====================================================
+
+	    ServletRequestAttributes attrs =
+	            (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+	    if (attrs != null) {
+
+	        HttpServletRequest request =
+	                attrs.getRequest();
+
+	        String userid =
+	                (String) request.getSession()
+	                        .getAttribute("USERID");
+
+	        auditService.createBusinessAudit(
+	                userid,
+	                "RESUBMIT",
+	                "M OR2 Resub Summary",
+	                null,
+	                "BRRS_M_OR2_RESUB_SUMMARYTABLE"
+	        );
+	    }
+
+	    System.out.println(
+	            "M_OR2 Resub Version Created Successfully : "
+	                    + newVersion);
+	}
 	
 	//Archival View
 public List<Object[]> getM_OR2Archival() {
