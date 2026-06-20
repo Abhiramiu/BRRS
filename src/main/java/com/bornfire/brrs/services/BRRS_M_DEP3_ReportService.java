@@ -36,6 +36,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -70,7 +71,7 @@ public class BRRS_M_DEP3_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -215,12 +216,18 @@ public class BRRS_M_DEP3_ReportService {
 		return mv;
 	}
 
+	@Transactional
 	public void updateReport(M_DEP3_Summary_Entity updatedEntity) {
 		System.out.println("Came to services1");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 		M_DEP3_Summary_Entity existing = BRRS_M_DEP3_Summary_Repo.findById(updatedEntity.getReportDate()).orElseThrow(
 				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+		// 🔹 Audit copy: Create clone of original DB state before altering any
+		// attributes
+		M_DEP3_Summary_Entity oldcopy = new M_DEP3_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
 			// ✅ Loop for table 2 fields
@@ -238,6 +245,16 @@ public class BRRS_M_DEP3_ReportService {
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existing);
+
+						// --- FIX: Normalize state differences to keep audit log payload minimal ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -247,7 +264,7 @@ public class BRRS_M_DEP3_ReportService {
 				}
 			}
 
-			// ✅ Loop for amount_1 fields
+			// ✅ Loop for exchange rate fields
 			int[] Rows1 = { 11, 12, 13, 14, 15, 16 };
 			for (int i : Rows1) {
 				String prefix = "R" + i + "_";
@@ -262,6 +279,16 @@ public class BRRS_M_DEP3_ReportService {
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existing);
+
+						// --- FIX: Normalize state differences ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -270,7 +297,7 @@ public class BRRS_M_DEP3_ReportService {
 				}
 			}
 
-			// ✅ Loop for amount_1 fields
+			// ✅ Loop for notice/deposit fields
 			int[] Rows2 = { 11, 12, 13, 14, 15, 16, 18 };
 			for (int i : Rows2) {
 				String prefix = "R" + i + "_";
@@ -285,6 +312,16 @@ public class BRRS_M_DEP3_ReportService {
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existing);
+
+						// --- FIX: Normalize state differences ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -299,6 +336,18 @@ public class BRRS_M_DEP3_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
+
+		// Evaluate actual adjustments made across processing threads
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("M_DEP3 Changes Length = " + changes.length());
+
+		// Post dynamic tracking to engine if changes are present
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
+					"M_DEP3 Summary Screen", "BRRS_M_DEP3_SUMMARY");
+		}
+
+		System.out.println("Update completed successfully");
 	}
 
 	public byte[] getM_DEP3DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
@@ -2478,11 +2527,13 @@ public class BRRS_M_DEP3_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 SUMMARY", null, "M_DEP3_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 SUMMARY", null,
+								"M_DEP3_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -4230,7 +4281,8 @@ public class BRRS_M_DEP3_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 EMAIL SUMMARY", null, "M_DEP3_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 EMAIL SUMMARY", null,
+							"M_DEP3_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -4330,7 +4382,7 @@ public class BRRS_M_DEP3_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					
+
 					Cell R12Cell = row.createCell(1);
 
 					if (record.getReportDate() != null) {
@@ -5969,7 +6021,8 @@ public class BRRS_M_DEP3_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 ARCHIVAL SUMMARY", null, "M_DEP3_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 ARCHIVAL SUMMARY", null,
+						"M_DEP3_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -7694,7 +7747,8 @@ public class BRRS_M_DEP3_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 EMAIL ARCHIVAL SUMMARY", null, "M_DEP3_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP3 EMAIL ARCHIVAL SUMMARY", null,
+						"M_DEP3_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}

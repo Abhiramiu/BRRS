@@ -66,7 +66,7 @@ public class BRRS_M_FXR_ReportService {
 
 	@Autowired
 	AuditService auditService;
-	
+
 	@Autowired
 	BRRS_M_FXR_Summary_Repo brrs_M_FXR_summary_repo;
 
@@ -190,6 +190,9 @@ public class BRRS_M_FXR_ReportService {
 		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		// 🔹 Create Audit Copy before editing
+		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -265,9 +268,23 @@ public class BRRS_M_FXR_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// 3️⃣ Save updated entity
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_FXR Changes Length = " + changes.length());
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
+		}
+
+		System.out.println("Update completed successfully");
 	}
 
 	public void updateReport2(M_FXR_Summary_Entity updatedEntity) {
@@ -277,6 +294,9 @@ public class BRRS_M_FXR_ReportService {
 		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		// 🔹 Create Audit Copy before editing
+		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -372,10 +392,23 @@ public class BRRS_M_FXR_ReportService {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_FXR Changes Length = " + changes.length());
 
-		// 3️⃣ Save updated entity
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
+		}
+
+		System.out.println("Update completed successfully");
 	}
 
 	public void updateReport3(M_FXR_Summary_Entity updatedEntity) {
@@ -385,6 +418,9 @@ public class BRRS_M_FXR_ReportService {
 		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		// 🔹 Create Audit Copy before editing
+		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -451,9 +487,23 @@ public class BRRS_M_FXR_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// 3️⃣ Save updated entity
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_FXR Changes Length = " + changes.length());
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// 💾 Save both tables
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
+		}
+
+		System.out.println("Update completed successfully");
 	}
 
 	public void updateResubReport(M_FXR_Resub_Summary_Entity updatedEntity) {
@@ -564,7 +614,8 @@ public class BRRS_M_FXR_ReportService {
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_FXR_Archival_Summary_Entity entity : repoData) {
-					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),entity.getReportResubDate() };
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
 					archivalList.add(row);
 				}
 
@@ -1380,11 +1431,13 @@ public class BRRS_M_FXR_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR SUMMARY", null, "BRRS_M_FXR_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR SUMMARY", null,
+								"BRRS_M_FXR_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -2250,7 +2303,8 @@ public class BRRS_M_FXR_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL SUMMARY", null, "BRRS_M_FXR_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL SUMMARY", null,
+							"BRRS_M_FXR_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -3028,7 +3082,8 @@ public class BRRS_M_FXR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR ARCHIVAL SUMMARY", null, "BRRS_M_FXR_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR ARCHIVAL SUMMARY", null,
+						"BRRS_M_FXR_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -3872,7 +3927,8 @@ public class BRRS_M_FXR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_FXR_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL ARCHIVAL SUMMARY", null,
+						"BRRS_M_FXR_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -4651,7 +4707,8 @@ public class BRRS_M_FXR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR RESUB SUMMARY", null, "BRRS_M_FXR_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR RESUB SUMMARY", null,
+						"BRRS_M_FXR_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -5492,7 +5549,8 @@ public class BRRS_M_FXR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL RESUB SUMMARY", null, "BRRS_M_FXR_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FXR EMAIL RESUB SUMMARY", null,
+						"BRRS_M_FXR_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}

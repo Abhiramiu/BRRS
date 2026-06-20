@@ -64,7 +64,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -192,7 +192,9 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
 				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
+		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
 				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
@@ -214,25 +216,27 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
@@ -247,25 +251,27 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				String setterName = "setR15_" + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip if not present
 					continue;
 				}
 			}
@@ -274,15 +280,26 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
 		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void updateReport2(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 		System.out.println("Came to services 2");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
@@ -291,7 +308,9 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
 				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
+		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
 				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
@@ -301,7 +320,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				});
 
 		try {
-			// 1️⃣ Loop from R11 to R50 and copy fields
+			// 1️⃣ Loop from R22 to R24 and copy fields
 			for (int i = 22; i <= 24; i++) {
 				String prefix = "R" + i + "_";
 
@@ -313,25 +332,27 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
@@ -341,15 +362,26 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
 		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void updateReport3(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 
 		System.out.println("Came to services 3");
@@ -359,7 +391,9 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
 				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
+		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
 				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
@@ -369,9 +403,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				});
 
 		try {
-
-			// 🔁 LOOP FOR R29 ONLY (LIKE OTHER METHODS)
-
+			// 🔁 LOOP FOR R29 ONLY
 			int i = 29;
 			String prefix = "R" + i + "_";
 
@@ -383,26 +415,27 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				String setterName = "set" + prefix + field;
 
 				try {
-
-					// Getter from UPDATED entity
 					Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 							getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip if not present
 					continue;
 				}
 			}
@@ -411,15 +444,26 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
 		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void updateReport4(M_UNCONS_INVEST_Summary_Entity updatedEntity) {
 		System.out.println("Came to services 4");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
@@ -428,7 +472,9 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
 				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
+		// 🔹 Create Audit Copy before editing
+		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
 				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
@@ -438,7 +484,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				});
 
 		try {
-			// 1️⃣ Loop from R11 to R50 and copy fields
+			// 1️⃣ Loop from R35 to R38 and copy fields
 			for (int i = 35; i <= 38; i++) {
 				String prefix = "R" + i + "_";
 
@@ -450,25 +496,27 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_UNCONS_INVEST_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_UNCONS_INVEST_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
@@ -478,11 +526,21 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_UNCONS_INVEST Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
 		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
+					"M_UNCONS_INVEST Summary Screen", "BRRS_M_UNCONS_INVEST_SUMMARY");
+		}
 
 		System.out.println("Update completed successfully");
 	}
@@ -566,58 +624,58 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 //////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
 /// Report Date | Report Version | Domain
 /// RESUB VIEW
-public List<Object[]> getM_UNCONS_INVESTResub() {
-List<Object[]> resubList = new ArrayList<>();
-try {
-List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
-.getdatabydateListWithVersion();
+	public List<Object[]> getM_UNCONS_INVESTResub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
-for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
-resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
-entity.getReportResubDate() });
-}
-System.out.println("Fetched " + resubList.size() + " record(s)");
-} else {
-System.out.println("No archival data found.");
-}
+			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
+				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
+					resubList.add(new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() });
+				}
+				System.out.println("Fetched " + resubList.size() + " record(s)");
+			} else {
+				System.out.println("No archival data found.");
+			}
 
-} catch (Exception e) {
-System.err.println("Error fetching M_UNCONS_INVEST Resub data: " + e.getMessage());
-e.printStackTrace();
-}
-return resubList;
-}
+		} catch (Exception e) {
+			System.err.println("Error fetching M_UNCONS_INVEST Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
 
 // Archival View
-public List<Object[]> getM_UNCONS_INVESTArchival() {
-List<Object[]> archivalList = new ArrayList<>();
+	public List<Object[]> getM_UNCONS_INVESTArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-try {
-List<M_UNCONS_INVEST_Archival_Summary_Entity> repoData = M_UNCONS_INVEST_Archival_Summary_Repo
-.getdatabydateListWithVersion();
+		try {
+			List<M_UNCONS_INVEST_Archival_Summary_Entity> repoData = M_UNCONS_INVEST_Archival_Summary_Repo
+					.getdatabydateListWithVersion();
 
-if (repoData != null && !repoData.isEmpty()) {
-for (M_UNCONS_INVEST_Archival_Summary_Entity entity : repoData) {
-Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
-entity.getReportResubDate() };
-archivalList.add(row);
-}
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReportDate(), entity.getReportVersion(),
+							entity.getReportResubDate() };
+					archivalList.add(row);
+				}
 
-System.out.println("Fetched " + archivalList.size() + " archival records");
-M_UNCONS_INVEST_Archival_Summary_Entity first = repoData.get(0);
-System.out.println("Latest archival version: " + first.getReportVersion());
-} else {
-System.out.println("No archival data found.");
-}
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				M_UNCONS_INVEST_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getReportVersion());
+			} else {
+				System.out.println("No archival data found.");
+			}
 
-} catch (Exception e) {
-System.err.println("Error fetching M_UNCONS_INVEST Archival data: " + e.getMessage());
-e.printStackTrace();
-}
+		} catch (Exception e) {
+			System.err.println("Error fetching M_UNCONS_INVEST Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
 
-return archivalList;
-}
+		return archivalList;
+	}
 
 	// Normal format Excel
 
@@ -1552,11 +1610,13 @@ return archivalList;
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST SUMMARY", null, "BRRS_M_UNCONS_INVEST_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST SUMMARY", null,
+								"BRRS_M_UNCONS_INVEST_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -2213,7 +2273,8 @@ return archivalList;
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL SUMMARY", null, "BRRS_M_UNCONS_INVEST_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL SUMMARY", null,
+							"BRRS_M_UNCONS_INVEST_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -3128,7 +3189,8 @@ return archivalList;
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST ARCHIVAL SUMMARY", null, "BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST ARCHIVAL SUMMARY", null,
+						"BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -3763,7 +3825,8 @@ return archivalList;
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL ARCHIVAL SUMMARY", null,
+						"BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -4666,7 +4729,8 @@ return archivalList;
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST RESUB SUMMARY", null, "BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST RESUB SUMMARY", null,
+						"BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -5300,7 +5364,8 @@ return archivalList;
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL RESUB SUMMARY", null, "BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_UNCONS_INVEST EMAIL RESUB SUMMARY", null,
+						"BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}

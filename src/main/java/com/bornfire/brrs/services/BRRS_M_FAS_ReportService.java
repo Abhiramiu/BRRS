@@ -35,6 +35,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -71,10 +72,10 @@ public class BRRS_M_FAS_ReportService {
 	SessionFactory sessionFactory;
 	@Autowired
 	private Environment env;
-	
+
 	@Autowired
 	AuditService auditService;
-	
+
 	@Autowired
 	BRRS_M_FAS_Detail_Repo m_FAS_Detail_Repo;
 	@Autowired
@@ -472,6 +473,7 @@ public class BRRS_M_FAS_ReportService {
 	// @Autowired
 	// private M_FAS_Archival_Detail_Repo m_FAS_Archival_Detail_Repo;
 
+	@Transactional
 	public void updateReport1(M_FAS_Summary_Entity updatedEntity) {
 		System.out.println("Came to services 3");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
@@ -483,6 +485,11 @@ public class BRRS_M_FAS_ReportService {
 			m_FAS_Summary_Repo.save(updatedEntity);
 			return;
 		}
+
+		// 🔹 Audit copy: Create a clone of the original database state before making
+		// any changes
+		M_FAS_Summary_Entity oldcopy = new M_FAS_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
 
@@ -501,6 +508,16 @@ public class BRRS_M_FAS_ReportService {
 					Method setter = M_FAS_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 					Object value = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existing);
+
+					// --- FIX: Normalize state differences to keep audit log payload minimal ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (value == null) ? "" : value.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					setter.invoke(existing, value);
 				} catch (NoSuchMethodException e) {
 					System.out.println("Missing (R12) method: " + getterName);
@@ -525,6 +542,16 @@ public class BRRS_M_FAS_ReportService {
 						Method setter = M_FAS_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object value = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existing);
+
+						// --- FIX: Normalize state differences ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (value == null) ? "" : value.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						setter.invoke(existing, value);
 					} catch (NoSuchMethodException e) {
 						System.out.println("Missing (R" + i + ") method: " + getterName);
@@ -538,6 +565,17 @@ public class BRRS_M_FAS_ReportService {
 
 		m_FAS_Summary_Repo.save(existing);
 		System.out.println("✔ UPDATED successfully");
+
+		// =====================================================
+		// EVALUATE AND LOG AUDIT TRAIL
+		// =====================================================
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("M_FAS Changes Length = " + changes.length());
+
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
+					"M_FAS Summary Screen", "BRRS_M_FAS_SUMMARY");
+		}
 	}
 
 	@Autowired
@@ -1419,11 +1457,13 @@ public class BRRS_M_FAS_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS SUMMARY", null, "M_FAS_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS SUMMARY", null,
+								"M_FAS_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -2142,7 +2182,8 @@ public class BRRS_M_FAS_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS EMAIL SUMMARY", null, "M_FAS_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS EMAIL SUMMARY", null,
+							"M_FAS_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -2843,7 +2884,8 @@ public class BRRS_M_FAS_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS ARCHIVAL SUMMARY", null, "M_FAS_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS ARCHIVAL SUMMARY", null,
+						"M_FAS_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -3539,7 +3581,8 @@ public class BRRS_M_FAS_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS EMAIL ARCHIVAL SUMMARY", null, "M_FAS_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_FAS EMAIL ARCHIVAL SUMMARY", null,
+						"M_FAS_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}

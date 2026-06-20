@@ -63,11 +63,9 @@ public class BRRS_Q_STAFF_Report_Service {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
 
 	@Autowired
 	AuditService auditService;
-	
 
 	@Autowired
 	BRRS_Q_STAFF_Summary_Repo brrs_Q_STAFF_summary_repo;
@@ -213,6 +211,10 @@ public class BRRS_Q_STAFF_Report_Service {
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
 
+		// 🔹 Audit copy
+		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
+
 		// 🔹 Fetch or create DETAIL
 		Q_STAFF_Detail_Entity detailEntity = brrs_Q_STAFF_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -236,18 +238,27 @@ public class BRRS_Q_STAFF_Report_Service {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_STAFF_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_STAFF_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -261,26 +272,38 @@ public class BRRS_Q_STAFF_Report_Service {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_STAFF Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_STAFF_summary_repo.save(existingSummary);
 		brrs_Q_STAFF_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void updateReport2(Q_STAFF_Summary_Entity updatedEntity) {
 		System.out.println("Came to services 2");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
-
-		Q_STAFF_Summary_Entity existing = brrs_Q_STAFF_summary_repo.findById(updatedEntity.getReportDate())
-				.orElse(null);
 
 		// 🔹 Fetch existing SUMMARY
 		Q_STAFF_Summary_Entity existingSummary = brrs_Q_STAFF_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+		// 🔹 Audit copy
+		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 
 		// 🔹 Fetch or create DETAIL
 		Q_STAFF_Detail_Entity detailEntity = brrs_Q_STAFF_detail_repo.findById(updatedEntity.getReportDate())
@@ -303,18 +326,27 @@ public class BRRS_Q_STAFF_Report_Service {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_STAFF_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_STAFF_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -328,15 +360,26 @@ public class BRRS_Q_STAFF_Report_Service {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_STAFF Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_STAFF_summary_repo.save(existingSummary);
 		brrs_Q_STAFF_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void updateReport3(Q_STAFF_Summary_Entity updatedEntity) {
 		System.out.println("Came to services 3");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
@@ -345,6 +388,10 @@ public class BRRS_Q_STAFF_Report_Service {
 		Q_STAFF_Summary_Entity existingSummary = brrs_Q_STAFF_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+
+		// 🔹 Audit copy
+		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 
 		// 🔹 Fetch or create DETAIL
 		Q_STAFF_Detail_Entity detailEntity = brrs_Q_STAFF_detail_repo.findById(updatedEntity.getReportDate())
@@ -368,18 +415,27 @@ public class BRRS_Q_STAFF_Report_Service {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_STAFF_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_STAFF_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -392,11 +448,21 @@ public class BRRS_Q_STAFF_Report_Service {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_STAFF Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_STAFF_summary_repo.save(existingSummary);
 		brrs_Q_STAFF_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
+		}
 
 		System.out.println("Update completed successfully");
 	}
@@ -651,8 +717,7 @@ public class BRRS_Q_STAFF_Report_Service {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
-							
-							
+
 							Cell R12Cell = row.createCell(1);
 
 							if (record.getReportDate() != null) {
@@ -668,7 +733,7 @@ public class BRRS_Q_STAFF_Report_Service {
 								R12Cell.setCellStyle(textStyle);
 							}
 							row = sheet.getRow(8);
-							
+
 // R9 Col B
 							Cell R9cell1 = row.createCell(1);
 							if (record.getR9_LOCAL() != null) {
@@ -1156,15 +1221,17 @@ public class BRRS_Q_STAFF_Report_Service {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					
+
 					// audit service summary format
 
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-												if (attrs != null) {
-													HttpServletRequest request = attrs.getRequest();
-													String userid = (String) request.getSession().getAttribute("USERID");
-													auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF SUMMARY", null, "BRRS_Q_STAFF_SUMMARYTABLE");
-												}
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF SUMMARY", null,
+								"BRRS_Q_STAFF_SUMMARYTABLE");
+					}
 
 					return out.toByteArray();
 				}
@@ -1906,16 +1973,16 @@ public class BRRS_Q_STAFF_Report_Service {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-				
 
 				// audit service summary email
 
 				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-									if (attrs != null) {
-										HttpServletRequest request = attrs.getRequest();
-										String userid = (String) request.getSession().getAttribute("USERID");
-										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL SUMMARY", null, "BRRS_Q_STAFF_SUMMARYTABLE");
-									}
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL SUMMARY", null,
+							"BRRS_Q_STAFF_SUMMARYTABLE");
+				}
 
 				return out.toByteArray();
 			}
@@ -2516,16 +2583,16 @@ public class BRRS_Q_STAFF_Report_Service {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
 
 			// audit service archival summary format
 
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-								if (attrs != null) {
-									HttpServletRequest request = attrs.getRequest();
-									String userid = (String) request.getSession().getAttribute("USERID");
-									auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF ARCHIVAL SUMMARY", null, "BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY");
-								}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF ARCHIVAL SUMMARY", null,
+						"BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY");
+			}
 
 			return out.toByteArray();
 		}
@@ -3244,16 +3311,16 @@ public class BRRS_Q_STAFF_Report_Service {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service archival summary email
 
-
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-							if (attrs != null) {
-								HttpServletRequest request = attrs.getRequest();
-								String userid = (String) request.getSession().getAttribute("USERID");
-								auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL ARCHIVAL SUMMARY", null, "BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY");
-							}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL ARCHIVAL SUMMARY", null,
+						"BRRS_Q_STAFF_ARCHIVALTABLE_SUMMARY");
+			}
 
 			return out.toByteArray();
 		}
@@ -3857,16 +3924,16 @@ public class BRRS_Q_STAFF_Report_Service {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service summary resub format
 
-
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-								if (attrs != null) {
-									HttpServletRequest request = attrs.getRequest();
-									String userid = (String) request.getSession().getAttribute("USERID");
-									auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF RESUB SUMMARY", null, "BRRS_Q_STAFF_RESUB_SUMMARYTABLE");
-								}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF RESUB SUMMARY", null,
+						"BRRS_Q_STAFF_RESUB_SUMMARYTABLE");
+			}
 
 			return out.toByteArray();
 		}
@@ -4585,15 +4652,16 @@ public class BRRS_Q_STAFF_Report_Service {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service summary resub email
 
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-							if (attrs != null) {
-								HttpServletRequest request = attrs.getRequest();
-								String userid = (String) request.getSession().getAttribute("USERID");
-								auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL RESUB SUMMARY", null, "BRRS_Q_STAFF_RESUB_SUMMARYTABLE");
-							}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_STAFF EMAIL RESUB SUMMARY", null,
+						"BRRS_Q_STAFF_RESUB_SUMMARYTABLE");
+			}
 
 			return out.toByteArray();
 		}

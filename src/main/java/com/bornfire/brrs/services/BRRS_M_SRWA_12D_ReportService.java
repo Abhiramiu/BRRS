@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -241,6 +242,11 @@ public class BRRS_M_SRWA_12D_ReportService {
 				.orElseThrow(() -> new RuntimeException(
 						"Detail Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
 
+		// 🔹 Audit copy: Create a clone of the original database summary state before
+		// making updates
+		M_SRWA_12D_Summary_Entity oldcopy = new M_SRWA_12D_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
 		try {
 
 			String[] totalFields = { "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
@@ -275,6 +281,16 @@ public class BRRS_M_SRWA_12D_ReportService {
 								getterSummary.getReturnType());
 
 						Object newValue = getterSummary.invoke(updatedEntity);
+						Object existingValue = getterSummary.invoke(existing);
+
+						// --- FIX: Normalize state differences to keep audit log payload minimal ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						setterSummary.invoke(existing, newValue);
 
 						// ===== Detail Update =====
@@ -298,6 +314,17 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 		M_SRWA_12D_Summary_Repo.save(existing);
 		bRRS_M_SRWA_12D_Detail_Repo.save(existing1);
+
+		// =====================================================
+		// EVALUATE AND LOG AUDIT TRAIL
+		// =====================================================
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("M_SRWA_12D Changes Length = " + changes.length());
+
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
+					"M_SRWA_12D Summary Screen", "BRRS_M_SRWA_12D_SUMMARY");
+		}
 
 		System.out.println("Update Completed Successfully");
 	}
@@ -2096,11 +2123,13 @@ public class BRRS_M_SRWA_12D_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D SUMMARY", null, "M_SRWA_12D_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D SUMMARY", null,
+								"M_SRWA_12D_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -3300,11 +3329,13 @@ public class BRRS_M_SRWA_12D_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D SUMMARY", null, "M_SRWA_12D_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D SUMMARY", null,
+								"M_SRWA_12D_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -4476,7 +4507,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL SUMMARY", null, "M_SRWA_12D_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL SUMMARY", null,
+							"M_SRWA_12D_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -5618,7 +5650,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D ARCHIVAL SUMMARY", null, "M_SRWA_12D_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D ARCHIVAL SUMMARY", null,
+						"M_SRWA_12D_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -6748,7 +6781,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL ARCHIVAL SUMMARY", null, "M_SRWA_12D_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL ARCHIVAL SUMMARY", null,
+						"M_SRWA_12D_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -7893,7 +7927,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D RESUB SUMMARY", null, "M_SRWA_12D_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D RESUB SUMMARY", null,
+						"M_SRWA_12D_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -9023,7 +9058,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL RESUB SUMMARY", null, "M_SRWA_12D_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12D EMAIL RESUB SUMMARY", null,
+						"M_SRWA_12D_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}

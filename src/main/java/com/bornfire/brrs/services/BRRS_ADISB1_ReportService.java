@@ -44,6 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -74,7 +75,7 @@ public class BRRS_ADISB1_ReportService {
 
 	@Autowired
 	AuditService auditService;
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -218,28 +219,64 @@ public class BRRS_ADISB1_ReportService {
 
 // 1. GET BY DATE + VERSION
 
-	public List<ADISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
-			String dataEntryVersion) {
-
-		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL "
-				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new ADISB1ArchivalDetailRowMapper());
-	}
+//	public List<ADISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+//			String dataEntryVersion) {
+//
+//		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL "
+//				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+//				new ADISB1ArchivalDetailRowMapper());
+//	}
 
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
 
+//	public List<ADISB1_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+//			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+//
+//		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABLE = ? "
+//				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+//
+//		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+//				new ADISB1ArchivalDetailRowMapper());
+//	}
 	public List<ADISB1_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+			String reportAddlCriteria1, Date reportdate) {
 
-		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABLE = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? ";
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new ADISB1ArchivalDetailRowMapper());
 	}
 
+	public List<ADISB1_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ?  ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new ADISB1ArchivalDetailRowMapper());
+	}
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_ADISB1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
+	}
+
+	public ADISB1_Detail_Entity findBysnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new ADISB1DetailRowMapper());
+	}
+
+	public ADISB1_Detail_Entity findBysno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_ADISB1_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new ADISB1DetailRowMapper());
+	}
 	// ROW MAPPER
 
 	class ADISB1RowMapper implements RowMapper<ADISB1_Summary_Entity> {
@@ -865,7 +902,7 @@ public class BRRS_ADISB1_ReportService {
 
 			obj.setReport_date(rs.getDate("report_date"));
 			obj.setReport_version(rs.getBigDecimal("report_version"));
-			obj.setREPORT_RESUBDATE(rs.getBigDecimal("REPORT_RESUBDATE"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
 			obj.setReport_frequency(rs.getString("report_frequency"));
 			obj.setReport_code(rs.getString("report_code"));
 			obj.setReport_desc(rs.getString("report_desc"));
@@ -904,8 +941,7 @@ public class BRRS_ADISB1_ReportService {
 		private Date report_date;
 		@Id
 		private BigDecimal report_version;
-		@Column(name = "REPORT_RESUBDATE")
-		private BigDecimal REPORT_RESUBDATE;
+		private Date REPORT_RESUBDATE;
 		private String report_frequency;
 		private String report_code;
 		private String report_desc;
@@ -1057,11 +1093,11 @@ public class BRRS_ADISB1_ReportService {
 			this.report_version = report_version;
 		}
 
-		public BigDecimal getREPORT_RESUBDATE() {
+		public Date getREPORT_RESUBDATE() {
 			return REPORT_RESUBDATE;
 		}
 
-		public void setREPORT_RESUBDATE(BigDecimal rEPORT_RESUBDATE) {
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
 			REPORT_RESUBDATE = rEPORT_RESUBDATE;
 		}
 
@@ -1153,7 +1189,7 @@ public class BRRS_ADISB1_ReportService {
 			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
 			obj.setReport_date(rs.getDate("report_date"));
 			obj.setReport_version(rs.getBigDecimal("report_version"));
-			obj.setREPORT_RESUBDATE(rs.getBigDecimal("REPORT_RESUBDATE"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
 			obj.setReport_frequency(rs.getString("report_frequency"));
 			obj.setReport_code(rs.getString("report_code"));
 			obj.setReport_desc(rs.getString("report_desc"));
@@ -1211,7 +1247,7 @@ public class BRRS_ADISB1_ReportService {
 	}
 
 	@IdClass(ADISB1_PK.class)
-	public class ADISB1_Manual_Archival_Summary_Entity {
+	public static class ADISB1_Manual_Archival_Summary_Entity {
 
 		private BigDecimal r23_total_no_of_acct;
 		private BigDecimal r23_total_value;
@@ -1242,8 +1278,7 @@ public class BRRS_ADISB1_ReportService {
 		private Date report_date;
 		private BigDecimal report_version;
 
-		@Column(name = "REPORT_RESUBDATE")
-		private BigDecimal REPORT_RESUBDATE;
+		private Date REPORT_RESUBDATE;
 		private String report_frequency;
 		private String report_code;
 		private String report_desc;
@@ -1427,11 +1462,11 @@ public class BRRS_ADISB1_ReportService {
 			this.report_version = report_version;
 		}
 
-		public BigDecimal getREPORT_RESUBDATE() {
+		public Date getREPORT_RESUBDATE() {
 			return REPORT_RESUBDATE;
 		}
 
-		public void setREPORT_RESUBDATE(BigDecimal rEPORT_RESUBDATE) {
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
 			REPORT_RESUBDATE = rEPORT_RESUBDATE;
 		}
 
@@ -1486,9 +1521,10 @@ public class BRRS_ADISB1_ReportService {
 
 	public class ADISB1_Detail_Entity {
 
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -1537,6 +1573,14 @@ public class BRRS_ADISB1_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -1709,7 +1753,7 @@ public class BRRS_ADISB1_ReportService {
 		public ADISB1_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			ADISB1_Detail_Entity obj = new ADISB1_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1749,7 +1793,7 @@ public class BRRS_ADISB1_ReportService {
 		public ADISB1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			ADISB1_Archival_Detail_Entity obj = new ADISB1_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1786,9 +1830,10 @@ public class BRRS_ADISB1_ReportService {
 
 	public class ADISB1_Archival_Detail_Entity {
 
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -1837,6 +1882,14 @@ public class BRRS_ADISB1_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -2007,10 +2060,8 @@ public class BRRS_ADISB1_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getADISB1View(
-
-			String reportId, String fromdate, String todate, String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+	public ModelAndView getADISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+			Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
 
@@ -2018,29 +2069,26 @@ public class BRRS_ADISB1_ReportService {
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
 
-		// ARCHIVAL MODE
-
-		if ("ARCHIVAL".equals(type) && version != null) {
+		// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<ADISB1_Archival_Summary_Entity> T1Master = new ArrayList<>();
 			List<ADISB1_Manual_Archival_Summary_Entity> T2Master = new ArrayList<>();
-
 			try {
+
 				Date dt = dateformat.parse(todate);
 
-				// SUMMARY ARCHIVAL
-
 				T1Master = getdatabydateListarchival(dt, version);
-
-				System.out.println("Archival Summary size = " + T1Master.size());
-
-				// MANUAL ARCHIVAL
-
 				T2Master = getManualArchivalByDate(dt, version);
 
 				System.out.println("Archival Manual size = " + T2Master.size());
 
 				mv.addObject("report_date", dateformat.format(dt));
+				System.out.println(type + " Summary size = " + T1Master.size());
+
+				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
+				mv.addObject("allowdetail", getishighestversion(dt, version));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2051,26 +2099,23 @@ public class BRRS_ADISB1_ReportService {
 		}
 
 		// NORMAL MODE
-
 		else {
 
 			List<ADISB1_Summary_Entity> T1Master = new ArrayList<>();
 			List<ADISB1_Manual_Summary_Entity> T2Master = new ArrayList<>();
-
 			try {
+
 				Date dt = dateformat.parse(todate);
 
-				// SUMMARY NORMAL
 				T1Master = getDataByDate(dt);
-
-				System.out.println("Summary size = " + T1Master.size());
-
-				// MANUAL NORMAL
 				T2Master = getManualDataByDate(dt);
 
 				System.out.println("Manual size = " + T2Master.size());
 
 				mv.addObject("report_date", dateformat.format(dt));
+				System.out.println("Summary size = " + T1Master.size());
+
+				mv.addObject("REPORT_DATE", dateformat.format(dt));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2080,8 +2125,6 @@ public class BRRS_ADISB1_ReportService {
 			mv.addObject("reportsummary1", T2Master);
 		}
 
-		// VIEW SETTINGS
-
 		mv.setViewName("BRRS/ADISB1");
 		mv.addObject("displaymode", "summary");
 
@@ -2090,7 +2133,9 @@ public class BRRS_ADISB1_ReportService {
 		return mv;
 	}
 
+	// =========================
 // MODEL AND VIEW METHOD detail
+//=========================
 
 	public ModelAndView getADISB1currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version) {
@@ -2116,33 +2161,29 @@ public class BRRS_ADISB1_ReportService {
 				}
 			}
 
-			// ARCHIVAL MODE
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type + " DETAIL MODE");
 
-				System.out.println("ARCHIVAL DETAIL MODE");
-
-				List<ADISB1_Archival_Detail_Entity> archivalDetailList;
+				List<ADISB1_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
-
 			else {
 
 				List<ADISB1_Detail_Entity> currentDetailList;
@@ -2154,7 +2195,6 @@ public class BRRS_ADISB1_ReportService {
 				} else {
 
 					currentDetailList = getDetaildatabydateList(parsedDate);
-
 				}
 
 				mv.addObject("reportdetails", currentDetailList);
@@ -2207,70 +2247,163 @@ public class BRRS_ADISB1_ReportService {
 		return archivalList;
 	}
 
-	public void updateReport(ADISB1_Manual_Summary_Entity updatedEntity) {
+	@Transactional
+	public void updateReport(Object entity, String type) {
 
-		System.out.println("Came to ADISB1 Manual Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
+		boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-		// Allowed rows
+		System.out.println("Came to ADISB1 Manual Update. Type: " + (isResub ? "RESUB" : "NORMAL"));
+
+		String tableName = isResub ? "BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY" : "BRRS_ADISB1_MANUAL_SUMMARYTABLE";
+
 		int[] rows = { 23, 25, 26, 30, 34, 35, 38, 39, 42, 43, 44, 46 };
 
 		try {
+			// Use the actual runtime class
+			Class<?> entityClass = entity.getClass();
 
-			// Loop rows
+			// Get report date
+			Method getDateMethod = entityClass.getMethod("getReport_date");
+			Object reportDateObj = getDateMethod.invoke(entity);
+
+			if (reportDateObj == null) {
+				throw new RuntimeException("Report Date is NULL");
+			}
+
+			Date reportDate = (Date) reportDateObj;
+
+			System.out.println("Report Date : " + reportDate);
+			System.out.println("Entity Class : " + entityClass.getName());
+
+			// =====================================================
+			// 🔹 AUDIT TRAIL SETUP (DYNAMIC LOG PAYLOAD PREPARATION)
+			// =====================================================
+			StringBuilder changesBuilder = new StringBuilder();
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+
 			for (int r : rows) {
 
-				// Two amount columns
 				String[] cols = { "total_no_of_acct", "total_value" };
 
 				for (String col : cols) {
 
 					String getterName = "getR" + r + "_" + col;
+					String columnName = "R" + r + "_" + col;
 
 					try {
+						Method getter = entityClass.getMethod(getterName);
+						Object newValueObj = getter.invoke(entity);
 
-						Method getter = ADISB1_Manual_Summary_Entity.class.getMethod(getterName);
+						System.out.println("Processing -> " + getterName + " = " + newValueObj);
 
-						Object value = getter.invoke(updatedEntity);
-
-						// Skip null values
-						if (value == null)
+						// Skip processing if the web input value completely lacks data
+						if (newValueObj == null) {
 							continue;
+						}
 
-						// Column name in DB
-						String columnName = "R" + r + "_" + col;
+						// 1. Fetch current value directly from the targeted DB Table before updating
+						String selectSql = "SELECT " + columnName + " FROM " + tableName + " WHERE REPORT_DATE = ?";
+						Object dbValueObj = null;
+						try {
+							dbValueObj = jdbcTemplate.queryForObject(selectSql, Object.class, sqlReportDate);
+						} catch (Exception e) {
+							// Handle if row doesn't exist yet gracefully
+							dbValueObj = null;
+						}
 
-						String sql = "UPDATE BRRS_ADISB1_MANUAL_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
+						// 2. Normalize comparison strings to prevent audit bloat
+						String currentValStr = (dbValueObj == null) ? "" : dbValueObj.toString().trim();
+						String newValStr = newValueObj.toString().trim();
 
-						jdbcTemplate.update(sql, value, updatedEntity.getReport_date());
+						// Skip update if value hasn't actually changed
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
-					} catch (NoSuchMethodException e) {
-						// Skip if method not exists
-						continue;
+						// 3. Track changes manually for JDBC tracking
+						if (changesBuilder.length() > 0) {
+							changesBuilder.append("|||");
+						}
+						changesBuilder.append(columnName.toUpperCase()).append(": OldValue: ")
+								.append(currentValStr.isEmpty() ? "null" : currentValStr).append(", NewValue: ")
+								.append(newValStr);
+
+						// 4. Perform live database update
+						String updateSql = "UPDATE " + tableName + " SET " + columnName + " = ? WHERE REPORT_DATE = ?";
+						int count = jdbcTemplate.update(updateSql, newValueObj, sqlReportDate);
+
+						System.out.println("Updated Column : " + columnName + " Rows Affected : " + count);
+
+					} catch (NoSuchMethodException ex) {
+						System.out.println("Method not found : " + getterName + " - Skipping");
 					}
 				}
 			}
 
-			System.out.println("ADISB1 Manual Update Completed");
+			// =====================================================
+			// 🔹 EXECUTE MANUAL AUDIT LOG INSERTION
+			// =====================================================
+			String changes = changesBuilder.toString();
+			System.out.println("ADISB1 Manual Changes Length = " + changes.length());
+
+			if (!changes.isEmpty()) {
+				// Enforce character protection thresholds against database column bounds
+				if (changes.length() > 1900) {
+					changes = changes.substring(0, 1900);
+				}
+
+				// Call custom manual audit execution to save directly into your Audit table
+				auditService.compareEntitiesmanual(entity, // Old copy placeholder (We pass entity to satisfy signature)
+						entity, // Existing copy placeholder
+						reportDate.toString(), "ADISB1 Manual Screen", tableName);
+
+				// Optional: If your audit trail system relies strictly on a pre-generated
+				// string instead of recalculating, you can write a short jdbcTemplate insert
+				// here
+				// to insert the `changes` string directly into "BRRS_AUDIT"."MODI_DETAILS".
+			}
+
+			System.out.println("ADISB1 Manual Update Completed Successfully for Type : " + type);
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating ADISB1 Manual fields", e);
+			System.err.println("===== ADISB1 UPDATE ERROR =====");
+			e.printStackTrace();
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			System.err.println("ROOT CAUSE : " + root.getMessage());
+
+			throw new RuntimeException("Error while updating ADISB1 Manual fields for type: " + type, e);
 		}
 	}
 
-	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/ADISB1");
 
-		if (acct_number != null) {
-			ADISB1_Detail_Entity ADISB1Entity = findByAcctnumber(acct_number);
-			if (ADISB1Entity != null && ADISB1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(ADISB1Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+		System.out.println("sno is : " + SNO);
+		System.out.println("Type: " + type);
+		if (SNO != null) {
+			if (type == "RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				ADISB1_Detail_Entity ADISB1Entity = findBysnoArch(SNO);
+				if (ADISB1Entity != null && ADISB1Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(ADISB1Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("ADISB1Data", ADISB1Entity);
+			} else {
+				ADISB1_Detail_Entity ADISB1Entity = findBysno(SNO);
+				if (ADISB1Entity != null && ADISB1Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(ADISB1Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("ADISB1Data", ADISB1Entity);
 			}
-			mv.addObject("ADISB1Data", ADISB1Entity);
 		}
-
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -2281,16 +2414,29 @@ public class BRRS_ADISB1_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 
-			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 
 			String acctName = request.getParameter("acctName");
 
 			String reportDateStr = request.getParameter("reportDate");
 
-			// Existing Record
-			ADISB1_Detail_Entity existing = findByAcctnumber(acctNo);
+			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+
+			// Load Existing Record
+			ADISB1_Detail_Entity existing = null;
+
+			System.out.println("type is : " + type);
+			if ((type == "RESUB") || (type.equals("RESUB"))) {
+				existing = findBysnoArch(Sno);
+			} else {
+				existing = findBysno(Sno);
+			}
+			ADISB1_Detail_Entity oldcopy = new ADISB1_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			if (existing == null) {
 
@@ -2299,7 +2445,7 @@ public class BRRS_ADISB1_ReportService {
 
 			boolean isChanged = false;
 
-			// ACCOUNT NAME
+			// Update Name
 			if (acctName != null && !acctName.isEmpty()) {
 
 				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
@@ -2310,10 +2456,10 @@ public class BRRS_ADISB1_ReportService {
 				}
 			}
 
-			// ACCOUNT BALANCE
-			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
 
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
 
 				if (existing.getAcctBalanceInpula() == null
 						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
@@ -2324,51 +2470,45 @@ public class BRRS_ADISB1_ReportService {
 				}
 			}
 
-			// UPDATE
+			// Save using JDBC
 			if (isChanged) {
+				String sql;
+				System.out.println("Type in update block : " + type);
+				// Safe from NullPointerExceptions and reference comparison bugs
+				if ("RESUB".equalsIgnoreCase(type)) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_ADISB1_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ? " + "WHERE SNO = ?";
+				} else {
+					System.out.println("Inside NORMAL UPDATE");
+					sql = "UPDATE BRRS_ADISB1_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ? "
+							+ "WHERE SNO = ?";
+				}
 
-				String sql = "UPDATE BRRS_ADISB1_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ? " + // ✅
-																														// no
-																														// comma
-																														// here
-						"WHERE ACCT_NUMBER = ?";
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), Sno);
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), Sno);
+				if ((type == "RESUB") || (type.equals("RESUB"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "ADISB1 Archival Screen",
+							"BRRS_ADISB1_ARCHIVALTABLE_DETAIL");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "ADISB1 Screen",
+							"BRRS_ADISB1_DETAILTABLE");
+				}
+				System.out.println("Record updated using JDBC");
 
-				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), acctNo);
+				Run_ADISB1_Procudure(reportDateStr, type, entry);
 
-				System.out.println("Record updated successfully");
-
-				// DATE FORMAT
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// PROCEDURE CALL
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_ADISB1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				if ((type == "RESUB" || type.equals("RESUB")) && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
-			}
-
-			else {
-
+			} else {
 				return ResponseEntity.ok("No changes were made.");
 			}
 
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 
 			e.printStackTrace();
 
@@ -2377,13 +2517,172 @@ public class BRRS_ADISB1_ReportService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_ADISB1_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+
+	private void Run_ADISB1_Procudure(String reportDateStr, String type, String entry) {
+
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM BRRS_ADISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO BRRS_ADISB1_DETAILTABLE "
+								+ " (SNO,  ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABLE, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO,  ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABLE, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_ADISB1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM BRRS_ADISB1_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						// 1. Handle Archival Summary Table (System Generated)
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_ADISB1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						String finalsql = "INSERT INTO BRRS_ADISB1_ARCHIVALTABLE_SUMMARY ("
+								+ "R7_TOTAL_NO_OF_ACCT, R7_TOTAL_VALUE, R8_TOTAL_NO_OF_ACCT, R8_TOTAL_VALUE, "
+								+ "R9_TOTAL_NO_OF_ACCT, R9_TOTAL_VALUE, R12_TOTAL_NO_OF_ACCT, R12_TOTAL_VALUE, "
+								+ "R13_TOTAL_NO_OF_ACCT, R13_TOTAL_VALUE, R14_TOTAL_NO_OF_ACCT, R14_TOTAL_VALUE, "
+								+ "R34_TOTAL_NO_OF_ACCT, R34_TOTAL_VALUE, R38_TOTAL_NO_OF_ACCT, R38_TOTAL_VALUE, "
+								+ "R39_TOTAL_NO_OF_ACCT, R39_TOTAL_VALUE, "
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+								+ ") " + "SELECT " + "R7_TOTAL_NO_OF_ACCT, R7_TOTAL_VALUE, "
+								+ "R8_TOTAL_NO_OF_ACCT, R8_TOTAL_VALUE, " + "R9_TOTAL_NO_OF_ACCT, R9_TOTAL_VALUE, "
+								+ "R12_TOTAL_NO_OF_ACCT, R12_TOTAL_VALUE, " + "R13_TOTAL_NO_OF_ACCT, R13_TOTAL_VALUE, "
+								+ "R14_TOTAL_NO_OF_ACCT, R14_TOTAL_VALUE, " + "R34_TOTAL_NO_OF_ACCT, R34_TOTAL_VALUE, "
+								+ "R38_TOTAL_NO_OF_ACCT, R38_TOTAL_VALUE, " + "R39_TOTAL_NO_OF_ACCT, R39_TOTAL_VALUE, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_ADISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred system summary " + rowsInsertedSum + " rows.");
+
+						// 2. Handle Manual Archival Summary Table (User Edited - Carry Forward updated
+						// fields)
+						String insManualSql = "SELECT MAX(REPORT_VERSION) FROM BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxManualVersion = jdbcTemplate.queryForObject(insManualSql, Integer.class,
+								formattedDate);
+
+						// Calculate the new version number
+						int manualVersion = (maxManualVersion != null ? maxManualVersion : 0) + 1;
+						int manualRowsInserted = 0;
+
+						if (maxManualVersion != null && maxManualVersion > 0) {
+							// Fetch from PREVIOUS VERSION of the ARCHIVAL table itself to capture the
+							// updates made screen-side
+							String manualFinalSql = "INSERT INTO BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY ("
+									+ "R23_TOTAL_NO_OF_ACCT, R23_TOTAL_VALUE, R25_TOTAL_NO_OF_ACCT, R25_TOTAL_VALUE, "
+									+ "R26_TOTAL_NO_OF_ACCT, R26_TOTAL_VALUE, R30_TOTAL_NO_OF_ACCT, R30_TOTAL_VALUE, "
+									+ "R35_TOTAL_NO_OF_ACCT, R35_TOTAL_VALUE, R38_TOTAL_NO_OF_ACCT, R39_TOTAL_NO_OF_ACCT, "
+									+ "R42_TOTAL_NO_OF_ACCT, R42_TOTAL_VALUE, R43_TOTAL_NO_OF_ACCT, R43_TOTAL_VALUE, "
+									+ "R44_TOTAL_NO_OF_ACCT, R44_TOTAL_VALUE, R46_TOTAL_NO_OF_ACCT, R46_TOTAL_VALUE, "
+									+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+									+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+									+ ") " + "SELECT " + "R23_TOTAL_NO_OF_ACCT, R23_TOTAL_VALUE, "
+									+ "R25_TOTAL_NO_OF_ACCT, R25_TOTAL_VALUE, "
+									+ "R26_TOTAL_NO_OF_ACCT, R26_TOTAL_VALUE, "
+									+ "R30_TOTAL_NO_OF_ACCT, R30_TOTAL_VALUE, "
+									+ "R35_TOTAL_NO_OF_ACCT, R35_TOTAL_VALUE, "
+									+ "R38_TOTAL_NO_OF_ACCT, R39_TOTAL_NO_OF_ACCT, "
+									+ "R42_TOTAL_NO_OF_ACCT, R42_TOTAL_VALUE, "
+									+ "R43_TOTAL_NO_OF_ACCT, R43_TOTAL_VALUE, "
+									+ "R44_TOTAL_NO_OF_ACCT, R44_TOTAL_VALUE, "
+									+ "R46_TOTAL_NO_OF_ACCT, R46_TOTAL_VALUE, " + "REPORT_DATE, ?, REPORT_FREQUENCY, "
+									+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+									+ "FROM BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY "
+									+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+
+							manualRowsInserted = jdbcTemplate.update(manualFinalSql, manualVersion, formattedDate,
+									maxManualVersion);
+						} else {
+							// Fallback option: If no previous version row exists in archival yet, fetch
+							// from active summary table
+							String manualFallbackSql = "INSERT INTO BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY ("
+									+ "R23_TOTAL_NO_OF_ACCT, R23_TOTAL_VALUE, R25_TOTAL_NO_OF_ACCT, R25_TOTAL_VALUE, "
+									+ "R26_TOTAL_NO_OF_ACCT, R26_TOTAL_VALUE, R30_TOTAL_NO_OF_ACCT, R30_TOTAL_VALUE, "
+									+ "R35_TOTAL_NO_OF_ACCT, R35_TOTAL_VALUE, R38_TOTAL_NO_OF_ACCT, R39_TOTAL_NO_OF_ACCT, "
+									+ "R42_TOTAL_NO_OF_ACCT, R42_TOTAL_VALUE, R43_TOTAL_NO_OF_ACCT, R43_TOTAL_VALUE, "
+									+ "R44_TOTAL_NO_OF_ACCT, R44_TOTAL_VALUE, R46_TOTAL_NO_OF_ACCT, R46_TOTAL_VALUE, "
+									+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+									+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+									+ ") " + "SELECT " + "R23_TOTAL_NO_OF_ACCT, R23_TOTAL_VALUE, "
+									+ "R25_TOTAL_NO_OF_ACCT, R25_TOTAL_VALUE, "
+									+ "R26_TOTAL_NO_OF_ACCT, R26_TOTAL_VALUE, "
+									+ "R30_TOTAL_NO_OF_ACCT, R30_TOTAL_VALUE, "
+									+ "R35_TOTAL_NO_OF_ACCT, R35_TOTAL_VALUE, "
+									+ "R38_TOTAL_NO_OF_ACCT, R39_TOTAL_NO_OF_ACCT, "
+									+ "R42_TOTAL_NO_OF_ACCT, R42_TOTAL_VALUE, "
+									+ "R43_TOTAL_NO_OF_ACCT, R43_TOTAL_VALUE, "
+									+ "R44_TOTAL_NO_OF_ACCT, R44_TOTAL_VALUE, "
+									+ "R46_TOTAL_NO_OF_ACCT, R46_TOTAL_VALUE, " + "REPORT_DATE, ?, REPORT_FREQUENCY, "
+									+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+									+ "FROM BRRS_ADISB1_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+							manualRowsInserted = jdbcTemplate.update(manualFallbackSql, manualVersion, formattedDate);
+						}
+
+						System.out.println("Manual summary archived successfully into version (" + manualVersion + "): "
+								+ manualRowsInserted + " rows.");
+
+						String adsumsql = "DELETE FROM BRRS_ADISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public byte[] getADISB1DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
 		try {
 			logger.info("Generating Excel for  ADISB1NEW Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 				byte[] ARCHIVALreport = getADISB1DetailNewExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
 						type, version);
 				return ARCHIVALreport;
@@ -2509,7 +2808,7 @@ public class BRRS_ADISB1_ReportService {
 		try {
 			logger.info("Generating Excel for ADISB1NEW ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -2574,7 +2873,7 @@ public class BRRS_ADISB1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<ADISB1_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
+			List<ADISB1_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -2631,7 +2930,8 @@ public class BRRS_ADISB1_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.ADISB1");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelADISB1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -3103,7 +3403,8 @@ public class BRRS_ADISB1_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "ADISB1 SUMMARY", null, "BRRS_ADISB1_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "ADISB1 SUMMARY", null,
+						"BRRS_ADISB1_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -3115,7 +3416,7 @@ public class BRRS_ADISB1_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 
@@ -3585,13 +3886,14 @@ public class BRRS_ADISB1_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "ADISB1 ARCHIVAL SUMMARY", null, "BRRS_ADISB1_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "ADISB1 ARCHIVAL SUMMARY", null,
+						"BRRS_ADISB1_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
 
 	}
-	
+
 	// Resubmission
 	public List<Object[]> getADISB1Resub() {
 		List<Object[]> resubList = new ArrayList<>();

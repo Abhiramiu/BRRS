@@ -64,7 +64,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -193,7 +193,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 		M_SRWA_12E_LTV_Summary_Entity existingSummary = brrs_M_SRWA_12E_LTV_summary_repo
 				.findById(updatedEntity.getReportDate()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		M_SRWA_12E_LTV_Summary_Entity oldcopy = new M_SRWA_12E_LTV_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_SRWA_12E_LTV_Detail_Entity detailEntity = brrs_M_SRWA_12E_LTV_detail_repo
 				.findById(updatedEntity.getReportDate()).orElseGet(() -> {
@@ -243,11 +244,21 @@ public class BRRS_M_SRWA_12E_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_SRWA_12E Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_M_SRWA_12E_LTV_summary_repo.save(existingSummary);
 		brrs_M_SRWA_12E_LTV_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"M_SRWA_12E Summary Screen", "BRRS_M_SRWA_12E_SUMMARY");
+		}
 
 		System.out.println("Update completed successfully");
 	}
@@ -706,11 +717,13 @@ public class BRRS_M_SRWA_12E_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV SUMMARY", null, "M_SRWA_12E_LTV_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV SUMMARY", null,
+								"M_SRWA_12E_LTV_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -820,7 +833,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
-						
+
 						Cell R12Cell = row.createCell(3);
 
 						if (record.getReportDate() != null) {
@@ -1097,7 +1110,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL SUMMARY", null,"SRWA_12E_LTV_SUMMARY_TABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL SUMMARY", null,
+							"SRWA_12E_LTV_SUMMARY_TABLE");
 				}
 				return out.toByteArray();
 			}
@@ -1195,7 +1209,7 @@ public class BRRS_M_SRWA_12E_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					
+
 					Cell R12Cell = row.createCell(2);
 
 					if (record.getReportDate() != null) {
@@ -1404,7 +1418,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV ARCHIVAL SUMMARY", null, "M_SRWA_12E_LTV_ARCHIVATABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV ARCHIVAL SUMMARY", null,
+						"M_SRWA_12E_LTV_ARCHIVATABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -1766,7 +1781,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL ARCHIVAL SUMMARY", null, "M_SRWA_12E_LTV_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL ARCHIVAL SUMMARY", null,
+						"M_SRWA_12E_LTV_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -2075,7 +2091,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV RESUB SUMMARY", null, "M_SRWA_12E_LTV_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV RESUB SUMMARY", null,
+						"M_SRWA_12E_LTV_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -2437,7 +2454,8 @@ public class BRRS_M_SRWA_12E_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL RESUB SUMMARY", null, "M_SRWA_12E_LTV_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SRWA_12E_LTV EMAIL RESUB SUMMARY", null,
+						"M_SRWA_12E_LTV_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}

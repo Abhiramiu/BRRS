@@ -49,6 +49,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
@@ -96,7 +97,7 @@ public class BRRS_M_SFINP1_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -307,6 +308,10 @@ public class BRRS_M_SFINP1_ReportService {
 				.findById(updatedEntity.getREPORT_DATE()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE : " + updatedEntity.getREPORT_DATE()));
 
+		// FIX: Create audit copy of the ORIGINAL database state before applying changes
+		M_SFINP1_Summary_Manual_Entity oldcopy = new M_SFINP1_Summary_Manual_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
 		// =====================================================
 		// STEP 2 : UPDATE ONLY MANUAL FIELDS
 		// =====================================================
@@ -326,21 +331,28 @@ public class BRRS_M_SFINP1_ReportService {
 				try {
 
 					Method getter = M_SFINP1_Summary_Manual_Entity.class.getMethod(getterName);
-
 					Method setter = M_SFINP1_Summary_Manual_Entity.class.getMethod(setterName, getter.getReturnType());
 
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existing);
+
+					// Normalize nulls vs empty strings to prevent audit bloat
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					// If values are functionally identical, skip updating to avoid dirtying fields
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
 
 					setter.invoke(existing, newValue);
 
 				} catch (NoSuchMethodException e) {
-
 					continue;
 				}
 			}
 
 		} catch (Exception e) {
-
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
@@ -428,6 +440,17 @@ public class BRRS_M_SFINP1_ReportService {
 		// =====================================================
 
 		BRRS_M_SFINP1_Summary_Repo.save(summaryEntity);
+
+		// =====================================================
+		// STEP 10 : EVALUATE AND LOG AUDIT TRAIL
+		// =====================================================
+		String changes = auditService.getChanges(oldcopy, existing);
+		System.out.println("M_SFINP1 Changes Length = " + changes.length());
+
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
+					"M_SFINP1 Summary Screen", "BRRS_M_SFINP1_SUMMARY_MANUAL");
+		}
 
 		System.out.println("Updated Successfully");
 	}
@@ -1331,23 +1354,22 @@ public class BRRS_M_SFINP1_ReportService {
 							Cell cellC, cellD;
 							CellStyle originalStyle;
 							// ===== Row 6 / Col b (Date) =====
-							
+
 							cellC = row.getCell(1);
 
 							if (cellC == null)
-							    cellC = row.createCell(1);
+								cellC = row.createCell(1);
 
 							originalStyle = cellC.getCellStyle();
 
 							if (record.getReport_date() != null) {
-							    cellC.setCellValue(record.getReport_date()); // java.util.Date
-							    cellC.setCellStyle(dateStyle);
+								cellC.setCellValue(record.getReport_date()); // java.util.Date
+								cellC.setCellStyle(dateStyle);
 							} else {
-							    cellC.setCellValue("");
-							    cellC.setCellStyle(originalStyle);
+								cellC.setCellValue("");
+								cellC.setCellStyle(originalStyle);
 							}
-							
-							
+
 							// ===== Row 10 / Col C =====
 							row = sheet.getRow(9);
 							cellC = row.getCell(2);
@@ -2179,11 +2201,13 @@ public class BRRS_M_SFINP1_ReportService {
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 SUMMARY", null, "BRRS_M_SFINP1_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 SUMMARY", null,
+								"BRRS_M_SFINP1_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -2304,22 +2328,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 						Cell cellC, cellD;
 						CellStyle originalStyle;
-						
+
 						cellC = row.getCell(1);
 
 						if (cellC == null)
-						    cellC = row.createCell(1);
+							cellC = row.createCell(1);
 
 						originalStyle = cellC.getCellStyle();
 
 						if (record.getReport_date() != null) {
-						    cellC.setCellValue(record.getReport_date()); // java.util.Date
-						    cellC.setCellStyle(dateStyle);
+							cellC.setCellValue(record.getReport_date()); // java.util.Date
+							cellC.setCellStyle(dateStyle);
 						} else {
-						    cellC.setCellValue("");
-						    cellC.setCellStyle(originalStyle);
+							cellC.setCellValue("");
+							cellC.setCellStyle(originalStyle);
 						}
-						
+
 						// ===== Row 10 / Col C =====
 						row = sheet.getRow(9);
 						cellC = row.getCell(2);
@@ -3155,7 +3179,8 @@ public class BRRS_M_SFINP1_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL SUMMARY", null, "BRRS_M_SFINP1_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL SUMMARY", null,
+							"BRRS_M_SFINP1_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -3260,22 +3285,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 					Cell cellC, cellD;
 					CellStyle originalStyle;
-					
+
 					cellC = row.getCell(1);
 
 					if (cellC == null)
-					    cellC = row.createCell(1);
+						cellC = row.createCell(1);
 
 					originalStyle = cellC.getCellStyle();
 
 					if (record.getReportDate() != null) {
-					    cellC.setCellValue(record.getReportDate()); // java.util.Date
-					    cellC.setCellStyle(dateStyle);
+						cellC.setCellValue(record.getReportDate()); // java.util.Date
+						cellC.setCellStyle(dateStyle);
 					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(originalStyle);
+						cellC.setCellValue("");
+						cellC.setCellStyle(originalStyle);
 					}
-					
+
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
@@ -4111,9 +4136,11 @@ public class BRRS_M_SFINP1_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 ARCHIVAL SUMMARY", null, "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 ARCHIVAL SUMMARY", null,
+						"BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
 			}
-			return out.toByteArray();		}
+			return out.toByteArray();
+		}
 
 	}
 
@@ -4212,22 +4239,22 @@ public class BRRS_M_SFINP1_ReportService {
 
 					Cell cellC, cellD;
 					CellStyle originalStyle;
-					
+
 					cellC = row.getCell(1);
 
 					if (cellC == null)
-					    cellC = row.createCell(1);
+						cellC = row.createCell(1);
 
 					originalStyle = cellC.getCellStyle();
 
 					if (record.getReportDate() != null) {
-					    cellC.setCellValue(record.getReportDate()); // java.util.Date
-					    cellC.setCellStyle(dateStyle);
+						cellC.setCellValue(record.getReportDate()); // java.util.Date
+						cellC.setCellStyle(dateStyle);
 					} else {
-					    cellC.setCellValue("");
-					    cellC.setCellStyle(originalStyle);
+						cellC.setCellValue("");
+						cellC.setCellStyle(originalStyle);
 					}
-					
+
 					// ===== Row 10 / Col C =====
 					row = sheet.getRow(9);
 					cellC = row.getCell(2);
@@ -5063,7 +5090,8 @@ public class BRRS_M_SFINP1_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL ARCHIVALSUMMARY", null, "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SFINP1 EMAIL ARCHIVALSUMMARY", null,
+						"BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}

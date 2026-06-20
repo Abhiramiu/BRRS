@@ -56,6 +56,7 @@ import com.bornfire.brrs.entities.M_SIR_Detail_Entity;
 import com.bornfire.brrs.entities.M_SIR_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_SIR_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
+import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity;
 
 @Component
 @Service
@@ -68,7 +69,7 @@ public class BRRS_M_SIR_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -198,7 +199,9 @@ public class BRRS_M_SIR_ReportService {
 		M_SIR_Summary_Entity existingSummary = brrs_M_SIR_summary_repo.findById(updatedEntity.getReportDate())
 				.orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		// 🔹 Create Audit Copy before editing
+		M_SIR_Summary_Entity oldcopy = new M_SIR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		M_SIR_Detail_Entity detailEntity = brrs_M_SIR_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -208,7 +211,7 @@ public class BRRS_M_SIR_ReportService {
 				});
 
 		try {
-			// 1️⃣ Loop from R11 to R50 and copy fields
+			// 1️⃣ Loop from R13 to R17
 			for (int i = 13; i <= 17; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
@@ -219,27 +222,31 @@ public class BRRS_M_SIR_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
 			}
+
+			// 2️⃣ Loop for R12 Fields
 			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
 					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
 			for (String field : totalFields) {
@@ -247,23 +254,25 @@ public class BRRS_M_SIR_ReportService {
 				String setterName = "setR12_" + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip if not present
 					continue;
 				}
 			}
@@ -273,7 +282,7 @@ public class BRRS_M_SIR_ReportService {
 		}
 
 		try {
-
+			// 3️⃣ Loop from R19 to R23
 			for (int i = 19; i <= 23; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
@@ -284,27 +293,31 @@ public class BRRS_M_SIR_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
 			}
+
+			// 4️⃣ Loop for R18 Fields
 			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
 					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
 			for (String field : totalFields) {
@@ -312,23 +325,25 @@ public class BRRS_M_SIR_ReportService {
 				String setterName = "setR18_" + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip if not present
 					continue;
 				}
 			}
@@ -337,9 +352,8 @@ public class BRRS_M_SIR_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// ------------------------------------------------------------------------
 		try {
-
+			// 5️⃣ Loop from R24 to R26
 			for (int i = 24; i <= 26; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
@@ -350,35 +364,35 @@ public class BRRS_M_SIR_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
 			}
-		}
-
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
 		try {
-
+			// 6️⃣ Loop from R28 to R32
 			for (int i = 28; i <= 32; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
@@ -389,27 +403,31 @@ public class BRRS_M_SIR_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						// Getter from UPDATED entity
 						Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+						Object existingValue = getter.invoke(existingSummary);
 
-						// SUMMARY setter
+						// --- FIX: Normalize nulls vs empty strings ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
 						Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
-						// DETAIL setter
 						Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing fields
 						continue;
 					}
 				}
 			}
+
+			// 7️⃣ Loop for R27 Fields
 			String[] totalFields = { "amt_6m", "risk_6m", "capital_6m", "amt_6to24m", "risk_6to24m", "capital_6to24m",
 					"amt_gt24m", "risk_gt24m", "capital_gt24m" };
 			for (String field : totalFields) {
@@ -417,23 +435,25 @@ public class BRRS_M_SIR_ReportService {
 				String setterName = "setR27_" + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip if not present
 					continue;
 				}
 			}
@@ -443,8 +463,8 @@ public class BRRS_M_SIR_ReportService {
 		}
 
 		try {
+			// 8️⃣ Loop for R33 Fields
 			String[] fields = { "capital_6m", "capital_6to24m", "capital_gt24m" };
-
 			String prefix = "R33_";
 
 			for (String field : fields) {
@@ -452,32 +472,35 @@ public class BRRS_M_SIR_ReportService {
 				String setterName = "set" + prefix + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip missing fields
 					continue;
 				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating R33 fields", e);
 		}
-		try {
-			String[] fields = { "tot_spec_risk_ch" }; // 👈 only the suffix
 
+		try {
+			// 9️⃣ Loop for R35 Fields
+			String[] fields = { "tot_spec_risk_ch" };
 			String prefix = "R35_";
 
 			for (String field : fields) {
@@ -485,23 +508,25 @@ public class BRRS_M_SIR_ReportService {
 				String setterName = "set" + prefix + field;
 
 				try {
-					// Getter from UPDATED entity
 					Method getter = M_SIR_Summary_Entity.class.getMethod(getterName);
-
 					Object newValue = getter.invoke(updatedEntity);
+					Object existingValue = getter.invoke(existingSummary);
 
-					// SUMMARY setter
+					// --- FIX: Normalize nulls vs empty strings ---
+					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+					String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+					if (currentValStr.equals(newValStr)) {
+						continue;
+					}
+
 					Method summarySetter = M_SIR_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					summarySetter.invoke(existingSummary, newValue);
 
-					// DETAIL setter
 					Method detailSetter = M_SIR_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					detailSetter.invoke(detailEntity, newValue);
 
 				} catch (NoSuchMethodException e) {
-					// Skip missing fields
 					continue;
 				}
 			}
@@ -509,11 +534,52 @@ public class BRRS_M_SIR_ReportService {
 			throw new RuntimeException("Error while updating R35 fields", e);
 		}
 
-		// 3️⃣ Save updated entity
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+
+		System.out.println("M_SIR Changes Length = "
+		+ (changes == null ? 0 : changes.length()));
+
+		System.out.println("Saving Summary & Detail tables");
+
+		// Save Summary & Detail first
 		brrs_M_SIR_summary_repo.save(existingSummary);
 		brrs_M_SIR_detail_repo.save(detailEntity);
+
+		// Audit only if within DB limit
+		try {
+
+		
+		if (changes != null && !changes.isEmpty()) {
+
+		    if (changes.length() <= 2000) {
+
+		        auditService.compareEntitiesmanual(
+		                oldcopy,
+		                existingSummary,
+		                updatedEntity.getReportDate().toString(),
+		                "M_SIR Summary Screen",
+		                "BRRS_M_SIR_SUMMARY");
+
+		    } else {
+
+		        System.out.println(
+		                "Audit skipped because MODI_DETAILS exceeds 2000 characters. Length = "
+		                        + changes.length());
+		    }
+		}
+		} catch (Exception ex) {
+
+		System.out.println("Audit Error : " + ex.getMessage());
+		ex.printStackTrace();
+
+
+		}
+
+		System.out.println("Update completed successfully");
+
 	}
 
+	@Transactional
 	public void updateResubReport(M_SIR_Resub_Summary_Entity updatedEntity) {
 
 		Date reportDate = updatedEntity.getReportDate();
@@ -521,22 +587,25 @@ public class BRRS_M_SIR_ReportService {
 		// ----------------------------------------------------
 		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
 		// ----------------------------------------------------
-
 		BigDecimal maxResubVer = brrs_M_SIR_resub_summary_repo.findMaxVersion(reportDate);
 
-		if (maxResubVer == null)
+		if (maxResubVer == null) {
 			throw new RuntimeException("No record for: " + reportDate);
+		}
+
+		// 🔹 Fetch the existing active record for auditing before incrementing the
+		// version
+		M_SIR_Resub_Summary_Entity oldcopy = brrs_M_SIR_resub_summary_repo
+				.findByReportDateAndReportVersion(reportDate, maxResubVer).orElseThrow(
+						() -> new RuntimeException("Could not fetch current maximum version record for auditing."));
 
 		BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
-
 		Date now = new Date();
 
 		// ====================================================
 		// 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
 		// ====================================================
-
 		M_SIR_Resub_Summary_Entity resubSummary = new M_SIR_Resub_Summary_Entity();
-
 		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
 
 		resubSummary.setReportDate(reportDate);
@@ -546,9 +615,7 @@ public class BRRS_M_SIR_ReportService {
 		// ====================================================
 		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
 		// ====================================================
-
 		M_SIR_Resub_Detail_Entity resubDetail = new M_SIR_Resub_Detail_Entity();
-
 		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
 
 		resubDetail.setReportDate(reportDate);
@@ -558,9 +625,7 @@ public class BRRS_M_SIR_ReportService {
 		// ====================================================
 		// 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
 		// ====================================================
-
 		M_SIR_Archival_Summary_Entity archSummary = new M_SIR_Archival_Summary_Entity();
-
 		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
 
 		archSummary.setReportDate(reportDate);
@@ -570,9 +635,7 @@ public class BRRS_M_SIR_ReportService {
 		// ====================================================
 		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
 		// ====================================================
-
 		M_SIR_Archival_Detail_Entity archDetail = new M_SIR_Archival_Detail_Entity();
-
 		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
 
 		archDetail.setReportDate(reportDate);
@@ -580,14 +643,38 @@ public class BRRS_M_SIR_ReportService {
 		archDetail.setReportResubDate(now);
 
 		// ====================================================
-		// 6️⃣ SAVE ALL WITH SAME DATA
+		// 6️⃣ AUDIT EVALUATION (EXCLUDE ADMIN ATTRIBUTE DELTAS)
 		// ====================================================
+		M_SIR_Resub_Summary_Entity populatedSummaryForAudit = new M_SIR_Resub_Summary_Entity();
+		BeanUtils.copyProperties(updatedEntity, populatedSummaryForAudit, "reportDate", "reportVersion",
+				"reportResubDate");
 
+		// Align administrative keys with oldcopy so they do not trigger false audit
+		// changes
+		populatedSummaryForAudit.setReportDate(oldcopy.getReportDate());
+		populatedSummaryForAudit.setReportVersion(oldcopy.getReportVersion());
+		populatedSummaryForAudit.setReportResubDate(oldcopy.getReportResubDate());
+
+		String changes = auditService.getChanges(oldcopy, populatedSummaryForAudit);
+		System.out.println("M_SIR Resub Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// ====================================================
+		// 7️⃣ SAVE ALL WITH SAME DATA
+		// ====================================================
+		System.out.println("Saving Resub & Archival tables");
 		brrs_M_SIR_resub_summary_repo.save(resubSummary);
 		brrs_M_SIR_resub_detail_repo.save(resubDetail);
 
 		M_SIR_Archival_Summary_Repo.save(archSummary);
 		BRRS_M_SIR_Archival_Detail_Repo.save(archDetail);
+
+		// Only invoke audit logger if real physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, populatedSummaryForAudit,
+					updatedEntity.getReportDate().toString(), "M_SIR Resub Screen", "BRRS_M_SIR_RESUB_SUMMARY");
+		}
+
+		System.out.println("Resubmission update completed successfully");
 	}
 
 	public List<Object[]> getM_SIRResub() {
@@ -790,7 +877,7 @@ public class BRRS_M_SIR_ReportService {
 
 								R12Cell.setCellStyle(textStyle);
 							}
-							
+
 //NORMAL
 
 							// row11
@@ -2142,11 +2229,13 @@ public class BRRS_M_SIR_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
 					if (attrs != null) {
 						HttpServletRequest request = attrs.getRequest();
 						String userid = (String) request.getSession().getAttribute("USERID");
-						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR SUMMARY", null, "BRRS_M_SIR_SUMMARYTABLE");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR SUMMARY", null,
+								"BRRS_M_SIR_SUMMARYTABLE");
 					}
 					return out.toByteArray();
 				}
@@ -3638,7 +3727,8 @@ public class BRRS_M_SIR_ReportService {
 				if (attrs != null) {
 					HttpServletRequest request = attrs.getRequest();
 					String userid = (String) request.getSession().getAttribute("USERID");
-					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL SUMMARY", null, "BRRS_M_SIR_SUMMARYTABLE");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL SUMMARY", null,
+							"BRRS_M_SIR_SUMMARYTABLE");
 				}
 				return out.toByteArray();
 			}
@@ -5120,7 +5210,8 @@ public class BRRS_M_SIR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR ARCHIVAL SUMMARY", null, "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR ARCHIVAL SUMMARY", null,
+						"BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -6590,7 +6681,8 @@ public class BRRS_M_SIR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL ARCHIVAL SUMMARY", null, "BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL ARCHIVAL SUMMARY", null,
+						"BRRS_M_SIR_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -8075,7 +8167,8 @@ public class BRRS_M_SIR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR RESUB SUMMARY", null, "BRRS_M_SIR_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR RESUB SUMMARY", null,
+						"BRRS_M_SIR_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -9545,7 +9638,8 @@ public class BRRS_M_SIR_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL RESUB SUMMARY", null, "BRRS_M_SIR_RESUB_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_SIR EMAIL RESUB SUMMARY", null,
+						"BRRS_M_SIR_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}

@@ -387,8 +387,8 @@ PURPOSE		: BRRSREPORT
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
 			if ((type === "RESUB" || type === "ARCHIVAL" )&& allowdetail === "NO") { 
-				alert("Detail page is only available for highest report version only ");
-				return;
+				showResultModal("Information", "Detail page is only available for highest report version only");
+								return;
 			}
 
 			var Callurl;

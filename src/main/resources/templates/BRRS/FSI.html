@@ -450,6 +450,10 @@ PURPOSE  : BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -460,7 +464,8 @@ PURPOSE  : BRRSREPORT
 		}
 
 		function showsummary() {
-			$('#loader').modal('show');
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
+			loader.show();
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 
@@ -871,6 +876,8 @@ function cancelModify() {
 	</script>
 
 	<script th:inline="javascript">
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
@@ -981,57 +988,118 @@ function cancelModify() {
 	</script>
 
 	<script>
+		let previousUrl = document.referrer;
+
 		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#DetailForm').serialize();
+			let userAnswer = null;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-			// Show loader while processing
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
+
 			$('#loader').modal('show');
 
 			$.ajax({
-				url: `/BRRS/Reports/${reportId}/update`,
+				url: '/BRRS/Reports/' + reportId + '/update',
 				type: 'POST',
 				data: formData,
+
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// ✅ Handle SUCCESS & NON-SUCCESS (Information)
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
-					} else {
-						showResultModal('Information', response || 'No data updated.');
-					}
 
-					// Redirect after 1.5 sec
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
+						if (userAnswer === 'NO') {
+							let title = 'Success';
+							let message = response;
+							document.getElementById('resultModalLabel2').innerText = title;
+							document.getElementById('resultModalBody2').innerText = message;
+
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
 						} else {
-							window.history.back(); // fallback
+							showResultModalDU('Success', response);
 						}
-					}, 1500);
+
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
 				},
 
-				error: function (xhr, status, error) {
+				error: function () {
 					$('#loader').modal('hide');
-					console.error("Update error:", error);
-
-					// ✅ Handle ERROR
-					showResultModal('Error', 'Failed to update record. Please try again.');
-
-					// Redirect back after delay even on error
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back();
-						}
-					}, 1500);
+					showResultModalDU('Error', 'Failed to update record. Please try again.');
 				}
 			});
 		}
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+
+			let cleanDate = rawDate.replace(/['"]/g, '');
+
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						let title = 'Success';
+						let message = response;
+						document.getElementById('resultModalLabel2').innerText = title;
+						document.getElementById('resultModalBody2').innerText = message;
+
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to process request. Please try again.');
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
+		}
+
 	</script>
 
 </head>
@@ -1077,6 +1145,8 @@ function cancelModify() {
 							Date:
 							<span th:text="${#strings.replace(asondate, '/', '-')}"></span>
 						</span>
+						<button type="button" class="custom-tab-btn" onclick="regenerateProcedure()"
+							th:if="${displaymode == 'Details' and type == 'RESUB' }">Regenerate</button>
 
 
 						<!-- Summary / Details -->
@@ -2546,6 +2616,42 @@ function cancelModify() {
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+								data-dismiss="modal">Modify</button>
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+								Regenerate</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 
@@ -2685,8 +2791,6 @@ function cancelModify() {
 	/* #reports th {
     width: inherit !important;
     background-color: #D8D8D8; /* set header color */
-
-
 </style>
 
 </html>

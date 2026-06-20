@@ -64,7 +64,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -194,7 +194,9 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		Q_BRANCHNET_Summary_Entity existingSummary = brrs_Q_BRANCHNET_summary_repo
 				.findById(updatedEntity.getReportDate()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		// 🔹 Create Audit Copy before editing
+		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		Q_BRANCHNET_Detail_Entity detailEntity = brrs_Q_BRANCHNET_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -204,7 +206,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				});
 
 		try {
-			// 🔁 Loop R9 to R15
+			// 🔁 Loop R10 to R20
 			for (int i = 10; i <= 20; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches",
@@ -218,19 +220,28 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_BRANCHNET_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -244,15 +255,26 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_BRANCHNET Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_BRANCHNET_summary_repo.save(existingSummary);
 		brrs_Q_BRANCHNET_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void QBranchnetUpdate2(Q_BRANCHNET_Summary_Entity updatedEntity) {
 
 		System.out.println("Came to services 1");
@@ -262,7 +284,9 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		Q_BRANCHNET_Summary_Entity existingSummary = brrs_Q_BRANCHNET_summary_repo
 				.findById(updatedEntity.getReportDate()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		// 🔹 Create Audit Copy before editing
+		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		Q_BRANCHNET_Detail_Entity detailEntity = brrs_Q_BRANCHNET_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -272,7 +296,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				});
 
 		try {
-			// 🔁 Loop R9 to R15
+			// 🔁 Loop R25 to R35
 			for (int i = 25; i <= 35; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "atm_mini_atm_district", "no_of_atms", "no_of_mini_atms", "encashment_points" };
@@ -285,19 +309,28 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_BRANCHNET_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -311,15 +344,26 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_BRANCHNET Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_BRANCHNET_summary_repo.save(existingSummary);
 		brrs_Q_BRANCHNET_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void QBranchnetUpdate3(Q_BRANCHNET_Summary_Entity updatedEntity) {
 
 		System.out.println("Came to services 1");
@@ -329,7 +373,9 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		Q_BRANCHNET_Summary_Entity existingSummary = brrs_Q_BRANCHNET_summary_repo
 				.findById(updatedEntity.getReportDate()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		// 🔹 Create Audit Copy before editing
+		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		Q_BRANCHNET_Detail_Entity detailEntity = brrs_Q_BRANCHNET_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -339,7 +385,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				});
 
 		try {
-			// 🔁 Loop R9 to R15
+			// 🔁 Loop R40 to R50
 			for (int i = 40; i <= 50; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "debit_district", "opening_no_of_cards", "no_of_cards_issued", "no_cards_of_closed",
@@ -353,19 +399,28 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_BRANCHNET_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -379,15 +434,26 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_BRANCHNET Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_BRANCHNET_summary_repo.save(existingSummary);
 		brrs_Q_BRANCHNET_detail_repo.save(detailEntity);
 
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
+		}
+
 		System.out.println("Update completed successfully");
 	}
 
+	@Transactional
 	public void QBranchnetUpdate4(Q_BRANCHNET_Summary_Entity updatedEntity) {
 
 		System.out.println("Came to services 1");
@@ -397,7 +463,9 @@ public class BRRS_Q_BRANCHNET_ReportService {
 		Q_BRANCHNET_Summary_Entity existingSummary = brrs_Q_BRANCHNET_summary_repo
 				.findById(updatedEntity.getReportDate()).orElseThrow(() -> new RuntimeException(
 						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-
+		// 🔹 Create Audit Copy before editing
+		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
 		Q_BRANCHNET_Detail_Entity detailEntity = brrs_Q_BRANCHNET_detail_repo.findById(updatedEntity.getReportDate())
 				.orElseGet(() -> {
@@ -407,7 +475,7 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				});
 
 		try {
-			// 🔁 Loop R9 to R15
+			// 🔁 Loop R55 to R65
 			for (int i = 55; i <= 65; i++) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "credit_district", "opening_no_of_cards", "no_of_cards_issued",
@@ -421,19 +489,28 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					try {
 						// Getter from UPDATED entity
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
 						Object newValue = getter.invoke(updatedEntity);
+
+						// Get current value from existing record to compare
+						Object existingValue = getter.invoke(existingSummary);
+
+						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
+						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+						// If values are functionally identical, skip updating to avoid dirtying fields
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
 
 						// SUMMARY setter
 						Method summarySetter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						summarySetter.invoke(existingSummary, newValue);
 
 						// DETAIL setter
 						Method detailSetter = Q_BRANCHNET_Detail_Entity.class.getMethod(setterName,
 								getter.getReturnType());
-
 						detailSetter.invoke(detailEntity, newValue);
 
 					} catch (NoSuchMethodException e) {
@@ -447,11 +524,21 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
+		// Evaluate the actual changes calculated post-normalization
+		String changes = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("Q_BRANCHNET Changes Length = " + changes.length());
+
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
 		brrs_Q_BRANCHNET_summary_repo.save(existingSummary);
 		brrs_Q_BRANCHNET_detail_repo.save(detailEntity);
+
+		// Only invoke audit logger if actual physical modifications exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
+					"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
+		}
 
 		System.out.println("Update completed successfully");
 	}
@@ -1949,16 +2036,17 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-					
+
 					// audit service summary format
 
-					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-												if (attrs != null) {
-													HttpServletRequest request = attrs.getRequest();
-													String userid = (String) request.getSession().getAttribute("USERID");
-													auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET SUMMARY", null, "BRRS_Q_BRANCHNET_SUMMARYTABLE");
-												}
-
+					ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+							.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET SUMMARY", null,
+								"BRRS_Q_BRANCHNET_SUMMARYTABLE");
+					}
 
 					return out.toByteArray();
 				}
@@ -3512,15 +3600,16 @@ public class BRRS_Q_BRANCHNET_ReportService {
 				workbook.write(out);
 
 				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-				
+
 				// audit service summary email
 
 				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-									if (attrs != null) {
-										HttpServletRequest request = attrs.getRequest();
-										String userid = (String) request.getSession().getAttribute("USERID");
-										auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL SUMMARY", null, "BRRS_Q_BRANCHNET_SUMMARYTABLE");
-									}
+				if (attrs != null) {
+					HttpServletRequest request = attrs.getRequest();
+					String userid = (String) request.getSession().getAttribute("USERID");
+					auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL SUMMARY", null,
+							"BRRS_Q_BRANCHNET_SUMMARYTABLE");
+				}
 
 				return out.toByteArray();
 			}
@@ -4862,15 +4951,16 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service archival summary format
 
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-								if (attrs != null) {
-									HttpServletRequest request = attrs.getRequest();
-									String userid = (String) request.getSession().getAttribute("USERID");
-									auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET ARCHIVAL SUMMARY", null, "BRRS_Q_BRANCHNET_ARCHIVALTABLE_SUMMARY");
-								}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET ARCHIVAL SUMMARY", null,
+						"BRRS_Q_BRANCHNET_ARCHIVALTABLE_SUMMARY");
+			}
 
 			return out.toByteArray();
 		}
@@ -6401,16 +6491,16 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service archival summary email
 
-
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-							if (attrs != null) {
-								HttpServletRequest request = attrs.getRequest();
-								String userid = (String) request.getSession().getAttribute("USERID");
-								auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL ARCHIVAL SUMMARY", null, "BRRS_Q_BRANCHNET_ARCHIVALTABLE_SUMMARY");
-							}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL ARCHIVAL SUMMARY", null,
+						"BRRS_Q_BRANCHNET_ARCHIVALTABLE_SUMMARY");
+			}
 
 			return out.toByteArray();
 		}
@@ -7755,16 +7845,16 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service summary resub format
 
-
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-								if (attrs != null) {
-									HttpServletRequest request = attrs.getRequest();
-									String userid = (String) request.getSession().getAttribute("USERID");
-									auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET RESUB SUMMARY", null, "BRRS_Q_BRANCHNET_RESUB_SUMMARYTABLE");
-								}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET RESUB SUMMARY", null,
+						"BRRS_Q_BRANCHNET_RESUB_SUMMARYTABLE");
+			}
 
 			return out.toByteArray();
 		}
@@ -9295,15 +9385,16 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-			
+
 			// audit service summary resub email
 
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-							if (attrs != null) {
-								HttpServletRequest request = attrs.getRequest();
-								String userid = (String) request.getSession().getAttribute("USERID");
-								auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL RESUB SUMMARY", null, "BRRS_Q_BRANCHNET_RESUB_SUMMARYTABLE");
-							}
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "Q_BRANCHNET EMAIL RESUB SUMMARY", null,
+						"BRRS_Q_BRANCHNET_RESUB_SUMMARYTABLE");
+			}
 
 			return out.toByteArray();
 		}

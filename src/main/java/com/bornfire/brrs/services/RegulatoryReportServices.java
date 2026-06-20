@@ -6649,8 +6649,8 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 			case "ADISB1":
-				modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "ADISB2":
@@ -6865,6 +6865,9 @@ public class RegulatoryReportServices {
 				break;
 			case "FSI":
 				response = BRRS_FSI_ReportService.callregenprocedure(request);
+				break;
+			case "ADISB1":
+				response = BRRS_ADISB1_ReportService.callregenprocedure(request);
 				break;
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);

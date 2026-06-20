@@ -13319,10 +13319,15 @@ public class BRRS_M_LA5_ReportService {
 						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
-						String sqltransfer = "INSERT INTO BRRS_M_LA5_DETAILTABLE "
-								+ " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA,  REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
-								+ "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA,  REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+						String sqltransfer = "INSERT INTO BRRS_M_LA5_DETAILTABLE ("
+								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
 								+ "FROM BRRS_M_LA5_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+
 						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
 						System.out.println("Successfully transferred " + rowsInserted + " rows.");
 					}
@@ -13341,12 +13346,24 @@ public class BRRS_M_LA5_ReportService {
 						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
-						String finalsql = "INSERT INTO BRRS_M_LA5_ARCHIVALTABLE_SUMMARY (R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,"
-								+ "R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,"
-								+ "R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,REPORT_DATE , REPORT_VERSION ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,REPORT_RESUBDATE) "
-								+ "SELECT R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,"
-								+ "R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,"
-								+ "REPORT_DATE, ? ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,SYSDATE FROM BRRS_M_LA5_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						StringBuilder columnsPart = new StringBuilder();
+						String[] tokens = { "PRODUCT", "USD", "ZAR", "GBP", "EURO", "YEN", "C6", "C7", "C8", "TOTAL" };
+
+						// Dynamically generate R6 to R62 columns
+						for (int i = 6; i <= 62; i++) {
+							for (String token : tokens) {
+								columnsPart.append("R").append(i).append("_").append(token).append(", ");
+							}
+						}
+
+						// Build the final query cleanly - Notice the '?' replacing REPORT_VERSION in
+						// SELECT
+						String finalsql = "INSERT INTO BRRS_M_LA5_ARCHIVALTABLE_SUMMARY (" + columnsPart.toString()
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT " + columnsPart.toString()
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_M_LA5_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
 						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
 						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
 
@@ -13367,16 +13384,10 @@ public class BRRS_M_LA5_ReportService {
 			logger.info("Generating Excel for  M_LA5 Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 				byte[] ARCHIVALreport = getM_LA5DetailNewExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
 						type, version);
 				return ARCHIVALreport;
-			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-
-				byte[] resubReport = getM_LA5DetailExcelRESUB(filename, fromdate, todate, currency, dtltype, type,
-						version);
-
-				return resubReport;
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("M_LA5DetailsDetail");
@@ -13499,128 +13510,7 @@ public class BRRS_M_LA5_ReportService {
 		try {
 			logger.info("Generating Excel for M_LA5 ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("M_LA5 Detail NEW");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE IN PULA", "REPORT LABEL",
-					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3 || i == 4) {
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_LA5_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate);
-
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (M_LA5_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCust_id());
-					row.createCell(1).setCellValue(item.getAcct_number());
-					row.createCell(2).setCellValue(item.getAcct_name());
-
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcct_balance_in_pula() != null) {
-						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(4).setCellValue(item.getReport_label());
-					row.createCell(5).setCellValue(item.getReport_addl_criteria_1());
-					row.createCell(6)
-							.setCellValue(item.getReport_date() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for M_LA5 — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating M_LA5 NEW Excel", e);
-			return new byte[0];
-		}
-	}
-
-	public byte[] getM_LA5DetailExcelRESUB(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for M_LA5 Resub Details...");
-			System.out.println("came to Resub Detail download service");
-			if (type.equals("RESUB") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -13741,13 +13631,10 @@ public class BRRS_M_LA5_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.M_LA5");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_LA5ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
-		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating RESUB report for version {}", version);
-
-			return getExcelExcelRESUB(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 		if ("email".equalsIgnoreCase(format) && version == null) {
 			logger.info("Got format as Email");
@@ -18134,7 +18021,7 @@ public class BRRS_M_LA5_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 

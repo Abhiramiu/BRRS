@@ -23,5 +23,9 @@ public interface BRRS_M_SIR_Resub_Summary_Repo extends JpaRepository<M_SIR_Resub
 	@Query("SELECT MAX(e.reportVersion) FROM M_SIR_Resub_Summary_Entity e WHERE e.reportDate = :date")
 	BigDecimal findMaxVersion(@Param("date") Date date);
 
-
+	@Query("SELECT s FROM M_SIR_Resub_Summary_Entity s WHERE s.reportDate = :reportDate AND s.reportVersion = :reportVersion")
+    Optional<M_SIR_Resub_Summary_Entity> findByReportDateAndReportVersion(
+        @Param("reportDate") Date reportDate, 
+        @Param("reportVersion") BigDecimal reportVersion
+    );
 }
