@@ -527,7 +527,7 @@ public class BRRS_M_IRB_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
-		if (type.equals("ARCHIVAL") & version != null) {
+		if ("ARCHIVAL".equals(type) && version != null) {
 			byte[] ARCHIVALreport = getExcelM_IRBARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
 					version);
 			return ARCHIVALreport;
@@ -5291,7 +5291,7 @@ public class BRRS_M_IRB_ReportService {
 	public byte[] getExcelM_IRBARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
+		if ("ARCHIVAL".equals(type) && version != null) {
 
 		}
 		List<M_IRB_Archival_Summary_Entity> dataList = m_irb_Archival_Summary_Repo

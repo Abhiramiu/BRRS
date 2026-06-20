@@ -961,13 +961,13 @@ public byte[] getM_NOSVOSExcel(String filename, String reportId, String fromdate
 	
 	System.out.println("format is : " + format );
 	
-	if (type.equals("ARCHIVAL") & version != null) {
+	if ("ARCHIVAL".equals(type) && version != null) {
 		byte[] ARCHIVALreport = getExcelM_NOSVOSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
 				version);
 		return ARCHIVALreport;
 	}
 	
-	if (type.equals("RESUB") & version != null) {
+	if ("RESUB".equals(type) && version != null){
 		byte[] ARCHIVALreport = getExcelM_NOSVOSRESUB(filename, reportId, fromdate, todate, currency, dtltype, type,
 				version);
 		return ARCHIVALreport;

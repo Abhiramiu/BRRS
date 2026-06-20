@@ -12390,9 +12390,7 @@ public class RegulatoryReportServices {
 
 		        logger.info("M_IRB: Excel generated → {} bytes", excelBytes.length);
 
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 40 }
-		        );
+		        List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
 
 		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
 		                excelBytes,
