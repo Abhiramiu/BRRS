@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.springframework.beans.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -31130,7 +31131,7 @@ public class BRRS_M_GALOR_ReportService {
 	    System.out.println("Entered updateReport service");
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-	    // ✅ Fetch existing record using corrected query
+	    // Fetch existing record
 	    List<M_GALOR_Manual_Summary_Entity> list =
 	            m_galor_Manual_Summary_Repo.getdatabydateList(updatedEntity.getReport_date());
 
@@ -31141,13 +31142,37 @@ public class BRRS_M_GALOR_ReportService {
 
 	    M_GALOR_Manual_Summary_Entity existing = list.get(0);
 
+	    // Audit old copy
+	    M_GALOR_Manual_Summary_Entity oldcopy = new M_GALOR_Manual_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
 
-	        int[] specialRows = { 22, 23, 57, 58, 60, 61, 64, 65, 67, 68, 111, 112, 113, 114 };
+	        int[] specialRows = {
+	                22, 23, 57, 58, 60, 61, 64, 65,
+	                67, 68, 111, 112, 113, 114
+	        };
 
-	        String[] fullFields = { "product", "botswana", "south_africa", "sadc", "usa", "uk",
-	                "europe", "india", "sydney", "uganda",
-	                "c10", "c11", "c12", "c13", "c14", "c15", "c16", "total" };
+	        String[] fullFields = {
+	                "product",
+	                "botswana",
+	                "south_africa",
+	                "sadc",
+	                "usa",
+	                "uk",
+	                "europe",
+	                "india",
+	                "sydney",
+	                "uganda",
+	                "c10",
+	                "c11",
+	                "c12",
+	                "c13",
+	                "c14",
+	                "c15",
+	                "c16",
+	                "total"
+	        };
 
 	        for (int row : specialRows) {
 
@@ -31164,29 +31189,48 @@ public class BRRS_M_GALOR_ReportService {
 
 	                try {
 
-	                    Method getter = M_GALOR_Manual_Summary_Entity.class.getMethod(getterName);
+	                    Method getter = M_GALOR_Manual_Summary_Entity.class
+	                            .getMethod(getterName);
+
 	                    Method setter = M_GALOR_Manual_Summary_Entity.class
 	                            .getMethod(setterName, getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 
-	                    System.out.println("Updating field: " + prefix + field + " = " + newValue);
+	                    System.out.println(
+	                            "Updating field: " + prefix + field + " = " + newValue);
 
 	                    setter.invoke(existing, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    System.out.println("Skipping missing field: " + prefix + field);
+	                    System.out.println(
+	                            "Skipping missing field: " + prefix + field);
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating GALOR report fields", e);
+	        throw new RuntimeException(
+	                "Error while updating GALOR report fields", e);
 	    }
 
-	    m_galor_Manual_Summary_Repo.saveAndFlush(existing);
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    System.out.println("GALOR report updated successfully.");
+	    if (!changes.isEmpty()) {
+
+	        m_galor_Manual_Summary_Repo.saveAndFlush(existing);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getReport_date().toString(),
+	                "M GALOR Manual Summary Screen",
+	                "M_GALOR_MANUAL_SUMMARY"
+	        );
+
+	        System.out.println("GALOR report updated successfully.");
+	    }
 	}
 	/**
 	 * Helper method to copy fields for a given row prefix (Rxx).
@@ -31232,74 +31276,121 @@ public class BRRS_M_GALOR_ReportService {
 
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
-			String acctNo = request.getParameter("acctNumber");
-			String provisionStr = request.getParameter("acctBalanceInpula");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+	    try {
 
-			M_GALOR_Detail_Entity existing = m_galor_detail_Repo.findByAcctnumber(acctNo);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+	        String acctNo = request.getParameter("acctNumber");
+	        String provisionStr = request.getParameter("acctBalanceInpula");
+	        String acctName = request.getParameter("acctName");
+	        String reportDateStr = request.getParameter("reportDate");
 
-			boolean isChanged = false;
+	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
+	        M_GALOR_Detail_Entity existing =
+	                m_galor_detail_Repo.findByAcctnumber(acctNo);
 
-			if (provisionStr != null && !provisionStr.isEmpty()) {
-				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
-					existing.setAcctBalanceInpula(newProvision);
-					isChanged = true;
-					logger.info("Balance updated to {}", newProvision);
-				}
-			}
+	        if (existing == null) {
 
-			if (isChanged) {
-				m_galor_detail_Repo.save(existing);
-				logger.info("Record updated successfully for account {}", acctNo);
+	            logger.warn("No record found for ACCT_NO: {}", acctNo);
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Record not found for update.");
+	        }
 
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_GALOR_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_GALOR_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
+	        // Audit copy
+	        M_GALOR_Detail_Entity oldcopy = new M_GALOR_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
-			}
+	        boolean isChanged = false;
 
-		} catch (Exception e) {
-			logger.error("Error updating M_GALOR record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
-		}
+	        if (acctName != null && !acctName.isEmpty()) {
+
+	            if (existing.getAcctName() == null ||
+	                    !existing.getAcctName().equals(acctName)) {
+
+	                existing.setAcctName(acctName);
+	                isChanged = true;
+
+	                logger.info("Account name updated to {}", acctName);
+	            }
+	        }
+
+	        if (provisionStr != null && !provisionStr.isEmpty()) {
+
+	            BigDecimal newProvision = new BigDecimal(provisionStr);
+
+	            if (existing.getAcctBalanceInpula() == null ||
+	                    existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+
+	                existing.setAcctBalanceInpula(newProvision);
+	                isChanged = true;
+
+	                logger.info("Balance updated to {}", newProvision);
+	            }
+	        }
+
+	        if (isChanged) {
+
+	            m_galor_detail_Repo.save(existing);
+
+	            // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "M GALOR Detail Screen",
+	                    "BRRS_M_GALOR_DETAIL"
+	            );
+
+	            logger.info("Record updated successfully for account {}", acctNo);
+
+	            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+	                    .format(new SimpleDateFormat("yyyy-MM-dd")
+	                    .parse(reportDateStr));
+
+	            TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                        @Override
+	                        public void afterCommit() {
+
+	                            try {
+
+	                                logger.info(
+	                                        "Transaction committed — calling BRRS_M_GALOR_SUMMARY_PROCEDURE({})",
+	                                        formattedDate);
+
+	                                jdbcTemplate.update(
+	                                        "BEGIN BRRS_M_GALOR_SUMMARY_PROCEDURE(?); END;",
+	                                        formattedDate);
+
+	                                logger.info(
+	                                        "Procedure executed successfully after commit.");
+
+	                            } catch (Exception e) {
+
+	                                logger.error(
+	                                        "Error executing procedure after commit",
+	                                        e);
+	                            }
+	                        }
+	                    });
+
+	            return ResponseEntity.ok("Record updated successfully!");
+
+	        } else {
+
+	            logger.info("No changes detected for ACCT_NO: {}", acctNo);
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+
+	        logger.error("Error updating M_GALOR record", e);
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
 	}
 
 

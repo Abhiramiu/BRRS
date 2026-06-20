@@ -426,30 +426,52 @@ public class BRRS_M_NOSVOS_ReportService {
 	}
 	
 	
-public void updateReport(BrrsMNosvosP1 updatedEntity) {
+	public void updateReport(BrrsMNosvosP1 updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
 	    Date cleanDate = normalizeDate(updatedEntity.getREPORT_DATE());
 
-	    BrrsMNosvosP1 existing = BrrsMNosvosP1Repository.findById(cleanDate)
+	    BrrsMNosvosP1 existing = BrrsMNosvosP1Repository
+	            .findById(cleanDate)
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
+	    // Audit old copy
+	    BrrsMNosvosP1 oldcopy = new BrrsMNosvosP1();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
-	        // 1️⃣ Loop from R11 to R50 and copy fields
+
+	        // 1️⃣ Loop through R1 to R101 and copy fields
 	        for (int i = 1; i <= 101; i++) {
+
 	            String prefix = "R" + i + "_";
 
-	            String[] fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO", "CURRENCY_NOSTRO",
-	                                "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "AMOUNT_DEMAND_NOSTRO" ,"AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO"};
+	            String[] fields = {
+	                    "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+	                    "TYPE_OF_ACCOUNT_NOSTRO",
+	                    "PURPOSE_NOSTRO",
+	                    "CURRENCY_NOSTRO",
+	                    "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+	                    "RISK_WEIGHT_NOSTRO",
+	                    "AMOUNT_DEMAND_NOSTRO",
+	                    "AMOUNT_TIME_NOSTRO",
+	                    "RISK_WEIGHTED_AMOUNT_NOSTRO"
+	            };
 
 	            for (String field : fields) {
+
 	                String getterName = "get" + prefix + field;
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter = BrrsMNosvosP1.class.getMethod(getterName);
-	                    Method setter = BrrsMNosvosP1.class.getMethod(setterName, getter.getReturnType());
+	                    Method setter = BrrsMNosvosP1.class.getMethod(
+	                            setterName,
+	                            getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
@@ -461,21 +483,29 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	            }
 	        }
 
-	        // 2️⃣ Handle R51 totals
-	        String[] totalFields = { "TOTAL_AMOUNT_DEMAND_NOSTRO", "TOTAL_AMOUNT_TIME_NOSTRO", "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO" };
+	        // 2️⃣ Handle R101 Total Fields
+	        String[] totalFields = {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO",
+	                "TOTAL_AMOUNT_TIME_NOSTRO",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
+	        };
+
 	        for (String field : totalFields) {
+
 	            String getterName = "getR101_" + field;
 	            String setterName = "setR101_" + field;
 
 	            try {
+
 	                Method getter = BrrsMNosvosP1.class.getMethod(getterName);
-	                Method setter = BrrsMNosvosP1.class.getMethod(setterName, getter.getReturnType());
+	                Method setter = BrrsMNosvosP1.class.getMethod(
+	                        setterName,
+	                        getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Skip if not present
 	                continue;
 	            }
 	        }
@@ -484,41 +514,73 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    BrrsMNosvosP1Repository.save(existing);
-	    
-	    BrrsMNosvosP1Detail detail = new BrrsMNosvosP1Detail();
+	    // 3️⃣ Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    BeanUtils.copyProperties(existing, detail);
+	    if (!changes.isEmpty()) {
 
+	        BrrsMNosvosP1Repository.save(existing);
 
-	    BrrsMNosvosP1Repositorydetail.save(detail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                cleanDate.toString(),
+	                "M NOSVOS P1 Screen",
+	                "BRRS_M_NOSVOS_P1"
+	        );
+
+	        // Save detail/audit table
+	        BrrsMNosvosP1Detail detail = new BrrsMNosvosP1Detail();
+	        BeanUtils.copyProperties(existing, detail);
+
+	        BrrsMNosvosP1Repositorydetail.save(detail);
+	    }
 	}
-
+	
+	
 	public void updateReport2(BrrsMNosvosP2 updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
 	    Date cleanDate = normalizeDate(updatedEntity.getREPORT_DATE());
-	    
-	    BrrsMNosvosP2 existing = BrrsMNosvosP2Repository.findById(cleanDate)
+
+	    BrrsMNosvosP2 existing = BrrsMNosvosP2Repository
+	            .findById(cleanDate)
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
+	    // Audit old copy
+	    BrrsMNosvosP2 oldcopy = new BrrsMNosvosP2();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
-	        // 1️⃣ Loop from R11 to R50 and copy fields
+
+	        // 1️⃣ Loop through R1 to R101 and copy fields
 	        for (int i = 1; i <= 101; i++) {
+
 	            String prefix = "R" + i + "_";
 
-	            String[] fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO", "CURRENCY_VOSTRO",
-	                                "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO"};
+	            String[] fields = {
+	                    "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+	                    "TYPE_OF_ACCOUNT_VOSTRO",
+	                    "PURPOSE_VOSTRO",
+	                    "CURRENCY_VOSTRO",
+	                    "AMOUNT_DEMAND_VOSTRO",
+	                    "AMOUNT_TIME_VOSTRO"
+	            };
 
 	            for (String field : fields) {
+
 	                String getterName = "get" + prefix + field;
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter = BrrsMNosvosP2.class.getMethod(getterName);
-	                    Method setter = BrrsMNosvosP2.class.getMethod(setterName, getter.getReturnType());
+	                    Method setter = BrrsMNosvosP2.class.getMethod(
+	                            setterName,
+	                            getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
@@ -530,21 +592,28 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	            }
 	        }
 
-	        // 2️⃣ Handle R51 totals
-	        String[] totalFields = { "TOATAL_AMOUNT_DEMAND_VOSTRO", "TOTAL_AMOUNT_TIME_VOSTRO" };
+	        // 2️⃣ Handle R101 Total Fields
+	        String[] totalFields = {
+	                "TOATAL_AMOUNT_DEMAND_VOSTRO",
+	                "TOTAL_AMOUNT_TIME_VOSTRO"
+	        };
+
 	        for (String field : totalFields) {
+
 	            String getterName = "getR101_" + field;
 	            String setterName = "setR101_" + field;
 
 	            try {
+
 	                Method getter = BrrsMNosvosP2.class.getMethod(getterName);
-	                Method setter = BrrsMNosvosP2.class.getMethod(setterName, getter.getReturnType());
+	                Method setter = BrrsMNosvosP2.class.getMethod(
+	                        setterName,
+	                        getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Skip if not present
 	                continue;
 	            }
 	        }
@@ -553,41 +622,75 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    BrrsMNosvosP2Repository.save(existing);
-	    
-	    BrrsMNosvosP2Detail detail = new BrrsMNosvosP2Detail();
+	    // 3️⃣ Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    BeanUtils.copyProperties(existing, detail);
+	    if (!changes.isEmpty()) {
 
+	        BrrsMNosvosP2Repository.save(existing);
 
-	    BrrsMNosvosP2Repositorydetail.save(detail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                cleanDate.toString(),
+	                "M NOSVOS P2 Screen",
+	                "BRRS_M_NOSVOS_P2"
+	        );
+
+	        // Save detail table
+	        BrrsMNosvosP2Detail detail = new BrrsMNosvosP2Detail();
+	        BeanUtils.copyProperties(existing, detail);
+
+	        BrrsMNosvosP2Repositorydetail.save(detail);
+	    }
 	}
 
 	public void updateReport3(BrrsMNosvosP3 updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
 	    Date cleanDate = normalizeDate(updatedEntity.getREPORT_DATE());
 
-	    BrrsMNosvosP3 existing = BrrsMNosvosP3Repository.findById(cleanDate)
+	    BrrsMNosvosP3 existing = BrrsMNosvosP3Repository
+	            .findById(cleanDate)
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
+	    // Audit old copy
+	    BrrsMNosvosP3 oldcopy = new BrrsMNosvosP3();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
-	        // 1️⃣ Loop from R11 to R50 and copy fields
+
+	        // 1️⃣ Loop through R1 to R101 and copy fields
 	        for (int i = 1; i <= 101; i++) {
+
 	            String prefix = "R" + i + "_";
 
-	            String[] fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
-	                                "SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+	            String[] fields = {
+	                    "NAME_OF_BANK_NOSTRO1",
+	                    "TYPE_OF_ACCOUNT_NOSTRO1",
+	                    "PURPOSE_NOSTRO1",
+	                    "CURRENCY_NOSTRO1",
+	                    "SOVEREIGN_RATING_NOSTRO1",
+	                    "RISK_WEIGHT_NOSTRO1",
+	                    "AMOUNT_DEMAND_NOSTRO1",
+	                    "AMOUNT_TIME_NOSTRO1",
+	                    "RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	            };
 
 	            for (String field : fields) {
+
 	                String getterName = "get" + prefix + field;
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter = BrrsMNosvosP3.class.getMethod(getterName);
-	                    Method setter = BrrsMNosvosP3.class.getMethod(setterName, getter.getReturnType());
+	                    Method setter = BrrsMNosvosP3.class.getMethod(
+	                            setterName,
+	                            getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
@@ -599,21 +702,29 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	            }
 	        }
 
-	        // 2️⃣ Handle R51 totals
-	        String[] totalFields = { "TOTAL_AMOUNT_DEMAND_NOSTRO1", "TOTAL_AMOUNT_TIME_NOSTRO1", "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+	        // 2️⃣ Handle R101 Total Fields
+	        String[] totalFields = {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO1",
+	                "TOTAL_AMOUNT_TIME_NOSTRO1",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	        };
+
 	        for (String field : totalFields) {
+
 	            String getterName = "getR101_" + field;
 	            String setterName = "setR101_" + field;
 
 	            try {
+
 	                Method getter = BrrsMNosvosP3.class.getMethod(getterName);
-	                Method setter = BrrsMNosvosP3.class.getMethod(setterName, getter.getReturnType());
+	                Method setter = BrrsMNosvosP3.class.getMethod(
+	                        setterName,
+	                        getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Skip if not present
 	                continue;
 	            }
 	        }
@@ -622,41 +733,72 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    BrrsMNosvosP3Repository.save(existing);
-	    
-	    BrrsMNosvosP3Detail detail = new BrrsMNosvosP3Detail();
+	    // 3️⃣ Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    BeanUtils.copyProperties(existing, detail);
+	    if (!changes.isEmpty()) {
 
+	        BrrsMNosvosP3Repository.save(existing);
 
-	    BrrsMNosvosP3Repositorydetail.save(detail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                cleanDate.toString(),
+	                "M NOSVOS P3 Screen",
+	                "BRRS_M_NOSVOS_P3"
+	        );
+
+	        // Save detail table
+	        BrrsMNosvosP3Detail detail = new BrrsMNosvosP3Detail();
+	        BeanUtils.copyProperties(existing, detail);
+
+	        BrrsMNosvosP3Repositorydetail.save(detail);
+	    }
 	}
 	
 	public void updateReport4(BrrsMNosvosP4 updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
 	    Date cleanDate = normalizeDate(updatedEntity.getREPORT_DATE());
 
-	    BrrsMNosvosP4 existing = BrrsMNosvosP4Repository.findById(cleanDate)
+	    BrrsMNosvosP4 existing = BrrsMNosvosP4Repository
+	            .findById(cleanDate)
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
+	    // Audit old copy
+	    BrrsMNosvosP4 oldcopy = new BrrsMNosvosP4();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
-	        // 1️⃣ Loop from R11 to R50 and copy fields
+
+	        // 1️⃣ Loop through R1 to R101 and copy fields
 	        for (int i = 1; i <= 101; i++) {
+
 	            String prefix = "R" + i + "_";
 
-	            String[] fields = { "NAME_OF_BANK_VOSTRO1","TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1", "AMOUNT_DEMAND_VOSTRO1",
-	                                "AMOUNT_TIME_VOSTRO1"};
+	            String[] fields = {
+	                    "NAME_OF_BANK_VOSTRO1",
+	                    "TYPE_OF_ACCOUNT_VOSTRO1",
+	                    "PURPOSE_VOSTRO1",
+	                    "CURRENCY_VOSTRO1",
+	                    "AMOUNT_DEMAND_VOSTRO1",
+	                    "AMOUNT_TIME_VOSTRO1"
+	            };
 
 	            for (String field : fields) {
+
 	                String getterName = "get" + prefix + field;
 	                String setterName = "set" + prefix + field;
 
 	                try {
+
 	                    Method getter = BrrsMNosvosP4.class.getMethod(getterName);
-	                    Method setter = BrrsMNosvosP4.class.getMethod(setterName, getter.getReturnType());
+	                    Method setter = BrrsMNosvosP4.class.getMethod(
+	                            setterName,
+	                            getter.getReturnType());
 
 	                    Object newValue = getter.invoke(updatedEntity);
 	                    setter.invoke(existing, newValue);
@@ -668,21 +810,28 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	            }
 	        }
 
-	        // 2️⃣ Handle R51 totals
-	        String[] totalFields = { "TOTAL_AMOUNT_DEMAND_VOSTRO1", "TOTAL_AMOUNT_TIME_VOSTRO1" };
+	        // 2️⃣ Handle R101 Total Fields
+	        String[] totalFields = {
+	                "TOTAL_AMOUNT_DEMAND_VOSTRO1",
+	                "TOTAL_AMOUNT_TIME_VOSTRO1"
+	        };
+
 	        for (String field : totalFields) {
+
 	            String getterName = "getR101_" + field;
 	            String setterName = "setR101_" + field;
 
 	            try {
+
 	                Method getter = BrrsMNosvosP4.class.getMethod(getterName);
-	                Method setter = BrrsMNosvosP4.class.getMethod(setterName, getter.getReturnType());
+	                Method setter = BrrsMNosvosP4.class.getMethod(
+	                        setterName,
+	                        getter.getReturnType());
 
 	                Object newValue = getter.invoke(updatedEntity);
 	                setter.invoke(existing, newValue);
 
 	            } catch (NoSuchMethodException e) {
-	                // Skip if not present
 	                continue;
 	            }
 	        }
@@ -691,43 +840,75 @@ public void updateReport(BrrsMNosvosP1 updatedEntity) {
 	        throw new RuntimeException("Error while updating report fields", e);
 	    }
 
-	    // 3️⃣ Save updated entity
-	    BrrsMNosvosP4Repository.save(existing);
-	    
-	    BrrsMNosvosP4Detail detail = new BrrsMNosvosP4Detail();
+	    // 3️⃣ Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    BeanUtils.copyProperties(existing, detail);
+	    if (!changes.isEmpty()) {
 
+	        BrrsMNosvosP4Repository.save(existing);
 
-	    BrrsMNosvosP4Repositorydetail.save(detail);
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                cleanDate.toString(),
+	                "M NOSVOS P4 Screen",
+	                "BRRS_M_NOSVOS_P4"
+	        );
+
+	        // Save detail table
+	        BrrsMNosvosP4Detail detail = new BrrsMNosvosP4Detail();
+	        BeanUtils.copyProperties(existing, detail);
+
+	        BrrsMNosvosP4Repositorydetail.save(detail);
+	    }
 	}
 	
 	public void updateReport5(BrrsMNosvosP5 updatedEntity) {
+
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
 	    Date cleanDate = normalizeDate(updatedEntity.getREPORT_DATE());
 
-	    BrrsMNosvosP5 existing = BrrsMNosvosP5epository.findById(cleanDate)
+	    BrrsMNosvosP5 existing = BrrsMNosvosP5epository
+	            .findById(cleanDate)
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + cleanDate));
 
-	    System.out.println("Enrterd P5 ");
-	    
+	    // Audit old copy
+	    BrrsMNosvosP5 oldcopy = new BrrsMNosvosP5();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    System.out.println("Entered P5");
+
+	    // Update existing entity
 	    BeanUtils.copyProperties(updatedEntity, existing);
-	    // 3️⃣ Save updated entity
-	    BrrsMNosvosP5epository.save(existing);
-	    
-	    System.out.println("Enrterd P5 save ");
-	    
-	    BrrsMNosvosP5Detail detail = new BrrsMNosvosP5Detail();
 
-	    BeanUtils.copyProperties(existing, detail);
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    System.out.println("Enrterd P5 copy detail");
-	    
-	    BrrsMNosvosP5Repositorydetail.save(detail);
-	}
-	
+	    if (!changes.isEmpty()) {
+
+	        BrrsMNosvosP5epository.save(existing);
+
+	        System.out.println("Entered P5 save");
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                cleanDate.toString(),
+	                "M NOSVOS P5 Screen",
+	                "BRRS_M_NOSVOS_P5"
+	        );
+
+	        BrrsMNosvosP5Detail detail = new BrrsMNosvosP5Detail();
+	        BeanUtils.copyProperties(existing, detail);
+
+	        System.out.println("Entered P5 copy detail");
+
+	        BrrsMNosvosP5Repositorydetail.save(detail);
+	    }
+	}	
 	public List<Object> getM_NOSVOSArchival() {
 		List<Object> M_NOSVOSArchivallist = new ArrayList<>();
 		try {
