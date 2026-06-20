@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.springframework.beans.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -253,6 +254,11 @@ public class BRRS_M_LIQGAP_ReportService {
 
 	    M_LIQGAP_Manual_Summary_Entity existing = list.get(0);
 
+	    // Audit old copy
+	    M_LIQGAP_Manual_Summary_Entity oldcopy =
+	            new M_LIQGAP_Manual_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
 	    try {
 
 	        int[] rows = {21, 32, 33, 34};
@@ -261,13 +267,16 @@ public class BRRS_M_LIQGAP_ReportService {
 
 	            String prefix = "r" + row + "_";
 
-	            // ✅ FIX: Row-wise fields (based on your entity)
 	            String[] fields;
 
 	            if (row == 21 || row == 32) {
-	                fields = new String[] { "non_interest_bearing" };
-	            } 
-	            else if (row == 33) {
+
+	                fields = new String[] {
+	                        "non_interest_bearing"
+	                };
+
+	            } else if (row == 33) {
+
 	                fields = new String[] {
 	                        "non_interest_bearing",
 	                        "third_month",
@@ -275,11 +284,14 @@ public class BRRS_M_LIQGAP_ReportService {
 	                        "first_year",
 	                        "fifth_year"
 	                };
-	            } 
-	            else if (row == 34) {
-	                fields = new String[] { "first_month" };
-	            } 
-	            else {
+
+	            } else if (row == 34) {
+
+	                fields = new String[] {
+	                        "first_month"
+	                };
+
+	            } else {
 	                continue;
 	            }
 
@@ -290,31 +302,54 @@ public class BRRS_M_LIQGAP_ReportService {
 
 	                try {
 
-	                    Method getter = M_LIQGAP_Manual_Summary_Entity.class
-	                            .getMethod(getterName);
+	                    Method getter =
+	                            M_LIQGAP_Manual_Summary_Entity.class
+	                                    .getMethod(getterName);
 
-	                    Method setter = M_LIQGAP_Manual_Summary_Entity.class
-	                            .getMethod(setterName, getter.getReturnType());
+	                    Method setter =
+	                            M_LIQGAP_Manual_Summary_Entity.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
 	                    Object newValue = getter.invoke(request);
 
-	                    System.out.println("Updating: " + prefix + field + " = " + newValue);
+	                    System.out.println(
+	                            "Updating: " + prefix + field + " = " + newValue);
 
 	                    setter.invoke(existing, newValue);
 
 	                } catch (NoSuchMethodException e) {
-	                    System.out.println("Field NOT FOUND: " + prefix + field);
+
+	                    System.out.println(
+	                            "Field NOT FOUND: " + prefix + field);
 	                }
 	            }
 	        }
 
 	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating LIQGAP report fields", e);
+
+	        throw new RuntimeException(
+	                "Error while updating LIQGAP report fields", e);
 	    }
 
-	    BRRS_M_LIQGAP_Manual_Summary_Repo.saveAndFlush(existing);
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    System.out.println("LIQGAP report updated successfully.");
+	    if (!changes.isEmpty()) {
+
+	        BRRS_M_LIQGAP_Manual_Summary_Repo.saveAndFlush(existing);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                request.getReportDate().toString(),
+	                "M LIQGAP Manual Summary Screen",
+	                "BRRS_M_LIQGAP_MANUAL_SUMMARY"
+	        );
+
+	        System.out.println("LIQGAP report updated successfully.");
+	    }
 	}
 	
 	

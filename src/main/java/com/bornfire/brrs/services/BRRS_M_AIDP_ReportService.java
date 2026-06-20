@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import org.springframework.beans.BeanUtils;
 import java.util.Locale;
 import java.util.Map;
 
@@ -327,332 +328,565 @@ public class BRRS_M_AIDP_ReportService {
 	@Transactional
 	public void updateReport(BRRS_M_AIDP_Summary_Entity1 updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity1 existing = BRRS_M_aidpRepo1.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Summary_Entity1 existing =
+	            BRRS_M_aidpRepo1.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		BRRS_M_AIDP_Detail_Entity1 existing1 = bRRS_M_AIDP_Detail_Repo1.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Detail record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Detail_Entity1 existing1 =
+	            bRRS_M_AIDP_Detail_Repo1.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Detail record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		try {
-			// 1️⃣ Loop R11 to R50
-			for (int i = 11; i <= 50; i++) {
-				String prefix = "R" + i + "_";
+	    // Audit old copy
+	    BRRS_M_AIDP_Summary_Entity1 oldcopy =
+	            new BRRS_M_AIDP_Summary_Entity1();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+	    try {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	        // 1️⃣ Loop R11 to R50
+	        for (int i = 11; i <= 50; i++) {
 
-					try {
-						Method getter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(getterName);
+	            String prefix = "R" + i + "_";
 
-						Object newValue = getter.invoke(updatedEntity);
+	            String[] fields = {
+	                    "NAME_OF_BANK",
+	                    "TYPE_OF_ACC",
+	                    "PURPOSE",
+	                    "CURRENCY",
+	                    "BANK_RATE",
+	                    "AMT_LESS_184_DAYS",
+	                    "AMT_MORE_184_DAYS"
+	            };
 
-						// ✅ Set in SUMMARY table
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existing, newValue);
+	            for (String field : fields) {
 
-						// ✅ Set in DETAIL table
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity1.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(existing1, newValue);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-					} catch (NoSuchMethodException e) {
-						// field not present in entity → skip
-						continue;
-					}
-					
-				}
-			}
+	                try {
 
-			// 2️⃣ Handle R51 totals
-			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+	                    Method getter =
+	                            BRRS_M_AIDP_Summary_Entity1.class
+	                                    .getMethod(getterName);
 
-			for (String field : totalFields) {
-				String getterName = "getR51_" + field;
-				String setterName = "setR51_" + field;
+	                    Object newValue = getter.invoke(updatedEntity);
 
-				try {
-					Method getter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(getterName);
+	                    // Summary update
+	                    Method summarySetter =
+	                            BRRS_M_AIDP_Summary_Entity1.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Object newValue = getter.invoke(updatedEntity);
+	                    summarySetter.invoke(existing, newValue);
 
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(setterName,
-							getter.getReturnType());
-					summarySetter.invoke(existing, newValue);
+	                    // Detail update
+	                    Method detailSetter =
+	                            BRRS_M_AIDP_Detail_Entity1.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity1.class.getMethod(setterName,
-							getter.getReturnType());
-					detailSetter.invoke(existing1, newValue);
+	                    detailSetter.invoke(existing1, newValue);
 
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        // 2️⃣ Handle R51 Totals
+	        String[] totalFields = {
+	                "TOT_AMT_LESS_184_DAYS",
+	                "TOT_AMT_MORE_184_DAYS"
+	        };
 
-		// 3️⃣ SAVE BOTH (both are dirty now)
-		BRRS_M_aidpRepo1.save(existing);
-		bRRS_M_AIDP_Detail_Repo1.save(existing1);
+	        for (String field : totalFields) {
+
+	            String getterName = "getR51_" + field;
+	            String setterName = "setR51_" + field;
+
+	            try {
+
+	                Method getter =
+	                        BRRS_M_AIDP_Summary_Entity1.class
+	                                .getMethod(getterName);
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                Method summarySetter =
+	                        BRRS_M_AIDP_Summary_Entity1.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                summarySetter.invoke(existing, newValue);
+
+	                Method detailSetter =
+	                        BRRS_M_AIDP_Detail_Entity1.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                detailSetter.invoke(existing1, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
+	    }
+
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    if (!changes.isEmpty()) {
+
+	        BRRS_M_aidpRepo1.save(existing);
+	        bRRS_M_AIDP_Detail_Repo1.save(existing1);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M AIDP Summary Screen",
+	                "BRRS_M_AIDP_SUMMARY"
+	        );
+	    }
 	}
+	
 
 	@Transactional
 	public void updateReport2(BRRS_M_AIDP_Summary_Entity2 updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity2 existing = BRRS_M_aidpRepo2.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Summary_Entity2 existing =
+	            BRRS_M_aidpRepo2.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		BRRS_M_AIDP_Detail_Entity2 existing1 = bRRS_M_AIDP_Detail_Repo2.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Detail record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Detail_Entity2 existing1 =
+	            bRRS_M_AIDP_Detail_Repo2.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Detail record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		try {
-			// 1️⃣ Loop from R56 to R95
-			for (int i = 56; i <= 95; i++) {
-				String prefix = "R" + i + "_";
+	    // Audit old copy
+	    BRRS_M_AIDP_Summary_Entity2 oldcopy =
+	            new BRRS_M_AIDP_Summary_Entity2();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+	    try {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	        // 1️⃣ Loop from R56 to R95
+	        for (int i = 56; i <= 95; i++) {
 
-					try {
-						Method getter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(getterName);
+	            String prefix = "R" + i + "_";
 
-						Object newValue = getter.invoke(updatedEntity);
+	            String[] fields = {
+	                    "NAME_OF_BANK",
+	                    "TYPE_OF_ACC",
+	                    "PURPOSE",
+	                    "CURRENCY",
+	                    "BANK_RATE",
+	                    "AMT_LESS_184_DAYS",
+	                    "AMT_MORE_184_DAYS"
+	            };
 
-						// ✅ Update SUMMARY table
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existing, newValue);
+	            for (String field : fields) {
 
-						// ✅ Update DETAIL table
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity2.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(existing1, newValue);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-					} catch (NoSuchMethodException e) {
-						// Field not present → skip
-						continue;
-					}
-				}
-			}
+	                try {
 
-			// 2️⃣ Handle R96 totals
-			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+	                    Method getter =
+	                            BRRS_M_AIDP_Summary_Entity2.class
+	                                    .getMethod(getterName);
 
-			for (String field : totalFields) {
-				String getterName = "getR96_" + field;
-				String setterName = "setR96_" + field;
+	                    Object newValue = getter.invoke(updatedEntity);
 
-				try {
-					Method getter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(getterName);
+	                    // Update Summary
+	                    Method summarySetter =
+	                            BRRS_M_AIDP_Summary_Entity2.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Object newValue = getter.invoke(updatedEntity);
+	                    summarySetter.invoke(existing, newValue);
 
-					// SUMMARY
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(setterName,
-							getter.getReturnType());
-					summarySetter.invoke(existing, newValue);
+	                    // Update Detail
+	                    Method detailSetter =
+	                            BRRS_M_AIDP_Detail_Entity2.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					// DETAIL
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity2.class.getMethod(setterName,
-							getter.getReturnType());
-					detailSetter.invoke(existing1, newValue);
+	                    detailSetter.invoke(existing1, newValue);
 
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	        // 2️⃣ Handle R96 Totals
+	        String[] totalFields = {
+	                "TOT_AMT_LESS_184_DAYS",
+	                "TOT_AMT_MORE_184_DAYS"
+	        };
 
-		// 3️⃣ Save BOTH entities (both are dirty now)
-		BRRS_M_aidpRepo2.save(existing);
-		bRRS_M_AIDP_Detail_Repo2.save(existing1);
+	        for (String field : totalFields) {
+
+	            String getterName = "getR96_" + field;
+	            String setterName = "setR96_" + field;
+
+	            try {
+
+	                Method getter =
+	                        BRRS_M_AIDP_Summary_Entity2.class
+	                                .getMethod(getterName);
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                Method summarySetter =
+	                        BRRS_M_AIDP_Summary_Entity2.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                summarySetter.invoke(existing, newValue);
+
+	                Method detailSetter =
+	                        BRRS_M_AIDP_Detail_Entity2.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                detailSetter.invoke(existing1, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report fields", e);
+	    }
+
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    if (!changes.isEmpty()) {
+
+	        BRRS_M_aidpRepo2.save(existing);
+	        bRRS_M_AIDP_Detail_Repo2.save(existing1);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M AIDP Summary 2 Screen",
+	                "BRRS_M_AIDP_SUMMARY_2"
+	        );
+	    }
 	}
+	
 
 	@Transactional
 	public void updateReport3(BRRS_M_AIDP_Summary_Entity3 updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity3 existing = BRRS_M_aidpRepo3.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Summary_Entity3 existing =
+	            BRRS_M_aidpRepo3.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		BRRS_M_AIDP_Detail_Entity3 existing1 = bRRS_M_AIDP_Detail_Repo3.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Detail record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Detail_Entity3 existing1 =
+	            bRRS_M_AIDP_Detail_Repo3.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Detail record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		try {
-			// 1️⃣ Loop from R101 to R141
-			for (int i = 101; i <= 141; i++) {
-				String prefix = "R" + i + "_";
+	    // Audit old copy
+	    BRRS_M_AIDP_Summary_Entity3 oldcopy =
+	            new BRRS_M_AIDP_Summary_Entity3();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND",
-						"AMT_TIME" };
+	    try {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	        // 1️⃣ Loop from R101 to R141
+	        for (int i = 101; i <= 141; i++) {
 
-					try {
-						Method getter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(getterName);
+	            String prefix = "R" + i + "_";
 
-						Object newValue = getter.invoke(updatedEntity);
+	            String[] fields = {
+	                    "NAME_OF_BANK",
+	                    "TYPE_OF_ACC",
+	                    "PURPOSE",
+	                    "CURRENCY",
+	                    "BANK_RATE",
+	                    "AMT_DEMAND",
+	                    "AMT_TIME"
+	            };
 
-						// ✅ SUMMARY
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existing, newValue);
+	            for (String field : fields) {
 
-						// ✅ DETAIL
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity3.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(existing1, newValue);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
+	                try {
 
-			// 2️⃣ Handle R142 totals
-			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
+	                    Method getter =
+	                            BRRS_M_AIDP_Summary_Entity3.class
+	                                    .getMethod(getterName);
 
-			for (String field : totalFields) {
-				String getterName = "getR142_" + field;
-				String setterName = "setR142_" + field;
+	                    Object newValue = getter.invoke(updatedEntity);
 
-				try {
-					Method getter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(getterName);
+	                    // Update Summary
+	                    Method summarySetter =
+	                            BRRS_M_AIDP_Summary_Entity3.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Object newValue = getter.invoke(updatedEntity);
+	                    summarySetter.invoke(existing, newValue);
 
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(setterName,
-							getter.getReturnType());
-					summarySetter.invoke(existing, newValue);
+	                    // Update Detail
+	                    Method detailSetter =
+	                            BRRS_M_AIDP_Detail_Entity3.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity3.class.getMethod(setterName,
-							getter.getReturnType());
-					detailSetter.invoke(existing1, newValue);
+	                    detailSetter.invoke(existing1, newValue);
 
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report3 fields", e);
-		}
+	        // 2️⃣ Handle R142 Totals
+	        String[] totalFields = {
+	                "TOT_AMT_DEMAND",
+	                "TOT_AMT_TIME"
+	        };
 
-		// 3️⃣ Save BOTH entities
-		BRRS_M_aidpRepo3.save(existing);
-		bRRS_M_AIDP_Detail_Repo3.save(existing1);
+	        for (String field : totalFields) {
+
+	            String getterName = "getR142_" + field;
+	            String setterName = "setR142_" + field;
+
+	            try {
+
+	                Method getter =
+	                        BRRS_M_AIDP_Summary_Entity3.class
+	                                .getMethod(getterName);
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                Method summarySetter =
+	                        BRRS_M_AIDP_Summary_Entity3.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                summarySetter.invoke(existing, newValue);
+
+	                Method detailSetter =
+	                        BRRS_M_AIDP_Detail_Entity3.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                detailSetter.invoke(existing1, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report3 fields", e);
+	    }
+
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    if (!changes.isEmpty()) {
+
+	        BRRS_M_aidpRepo3.save(existing);
+	        bRRS_M_AIDP_Detail_Repo3.save(existing1);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M AIDP Summary 3 Screen",
+	                "BRRS_M_AIDP_SUMMARY_3"
+	        );
+	    }
 	}
-
+	
 	@Transactional
 	public void updateReport4(BRRS_M_AIDP_Summary_Entity4 updatedEntity) {
 
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity4 existing = BRRS_M_aidpRepo4.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Summary_Entity4 existing =
+	            BRRS_M_aidpRepo4.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Summary record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		BRRS_M_AIDP_Detail_Entity4 existing1 = bRRS_M_AIDP_Detail_Repo4.findById(updatedEntity.getREPORT_DATE())
-				.orElseThrow(() -> new RuntimeException(
-						"Detail record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
+	    BRRS_M_AIDP_Detail_Entity4 existing1 =
+	            bRRS_M_AIDP_Detail_Repo4.findById(updatedEntity.getREPORT_DATE())
+	            .orElseThrow(() -> new RuntimeException(
+	                    "Detail record not found for REPORT_DATE: "
+	                            + updatedEntity.getREPORT_DATE()));
 
-		try {
-			// 1️⃣ Loop from R147 to R193
-			for (int i = 147; i <= 193; i++) {
-				String prefix = "R" + i + "_";
+	    // Audit old copy
+	    BRRS_M_AIDP_Summary_Entity4 oldcopy =
+	            new BRRS_M_AIDP_Summary_Entity4();
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-				String[] fields = { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_DEMAND", "AMT_TIME" };
+	    try {
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	        // 1️⃣ Loop from R147 to R193
+	        for (int i = 147; i <= 193; i++) {
 
-					try {
-						Method getter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(getterName);
+	            String prefix = "R" + i + "_";
 
-						Object newValue = getter.invoke(updatedEntity);
+	            String[] fields = {
+	                    "NAME_OF_BANK",
+	                    "COUNTRY",
+	                    "TYPE_OF_ACC",
+	                    "PURPOSE",
+	                    "CURRENCY",
+	                    "BANK_RATE",
+	                    "AMT_DEMAND",
+	                    "AMT_TIME"
+	            };
 
-						// ✅ SUMMARY
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existing, newValue);
+	            for (String field : fields) {
 
-						// ✅ DETAIL
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity4.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(existing1, newValue);
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
+	                try {
 
-			// 2️⃣ Handle R194 totals
-			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
+	                    Method getter =
+	                            BRRS_M_AIDP_Summary_Entity4.class
+	                                    .getMethod(getterName);
 
-			for (String field : totalFields) {
-				String getterName = "getR194_" + field;
-				String setterName = "setR194_" + field;
+	                    Object newValue = getter.invoke(updatedEntity);
 
-				try {
-					Method getter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(getterName);
+	                    // Update Summary
+	                    Method summarySetter =
+	                            BRRS_M_AIDP_Summary_Entity4.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Object newValue = getter.invoke(updatedEntity);
+	                    summarySetter.invoke(existing, newValue);
 
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(setterName,
-							getter.getReturnType());
-					summarySetter.invoke(existing, newValue);
+	                    // Update Detail
+	                    Method detailSetter =
+	                            BRRS_M_AIDP_Detail_Entity4.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity4.class.getMethod(setterName,
-							getter.getReturnType());
-					detailSetter.invoke(existing1, newValue);
+	                    detailSetter.invoke(existing1, newValue);
 
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report4 fields", e);
-		}
+	        // 2️⃣ Handle R194 Totals
+	        String[] totalFields = {
+	                "TOT_AMT_DEMAND",
+	                "TOT_AMT_TIME"
+	        };
 
-		// 3️⃣ Save BOTH entities
-		BRRS_M_aidpRepo4.save(existing);
-		bRRS_M_AIDP_Detail_Repo4.save(existing1);
+	        for (String field : totalFields) {
+
+	            String getterName = "getR194_" + field;
+	            String setterName = "setR194_" + field;
+
+	            try {
+
+	                Method getter =
+	                        BRRS_M_AIDP_Summary_Entity4.class
+	                                .getMethod(getterName);
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                Method summarySetter =
+	                        BRRS_M_AIDP_Summary_Entity4.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                summarySetter.invoke(existing, newValue);
+
+	                Method detailSetter =
+	                        BRRS_M_AIDP_Detail_Entity4.class
+	                                .getMethod(
+	                                        setterName,
+	                                        getter.getReturnType());
+
+	                detailSetter.invoke(existing1, newValue);
+
+	            } catch (NoSuchMethodException e) {
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error while updating report4 fields", e);
+	    }
+
+	    // Audit & Save only if changes exist
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	    if (!changes.isEmpty()) {
+
+	        BRRS_M_aidpRepo4.save(existing);
+	        bRRS_M_AIDP_Detail_Repo4.save(existing1);
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M AIDP Summary 4 Screen",
+	                "BRRS_M_AIDP_SUMMARY_4"
+	        );
+	    }
 	}
-
+	
+	
 	public byte[] getM_AIDPExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 

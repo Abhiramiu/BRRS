@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.springframework.beans.BeanUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -11147,7 +11147,9 @@ public ModelAndView updateDetailEdit(String acctNo, String formMode) {
 
 @Transactional
 public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+
     try {
+
         String acctNo = request.getParameter("acctNumber");
         String provisionStr = request.getParameter("acctBalanceInpula");
         String acctName = request.getParameter("acctName");
@@ -11155,65 +11157,108 @@ public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 
         logger.info("Received update for ACCT_NO: {}", acctNo);
 
-        M_DEP1_Detail_Entity existing = M_DEP1_Detail_Repo.findByAcctnumber(acctNo);
+        M_DEP1_Detail_Entity existing =
+                M_DEP1_Detail_Repo.findByAcctnumber(acctNo);
+
         if (existing == null) {
+
             logger.warn("No record found for ACCT_NO: {}", acctNo);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Record not found for update.");
         }
+
+        // Create old copy for audit comparison
+        M_DEP1_Detail_Entity oldcopy = new M_DEP1_Detail_Entity();
+        BeanUtils.copyProperties(existing, oldcopy);
 
         boolean isChanged = false;
 
         if (acctName != null && !acctName.isEmpty()) {
-            if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+
+            if (existing.getAcctName() == null ||
+                    !existing.getAcctName().equals(acctName)) {
+
                 existing.setAcctName(acctName);
                 isChanged = true;
+
                 logger.info("Account name updated to {}", acctName);
             }
         }
 
         if (provisionStr != null && !provisionStr.isEmpty()) {
+
             BigDecimal newProvision = new BigDecimal(provisionStr);
+
             if (existing.getAcctBalanceInpula() == null ||
-                existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+                    existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
+
                 existing.setAcctBalanceInpula(newProvision);
                 isChanged = true;
+
                 logger.info("Balance updated to {}", newProvision);
             }
         }
-        
-        
 
         if (isChanged) {
-        	M_DEP1_Detail_Repo.save(existing);
+
+            M_DEP1_Detail_Repo.save(existing);
+
+            // Audit comparison
+            auditService.compareEntitiesmanual(
+                    oldcopy,
+                    existing,
+                    acctNo,
+                    "M DEP1 Detail Screen",
+                    "BRRS_M_DEP1_DETAIL"
+            );
+
             logger.info("Record updated successfully for account {}", acctNo);
 
-            // Format date for procedure
             String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-                    .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+                    .format(new SimpleDateFormat("yyyy-MM-dd")
+                    .parse(reportDateStr));
 
-            // Run summary procedure after commit
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-                @Override
-                public void afterCommit() {
-                    try {
-                        logger.info("Transaction committed — calling BRRS_M_DEP1_SUMMARY_PROCEDURE({})",
-                                formattedDate);
-                        jdbcTemplate.update("BEGIN BRRS_M_DEP1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-                        logger.info("Procedure executed successfully after commit.");
-                    } catch (Exception e) {
-                        logger.error("Error executing procedure after commit", e);
-                    }
-                }
-            });
+            TransactionSynchronizationManager.registerSynchronization(
+                    new TransactionSynchronizationAdapter() {
+
+                        @Override
+                        public void afterCommit() {
+
+                            try {
+
+                                logger.info(
+                                        "Transaction committed — calling BRRS_M_DEP1_SUMMARY_PROCEDURE({})",
+                                        formattedDate);
+
+                                jdbcTemplate.update(
+                                        "BEGIN BRRS_M_DEP1_SUMMARY_PROCEDURE(?); END;",
+                                        formattedDate);
+
+                                logger.info(
+                                        "Procedure executed successfully after commit.");
+
+                            } catch (Exception e) {
+
+                                logger.error(
+                                        "Error executing procedure after commit",
+                                        e);
+                            }
+                        }
+                    });
 
             return ResponseEntity.ok("Record updated successfully!");
+
         } else {
+
             logger.info("No changes detected for ACCT_NO: {}", acctNo);
             return ResponseEntity.ok("No changes were made.");
         }
 
     } catch (Exception e) {
+
         logger.error("Error updating M_DEP1 record", e);
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error updating record: " + e.getMessage());
     }
