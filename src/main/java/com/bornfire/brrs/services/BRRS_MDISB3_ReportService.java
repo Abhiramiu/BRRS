@@ -46,6 +46,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -32737,18 +32738,24 @@ public class BRRS_MDISB3_ReportService {
 	        MDISB3_Detail_Entity existing = findByAcctnumber(acctNo);
 
 	        if (existing == null) {
+
 	            logger.warn("No record found for ACCT_NUMBER: {}", acctNo);
+
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
 	                    .body("Record not found for update.");
 	        }
+
+	        // Create old copy for audit comparison
+	        MDISB3_Detail_Entity oldcopy = new MDISB3_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 	        boolean isChanged = false;
 
 	        // Update Account Name
 	        if (acctName != null && !acctName.isEmpty()) {
 
-	            if (existing.getAcct_name() == null ||
-	                    !existing.getAcct_name().equals(acctName)) {
+	            if (existing.getAcct_name() == null
+	                    || !existing.getAcct_name().equals(acctName)) {
 
 	                existing.setAcct_name(acctName);
 	                isChanged = true;
@@ -32758,12 +32765,15 @@ public class BRRS_MDISB3_ReportService {
 	        }
 
 	        // Update Account Balance
-	        if (acctBalanceInPula != null && !acctBalanceInPula.isEmpty()) {
+	        if (acctBalanceInPula != null
+	                && !acctBalanceInPula.isEmpty()) {
 
-	            BigDecimal newBalance = new BigDecimal(acctBalanceInPula);
+	            BigDecimal newBalance =
+	                    new BigDecimal(acctBalanceInPula);
 
-	            if (existing.getAcct_balance_in_pula() == null ||
-	                    existing.getAcct_balance_in_pula().compareTo(newBalance) != 0) {
+	            if (existing.getAcct_balance_in_pula() == null
+	                    || existing.getAcct_balance_in_pula()
+	                    .compareTo(newBalance) != 0) {
 
 	                existing.setAcct_balance_in_pula(newBalance);
 	                isChanged = true;
@@ -32787,68 +32797,92 @@ public class BRRS_MDISB3_ReportService {
 	                    existing.getAcct_number()
 	            );
 
+	            // Audit comparison
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "MDISB3 Detail Screen",
+	                    "BRRS_MDISB3_DETAILTABLE"
+	            );
+
+	            logger.info(
+	                    "Record updated successfully for account {}",
+	                    acctNo);
+
 	            // Format date for procedure
 	            String formattedDate = null;
 
-	            if (reportDateStr != null && !reportDateStr.isEmpty()) {
+	            if (reportDateStr != null
+	                    && !reportDateStr.isEmpty()) {
 
-	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                        .format(new SimpleDateFormat("yyyy-MM-dd")
-	                                .parse(reportDateStr));
+	                formattedDate =
+	                        new SimpleDateFormat("dd-MM-yyyy")
+	                                .format(
+	                                        new SimpleDateFormat("yyyy-MM-dd")
+	                                                .parse(reportDateStr)
+	                                );
 
 	            } else if (existing.getReport_date() != null) {
 
-	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                        .format(existing.getReport_date());
+	                formattedDate =
+	                        new SimpleDateFormat("dd-MM-yyyy")
+	                                .format(existing.getReport_date());
 	            }
 
 	            final String procDate = formattedDate;
 
 	            if (procDate != null) {
 
-	                TransactionSynchronizationManager.registerSynchronization(
-	                        new TransactionSynchronizationAdapter() {
+	                TransactionSynchronizationManager
+	                        .registerSynchronization(
+	                                new TransactionSynchronizationAdapter() {
 
-	                            @Override
-	                            public void afterCommit() {
+	                                    @Override
+	                                    public void afterCommit() {
 
-	                                try {
+	                                        try {
 
-	                                    logger.info(
-	                                            "Transaction committed — calling BRRS_MDISB3_SUMMARY_PROCEDURE({})",
-	                                            procDate);
+	                                            logger.info(
+	                                                    "Transaction committed — calling BRRS_MDISB3_SUMMARY_PROCEDURE({})",
+	                                                    procDate);
 
-	                                    jdbcTemplate.update(
-	                                            "BEGIN BRRS_MDISB3_SUMMARY_PROCEDURE(?); END;",
-	                                            procDate);
+	                                            jdbcTemplate.update(
+	                                                    "BEGIN BRRS_MDISB3_SUMMARY_PROCEDURE(?); END;",
+	                                                    procDate);
 
-	                                    logger.info(
-	                                            "Procedure executed successfully after commit.");
+	                                            logger.info(
+	                                                    "Procedure executed successfully after commit.");
 
-	                                } catch (Exception e) {
+	                                        } catch (Exception e) {
 
-	                                    logger.error(
-	                                            "Error executing procedure after commit",
-	                                            e);
-	                                }
-	                            }
-	                        });
+	                                            logger.error(
+	                                                    "Error executing procedure after commit",
+	                                                    e);
+	                                        }
+	                                    }
+	                                });
 	            }
 
-	            return ResponseEntity.ok("Record updated successfully!");
+	            return ResponseEntity.ok(
+	                    "Record updated successfully!");
 
 	        } else {
 
-	            logger.info("No changes detected for ACCT_NUMBER: {}", acctNo);
+	            logger.info(
+	                    "No changes detected for ACCT_NUMBER: {}",
+	                    acctNo);
 
-	            return ResponseEntity.ok("No changes were made.");
+	            return ResponseEntity.ok(
+	                    "No changes were made.");
 	        }
 
 	    } catch (Exception e) {
 
 	        logger.error("Error updating MDISB3 record", e);
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	        return ResponseEntity.status(
+	                HttpStatus.INTERNAL_SERVER_ERROR)
 	                .body("Error updating record: " + e.getMessage());
 	    }
 	}

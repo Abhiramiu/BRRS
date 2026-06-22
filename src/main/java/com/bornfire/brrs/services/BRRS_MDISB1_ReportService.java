@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+import org.springframework.dao.EmptyResultDataAccessException;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.IdClass;
@@ -46,6 +46,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -278,10 +279,23 @@ public class BRRS_MDISB1_ReportService {
 
 		public MDISB1_Detail_Entity findByAcctnumber(String acctNumber) {
 
-			String sql = "SELECT * FROM BRRS_MDISB1_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		    try {
 
-			return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new MDISB1DetailRowMapper());
-		}	
+		        String sql =
+		                "SELECT * FROM BRRS_MDISB1_DETAILTABLE " +
+		                "WHERE ACCT_NUMBER = ?";
+
+		        return jdbcTemplate.queryForObject(
+		                sql,
+		                new Object[]{acctNumber},
+		                new MDISB1DetailRowMapper());
+
+		    } catch (EmptyResultDataAccessException e) {
+
+		        logger.warn("No record found for ACCT_NUMBER : {}", acctNumber);
+		        return null;
+		    }
+		}
 		
 		
 		// 1. GET BY DATE + VERSION
@@ -32698,162 +32712,314 @@ public class BRRS_MDISB1_ReportService {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/MDISB1");
+	public ModelAndView getViewOrEditPage(
+	        String acctNo,
+	        String formMode) {
 
-		System.out.println("Came to view method");
+	    ModelAndView mv =
+	            new ModelAndView("BRRS/MDISB1");
 
-		if (acctNo != null) {
-			MDISB1_Detail_Entity Entity = findByAcctnumber(acctNo);
-			if (Entity != null && Entity.getReport_date() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(Entity.getReport_date());
-				mv.addObject("asondate", formattedDate);
-			}
-			mv.addObject("Data", Entity);
-		}
+	    logger.info("Entered getViewOrEditPage()");
 
-		else {
-			System.out.println(acctNo);
-		}
+	    if (acctNo != null && !acctNo.trim().isEmpty()) {
 
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
-	}
+	        MDISB1_Detail_Entity entity =
+	                findByAcctnumber(acctNo);
 
-	
-	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	        if (entity != null) {
 
-	    try {
+	            if (entity.getReport_date() != null) {
 
-	        String acctNo = request.getParameter("acct_number");
-	        String acctName = request.getParameter("acct_name");
-	        String acctBalanceInPula = request.getParameter("acct_balance_in_pula");
-	        String reportDateStr = request.getParameter("report_date");
+	                String formattedDate =
+	                        new SimpleDateFormat("dd/MM/yyyy")
+	                                .format(entity.getReport_date());
 
-	        logger.info("Received update for ACCT_NUMBER: {}", acctNo);
-
-	        MDISB1_Detail_Entity existing = findByAcctnumber(acctNo);
-
-	        if (existing == null) {
-	            logger.warn("No record found for ACCT_NUMBER: {}", acctNo);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                    .body("Record not found for update.");
-	        }
-
-	        boolean isChanged = false;
-
-	        // Update Account Name
-	        if (acctName != null && !acctName.isEmpty()) {
-
-	            if (existing.getAcct_name() == null ||
-	                    !existing.getAcct_name().equals(acctName)) {
-
-	                existing.setAcct_name(acctName);
-	                isChanged = true;
-
-	                logger.info("Account Name updated to {}", acctName);
-	            }
-	        }
-
-	        // Update Account Balance
-	        if (acctBalanceInPula != null && !acctBalanceInPula.isEmpty()) {
-
-	            BigDecimal newBalance = new BigDecimal(acctBalanceInPula);
-
-	            if (existing.getAcct_balance_in_pula() == null ||
-	                    existing.getAcct_balance_in_pula().compareTo(newBalance) != 0) {
-
-	                existing.setAcct_balance_in_pula(newBalance);
-	                isChanged = true;
-
-	                logger.info("Account Balance updated to {}", newBalance);
-	            }
-	        }
-
-	        if (isChanged) {
-
-	            String sql =
-	                    "UPDATE BRRS_MDISB1_DETAILTABLE " +
-	                    "SET ACCT_NAME = ?, " +
-	                    "ACCT_BALANCE_IN_PULA = ? " +
-	                    "WHERE ACCT_NUMBER = ?";
-
-	            jdbcTemplate.update(
-	                    sql,
-	                    existing.getAcct_name(),
-	                    existing.getAcct_balance_in_pula(),
-	                    existing.getAcct_number()
-	            );
-
-	            // Format date for procedure
-	            String formattedDate = null;
-
-	            if (reportDateStr != null && !reportDateStr.isEmpty()) {
-
-	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                        .format(new SimpleDateFormat("yyyy-MM-dd")
-	                                .parse(reportDateStr));
-
-	            } else if (existing.getReport_date() != null) {
-
-	                formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                        .format(existing.getReport_date());
+	                mv.addObject(
+	                        "asondate",
+	                        formattedDate);
 	            }
 
-	            final String procDate = formattedDate;
-
-	            if (procDate != null) {
-
-	                TransactionSynchronizationManager.registerSynchronization(
-	                        new TransactionSynchronizationAdapter() {
-
-	                            @Override
-	                            public void afterCommit() {
-
-	                                try {
-
-	                                    logger.info(
-	                                            "Transaction committed — calling BRRS_MDISB1_SUMMARY_PROCEDURE({})",
-	                                            procDate);
-
-	                                    jdbcTemplate.update(
-	                                            "BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;",
-	                                            procDate);
-
-	                                    logger.info(
-	                                            "Procedure executed successfully after commit.");
-
-	                                } catch (Exception e) {
-
-	                                    logger.error(
-	                                            "Error executing procedure after commit",
-	                                            e);
-	                                }
-	                            }
-	                        });
-	            }
-
-	            return ResponseEntity.ok("Record updated successfully!");
+	            mv.addObject("Data", entity);
 
 	        } else {
 
-	            logger.info("No changes detected for ACCT_NUMBER: {}", acctNo);
-
-	            return ResponseEntity.ok("No changes were made.");
+	            logger.warn(
+	                    "No record found for account : {}",
+	                    acctNo);
 	        }
+	    }
+
+	    mv.addObject("displaymode", "edit");
+	    mv.addObject(
+	            "formmode",
+	            formMode != null ? formMode : "edit");
+
+	    return mv;
+	}
+
+	/*=========================================================
+	 * UPDATE DETAIL SCREEN
+	 *=========================================================*/
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(
+	        HttpServletRequest request) {
+
+	    try {
+
+	        String acctNo =
+	                request.getParameter("acct_number");
+
+	        String acctName =
+	                request.getParameter("acct_name");
+
+	        String acctBalanceInPula =
+	                request.getParameter(
+	                        "acct_balance_in_pula");
+
+	        String reportDateStr =
+	                request.getParameter("report_date");
+
+	        logger.info(
+	                "Received update request for account : {}",
+	                acctNo);
+
+	        MDISB1_Detail_Entity existing =
+	                findByAcctnumber(acctNo);
+
+	        if (existing == null) {
+
+	            logger.warn(
+	                    "Record not found for account : {}",
+	                    acctNo);
+
+	            return ResponseEntity
+	                    .status(HttpStatus.NOT_FOUND)
+	                    .body(
+	                            "Record not found for update.");
+	        }
+
+	        /*-----------------------------------------
+	         * Create old copy for audit
+	         *-----------------------------------------*/
+	        MDISB1_Detail_Entity oldcopy =
+	                new MDISB1_Detail_Entity();
+
+	        BeanUtils.copyProperties(
+	                existing,
+	                oldcopy);
+
+	        boolean isChanged = false;
+
+	        /*-----------------------------------------
+	         * Account Name
+	         *-----------------------------------------*/
+	        if (acctName != null &&
+	                !acctName.trim().isEmpty()) {
+
+	            if (existing.getAcct_name() == null ||
+	                    !existing.getAcct_name()
+	                            .equals(acctName)) {
+
+	                existing.setAcct_name(acctName);
+
+	                isChanged = true;
+
+	                logger.info(
+	                        "Account Name changed : {}",
+	                        acctName);
+	            }
+	        }
+
+	        /*-----------------------------------------
+	         * Account Balance
+	         *-----------------------------------------*/
+	        if (acctBalanceInPula != null &&
+	                !acctBalanceInPula.trim().isEmpty()) {
+
+	            BigDecimal newBalance =
+	                    new BigDecimal(
+	                            acctBalanceInPula);
+
+	            if (existing.getAcct_balance_in_pula() == null ||
+	                    existing.getAcct_balance_in_pula()
+	                            .compareTo(newBalance) != 0) {
+
+	                existing.setAcct_balance_in_pula(
+	                        newBalance);
+
+	                isChanged = true;
+
+	                logger.info(
+	                        "Balance changed : {}",
+	                        newBalance);
+	            }
+	        }
+
+	        /*-----------------------------------------
+	         * Report Date
+	         *-----------------------------------------*/
+	        if (reportDateStr != null &&
+	                !reportDateStr.trim().isEmpty()) {
+
+	            Date newDate =
+	                    new SimpleDateFormat(
+	                            "yyyy-MM-dd")
+	                            .parse(reportDateStr);
+
+	            if (existing.getReport_date() == null ||
+	                    !existing.getReport_date()
+	                            .equals(newDate)) {
+
+	                existing.setReport_date(newDate);
+
+	                isChanged = true;
+
+	                logger.info(
+	                        "Report Date changed : {}",
+	                        newDate);
+	            }
+	        }
+
+	        /*-----------------------------------------
+	         * No Changes
+	         *-----------------------------------------*/
+	        if (!isChanged) {
+
+	            logger.info(
+	                    "No changes detected for account : {}",
+	                    acctNo);
+
+	            return ResponseEntity.ok(
+	                    "No changes were made.");
+	        }
+
+	        /*-----------------------------------------
+	         * Update Table
+	         *-----------------------------------------*/
+	        String updateSql =
+	                "UPDATE BRRS_MDISB1_DETAILTABLE " +
+	                "SET ACCT_NAME = ?, " +
+	                "    ACCT_BALANCE_IN_PULA = ?, " +
+	                "    REPORT_DATE = ? " +
+	                "WHERE ACCT_NUMBER = ?";
+
+	        int count =
+	                jdbcTemplate.update(
+	                        updateSql,
+	                        existing.getAcct_name(),
+	                        existing.getAcct_balance_in_pula(),
+	                        new java.sql.Date(
+	                                existing.getReport_date()
+	                                        .getTime()),
+	                        existing.getAcct_number());
+
+	        if (count <= 0) {
+
+	            logger.error(
+	                    "Update failed for account : {}",
+	                    acctNo);
+
+	            return ResponseEntity
+	                    .status(
+	                            HttpStatus.INTERNAL_SERVER_ERROR)
+	                    .body(
+	                            "Unable to update record.");
+	        }
+
+	        logger.info(
+	                "Record updated successfully for account : {}",
+	                acctNo);
+
+	        /*-----------------------------------------
+	         * Audit
+	         *-----------------------------------------*/
+	        String changes =
+	                auditService.getChanges(
+	                        oldcopy,
+	                        existing);
+
+	        if (changes != null &&
+	                !changes.isEmpty()) {
+
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    existing,
+	                    acctNo,
+	                    "MDISB1 Detail Screen",
+	                    "BRRS_MDISB1_DETAILTABLE");
+
+	            logger.info(
+	                    "Audit completed for account : {}",
+	                    acctNo);
+	        }
+
+	        /*-----------------------------------------
+	         * Procedure Call After Commit
+	         *-----------------------------------------*/
+	        String formattedDate = null;
+
+	        if (existing.getReport_date() != null) {
+
+	            formattedDate =
+	                    new SimpleDateFormat(
+	                            "dd-MM-yyyy")
+	                            .format(
+	                                    existing.getReport_date());
+	        }
+
+	        final String procDate =
+	                formattedDate;
+
+	        if (procDate != null) {
+
+	        	TransactionSynchronizationManager.registerSynchronization(
+	                    new TransactionSynchronizationAdapter() {
+
+	                                @Override
+	                                public void afterCommit() {
+
+	                                    try {
+
+	                                        logger.info(
+	                                                "Calling Procedure BRRS_MDISB1_SUMMARY_PROCEDURE({})",
+	                                                procDate);
+
+	                                        jdbcTemplate.update(
+	                                                "BEGIN BRRS_MDISB1_SUMMARY_PROCEDURE(?); END;",
+	                                                procDate);
+
+	                                        logger.info(
+	                                                "Procedure executed successfully.");
+
+	                                    } catch (Exception e) {
+
+	                                        logger.error(
+	                                                "Error while executing procedure",
+	                                                e);
+	                                    }
+	                                }
+	                            });
+	        }
+
+	        return ResponseEntity.ok(
+	                "Record updated successfully!");
 
 	    } catch (Exception e) {
 
-	        logger.error("Error updating MDISB1 record", e);
+	        logger.error(
+	                "Error updating MDISB1 record",
+	                e);
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Error updating record: " + e.getMessage());
+	        return ResponseEntity
+	                .status(
+	                        HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(
+	                        "Error updating record : "
+	                                + e.getMessage());
 	    }
 	}
 	
-
+	
 	public byte[] getExcelMDISB1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");

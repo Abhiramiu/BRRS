@@ -13197,214 +13197,310 @@ public class BRRS_MDISB5_ReportService {
 
 	    try {
 
-	        String sql =
-	                "UPDATE BRRS_MDISB5_SUMMARYTABLE1 SET " +
-	                "R5_NAME_OF_SHAREHOLDER=?, R5_PERCENTAGE_SHAREHOLDING=?, R5_NUMBER_OF_ACCOUNTS=?, R5_AMOUNT=?, " +
-	                "R6_NAME_OF_SHAREHOLDER=?, R6_PERCENTAGE_SHAREHOLDING=?, R6_NUMBER_OF_ACCOUNTS=?, R6_AMOUNT=?, " +
-	                "R7_NAME_OF_SHAREHOLDER=?, R7_PERCENTAGE_SHAREHOLDING=?, R7_NUMBER_OF_ACCOUNTS=?, R7_AMOUNT=?, " +
-	                "R8_NAME_OF_SHAREHOLDER=?, R8_PERCENTAGE_SHAREHOLDING=?, R8_NUMBER_OF_ACCOUNTS=?, R8_AMOUNT=?, " +
-	                "R9_NAME_OF_SHAREHOLDER=?, R9_PERCENTAGE_SHAREHOLDING=?, R9_NUMBER_OF_ACCOUNTS=?, R9_AMOUNT=?, " +
-	                "R10_NAME_OF_SHAREHOLDER=?, R10_PERCENTAGE_SHAREHOLDING=?, R10_NUMBER_OF_ACCOUNTS=?, R10_AMOUNT=?, " +
-	                "R11_NAME_OF_SHAREHOLDER=?, R11_PERCENTAGE_SHAREHOLDING=?, R11_NUMBER_OF_ACCOUNTS=?, R11_AMOUNT=?, " +
-	                "R12_NAME_OF_SHAREHOLDER=?, R12_PERCENTAGE_SHAREHOLDING=?, R12_NUMBER_OF_ACCOUNTS=?, R12_AMOUNT=?, " +
-	                "R13_NAME_OF_SHAREHOLDER=?, R13_PERCENTAGE_SHAREHOLDING=?, R13_NUMBER_OF_ACCOUNTS=?, R13_AMOUNT=?, " +
-	                "R14_NAME_OF_SHAREHOLDER=?, R14_PERCENTAGE_SHAREHOLDING=?, R14_NUMBER_OF_ACCOUNTS=?, R14_AMOUNT=?, " +
-	                "R15_NAME_OF_SHAREHOLDER=?, R15_PERCENTAGE_SHAREHOLDING=?, R15_NUMBER_OF_ACCOUNTS=?, R15_AMOUNT=? " +
-	                "WHERE REPORT_DATE=?";
+	        logger.info("Came to services");
+	        logger.info("Report Date: {}", request1.getREPORT_DATE());
 
-	        System.out.println("=================================");
-	        System.out.println("Report Date = " + request1.getREPORT_DATE());
-	        System.out.println("R5 Value Sent = " + request1.getR5_NAME_OF_SHAREHOLDER());
-	        System.out.println("=================================");
+	        // Fetch existing record
+	        List<MDISB5_Summary_Entity1> records =
+	                getDataByDate1(request1.getREPORT_DATE());
 
-	        int count = jdbcTemplate.update(
-	                sql,
+	        if (records == null || records.isEmpty()) {
 
-	                request1.getR5_NAME_OF_SHAREHOLDER(),
-	                request1.getR5_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR5_NUMBER_OF_ACCOUNTS(),
-	                request1.getR5_AMOUNT(),
+	            throw new RuntimeException(
+	                    "Record not found for REPORT_DATE: "
+	                            + request1.getREPORT_DATE());
+	        }
 
-	                request1.getR6_NAME_OF_SHAREHOLDER(),
-	                request1.getR6_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR6_NUMBER_OF_ACCOUNTS(),
-	                request1.getR6_AMOUNT(),
+	        MDISB5_Summary_Entity1 existing = records.get(0);
 
-	                request1.getR7_NAME_OF_SHAREHOLDER(),
-	                request1.getR7_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR7_NUMBER_OF_ACCOUNTS(),
-	                request1.getR7_AMOUNT(),
+	        // Audit old copy
+	        MDISB5_Summary_Entity1 oldcopy =
+	                new MDISB5_Summary_Entity1();
 
-	                request1.getR8_NAME_OF_SHAREHOLDER(),
-	                request1.getR8_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR8_NUMBER_OF_ACCOUNTS(),
-	                request1.getR8_AMOUNT(),
+	        BeanUtils.copyProperties(existing, oldcopy);
 
-	                request1.getR9_NAME_OF_SHAREHOLDER(),
-	                request1.getR9_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR9_NUMBER_OF_ACCOUNTS(),
-	                request1.getR9_AMOUNT(),
+	        String changes = auditService.getChanges(oldcopy, request1);
 
-	                request1.getR10_NAME_OF_SHAREHOLDER(),
-	                request1.getR10_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR10_NUMBER_OF_ACCOUNTS(),
-	                request1.getR10_AMOUNT(),
+	        if (!changes.isEmpty()) {
 
-	                request1.getR11_NAME_OF_SHAREHOLDER(),
-	                request1.getR11_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR11_NUMBER_OF_ACCOUNTS(),
-	                request1.getR11_AMOUNT(),
+	            String sql =
+	                    "UPDATE BRRS_MDISB5_SUMMARYTABLE1 SET " +
+	                    "R5_NAME_OF_SHAREHOLDER=?, R5_PERCENTAGE_SHAREHOLDING=?, R5_NUMBER_OF_ACCOUNTS=?, R5_AMOUNT=?, " +
+	                    "R6_NAME_OF_SHAREHOLDER=?, R6_PERCENTAGE_SHAREHOLDING=?, R6_NUMBER_OF_ACCOUNTS=?, R6_AMOUNT=?, " +
+	                    "R7_NAME_OF_SHAREHOLDER=?, R7_PERCENTAGE_SHAREHOLDING=?, R7_NUMBER_OF_ACCOUNTS=?, R7_AMOUNT=?, " +
+	                    "R8_NAME_OF_SHAREHOLDER=?, R8_PERCENTAGE_SHAREHOLDING=?, R8_NUMBER_OF_ACCOUNTS=?, R8_AMOUNT=?, " +
+	                    "R9_NAME_OF_SHAREHOLDER=?, R9_PERCENTAGE_SHAREHOLDING=?, R9_NUMBER_OF_ACCOUNTS=?, R9_AMOUNT=?, " +
+	                    "R10_NAME_OF_SHAREHOLDER=?, R10_PERCENTAGE_SHAREHOLDING=?, R10_NUMBER_OF_ACCOUNTS=?, R10_AMOUNT=?, " +
+	                    "R11_NAME_OF_SHAREHOLDER=?, R11_PERCENTAGE_SHAREHOLDING=?, R11_NUMBER_OF_ACCOUNTS=?, R11_AMOUNT=?, " +
+	                    "R12_NAME_OF_SHAREHOLDER=?, R12_PERCENTAGE_SHAREHOLDING=?, R12_NUMBER_OF_ACCOUNTS=?, R12_AMOUNT=?, " +
+	                    "R13_NAME_OF_SHAREHOLDER=?, R13_PERCENTAGE_SHAREHOLDING=?, R13_NUMBER_OF_ACCOUNTS=?, R13_AMOUNT=?, " +
+	                    "R14_NAME_OF_SHAREHOLDER=?, R14_PERCENTAGE_SHAREHOLDING=?, R14_NUMBER_OF_ACCOUNTS=?, R14_AMOUNT=?, " +
+	                    "R15_NAME_OF_SHAREHOLDER=?, R15_PERCENTAGE_SHAREHOLDING=?, R15_NUMBER_OF_ACCOUNTS=?, R15_AMOUNT=? " +
+	                    "WHERE REPORT_DATE=?";
 
-	                request1.getR12_NAME_OF_SHAREHOLDER(),
-	                request1.getR12_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR12_NUMBER_OF_ACCOUNTS(),
-	                request1.getR12_AMOUNT(),
+	            int count = jdbcTemplate.update(
+	                    sql,
 
-	                request1.getR13_NAME_OF_SHAREHOLDER(),
-	                request1.getR13_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR13_NUMBER_OF_ACCOUNTS(),
-	                request1.getR13_AMOUNT(),
+	                    request1.getR5_NAME_OF_SHAREHOLDER(),
+	                    request1.getR5_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR5_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR5_AMOUNT(),
 
-	                request1.getR14_NAME_OF_SHAREHOLDER(),
-	                request1.getR14_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR14_NUMBER_OF_ACCOUNTS(),
-	                request1.getR14_AMOUNT(),
+	                    request1.getR6_NAME_OF_SHAREHOLDER(),
+	                    request1.getR6_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR6_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR6_AMOUNT(),
 
-	                request1.getR15_NAME_OF_SHAREHOLDER(),
-	                request1.getR15_PERCENTAGE_SHAREHOLDING(),
-	                request1.getR15_NUMBER_OF_ACCOUNTS(),
-	                request1.getR15_AMOUNT(),
+	                    request1.getR7_NAME_OF_SHAREHOLDER(),
+	                    request1.getR7_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR7_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR7_AMOUNT(),
 
-	                request1.getREPORT_DATE()
-	        );
+	                    request1.getR8_NAME_OF_SHAREHOLDER(),
+	                    request1.getR8_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR8_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR8_AMOUNT(),
 
-	        System.out.println("=================================");
-	        System.out.println("Rows Updated = " + count);
-	        System.out.println("MDISB5 Summary Updated Successfully");
-	        System.out.println("=================================");
+	                    request1.getR9_NAME_OF_SHAREHOLDER(),
+	                    request1.getR9_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR9_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR9_AMOUNT(),
+
+	                    request1.getR10_NAME_OF_SHAREHOLDER(),
+	                    request1.getR10_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR10_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR10_AMOUNT(),
+
+	                    request1.getR11_NAME_OF_SHAREHOLDER(),
+	                    request1.getR11_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR11_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR11_AMOUNT(),
+
+	                    request1.getR12_NAME_OF_SHAREHOLDER(),
+	                    request1.getR12_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR12_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR12_AMOUNT(),
+
+	                    request1.getR13_NAME_OF_SHAREHOLDER(),
+	                    request1.getR13_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR13_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR13_AMOUNT(),
+
+	                    request1.getR14_NAME_OF_SHAREHOLDER(),
+	                    request1.getR14_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR14_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR14_AMOUNT(),
+
+	                    request1.getR15_NAME_OF_SHAREHOLDER(),
+	                    request1.getR15_PERCENTAGE_SHAREHOLDING(),
+	                    request1.getR15_NUMBER_OF_ACCOUNTS(),
+	                    request1.getR15_AMOUNT(),
+
+	                    request1.getREPORT_DATE()
+	            );
+
+	            if (count > 0) {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        request1,
+	                        request1.getREPORT_DATE().toString(),
+	                        "MDISB5 Summary Screen",
+	                        "BRRS_MDISB5_SUMMARYTABLE1"
+	                );
+
+	                logger.info(
+	                        "Audit completed for REPORT_DATE {}",
+	                        request1.getREPORT_DATE());
+
+	                logger.info(
+	                        "MDISB5 Summary Updated Successfully. Rows Updated: {}",
+	                        count);
+	            }
+
+	        } else {
+
+	            logger.info(
+	                    "No changes detected for REPORT_DATE {}",
+	                    request1.getREPORT_DATE());
+	        }
 
 	    } catch (Exception e) {
 
-	        e.printStackTrace();
+	        logger.error(
+	                "Error while updating BRRS_MDISB5 Report",
+	                e);
 
 	        throw new RuntimeException(
-	                "Error while updating BRRS_MDISB5 Report", e);
+	                "Error while updating BRRS_MDISB5 Report",
+	                e);
 	    }
 	}
+	
 	
 	@Transactional
 	public void updateReport2(MDISB5_Summary_Entity2 request2) {
 
 	    try {
 
-	        String sql =
-	            "UPDATE BRRS_MDISB5_SUMMARYTABLE2 SET " +
+	        logger.info("Came to services");
+	        logger.info("Report Date: {}", request2.getREPORT_DATE());
 
-	            "R20_NAME_OF_BOARD_MEMBERS=?, R20_EXECUTIVE_OR_NONEXECUTIVE=?, R20_NUMBER_OF_ACCOUNTS=?, R20_AMOUNT=?, " +
-	            "R21_NAME_OF_BOARD_MEMBERS=?, R21_EXECUTIVE_OR_NONEXECUTIVE=?, R21_NUMBER_OF_ACCOUNTS=?, R21_AMOUNT=?, " +
-	            "R22_NAME_OF_BOARD_MEMBERS=?, R22_EXECUTIVE_OR_NONEXECUTIVE=?, R22_NUMBER_OF_ACCOUNTS=?, R22_AMOUNT=?, " +
-	            "R23_NAME_OF_BOARD_MEMBERS=?, R23_EXECUTIVE_OR_NONEXECUTIVE=?, R23_NUMBER_OF_ACCOUNTS=?, R23_AMOUNT=?, " +
-	            "R24_NAME_OF_BOARD_MEMBERS=?, R24_EXECUTIVE_OR_NONEXECUTIVE=?, R24_NUMBER_OF_ACCOUNTS=?, R24_AMOUNT=?, " +
-	            "R25_NAME_OF_BOARD_MEMBERS=?, R25_EXECUTIVE_OR_NONEXECUTIVE=?, R25_NUMBER_OF_ACCOUNTS=?, R25_AMOUNT=?, " +
-	            "R26_NAME_OF_BOARD_MEMBERS=?, R26_EXECUTIVE_OR_NONEXECUTIVE=?, R26_NUMBER_OF_ACCOUNTS=?, R26_AMOUNT=?, " +
-	            "R27_NAME_OF_BOARD_MEMBERS=?, R27_EXECUTIVE_OR_NONEXECUTIVE=?, R27_NUMBER_OF_ACCOUNTS=?, R27_AMOUNT=?, " +
-	            "R28_NAME_OF_BOARD_MEMBERS=?, R28_EXECUTIVE_OR_NONEXECUTIVE=?, R28_NUMBER_OF_ACCOUNTS=?, R28_AMOUNT=?, " +
-	            "R29_NAME_OF_BOARD_MEMBERS=?, R29_EXECUTIVE_OR_NONEXECUTIVE=?, R29_NUMBER_OF_ACCOUNTS=?, R29_AMOUNT=?, " +
-	            "R30_NAME_OF_BOARD_MEMBERS=?, R30_EXECUTIVE_OR_NONEXECUTIVE=?, R30_NUMBER_OF_ACCOUNTS=?, R30_AMOUNT=?, " +
-	            "R31_NAME_OF_BOARD_MEMBERS=?, R31_EXECUTIVE_OR_NONEXECUTIVE=?, R31_NUMBER_OF_ACCOUNTS=?, R31_AMOUNT=?, " +
-	            "R32_NAME_OF_BOARD_MEMBERS=?, R32_EXECUTIVE_OR_NONEXECUTIVE=?, R32_NUMBER_OF_ACCOUNTS=?, R32_AMOUNT=?, " +
-	            "R33_NAME_OF_BOARD_MEMBERS=?, R33_EXECUTIVE_OR_NONEXECUTIVE=?, R33_NUMBER_OF_ACCOUNTS=?, R33_AMOUNT=? " +
+	        // Fetch existing record
+	        List<MDISB5_Summary_Entity2> records =
+	                getDataByDate2(request2.getREPORT_DATE());
 
-	            "WHERE REPORT_DATE=?";
+	        if (records == null || records.isEmpty()) {
 
-	        jdbcTemplate.update(
+	            throw new RuntimeException(
+	                    "Record not found for REPORT_DATE: "
+	                            + request2.getREPORT_DATE());
+	        }
 
-	            sql,
+	        MDISB5_Summary_Entity2 existing = records.get(0);
 
-	            request2.getR20_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR20_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR20_NUMBER_OF_ACCOUNTS(),
-	            request2.getR20_AMOUNT(),
+	        // Audit old copy
+	        MDISB5_Summary_Entity2 oldcopy =
+	                new MDISB5_Summary_Entity2();
 
-	            request2.getR21_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR21_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR21_NUMBER_OF_ACCOUNTS(),
-	            request2.getR21_AMOUNT(),
+	        BeanUtils.copyProperties(existing, oldcopy);
 
-	            request2.getR22_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR22_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR22_NUMBER_OF_ACCOUNTS(),
-	            request2.getR22_AMOUNT(),
+	        String changes = auditService.getChanges(oldcopy, request2);
 
-	            request2.getR23_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR23_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR23_NUMBER_OF_ACCOUNTS(),
-	            request2.getR23_AMOUNT(),
+	        if (!changes.isEmpty()) {
 
-	            request2.getR24_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR24_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR24_NUMBER_OF_ACCOUNTS(),
-	            request2.getR24_AMOUNT(),
+	            String sql =
+	                "UPDATE BRRS_MDISB5_SUMMARYTABLE2 SET " +
 
-	            request2.getR25_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR25_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR25_NUMBER_OF_ACCOUNTS(),
-	            request2.getR25_AMOUNT(),
+	                "R20_NAME_OF_BOARD_MEMBERS=?, R20_EXECUTIVE_OR_NONEXECUTIVE=?, R20_NUMBER_OF_ACCOUNTS=?, R20_AMOUNT=?, " +
+	                "R21_NAME_OF_BOARD_MEMBERS=?, R21_EXECUTIVE_OR_NONEXECUTIVE=?, R21_NUMBER_OF_ACCOUNTS=?, R21_AMOUNT=?, " +
+	                "R22_NAME_OF_BOARD_MEMBERS=?, R22_EXECUTIVE_OR_NONEXECUTIVE=?, R22_NUMBER_OF_ACCOUNTS=?, R22_AMOUNT=?, " +
+	                "R23_NAME_OF_BOARD_MEMBERS=?, R23_EXECUTIVE_OR_NONEXECUTIVE=?, R23_NUMBER_OF_ACCOUNTS=?, R23_AMOUNT=?, " +
+	                "R24_NAME_OF_BOARD_MEMBERS=?, R24_EXECUTIVE_OR_NONEXECUTIVE=?, R24_NUMBER_OF_ACCOUNTS=?, R24_AMOUNT=?, " +
+	                "R25_NAME_OF_BOARD_MEMBERS=?, R25_EXECUTIVE_OR_NONEXECUTIVE=?, R25_NUMBER_OF_ACCOUNTS=?, R25_AMOUNT=?, " +
+	                "R26_NAME_OF_BOARD_MEMBERS=?, R26_EXECUTIVE_OR_NONEXECUTIVE=?, R26_NUMBER_OF_ACCOUNTS=?, R26_AMOUNT=?, " +
+	                "R27_NAME_OF_BOARD_MEMBERS=?, R27_EXECUTIVE_OR_NONEXECUTIVE=?, R27_NUMBER_OF_ACCOUNTS=?, R27_AMOUNT=?, " +
+	                "R28_NAME_OF_BOARD_MEMBERS=?, R28_EXECUTIVE_OR_NONEXECUTIVE=?, R28_NUMBER_OF_ACCOUNTS=?, R28_AMOUNT=?, " +
+	                "R29_NAME_OF_BOARD_MEMBERS=?, R29_EXECUTIVE_OR_NONEXECUTIVE=?, R29_NUMBER_OF_ACCOUNTS=?, R29_AMOUNT=?, " +
+	                "R30_NAME_OF_BOARD_MEMBERS=?, R30_EXECUTIVE_OR_NONEXECUTIVE=?, R30_NUMBER_OF_ACCOUNTS=?, R30_AMOUNT=?, " +
+	                "R31_NAME_OF_BOARD_MEMBERS=?, R31_EXECUTIVE_OR_NONEXECUTIVE=?, R31_NUMBER_OF_ACCOUNTS=?, R31_AMOUNT=?, " +
+	                "R32_NAME_OF_BOARD_MEMBERS=?, R32_EXECUTIVE_OR_NONEXECUTIVE=?, R32_NUMBER_OF_ACCOUNTS=?, R32_AMOUNT=?, " +
+	                "R33_NAME_OF_BOARD_MEMBERS=?, R33_EXECUTIVE_OR_NONEXECUTIVE=?, R33_NUMBER_OF_ACCOUNTS=?, R33_AMOUNT=? " +
 
-	            request2.getR26_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR26_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR26_NUMBER_OF_ACCOUNTS(),
-	            request2.getR26_AMOUNT(),
+	                "WHERE REPORT_DATE=?";
 
-	            request2.getR27_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR27_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR27_NUMBER_OF_ACCOUNTS(),
-	            request2.getR27_AMOUNT(),
+	            int count = jdbcTemplate.update(
 
-	            request2.getR28_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR28_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR28_NUMBER_OF_ACCOUNTS(),
-	            request2.getR28_AMOUNT(),
+	                sql,
 
-	            request2.getR29_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR29_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR29_NUMBER_OF_ACCOUNTS(),
-	            request2.getR29_AMOUNT(),
+	                request2.getR20_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR20_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR20_NUMBER_OF_ACCOUNTS(),
+	                request2.getR20_AMOUNT(),
 
-	            request2.getR30_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR30_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR30_NUMBER_OF_ACCOUNTS(),
-	            request2.getR30_AMOUNT(),
+	                request2.getR21_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR21_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR21_NUMBER_OF_ACCOUNTS(),
+	                request2.getR21_AMOUNT(),
 
-	            request2.getR31_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR31_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR31_NUMBER_OF_ACCOUNTS(),
-	            request2.getR31_AMOUNT(),
+	                request2.getR22_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR22_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR22_NUMBER_OF_ACCOUNTS(),
+	                request2.getR22_AMOUNT(),
 
-	            request2.getR32_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR32_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR32_NUMBER_OF_ACCOUNTS(),
-	            request2.getR32_AMOUNT(),
+	                request2.getR23_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR23_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR23_NUMBER_OF_ACCOUNTS(),
+	                request2.getR23_AMOUNT(),
 
-	            request2.getR33_NAME_OF_BOARD_MEMBERS(),
-	            request2.getR33_EXECUTIVE_OR_NONEXECUTIVE(),
-	            request2.getR33_NUMBER_OF_ACCOUNTS(),
-	            request2.getR33_AMOUNT(),
+	                request2.getR24_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR24_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR24_NUMBER_OF_ACCOUNTS(),
+	                request2.getR24_AMOUNT(),
 
-	            request2.getREPORT_DATE()
-	        );
+	                request2.getR25_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR25_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR25_NUMBER_OF_ACCOUNTS(),
+	                request2.getR25_AMOUNT(),
 
-	        System.out.println("MDISB5 Summary Part 2 Updated Successfully");
+	                request2.getR26_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR26_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR26_NUMBER_OF_ACCOUNTS(),
+	                request2.getR26_AMOUNT(),
+
+	                request2.getR27_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR27_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR27_NUMBER_OF_ACCOUNTS(),
+	                request2.getR27_AMOUNT(),
+
+	                request2.getR28_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR28_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR28_NUMBER_OF_ACCOUNTS(),
+	                request2.getR28_AMOUNT(),
+
+	                request2.getR29_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR29_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR29_NUMBER_OF_ACCOUNTS(),
+	                request2.getR29_AMOUNT(),
+
+	                request2.getR30_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR30_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR30_NUMBER_OF_ACCOUNTS(),
+	                request2.getR30_AMOUNT(),
+
+	                request2.getR31_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR31_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR31_NUMBER_OF_ACCOUNTS(),
+	                request2.getR31_AMOUNT(),
+
+	                request2.getR32_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR32_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR32_NUMBER_OF_ACCOUNTS(),
+	                request2.getR32_AMOUNT(),
+
+	                request2.getR33_NAME_OF_BOARD_MEMBERS(),
+	                request2.getR33_EXECUTIVE_OR_NONEXECUTIVE(),
+	                request2.getR33_NUMBER_OF_ACCOUNTS(),
+	                request2.getR33_AMOUNT(),
+
+	                request2.getREPORT_DATE()
+	            );
+
+	            if (count > 0) {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        request2,
+	                        request2.getREPORT_DATE().toString(),
+	                        "MDISB5 Summary Part 2 Screen",
+	                        "BRRS_MDISB5_SUMMARYTABLE2"
+	                );
+
+	                logger.info(
+	                        "Audit completed for REPORT_DATE {}",
+	                        request2.getREPORT_DATE());
+	            }
+
+	        } else {
+
+	            logger.info(
+	                    "No changes detected for REPORT_DATE {}",
+	                    request2.getREPORT_DATE());
+	        }
+
+	        logger.info("MDISB5 Summary Part 2 Updated Successfully");
 
 	    } catch (Exception e) {
 
-	        e.printStackTrace();
+	        logger.error(
+	                "Error while updating BRRS_MDISB5 Report Part 2",
+	                e);
 
 	        throw new RuntimeException(
-	                "Error while updating BRRS_MDISB5 Report Part 2", e);
+	                "Error while updating BRRS_MDISB5 Report Part 2",
+	                e);
 	    }
 	}
-	
 	
 	
 	@Transactional
@@ -13412,75 +13508,128 @@ public class BRRS_MDISB5_ReportService {
 
 	    try {
 
-	        String sql =
-	            "UPDATE BRRS_MDISB5_SUMMARYTABLE3 SET " +
+	        logger.info("Came to services");
+	        logger.info("Report Date: {}", request3.getREPORT_DATE());
 
-	            "R37_NAME=?, R37_DESIGNATION_OR_POSITION=?, R37_NUMBER_OF_ACCOUNTS=?, R37_AMOUNT=?, " +
-	            "R38_NAME=?, R38_DESIGNATION_OR_POSITION=?, R38_NUMBER_OF_ACCOUNTS=?, R38_AMOUNT=?, " +
-	            "R39_NAME=?, R39_DESIGNATION_OR_POSITION=?, R39_NUMBER_OF_ACCOUNTS=?, R39_AMOUNT=?, " +
-	            "R40_NAME=?, R40_DESIGNATION_OR_POSITION=?, R40_NUMBER_OF_ACCOUNTS=?, R40_AMOUNT=?, " +
-	            "R41_NAME=?, R41_DESIGNATION_OR_POSITION=?, R41_NUMBER_OF_ACCOUNTS=?, R41_AMOUNT=?, " +
-	            "R42_NAME=?, R42_DESIGNATION_OR_POSITION=?, R42_NUMBER_OF_ACCOUNTS=?, R42_AMOUNT=?, " +
-	            "R43_NAME=?, R43_DESIGNATION_OR_POSITION=?, R43_NUMBER_OF_ACCOUNTS=?, R43_AMOUNT=?, " +
-	            "R44_NAME=?, R44_DESIGNATION_OR_POSITION=?, R44_NUMBER_OF_ACCOUNTS=?, R44_AMOUNT=? " +
+	        // Fetch existing record
+	        List<MDISB5_Summary_Entity3> records =
+	                getDataByDate3(request3.getREPORT_DATE());
 
-	            "WHERE REPORT_DATE=?";
+	        if (records == null || records.isEmpty()) {
 
-	        jdbcTemplate.update(
+	            throw new RuntimeException(
+	                    "Record not found for REPORT_DATE: "
+	                            + request3.getREPORT_DATE());
+	        }
 
-	            sql,
+	        MDISB5_Summary_Entity3 existing = records.get(0);
 
-	            request3.getR37_NAME(),
-	            request3.getR37_DESIGNATION_OR_POSITION(),
-	            request3.getR37_NUMBER_OF_ACCOUNTS(),
-	            request3.getR37_AMOUNT(),
+	        // Audit old copy
+	        MDISB5_Summary_Entity3 oldcopy =
+	                new MDISB5_Summary_Entity3();
 
-	            request3.getR38_NAME(),
-	            request3.getR38_DESIGNATION_OR_POSITION(),
-	            request3.getR38_NUMBER_OF_ACCOUNTS(),
-	            request3.getR38_AMOUNT(),
+	        BeanUtils.copyProperties(existing, oldcopy);
 
-	            request3.getR39_NAME(),
-	            request3.getR39_DESIGNATION_OR_POSITION(),
-	            request3.getR39_NUMBER_OF_ACCOUNTS(),
-	            request3.getR39_AMOUNT(),
+	        String changes = auditService.getChanges(oldcopy, request3);
 
-	            request3.getR40_NAME(),
-	            request3.getR40_DESIGNATION_OR_POSITION(),
-	            request3.getR40_NUMBER_OF_ACCOUNTS(),
-	            request3.getR40_AMOUNT(),
+	        if (!changes.isEmpty()) {
 
-	            request3.getR41_NAME(),
-	            request3.getR41_DESIGNATION_OR_POSITION(),
-	            request3.getR41_NUMBER_OF_ACCOUNTS(),
-	            request3.getR41_AMOUNT(),
+	            String sql =
+	                "UPDATE BRRS_MDISB5_SUMMARYTABLE3 SET " +
 
-	            request3.getR42_NAME(),
-	            request3.getR42_DESIGNATION_OR_POSITION(),
-	            request3.getR42_NUMBER_OF_ACCOUNTS(),
-	            request3.getR42_AMOUNT(),
+	                "R37_NAME=?, R37_DESIGNATION_OR_POSITION=?, R37_NUMBER_OF_ACCOUNTS=?, R37_AMOUNT=?, " +
+	                "R38_NAME=?, R38_DESIGNATION_OR_POSITION=?, R38_NUMBER_OF_ACCOUNTS=?, R38_AMOUNT=?, " +
+	                "R39_NAME=?, R39_DESIGNATION_OR_POSITION=?, R39_NUMBER_OF_ACCOUNTS=?, R39_AMOUNT=?, " +
+	                "R40_NAME=?, R40_DESIGNATION_OR_POSITION=?, R40_NUMBER_OF_ACCOUNTS=?, R40_AMOUNT=?, " +
+	                "R41_NAME=?, R41_DESIGNATION_OR_POSITION=?, R41_NUMBER_OF_ACCOUNTS=?, R41_AMOUNT=?, " +
+	                "R42_NAME=?, R42_DESIGNATION_OR_POSITION=?, R42_NUMBER_OF_ACCOUNTS=?, R42_AMOUNT=?, " +
+	                "R43_NAME=?, R43_DESIGNATION_OR_POSITION=?, R43_NUMBER_OF_ACCOUNTS=?, R43_AMOUNT=?, " +
+	                "R44_NAME=?, R44_DESIGNATION_OR_POSITION=?, R44_NUMBER_OF_ACCOUNTS=?, R44_AMOUNT=? " +
 
-	            request3.getR43_NAME(),
-	            request3.getR43_DESIGNATION_OR_POSITION(),
-	            request3.getR43_NUMBER_OF_ACCOUNTS(),
-	            request3.getR43_AMOUNT(),
+	                "WHERE REPORT_DATE=?";
 
-	            request3.getR44_NAME(),
-	            request3.getR44_DESIGNATION_OR_POSITION(),
-	            request3.getR44_NUMBER_OF_ACCOUNTS(),
-	            request3.getR44_AMOUNT(),
+	            int count = jdbcTemplate.update(
 
-	            request3.getREPORT_DATE()
-	        );
+	                sql,
 
-	        System.out.println("MDISB5 Summary Part 3 Updated Successfully");
+	                request3.getR37_NAME(),
+	                request3.getR37_DESIGNATION_OR_POSITION(),
+	                request3.getR37_NUMBER_OF_ACCOUNTS(),
+	                request3.getR37_AMOUNT(),
+
+	                request3.getR38_NAME(),
+	                request3.getR38_DESIGNATION_OR_POSITION(),
+	                request3.getR38_NUMBER_OF_ACCOUNTS(),
+	                request3.getR38_AMOUNT(),
+
+	                request3.getR39_NAME(),
+	                request3.getR39_DESIGNATION_OR_POSITION(),
+	                request3.getR39_NUMBER_OF_ACCOUNTS(),
+	                request3.getR39_AMOUNT(),
+
+	                request3.getR40_NAME(),
+	                request3.getR40_DESIGNATION_OR_POSITION(),
+	                request3.getR40_NUMBER_OF_ACCOUNTS(),
+	                request3.getR40_AMOUNT(),
+
+	                request3.getR41_NAME(),
+	                request3.getR41_DESIGNATION_OR_POSITION(),
+	                request3.getR41_NUMBER_OF_ACCOUNTS(),
+	                request3.getR41_AMOUNT(),
+
+	                request3.getR42_NAME(),
+	                request3.getR42_DESIGNATION_OR_POSITION(),
+	                request3.getR42_NUMBER_OF_ACCOUNTS(),
+	                request3.getR42_AMOUNT(),
+
+	                request3.getR43_NAME(),
+	                request3.getR43_DESIGNATION_OR_POSITION(),
+	                request3.getR43_NUMBER_OF_ACCOUNTS(),
+	                request3.getR43_AMOUNT(),
+
+	                request3.getR44_NAME(),
+	                request3.getR44_DESIGNATION_OR_POSITION(),
+	                request3.getR44_NUMBER_OF_ACCOUNTS(),
+	                request3.getR44_AMOUNT(),
+
+	                request3.getREPORT_DATE()
+	            );
+
+	            if (count > 0) {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        request3,
+	                        request3.getREPORT_DATE().toString(),
+	                        "MDISB5 Summary Part 3 Screen",
+	                        "BRRS_MDISB5_SUMMARYTABLE3"
+	                );
+
+	                logger.info(
+	                        "Audit completed for REPORT_DATE {}",
+	                        request3.getREPORT_DATE());
+
+	                logger.info(
+	                        "MDISB5 Summary Part 3 Updated Successfully. Rows Updated: {}",
+	                        count);
+	            }
+
+	        } else {
+
+	            logger.info(
+	                    "No changes detected for REPORT_DATE {}",
+	                    request3.getREPORT_DATE());
+	        }
 
 	    } catch (Exception e) {
 
-	        e.printStackTrace();
+	        logger.error(
+	                "Error while updating BRRS_MDISB5 Report Part 3",
+	                e);
 
 	        throw new RuntimeException(
-	            "Error while updating BRRS_MDISB5 Report Part 3", e);
+	                "Error while updating BRRS_MDISB5 Report Part 3",
+	                e);
 	    }
 	}
 	
