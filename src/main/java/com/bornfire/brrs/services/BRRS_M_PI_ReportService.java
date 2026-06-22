@@ -181,13 +181,19 @@ public class BRRS_M_PI_ReportService {
 	}
 
 	public ModelAndView getM_PIcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			  String dtltype, Pageable pageable, String Filter, String type, String version) {
+			  String dtltype, Pageable pageable, String Filter, String type, String version,HttpServletRequest req1,Model md) {
 
 	int pageSize = pageable != null ? pageable.getPageSize() : 10;
 	int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 	int totalPages = 0;
 
 	ModelAndView mv = new ModelAndView();
+	String userid = (String) req1.getSession().getAttribute("USERID");
+
+	System.out.println("User Id Maker and Checker: " + userid);
+	String role = userProfileRep.getUserRole(userid);
+	md.addAttribute("role", role);
+	System.out.println("Role: " + role);
 //	Session hs = sessionFactory.getCurrentSession();
 
 	try {

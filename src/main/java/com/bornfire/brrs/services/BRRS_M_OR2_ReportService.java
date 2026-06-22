@@ -37,6 +37,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -53,6 +54,7 @@ import com.bornfire.brrs.entities.M_OR2_Detail_Entity;
 import com.bornfire.brrs.entities.M_OR2_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_OR2_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_OR2_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 
 @Component
@@ -89,7 +91,8 @@ public class BRRS_M_OR2_ReportService {
     @Autowired
 	BRRS_M_OR2_RESUB_Detail_Repo M_OR2_resub_detail_repo;
 	
-
+    @Autowired
+    UserProfileRep userProfileRep;
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -101,9 +104,18 @@ public class BRRS_M_OR2_ReportService {
 	        String dtltype,
 	        Pageable pageable,
 	        String type,
-	        BigDecimal version) {
+	        BigDecimal version,
+	        HttpServletRequest req1,Model md) {
 
 	    ModelAndView mv = new ModelAndView();
+	    
+	    String userid = (String) req1.getSession().getAttribute("USERID");
+	    System.out.println("User Id Maker and Checker: " + userid);
+	    String role = userProfileRep.getUserRole(userid);
+	    md.addAttribute("role", role);
+	    System.out.println("Role: " + role);
+
+
 
 	    int pageSize = pageable.getPageSize();
 	    int currentPage = pageable.getPageNumber();

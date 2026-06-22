@@ -48,6 +48,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_IS_Archival_Detail_Repo;
@@ -62,6 +63,7 @@ import com.bornfire.brrs.entities.M_IS_Archival_Summary_Entity2;
 import com.bornfire.brrs.entities.M_IS_Detail_Entity;
 import com.bornfire.brrs.entities.M_IS_Summary_Entity1;
 import com.bornfire.brrs.entities.M_IS_Summary_Entity2;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 
 
@@ -100,6 +102,8 @@ public class BRRS_M_IS_ReportService {
 	@Autowired
 	BRRS_M_IS_Archival_Summary_Repo2 M_IS_Archival_Summary_Repo2;
 
+	@Autowired
+	UserProfileRep userProfileRep;
 
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
@@ -107,9 +111,17 @@ public class BRRS_M_IS_ReportService {
 	public ModelAndView getM_ISView(
 			String reportId, String fromdate, String todate,
 			String currency, String dtltype, Pageable pageable,
-			String type, BigDecimal version) {
+			String type, BigDecimal version, HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+		
 		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
@@ -176,7 +188,7 @@ public class BRRS_M_IS_ReportService {
 
 	public ModelAndView getM_IScurrentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter,
-			String type, String version) {
+			String type, String version, HttpServletRequest req1,Model md) {
 		int pageSize = 10; // default
 		int currentPage = 0; // default
 		if (pageable != null) {
@@ -186,6 +198,14 @@ public class BRRS_M_IS_ReportService {
 		int startItem = currentPage * pageSize;
 
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+		
 		Session hs = sessionFactory.getCurrentSession();
 
 		try {

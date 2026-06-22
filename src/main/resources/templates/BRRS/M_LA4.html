@@ -1532,7 +1532,7 @@ function TotalcalculateR64(){
 							th:if="${displaymode == 'summary'}">Details</button>
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							id="addRecord">Modify</button>
 
@@ -1595,7 +1595,7 @@ function TotalcalculateR64(){
 							</div>
 						</div>
 
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}" th:attr=" data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" th:if="${role != 'M' and displaymode == 'Details'}" th:attr=" data-reportid=${reportid}, 
 							           data-asondate=${asondate}, 
 							           data-fromdate=${fromdate},
 								       data-todate=${todate},

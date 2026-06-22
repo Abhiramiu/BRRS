@@ -265,7 +265,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size,
-			@RequestParam(value = "reportingTime", required = false) String reportingTime, Model md) {
+			@RequestParam(value = "reportingTime", required = false) String reportingTime,HttpServletRequest req, Model md) {
 
 		md.addAttribute("reportid", reportid);
 		md.addAttribute("asondate", asondate);
@@ -292,10 +292,10 @@ public class BRRS_ReportsController {
 		// logger.info("Getting ModelandView :" + reportid);
 		ModelAndView mv = regreportServices.getReportDetails(reportid, instancecode, asondate, fromdate, todate,
 				currency, reportingTime, dtltype, subreportid, secid, PageRequest.of(page, size), filter, type,
-				version);
+				version,req,md);
 
 		return mv;
-	}
+	}   
 
 	@RequestMapping(value = "downloadExcel", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody

@@ -1554,7 +1554,7 @@ function cancelModify() {
 						
 						<!-- Modify -->
 						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">Modify</button>
 
@@ -1629,7 +1629,7 @@ function cancelModify() {
 						</div>						
 						
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							id="custom-tab-btnAdd" th:if="${role != 'M' and displaymode == 'Details'}"
 							onclick="startReport(this);"
 							th:attr="
 						    data-fromdate=${fromdate},

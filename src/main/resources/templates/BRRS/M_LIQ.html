@@ -1338,7 +1338,7 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
   id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -1405,7 +1405,7 @@ PURPOSE		: BRRS REPORT
 						</div>
 						
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
+							th:if="${role != 'M' and displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
              data-asondate=${asondate}, 
              data-fromdate=${fromdate}, 
              data-todate=${todate}, 
