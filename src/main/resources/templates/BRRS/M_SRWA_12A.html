@@ -1960,7 +1960,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>-->
 							
 							<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-														title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+														title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
 														th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 														id="addRecord">
 														Modify
@@ -2039,7 +2039,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							id="custom-tab-btnAdd" th:if="${ role != 'M' and displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid}, 
              data-asondate=${asondate}, 
              data-fromdate=${fromdate}, 

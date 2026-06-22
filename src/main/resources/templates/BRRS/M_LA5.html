@@ -1009,7 +1009,7 @@ PURPOSE		: BRFREPORT
 							th:if="${displaymode == 'summary'}">Details</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' ) or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
 							                   data-asondate=${asondate},
 							                   data-fromdate=${fromdate},
@@ -1022,7 +1022,7 @@ PURPOSE		: BRFREPORT
 							style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' )
 													          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
 													             data-asondate=${asondate},
 													             data-fromdate=${fromdate},
@@ -1053,7 +1053,7 @@ PURPOSE		: BRFREPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" th:attr=" data-reportid=${reportid}, 
+							th:if="${role != 'M' and displaymode == 'Details'}" th:attr=" data-reportid=${reportid}, 
 									  data-asondate=${asondate},
 									  data-fromdate=${fromdate},
 									  data-todate=${todate},

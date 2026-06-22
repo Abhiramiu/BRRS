@@ -1108,7 +1108,7 @@ PURPOSE		: BRRS MANUAL REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1121,7 +1121,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1137,7 +1137,42 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='EMAIL_M_CA3.xlsx',
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Email
+
+						</button>
+						
+						
+						
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${role != 'M' and displaymode == 'Details'}"
+							th:attr="data-reportid=${reportid}, 
+                     data-asondate=${asondate}, 
+                     data-fromdate=${fromdate}, 
+                     data-todate=${todate}, 
+                     data-currency=${currency},  
+                     data-dtltype=${dtltype}, 
+                     data-filename='M_CA3.xlsx',
+                     data-type=${type},
+					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> Format
+						</button>
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${role != 'M' and displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},

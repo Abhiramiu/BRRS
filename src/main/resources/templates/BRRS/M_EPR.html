@@ -1272,7 +1272,7 @@ $(document).ready(function() {
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
 
 
@@ -1285,7 +1285,7 @@ $(document).ready(function() {
 
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1301,7 +1301,7 @@ $(document).ready(function() {
 
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail'or displaymode == 'resub'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},

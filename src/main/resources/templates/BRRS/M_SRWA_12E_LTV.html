@@ -923,7 +923,7 @@ PURPOSE		: BWRBRREPORT
 
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -933,7 +933,7 @@ PURPOSE		: BWRBRREPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
@@ -945,7 +945,7 @@ PURPOSE		: BWRBRREPORT
 							               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
 												          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
 												             data-asondate=${asondate},
 												             data-fromdate=${fromdate},

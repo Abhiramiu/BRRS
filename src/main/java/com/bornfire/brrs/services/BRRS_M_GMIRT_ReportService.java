@@ -41,6 +41,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,6 +64,7 @@ import com.bornfire.brrs.entities.M_GMIRT_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
 import com.bornfire.brrs.entities.M_GP_Archival_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
 @Service
@@ -99,13 +101,25 @@ public class BRRS_M_GMIRT_ReportService {
 
 	@Autowired
 	BRRS_M_GMIRT_RESUB_Detail_Repo BRRS_M_GMIRT_resub_Detail_Repo;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_GMIRTView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+
+		
 		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();

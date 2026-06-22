@@ -57,9 +57,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -82,6 +85,9 @@ public class BRRS_M_LA5_ReportService {
 
 	@Autowired
 	AuditService auditService;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	// Fetch data by report date
 	public List<M_LA5_Summary_Entity> getDataByDate(Date reportDate) {
@@ -12969,9 +12975,16 @@ public class BRRS_M_LA5_ReportService {
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_LA5View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
-
+			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+		
 		ModelAndView mv = new ModelAndView();
+		
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		System.out.println("M_LA5 View Called");
 		System.out.println("Type = " + type);
@@ -13036,9 +13049,16 @@ public class BRRS_M_LA5_ReportService {
 //=========================
 
 	public ModelAndView getM_LA5currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+
 
 		try {
 

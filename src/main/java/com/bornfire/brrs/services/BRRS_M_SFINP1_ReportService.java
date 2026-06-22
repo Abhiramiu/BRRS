@@ -58,6 +58,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -76,6 +77,7 @@ import com.bornfire.brrs.entities.M_SFINP1_Archival_Summary_Manual_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Detail_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Entity;
 import com.bornfire.brrs.entities.M_SFINP1_Summary_Manual_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 //=== iText PDF ===
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -86,6 +88,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
 
 @Component
 @Service
@@ -118,14 +121,24 @@ public class BRRS_M_SFINP1_ReportService {
 	@Autowired
 	BRRS_M_SFINP1_Archival_Summary_Manual_Repo BRRS_M_SFINP1_Archival_Summary_Manual_Repo;
 
+	@Autowired
+	UserProfileRep userProfileRep;
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_SFINP1View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		System.out.println("🟢 getM_SFINP1View() called");
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		try {
 			Date reportDate = dateformat.parse(todate);
@@ -178,11 +191,18 @@ public class BRRS_M_SFINP1_ReportService {
 	}
 
 	public ModelAndView getM_SFINP1currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version) {
+			String dtltype, Pageable pageable, String Filter, String type, String version,HttpServletRequest req1,Model md) {
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 		// Session hs = sessionFactory.getCurrentSession();
 		try {
 			Date parsedDate = null;

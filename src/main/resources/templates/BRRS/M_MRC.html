@@ -1337,7 +1337,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 						<!-- Modify -->
 						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${role == 'M'  and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">Modify</button>
 
@@ -1350,7 +1350,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 						<!-- Download button - Summary -->
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
 													                   data-asondate=${asondate},
 													                   data-fromdate=${fromdate},
@@ -1363,7 +1363,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 							style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
 																			          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
 																			             data-asondate=${asondate},
 																			             data-fromdate=${fromdate},
@@ -1405,7 +1405,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 						</div>
 
 						<!-- Download button - Details -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" th:if="${role != 'M' and  displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
