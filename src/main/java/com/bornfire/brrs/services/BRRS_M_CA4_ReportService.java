@@ -56,12 +56,8 @@ import com.bornfire.brrs.entities.M_CA4_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA4_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA4_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA4_Summary_Entity;
-import com.bornfire.brrs.entities.M_EPR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Resub_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12H_Resub_Summary_Entity;
+
+
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component

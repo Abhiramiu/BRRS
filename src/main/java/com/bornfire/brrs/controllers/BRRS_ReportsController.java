@@ -2577,7 +2577,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_EPR_Summary_Entity request) {
+			@ModelAttribute BRRS_M_EPR_ReportService.M_EPR_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
@@ -2601,7 +2601,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_EPR_RESUB_Summary_Entity request,
+			@ModelAttribute BRRS_M_EPR_ReportService.M_EPR_RESUB_Summary_Entity request,
 
 			HttpServletRequest req) {
 

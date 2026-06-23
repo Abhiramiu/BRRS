@@ -48,16 +48,13 @@ import com.bornfire.brrs.entities.BRRS_M_INT_RATES_NEW_Archival_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_NEW_Archival_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_NEW_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_INT_RATES_NEW_Summary_Repo;
-import com.bornfire.brrs.entities.M_EPR_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Detail_Entity;
+
+
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_NEW_Summary_Entity;
-import com.bornfire.brrs.entities.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.entities.M_SCI_E_Manual_Summary_Entity;
+
 
 @Component
 @Service
