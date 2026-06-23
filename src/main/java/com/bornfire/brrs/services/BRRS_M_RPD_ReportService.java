@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -35,6 +37,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo1;
@@ -171,6 +176,9 @@ public class BRRS_M_RPD_ReportService {
 	
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	AuditService auditService;
 	
 	@Autowired
 	BRRS_M_RPD_Summary_Repo1 BRRS_M_RPD_Summary_Repo1;
@@ -535,543 +543,1753 @@ public class BRRS_M_RPD_ReportService {
 	    }
 	
 
-public void updateReport1(M_RPD_Summary_Entity1 entity1) {
-    System.out.println("Report Date: " + entity1.getReportDate());
+//public void updateReport1(M_RPD_Summary_Entity1 entity1) {
+//    System.out.println("Report Date: " + entity1.getReportDate());
+//
+//    M_RPD_Summary_Entity1 existing = BRRS_M_RPD_Summary_Repo1.findById(entity1.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity1.getReportDate()));
+//    
+//    M_RPD_Detail_Entity1 existingDtl = brrs_M_RPD_Detail_Repo1.findById(entity1.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity1.getReportDate()));
+//    
+//    // ====================================================
+//    // OLD COPY FOR AUDIT
+//    // ====================================================
+//    M_RPD_Summary_Entity1 oldcopy =
+//            new M_RPD_Summary_Entity1();
+//
+//    BeanUtils.copyProperties(existing, oldcopy);
+//
+//    // --------------------------
+//    // Update R28–R34 amounts
+//    // --------------------------
+//    
+//    try {
+//        for (int i = 11; i <= 50; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity1.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity1);
+//                    
+//                    Method setter = M_RPD_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(existingDtl,newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R11–R50 fields", e);
+//    }  
+//
+//    BRRS_M_RPD_Summary_Repo1.save(existing);
+//    brrs_M_RPD_Detail_Repo1.save(existingDtl);
+//}
+	
+	@Transactional
+	public void updateReport1(M_RPD_Summary_Entity1 entity1) {
 
-    M_RPD_Summary_Entity1 existing = BRRS_M_RPD_Summary_Repo1.findById(entity1.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity1.getReportDate()));
-    
-    M_RPD_Detail_Entity1 existingDtl = brrs_M_RPD_Detail_Repo1.findById(entity1.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity1.getReportDate()));
+	    System.out.println("Report Date: " + entity1.getReportDate());
 
-    // --------------------------
-    // Update R28–R34 amounts
-    // --------------------------
-    
-    try {
-        for (int i = 11; i <= 50; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	    M_RPD_Summary_Entity1 existing =
+	            BRRS_M_RPD_Summary_Repo1.findById(entity1.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity1.getReportDate()));
 
+	    M_RPD_Detail_Entity1 existingDtl =
+	            brrs_M_RPD_Detail_Repo1.findById(entity1.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity1.getReportDate()));
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+	    M_RPD_Summary_Entity1 oldcopy =
+	            new M_RPD_Summary_Entity1();
 
-                try {
-                    Method getter = M_RPD_Summary_Entity1.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity1);
-                    
-                    Method setter = M_RPD_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(existingDtl,newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R11–R50 fields", e);
-    }  
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-    BRRS_M_RPD_Summary_Repo1.save(existing);
-    brrs_M_RPD_Detail_Repo1.save(existingDtl);
-}
-public void updateReport2(M_RPD_Summary_Entity2 entity2) {
-    System.out.println("Report Date: " + entity2.getReportDate());
+	    try {
 
-    M_RPD_Summary_Entity2 existing = BRRS_M_RPD_Summary_Repo2.findById(entity2.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity2.getReportDate()));
-    
-    M_RPD_Detail_Entity2 detailexisting = brrs_M_RPD_Detail_Repo2.findById(entity2.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity2.getReportDate()));
+	        // ====================================================
+	        // UPDATE R11 - R50
+	        // ====================================================
+	        for (int i = 11; i <= 50; i++) {
 
-    try {
-        for (int i = 51; i <= 100; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	            String prefix = "R" + i + "_";
 
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	            for (String field : fields) {
 
-                try {
-                    Method getter = M_RPD_Summary_Entity2.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity2);
-                    
-                    Method setter = M_RPD_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R51-100 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo2.save(existing);
-    brrs_M_RPD_Detail_Repo2.save(detailexisting);
-}
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-public void updateReport3(M_RPD_Summary_Entity3 entity3) {
-    System.out.println("Report Date: " + entity3.getReportDate());
+	                try {
 
-    M_RPD_Summary_Entity3 existing = BRRS_M_RPD_Summary_Repo3.findById(entity3.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity3.getReportDate()));
-    
-    M_RPD_Detail_Entity3 detailexisting = brrs_M_RPD_Detail_Repo3.findById(entity3.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity3.getReportDate()));
+	                    Method getter =
+	                            M_RPD_Summary_Entity1.class
+	                                    .getMethod(getterName);
 
-    try {
-        for (int i = 101; i <= 150; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	                    Object newValue =
+	                            getter.invoke(entity1);
 
+	                    Method setter =
+	                            M_RPD_Summary_Entity1.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	                    Method detailSetter =
+	                            M_RPD_Detail_Entity1.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-                try {
-                    Method getter = M_RPD_Summary_Entity3.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity3);
-                    
-                    Method setter = M_RPD_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity3.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R101-150 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo3.save(existing);
-    brrs_M_RPD_Detail_Repo3.save(detailexisting);
-}
+	                    setter.invoke(existing, newValue);
+	                    detailSetter.invoke(existingDtl, newValue);
 
-public void updateReport4(M_RPD_Summary_Entity4 entity4) {
-    System.out.println("Report Date: " + entity4.getReportDate());
+	                } catch (NoSuchMethodException e) {
 
-    M_RPD_Summary_Entity4 existing = BRRS_M_RPD_Summary_Repo4.findById(entity4.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity4.getReportDate()));
-    
-    M_RPD_Detail_Entity4 detailexisting = brrs_M_RPD_Detail_Repo4.findById(entity4.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity4.getReportDate()));
+	                    continue;
+	                }
+	            }
+	        }
 
-    try {
-        for (int i = 151; i <= 200; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	    } catch (Exception e) {
 
+	        throw new RuntimeException(
+	                "Error while updating R11–R50 fields", e);
+	    }
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+	    BRRS_M_RPD_Summary_Repo1.save(existing);
 
-                try {
-                    Method getter = M_RPD_Summary_Entity4.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity4);
-                    
-                    Method setter = M_RPD_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity4.class.getMethod(setterName, getter.getReturnType());
-                   
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R151-200 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo4.save(existing);
-    brrs_M_RPD_Detail_Repo4.save(detailexisting);
-}
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+	    brrs_M_RPD_Detail_Repo1.save(existingDtl);
 
-public void updateReport5(M_RPD_Summary_Entity5 entity5) {
-    System.out.println("Report Date: " + entity5.getReportDate());
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+	    M_RPD_Summary_Entity1 newcopy =
+	            new M_RPD_Summary_Entity1();
 
-    M_RPD_Summary_Entity5 existing = BRRS_M_RPD_Summary_Repo5.findById(entity5.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity5.getReportDate()));
+	    BeanUtils.copyProperties(existing, newcopy);
 
-    M_RPD_Detail_Entity5 detailexisting =brrs_M_RPD_Detail_Repo5.findById(entity5.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity5.getReportDate()));
-    
-    try {
-        for (int i = 201; i <= 250; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+	    try {
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                newcopy,
+	                entity1.getReportDate().toString(),
+	                "RPD Summary 1",
+	                "BRRS_M_RPD_SUMMARYTABLE1"
+	        );
 
-                try {
-                    Method getter = M_RPD_Summary_Entity5.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity5);
-                    
-                    Method setter = M_RPD_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity5.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R201-250 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo5.save(existing);
-    brrs_M_RPD_Detail_Repo5.save(detailexisting);
-}
+	    } catch (Exception ex) {
 
-public void updateReport6(M_RPD_Summary_Entity6 entity6) {
-    System.out.println("Report Date: " + entity6.getReportDate());
+	        System.out.println(
+	                "Audit failed : " + ex.getMessage());
+	    }
 
-    M_RPD_Summary_Entity6 existing = BRRS_M_RPD_Summary_Repo6.findById(entity6.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity6.getReportDate()));
-    
-    M_RPD_Detail_Entity6 detailexisting = brrs_M_RPD_Detail_Repo6.findById(entity6.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity6.getReportDate()));
+	    System.out.println(
+	            "M_RPD Summary 1 Update Completed");
+	}
+	
+	
+//public void updateReport2(M_RPD_Summary_Entity2 entity2) {
+//    System.out.println("Report Date: " + entity2.getReportDate());
+//
+//    M_RPD_Summary_Entity2 existing = BRRS_M_RPD_Summary_Repo2.findById(entity2.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity2.getReportDate()));
+//    
+//    M_RPD_Detail_Entity2 detailexisting = brrs_M_RPD_Detail_Repo2.findById(entity2.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity2.getReportDate()));
+//
+//    try {
+//        for (int i = 51; i <= 100; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity2.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity2);
+//                    
+//                    Method setter = M_RPD_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R51-100 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo2.save(existing);
+//    brrs_M_RPD_Detail_Repo2.save(detailexisting);
+//}
 
-    try {
-        for (int i = 251; i <= 300; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	@Transactional
+	public void updateReport2(M_RPD_Summary_Entity2 entity2) {
 
+	    System.out.println("Report Date: " + entity2.getReportDate());
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	    M_RPD_Summary_Entity2 existing =
+	            BRRS_M_RPD_Summary_Repo2.findById(entity2.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity2.getReportDate()));
 
-                try {
-                    Method getter = M_RPD_Summary_Entity6.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity6);
-                    
-                    Method setter = M_RPD_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity6.class.getMethod(setterName, getter.getReturnType());
-                   
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R251-300 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo6.save(existing);
-    brrs_M_RPD_Detail_Repo6.save(detailexisting);
-}
+	    M_RPD_Detail_Entity2 detailexisting =
+	            brrs_M_RPD_Detail_Repo2.findById(entity2.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity2.getReportDate()));
 
-public void updateReport7(M_RPD_Summary_Entity7 entity7) {
-    System.out.println("Report Date: " + entity7.getReportDate());
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+	    M_RPD_Summary_Entity2 oldcopy =
+	            new M_RPD_Summary_Entity2();
 
-    M_RPD_Summary_Entity7 existing = BRRS_M_RPD_Summary_Repo7.findById(entity7.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity7.getReportDate()));
-    
-    M_RPD_Detail_Entity7 detailexisting = brrs_M_RPD_Detail_Repo7.findById(entity7.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity7.getReportDate()));
+	    BeanUtils.copyProperties(existing, oldcopy);
 
-    try {
-        for (int i = 301; i <= 350; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	    try {
 
+	        // ====================================================
+	        // UPDATE R51 - R100
+	        // ====================================================
+	        for (int i = 51; i <= 100; i++) {
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	            String prefix = "R" + i + "_";
 
-                try {
-                    Method getter = M_RPD_Summary_Entity7.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity7);
-                    
-                    Method setter = M_RPD_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity7.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R301-350 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo7.save(existing);
-     brrs_M_RPD_Detail_Repo7.save(detailexisting);
-}
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
 
-public void updateReport8(M_RPD_Summary_Entity8 entity8) {
-    System.out.println("Report Date: " + entity8.getReportDate());
+	            for (String field : fields) {
 
-    M_RPD_Summary_Entity8 existing = BRRS_M_RPD_Summary_Repo8.findById(entity8.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity8.getReportDate()));
-    
-    M_RPD_Detail_Entity8 detailexisting = brrs_M_RPD_Detail_Repo8.findById(entity8.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity8.getReportDate()));
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
 
-    try {
-        for (int i = 351; i <= 400; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	                try {
 
+	                    Method getter =
+	                            M_RPD_Summary_Entity2.class
+	                                    .getMethod(getterName);
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
+	                    Object newValue =
+	                            getter.invoke(entity2);
 
-                try {
-                    Method getter = M_RPD_Summary_Entity8.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity8);
-                    
-                    Method setter = M_RPD_Summary_Entity8.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity8.class.getMethod(setterName, getter.getReturnType());
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R351-400 fields", e);
-    }
-    BRRS_M_RPD_Summary_Repo8.save(existing);
-    brrs_M_RPD_Detail_Repo8.save(detailexisting);
-}
+	                    Method setter =
+	                            M_RPD_Summary_Entity2.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-public void updateReport9(M_RPD_Summary_Entity9 entity9) {
-    System.out.println("Report Date: " + entity9.getReportDate());
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity2.class
+	                                    .getMethod(
+	                                            setterName,
+	                                            getter.getReturnType());
 
-    M_RPD_Summary_Entity9 existing = BRRS_M_RPD_Summary_Repo9.findById(entity9.getReportDate())
-        .orElseThrow(() -> new RuntimeException(
-            "Record not found for REPORT_DATE: " + entity9.getReportDate()));
-    
-    M_RPD_Detail_Entity9 detailexisting = brrs_M_RPD_Detail_Repo9.findById(entity9.getReportDate())
-            .orElseThrow(() -> new RuntimeException(
-                "Record not found for REPORT_DATE: " + entity9.getReportDate()));
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
 
-    try {
-        for (int i = 401; i <= 450; i++) {
-            String prefix = "R" + i + "_";
-            // You can add more fields here if needed later
-            String[] fields = {
-            	    "NAME_INSIDER_BORROWER",
-            	    "TYPE_FACILITY",
-            	    "APPROVED_LIMIT",
-            	    "OUTSTANDING_AMOUNT",
-            	    "EXCESS_OVER_CEILING",
-            	    "LOAN_CLASSIFICATION",
-            	    "CURRENT_PROVISIONS",
-            	    "DESCRIPTION",
-            	    "VALUE",
-            	    "INTEREST_RATE"
-            	};
+	                } catch (NoSuchMethodException e) {
 
-            for (String field : fields) {
-                String getterName = "get" + prefix + field;
-                String setterName = "set" + prefix + field;
-                System.out.println("Detail Existing....1");
-                try {
-                    Method getter = M_RPD_Summary_Entity9.class.getMethod(getterName);
-                    Object newValue = getter.invoke(entity9);
-                    
-                    Method setter = M_RPD_Summary_Entity9.class.getMethod(setterName, getter.getReturnType());
-                    Method detailsetter = M_RPD_Detail_Entity9.class.getMethod(setterName, getter.getReturnType());
+	                    continue;
+	                }
+	            }
+	        }
 
-                    
-                    setter.invoke(existing, newValue);
-                    detailsetter.invoke(detailexisting, newValue);
-                    System.out.println("Detail Existing....2");
-                } catch (NoSuchMethodException e) {
-                    // if any field is missing in entity class, skip it
-                    continue;
-                }
-            }
-        }
-        System.out.println("Detail Existing....3");
-        Method getter1 = M_RPD_Summary_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
-        Method setter1 = M_RPD_Summary_Entity9.class.getMethod("setR451_APPROVED_LIMIT", getter1.getReturnType());       
-        Method getter2 = M_RPD_Summary_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
-        Method setter2 = M_RPD_Summary_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", getter2.getReturnType());       
-        Method getter3 = M_RPD_Summary_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
-        Method setter3 = M_RPD_Summary_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", getter3.getReturnType());   
-        Method getter4 = M_RPD_Summary_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
-        Method setter4 = M_RPD_Summary_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", getter4.getReturnType());     
-        Method getter5 = M_RPD_Summary_Entity9.class.getMethod("getR451_VALUE");
-        Method setter5 = M_RPD_Summary_Entity9.class.getMethod("setR451_VALUE", getter5.getReturnType());
-        
-        Method detailgetter1 = M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
-        Method detailsetter1 = M_RPD_Detail_Entity9.class.getMethod("setR451_APPROVED_LIMIT", detailgetter1.getReturnType());
-        Method detailgetter2 = M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
-        Method detailsetter2 = M_RPD_Detail_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", detailgetter2.getReturnType());
-        Method detailgetter3 = M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
-        Method detailsetter3 = M_RPD_Detail_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", detailgetter3.getReturnType());
-        Method detailgetter4 = M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
-        Method detailsetter4 = M_RPD_Detail_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", detailgetter4.getReturnType());
-        Method detailgetter5 = M_RPD_Detail_Entity9.class.getMethod("getR451_VALUE");
-        Method detailsetter5 = M_RPD_Detail_Entity9.class.getMethod("setR451_VALUE", detailgetter5.getReturnType());
-        System.out.println("Detail Existing....4");
-        setter1.invoke(existing, getter1.invoke(entity9));
-        setter2.invoke(existing, getter2.invoke(entity9));
-        setter3.invoke(existing, getter3.invoke(entity9));
-        setter4.invoke(existing, getter4.invoke(entity9));       
-        setter5.invoke(existing, getter5.invoke(entity9));
-        System.out.println("Detail Existing....5");
-        
-//        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
-//        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
-//        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
-//        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
-//        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
-         
-System.out.println("Detail Existing .......6");        
-    } catch (Exception e) {
-        throw new RuntimeException("Error while updating R401-450 fields", e);
-    	//e.printStackTrace();
-    	}
-    BeanUtils.copyProperties(existing, detailexisting);
-    BRRS_M_RPD_Summary_Repo9.save(existing);
-   brrs_M_RPD_Detail_Repo9.save(detailexisting);
-}
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R51-R100 fields", e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+	    BRRS_M_RPD_Summary_Repo2.save(existing);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+	    brrs_M_RPD_Detail_Repo2.save(detailexisting);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+	    M_RPD_Summary_Entity2 newcopy =
+	            new M_RPD_Summary_Entity2();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+	    try {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                newcopy,
+	                entity2.getReportDate().toString(),
+	                "RPD Summary 2",
+	                "BRRS_M_RPD_SUMMARYTABLE2"
+	        );
+
+	    } catch (Exception ex) {
+
+	        System.out.println(
+	                "Audit failed : " + ex.getMessage());
+	    }
+
+	    System.out.println(
+	            "M_RPD Summary 2 Update Completed");
+	}
+	
+	
+//public void updateReport3(M_RPD_Summary_Entity3 entity3) {
+//    System.out.println("Report Date: " + entity3.getReportDate());
+//
+//    M_RPD_Summary_Entity3 existing = BRRS_M_RPD_Summary_Repo3.findById(entity3.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity3.getReportDate()));
+//    
+//    M_RPD_Detail_Entity3 detailexisting = brrs_M_RPD_Detail_Repo3.findById(entity3.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity3.getReportDate()));
+//
+//    try {
+//        for (int i = 101; i <= 150; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity3.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity3);
+//                    
+//                    Method setter = M_RPD_Summary_Entity3.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity3.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R101-150 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo3.save(existing);
+//    brrs_M_RPD_Detail_Repo3.save(detailexisting);
+//}
+	
+	@Transactional
+	public void updateReport3(M_RPD_Summary_Entity3 entity3) {
+
+	    System.out.println("Report Date: " + entity3.getReportDate());
+
+	    M_RPD_Summary_Entity3 existing =
+	            BRRS_M_RPD_Summary_Repo3.findById(entity3.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity3.getReportDate()));
+
+	    M_RPD_Detail_Entity3 detailexisting =
+	            brrs_M_RPD_Detail_Repo3.findById(entity3.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity3.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity3 oldcopy =
+	            new M_RPD_Summary_Entity3();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 101; i <= 150; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity3.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity3);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity3.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity3.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R101-150 fields",
+	                e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo3.save(existing);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo3.save(detailexisting);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity3 newcopy =
+	            new M_RPD_Summary_Entity3();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity3.getReportDate().toString(),
+	            "RPD Summary 3",
+	            "BRRS_M_RPD_SUMMARYTABLE3"
+	    );
+
+	    System.out.println("RPD Summary 3 Update Completed");
+	}
+
+//public void updateReport4(M_RPD_Summary_Entity4 entity4) {
+//    System.out.println("Report Date: " + entity4.getReportDate());
+//
+//    M_RPD_Summary_Entity4 existing = BRRS_M_RPD_Summary_Repo4.findById(entity4.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity4.getReportDate()));
+//    
+//    M_RPD_Detail_Entity4 detailexisting = brrs_M_RPD_Detail_Repo4.findById(entity4.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity4.getReportDate()));
+//
+//    try {
+//        for (int i = 151; i <= 200; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity4.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity4);
+//                    
+//                    Method setter = M_RPD_Summary_Entity4.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity4.class.getMethod(setterName, getter.getReturnType());
+//                   
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R151-200 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo4.save(existing);
+//    brrs_M_RPD_Detail_Repo4.save(detailexisting);
+//}
+
+	@Transactional
+	public void updateReport4(M_RPD_Summary_Entity4 entity4) {
+
+	    System.out.println("Report Date: " + entity4.getReportDate());
+
+	    M_RPD_Summary_Entity4 existing =
+	            BRRS_M_RPD_Summary_Repo4.findById(entity4.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity4.getReportDate()));
+
+	    M_RPD_Detail_Entity4 detailexisting =
+	            brrs_M_RPD_Detail_Repo4.findById(entity4.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity4.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity4 oldcopy =
+	            new M_RPD_Summary_Entity4();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 151; i <= 200; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity4.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity4);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity4.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity4.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R151-200 fields",
+	                e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo4.save(existing);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo4.save(detailexisting);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity4 newcopy =
+	            new M_RPD_Summary_Entity4();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity4.getReportDate().toString(),
+	            "RPD Summary 4",
+	            "BRRS_M_RPD_SUMMARYTABLE4"
+	    );
+
+	    System.out.println("RPD Summary 4 Update Completed");
+	}
+	
+	
+//public void updateReport5(M_RPD_Summary_Entity5 entity5) {
+//    System.out.println("Report Date: " + entity5.getReportDate());
+//
+//    M_RPD_Summary_Entity5 existing = BRRS_M_RPD_Summary_Repo5.findById(entity5.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity5.getReportDate()));
+//
+//    M_RPD_Detail_Entity5 detailexisting =brrs_M_RPD_Detail_Repo5.findById(entity5.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity5.getReportDate()));
+//    
+//    try {
+//        for (int i = 201; i <= 250; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity5.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity5);
+//                    
+//                    Method setter = M_RPD_Summary_Entity5.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity5.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R201-250 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo5.save(existing);
+//    brrs_M_RPD_Detail_Repo5.save(detailexisting);
+//}
+	
+	@Transactional
+	public void updateReport5(M_RPD_Summary_Entity5 entity5) {
+
+	    System.out.println("Report Date: " + entity5.getReportDate());
+
+	    M_RPD_Summary_Entity5 existing =
+	            BRRS_M_RPD_Summary_Repo5.findById(entity5.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity5.getReportDate()));
+
+	    M_RPD_Detail_Entity5 detailexisting =
+	            brrs_M_RPD_Detail_Repo5.findById(entity5.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity5.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity5 oldcopy =
+	            new M_RPD_Summary_Entity5();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 201; i <= 250; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity5.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity5);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity5.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity5.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R201-250 fields",
+	                e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo5.save(existing);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo5.save(detailexisting);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity5 newcopy =
+	            new M_RPD_Summary_Entity5();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity5.getReportDate().toString(),
+	            "RPD Summary 5",
+	            "BRRS_M_RPD_SUMMARYTABLE5"
+	    );
+
+	    System.out.println("RPD Summary 5 Update Completed");
+	}
+
+//public void updateReport6(M_RPD_Summary_Entity6 entity6) {
+//    System.out.println("Report Date: " + entity6.getReportDate());
+//
+//    M_RPD_Summary_Entity6 existing = BRRS_M_RPD_Summary_Repo6.findById(entity6.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity6.getReportDate()));
+//    
+//    M_RPD_Detail_Entity6 detailexisting = brrs_M_RPD_Detail_Repo6.findById(entity6.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity6.getReportDate()));
+//
+//    try {
+//        for (int i = 251; i <= 300; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity6.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity6);
+//                    
+//                    Method setter = M_RPD_Summary_Entity6.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity6.class.getMethod(setterName, getter.getReturnType());
+//                   
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R251-300 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo6.save(existing);
+//    brrs_M_RPD_Detail_Repo6.save(detailexisting);
+//}
+	
+	@Transactional
+	public void updateReport6(M_RPD_Summary_Entity6 entity6) {
+
+	    System.out.println("Report Date: " + entity6.getReportDate());
+
+	    M_RPD_Summary_Entity6 existing =
+	            BRRS_M_RPD_Summary_Repo6.findById(entity6.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity6.getReportDate()));
+
+	    M_RPD_Detail_Entity6 detailexisting =
+	            brrs_M_RPD_Detail_Repo6.findById(entity6.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity6.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity6 oldcopy =
+	            new M_RPD_Summary_Entity6();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 251; i <= 300; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity6.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity6);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity6.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity6.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R251-300 fields",
+	                e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo6.save(existing);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo6.save(detailexisting);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity6 newcopy =
+	            new M_RPD_Summary_Entity6();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity6.getReportDate().toString(),
+	            "RPD Summary 6",
+	            "BRRS_M_RPD_SUMMARYTABLE6"
+	    );
+
+	    System.out.println("RPD Summary 6 Update Completed");
+	}
+
+//public void updateReport7(M_RPD_Summary_Entity7 entity7) {
+//    System.out.println("Report Date: " + entity7.getReportDate());
+//
+//    M_RPD_Summary_Entity7 existing = BRRS_M_RPD_Summary_Repo7.findById(entity7.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity7.getReportDate()));
+//    
+//    M_RPD_Detail_Entity7 detailexisting = brrs_M_RPD_Detail_Repo7.findById(entity7.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity7.getReportDate()));
+//
+//    try {
+//        for (int i = 301; i <= 350; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity7.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity7);
+//                    
+//                    Method setter = M_RPD_Summary_Entity7.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity7.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R301-350 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo7.save(existing);
+//     brrs_M_RPD_Detail_Repo7.save(detailexisting);
+//}
+	
+	@Transactional
+	public void updateReport7(M_RPD_Summary_Entity7 entity7) {
+
+	    System.out.println("Report Date: " + entity7.getReportDate());
+
+	    M_RPD_Summary_Entity7 existing =
+	            BRRS_M_RPD_Summary_Repo7.findById(entity7.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity7.getReportDate()));
+
+	    M_RPD_Detail_Entity7 detailexisting =
+	            brrs_M_RPD_Detail_Repo7.findById(entity7.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity7.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity7 oldcopy =
+	            new M_RPD_Summary_Entity7();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 301; i <= 350; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity7.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity7);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity7.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity7.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R301-350 fields", e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo7.save(existing);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity7 newcopy =
+	            new M_RPD_Summary_Entity7();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo7.save(detailexisting);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity7.getReportDate().toString(),
+	            "RPD Summary 7",
+	            "BRRS_M_RPD_SUMMARYTABLE7"
+	    );
+
+	    System.out.println("M_RPD Summary 7 Update Completed");
+	}
+	
+
+//public void updateReport8(M_RPD_Summary_Entity8 entity8) {
+//    System.out.println("Report Date: " + entity8.getReportDate());
+//
+//    M_RPD_Summary_Entity8 existing = BRRS_M_RPD_Summary_Repo8.findById(entity8.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity8.getReportDate()));
+//    
+//    M_RPD_Detail_Entity8 detailexisting = brrs_M_RPD_Detail_Repo8.findById(entity8.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity8.getReportDate()));
+//
+//    try {
+//        for (int i = 351; i <= 400; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//
+//                try {
+//                    Method getter = M_RPD_Summary_Entity8.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity8);
+//                    
+//                    Method setter = M_RPD_Summary_Entity8.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity8.class.getMethod(setterName, getter.getReturnType());
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R351-400 fields", e);
+//    }
+//    BRRS_M_RPD_Summary_Repo8.save(existing);
+//    brrs_M_RPD_Detail_Repo8.save(detailexisting);
+//}
+
+	@Transactional
+	public void updateReport8(M_RPD_Summary_Entity8 entity8) {
+
+	    System.out.println("Report Date: " + entity8.getReportDate());
+
+	    M_RPD_Summary_Entity8 existing =
+	            BRRS_M_RPD_Summary_Repo8.findById(entity8.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity8.getReportDate()));
+
+	    M_RPD_Detail_Entity8 detailexisting =
+	            brrs_M_RPD_Detail_Repo8.findById(entity8.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity8.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity8 oldcopy =
+	            new M_RPD_Summary_Entity8();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 351; i <= 400; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity8.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity8);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity8.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity8.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R351-400 fields", e);
+	    }
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo8.save(existing);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity8 newcopy =
+	            new M_RPD_Summary_Entity8();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo8.save(detailexisting);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity8.getReportDate().toString(),
+	            "RPD Summary 8",
+	            "BRRS_M_RPD_SUMMARYTABLE8"
+	    );
+
+	    System.out.println("M_RPD Summary 8 Update Completed");
+	}
+	
+	
+//public void updateReport9(M_RPD_Summary_Entity9 entity9) {
+//    System.out.println("Report Date: " + entity9.getReportDate());
+//
+//    M_RPD_Summary_Entity9 existing = BRRS_M_RPD_Summary_Repo9.findById(entity9.getReportDate())
+//        .orElseThrow(() -> new RuntimeException(
+//            "Record not found for REPORT_DATE: " + entity9.getReportDate()));
+//    
+//    M_RPD_Detail_Entity9 detailexisting = brrs_M_RPD_Detail_Repo9.findById(entity9.getReportDate())
+//            .orElseThrow(() -> new RuntimeException(
+//                "Record not found for REPORT_DATE: " + entity9.getReportDate()));
+//
+//    try {
+//        for (int i = 401; i <= 450; i++) {
+//            String prefix = "R" + i + "_";
+//            // You can add more fields here if needed later
+//            String[] fields = {
+//            	    "NAME_INSIDER_BORROWER",
+//            	    "TYPE_FACILITY",
+//            	    "APPROVED_LIMIT",
+//            	    "OUTSTANDING_AMOUNT",
+//            	    "EXCESS_OVER_CEILING",
+//            	    "LOAN_CLASSIFICATION",
+//            	    "CURRENT_PROVISIONS",
+//            	    "DESCRIPTION",
+//            	    "VALUE",
+//            	    "INTEREST_RATE"
+//            	};
+//
+//            for (String field : fields) {
+//                String getterName = "get" + prefix + field;
+//                String setterName = "set" + prefix + field;
+//                System.out.println("Detail Existing....1");
+//                try {
+//                    Method getter = M_RPD_Summary_Entity9.class.getMethod(getterName);
+//                    Object newValue = getter.invoke(entity9);
+//                    
+//                    Method setter = M_RPD_Summary_Entity9.class.getMethod(setterName, getter.getReturnType());
+//                    Method detailsetter = M_RPD_Detail_Entity9.class.getMethod(setterName, getter.getReturnType());
+//
+//                    
+//                    setter.invoke(existing, newValue);
+//                    detailsetter.invoke(detailexisting, newValue);
+//                    System.out.println("Detail Existing....2");
+//                } catch (NoSuchMethodException e) {
+//                    // if any field is missing in entity class, skip it
+//                    continue;
+//                }
+//            }
+//        }
+//        System.out.println("Detail Existing....3");
+//        Method getter1 = M_RPD_Summary_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+//        Method setter1 = M_RPD_Summary_Entity9.class.getMethod("setR451_APPROVED_LIMIT", getter1.getReturnType());       
+//        Method getter2 = M_RPD_Summary_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+//        Method setter2 = M_RPD_Summary_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", getter2.getReturnType());       
+//        Method getter3 = M_RPD_Summary_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+//        Method setter3 = M_RPD_Summary_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", getter3.getReturnType());   
+//        Method getter4 = M_RPD_Summary_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+//        Method setter4 = M_RPD_Summary_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", getter4.getReturnType());     
+//        Method getter5 = M_RPD_Summary_Entity9.class.getMethod("getR451_VALUE");
+//        Method setter5 = M_RPD_Summary_Entity9.class.getMethod("setR451_VALUE", getter5.getReturnType());
+//        
+//        Method detailgetter1 = M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+//        Method detailsetter1 = M_RPD_Detail_Entity9.class.getMethod("setR451_APPROVED_LIMIT", detailgetter1.getReturnType());
+//        Method detailgetter2 = M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+//        Method detailsetter2 = M_RPD_Detail_Entity9.class.getMethod("setR451_OUTSTANDING_AMOUNT", detailgetter2.getReturnType());
+//        Method detailgetter3 = M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+//        Method detailsetter3 = M_RPD_Detail_Entity9.class.getMethod("setR451_EXCESS_OVER_CEILING", detailgetter3.getReturnType());
+//        Method detailgetter4 = M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+//        Method detailsetter4 = M_RPD_Detail_Entity9.class.getMethod("setR451_CURRENT_PROVISIONS", detailgetter4.getReturnType());
+//        Method detailgetter5 = M_RPD_Detail_Entity9.class.getMethod("getR451_VALUE");
+//        Method detailsetter5 = M_RPD_Detail_Entity9.class.getMethod("setR451_VALUE", detailgetter5.getReturnType());
+//        System.out.println("Detail Existing....4");
+//        setter1.invoke(existing, getter1.invoke(entity9));
+//        setter2.invoke(existing, getter2.invoke(entity9));
+//        setter3.invoke(existing, getter3.invoke(entity9));
+//        setter4.invoke(existing, getter4.invoke(entity9));       
+//        setter5.invoke(existing, getter5.invoke(entity9));
+//        System.out.println("Detail Existing....5");
+//        
+////        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
+////        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
+////        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
+////        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
+////        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
+//         
+//System.out.println("Detail Existing .......6");        
+//    } catch (Exception e) {
+//        throw new RuntimeException("Error while updating R401-450 fields", e);
+//    	//e.printStackTrace();
+//    	}
+//    BeanUtils.copyProperties(existing, detailexisting);
+//    BRRS_M_RPD_Summary_Repo9.save(existing);
+//   brrs_M_RPD_Detail_Repo9.save(detailexisting);
+//}
+	
+	@Transactional
+	public void updateReport9(M_RPD_Summary_Entity9 entity9) {
+
+	    System.out.println("Report Date: " + entity9.getReportDate());
+
+	    M_RPD_Summary_Entity9 existing =
+	            BRRS_M_RPD_Summary_Repo9.findById(entity9.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity9.getReportDate()));
+
+	    M_RPD_Detail_Entity9 detailexisting =
+	            brrs_M_RPD_Detail_Repo9.findById(entity9.getReportDate())
+	                    .orElseThrow(() -> new RuntimeException(
+	                            "Record not found for REPORT_DATE: "
+	                                    + entity9.getReportDate()));
+
+	    // ====================================================
+	    // OLD COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity9 oldcopy =
+	            new M_RPD_Summary_Entity9();
+
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    try {
+
+	        for (int i = 401; i <= 450; i++) {
+
+	            String prefix = "R" + i + "_";
+
+	            String[] fields = {
+	                    "NAME_INSIDER_BORROWER",
+	                    "TYPE_FACILITY",
+	                    "APPROVED_LIMIT",
+	                    "OUTSTANDING_AMOUNT",
+	                    "EXCESS_OVER_CEILING",
+	                    "LOAN_CLASSIFICATION",
+	                    "CURRENT_PROVISIONS",
+	                    "DESCRIPTION",
+	                    "VALUE",
+	                    "INTEREST_RATE"
+	            };
+
+	            for (String field : fields) {
+
+	                String getterName = "get" + prefix + field;
+	                String setterName = "set" + prefix + field;
+
+	                System.out.println("Detail Existing....1");
+
+	                try {
+
+	                    Method getter =
+	                            M_RPD_Summary_Entity9.class.getMethod(getterName);
+
+	                    Object newValue =
+	                            getter.invoke(entity9);
+
+	                    Method setter =
+	                            M_RPD_Summary_Entity9.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    Method detailsetter =
+	                            M_RPD_Detail_Entity9.class.getMethod(
+	                                    setterName,
+	                                    getter.getReturnType());
+
+	                    setter.invoke(existing, newValue);
+	                    detailsetter.invoke(detailexisting, newValue);
+
+	                    System.out.println("Detail Existing....2");
+
+	                } catch (NoSuchMethodException e) {
+	                    continue;
+	                }
+	            }
+	        }
+
+	        System.out.println("Detail Existing....3");
+
+	        Method getter1 =
+	                M_RPD_Summary_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+	        Method setter1 =
+	                M_RPD_Summary_Entity9.class.getMethod(
+	                        "setR451_APPROVED_LIMIT",
+	                        getter1.getReturnType());
+
+	        Method getter2 =
+	                M_RPD_Summary_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+	        Method setter2 =
+	                M_RPD_Summary_Entity9.class.getMethod(
+	                        "setR451_OUTSTANDING_AMOUNT",
+	                        getter2.getReturnType());
+
+	        Method getter3 =
+	                M_RPD_Summary_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+	        Method setter3 =
+	                M_RPD_Summary_Entity9.class.getMethod(
+	                        "setR451_EXCESS_OVER_CEILING",
+	                        getter3.getReturnType());
+
+	        Method getter4 =
+	                M_RPD_Summary_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+	        Method setter4 =
+	                M_RPD_Summary_Entity9.class.getMethod(
+	                        "setR451_CURRENT_PROVISIONS",
+	                        getter4.getReturnType());
+
+	        Method getter5 =
+	                M_RPD_Summary_Entity9.class.getMethod("getR451_VALUE");
+	        Method setter5 =
+	                M_RPD_Summary_Entity9.class.getMethod(
+	                        "setR451_VALUE",
+	                        getter5.getReturnType());
+
+	        Method detailgetter1 =
+	                M_RPD_Detail_Entity9.class.getMethod("getR451_APPROVED_LIMIT");
+	        Method detailsetter1 =
+	                M_RPD_Detail_Entity9.class.getMethod(
+	                        "setR451_APPROVED_LIMIT",
+	                        detailgetter1.getReturnType());
+
+	        Method detailgetter2 =
+	                M_RPD_Detail_Entity9.class.getMethod("getR451_OUTSTANDING_AMOUNT");
+	        Method detailsetter2 =
+	                M_RPD_Detail_Entity9.class.getMethod(
+	                        "setR451_OUTSTANDING_AMOUNT",
+	                        detailgetter2.getReturnType());
+
+	        Method detailgetter3 =
+	                M_RPD_Detail_Entity9.class.getMethod("getR451_EXCESS_OVER_CEILING");
+	        Method detailsetter3 =
+	                M_RPD_Detail_Entity9.class.getMethod(
+	                        "setR451_EXCESS_OVER_CEILING",
+	                        detailgetter3.getReturnType());
+
+	        Method detailgetter4 =
+	                M_RPD_Detail_Entity9.class.getMethod("getR451_CURRENT_PROVISIONS");
+	        Method detailsetter4 =
+	                M_RPD_Detail_Entity9.class.getMethod(
+	                        "setR451_CURRENT_PROVISIONS",
+	                        detailgetter4.getReturnType());
+
+	        Method detailgetter5 =
+	                M_RPD_Detail_Entity9.class.getMethod("getR451_VALUE");
+	        Method detailsetter5 =
+	                M_RPD_Detail_Entity9.class.getMethod(
+	                        "setR451_VALUE",
+	                        detailgetter5.getReturnType());
+
+	        System.out.println("Detail Existing....4");
+
+	        setter1.invoke(existing, getter1.invoke(entity9));
+	        setter2.invoke(existing, getter2.invoke(entity9));
+	        setter3.invoke(existing, getter3.invoke(entity9));
+	        setter4.invoke(existing, getter4.invoke(entity9));
+	        setter5.invoke(existing, getter5.invoke(entity9));
+
+	        System.out.println("Detail Existing....5");
+
+	        // Optional Detail Updates
+	        /*
+	        detailsetter1.invoke(detailexisting, detailgetter1.invoke(entity9));
+	        detailsetter2.invoke(detailexisting, detailgetter2.invoke(entity9));
+	        detailsetter3.invoke(detailexisting, detailgetter3.invoke(entity9));
+	        detailsetter4.invoke(detailexisting, detailgetter4.invoke(entity9));
+	        detailsetter5.invoke(detailexisting, detailgetter5.invoke(entity9));
+	        */
+
+	        System.out.println("Detail Existing .......6");
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating R401-450 fields", e);
+	    }
+
+	    BeanUtils.copyProperties(existing, detailexisting);
+
+	    // ====================================================
+	    // SAVE SUMMARY
+	    // ====================================================
+
+	    BRRS_M_RPD_Summary_Repo9.save(existing);
+
+	    // ====================================================
+	    // NEW COPY FOR AUDIT
+	    // ====================================================
+
+	    M_RPD_Summary_Entity9 newcopy =
+	            new M_RPD_Summary_Entity9();
+
+	    BeanUtils.copyProperties(existing, newcopy);
+
+	    // ====================================================
+	    // SAVE DETAIL
+	    // ====================================================
+
+	    brrs_M_RPD_Detail_Repo9.save(detailexisting);
+
+	    // ====================================================
+	    // FIELD LEVEL AUDIT
+	    // ====================================================
+
+	    auditService.compareEntitiesmanual(
+	            oldcopy,
+	            newcopy,
+	            entity9.getReportDate().toString(),
+	            "RPD Summary 9",
+	            "BRRS_M_RPD_SUMMARYTABLE9"
+	    );
+
+	    System.out.println("M_RPD Summary 9 Update Completed");
+	}
 
 public List<Object> getM_RPDarchival() {
 	List<Object> M_RPDArchivallist = new ArrayList<>();
@@ -10006,6 +11224,15 @@ workbook.setForceFormulaRecalculation(true);
 workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+//audit service summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+							if (attrs != null) {
+								HttpServletRequest request = attrs.getRequest();
+								String userid = (String) request.getSession().getAttribute("USERID");
+								auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD  SUMMARY", null, "BRRS_RPD_SUMMARYTABLE");
+							}
 
 return out.toByteArray();
 }
@@ -38027,6 +39254,15 @@ workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+//audit service archival summary format
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD ARCHIVAL SUMMARY", null, "BRRS_RPD_ARCHIVALTABLE_SUMMARY");
+					}
+
 return out.toByteArray();
 }
 }
@@ -53604,6 +54840,16 @@ workbook.write(out);
 
 logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 
+//audit service summary email
+
+ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD EMAIL SUMMARY", null, "BRRS_RPD_SUMMARYTABEL");
+					}
+
+
 return out.toByteArray();
 	  }	
 }
@@ -62455,6 +63701,16 @@ public byte[] BRRS_M_RPDResubExcel(String filename, String reportId, String from
 	workbook.write(out);
 
 	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+	
+	// audit service summary resub format
+
+
+	ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+						if (attrs != null) {
+							HttpServletRequest request = attrs.getRequest();
+							String userid = (String) request.getSession().getAttribute("USERID");
+							auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD RESUB SUMMARY", null, "BRRS_RPD_RESUB_SUMMARYTABLE");
+						}
 
 	return out.toByteArray();
 	}
@@ -82119,6 +83375,17 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 	workbook.write(out);
 
 	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+	
+
+	// audit service archival summary email
+
+
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+						if (attrs != null) {
+							HttpServletRequest request = attrs.getRequest();
+							String userid = (String) request.getSession().getAttribute("USERID");
+							auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD EMAIL ARCHIVAL SUMMARY", null, "BRRS_RPD_ARCHIVALTABLE_SUMMARY");
+						}
 
 	return out.toByteArray();
 		  }	
@@ -84000,6 +85267,15 @@ public void next201_5_6(Sheet sheet,BRRS_M_RPD_Resub_Summary_Entity5 record5,BRR
 	workbook.write(out);
 
 	logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+	
+	// audit service summary resub email
+
+	ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+					if (attrs != null) {
+						HttpServletRequest request = attrs.getRequest();
+						String userid = (String) request.getSession().getAttribute("USERID");
+						auditService.createBusinessAudit(userid, "DOWNLOAD", "RPD EMAIL RESUB SUMMARY", null, "BRRS_RPD_RESUB_SUMMARYTABLE");
+					}
 
 	return out.toByteArray();
 		  }	

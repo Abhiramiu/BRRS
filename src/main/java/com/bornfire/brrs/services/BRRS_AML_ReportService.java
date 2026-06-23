@@ -40,6 +40,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -8209,6 +8210,10 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
+			
+			 // Create old copy for audit comparison
+			AML_Detail_Entity oldcopy = new AML_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
@@ -8249,6 +8254,15 @@ public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
     existing.getAcctNumber()
 );
 
+		        // Audit comparison
+		            auditService.compareEntitiesmanual(
+		                    oldcopy,
+		                    existing,
+		                    acctNo,
+		                    "AML Detail Screen",
+		                    "BRRS_AML_DETAILTABLE"
+		            );     
+		           
 				// Format date for procedure
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
 						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
