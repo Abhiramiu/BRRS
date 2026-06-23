@@ -33,8 +33,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -52,26 +52,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Archival_Summary1_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Archival_Summary2_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Summary1_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GALOR_Summary2_Repo;
-import com.bornfire.brrs.entities.M_GALOR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_GALOR_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_GALOR_Detail_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_GALOR_Summary_Entity1;
-import com.bornfire.brrs.entities.M_GALOR_Summary_Entity2;
+
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
+@Transactional
 public class BRRS_M_GALOR_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_GALOR_ReportService.class);
 
@@ -79,69 +64,159 @@ public class BRRS_M_GALOR_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-
-	@Autowired
 	AuditService auditService;
 
-	@Autowired
-	BRRS_M_GALOR_Manual_Archival_Summary_Repo m_galor_Manual_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_GALOR_Manual_Summary_Repo m_galor_Manual_Summary_Repo;
-
-	@Autowired
-	BRRS_M_GALOR_Detail_Repo m_galor_detail_Repo;
-
-	@Autowired
-	BRRS_M_GALOR_Summary1_Repo M_GALOR_Summary_Repo1;
-
-	@Autowired
-	BRRS_M_GALOR_Summary2_Repo M_GALOR_Summary_Repo2;
-
-	@Autowired
-	BRRS_M_GALOR_Archival_Detail_Repo M_GALOR_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_GALOR_Archival_Summary1_Repo M_GALOR_Archival_Summary_Repo1;
-
-	@Autowired
-	BRRS_M_GALOR_Archival_Summary2_Repo M_GALOR_Archival_Summary_Repo2;
-	
 	@Autowired
 	UserProfileRep userProfileRep;
 
 	
 	
 
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	
+	// JDBC QUERY METHODS
+
+
+	public List<M_GALOR_Summary_Entity1> getSummary1ByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_SUMMARYTABLE1 WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_GALORSummary1RowMapper());
+	}
+
+	public List<M_GALOR_Summary_Entity2> getSummary2ByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_SUMMARYTABLE2 WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_GALORSummary2RowMapper());
+	}
+
+	public List<M_GALOR_Manual_Summary_Entity> getManualSummaryByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_MANUAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_GALORManualSummaryRowMapper());
+	}
+
+	public List<M_GALOR_Detail_Entity> getDetailByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_DETAILTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_GALORDetailRowMapper());
+	}
+
+	public List<M_GALOR_Detail_Entity> getDetailByDate(Date reportDate, int offset, int limit) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_DETAILTABLE WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, offset, limit}, new M_GALORDetailRowMapper());
+	}
+
+	public int getDetailCount(Date reportDate) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_GALOR_DETAILTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[]{reportDate}, Integer.class);
+	}
+
+	public List<M_GALOR_Detail_Entity> getDetailByLabelAndCriteria(String label, String criteria, Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{label, criteria, reportDate}, new M_GALORDetailRowMapper());
+	}
+
+	public M_GALOR_Detail_Entity findDetailByAcctNumber(String acctNumber) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		List<M_GALOR_Detail_Entity> r = jdbcTemplate.query(sql, new Object[]{acctNumber}, new M_GALORDetailRowMapper());
+		return r.isEmpty() ? null : r.get(0);
+	}
+
+	public List<M_GALOR_Archival_Summary_Entity1> getArchivalSummary1ByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_GALORArchivalSummary1RowMapper());
+	}
+
+	public List<M_GALOR_Archival_Summary_Entity1> getArchivalSummary1WithVersion() {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		return jdbcTemplate.query(sql, new M_GALORArchivalSummary1RowMapper());
+	}
+
+	public List<M_GALOR_Archival_Summary_Entity2> getArchivalSummary2ByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_SUMMARY2 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_GALORArchivalSummary2RowMapper());
+	}
+
+	public List<M_GALOR_Archival_Summary_Entity2> getArchivalSummary2WithVersion() {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_SUMMARY2 WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		return jdbcTemplate.query(sql, new M_GALORArchivalSummary2RowMapper());
+	}
+
+	public List<M_GALOR_Manual_Archival_Summary_Entity> getArchivalManualSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_MANUAL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_GALORManualArchivalSummaryRowMapper());
+	}
+
+	public List<M_GALOR_Manual_Archival_Summary_Entity> getArchivalManualSummaryWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_GALOR_MANUAL_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		return jdbcTemplate.query(sql, new M_GALORManualArchivalSummaryRowMapper());
+	}
+
+	public List<M_GALOR_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String dataEntryVersion) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, dataEntryVersion}, new M_GALORArchivalDetailRowMapper());
+	}
+
+	public List<M_GALOR_Archival_Detail_Entity> getArchivalDetailByLabelAndCriteria(String label, String criteria, Date reportDate, String dataEntryVersion) {
+		String sql = "SELECT * FROM BRRS_M_GALOR_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{label, criteria, reportDate, dataEntryVersion}, new M_GALORArchivalDetailRowMapper());
+	}
+
+	public void saveDetailEntity(M_GALOR_Detail_Entity e) {
+		String sql = "UPDATE BRRS_M_GALOR_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
+		jdbcTemplate.update(sql, e.getAcctName(), e.getAcctBalanceInpula(), e.getAcctNumber());
+	}
+
+	public void saveManualSummaryEntity(M_GALOR_Manual_Summary_Entity entity) {
+		int[] specialRows = { 22, 23, 57, 58, 60, 61, 64, 65, 67, 68, 111, 112, 113, 114 };
+		String[] fullFields = { "product", "botswana", "south_africa", "sadc", "usa", "uk",
+				"europe", "india", "sydney", "uganda", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "total" };
+		StringBuilder sb = new StringBuilder("UPDATE BRRS_M_GALOR_MANUAL_SUMMARYTABLE SET ");
+		List<Object> params = new ArrayList<>();
+		boolean first = true;
+		for (int row : specialRows) {
+			String prefix = "R" + row + "_";
+			String[] activeFields = (row >= 111 && row <= 114) ? new String[] { "botswana" } : fullFields;
+			for (String field : activeFields) {
+				String getterName = "get" + prefix + field;
+				try {
+					Method getter = M_GALOR_Manual_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+					if (!first) sb.append(", ");
+					sb.append(prefix.toUpperCase()).append(field.toUpperCase()).append(" = ?");
+					params.add(value);
+					first = false;
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		sb.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+		params.add(entity.getReport_date());
+		jdbcTemplate.update(sb.toString(), params.toArray());
+	}
 
 	public ModelAndView getM_GALORView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 		ModelAndView mv = new ModelAndView();
+
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 		
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		/*int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();*/
 
 		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_GALOR_Archival_Summary_Entity1> T1Master = new ArrayList<M_GALOR_Archival_Summary_Entity1>();
-			List<M_GALOR_Archival_Summary_Entity2> T1Master1 = new ArrayList<M_GALOR_Archival_Summary_Entity2>();
-			List<M_GALOR_Manual_Archival_Summary_Entity> T1Master2 = new ArrayList<M_GALOR_Manual_Archival_Summary_Entity>();
+			List<M_GALOR_Archival_Summary_Entity1> T1Master = new ArrayList<>();
+			List<M_GALOR_Archival_Summary_Entity2> T1Master1 = new ArrayList<>();
+			List<M_GALOR_Manual_Archival_Summary_Entity> T1Master2 = new ArrayList<>();
 			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = M_GALOR_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master1 = M_GALOR_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master2 = m_galor_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate),
-						version);
-
+				T1Master = getArchivalSummary1ByDateAndVersion(dateformat.parse(todate), version);
+				T1Master1 = getArchivalSummary2ByDateAndVersion(dateformat.parse(todate), version);
+				T1Master2 = getArchivalManualSummaryByDateAndVersion(dateformat.parse(todate), version);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -150,16 +225,13 @@ public class BRRS_M_GALOR_ReportService {
 			mv.addObject("reportsummary2", T1Master1);
 			mv.addObject("reportsummary3", T1Master2);
 		} else {
-			List<M_GALOR_Summary_Entity1> T1Master = new ArrayList<M_GALOR_Summary_Entity1>();
-			List<M_GALOR_Summary_Entity2> T1Master1 = new ArrayList<M_GALOR_Summary_Entity2>();
-			List<M_GALOR_Manual_Summary_Entity> T1Master2 = new ArrayList<M_GALOR_Manual_Summary_Entity>();
+			List<M_GALOR_Summary_Entity1> T1Master = new ArrayList<>();
+			List<M_GALOR_Summary_Entity2> T1Master1 = new ArrayList<>();
+			List<M_GALOR_Manual_Summary_Entity> T1Master2 = new ArrayList<>();
 			try {
-				Date d1 = dateformat.parse(todate);
-
-				T1Master = M_GALOR_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-				T1Master1 = M_GALOR_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-				T1Master2 = m_galor_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-				System.out.println("nishaaaa");
+				T1Master = getSummary1ByDate(dateformat.parse(todate));
+				T1Master1 = getSummary2ByDate(dateformat.parse(todate));
+				T1Master2 = getManualSummaryByDate(dateformat.parse(todate));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -216,10 +288,9 @@ public class BRRS_M_GALOR_ReportService {
 				// 🔹 Archival branch
 				List<M_GALOR_Archival_Detail_Entity> T1Dt1;
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = M_GALOR_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
-							parsedDate, version);
+					T1Dt1 = getArchivalDetailByLabelAndCriteria(reportLable, reportAddlCriteria_1, parsedDate, version);
 				} else {
-					T1Dt1 = M_GALOR_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -231,11 +302,10 @@ public class BRRS_M_GALOR_ReportService {
 				List<M_GALOR_Detail_Entity> T1Dt1;
 
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = m_galor_detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
-							parsedDate);
+					T1Dt1 = getDetailByLabelAndCriteria(reportLable, reportAddlCriteria_1, parsedDate);
 				} else {
-					T1Dt1 = m_galor_detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = m_galor_detail_Repo.getdatacount(parsedDate);
+					T1Dt1 = getDetailByDate(parsedDate, currentPage, pageSize);
+					totalPages = getDetailCount(parsedDate);
 					mv.addObject("pagination", "YES");
 
 				}
@@ -303,10 +373,9 @@ public class BRRS_M_GALOR_ReportService {
 
 		// Fetch data
 
-		List<M_GALOR_Summary_Entity1> dataList = M_GALOR_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-		List<M_GALOR_Summary_Entity2> dataList1 = M_GALOR_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-		List<M_GALOR_Manual_Summary_Entity> dataList2 = m_galor_Manual_Summary_Repo
-				.getdatabydateList(dateformat.parse(todate));
+		List<M_GALOR_Summary_Entity1> dataList = getSummary1ByDate(reportDate);
+		List<M_GALOR_Summary_Entity2> dataList1 = getSummary2ByDate(reportDate);
+		List<M_GALOR_Manual_Summary_Entity> dataList2 = getManualSummaryByDate(reportDate);
 
 		if (dataList.isEmpty() && dataList1.isEmpty() && dataList2.isEmpty()) {
 			logger.warn("Service: No data found for M_GALOR report. Returning empty result.");
@@ -15544,7 +15613,7 @@ public class BRRS_M_GALOR_ReportService {
 
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 			System.out.println("Parsed Date: " + parsedToDate);
-			List<M_GALOR_Detail_Entity> reportData = m_galor_detail_Repo.getdatabydateList(parsedToDate);
+			List<M_GALOR_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -15666,8 +15735,7 @@ public class BRRS_M_GALOR_ReportService {
 
 // Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_GALOR_Archival_Detail_Entity> reportData = M_GALOR_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<M_GALOR_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -15728,7 +15796,7 @@ public class BRRS_M_GALOR_ReportService {
 
 	        // Fetch data from Manual Repository
 	        List<M_GALOR_Manual_Archival_Summary_Entity> manualData =
-	                m_galor_Manual_Archival_Summary_Repo.getdatabydateListWithVersion();
+	                getArchivalManualSummaryWithVersion();
 
 	        if (manualData != null && !manualData.isEmpty()) {
 
@@ -15755,7 +15823,7 @@ public class BRRS_M_GALOR_ReportService {
 
 	        // Fetch data from Repository 1
 	        List<M_GALOR_Archival_Summary_Entity1> repoData1 =
-	                M_GALOR_Archival_Summary_Repo1.getdatabydateListWithVersion();
+	                getArchivalSummary1WithVersion();
 
 	        if (repoData1 != null && !repoData1.isEmpty()) {
 
@@ -15782,7 +15850,7 @@ public class BRRS_M_GALOR_ReportService {
 
 	        // Fetch data from Repository 2
 	        List<M_GALOR_Archival_Summary_Entity2> repoData2 =
-	                M_GALOR_Archival_Summary_Repo2.getdatabydateListWithVersion();
+	                getArchivalSummary2WithVersion();
 
 	        if (repoData2 != null && !repoData2.isEmpty()) {
 
@@ -15824,12 +15892,10 @@ public class BRRS_M_GALOR_ReportService {
 
 		}
 
-		List<M_GALOR_Archival_Summary_Entity1> dataList = M_GALOR_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_GALOR_Archival_Summary_Entity2> dataList1 = M_GALOR_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_GALOR_Manual_Archival_Summary_Entity> dataList2 = m_galor_Manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		Date archivalReportDate = dateformat.parse(todate);
+		List<M_GALOR_Archival_Summary_Entity1> dataList = getArchivalSummary1ByDateAndVersion(archivalReportDate, version);
+		List<M_GALOR_Archival_Summary_Entity2> dataList1 = getArchivalSummary2ByDateAndVersion(archivalReportDate, version);
+		List<M_GALOR_Manual_Archival_Summary_Entity> dataList2 = getArchivalManualSummaryByDateAndVersion(archivalReportDate, version);
 
 		if (dataList.isEmpty() && dataList1.isEmpty() && dataList2.isEmpty()) {
 			logger.warn("Service: No data found for M_GALOR report. Returning empty result.");
@@ -31088,7 +31154,7 @@ public class BRRS_M_GALOR_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_GALOR_Detail_Entity> reportData = m_galor_detail_Repo.getdatabydateList(parsedToDate);
+			List<M_GALOR_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -31153,7 +31219,7 @@ public class BRRS_M_GALOR_ReportService {
 
 	    // Fetch existing record
 	    List<M_GALOR_Manual_Summary_Entity> list =
-	            m_galor_Manual_Summary_Repo.getdatabydateList(updatedEntity.getReport_date());
+	            getManualSummaryByDate(updatedEntity.getReport_date());
 
 	    if (list.isEmpty()) {
 	        throw new RuntimeException(
@@ -31234,12 +31300,14 @@ public class BRRS_M_GALOR_ReportService {
 	                "Error while updating GALOR report fields", e);
 	    }
 
+
 	    // Audit & Save only if changes exist
 	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    if (!changes.isEmpty()) {
+	    saveManualSummaryEntity(existing);
 
-	        m_galor_Manual_Summary_Repo.saveAndFlush(existing);
+
+	    if (!changes.isEmpty()) {
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -31256,14 +31324,11 @@ public class BRRS_M_GALOR_ReportService {
 	 * Helper method to copy fields for a given row prefix (Rxx).
 	 */
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_GALOR"); // ✅ match the report name
 		System.out.println("Hello");
 		if (acctNo != null) {
-			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctnumber(acctNo);
+			M_GALOR_Detail_Entity galorEntity = findDetailByAcctNumber(acctNo);
 			if (galorEntity != null && galorEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(galorEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -31280,7 +31345,7 @@ public class BRRS_M_GALOR_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/M_GALOR"); // ✅ match the report name
 
 		if (acctNo != null) {
-			M_GALOR_Detail_Entity galorEntity = m_galor_detail_Repo.findByAcctnumber(acctNo);
+			M_GALOR_Detail_Entity galorEntity = findDetailByAcctNumber(acctNo);
 			if (galorEntity != null && galorEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(galorEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -31299,23 +31364,17 @@ public class BRRS_M_GALOR_ReportService {
 
 	    try {
 
+
 	        String acctNo = request.getParameter("acctNumber");
 	        String provisionStr = request.getParameter("acctBalanceInpula");
 	        String acctName = request.getParameter("acctName");
 	        String reportDateStr = request.getParameter("reportDate");
 
-	        logger.info("Received update for ACCT_NO: {}", acctNo);
-
-	        M_GALOR_Detail_Entity existing =
-	                m_galor_detail_Repo.findByAcctnumber(acctNo);
-
-	        if (existing == null) {
-
-	            logger.warn("No record found for ACCT_NO: {}", acctNo);
-
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                    .body("Record not found for update.");
-	        }
+			M_GALOR_Detail_Entity existing = findDetailByAcctNumber(acctNo);
+			if (existing == null) {
+				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
 
 	        // Audit copy
 	        M_GALOR_Detail_Entity oldcopy = new M_GALOR_Detail_Entity();
@@ -31351,7 +31410,7 @@ public class BRRS_M_GALOR_ReportService {
 
 	        if (isChanged) {
 
-	            m_galor_detail_Repo.save(existing);
+	            saveDetailEntity(existing);
 
 	            // Audit comparison
 	            auditService.compareEntitiesmanual(
@@ -31425,10 +31484,9 @@ public class BRRS_M_GALOR_ReportService {
 	    Date reportDate = dateformat.parse(todate);
 
 	    // Fetch data
-	    List<M_GALOR_Summary_Entity1> dataList = M_GALOR_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-	    List<M_GALOR_Summary_Entity2> dataList1 = M_GALOR_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-	    List<M_GALOR_Manual_Summary_Entity> dataList2 = m_galor_Manual_Summary_Repo
-	            .getdatabydateList(dateformat.parse(todate));
+	    List<M_GALOR_Summary_Entity1> dataList = getSummary1ByDate(reportDate);
+	    List<M_GALOR_Summary_Entity2> dataList1 = getSummary2ByDate(reportDate);
+	    List<M_GALOR_Manual_Summary_Entity> dataList2 = getManualSummaryByDate(reportDate);
 
 	    if (dataList.isEmpty() && dataList1.isEmpty() && dataList2.isEmpty()) {
 	        logger.warn("Service: No data found for M_GALOR report. Returning empty result.");
@@ -40993,14 +41051,10 @@ public class BRRS_M_GALOR_ReportService {
 		logger.info("DownloadFile: reportId={}, filename={}", reportId, filename, type, version);
 
 		// Convert string to Date
-		Date reportDate = dateformat.parse(todate);
-
-		List<M_GALOR_Archival_Summary_Entity1> dataList = M_GALOR_Archival_Summary_Repo1
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_GALOR_Archival_Summary_Entity2> dataList1 = M_GALOR_Archival_Summary_Repo2
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_GALOR_Manual_Archival_Summary_Entity> dataList2 = m_galor_Manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		Date archivalReportDate = dateformat.parse(todate);
+		List<M_GALOR_Archival_Summary_Entity1> dataList = getArchivalSummary1ByDateAndVersion(archivalReportDate, version);
+		List<M_GALOR_Archival_Summary_Entity2> dataList1 = getArchivalSummary2ByDateAndVersion(archivalReportDate, version);
+		List<M_GALOR_Manual_Archival_Summary_Entity> dataList2 = getArchivalManualSummaryByDateAndVersion(archivalReportDate, version);
 
 		if (dataList.isEmpty() && dataList1.isEmpty() && dataList2.isEmpty()) {
 			logger.warn("Service: No data found for M_GALOR report. Returning empty result.");
@@ -50574,4 +50628,15674 @@ public class BRRS_M_GALOR_ReportService {
 		}
    
 	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORSummary1RowMapper implements RowMapper<M_GALOR_Summary_Entity1> {
+		@Override
+		public M_GALOR_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Summary_Entity1 obj = new M_GALOR_Summary_Entity1();
+			obj.setR10_product(rs.getString("R10_PRODUCT"));
+			obj.setR10_botswana(rs.getBigDecimal("R10_BOTSWANA"));
+			obj.setR10_south_africa(rs.getBigDecimal("R10_SOUTH_AFRICA"));
+			obj.setR10_sadc(rs.getBigDecimal("R10_SADC"));
+			obj.setR10_usa(rs.getBigDecimal("R10_USA"));
+			obj.setR10_uk(rs.getBigDecimal("R10_UK"));
+			obj.setR10_europe(rs.getBigDecimal("R10_EUROPE"));
+			obj.setR10_india(rs.getBigDecimal("R10_INDIA"));
+			obj.setR10_sydney(rs.getBigDecimal("R10_SYDNEY"));
+			obj.setR10_uganda(rs.getBigDecimal("R10_UGANDA"));
+			obj.setR10_c10(rs.getBigDecimal("R10_C10"));
+			obj.setR10_c11(rs.getBigDecimal("R10_C11"));
+			obj.setR10_c12(rs.getBigDecimal("R10_C12"));
+			obj.setR10_c13(rs.getBigDecimal("R10_C13"));
+			obj.setR10_c14(rs.getBigDecimal("R10_C14"));
+			obj.setR10_c15(rs.getBigDecimal("R10_C15"));
+			obj.setR10_c16(rs.getBigDecimal("R10_C16"));
+			obj.setR10_total(rs.getBigDecimal("R10_TOTAL"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_botswana(rs.getBigDecimal("R11_BOTSWANA"));
+			obj.setR11_south_africa(rs.getBigDecimal("R11_SOUTH_AFRICA"));
+			obj.setR11_sadc(rs.getBigDecimal("R11_SADC"));
+			obj.setR11_usa(rs.getBigDecimal("R11_USA"));
+			obj.setR11_uk(rs.getBigDecimal("R11_UK"));
+			obj.setR11_europe(rs.getBigDecimal("R11_EUROPE"));
+			obj.setR11_india(rs.getBigDecimal("R11_INDIA"));
+			obj.setR11_sydney(rs.getBigDecimal("R11_SYDNEY"));
+			obj.setR11_uganda(rs.getBigDecimal("R11_UGANDA"));
+			obj.setR11_c10(rs.getBigDecimal("R11_C10"));
+			obj.setR11_c11(rs.getBigDecimal("R11_C11"));
+			obj.setR11_c12(rs.getBigDecimal("R11_C12"));
+			obj.setR11_c13(rs.getBigDecimal("R11_C13"));
+			obj.setR11_c14(rs.getBigDecimal("R11_C14"));
+			obj.setR11_c15(rs.getBigDecimal("R11_C15"));
+			obj.setR11_c16(rs.getBigDecimal("R11_C16"));
+			obj.setR11_total(rs.getBigDecimal("R11_TOTAL"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_botswana(rs.getBigDecimal("R12_BOTSWANA"));
+			obj.setR12_south_africa(rs.getBigDecimal("R12_SOUTH_AFRICA"));
+			obj.setR12_sadc(rs.getBigDecimal("R12_SADC"));
+			obj.setR12_usa(rs.getBigDecimal("R12_USA"));
+			obj.setR12_uk(rs.getBigDecimal("R12_UK"));
+			obj.setR12_europe(rs.getBigDecimal("R12_EUROPE"));
+			obj.setR12_india(rs.getBigDecimal("R12_INDIA"));
+			obj.setR12_sydney(rs.getBigDecimal("R12_SYDNEY"));
+			obj.setR12_uganda(rs.getBigDecimal("R12_UGANDA"));
+			obj.setR12_c10(rs.getBigDecimal("R12_C10"));
+			obj.setR12_c11(rs.getBigDecimal("R12_C11"));
+			obj.setR12_c12(rs.getBigDecimal("R12_C12"));
+			obj.setR12_c13(rs.getBigDecimal("R12_C13"));
+			obj.setR12_c14(rs.getBigDecimal("R12_C14"));
+			obj.setR12_c15(rs.getBigDecimal("R12_C15"));
+			obj.setR12_c16(rs.getBigDecimal("R12_C16"));
+			obj.setR12_total(rs.getBigDecimal("R12_TOTAL"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_botswana(rs.getBigDecimal("R13_BOTSWANA"));
+			obj.setR13_south_africa(rs.getBigDecimal("R13_SOUTH_AFRICA"));
+			obj.setR13_sadc(rs.getBigDecimal("R13_SADC"));
+			obj.setR13_usa(rs.getBigDecimal("R13_USA"));
+			obj.setR13_uk(rs.getBigDecimal("R13_UK"));
+			obj.setR13_europe(rs.getBigDecimal("R13_EUROPE"));
+			obj.setR13_india(rs.getBigDecimal("R13_INDIA"));
+			obj.setR13_sydney(rs.getBigDecimal("R13_SYDNEY"));
+			obj.setR13_uganda(rs.getBigDecimal("R13_UGANDA"));
+			obj.setR13_c10(rs.getBigDecimal("R13_C10"));
+			obj.setR13_c11(rs.getBigDecimal("R13_C11"));
+			obj.setR13_c12(rs.getBigDecimal("R13_C12"));
+			obj.setR13_c13(rs.getBigDecimal("R13_C13"));
+			obj.setR13_c14(rs.getBigDecimal("R13_C14"));
+			obj.setR13_c15(rs.getBigDecimal("R13_C15"));
+			obj.setR13_c16(rs.getBigDecimal("R13_C16"));
+			obj.setR13_total(rs.getBigDecimal("R13_TOTAL"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_botswana(rs.getBigDecimal("R14_BOTSWANA"));
+			obj.setR14_south_africa(rs.getBigDecimal("R14_SOUTH_AFRICA"));
+			obj.setR14_sadc(rs.getBigDecimal("R14_SADC"));
+			obj.setR14_usa(rs.getBigDecimal("R14_USA"));
+			obj.setR14_uk(rs.getBigDecimal("R14_UK"));
+			obj.setR14_europe(rs.getBigDecimal("R14_EUROPE"));
+			obj.setR14_india(rs.getBigDecimal("R14_INDIA"));
+			obj.setR14_sydney(rs.getBigDecimal("R14_SYDNEY"));
+			obj.setR14_uganda(rs.getBigDecimal("R14_UGANDA"));
+			obj.setR14_c10(rs.getBigDecimal("R14_C10"));
+			obj.setR14_c11(rs.getBigDecimal("R14_C11"));
+			obj.setR14_c12(rs.getBigDecimal("R14_C12"));
+			obj.setR14_c13(rs.getBigDecimal("R14_C13"));
+			obj.setR14_c14(rs.getBigDecimal("R14_C14"));
+			obj.setR14_c15(rs.getBigDecimal("R14_C15"));
+			obj.setR14_c16(rs.getBigDecimal("R14_C16"));
+			obj.setR14_total(rs.getBigDecimal("R14_TOTAL"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_botswana(rs.getBigDecimal("R15_BOTSWANA"));
+			obj.setR15_south_africa(rs.getBigDecimal("R15_SOUTH_AFRICA"));
+			obj.setR15_sadc(rs.getBigDecimal("R15_SADC"));
+			obj.setR15_usa(rs.getBigDecimal("R15_USA"));
+			obj.setR15_uk(rs.getBigDecimal("R15_UK"));
+			obj.setR15_europe(rs.getBigDecimal("R15_EUROPE"));
+			obj.setR15_india(rs.getBigDecimal("R15_INDIA"));
+			obj.setR15_sydney(rs.getBigDecimal("R15_SYDNEY"));
+			obj.setR15_uganda(rs.getBigDecimal("R15_UGANDA"));
+			obj.setR15_c10(rs.getBigDecimal("R15_C10"));
+			obj.setR15_c11(rs.getBigDecimal("R15_C11"));
+			obj.setR15_c12(rs.getBigDecimal("R15_C12"));
+			obj.setR15_c13(rs.getBigDecimal("R15_C13"));
+			obj.setR15_c14(rs.getBigDecimal("R15_C14"));
+			obj.setR15_c15(rs.getBigDecimal("R15_C15"));
+			obj.setR15_c16(rs.getBigDecimal("R15_C16"));
+			obj.setR15_total(rs.getBigDecimal("R15_TOTAL"));
+			obj.setR16_product(rs.getString("R16_PRODUCT"));
+			obj.setR16_botswana(rs.getBigDecimal("R16_BOTSWANA"));
+			obj.setR16_south_africa(rs.getBigDecimal("R16_SOUTH_AFRICA"));
+			obj.setR16_sadc(rs.getBigDecimal("R16_SADC"));
+			obj.setR16_usa(rs.getBigDecimal("R16_USA"));
+			obj.setR16_uk(rs.getBigDecimal("R16_UK"));
+			obj.setR16_europe(rs.getBigDecimal("R16_EUROPE"));
+			obj.setR16_india(rs.getBigDecimal("R16_INDIA"));
+			obj.setR16_sydney(rs.getBigDecimal("R16_SYDNEY"));
+			obj.setR16_uganda(rs.getBigDecimal("R16_UGANDA"));
+			obj.setR16_c10(rs.getBigDecimal("R16_C10"));
+			obj.setR16_c11(rs.getBigDecimal("R16_C11"));
+			obj.setR16_c12(rs.getBigDecimal("R16_C12"));
+			obj.setR16_c13(rs.getBigDecimal("R16_C13"));
+			obj.setR16_c14(rs.getBigDecimal("R16_C14"));
+			obj.setR16_c15(rs.getBigDecimal("R16_C15"));
+			obj.setR16_c16(rs.getBigDecimal("R16_C16"));
+			obj.setR16_total(rs.getBigDecimal("R16_TOTAL"));
+			obj.setR17_product(rs.getString("R17_PRODUCT"));
+			obj.setR17_botswana(rs.getBigDecimal("R17_BOTSWANA"));
+			obj.setR17_south_africa(rs.getBigDecimal("R17_SOUTH_AFRICA"));
+			obj.setR17_sadc(rs.getBigDecimal("R17_SADC"));
+			obj.setR17_usa(rs.getBigDecimal("R17_USA"));
+			obj.setR17_uk(rs.getBigDecimal("R17_UK"));
+			obj.setR17_europe(rs.getBigDecimal("R17_EUROPE"));
+			obj.setR17_india(rs.getBigDecimal("R17_INDIA"));
+			obj.setR17_sydney(rs.getBigDecimal("R17_SYDNEY"));
+			obj.setR17_uganda(rs.getBigDecimal("R17_UGANDA"));
+			obj.setR17_c10(rs.getBigDecimal("R17_C10"));
+			obj.setR17_c11(rs.getBigDecimal("R17_C11"));
+			obj.setR17_c12(rs.getBigDecimal("R17_C12"));
+			obj.setR17_c13(rs.getBigDecimal("R17_C13"));
+			obj.setR17_c14(rs.getBigDecimal("R17_C14"));
+			obj.setR17_c15(rs.getBigDecimal("R17_C15"));
+			obj.setR17_c16(rs.getBigDecimal("R17_C16"));
+			obj.setR17_total(rs.getBigDecimal("R17_TOTAL"));
+			obj.setR18_product(rs.getString("R18_PRODUCT"));
+			obj.setR18_botswana(rs.getBigDecimal("R18_BOTSWANA"));
+			obj.setR18_south_africa(rs.getBigDecimal("R18_SOUTH_AFRICA"));
+			obj.setR18_sadc(rs.getBigDecimal("R18_SADC"));
+			obj.setR18_usa(rs.getBigDecimal("R18_USA"));
+			obj.setR18_uk(rs.getBigDecimal("R18_UK"));
+			obj.setR18_europe(rs.getBigDecimal("R18_EUROPE"));
+			obj.setR18_india(rs.getBigDecimal("R18_INDIA"));
+			obj.setR18_sydney(rs.getBigDecimal("R18_SYDNEY"));
+			obj.setR18_uganda(rs.getBigDecimal("R18_UGANDA"));
+			obj.setR18_c10(rs.getBigDecimal("R18_C10"));
+			obj.setR18_c11(rs.getBigDecimal("R18_C11"));
+			obj.setR18_c12(rs.getBigDecimal("R18_C12"));
+			obj.setR18_c13(rs.getBigDecimal("R18_C13"));
+			obj.setR18_c14(rs.getBigDecimal("R18_C14"));
+			obj.setR18_c15(rs.getBigDecimal("R18_C15"));
+			obj.setR18_c16(rs.getBigDecimal("R18_C16"));
+			obj.setR18_total(rs.getBigDecimal("R18_TOTAL"));
+			obj.setR19_product(rs.getString("R19_PRODUCT"));
+			obj.setR19_botswana(rs.getBigDecimal("R19_BOTSWANA"));
+			obj.setR19_south_africa(rs.getBigDecimal("R19_SOUTH_AFRICA"));
+			obj.setR19_sadc(rs.getBigDecimal("R19_SADC"));
+			obj.setR19_usa(rs.getBigDecimal("R19_USA"));
+			obj.setR19_uk(rs.getBigDecimal("R19_UK"));
+			obj.setR19_europe(rs.getBigDecimal("R19_EUROPE"));
+			obj.setR19_india(rs.getBigDecimal("R19_INDIA"));
+			obj.setR19_sydney(rs.getBigDecimal("R19_SYDNEY"));
+			obj.setR19_uganda(rs.getBigDecimal("R19_UGANDA"));
+			obj.setR19_c10(rs.getBigDecimal("R19_C10"));
+			obj.setR19_c11(rs.getBigDecimal("R19_C11"));
+			obj.setR19_c12(rs.getBigDecimal("R19_C12"));
+			obj.setR19_c13(rs.getBigDecimal("R19_C13"));
+			obj.setR19_c14(rs.getBigDecimal("R19_C14"));
+			obj.setR19_c15(rs.getBigDecimal("R19_C15"));
+			obj.setR19_c16(rs.getBigDecimal("R19_C16"));
+			obj.setR19_total(rs.getBigDecimal("R19_TOTAL"));
+			obj.setR20_product(rs.getString("R20_PRODUCT"));
+			obj.setR20_botswana(rs.getBigDecimal("R20_BOTSWANA"));
+			obj.setR20_south_africa(rs.getBigDecimal("R20_SOUTH_AFRICA"));
+			obj.setR20_sadc(rs.getBigDecimal("R20_SADC"));
+			obj.setR20_usa(rs.getBigDecimal("R20_USA"));
+			obj.setR20_uk(rs.getBigDecimal("R20_UK"));
+			obj.setR20_europe(rs.getBigDecimal("R20_EUROPE"));
+			obj.setR20_india(rs.getBigDecimal("R20_INDIA"));
+			obj.setR20_sydney(rs.getBigDecimal("R20_SYDNEY"));
+			obj.setR20_uganda(rs.getBigDecimal("R20_UGANDA"));
+			obj.setR20_c10(rs.getBigDecimal("R20_C10"));
+			obj.setR20_c11(rs.getBigDecimal("R20_C11"));
+			obj.setR20_c12(rs.getBigDecimal("R20_C12"));
+			obj.setR20_c13(rs.getBigDecimal("R20_C13"));
+			obj.setR20_c14(rs.getBigDecimal("R20_C14"));
+			obj.setR20_c15(rs.getBigDecimal("R20_C15"));
+			obj.setR20_c16(rs.getBigDecimal("R20_C16"));
+			obj.setR20_total(rs.getBigDecimal("R20_TOTAL"));
+			obj.setR21_product(rs.getString("R21_PRODUCT"));
+			obj.setR21_botswana(rs.getBigDecimal("R21_BOTSWANA"));
+			obj.setR21_south_africa(rs.getBigDecimal("R21_SOUTH_AFRICA"));
+			obj.setR21_sadc(rs.getBigDecimal("R21_SADC"));
+			obj.setR21_usa(rs.getBigDecimal("R21_USA"));
+			obj.setR21_uk(rs.getBigDecimal("R21_UK"));
+			obj.setR21_europe(rs.getBigDecimal("R21_EUROPE"));
+			obj.setR21_india(rs.getBigDecimal("R21_INDIA"));
+			obj.setR21_sydney(rs.getBigDecimal("R21_SYDNEY"));
+			obj.setR21_uganda(rs.getBigDecimal("R21_UGANDA"));
+			obj.setR21_c10(rs.getBigDecimal("R21_C10"));
+			obj.setR21_c11(rs.getBigDecimal("R21_C11"));
+			obj.setR21_c12(rs.getBigDecimal("R21_C12"));
+			obj.setR21_c13(rs.getBigDecimal("R21_C13"));
+			obj.setR21_c14(rs.getBigDecimal("R21_C14"));
+			obj.setR21_c15(rs.getBigDecimal("R21_C15"));
+			obj.setR21_c16(rs.getBigDecimal("R21_C16"));
+			obj.setR21_total(rs.getBigDecimal("R21_TOTAL"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_botswana(rs.getBigDecimal("R24_BOTSWANA"));
+			obj.setR24_south_africa(rs.getBigDecimal("R24_SOUTH_AFRICA"));
+			obj.setR24_sadc(rs.getBigDecimal("R24_SADC"));
+			obj.setR24_usa(rs.getBigDecimal("R24_USA"));
+			obj.setR24_uk(rs.getBigDecimal("R24_UK"));
+			obj.setR24_europe(rs.getBigDecimal("R24_EUROPE"));
+			obj.setR24_india(rs.getBigDecimal("R24_INDIA"));
+			obj.setR24_sydney(rs.getBigDecimal("R24_SYDNEY"));
+			obj.setR24_uganda(rs.getBigDecimal("R24_UGANDA"));
+			obj.setR24_c10(rs.getBigDecimal("R24_C10"));
+			obj.setR24_c11(rs.getBigDecimal("R24_C11"));
+			obj.setR24_c12(rs.getBigDecimal("R24_C12"));
+			obj.setR24_c13(rs.getBigDecimal("R24_C13"));
+			obj.setR24_c14(rs.getBigDecimal("R24_C14"));
+			obj.setR24_c15(rs.getBigDecimal("R24_C15"));
+			obj.setR24_c16(rs.getBigDecimal("R24_C16"));
+			obj.setR24_total(rs.getBigDecimal("R24_TOTAL"));
+			obj.setR25_product(rs.getString("R25_PRODUCT"));
+			obj.setR25_botswana(rs.getBigDecimal("R25_BOTSWANA"));
+			obj.setR25_south_africa(rs.getBigDecimal("R25_SOUTH_AFRICA"));
+			obj.setR25_sadc(rs.getBigDecimal("R25_SADC"));
+			obj.setR25_usa(rs.getBigDecimal("R25_USA"));
+			obj.setR25_uk(rs.getBigDecimal("R25_UK"));
+			obj.setR25_europe(rs.getBigDecimal("R25_EUROPE"));
+			obj.setR25_india(rs.getBigDecimal("R25_INDIA"));
+			obj.setR25_sydney(rs.getBigDecimal("R25_SYDNEY"));
+			obj.setR25_uganda(rs.getBigDecimal("R25_UGANDA"));
+			obj.setR25_c10(rs.getBigDecimal("R25_C10"));
+			obj.setR25_c11(rs.getBigDecimal("R25_C11"));
+			obj.setR25_c12(rs.getBigDecimal("R25_C12"));
+			obj.setR25_c13(rs.getBigDecimal("R25_C13"));
+			obj.setR25_c14(rs.getBigDecimal("R25_C14"));
+			obj.setR25_c15(rs.getBigDecimal("R25_C15"));
+			obj.setR25_c16(rs.getBigDecimal("R25_C16"));
+			obj.setR25_total(rs.getBigDecimal("R25_TOTAL"));
+			obj.setR26_product(rs.getString("R26_PRODUCT"));
+			obj.setR26_botswana(rs.getBigDecimal("R26_BOTSWANA"));
+			obj.setR26_south_africa(rs.getBigDecimal("R26_SOUTH_AFRICA"));
+			obj.setR26_sadc(rs.getBigDecimal("R26_SADC"));
+			obj.setR26_usa(rs.getBigDecimal("R26_USA"));
+			obj.setR26_uk(rs.getBigDecimal("R26_UK"));
+			obj.setR26_europe(rs.getBigDecimal("R26_EUROPE"));
+			obj.setR26_india(rs.getBigDecimal("R26_INDIA"));
+			obj.setR26_sydney(rs.getBigDecimal("R26_SYDNEY"));
+			obj.setR26_uganda(rs.getBigDecimal("R26_UGANDA"));
+			obj.setR26_c10(rs.getBigDecimal("R26_C10"));
+			obj.setR26_c11(rs.getBigDecimal("R26_C11"));
+			obj.setR26_c12(rs.getBigDecimal("R26_C12"));
+			obj.setR26_c13(rs.getBigDecimal("R26_C13"));
+			obj.setR26_c14(rs.getBigDecimal("R26_C14"));
+			obj.setR26_c15(rs.getBigDecimal("R26_C15"));
+			obj.setR26_c16(rs.getBigDecimal("R26_C16"));
+			obj.setR26_total(rs.getBigDecimal("R26_TOTAL"));
+			obj.setR27_product(rs.getString("R27_PRODUCT"));
+			obj.setR27_botswana(rs.getBigDecimal("R27_BOTSWANA"));
+			obj.setR27_south_africa(rs.getBigDecimal("R27_SOUTH_AFRICA"));
+			obj.setR27_sadc(rs.getBigDecimal("R27_SADC"));
+			obj.setR27_usa(rs.getBigDecimal("R27_USA"));
+			obj.setR27_uk(rs.getBigDecimal("R27_UK"));
+			obj.setR27_europe(rs.getBigDecimal("R27_EUROPE"));
+			obj.setR27_india(rs.getBigDecimal("R27_INDIA"));
+			obj.setR27_sydney(rs.getBigDecimal("R27_SYDNEY"));
+			obj.setR27_uganda(rs.getBigDecimal("R27_UGANDA"));
+			obj.setR27_c10(rs.getBigDecimal("R27_C10"));
+			obj.setR27_c11(rs.getBigDecimal("R27_C11"));
+			obj.setR27_c12(rs.getBigDecimal("R27_C12"));
+			obj.setR27_c13(rs.getBigDecimal("R27_C13"));
+			obj.setR27_c14(rs.getBigDecimal("R27_C14"));
+			obj.setR27_c15(rs.getBigDecimal("R27_C15"));
+			obj.setR27_c16(rs.getBigDecimal("R27_C16"));
+			obj.setR27_total(rs.getBigDecimal("R27_TOTAL"));
+			obj.setR28_product(rs.getString("R28_PRODUCT"));
+			obj.setR28_botswana(rs.getBigDecimal("R28_BOTSWANA"));
+			obj.setR28_south_africa(rs.getBigDecimal("R28_SOUTH_AFRICA"));
+			obj.setR28_sadc(rs.getBigDecimal("R28_SADC"));
+			obj.setR28_usa(rs.getBigDecimal("R28_USA"));
+			obj.setR28_uk(rs.getBigDecimal("R28_UK"));
+			obj.setR28_europe(rs.getBigDecimal("R28_EUROPE"));
+			obj.setR28_india(rs.getBigDecimal("R28_INDIA"));
+			obj.setR28_sydney(rs.getBigDecimal("R28_SYDNEY"));
+			obj.setR28_uganda(rs.getBigDecimal("R28_UGANDA"));
+			obj.setR28_c10(rs.getBigDecimal("R28_C10"));
+			obj.setR28_c11(rs.getBigDecimal("R28_C11"));
+			obj.setR28_c12(rs.getBigDecimal("R28_C12"));
+			obj.setR28_c13(rs.getBigDecimal("R28_C13"));
+			obj.setR28_c14(rs.getBigDecimal("R28_C14"));
+			obj.setR28_c15(rs.getBigDecimal("R28_C15"));
+			obj.setR28_c16(rs.getBigDecimal("R28_C16"));
+			obj.setR28_total(rs.getBigDecimal("R28_TOTAL"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_botswana(rs.getBigDecimal("R29_BOTSWANA"));
+			obj.setR29_south_africa(rs.getBigDecimal("R29_SOUTH_AFRICA"));
+			obj.setR29_sadc(rs.getBigDecimal("R29_SADC"));
+			obj.setR29_usa(rs.getBigDecimal("R29_USA"));
+			obj.setR29_uk(rs.getBigDecimal("R29_UK"));
+			obj.setR29_europe(rs.getBigDecimal("R29_EUROPE"));
+			obj.setR29_india(rs.getBigDecimal("R29_INDIA"));
+			obj.setR29_sydney(rs.getBigDecimal("R29_SYDNEY"));
+			obj.setR29_uganda(rs.getBigDecimal("R29_UGANDA"));
+			obj.setR29_c10(rs.getBigDecimal("R29_C10"));
+			obj.setR29_c11(rs.getBigDecimal("R29_C11"));
+			obj.setR29_c12(rs.getBigDecimal("R29_C12"));
+			obj.setR29_c13(rs.getBigDecimal("R29_C13"));
+			obj.setR29_c14(rs.getBigDecimal("R29_C14"));
+			obj.setR29_c15(rs.getBigDecimal("R29_C15"));
+			obj.setR29_c16(rs.getBigDecimal("R29_C16"));
+			obj.setR29_total(rs.getBigDecimal("R29_TOTAL"));
+			obj.setR30_product(rs.getString("R30_PRODUCT"));
+			obj.setR30_botswana(rs.getBigDecimal("R30_BOTSWANA"));
+			obj.setR30_south_africa(rs.getBigDecimal("R30_SOUTH_AFRICA"));
+			obj.setR30_sadc(rs.getBigDecimal("R30_SADC"));
+			obj.setR30_usa(rs.getBigDecimal("R30_USA"));
+			obj.setR30_uk(rs.getBigDecimal("R30_UK"));
+			obj.setR30_europe(rs.getBigDecimal("R30_EUROPE"));
+			obj.setR30_india(rs.getBigDecimal("R30_INDIA"));
+			obj.setR30_sydney(rs.getBigDecimal("R30_SYDNEY"));
+			obj.setR30_uganda(rs.getBigDecimal("R30_UGANDA"));
+			obj.setR30_c10(rs.getBigDecimal("R30_C10"));
+			obj.setR30_c11(rs.getBigDecimal("R30_C11"));
+			obj.setR30_c12(rs.getBigDecimal("R30_C12"));
+			obj.setR30_c13(rs.getBigDecimal("R30_C13"));
+			obj.setR30_c14(rs.getBigDecimal("R30_C14"));
+			obj.setR30_c15(rs.getBigDecimal("R30_C15"));
+			obj.setR30_c16(rs.getBigDecimal("R30_C16"));
+			obj.setR30_total(rs.getBigDecimal("R30_TOTAL"));
+			obj.setR31_product(rs.getString("R31_PRODUCT"));
+			obj.setR31_botswana(rs.getBigDecimal("R31_BOTSWANA"));
+			obj.setR31_south_africa(rs.getBigDecimal("R31_SOUTH_AFRICA"));
+			obj.setR31_sadc(rs.getBigDecimal("R31_SADC"));
+			obj.setR31_usa(rs.getBigDecimal("R31_USA"));
+			obj.setR31_uk(rs.getBigDecimal("R31_UK"));
+			obj.setR31_europe(rs.getBigDecimal("R31_EUROPE"));
+			obj.setR31_india(rs.getBigDecimal("R31_INDIA"));
+			obj.setR31_sydney(rs.getBigDecimal("R31_SYDNEY"));
+			obj.setR31_uganda(rs.getBigDecimal("R31_UGANDA"));
+			obj.setR31_c10(rs.getBigDecimal("R31_C10"));
+			obj.setR31_c11(rs.getBigDecimal("R31_C11"));
+			obj.setR31_c12(rs.getBigDecimal("R31_C12"));
+			obj.setR31_c13(rs.getBigDecimal("R31_C13"));
+			obj.setR31_c14(rs.getBigDecimal("R31_C14"));
+			obj.setR31_c15(rs.getBigDecimal("R31_C15"));
+			obj.setR31_c16(rs.getBigDecimal("R31_C16"));
+			obj.setR31_total(rs.getBigDecimal("R31_TOTAL"));
+			obj.setR32_product(rs.getString("R32_PRODUCT"));
+			obj.setR32_botswana(rs.getBigDecimal("R32_BOTSWANA"));
+			obj.setR32_south_africa(rs.getBigDecimal("R32_SOUTH_AFRICA"));
+			obj.setR32_sadc(rs.getBigDecimal("R32_SADC"));
+			obj.setR32_usa(rs.getBigDecimal("R32_USA"));
+			obj.setR32_uk(rs.getBigDecimal("R32_UK"));
+			obj.setR32_europe(rs.getBigDecimal("R32_EUROPE"));
+			obj.setR32_india(rs.getBigDecimal("R32_INDIA"));
+			obj.setR32_sydney(rs.getBigDecimal("R32_SYDNEY"));
+			obj.setR32_uganda(rs.getBigDecimal("R32_UGANDA"));
+			obj.setR32_c10(rs.getBigDecimal("R32_C10"));
+			obj.setR32_c11(rs.getBigDecimal("R32_C11"));
+			obj.setR32_c12(rs.getBigDecimal("R32_C12"));
+			obj.setR32_c13(rs.getBigDecimal("R32_C13"));
+			obj.setR32_c14(rs.getBigDecimal("R32_C14"));
+			obj.setR32_c15(rs.getBigDecimal("R32_C15"));
+			obj.setR32_c16(rs.getBigDecimal("R32_C16"));
+			obj.setR32_total(rs.getBigDecimal("R32_TOTAL"));
+			obj.setR33_product(rs.getString("R33_PRODUCT"));
+			obj.setR33_botswana(rs.getBigDecimal("R33_BOTSWANA"));
+			obj.setR33_south_africa(rs.getBigDecimal("R33_SOUTH_AFRICA"));
+			obj.setR33_sadc(rs.getBigDecimal("R33_SADC"));
+			obj.setR33_usa(rs.getBigDecimal("R33_USA"));
+			obj.setR33_uk(rs.getBigDecimal("R33_UK"));
+			obj.setR33_europe(rs.getBigDecimal("R33_EUROPE"));
+			obj.setR33_india(rs.getBigDecimal("R33_INDIA"));
+			obj.setR33_sydney(rs.getBigDecimal("R33_SYDNEY"));
+			obj.setR33_uganda(rs.getBigDecimal("R33_UGANDA"));
+			obj.setR33_c10(rs.getBigDecimal("R33_C10"));
+			obj.setR33_c11(rs.getBigDecimal("R33_C11"));
+			obj.setR33_c12(rs.getBigDecimal("R33_C12"));
+			obj.setR33_c13(rs.getBigDecimal("R33_C13"));
+			obj.setR33_c14(rs.getBigDecimal("R33_C14"));
+			obj.setR33_c15(rs.getBigDecimal("R33_C15"));
+			obj.setR33_c16(rs.getBigDecimal("R33_C16"));
+			obj.setR33_total(rs.getBigDecimal("R33_TOTAL"));
+			obj.setR34_product(rs.getString("R34_PRODUCT"));
+			obj.setR34_botswana(rs.getBigDecimal("R34_BOTSWANA"));
+			obj.setR34_south_africa(rs.getBigDecimal("R34_SOUTH_AFRICA"));
+			obj.setR34_sadc(rs.getBigDecimal("R34_SADC"));
+			obj.setR34_usa(rs.getBigDecimal("R34_USA"));
+			obj.setR34_uk(rs.getBigDecimal("R34_UK"));
+			obj.setR34_europe(rs.getBigDecimal("R34_EUROPE"));
+			obj.setR34_india(rs.getBigDecimal("R34_INDIA"));
+			obj.setR34_sydney(rs.getBigDecimal("R34_SYDNEY"));
+			obj.setR34_uganda(rs.getBigDecimal("R34_UGANDA"));
+			obj.setR34_c10(rs.getBigDecimal("R34_C10"));
+			obj.setR34_c11(rs.getBigDecimal("R34_C11"));
+			obj.setR34_c12(rs.getBigDecimal("R34_C12"));
+			obj.setR34_c13(rs.getBigDecimal("R34_C13"));
+			obj.setR34_c14(rs.getBigDecimal("R34_C14"));
+			obj.setR34_c15(rs.getBigDecimal("R34_C15"));
+			obj.setR34_c16(rs.getBigDecimal("R34_C16"));
+			obj.setR34_total(rs.getBigDecimal("R34_TOTAL"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_botswana(rs.getBigDecimal("R35_BOTSWANA"));
+			obj.setR35_south_africa(rs.getBigDecimal("R35_SOUTH_AFRICA"));
+			obj.setR35_sadc(rs.getBigDecimal("R35_SADC"));
+			obj.setR35_usa(rs.getBigDecimal("R35_USA"));
+			obj.setR35_uk(rs.getBigDecimal("R35_UK"));
+			obj.setR35_europe(rs.getBigDecimal("R35_EUROPE"));
+			obj.setR35_india(rs.getBigDecimal("R35_INDIA"));
+			obj.setR35_sydney(rs.getBigDecimal("R35_SYDNEY"));
+			obj.setR35_uganda(rs.getBigDecimal("R35_UGANDA"));
+			obj.setR35_c10(rs.getBigDecimal("R35_C10"));
+			obj.setR35_c11(rs.getBigDecimal("R35_C11"));
+			obj.setR35_c12(rs.getBigDecimal("R35_C12"));
+			obj.setR35_c13(rs.getBigDecimal("R35_C13"));
+			obj.setR35_c14(rs.getBigDecimal("R35_C14"));
+			obj.setR35_c15(rs.getBigDecimal("R35_C15"));
+			obj.setR35_c16(rs.getBigDecimal("R35_C16"));
+			obj.setR35_total(rs.getBigDecimal("R35_TOTAL"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_botswana(rs.getBigDecimal("R36_BOTSWANA"));
+			obj.setR36_south_africa(rs.getBigDecimal("R36_SOUTH_AFRICA"));
+			obj.setR36_sadc(rs.getBigDecimal("R36_SADC"));
+			obj.setR36_usa(rs.getBigDecimal("R36_USA"));
+			obj.setR36_uk(rs.getBigDecimal("R36_UK"));
+			obj.setR36_europe(rs.getBigDecimal("R36_EUROPE"));
+			obj.setR36_india(rs.getBigDecimal("R36_INDIA"));
+			obj.setR36_sydney(rs.getBigDecimal("R36_SYDNEY"));
+			obj.setR36_uganda(rs.getBigDecimal("R36_UGANDA"));
+			obj.setR36_c10(rs.getBigDecimal("R36_C10"));
+			obj.setR36_c11(rs.getBigDecimal("R36_C11"));
+			obj.setR36_c12(rs.getBigDecimal("R36_C12"));
+			obj.setR36_c13(rs.getBigDecimal("R36_C13"));
+			obj.setR36_c14(rs.getBigDecimal("R36_C14"));
+			obj.setR36_c15(rs.getBigDecimal("R36_C15"));
+			obj.setR36_c16(rs.getBigDecimal("R36_C16"));
+			obj.setR36_total(rs.getBigDecimal("R36_TOTAL"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_botswana(rs.getBigDecimal("R37_BOTSWANA"));
+			obj.setR37_south_africa(rs.getBigDecimal("R37_SOUTH_AFRICA"));
+			obj.setR37_sadc(rs.getBigDecimal("R37_SADC"));
+			obj.setR37_usa(rs.getBigDecimal("R37_USA"));
+			obj.setR37_uk(rs.getBigDecimal("R37_UK"));
+			obj.setR37_europe(rs.getBigDecimal("R37_EUROPE"));
+			obj.setR37_india(rs.getBigDecimal("R37_INDIA"));
+			obj.setR37_sydney(rs.getBigDecimal("R37_SYDNEY"));
+			obj.setR37_uganda(rs.getBigDecimal("R37_UGANDA"));
+			obj.setR37_c10(rs.getBigDecimal("R37_C10"));
+			obj.setR37_c11(rs.getBigDecimal("R37_C11"));
+			obj.setR37_c12(rs.getBigDecimal("R37_C12"));
+			obj.setR37_c13(rs.getBigDecimal("R37_C13"));
+			obj.setR37_c14(rs.getBigDecimal("R37_C14"));
+			obj.setR37_c15(rs.getBigDecimal("R37_C15"));
+			obj.setR37_c16(rs.getBigDecimal("R37_C16"));
+			obj.setR37_total(rs.getBigDecimal("R37_TOTAL"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_botswana(rs.getBigDecimal("R38_BOTSWANA"));
+			obj.setR38_south_africa(rs.getBigDecimal("R38_SOUTH_AFRICA"));
+			obj.setR38_sadc(rs.getBigDecimal("R38_SADC"));
+			obj.setR38_usa(rs.getBigDecimal("R38_USA"));
+			obj.setR38_uk(rs.getBigDecimal("R38_UK"));
+			obj.setR38_europe(rs.getBigDecimal("R38_EUROPE"));
+			obj.setR38_india(rs.getBigDecimal("R38_INDIA"));
+			obj.setR38_sydney(rs.getBigDecimal("R38_SYDNEY"));
+			obj.setR38_uganda(rs.getBigDecimal("R38_UGANDA"));
+			obj.setR38_c10(rs.getBigDecimal("R38_C10"));
+			obj.setR38_c11(rs.getBigDecimal("R38_C11"));
+			obj.setR38_c12(rs.getBigDecimal("R38_C12"));
+			obj.setR38_c13(rs.getBigDecimal("R38_C13"));
+			obj.setR38_c14(rs.getBigDecimal("R38_C14"));
+			obj.setR38_c15(rs.getBigDecimal("R38_C15"));
+			obj.setR38_c16(rs.getBigDecimal("R38_C16"));
+			obj.setR38_total(rs.getBigDecimal("R38_TOTAL"));
+			obj.setR39_product(rs.getString("R39_PRODUCT"));
+			obj.setR39_botswana(rs.getBigDecimal("R39_BOTSWANA"));
+			obj.setR39_south_africa(rs.getBigDecimal("R39_SOUTH_AFRICA"));
+			obj.setR39_sadc(rs.getBigDecimal("R39_SADC"));
+			obj.setR39_usa(rs.getBigDecimal("R39_USA"));
+			obj.setR39_uk(rs.getBigDecimal("R39_UK"));
+			obj.setR39_europe(rs.getBigDecimal("R39_EUROPE"));
+			obj.setR39_india(rs.getBigDecimal("R39_INDIA"));
+			obj.setR39_sydney(rs.getBigDecimal("R39_SYDNEY"));
+			obj.setR39_uganda(rs.getBigDecimal("R39_UGANDA"));
+			obj.setR39_c10(rs.getBigDecimal("R39_C10"));
+			obj.setR39_c11(rs.getBigDecimal("R39_C11"));
+			obj.setR39_c12(rs.getBigDecimal("R39_C12"));
+			obj.setR39_c13(rs.getBigDecimal("R39_C13"));
+			obj.setR39_c14(rs.getBigDecimal("R39_C14"));
+			obj.setR39_c15(rs.getBigDecimal("R39_C15"));
+			obj.setR39_c16(rs.getBigDecimal("R39_C16"));
+			obj.setR39_total(rs.getBigDecimal("R39_TOTAL"));
+			obj.setR40_product(rs.getString("R40_PRODUCT"));
+			obj.setR40_botswana(rs.getBigDecimal("R40_BOTSWANA"));
+			obj.setR40_south_africa(rs.getBigDecimal("R40_SOUTH_AFRICA"));
+			obj.setR40_sadc(rs.getBigDecimal("R40_SADC"));
+			obj.setR40_usa(rs.getBigDecimal("R40_USA"));
+			obj.setR40_uk(rs.getBigDecimal("R40_UK"));
+			obj.setR40_europe(rs.getBigDecimal("R40_EUROPE"));
+			obj.setR40_india(rs.getBigDecimal("R40_INDIA"));
+			obj.setR40_sydney(rs.getBigDecimal("R40_SYDNEY"));
+			obj.setR40_uganda(rs.getBigDecimal("R40_UGANDA"));
+			obj.setR40_c10(rs.getBigDecimal("R40_C10"));
+			obj.setR40_c11(rs.getBigDecimal("R40_C11"));
+			obj.setR40_c12(rs.getBigDecimal("R40_C12"));
+			obj.setR40_c13(rs.getBigDecimal("R40_C13"));
+			obj.setR40_c14(rs.getBigDecimal("R40_C14"));
+			obj.setR40_c15(rs.getBigDecimal("R40_C15"));
+			obj.setR40_c16(rs.getBigDecimal("R40_C16"));
+			obj.setR40_total(rs.getBigDecimal("R40_TOTAL"));
+			obj.setR41_product(rs.getString("R41_PRODUCT"));
+			obj.setR41_botswana(rs.getBigDecimal("R41_BOTSWANA"));
+			obj.setR41_south_africa(rs.getBigDecimal("R41_SOUTH_AFRICA"));
+			obj.setR41_sadc(rs.getBigDecimal("R41_SADC"));
+			obj.setR41_usa(rs.getBigDecimal("R41_USA"));
+			obj.setR41_uk(rs.getBigDecimal("R41_UK"));
+			obj.setR41_europe(rs.getBigDecimal("R41_EUROPE"));
+			obj.setR41_india(rs.getBigDecimal("R41_INDIA"));
+			obj.setR41_sydney(rs.getBigDecimal("R41_SYDNEY"));
+			obj.setR41_uganda(rs.getBigDecimal("R41_UGANDA"));
+			obj.setR41_c10(rs.getBigDecimal("R41_C10"));
+			obj.setR41_c11(rs.getBigDecimal("R41_C11"));
+			obj.setR41_c12(rs.getBigDecimal("R41_C12"));
+			obj.setR41_c13(rs.getBigDecimal("R41_C13"));
+			obj.setR41_c14(rs.getBigDecimal("R41_C14"));
+			obj.setR41_c15(rs.getBigDecimal("R41_C15"));
+			obj.setR41_c16(rs.getBigDecimal("R41_C16"));
+			obj.setR41_total(rs.getBigDecimal("R41_TOTAL"));
+			obj.setR42_product(rs.getString("R42_PRODUCT"));
+			obj.setR42_botswana(rs.getBigDecimal("R42_BOTSWANA"));
+			obj.setR42_south_africa(rs.getBigDecimal("R42_SOUTH_AFRICA"));
+			obj.setR42_sadc(rs.getBigDecimal("R42_SADC"));
+			obj.setR42_usa(rs.getBigDecimal("R42_USA"));
+			obj.setR42_uk(rs.getBigDecimal("R42_UK"));
+			obj.setR42_europe(rs.getBigDecimal("R42_EUROPE"));
+			obj.setR42_india(rs.getBigDecimal("R42_INDIA"));
+			obj.setR42_sydney(rs.getBigDecimal("R42_SYDNEY"));
+			obj.setR42_uganda(rs.getBigDecimal("R42_UGANDA"));
+			obj.setR42_c10(rs.getBigDecimal("R42_C10"));
+			obj.setR42_c11(rs.getBigDecimal("R42_C11"));
+			obj.setR42_c12(rs.getBigDecimal("R42_C12"));
+			obj.setR42_c13(rs.getBigDecimal("R42_C13"));
+			obj.setR42_c14(rs.getBigDecimal("R42_C14"));
+			obj.setR42_c15(rs.getBigDecimal("R42_C15"));
+			obj.setR42_c16(rs.getBigDecimal("R42_C16"));
+			obj.setR42_total(rs.getBigDecimal("R42_TOTAL"));
+			obj.setR43_product(rs.getString("R43_PRODUCT"));
+			obj.setR43_botswana(rs.getBigDecimal("R43_BOTSWANA"));
+			obj.setR43_south_africa(rs.getBigDecimal("R43_SOUTH_AFRICA"));
+			obj.setR43_sadc(rs.getBigDecimal("R43_SADC"));
+			obj.setR43_usa(rs.getBigDecimal("R43_USA"));
+			obj.setR43_uk(rs.getBigDecimal("R43_UK"));
+			obj.setR43_europe(rs.getBigDecimal("R43_EUROPE"));
+			obj.setR43_india(rs.getBigDecimal("R43_INDIA"));
+			obj.setR43_sydney(rs.getBigDecimal("R43_SYDNEY"));
+			obj.setR43_uganda(rs.getBigDecimal("R43_UGANDA"));
+			obj.setR43_c10(rs.getBigDecimal("R43_C10"));
+			obj.setR43_c11(rs.getBigDecimal("R43_C11"));
+			obj.setR43_c12(rs.getBigDecimal("R43_C12"));
+			obj.setR43_c13(rs.getBigDecimal("R43_C13"));
+			obj.setR43_c14(rs.getBigDecimal("R43_C14"));
+			obj.setR43_c15(rs.getBigDecimal("R43_C15"));
+			obj.setR43_c16(rs.getBigDecimal("R43_C16"));
+			obj.setR43_total(rs.getBigDecimal("R43_TOTAL"));
+			obj.setR44_product(rs.getString("R44_PRODUCT"));
+			obj.setR44_botswana(rs.getBigDecimal("R44_BOTSWANA"));
+			obj.setR44_south_africa(rs.getBigDecimal("R44_SOUTH_AFRICA"));
+			obj.setR44_sadc(rs.getBigDecimal("R44_SADC"));
+			obj.setR44_usa(rs.getBigDecimal("R44_USA"));
+			obj.setR44_uk(rs.getBigDecimal("R44_UK"));
+			obj.setR44_europe(rs.getBigDecimal("R44_EUROPE"));
+			obj.setR44_india(rs.getBigDecimal("R44_INDIA"));
+			obj.setR44_sydney(rs.getBigDecimal("R44_SYDNEY"));
+			obj.setR44_uganda(rs.getBigDecimal("R44_UGANDA"));
+			obj.setR44_c10(rs.getBigDecimal("R44_C10"));
+			obj.setR44_c11(rs.getBigDecimal("R44_C11"));
+			obj.setR44_c12(rs.getBigDecimal("R44_C12"));
+			obj.setR44_c13(rs.getBigDecimal("R44_C13"));
+			obj.setR44_c14(rs.getBigDecimal("R44_C14"));
+			obj.setR44_c15(rs.getBigDecimal("R44_C15"));
+			obj.setR44_c16(rs.getBigDecimal("R44_C16"));
+			obj.setR44_total(rs.getBigDecimal("R44_TOTAL"));
+			obj.setR45_product(rs.getString("R45_PRODUCT"));
+			obj.setR45_botswana(rs.getBigDecimal("R45_BOTSWANA"));
+			obj.setR45_south_africa(rs.getBigDecimal("R45_SOUTH_AFRICA"));
+			obj.setR45_sadc(rs.getBigDecimal("R45_SADC"));
+			obj.setR45_usa(rs.getBigDecimal("R45_USA"));
+			obj.setR45_uk(rs.getBigDecimal("R45_UK"));
+			obj.setR45_europe(rs.getBigDecimal("R45_EUROPE"));
+			obj.setR45_india(rs.getBigDecimal("R45_INDIA"));
+			obj.setR45_sydney(rs.getBigDecimal("R45_SYDNEY"));
+			obj.setR45_uganda(rs.getBigDecimal("R45_UGANDA"));
+			obj.setR45_c10(rs.getBigDecimal("R45_C10"));
+			obj.setR45_c11(rs.getBigDecimal("R45_C11"));
+			obj.setR45_c12(rs.getBigDecimal("R45_C12"));
+			obj.setR45_c13(rs.getBigDecimal("R45_C13"));
+			obj.setR45_c14(rs.getBigDecimal("R45_C14"));
+			obj.setR45_c15(rs.getBigDecimal("R45_C15"));
+			obj.setR45_c16(rs.getBigDecimal("R45_C16"));
+			obj.setR45_total(rs.getBigDecimal("R45_TOTAL"));
+			obj.setR46_product(rs.getString("R46_PRODUCT"));
+			obj.setR46_botswana(rs.getBigDecimal("R46_BOTSWANA"));
+			obj.setR46_south_africa(rs.getBigDecimal("R46_SOUTH_AFRICA"));
+			obj.setR46_sadc(rs.getBigDecimal("R46_SADC"));
+			obj.setR46_usa(rs.getBigDecimal("R46_USA"));
+			obj.setR46_uk(rs.getBigDecimal("R46_UK"));
+			obj.setR46_europe(rs.getBigDecimal("R46_EUROPE"));
+			obj.setR46_india(rs.getBigDecimal("R46_INDIA"));
+			obj.setR46_sydney(rs.getBigDecimal("R46_SYDNEY"));
+			obj.setR46_uganda(rs.getBigDecimal("R46_UGANDA"));
+			obj.setR46_c10(rs.getBigDecimal("R46_C10"));
+			obj.setR46_c11(rs.getBigDecimal("R46_C11"));
+			obj.setR46_c12(rs.getBigDecimal("R46_C12"));
+			obj.setR46_c13(rs.getBigDecimal("R46_C13"));
+			obj.setR46_c14(rs.getBigDecimal("R46_C14"));
+			obj.setR46_c15(rs.getBigDecimal("R46_C15"));
+			obj.setR46_c16(rs.getBigDecimal("R46_C16"));
+			obj.setR46_total(rs.getBigDecimal("R46_TOTAL"));
+			obj.setR47_product(rs.getString("R47_PRODUCT"));
+			obj.setR47_botswana(rs.getBigDecimal("R47_BOTSWANA"));
+			obj.setR47_south_africa(rs.getBigDecimal("R47_SOUTH_AFRICA"));
+			obj.setR47_sadc(rs.getBigDecimal("R47_SADC"));
+			obj.setR47_usa(rs.getBigDecimal("R47_USA"));
+			obj.setR47_uk(rs.getBigDecimal("R47_UK"));
+			obj.setR47_europe(rs.getBigDecimal("R47_EUROPE"));
+			obj.setR47_india(rs.getBigDecimal("R47_INDIA"));
+			obj.setR47_sydney(rs.getBigDecimal("R47_SYDNEY"));
+			obj.setR47_uganda(rs.getBigDecimal("R47_UGANDA"));
+			obj.setR47_c10(rs.getBigDecimal("R47_C10"));
+			obj.setR47_c11(rs.getBigDecimal("R47_C11"));
+			obj.setR47_c12(rs.getBigDecimal("R47_C12"));
+			obj.setR47_c13(rs.getBigDecimal("R47_C13"));
+			obj.setR47_c14(rs.getBigDecimal("R47_C14"));
+			obj.setR47_c15(rs.getBigDecimal("R47_C15"));
+			obj.setR47_c16(rs.getBigDecimal("R47_C16"));
+			obj.setR47_total(rs.getBigDecimal("R47_TOTAL"));
+			obj.setR48_product(rs.getString("R48_PRODUCT"));
+			obj.setR48_botswana(rs.getBigDecimal("R48_BOTSWANA"));
+			obj.setR48_south_africa(rs.getBigDecimal("R48_SOUTH_AFRICA"));
+			obj.setR48_sadc(rs.getBigDecimal("R48_SADC"));
+			obj.setR48_usa(rs.getBigDecimal("R48_USA"));
+			obj.setR48_uk(rs.getBigDecimal("R48_UK"));
+			obj.setR48_europe(rs.getBigDecimal("R48_EUROPE"));
+			obj.setR48_india(rs.getBigDecimal("R48_INDIA"));
+			obj.setR48_sydney(rs.getBigDecimal("R48_SYDNEY"));
+			obj.setR48_uganda(rs.getBigDecimal("R48_UGANDA"));
+			obj.setR48_c10(rs.getBigDecimal("R48_C10"));
+			obj.setR48_c11(rs.getBigDecimal("R48_C11"));
+			obj.setR48_c12(rs.getBigDecimal("R48_C12"));
+			obj.setR48_c13(rs.getBigDecimal("R48_C13"));
+			obj.setR48_c14(rs.getBigDecimal("R48_C14"));
+			obj.setR48_c15(rs.getBigDecimal("R48_C15"));
+			obj.setR48_c16(rs.getBigDecimal("R48_C16"));
+			obj.setR48_total(rs.getBigDecimal("R48_TOTAL"));
+			obj.setR49_product(rs.getString("R49_PRODUCT"));
+			obj.setR49_botswana(rs.getBigDecimal("R49_BOTSWANA"));
+			obj.setR49_south_africa(rs.getBigDecimal("R49_SOUTH_AFRICA"));
+			obj.setR49_sadc(rs.getBigDecimal("R49_SADC"));
+			obj.setR49_usa(rs.getBigDecimal("R49_USA"));
+			obj.setR49_uk(rs.getBigDecimal("R49_UK"));
+			obj.setR49_europe(rs.getBigDecimal("R49_EUROPE"));
+			obj.setR49_india(rs.getBigDecimal("R49_INDIA"));
+			obj.setR49_sydney(rs.getBigDecimal("R49_SYDNEY"));
+			obj.setR49_uganda(rs.getBigDecimal("R49_UGANDA"));
+			obj.setR49_c10(rs.getBigDecimal("R49_C10"));
+			obj.setR49_c11(rs.getBigDecimal("R49_C11"));
+			obj.setR49_c12(rs.getBigDecimal("R49_C12"));
+			obj.setR49_c13(rs.getBigDecimal("R49_C13"));
+			obj.setR49_c14(rs.getBigDecimal("R49_C14"));
+			obj.setR49_c15(rs.getBigDecimal("R49_C15"));
+			obj.setR49_c16(rs.getBigDecimal("R49_C16"));
+			obj.setR49_total(rs.getBigDecimal("R49_TOTAL"));
+			obj.setR50_product(rs.getString("R50_PRODUCT"));
+			obj.setR50_botswana(rs.getBigDecimal("R50_BOTSWANA"));
+			obj.setR50_south_africa(rs.getBigDecimal("R50_SOUTH_AFRICA"));
+			obj.setR50_sadc(rs.getBigDecimal("R50_SADC"));
+			obj.setR50_usa(rs.getBigDecimal("R50_USA"));
+			obj.setR50_uk(rs.getBigDecimal("R50_UK"));
+			obj.setR50_europe(rs.getBigDecimal("R50_EUROPE"));
+			obj.setR50_india(rs.getBigDecimal("R50_INDIA"));
+			obj.setR50_sydney(rs.getBigDecimal("R50_SYDNEY"));
+			obj.setR50_uganda(rs.getBigDecimal("R50_UGANDA"));
+			obj.setR50_c10(rs.getBigDecimal("R50_C10"));
+			obj.setR50_c11(rs.getBigDecimal("R50_C11"));
+			obj.setR50_c12(rs.getBigDecimal("R50_C12"));
+			obj.setR50_c13(rs.getBigDecimal("R50_C13"));
+			obj.setR50_c14(rs.getBigDecimal("R50_C14"));
+			obj.setR50_c15(rs.getBigDecimal("R50_C15"));
+			obj.setR50_c16(rs.getBigDecimal("R50_C16"));
+			obj.setR50_total(rs.getBigDecimal("R50_TOTAL"));
+			obj.setR51_product(rs.getString("R51_PRODUCT"));
+			obj.setR51_botswana(rs.getBigDecimal("R51_BOTSWANA"));
+			obj.setR51_south_africa(rs.getBigDecimal("R51_SOUTH_AFRICA"));
+			obj.setR51_sadc(rs.getBigDecimal("R51_SADC"));
+			obj.setR51_usa(rs.getBigDecimal("R51_USA"));
+			obj.setR51_uk(rs.getBigDecimal("R51_UK"));
+			obj.setR51_europe(rs.getBigDecimal("R51_EUROPE"));
+			obj.setR51_india(rs.getBigDecimal("R51_INDIA"));
+			obj.setR51_sydney(rs.getBigDecimal("R51_SYDNEY"));
+			obj.setR51_uganda(rs.getBigDecimal("R51_UGANDA"));
+			obj.setR51_c10(rs.getBigDecimal("R51_C10"));
+			obj.setR51_c11(rs.getBigDecimal("R51_C11"));
+			obj.setR51_c12(rs.getBigDecimal("R51_C12"));
+			obj.setR51_c13(rs.getBigDecimal("R51_C13"));
+			obj.setR51_c14(rs.getBigDecimal("R51_C14"));
+			obj.setR51_c15(rs.getBigDecimal("R51_C15"));
+			obj.setR51_c16(rs.getBigDecimal("R51_C16"));
+			obj.setR51_total(rs.getBigDecimal("R51_TOTAL"));
+			obj.setR52_product(rs.getString("R52_PRODUCT"));
+			obj.setR52_botswana(rs.getBigDecimal("R52_BOTSWANA"));
+			obj.setR52_south_africa(rs.getBigDecimal("R52_SOUTH_AFRICA"));
+			obj.setR52_sadc(rs.getBigDecimal("R52_SADC"));
+			obj.setR52_usa(rs.getBigDecimal("R52_USA"));
+			obj.setR52_uk(rs.getBigDecimal("R52_UK"));
+			obj.setR52_europe(rs.getBigDecimal("R52_EUROPE"));
+			obj.setR52_india(rs.getBigDecimal("R52_INDIA"));
+			obj.setR52_sydney(rs.getBigDecimal("R52_SYDNEY"));
+			obj.setR52_uganda(rs.getBigDecimal("R52_UGANDA"));
+			obj.setR52_c10(rs.getBigDecimal("R52_C10"));
+			obj.setR52_c11(rs.getBigDecimal("R52_C11"));
+			obj.setR52_c12(rs.getBigDecimal("R52_C12"));
+			obj.setR52_c13(rs.getBigDecimal("R52_C13"));
+			obj.setR52_c14(rs.getBigDecimal("R52_C14"));
+			obj.setR52_c15(rs.getBigDecimal("R52_C15"));
+			obj.setR52_c16(rs.getBigDecimal("R52_C16"));
+			obj.setR52_total(rs.getBigDecimal("R52_TOTAL"));
+			obj.setR53_product(rs.getString("R53_PRODUCT"));
+			obj.setR53_botswana(rs.getBigDecimal("R53_BOTSWANA"));
+			obj.setR53_south_africa(rs.getBigDecimal("R53_SOUTH_AFRICA"));
+			obj.setR53_sadc(rs.getBigDecimal("R53_SADC"));
+			obj.setR53_usa(rs.getBigDecimal("R53_USA"));
+			obj.setR53_uk(rs.getBigDecimal("R53_UK"));
+			obj.setR53_europe(rs.getBigDecimal("R53_EUROPE"));
+			obj.setR53_india(rs.getBigDecimal("R53_INDIA"));
+			obj.setR53_sydney(rs.getBigDecimal("R53_SYDNEY"));
+			obj.setR53_uganda(rs.getBigDecimal("R53_UGANDA"));
+			obj.setR53_c10(rs.getBigDecimal("R53_C10"));
+			obj.setR53_c11(rs.getBigDecimal("R53_C11"));
+			obj.setR53_c12(rs.getBigDecimal("R53_C12"));
+			obj.setR53_c13(rs.getBigDecimal("R53_C13"));
+			obj.setR53_c14(rs.getBigDecimal("R53_C14"));
+			obj.setR53_c15(rs.getBigDecimal("R53_C15"));
+			obj.setR53_c16(rs.getBigDecimal("R53_C16"));
+			obj.setR53_total(rs.getBigDecimal("R53_TOTAL"));
+			obj.setR54_product(rs.getString("R54_PRODUCT"));
+			obj.setR54_botswana(rs.getBigDecimal("R54_BOTSWANA"));
+			obj.setR54_south_africa(rs.getBigDecimal("R54_SOUTH_AFRICA"));
+			obj.setR54_sadc(rs.getBigDecimal("R54_SADC"));
+			obj.setR54_usa(rs.getBigDecimal("R54_USA"));
+			obj.setR54_uk(rs.getBigDecimal("R54_UK"));
+			obj.setR54_europe(rs.getBigDecimal("R54_EUROPE"));
+			obj.setR54_india(rs.getBigDecimal("R54_INDIA"));
+			obj.setR54_sydney(rs.getBigDecimal("R54_SYDNEY"));
+			obj.setR54_uganda(rs.getBigDecimal("R54_UGANDA"));
+			obj.setR54_c10(rs.getBigDecimal("R54_C10"));
+			obj.setR54_c11(rs.getBigDecimal("R54_C11"));
+			obj.setR54_c12(rs.getBigDecimal("R54_C12"));
+			obj.setR54_c13(rs.getBigDecimal("R54_C13"));
+			obj.setR54_c14(rs.getBigDecimal("R54_C14"));
+			obj.setR54_c15(rs.getBigDecimal("R54_C15"));
+			obj.setR54_c16(rs.getBigDecimal("R54_C16"));
+			obj.setR54_total(rs.getBigDecimal("R54_TOTAL"));
+			obj.setR55_product(rs.getString("R55_PRODUCT"));
+			obj.setR55_botswana(rs.getBigDecimal("R55_BOTSWANA"));
+			obj.setR55_south_africa(rs.getBigDecimal("R55_SOUTH_AFRICA"));
+			obj.setR55_sadc(rs.getBigDecimal("R55_SADC"));
+			obj.setR55_usa(rs.getBigDecimal("R55_USA"));
+			obj.setR55_uk(rs.getBigDecimal("R55_UK"));
+			obj.setR55_europe(rs.getBigDecimal("R55_EUROPE"));
+			obj.setR55_india(rs.getBigDecimal("R55_INDIA"));
+			obj.setR55_sydney(rs.getBigDecimal("R55_SYDNEY"));
+			obj.setR55_uganda(rs.getBigDecimal("R55_UGANDA"));
+			obj.setR55_c10(rs.getBigDecimal("R55_C10"));
+			obj.setR55_c11(rs.getBigDecimal("R55_C11"));
+			obj.setR55_c12(rs.getBigDecimal("R55_C12"));
+			obj.setR55_c13(rs.getBigDecimal("R55_C13"));
+			obj.setR55_c14(rs.getBigDecimal("R55_C14"));
+			obj.setR55_c15(rs.getBigDecimal("R55_C15"));
+			obj.setR55_c16(rs.getBigDecimal("R55_C16"));
+			obj.setR55_total(rs.getBigDecimal("R55_TOTAL"));
+			obj.setR56_product(rs.getString("R56_PRODUCT"));
+			obj.setR56_botswana(rs.getBigDecimal("R56_BOTSWANA"));
+			obj.setR56_south_africa(rs.getBigDecimal("R56_SOUTH_AFRICA"));
+			obj.setR56_sadc(rs.getBigDecimal("R56_SADC"));
+			obj.setR56_usa(rs.getBigDecimal("R56_USA"));
+			obj.setR56_uk(rs.getBigDecimal("R56_UK"));
+			obj.setR56_europe(rs.getBigDecimal("R56_EUROPE"));
+			obj.setR56_india(rs.getBigDecimal("R56_INDIA"));
+			obj.setR56_sydney(rs.getBigDecimal("R56_SYDNEY"));
+			obj.setR56_uganda(rs.getBigDecimal("R56_UGANDA"));
+			obj.setR56_c10(rs.getBigDecimal("R56_C10"));
+			obj.setR56_c11(rs.getBigDecimal("R56_C11"));
+			obj.setR56_c12(rs.getBigDecimal("R56_C12"));
+			obj.setR56_c13(rs.getBigDecimal("R56_C13"));
+			obj.setR56_c14(rs.getBigDecimal("R56_C14"));
+			obj.setR56_c15(rs.getBigDecimal("R56_C15"));
+			obj.setR56_c16(rs.getBigDecimal("R56_C16"));
+			obj.setR56_total(rs.getBigDecimal("R56_TOTAL"));
+			obj.setR59_product(rs.getString("R59_PRODUCT"));
+			obj.setR59_botswana(rs.getBigDecimal("R59_BOTSWANA"));
+			obj.setR59_south_africa(rs.getBigDecimal("R59_SOUTH_AFRICA"));
+			obj.setR59_sadc(rs.getBigDecimal("R59_SADC"));
+			obj.setR59_usa(rs.getBigDecimal("R59_USA"));
+			obj.setR59_uk(rs.getBigDecimal("R59_UK"));
+			obj.setR59_europe(rs.getBigDecimal("R59_EUROPE"));
+			obj.setR59_india(rs.getBigDecimal("R59_INDIA"));
+			obj.setR59_sydney(rs.getBigDecimal("R59_SYDNEY"));
+			obj.setR59_uganda(rs.getBigDecimal("R59_UGANDA"));
+			obj.setR59_c10(rs.getBigDecimal("R59_C10"));
+			obj.setR59_c11(rs.getBigDecimal("R59_C11"));
+			obj.setR59_c12(rs.getBigDecimal("R59_C12"));
+			obj.setR59_c13(rs.getBigDecimal("R59_C13"));
+			obj.setR59_c14(rs.getBigDecimal("R59_C14"));
+			obj.setR59_c15(rs.getBigDecimal("R59_C15"));
+			obj.setR59_c16(rs.getBigDecimal("R59_C16"));
+			obj.setR59_total(rs.getBigDecimal("R59_TOTAL"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getString("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Summary_Entity1 {
+		private String r10_product;
+		private BigDecimal r10_botswana;
+		private BigDecimal r10_south_africa;
+		private BigDecimal r10_sadc;
+		private BigDecimal r10_usa;
+		private BigDecimal r10_uk;
+		private BigDecimal r10_europe;
+		private BigDecimal r10_india;
+		private BigDecimal r10_sydney;
+		private BigDecimal r10_uganda;
+		private BigDecimal r10_c10;
+		private BigDecimal r10_c11;
+		private BigDecimal r10_c12;
+		private BigDecimal r10_c13;
+		private BigDecimal r10_c14;
+		private BigDecimal r10_c15;
+		private BigDecimal r10_c16;
+		private BigDecimal r10_total;
+		private String r11_product;
+		private BigDecimal r11_botswana;
+		private BigDecimal r11_south_africa;
+		private BigDecimal r11_sadc;
+		private BigDecimal r11_usa;
+		private BigDecimal r11_uk;
+		private BigDecimal r11_europe;
+		private BigDecimal r11_india;
+		private BigDecimal r11_sydney;
+		private BigDecimal r11_uganda;
+		private BigDecimal r11_c10;
+		private BigDecimal r11_c11;
+		private BigDecimal r11_c12;
+		private BigDecimal r11_c13;
+		private BigDecimal r11_c14;
+		private BigDecimal r11_c15;
+		private BigDecimal r11_c16;
+		private BigDecimal r11_total;
+		private String r12_product;
+		private BigDecimal r12_botswana;
+		private BigDecimal r12_south_africa;
+		private BigDecimal r12_sadc;
+		private BigDecimal r12_usa;
+		private BigDecimal r12_uk;
+		private BigDecimal r12_europe;
+		private BigDecimal r12_india;
+		private BigDecimal r12_sydney;
+		private BigDecimal r12_uganda;
+		private BigDecimal r12_c10;
+		private BigDecimal r12_c11;
+		private BigDecimal r12_c12;
+		private BigDecimal r12_c13;
+		private BigDecimal r12_c14;
+		private BigDecimal r12_c15;
+		private BigDecimal r12_c16;
+		private BigDecimal r12_total;
+		private String r13_product;
+		private BigDecimal r13_botswana;
+		private BigDecimal r13_south_africa;
+		private BigDecimal r13_sadc;
+		private BigDecimal r13_usa;
+		private BigDecimal r13_uk;
+		private BigDecimal r13_europe;
+		private BigDecimal r13_india;
+		private BigDecimal r13_sydney;
+		private BigDecimal r13_uganda;
+		private BigDecimal r13_c10;
+		private BigDecimal r13_c11;
+		private BigDecimal r13_c12;
+		private BigDecimal r13_c13;
+		private BigDecimal r13_c14;
+		private BigDecimal r13_c15;
+		private BigDecimal r13_c16;
+		private BigDecimal r13_total;
+		private String r14_product;
+		private BigDecimal r14_botswana;
+		private BigDecimal r14_south_africa;
+		private BigDecimal r14_sadc;
+		private BigDecimal r14_usa;
+		private BigDecimal r14_uk;
+		private BigDecimal r14_europe;
+		private BigDecimal r14_india;
+		private BigDecimal r14_sydney;
+		private BigDecimal r14_uganda;
+		private BigDecimal r14_c10;
+		private BigDecimal r14_c11;
+		private BigDecimal r14_c12;
+		private BigDecimal r14_c13;
+		private BigDecimal r14_c14;
+		private BigDecimal r14_c15;
+		private BigDecimal r14_c16;
+		private BigDecimal r14_total;
+		private String r15_product;
+		private BigDecimal r15_botswana;
+		private BigDecimal r15_south_africa;
+		private BigDecimal r15_sadc;
+		private BigDecimal r15_usa;
+		private BigDecimal r15_uk;
+		private BigDecimal r15_europe;
+		private BigDecimal r15_india;
+		private BigDecimal r15_sydney;
+		private BigDecimal r15_uganda;
+		private BigDecimal r15_c10;
+		private BigDecimal r15_c11;
+		private BigDecimal r15_c12;
+		private BigDecimal r15_c13;
+		private BigDecimal r15_c14;
+		private BigDecimal r15_c15;
+		private BigDecimal r15_c16;
+		private BigDecimal r15_total;
+		private String r16_product;
+		private BigDecimal r16_botswana;
+		private BigDecimal r16_south_africa;
+		private BigDecimal r16_sadc;
+		private BigDecimal r16_usa;
+		private BigDecimal r16_uk;
+		private BigDecimal r16_europe;
+		private BigDecimal r16_india;
+		private BigDecimal r16_sydney;
+		private BigDecimal r16_uganda;
+		private BigDecimal r16_c10;
+		private BigDecimal r16_c11;
+		private BigDecimal r16_c12;
+		private BigDecimal r16_c13;
+		private BigDecimal r16_c14;
+		private BigDecimal r16_c15;
+		private BigDecimal r16_c16;
+		private BigDecimal r16_total;
+		private String r17_product;
+		private BigDecimal r17_botswana;
+		private BigDecimal r17_south_africa;
+		private BigDecimal r17_sadc;
+		private BigDecimal r17_usa;
+		private BigDecimal r17_uk;
+		private BigDecimal r17_europe;
+		private BigDecimal r17_india;
+		private BigDecimal r17_sydney;
+		private BigDecimal r17_uganda;
+		private BigDecimal r17_c10;
+		private BigDecimal r17_c11;
+		private BigDecimal r17_c12;
+		private BigDecimal r17_c13;
+		private BigDecimal r17_c14;
+		private BigDecimal r17_c15;
+		private BigDecimal r17_c16;
+		private BigDecimal r17_total;
+		private String r18_product;
+		private BigDecimal r18_botswana;
+		private BigDecimal r18_south_africa;
+		private BigDecimal r18_sadc;
+		private BigDecimal r18_usa;
+		private BigDecimal r18_uk;
+		private BigDecimal r18_europe;
+		private BigDecimal r18_india;
+		private BigDecimal r18_sydney;
+		private BigDecimal r18_uganda;
+		private BigDecimal r18_c10;
+		private BigDecimal r18_c11;
+		private BigDecimal r18_c12;
+		private BigDecimal r18_c13;
+		private BigDecimal r18_c14;
+		private BigDecimal r18_c15;
+		private BigDecimal r18_c16;
+		private BigDecimal r18_total;
+		private String r19_product;
+		private BigDecimal r19_botswana;
+		private BigDecimal r19_south_africa;
+		private BigDecimal r19_sadc;
+		private BigDecimal r19_usa;
+		private BigDecimal r19_uk;
+		private BigDecimal r19_europe;
+		private BigDecimal r19_india;
+		private BigDecimal r19_sydney;
+		private BigDecimal r19_uganda;
+		private BigDecimal r19_c10;
+		private BigDecimal r19_c11;
+		private BigDecimal r19_c12;
+		private BigDecimal r19_c13;
+		private BigDecimal r19_c14;
+		private BigDecimal r19_c15;
+		private BigDecimal r19_c16;
+		private BigDecimal r19_total;
+		private String r20_product;
+		private BigDecimal r20_botswana;
+		private BigDecimal r20_south_africa;
+		private BigDecimal r20_sadc;
+		private BigDecimal r20_usa;
+		private BigDecimal r20_uk;
+		private BigDecimal r20_europe;
+		private BigDecimal r20_india;
+		private BigDecimal r20_sydney;
+		private BigDecimal r20_uganda;
+		private BigDecimal r20_c10;
+		private BigDecimal r20_c11;
+		private BigDecimal r20_c12;
+		private BigDecimal r20_c13;
+		private BigDecimal r20_c14;
+		private BigDecimal r20_c15;
+		private BigDecimal r20_c16;
+		private BigDecimal r20_total;
+		private String r21_product;
+		private BigDecimal r21_botswana;
+		private BigDecimal r21_south_africa;
+		private BigDecimal r21_sadc;
+		private BigDecimal r21_usa;
+		private BigDecimal r21_uk;
+		private BigDecimal r21_europe;
+		private BigDecimal r21_india;
+		private BigDecimal r21_sydney;
+		private BigDecimal r21_uganda;
+		private BigDecimal r21_c10;
+		private BigDecimal r21_c11;
+		private BigDecimal r21_c12;
+		private BigDecimal r21_c13;
+		private BigDecimal r21_c14;
+		private BigDecimal r21_c15;
+		private BigDecimal r21_c16;
+		private BigDecimal r21_total;
+		private String r24_product;
+		private BigDecimal r24_botswana;
+		private BigDecimal r24_south_africa;
+		private BigDecimal r24_sadc;
+		private BigDecimal r24_usa;
+		private BigDecimal r24_uk;
+		private BigDecimal r24_europe;
+		private BigDecimal r24_india;
+		private BigDecimal r24_sydney;
+		private BigDecimal r24_uganda;
+		private BigDecimal r24_c10;
+		private BigDecimal r24_c11;
+		private BigDecimal r24_c12;
+		private BigDecimal r24_c13;
+		private BigDecimal r24_c14;
+		private BigDecimal r24_c15;
+		private BigDecimal r24_c16;
+		private BigDecimal r24_total;
+		private String r25_product;
+		private BigDecimal r25_botswana;
+		private BigDecimal r25_south_africa;
+		private BigDecimal r25_sadc;
+		private BigDecimal r25_usa;
+		private BigDecimal r25_uk;
+		private BigDecimal r25_europe;
+		private BigDecimal r25_india;
+		private BigDecimal r25_sydney;
+		private BigDecimal r25_uganda;
+		private BigDecimal r25_c10;
+		private BigDecimal r25_c11;
+		private BigDecimal r25_c12;
+		private BigDecimal r25_c13;
+		private BigDecimal r25_c14;
+		private BigDecimal r25_c15;
+		private BigDecimal r25_c16;
+		private BigDecimal r25_total;
+		private String r26_product;
+		private BigDecimal r26_botswana;
+		private BigDecimal r26_south_africa;
+		private BigDecimal r26_sadc;
+		private BigDecimal r26_usa;
+		private BigDecimal r26_uk;
+		private BigDecimal r26_europe;
+		private BigDecimal r26_india;
+		private BigDecimal r26_sydney;
+		private BigDecimal r26_uganda;
+		private BigDecimal r26_c10;
+		private BigDecimal r26_c11;
+		private BigDecimal r26_c12;
+		private BigDecimal r26_c13;
+		private BigDecimal r26_c14;
+		private BigDecimal r26_c15;
+		private BigDecimal r26_c16;
+		private BigDecimal r26_total;
+		private String r27_product;
+		private BigDecimal r27_botswana;
+		private BigDecimal r27_south_africa;
+		private BigDecimal r27_sadc;
+		private BigDecimal r27_usa;
+		private BigDecimal r27_uk;
+		private BigDecimal r27_europe;
+		private BigDecimal r27_india;
+		private BigDecimal r27_sydney;
+		private BigDecimal r27_uganda;
+		private BigDecimal r27_c10;
+		private BigDecimal r27_c11;
+		private BigDecimal r27_c12;
+		private BigDecimal r27_c13;
+		private BigDecimal r27_c14;
+		private BigDecimal r27_c15;
+		private BigDecimal r27_c16;
+		private BigDecimal r27_total;
+		private String r28_product;
+		private BigDecimal r28_botswana;
+		private BigDecimal r28_south_africa;
+		private BigDecimal r28_sadc;
+		private BigDecimal r28_usa;
+		private BigDecimal r28_uk;
+		private BigDecimal r28_europe;
+		private BigDecimal r28_india;
+		private BigDecimal r28_sydney;
+		private BigDecimal r28_uganda;
+		private BigDecimal r28_c10;
+		private BigDecimal r28_c11;
+		private BigDecimal r28_c12;
+		private BigDecimal r28_c13;
+		private BigDecimal r28_c14;
+		private BigDecimal r28_c15;
+		private BigDecimal r28_c16;
+		private BigDecimal r28_total;
+		private String r29_product;
+		private BigDecimal r29_botswana;
+		private BigDecimal r29_south_africa;
+		private BigDecimal r29_sadc;
+		private BigDecimal r29_usa;
+		private BigDecimal r29_uk;
+		private BigDecimal r29_europe;
+		private BigDecimal r29_india;
+		private BigDecimal r29_sydney;
+		private BigDecimal r29_uganda;
+		private BigDecimal r29_c10;
+		private BigDecimal r29_c11;
+		private BigDecimal r29_c12;
+		private BigDecimal r29_c13;
+		private BigDecimal r29_c14;
+		private BigDecimal r29_c15;
+		private BigDecimal r29_c16;
+		private BigDecimal r29_total;
+		private String r30_product;
+		private BigDecimal r30_botswana;
+		private BigDecimal r30_south_africa;
+		private BigDecimal r30_sadc;
+		private BigDecimal r30_usa;
+		private BigDecimal r30_uk;
+		private BigDecimal r30_europe;
+		private BigDecimal r30_india;
+		private BigDecimal r30_sydney;
+		private BigDecimal r30_uganda;
+		private BigDecimal r30_c10;
+		private BigDecimal r30_c11;
+		private BigDecimal r30_c12;
+		private BigDecimal r30_c13;
+		private BigDecimal r30_c14;
+		private BigDecimal r30_c15;
+		private BigDecimal r30_c16;
+		private BigDecimal r30_total;
+		private String r31_product;
+		private BigDecimal r31_botswana;
+		private BigDecimal r31_south_africa;
+		private BigDecimal r31_sadc;
+		private BigDecimal r31_usa;
+		private BigDecimal r31_uk;
+		private BigDecimal r31_europe;
+		private BigDecimal r31_india;
+		private BigDecimal r31_sydney;
+		private BigDecimal r31_uganda;
+		private BigDecimal r31_c10;
+		private BigDecimal r31_c11;
+		private BigDecimal r31_c12;
+		private BigDecimal r31_c13;
+		private BigDecimal r31_c14;
+		private BigDecimal r31_c15;
+		private BigDecimal r31_c16;
+		private BigDecimal r31_total;
+		private String r32_product;
+		private BigDecimal r32_botswana;
+		private BigDecimal r32_south_africa;
+		private BigDecimal r32_sadc;
+		private BigDecimal r32_usa;
+		private BigDecimal r32_uk;
+		private BigDecimal r32_europe;
+		private BigDecimal r32_india;
+		private BigDecimal r32_sydney;
+		private BigDecimal r32_uganda;
+		private BigDecimal r32_c10;
+		private BigDecimal r32_c11;
+		private BigDecimal r32_c12;
+		private BigDecimal r32_c13;
+		private BigDecimal r32_c14;
+		private BigDecimal r32_c15;
+		private BigDecimal r32_c16;
+		private BigDecimal r32_total;
+		private String r33_product;
+		private BigDecimal r33_botswana;
+		private BigDecimal r33_south_africa;
+		private BigDecimal r33_sadc;
+		private BigDecimal r33_usa;
+		private BigDecimal r33_uk;
+		private BigDecimal r33_europe;
+		private BigDecimal r33_india;
+		private BigDecimal r33_sydney;
+		private BigDecimal r33_uganda;
+		private BigDecimal r33_c10;
+		private BigDecimal r33_c11;
+		private BigDecimal r33_c12;
+		private BigDecimal r33_c13;
+		private BigDecimal r33_c14;
+		private BigDecimal r33_c15;
+		private BigDecimal r33_c16;
+		private BigDecimal r33_total;
+		private String r34_product;
+		private BigDecimal r34_botswana;
+		private BigDecimal r34_south_africa;
+		private BigDecimal r34_sadc;
+		private BigDecimal r34_usa;
+		private BigDecimal r34_uk;
+		private BigDecimal r34_europe;
+		private BigDecimal r34_india;
+		private BigDecimal r34_sydney;
+		private BigDecimal r34_uganda;
+		private BigDecimal r34_c10;
+		private BigDecimal r34_c11;
+		private BigDecimal r34_c12;
+		private BigDecimal r34_c13;
+		private BigDecimal r34_c14;
+		private BigDecimal r34_c15;
+		private BigDecimal r34_c16;
+		private BigDecimal r34_total;
+		private String r35_product;
+		private BigDecimal r35_botswana;
+		private BigDecimal r35_south_africa;
+		private BigDecimal r35_sadc;
+		private BigDecimal r35_usa;
+		private BigDecimal r35_uk;
+		private BigDecimal r35_europe;
+		private BigDecimal r35_india;
+		private BigDecimal r35_sydney;
+		private BigDecimal r35_uganda;
+		private BigDecimal r35_c10;
+		private BigDecimal r35_c11;
+		private BigDecimal r35_c12;
+		private BigDecimal r35_c13;
+		private BigDecimal r35_c14;
+		private BigDecimal r35_c15;
+		private BigDecimal r35_c16;
+		private BigDecimal r35_total;
+		private String r36_product;
+		private BigDecimal r36_botswana;
+		private BigDecimal r36_south_africa;
+		private BigDecimal r36_sadc;
+		private BigDecimal r36_usa;
+		private BigDecimal r36_uk;
+		private BigDecimal r36_europe;
+		private BigDecimal r36_india;
+		private BigDecimal r36_sydney;
+		private BigDecimal r36_uganda;
+		private BigDecimal r36_c10;
+		private BigDecimal r36_c11;
+		private BigDecimal r36_c12;
+		private BigDecimal r36_c13;
+		private BigDecimal r36_c14;
+		private BigDecimal r36_c15;
+		private BigDecimal r36_c16;
+		private BigDecimal r36_total;
+		private String r37_product;
+		private BigDecimal r37_botswana;
+		private BigDecimal r37_south_africa;
+		private BigDecimal r37_sadc;
+		private BigDecimal r37_usa;
+		private BigDecimal r37_uk;
+		private BigDecimal r37_europe;
+		private BigDecimal r37_india;
+		private BigDecimal r37_sydney;
+		private BigDecimal r37_uganda;
+		private BigDecimal r37_c10;
+		private BigDecimal r37_c11;
+		private BigDecimal r37_c12;
+		private BigDecimal r37_c13;
+		private BigDecimal r37_c14;
+		private BigDecimal r37_c15;
+		private BigDecimal r37_c16;
+		private BigDecimal r37_total;
+		private String r38_product;
+		private BigDecimal r38_botswana;
+		private BigDecimal r38_south_africa;
+		private BigDecimal r38_sadc;
+		private BigDecimal r38_usa;
+		private BigDecimal r38_uk;
+		private BigDecimal r38_europe;
+		private BigDecimal r38_india;
+		private BigDecimal r38_sydney;
+		private BigDecimal r38_uganda;
+		private BigDecimal r38_c10;
+		private BigDecimal r38_c11;
+		private BigDecimal r38_c12;
+		private BigDecimal r38_c13;
+		private BigDecimal r38_c14;
+		private BigDecimal r38_c15;
+		private BigDecimal r38_c16;
+		private BigDecimal r38_total;
+		private String r39_product;
+		private BigDecimal r39_botswana;
+		private BigDecimal r39_south_africa;
+		private BigDecimal r39_sadc;
+		private BigDecimal r39_usa;
+		private BigDecimal r39_uk;
+		private BigDecimal r39_europe;
+		private BigDecimal r39_india;
+		private BigDecimal r39_sydney;
+		private BigDecimal r39_uganda;
+		private BigDecimal r39_c10;
+		private BigDecimal r39_c11;
+		private BigDecimal r39_c12;
+		private BigDecimal r39_c13;
+		private BigDecimal r39_c14;
+		private BigDecimal r39_c15;
+		private BigDecimal r39_c16;
+		private BigDecimal r39_total;
+		private String r40_product;
+		private BigDecimal r40_botswana;
+		private BigDecimal r40_south_africa;
+		private BigDecimal r40_sadc;
+		private BigDecimal r40_usa;
+		private BigDecimal r40_uk;
+		private BigDecimal r40_europe;
+		private BigDecimal r40_india;
+		private BigDecimal r40_sydney;
+		private BigDecimal r40_uganda;
+		private BigDecimal r40_c10;
+		private BigDecimal r40_c11;
+		private BigDecimal r40_c12;
+		private BigDecimal r40_c13;
+		private BigDecimal r40_c14;
+		private BigDecimal r40_c15;
+		private BigDecimal r40_c16;
+		private BigDecimal r40_total;
+		private String r41_product;
+		private BigDecimal r41_botswana;
+		private BigDecimal r41_south_africa;
+		private BigDecimal r41_sadc;
+		private BigDecimal r41_usa;
+		private BigDecimal r41_uk;
+		private BigDecimal r41_europe;
+		private BigDecimal r41_india;
+		private BigDecimal r41_sydney;
+		private BigDecimal r41_uganda;
+		private BigDecimal r41_c10;
+		private BigDecimal r41_c11;
+		private BigDecimal r41_c12;
+		private BigDecimal r41_c13;
+		private BigDecimal r41_c14;
+		private BigDecimal r41_c15;
+		private BigDecimal r41_c16;
+		private BigDecimal r41_total;
+		private String r42_product;
+		private BigDecimal r42_botswana;
+		private BigDecimal r42_south_africa;
+		private BigDecimal r42_sadc;
+		private BigDecimal r42_usa;
+		private BigDecimal r42_uk;
+		private BigDecimal r42_europe;
+		private BigDecimal r42_india;
+		private BigDecimal r42_sydney;
+		private BigDecimal r42_uganda;
+		private BigDecimal r42_c10;
+		private BigDecimal r42_c11;
+		private BigDecimal r42_c12;
+		private BigDecimal r42_c13;
+		private BigDecimal r42_c14;
+		private BigDecimal r42_c15;
+		private BigDecimal r42_c16;
+		private BigDecimal r42_total;
+		private String r43_product;
+		private BigDecimal r43_botswana;
+		private BigDecimal r43_south_africa;
+		private BigDecimal r43_sadc;
+		private BigDecimal r43_usa;
+		private BigDecimal r43_uk;
+		private BigDecimal r43_europe;
+		private BigDecimal r43_india;
+		private BigDecimal r43_sydney;
+		private BigDecimal r43_uganda;
+		private BigDecimal r43_c10;
+		private BigDecimal r43_c11;
+		private BigDecimal r43_c12;
+		private BigDecimal r43_c13;
+		private BigDecimal r43_c14;
+		private BigDecimal r43_c15;
+		private BigDecimal r43_c16;
+		private BigDecimal r43_total;
+		private String r44_product;
+		private BigDecimal r44_botswana;
+		private BigDecimal r44_south_africa;
+		private BigDecimal r44_sadc;
+		private BigDecimal r44_usa;
+		private BigDecimal r44_uk;
+		private BigDecimal r44_europe;
+		private BigDecimal r44_india;
+		private BigDecimal r44_sydney;
+		private BigDecimal r44_uganda;
+		private BigDecimal r44_c10;
+		private BigDecimal r44_c11;
+		private BigDecimal r44_c12;
+		private BigDecimal r44_c13;
+		private BigDecimal r44_c14;
+		private BigDecimal r44_c15;
+		private BigDecimal r44_c16;
+		private BigDecimal r44_total;
+		private String r45_product;
+		private BigDecimal r45_botswana;
+		private BigDecimal r45_south_africa;
+		private BigDecimal r45_sadc;
+		private BigDecimal r45_usa;
+		private BigDecimal r45_uk;
+		private BigDecimal r45_europe;
+		private BigDecimal r45_india;
+		private BigDecimal r45_sydney;
+		private BigDecimal r45_uganda;
+		private BigDecimal r45_c10;
+		private BigDecimal r45_c11;
+		private BigDecimal r45_c12;
+		private BigDecimal r45_c13;
+		private BigDecimal r45_c14;
+		private BigDecimal r45_c15;
+		private BigDecimal r45_c16;
+		private BigDecimal r45_total;
+		private String r46_product;
+		private BigDecimal r46_botswana;
+		private BigDecimal r46_south_africa;
+		private BigDecimal r46_sadc;
+		private BigDecimal r46_usa;
+		private BigDecimal r46_uk;
+		private BigDecimal r46_europe;
+		private BigDecimal r46_india;
+		private BigDecimal r46_sydney;
+		private BigDecimal r46_uganda;
+		private BigDecimal r46_c10;
+		private BigDecimal r46_c11;
+		private BigDecimal r46_c12;
+		private BigDecimal r46_c13;
+		private BigDecimal r46_c14;
+		private BigDecimal r46_c15;
+		private BigDecimal r46_c16;
+		private BigDecimal r46_total;
+		private String r47_product;
+		private BigDecimal r47_botswana;
+		private BigDecimal r47_south_africa;
+		private BigDecimal r47_sadc;
+		private BigDecimal r47_usa;
+		private BigDecimal r47_uk;
+		private BigDecimal r47_europe;
+		private BigDecimal r47_india;
+		private BigDecimal r47_sydney;
+		private BigDecimal r47_uganda;
+		private BigDecimal r47_c10;
+		private BigDecimal r47_c11;
+		private BigDecimal r47_c12;
+		private BigDecimal r47_c13;
+		private BigDecimal r47_c14;
+		private BigDecimal r47_c15;
+		private BigDecimal r47_c16;
+		private BigDecimal r47_total;
+		private String r48_product;
+		private BigDecimal r48_botswana;
+		private BigDecimal r48_south_africa;
+		private BigDecimal r48_sadc;
+		private BigDecimal r48_usa;
+		private BigDecimal r48_uk;
+		private BigDecimal r48_europe;
+		private BigDecimal r48_india;
+		private BigDecimal r48_sydney;
+		private BigDecimal r48_uganda;
+		private BigDecimal r48_c10;
+		private BigDecimal r48_c11;
+		private BigDecimal r48_c12;
+		private BigDecimal r48_c13;
+		private BigDecimal r48_c14;
+		private BigDecimal r48_c15;
+		private BigDecimal r48_c16;
+		private BigDecimal r48_total;
+		private String r49_product;
+		private BigDecimal r49_botswana;
+		private BigDecimal r49_south_africa;
+		private BigDecimal r49_sadc;
+		private BigDecimal r49_usa;
+		private BigDecimal r49_uk;
+		private BigDecimal r49_europe;
+		private BigDecimal r49_india;
+		private BigDecimal r49_sydney;
+		private BigDecimal r49_uganda;
+		private BigDecimal r49_c10;
+		private BigDecimal r49_c11;
+		private BigDecimal r49_c12;
+		private BigDecimal r49_c13;
+		private BigDecimal r49_c14;
+		private BigDecimal r49_c15;
+		private BigDecimal r49_c16;
+		private BigDecimal r49_total;
+		private String r50_product;
+		private BigDecimal r50_botswana;
+		private BigDecimal r50_south_africa;
+		private BigDecimal r50_sadc;
+		private BigDecimal r50_usa;
+		private BigDecimal r50_uk;
+		private BigDecimal r50_europe;
+		private BigDecimal r50_india;
+		private BigDecimal r50_sydney;
+		private BigDecimal r50_uganda;
+		private BigDecimal r50_c10;
+		private BigDecimal r50_c11;
+		private BigDecimal r50_c12;
+		private BigDecimal r50_c13;
+		private BigDecimal r50_c14;
+		private BigDecimal r50_c15;
+		private BigDecimal r50_c16;
+		private BigDecimal r50_total;
+		private String r51_product;
+		private BigDecimal r51_botswana;
+		private BigDecimal r51_south_africa;
+		private BigDecimal r51_sadc;
+		private BigDecimal r51_usa;
+		private BigDecimal r51_uk;
+		private BigDecimal r51_europe;
+		private BigDecimal r51_india;
+		private BigDecimal r51_sydney;
+		private BigDecimal r51_uganda;
+		private BigDecimal r51_c10;
+		private BigDecimal r51_c11;
+		private BigDecimal r51_c12;
+		private BigDecimal r51_c13;
+		private BigDecimal r51_c14;
+		private BigDecimal r51_c15;
+		private BigDecimal r51_c16;
+		private BigDecimal r51_total;
+		private String r52_product;
+		private BigDecimal r52_botswana;
+		private BigDecimal r52_south_africa;
+		private BigDecimal r52_sadc;
+		private BigDecimal r52_usa;
+		private BigDecimal r52_uk;
+		private BigDecimal r52_europe;
+		private BigDecimal r52_india;
+		private BigDecimal r52_sydney;
+		private BigDecimal r52_uganda;
+		private BigDecimal r52_c10;
+		private BigDecimal r52_c11;
+		private BigDecimal r52_c12;
+		private BigDecimal r52_c13;
+		private BigDecimal r52_c14;
+		private BigDecimal r52_c15;
+		private BigDecimal r52_c16;
+		private BigDecimal r52_total;
+		private String r53_product;
+		private BigDecimal r53_botswana;
+		private BigDecimal r53_south_africa;
+		private BigDecimal r53_sadc;
+		private BigDecimal r53_usa;
+		private BigDecimal r53_uk;
+		private BigDecimal r53_europe;
+		private BigDecimal r53_india;
+		private BigDecimal r53_sydney;
+		private BigDecimal r53_uganda;
+		private BigDecimal r53_c10;
+		private BigDecimal r53_c11;
+		private BigDecimal r53_c12;
+		private BigDecimal r53_c13;
+		private BigDecimal r53_c14;
+		private BigDecimal r53_c15;
+		private BigDecimal r53_c16;
+		private BigDecimal r53_total;
+		private String r54_product;
+		private BigDecimal r54_botswana;
+		private BigDecimal r54_south_africa;
+		private BigDecimal r54_sadc;
+		private BigDecimal r54_usa;
+		private BigDecimal r54_uk;
+		private BigDecimal r54_europe;
+		private BigDecimal r54_india;
+		private BigDecimal r54_sydney;
+		private BigDecimal r54_uganda;
+		private BigDecimal r54_c10;
+		private BigDecimal r54_c11;
+		private BigDecimal r54_c12;
+		private BigDecimal r54_c13;
+		private BigDecimal r54_c14;
+		private BigDecimal r54_c15;
+		private BigDecimal r54_c16;
+		private BigDecimal r54_total;
+		private String r55_product;
+		private BigDecimal r55_botswana;
+		private BigDecimal r55_south_africa;
+		private BigDecimal r55_sadc;
+		private BigDecimal r55_usa;
+		private BigDecimal r55_uk;
+		private BigDecimal r55_europe;
+		private BigDecimal r55_india;
+		private BigDecimal r55_sydney;
+		private BigDecimal r55_uganda;
+		private BigDecimal r55_c10;
+		private BigDecimal r55_c11;
+		private BigDecimal r55_c12;
+		private BigDecimal r55_c13;
+		private BigDecimal r55_c14;
+		private BigDecimal r55_c15;
+		private BigDecimal r55_c16;
+		private BigDecimal r55_total;
+		private String r56_product;
+		private BigDecimal r56_botswana;
+		private BigDecimal r56_south_africa;
+		private BigDecimal r56_sadc;
+		private BigDecimal r56_usa;
+		private BigDecimal r56_uk;
+		private BigDecimal r56_europe;
+		private BigDecimal r56_india;
+		private BigDecimal r56_sydney;
+		private BigDecimal r56_uganda;
+		private BigDecimal r56_c10;
+		private BigDecimal r56_c11;
+		private BigDecimal r56_c12;
+		private BigDecimal r56_c13;
+		private BigDecimal r56_c14;
+		private BigDecimal r56_c15;
+		private BigDecimal r56_c16;
+		private BigDecimal r56_total;
+		private String r59_product;
+		private BigDecimal r59_botswana;
+		private BigDecimal r59_south_africa;
+		private BigDecimal r59_sadc;
+		private BigDecimal r59_usa;
+		private BigDecimal r59_uk;
+		private BigDecimal r59_europe;
+		private BigDecimal r59_india;
+		private BigDecimal r59_sydney;
+		private BigDecimal r59_uganda;
+		private BigDecimal r59_c10;
+		private BigDecimal r59_c11;
+		private BigDecimal r59_c12;
+		private BigDecimal r59_c13;
+		private BigDecimal r59_c14;
+		private BigDecimal r59_c15;
+		private BigDecimal r59_c16;
+		private BigDecimal r59_total;
+		private Date report_date;
+		private String report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR10_product() { return r10_product; }
+		public void setR10_product(String r10_product) { this.r10_product = r10_product; }
+		public BigDecimal getR10_botswana() { return r10_botswana; }
+		public void setR10_botswana(BigDecimal r10_botswana) { this.r10_botswana = r10_botswana; }
+		public BigDecimal getR10_south_africa() { return r10_south_africa; }
+		public void setR10_south_africa(BigDecimal r10_south_africa) { this.r10_south_africa = r10_south_africa; }
+		public BigDecimal getR10_sadc() { return r10_sadc; }
+		public void setR10_sadc(BigDecimal r10_sadc) { this.r10_sadc = r10_sadc; }
+		public BigDecimal getR10_usa() { return r10_usa; }
+		public void setR10_usa(BigDecimal r10_usa) { this.r10_usa = r10_usa; }
+		public BigDecimal getR10_uk() { return r10_uk; }
+		public void setR10_uk(BigDecimal r10_uk) { this.r10_uk = r10_uk; }
+		public BigDecimal getR10_europe() { return r10_europe; }
+		public void setR10_europe(BigDecimal r10_europe) { this.r10_europe = r10_europe; }
+		public BigDecimal getR10_india() { return r10_india; }
+		public void setR10_india(BigDecimal r10_india) { this.r10_india = r10_india; }
+		public BigDecimal getR10_sydney() { return r10_sydney; }
+		public void setR10_sydney(BigDecimal r10_sydney) { this.r10_sydney = r10_sydney; }
+		public BigDecimal getR10_uganda() { return r10_uganda; }
+		public void setR10_uganda(BigDecimal r10_uganda) { this.r10_uganda = r10_uganda; }
+		public BigDecimal getR10_c10() { return r10_c10; }
+		public void setR10_c10(BigDecimal r10_c10) { this.r10_c10 = r10_c10; }
+		public BigDecimal getR10_c11() { return r10_c11; }
+		public void setR10_c11(BigDecimal r10_c11) { this.r10_c11 = r10_c11; }
+		public BigDecimal getR10_c12() { return r10_c12; }
+		public void setR10_c12(BigDecimal r10_c12) { this.r10_c12 = r10_c12; }
+		public BigDecimal getR10_c13() { return r10_c13; }
+		public void setR10_c13(BigDecimal r10_c13) { this.r10_c13 = r10_c13; }
+		public BigDecimal getR10_c14() { return r10_c14; }
+		public void setR10_c14(BigDecimal r10_c14) { this.r10_c14 = r10_c14; }
+		public BigDecimal getR10_c15() { return r10_c15; }
+		public void setR10_c15(BigDecimal r10_c15) { this.r10_c15 = r10_c15; }
+		public BigDecimal getR10_c16() { return r10_c16; }
+		public void setR10_c16(BigDecimal r10_c16) { this.r10_c16 = r10_c16; }
+		public BigDecimal getR10_total() { return r10_total; }
+		public void setR10_total(BigDecimal r10_total) { this.r10_total = r10_total; }
+		public String getR11_product() { return r11_product; }
+		public void setR11_product(String r11_product) { this.r11_product = r11_product; }
+		public BigDecimal getR11_botswana() { return r11_botswana; }
+		public void setR11_botswana(BigDecimal r11_botswana) { this.r11_botswana = r11_botswana; }
+		public BigDecimal getR11_south_africa() { return r11_south_africa; }
+		public void setR11_south_africa(BigDecimal r11_south_africa) { this.r11_south_africa = r11_south_africa; }
+		public BigDecimal getR11_sadc() { return r11_sadc; }
+		public void setR11_sadc(BigDecimal r11_sadc) { this.r11_sadc = r11_sadc; }
+		public BigDecimal getR11_usa() { return r11_usa; }
+		public void setR11_usa(BigDecimal r11_usa) { this.r11_usa = r11_usa; }
+		public BigDecimal getR11_uk() { return r11_uk; }
+		public void setR11_uk(BigDecimal r11_uk) { this.r11_uk = r11_uk; }
+		public BigDecimal getR11_europe() { return r11_europe; }
+		public void setR11_europe(BigDecimal r11_europe) { this.r11_europe = r11_europe; }
+		public BigDecimal getR11_india() { return r11_india; }
+		public void setR11_india(BigDecimal r11_india) { this.r11_india = r11_india; }
+		public BigDecimal getR11_sydney() { return r11_sydney; }
+		public void setR11_sydney(BigDecimal r11_sydney) { this.r11_sydney = r11_sydney; }
+		public BigDecimal getR11_uganda() { return r11_uganda; }
+		public void setR11_uganda(BigDecimal r11_uganda) { this.r11_uganda = r11_uganda; }
+		public BigDecimal getR11_c10() { return r11_c10; }
+		public void setR11_c10(BigDecimal r11_c10) { this.r11_c10 = r11_c10; }
+		public BigDecimal getR11_c11() { return r11_c11; }
+		public void setR11_c11(BigDecimal r11_c11) { this.r11_c11 = r11_c11; }
+		public BigDecimal getR11_c12() { return r11_c12; }
+		public void setR11_c12(BigDecimal r11_c12) { this.r11_c12 = r11_c12; }
+		public BigDecimal getR11_c13() { return r11_c13; }
+		public void setR11_c13(BigDecimal r11_c13) { this.r11_c13 = r11_c13; }
+		public BigDecimal getR11_c14() { return r11_c14; }
+		public void setR11_c14(BigDecimal r11_c14) { this.r11_c14 = r11_c14; }
+		public BigDecimal getR11_c15() { return r11_c15; }
+		public void setR11_c15(BigDecimal r11_c15) { this.r11_c15 = r11_c15; }
+		public BigDecimal getR11_c16() { return r11_c16; }
+		public void setR11_c16(BigDecimal r11_c16) { this.r11_c16 = r11_c16; }
+		public BigDecimal getR11_total() { return r11_total; }
+		public void setR11_total(BigDecimal r11_total) { this.r11_total = r11_total; }
+		public String getR12_product() { return r12_product; }
+		public void setR12_product(String r12_product) { this.r12_product = r12_product; }
+		public BigDecimal getR12_botswana() { return r12_botswana; }
+		public void setR12_botswana(BigDecimal r12_botswana) { this.r12_botswana = r12_botswana; }
+		public BigDecimal getR12_south_africa() { return r12_south_africa; }
+		public void setR12_south_africa(BigDecimal r12_south_africa) { this.r12_south_africa = r12_south_africa; }
+		public BigDecimal getR12_sadc() { return r12_sadc; }
+		public void setR12_sadc(BigDecimal r12_sadc) { this.r12_sadc = r12_sadc; }
+		public BigDecimal getR12_usa() { return r12_usa; }
+		public void setR12_usa(BigDecimal r12_usa) { this.r12_usa = r12_usa; }
+		public BigDecimal getR12_uk() { return r12_uk; }
+		public void setR12_uk(BigDecimal r12_uk) { this.r12_uk = r12_uk; }
+		public BigDecimal getR12_europe() { return r12_europe; }
+		public void setR12_europe(BigDecimal r12_europe) { this.r12_europe = r12_europe; }
+		public BigDecimal getR12_india() { return r12_india; }
+		public void setR12_india(BigDecimal r12_india) { this.r12_india = r12_india; }
+		public BigDecimal getR12_sydney() { return r12_sydney; }
+		public void setR12_sydney(BigDecimal r12_sydney) { this.r12_sydney = r12_sydney; }
+		public BigDecimal getR12_uganda() { return r12_uganda; }
+		public void setR12_uganda(BigDecimal r12_uganda) { this.r12_uganda = r12_uganda; }
+		public BigDecimal getR12_c10() { return r12_c10; }
+		public void setR12_c10(BigDecimal r12_c10) { this.r12_c10 = r12_c10; }
+		public BigDecimal getR12_c11() { return r12_c11; }
+		public void setR12_c11(BigDecimal r12_c11) { this.r12_c11 = r12_c11; }
+		public BigDecimal getR12_c12() { return r12_c12; }
+		public void setR12_c12(BigDecimal r12_c12) { this.r12_c12 = r12_c12; }
+		public BigDecimal getR12_c13() { return r12_c13; }
+		public void setR12_c13(BigDecimal r12_c13) { this.r12_c13 = r12_c13; }
+		public BigDecimal getR12_c14() { return r12_c14; }
+		public void setR12_c14(BigDecimal r12_c14) { this.r12_c14 = r12_c14; }
+		public BigDecimal getR12_c15() { return r12_c15; }
+		public void setR12_c15(BigDecimal r12_c15) { this.r12_c15 = r12_c15; }
+		public BigDecimal getR12_c16() { return r12_c16; }
+		public void setR12_c16(BigDecimal r12_c16) { this.r12_c16 = r12_c16; }
+		public BigDecimal getR12_total() { return r12_total; }
+		public void setR12_total(BigDecimal r12_total) { this.r12_total = r12_total; }
+		public String getR13_product() { return r13_product; }
+		public void setR13_product(String r13_product) { this.r13_product = r13_product; }
+		public BigDecimal getR13_botswana() { return r13_botswana; }
+		public void setR13_botswana(BigDecimal r13_botswana) { this.r13_botswana = r13_botswana; }
+		public BigDecimal getR13_south_africa() { return r13_south_africa; }
+		public void setR13_south_africa(BigDecimal r13_south_africa) { this.r13_south_africa = r13_south_africa; }
+		public BigDecimal getR13_sadc() { return r13_sadc; }
+		public void setR13_sadc(BigDecimal r13_sadc) { this.r13_sadc = r13_sadc; }
+		public BigDecimal getR13_usa() { return r13_usa; }
+		public void setR13_usa(BigDecimal r13_usa) { this.r13_usa = r13_usa; }
+		public BigDecimal getR13_uk() { return r13_uk; }
+		public void setR13_uk(BigDecimal r13_uk) { this.r13_uk = r13_uk; }
+		public BigDecimal getR13_europe() { return r13_europe; }
+		public void setR13_europe(BigDecimal r13_europe) { this.r13_europe = r13_europe; }
+		public BigDecimal getR13_india() { return r13_india; }
+		public void setR13_india(BigDecimal r13_india) { this.r13_india = r13_india; }
+		public BigDecimal getR13_sydney() { return r13_sydney; }
+		public void setR13_sydney(BigDecimal r13_sydney) { this.r13_sydney = r13_sydney; }
+		public BigDecimal getR13_uganda() { return r13_uganda; }
+		public void setR13_uganda(BigDecimal r13_uganda) { this.r13_uganda = r13_uganda; }
+		public BigDecimal getR13_c10() { return r13_c10; }
+		public void setR13_c10(BigDecimal r13_c10) { this.r13_c10 = r13_c10; }
+		public BigDecimal getR13_c11() { return r13_c11; }
+		public void setR13_c11(BigDecimal r13_c11) { this.r13_c11 = r13_c11; }
+		public BigDecimal getR13_c12() { return r13_c12; }
+		public void setR13_c12(BigDecimal r13_c12) { this.r13_c12 = r13_c12; }
+		public BigDecimal getR13_c13() { return r13_c13; }
+		public void setR13_c13(BigDecimal r13_c13) { this.r13_c13 = r13_c13; }
+		public BigDecimal getR13_c14() { return r13_c14; }
+		public void setR13_c14(BigDecimal r13_c14) { this.r13_c14 = r13_c14; }
+		public BigDecimal getR13_c15() { return r13_c15; }
+		public void setR13_c15(BigDecimal r13_c15) { this.r13_c15 = r13_c15; }
+		public BigDecimal getR13_c16() { return r13_c16; }
+		public void setR13_c16(BigDecimal r13_c16) { this.r13_c16 = r13_c16; }
+		public BigDecimal getR13_total() { return r13_total; }
+		public void setR13_total(BigDecimal r13_total) { this.r13_total = r13_total; }
+		public String getR14_product() { return r14_product; }
+		public void setR14_product(String r14_product) { this.r14_product = r14_product; }
+		public BigDecimal getR14_botswana() { return r14_botswana; }
+		public void setR14_botswana(BigDecimal r14_botswana) { this.r14_botswana = r14_botswana; }
+		public BigDecimal getR14_south_africa() { return r14_south_africa; }
+		public void setR14_south_africa(BigDecimal r14_south_africa) { this.r14_south_africa = r14_south_africa; }
+		public BigDecimal getR14_sadc() { return r14_sadc; }
+		public void setR14_sadc(BigDecimal r14_sadc) { this.r14_sadc = r14_sadc; }
+		public BigDecimal getR14_usa() { return r14_usa; }
+		public void setR14_usa(BigDecimal r14_usa) { this.r14_usa = r14_usa; }
+		public BigDecimal getR14_uk() { return r14_uk; }
+		public void setR14_uk(BigDecimal r14_uk) { this.r14_uk = r14_uk; }
+		public BigDecimal getR14_europe() { return r14_europe; }
+		public void setR14_europe(BigDecimal r14_europe) { this.r14_europe = r14_europe; }
+		public BigDecimal getR14_india() { return r14_india; }
+		public void setR14_india(BigDecimal r14_india) { this.r14_india = r14_india; }
+		public BigDecimal getR14_sydney() { return r14_sydney; }
+		public void setR14_sydney(BigDecimal r14_sydney) { this.r14_sydney = r14_sydney; }
+		public BigDecimal getR14_uganda() { return r14_uganda; }
+		public void setR14_uganda(BigDecimal r14_uganda) { this.r14_uganda = r14_uganda; }
+		public BigDecimal getR14_c10() { return r14_c10; }
+		public void setR14_c10(BigDecimal r14_c10) { this.r14_c10 = r14_c10; }
+		public BigDecimal getR14_c11() { return r14_c11; }
+		public void setR14_c11(BigDecimal r14_c11) { this.r14_c11 = r14_c11; }
+		public BigDecimal getR14_c12() { return r14_c12; }
+		public void setR14_c12(BigDecimal r14_c12) { this.r14_c12 = r14_c12; }
+		public BigDecimal getR14_c13() { return r14_c13; }
+		public void setR14_c13(BigDecimal r14_c13) { this.r14_c13 = r14_c13; }
+		public BigDecimal getR14_c14() { return r14_c14; }
+		public void setR14_c14(BigDecimal r14_c14) { this.r14_c14 = r14_c14; }
+		public BigDecimal getR14_c15() { return r14_c15; }
+		public void setR14_c15(BigDecimal r14_c15) { this.r14_c15 = r14_c15; }
+		public BigDecimal getR14_c16() { return r14_c16; }
+		public void setR14_c16(BigDecimal r14_c16) { this.r14_c16 = r14_c16; }
+		public BigDecimal getR14_total() { return r14_total; }
+		public void setR14_total(BigDecimal r14_total) { this.r14_total = r14_total; }
+		public String getR15_product() { return r15_product; }
+		public void setR15_product(String r15_product) { this.r15_product = r15_product; }
+		public BigDecimal getR15_botswana() { return r15_botswana; }
+		public void setR15_botswana(BigDecimal r15_botswana) { this.r15_botswana = r15_botswana; }
+		public BigDecimal getR15_south_africa() { return r15_south_africa; }
+		public void setR15_south_africa(BigDecimal r15_south_africa) { this.r15_south_africa = r15_south_africa; }
+		public BigDecimal getR15_sadc() { return r15_sadc; }
+		public void setR15_sadc(BigDecimal r15_sadc) { this.r15_sadc = r15_sadc; }
+		public BigDecimal getR15_usa() { return r15_usa; }
+		public void setR15_usa(BigDecimal r15_usa) { this.r15_usa = r15_usa; }
+		public BigDecimal getR15_uk() { return r15_uk; }
+		public void setR15_uk(BigDecimal r15_uk) { this.r15_uk = r15_uk; }
+		public BigDecimal getR15_europe() { return r15_europe; }
+		public void setR15_europe(BigDecimal r15_europe) { this.r15_europe = r15_europe; }
+		public BigDecimal getR15_india() { return r15_india; }
+		public void setR15_india(BigDecimal r15_india) { this.r15_india = r15_india; }
+		public BigDecimal getR15_sydney() { return r15_sydney; }
+		public void setR15_sydney(BigDecimal r15_sydney) { this.r15_sydney = r15_sydney; }
+		public BigDecimal getR15_uganda() { return r15_uganda; }
+		public void setR15_uganda(BigDecimal r15_uganda) { this.r15_uganda = r15_uganda; }
+		public BigDecimal getR15_c10() { return r15_c10; }
+		public void setR15_c10(BigDecimal r15_c10) { this.r15_c10 = r15_c10; }
+		public BigDecimal getR15_c11() { return r15_c11; }
+		public void setR15_c11(BigDecimal r15_c11) { this.r15_c11 = r15_c11; }
+		public BigDecimal getR15_c12() { return r15_c12; }
+		public void setR15_c12(BigDecimal r15_c12) { this.r15_c12 = r15_c12; }
+		public BigDecimal getR15_c13() { return r15_c13; }
+		public void setR15_c13(BigDecimal r15_c13) { this.r15_c13 = r15_c13; }
+		public BigDecimal getR15_c14() { return r15_c14; }
+		public void setR15_c14(BigDecimal r15_c14) { this.r15_c14 = r15_c14; }
+		public BigDecimal getR15_c15() { return r15_c15; }
+		public void setR15_c15(BigDecimal r15_c15) { this.r15_c15 = r15_c15; }
+		public BigDecimal getR15_c16() { return r15_c16; }
+		public void setR15_c16(BigDecimal r15_c16) { this.r15_c16 = r15_c16; }
+		public BigDecimal getR15_total() { return r15_total; }
+		public void setR15_total(BigDecimal r15_total) { this.r15_total = r15_total; }
+		public String getR16_product() { return r16_product; }
+		public void setR16_product(String r16_product) { this.r16_product = r16_product; }
+		public BigDecimal getR16_botswana() { return r16_botswana; }
+		public void setR16_botswana(BigDecimal r16_botswana) { this.r16_botswana = r16_botswana; }
+		public BigDecimal getR16_south_africa() { return r16_south_africa; }
+		public void setR16_south_africa(BigDecimal r16_south_africa) { this.r16_south_africa = r16_south_africa; }
+		public BigDecimal getR16_sadc() { return r16_sadc; }
+		public void setR16_sadc(BigDecimal r16_sadc) { this.r16_sadc = r16_sadc; }
+		public BigDecimal getR16_usa() { return r16_usa; }
+		public void setR16_usa(BigDecimal r16_usa) { this.r16_usa = r16_usa; }
+		public BigDecimal getR16_uk() { return r16_uk; }
+		public void setR16_uk(BigDecimal r16_uk) { this.r16_uk = r16_uk; }
+		public BigDecimal getR16_europe() { return r16_europe; }
+		public void setR16_europe(BigDecimal r16_europe) { this.r16_europe = r16_europe; }
+		public BigDecimal getR16_india() { return r16_india; }
+		public void setR16_india(BigDecimal r16_india) { this.r16_india = r16_india; }
+		public BigDecimal getR16_sydney() { return r16_sydney; }
+		public void setR16_sydney(BigDecimal r16_sydney) { this.r16_sydney = r16_sydney; }
+		public BigDecimal getR16_uganda() { return r16_uganda; }
+		public void setR16_uganda(BigDecimal r16_uganda) { this.r16_uganda = r16_uganda; }
+		public BigDecimal getR16_c10() { return r16_c10; }
+		public void setR16_c10(BigDecimal r16_c10) { this.r16_c10 = r16_c10; }
+		public BigDecimal getR16_c11() { return r16_c11; }
+		public void setR16_c11(BigDecimal r16_c11) { this.r16_c11 = r16_c11; }
+		public BigDecimal getR16_c12() { return r16_c12; }
+		public void setR16_c12(BigDecimal r16_c12) { this.r16_c12 = r16_c12; }
+		public BigDecimal getR16_c13() { return r16_c13; }
+		public void setR16_c13(BigDecimal r16_c13) { this.r16_c13 = r16_c13; }
+		public BigDecimal getR16_c14() { return r16_c14; }
+		public void setR16_c14(BigDecimal r16_c14) { this.r16_c14 = r16_c14; }
+		public BigDecimal getR16_c15() { return r16_c15; }
+		public void setR16_c15(BigDecimal r16_c15) { this.r16_c15 = r16_c15; }
+		public BigDecimal getR16_c16() { return r16_c16; }
+		public void setR16_c16(BigDecimal r16_c16) { this.r16_c16 = r16_c16; }
+		public BigDecimal getR16_total() { return r16_total; }
+		public void setR16_total(BigDecimal r16_total) { this.r16_total = r16_total; }
+		public String getR17_product() { return r17_product; }
+		public void setR17_product(String r17_product) { this.r17_product = r17_product; }
+		public BigDecimal getR17_botswana() { return r17_botswana; }
+		public void setR17_botswana(BigDecimal r17_botswana) { this.r17_botswana = r17_botswana; }
+		public BigDecimal getR17_south_africa() { return r17_south_africa; }
+		public void setR17_south_africa(BigDecimal r17_south_africa) { this.r17_south_africa = r17_south_africa; }
+		public BigDecimal getR17_sadc() { return r17_sadc; }
+		public void setR17_sadc(BigDecimal r17_sadc) { this.r17_sadc = r17_sadc; }
+		public BigDecimal getR17_usa() { return r17_usa; }
+		public void setR17_usa(BigDecimal r17_usa) { this.r17_usa = r17_usa; }
+		public BigDecimal getR17_uk() { return r17_uk; }
+		public void setR17_uk(BigDecimal r17_uk) { this.r17_uk = r17_uk; }
+		public BigDecimal getR17_europe() { return r17_europe; }
+		public void setR17_europe(BigDecimal r17_europe) { this.r17_europe = r17_europe; }
+		public BigDecimal getR17_india() { return r17_india; }
+		public void setR17_india(BigDecimal r17_india) { this.r17_india = r17_india; }
+		public BigDecimal getR17_sydney() { return r17_sydney; }
+		public void setR17_sydney(BigDecimal r17_sydney) { this.r17_sydney = r17_sydney; }
+		public BigDecimal getR17_uganda() { return r17_uganda; }
+		public void setR17_uganda(BigDecimal r17_uganda) { this.r17_uganda = r17_uganda; }
+		public BigDecimal getR17_c10() { return r17_c10; }
+		public void setR17_c10(BigDecimal r17_c10) { this.r17_c10 = r17_c10; }
+		public BigDecimal getR17_c11() { return r17_c11; }
+		public void setR17_c11(BigDecimal r17_c11) { this.r17_c11 = r17_c11; }
+		public BigDecimal getR17_c12() { return r17_c12; }
+		public void setR17_c12(BigDecimal r17_c12) { this.r17_c12 = r17_c12; }
+		public BigDecimal getR17_c13() { return r17_c13; }
+		public void setR17_c13(BigDecimal r17_c13) { this.r17_c13 = r17_c13; }
+		public BigDecimal getR17_c14() { return r17_c14; }
+		public void setR17_c14(BigDecimal r17_c14) { this.r17_c14 = r17_c14; }
+		public BigDecimal getR17_c15() { return r17_c15; }
+		public void setR17_c15(BigDecimal r17_c15) { this.r17_c15 = r17_c15; }
+		public BigDecimal getR17_c16() { return r17_c16; }
+		public void setR17_c16(BigDecimal r17_c16) { this.r17_c16 = r17_c16; }
+		public BigDecimal getR17_total() { return r17_total; }
+		public void setR17_total(BigDecimal r17_total) { this.r17_total = r17_total; }
+		public String getR18_product() { return r18_product; }
+		public void setR18_product(String r18_product) { this.r18_product = r18_product; }
+		public BigDecimal getR18_botswana() { return r18_botswana; }
+		public void setR18_botswana(BigDecimal r18_botswana) { this.r18_botswana = r18_botswana; }
+		public BigDecimal getR18_south_africa() { return r18_south_africa; }
+		public void setR18_south_africa(BigDecimal r18_south_africa) { this.r18_south_africa = r18_south_africa; }
+		public BigDecimal getR18_sadc() { return r18_sadc; }
+		public void setR18_sadc(BigDecimal r18_sadc) { this.r18_sadc = r18_sadc; }
+		public BigDecimal getR18_usa() { return r18_usa; }
+		public void setR18_usa(BigDecimal r18_usa) { this.r18_usa = r18_usa; }
+		public BigDecimal getR18_uk() { return r18_uk; }
+		public void setR18_uk(BigDecimal r18_uk) { this.r18_uk = r18_uk; }
+		public BigDecimal getR18_europe() { return r18_europe; }
+		public void setR18_europe(BigDecimal r18_europe) { this.r18_europe = r18_europe; }
+		public BigDecimal getR18_india() { return r18_india; }
+		public void setR18_india(BigDecimal r18_india) { this.r18_india = r18_india; }
+		public BigDecimal getR18_sydney() { return r18_sydney; }
+		public void setR18_sydney(BigDecimal r18_sydney) { this.r18_sydney = r18_sydney; }
+		public BigDecimal getR18_uganda() { return r18_uganda; }
+		public void setR18_uganda(BigDecimal r18_uganda) { this.r18_uganda = r18_uganda; }
+		public BigDecimal getR18_c10() { return r18_c10; }
+		public void setR18_c10(BigDecimal r18_c10) { this.r18_c10 = r18_c10; }
+		public BigDecimal getR18_c11() { return r18_c11; }
+		public void setR18_c11(BigDecimal r18_c11) { this.r18_c11 = r18_c11; }
+		public BigDecimal getR18_c12() { return r18_c12; }
+		public void setR18_c12(BigDecimal r18_c12) { this.r18_c12 = r18_c12; }
+		public BigDecimal getR18_c13() { return r18_c13; }
+		public void setR18_c13(BigDecimal r18_c13) { this.r18_c13 = r18_c13; }
+		public BigDecimal getR18_c14() { return r18_c14; }
+		public void setR18_c14(BigDecimal r18_c14) { this.r18_c14 = r18_c14; }
+		public BigDecimal getR18_c15() { return r18_c15; }
+		public void setR18_c15(BigDecimal r18_c15) { this.r18_c15 = r18_c15; }
+		public BigDecimal getR18_c16() { return r18_c16; }
+		public void setR18_c16(BigDecimal r18_c16) { this.r18_c16 = r18_c16; }
+		public BigDecimal getR18_total() { return r18_total; }
+		public void setR18_total(BigDecimal r18_total) { this.r18_total = r18_total; }
+		public String getR19_product() { return r19_product; }
+		public void setR19_product(String r19_product) { this.r19_product = r19_product; }
+		public BigDecimal getR19_botswana() { return r19_botswana; }
+		public void setR19_botswana(BigDecimal r19_botswana) { this.r19_botswana = r19_botswana; }
+		public BigDecimal getR19_south_africa() { return r19_south_africa; }
+		public void setR19_south_africa(BigDecimal r19_south_africa) { this.r19_south_africa = r19_south_africa; }
+		public BigDecimal getR19_sadc() { return r19_sadc; }
+		public void setR19_sadc(BigDecimal r19_sadc) { this.r19_sadc = r19_sadc; }
+		public BigDecimal getR19_usa() { return r19_usa; }
+		public void setR19_usa(BigDecimal r19_usa) { this.r19_usa = r19_usa; }
+		public BigDecimal getR19_uk() { return r19_uk; }
+		public void setR19_uk(BigDecimal r19_uk) { this.r19_uk = r19_uk; }
+		public BigDecimal getR19_europe() { return r19_europe; }
+		public void setR19_europe(BigDecimal r19_europe) { this.r19_europe = r19_europe; }
+		public BigDecimal getR19_india() { return r19_india; }
+		public void setR19_india(BigDecimal r19_india) { this.r19_india = r19_india; }
+		public BigDecimal getR19_sydney() { return r19_sydney; }
+		public void setR19_sydney(BigDecimal r19_sydney) { this.r19_sydney = r19_sydney; }
+		public BigDecimal getR19_uganda() { return r19_uganda; }
+		public void setR19_uganda(BigDecimal r19_uganda) { this.r19_uganda = r19_uganda; }
+		public BigDecimal getR19_c10() { return r19_c10; }
+		public void setR19_c10(BigDecimal r19_c10) { this.r19_c10 = r19_c10; }
+		public BigDecimal getR19_c11() { return r19_c11; }
+		public void setR19_c11(BigDecimal r19_c11) { this.r19_c11 = r19_c11; }
+		public BigDecimal getR19_c12() { return r19_c12; }
+		public void setR19_c12(BigDecimal r19_c12) { this.r19_c12 = r19_c12; }
+		public BigDecimal getR19_c13() { return r19_c13; }
+		public void setR19_c13(BigDecimal r19_c13) { this.r19_c13 = r19_c13; }
+		public BigDecimal getR19_c14() { return r19_c14; }
+		public void setR19_c14(BigDecimal r19_c14) { this.r19_c14 = r19_c14; }
+		public BigDecimal getR19_c15() { return r19_c15; }
+		public void setR19_c15(BigDecimal r19_c15) { this.r19_c15 = r19_c15; }
+		public BigDecimal getR19_c16() { return r19_c16; }
+		public void setR19_c16(BigDecimal r19_c16) { this.r19_c16 = r19_c16; }
+		public BigDecimal getR19_total() { return r19_total; }
+		public void setR19_total(BigDecimal r19_total) { this.r19_total = r19_total; }
+		public String getR20_product() { return r20_product; }
+		public void setR20_product(String r20_product) { this.r20_product = r20_product; }
+		public BigDecimal getR20_botswana() { return r20_botswana; }
+		public void setR20_botswana(BigDecimal r20_botswana) { this.r20_botswana = r20_botswana; }
+		public BigDecimal getR20_south_africa() { return r20_south_africa; }
+		public void setR20_south_africa(BigDecimal r20_south_africa) { this.r20_south_africa = r20_south_africa; }
+		public BigDecimal getR20_sadc() { return r20_sadc; }
+		public void setR20_sadc(BigDecimal r20_sadc) { this.r20_sadc = r20_sadc; }
+		public BigDecimal getR20_usa() { return r20_usa; }
+		public void setR20_usa(BigDecimal r20_usa) { this.r20_usa = r20_usa; }
+		public BigDecimal getR20_uk() { return r20_uk; }
+		public void setR20_uk(BigDecimal r20_uk) { this.r20_uk = r20_uk; }
+		public BigDecimal getR20_europe() { return r20_europe; }
+		public void setR20_europe(BigDecimal r20_europe) { this.r20_europe = r20_europe; }
+		public BigDecimal getR20_india() { return r20_india; }
+		public void setR20_india(BigDecimal r20_india) { this.r20_india = r20_india; }
+		public BigDecimal getR20_sydney() { return r20_sydney; }
+		public void setR20_sydney(BigDecimal r20_sydney) { this.r20_sydney = r20_sydney; }
+		public BigDecimal getR20_uganda() { return r20_uganda; }
+		public void setR20_uganda(BigDecimal r20_uganda) { this.r20_uganda = r20_uganda; }
+		public BigDecimal getR20_c10() { return r20_c10; }
+		public void setR20_c10(BigDecimal r20_c10) { this.r20_c10 = r20_c10; }
+		public BigDecimal getR20_c11() { return r20_c11; }
+		public void setR20_c11(BigDecimal r20_c11) { this.r20_c11 = r20_c11; }
+		public BigDecimal getR20_c12() { return r20_c12; }
+		public void setR20_c12(BigDecimal r20_c12) { this.r20_c12 = r20_c12; }
+		public BigDecimal getR20_c13() { return r20_c13; }
+		public void setR20_c13(BigDecimal r20_c13) { this.r20_c13 = r20_c13; }
+		public BigDecimal getR20_c14() { return r20_c14; }
+		public void setR20_c14(BigDecimal r20_c14) { this.r20_c14 = r20_c14; }
+		public BigDecimal getR20_c15() { return r20_c15; }
+		public void setR20_c15(BigDecimal r20_c15) { this.r20_c15 = r20_c15; }
+		public BigDecimal getR20_c16() { return r20_c16; }
+		public void setR20_c16(BigDecimal r20_c16) { this.r20_c16 = r20_c16; }
+		public BigDecimal getR20_total() { return r20_total; }
+		public void setR20_total(BigDecimal r20_total) { this.r20_total = r20_total; }
+		public String getR21_product() { return r21_product; }
+		public void setR21_product(String r21_product) { this.r21_product = r21_product; }
+		public BigDecimal getR21_botswana() { return r21_botswana; }
+		public void setR21_botswana(BigDecimal r21_botswana) { this.r21_botswana = r21_botswana; }
+		public BigDecimal getR21_south_africa() { return r21_south_africa; }
+		public void setR21_south_africa(BigDecimal r21_south_africa) { this.r21_south_africa = r21_south_africa; }
+		public BigDecimal getR21_sadc() { return r21_sadc; }
+		public void setR21_sadc(BigDecimal r21_sadc) { this.r21_sadc = r21_sadc; }
+		public BigDecimal getR21_usa() { return r21_usa; }
+		public void setR21_usa(BigDecimal r21_usa) { this.r21_usa = r21_usa; }
+		public BigDecimal getR21_uk() { return r21_uk; }
+		public void setR21_uk(BigDecimal r21_uk) { this.r21_uk = r21_uk; }
+		public BigDecimal getR21_europe() { return r21_europe; }
+		public void setR21_europe(BigDecimal r21_europe) { this.r21_europe = r21_europe; }
+		public BigDecimal getR21_india() { return r21_india; }
+		public void setR21_india(BigDecimal r21_india) { this.r21_india = r21_india; }
+		public BigDecimal getR21_sydney() { return r21_sydney; }
+		public void setR21_sydney(BigDecimal r21_sydney) { this.r21_sydney = r21_sydney; }
+		public BigDecimal getR21_uganda() { return r21_uganda; }
+		public void setR21_uganda(BigDecimal r21_uganda) { this.r21_uganda = r21_uganda; }
+		public BigDecimal getR21_c10() { return r21_c10; }
+		public void setR21_c10(BigDecimal r21_c10) { this.r21_c10 = r21_c10; }
+		public BigDecimal getR21_c11() { return r21_c11; }
+		public void setR21_c11(BigDecimal r21_c11) { this.r21_c11 = r21_c11; }
+		public BigDecimal getR21_c12() { return r21_c12; }
+		public void setR21_c12(BigDecimal r21_c12) { this.r21_c12 = r21_c12; }
+		public BigDecimal getR21_c13() { return r21_c13; }
+		public void setR21_c13(BigDecimal r21_c13) { this.r21_c13 = r21_c13; }
+		public BigDecimal getR21_c14() { return r21_c14; }
+		public void setR21_c14(BigDecimal r21_c14) { this.r21_c14 = r21_c14; }
+		public BigDecimal getR21_c15() { return r21_c15; }
+		public void setR21_c15(BigDecimal r21_c15) { this.r21_c15 = r21_c15; }
+		public BigDecimal getR21_c16() { return r21_c16; }
+		public void setR21_c16(BigDecimal r21_c16) { this.r21_c16 = r21_c16; }
+		public BigDecimal getR21_total() { return r21_total; }
+		public void setR21_total(BigDecimal r21_total) { this.r21_total = r21_total; }
+		public String getR24_product() { return r24_product; }
+		public void setR24_product(String r24_product) { this.r24_product = r24_product; }
+		public BigDecimal getR24_botswana() { return r24_botswana; }
+		public void setR24_botswana(BigDecimal r24_botswana) { this.r24_botswana = r24_botswana; }
+		public BigDecimal getR24_south_africa() { return r24_south_africa; }
+		public void setR24_south_africa(BigDecimal r24_south_africa) { this.r24_south_africa = r24_south_africa; }
+		public BigDecimal getR24_sadc() { return r24_sadc; }
+		public void setR24_sadc(BigDecimal r24_sadc) { this.r24_sadc = r24_sadc; }
+		public BigDecimal getR24_usa() { return r24_usa; }
+		public void setR24_usa(BigDecimal r24_usa) { this.r24_usa = r24_usa; }
+		public BigDecimal getR24_uk() { return r24_uk; }
+		public void setR24_uk(BigDecimal r24_uk) { this.r24_uk = r24_uk; }
+		public BigDecimal getR24_europe() { return r24_europe; }
+		public void setR24_europe(BigDecimal r24_europe) { this.r24_europe = r24_europe; }
+		public BigDecimal getR24_india() { return r24_india; }
+		public void setR24_india(BigDecimal r24_india) { this.r24_india = r24_india; }
+		public BigDecimal getR24_sydney() { return r24_sydney; }
+		public void setR24_sydney(BigDecimal r24_sydney) { this.r24_sydney = r24_sydney; }
+		public BigDecimal getR24_uganda() { return r24_uganda; }
+		public void setR24_uganda(BigDecimal r24_uganda) { this.r24_uganda = r24_uganda; }
+		public BigDecimal getR24_c10() { return r24_c10; }
+		public void setR24_c10(BigDecimal r24_c10) { this.r24_c10 = r24_c10; }
+		public BigDecimal getR24_c11() { return r24_c11; }
+		public void setR24_c11(BigDecimal r24_c11) { this.r24_c11 = r24_c11; }
+		public BigDecimal getR24_c12() { return r24_c12; }
+		public void setR24_c12(BigDecimal r24_c12) { this.r24_c12 = r24_c12; }
+		public BigDecimal getR24_c13() { return r24_c13; }
+		public void setR24_c13(BigDecimal r24_c13) { this.r24_c13 = r24_c13; }
+		public BigDecimal getR24_c14() { return r24_c14; }
+		public void setR24_c14(BigDecimal r24_c14) { this.r24_c14 = r24_c14; }
+		public BigDecimal getR24_c15() { return r24_c15; }
+		public void setR24_c15(BigDecimal r24_c15) { this.r24_c15 = r24_c15; }
+		public BigDecimal getR24_c16() { return r24_c16; }
+		public void setR24_c16(BigDecimal r24_c16) { this.r24_c16 = r24_c16; }
+		public BigDecimal getR24_total() { return r24_total; }
+		public void setR24_total(BigDecimal r24_total) { this.r24_total = r24_total; }
+		public String getR25_product() { return r25_product; }
+		public void setR25_product(String r25_product) { this.r25_product = r25_product; }
+		public BigDecimal getR25_botswana() { return r25_botswana; }
+		public void setR25_botswana(BigDecimal r25_botswana) { this.r25_botswana = r25_botswana; }
+		public BigDecimal getR25_south_africa() { return r25_south_africa; }
+		public void setR25_south_africa(BigDecimal r25_south_africa) { this.r25_south_africa = r25_south_africa; }
+		public BigDecimal getR25_sadc() { return r25_sadc; }
+		public void setR25_sadc(BigDecimal r25_sadc) { this.r25_sadc = r25_sadc; }
+		public BigDecimal getR25_usa() { return r25_usa; }
+		public void setR25_usa(BigDecimal r25_usa) { this.r25_usa = r25_usa; }
+		public BigDecimal getR25_uk() { return r25_uk; }
+		public void setR25_uk(BigDecimal r25_uk) { this.r25_uk = r25_uk; }
+		public BigDecimal getR25_europe() { return r25_europe; }
+		public void setR25_europe(BigDecimal r25_europe) { this.r25_europe = r25_europe; }
+		public BigDecimal getR25_india() { return r25_india; }
+		public void setR25_india(BigDecimal r25_india) { this.r25_india = r25_india; }
+		public BigDecimal getR25_sydney() { return r25_sydney; }
+		public void setR25_sydney(BigDecimal r25_sydney) { this.r25_sydney = r25_sydney; }
+		public BigDecimal getR25_uganda() { return r25_uganda; }
+		public void setR25_uganda(BigDecimal r25_uganda) { this.r25_uganda = r25_uganda; }
+		public BigDecimal getR25_c10() { return r25_c10; }
+		public void setR25_c10(BigDecimal r25_c10) { this.r25_c10 = r25_c10; }
+		public BigDecimal getR25_c11() { return r25_c11; }
+		public void setR25_c11(BigDecimal r25_c11) { this.r25_c11 = r25_c11; }
+		public BigDecimal getR25_c12() { return r25_c12; }
+		public void setR25_c12(BigDecimal r25_c12) { this.r25_c12 = r25_c12; }
+		public BigDecimal getR25_c13() { return r25_c13; }
+		public void setR25_c13(BigDecimal r25_c13) { this.r25_c13 = r25_c13; }
+		public BigDecimal getR25_c14() { return r25_c14; }
+		public void setR25_c14(BigDecimal r25_c14) { this.r25_c14 = r25_c14; }
+		public BigDecimal getR25_c15() { return r25_c15; }
+		public void setR25_c15(BigDecimal r25_c15) { this.r25_c15 = r25_c15; }
+		public BigDecimal getR25_c16() { return r25_c16; }
+		public void setR25_c16(BigDecimal r25_c16) { this.r25_c16 = r25_c16; }
+		public BigDecimal getR25_total() { return r25_total; }
+		public void setR25_total(BigDecimal r25_total) { this.r25_total = r25_total; }
+		public String getR26_product() { return r26_product; }
+		public void setR26_product(String r26_product) { this.r26_product = r26_product; }
+		public BigDecimal getR26_botswana() { return r26_botswana; }
+		public void setR26_botswana(BigDecimal r26_botswana) { this.r26_botswana = r26_botswana; }
+		public BigDecimal getR26_south_africa() { return r26_south_africa; }
+		public void setR26_south_africa(BigDecimal r26_south_africa) { this.r26_south_africa = r26_south_africa; }
+		public BigDecimal getR26_sadc() { return r26_sadc; }
+		public void setR26_sadc(BigDecimal r26_sadc) { this.r26_sadc = r26_sadc; }
+		public BigDecimal getR26_usa() { return r26_usa; }
+		public void setR26_usa(BigDecimal r26_usa) { this.r26_usa = r26_usa; }
+		public BigDecimal getR26_uk() { return r26_uk; }
+		public void setR26_uk(BigDecimal r26_uk) { this.r26_uk = r26_uk; }
+		public BigDecimal getR26_europe() { return r26_europe; }
+		public void setR26_europe(BigDecimal r26_europe) { this.r26_europe = r26_europe; }
+		public BigDecimal getR26_india() { return r26_india; }
+		public void setR26_india(BigDecimal r26_india) { this.r26_india = r26_india; }
+		public BigDecimal getR26_sydney() { return r26_sydney; }
+		public void setR26_sydney(BigDecimal r26_sydney) { this.r26_sydney = r26_sydney; }
+		public BigDecimal getR26_uganda() { return r26_uganda; }
+		public void setR26_uganda(BigDecimal r26_uganda) { this.r26_uganda = r26_uganda; }
+		public BigDecimal getR26_c10() { return r26_c10; }
+		public void setR26_c10(BigDecimal r26_c10) { this.r26_c10 = r26_c10; }
+		public BigDecimal getR26_c11() { return r26_c11; }
+		public void setR26_c11(BigDecimal r26_c11) { this.r26_c11 = r26_c11; }
+		public BigDecimal getR26_c12() { return r26_c12; }
+		public void setR26_c12(BigDecimal r26_c12) { this.r26_c12 = r26_c12; }
+		public BigDecimal getR26_c13() { return r26_c13; }
+		public void setR26_c13(BigDecimal r26_c13) { this.r26_c13 = r26_c13; }
+		public BigDecimal getR26_c14() { return r26_c14; }
+		public void setR26_c14(BigDecimal r26_c14) { this.r26_c14 = r26_c14; }
+		public BigDecimal getR26_c15() { return r26_c15; }
+		public void setR26_c15(BigDecimal r26_c15) { this.r26_c15 = r26_c15; }
+		public BigDecimal getR26_c16() { return r26_c16; }
+		public void setR26_c16(BigDecimal r26_c16) { this.r26_c16 = r26_c16; }
+		public BigDecimal getR26_total() { return r26_total; }
+		public void setR26_total(BigDecimal r26_total) { this.r26_total = r26_total; }
+		public String getR27_product() { return r27_product; }
+		public void setR27_product(String r27_product) { this.r27_product = r27_product; }
+		public BigDecimal getR27_botswana() { return r27_botswana; }
+		public void setR27_botswana(BigDecimal r27_botswana) { this.r27_botswana = r27_botswana; }
+		public BigDecimal getR27_south_africa() { return r27_south_africa; }
+		public void setR27_south_africa(BigDecimal r27_south_africa) { this.r27_south_africa = r27_south_africa; }
+		public BigDecimal getR27_sadc() { return r27_sadc; }
+		public void setR27_sadc(BigDecimal r27_sadc) { this.r27_sadc = r27_sadc; }
+		public BigDecimal getR27_usa() { return r27_usa; }
+		public void setR27_usa(BigDecimal r27_usa) { this.r27_usa = r27_usa; }
+		public BigDecimal getR27_uk() { return r27_uk; }
+		public void setR27_uk(BigDecimal r27_uk) { this.r27_uk = r27_uk; }
+		public BigDecimal getR27_europe() { return r27_europe; }
+		public void setR27_europe(BigDecimal r27_europe) { this.r27_europe = r27_europe; }
+		public BigDecimal getR27_india() { return r27_india; }
+		public void setR27_india(BigDecimal r27_india) { this.r27_india = r27_india; }
+		public BigDecimal getR27_sydney() { return r27_sydney; }
+		public void setR27_sydney(BigDecimal r27_sydney) { this.r27_sydney = r27_sydney; }
+		public BigDecimal getR27_uganda() { return r27_uganda; }
+		public void setR27_uganda(BigDecimal r27_uganda) { this.r27_uganda = r27_uganda; }
+		public BigDecimal getR27_c10() { return r27_c10; }
+		public void setR27_c10(BigDecimal r27_c10) { this.r27_c10 = r27_c10; }
+		public BigDecimal getR27_c11() { return r27_c11; }
+		public void setR27_c11(BigDecimal r27_c11) { this.r27_c11 = r27_c11; }
+		public BigDecimal getR27_c12() { return r27_c12; }
+		public void setR27_c12(BigDecimal r27_c12) { this.r27_c12 = r27_c12; }
+		public BigDecimal getR27_c13() { return r27_c13; }
+		public void setR27_c13(BigDecimal r27_c13) { this.r27_c13 = r27_c13; }
+		public BigDecimal getR27_c14() { return r27_c14; }
+		public void setR27_c14(BigDecimal r27_c14) { this.r27_c14 = r27_c14; }
+		public BigDecimal getR27_c15() { return r27_c15; }
+		public void setR27_c15(BigDecimal r27_c15) { this.r27_c15 = r27_c15; }
+		public BigDecimal getR27_c16() { return r27_c16; }
+		public void setR27_c16(BigDecimal r27_c16) { this.r27_c16 = r27_c16; }
+		public BigDecimal getR27_total() { return r27_total; }
+		public void setR27_total(BigDecimal r27_total) { this.r27_total = r27_total; }
+		public String getR28_product() { return r28_product; }
+		public void setR28_product(String r28_product) { this.r28_product = r28_product; }
+		public BigDecimal getR28_botswana() { return r28_botswana; }
+		public void setR28_botswana(BigDecimal r28_botswana) { this.r28_botswana = r28_botswana; }
+		public BigDecimal getR28_south_africa() { return r28_south_africa; }
+		public void setR28_south_africa(BigDecimal r28_south_africa) { this.r28_south_africa = r28_south_africa; }
+		public BigDecimal getR28_sadc() { return r28_sadc; }
+		public void setR28_sadc(BigDecimal r28_sadc) { this.r28_sadc = r28_sadc; }
+		public BigDecimal getR28_usa() { return r28_usa; }
+		public void setR28_usa(BigDecimal r28_usa) { this.r28_usa = r28_usa; }
+		public BigDecimal getR28_uk() { return r28_uk; }
+		public void setR28_uk(BigDecimal r28_uk) { this.r28_uk = r28_uk; }
+		public BigDecimal getR28_europe() { return r28_europe; }
+		public void setR28_europe(BigDecimal r28_europe) { this.r28_europe = r28_europe; }
+		public BigDecimal getR28_india() { return r28_india; }
+		public void setR28_india(BigDecimal r28_india) { this.r28_india = r28_india; }
+		public BigDecimal getR28_sydney() { return r28_sydney; }
+		public void setR28_sydney(BigDecimal r28_sydney) { this.r28_sydney = r28_sydney; }
+		public BigDecimal getR28_uganda() { return r28_uganda; }
+		public void setR28_uganda(BigDecimal r28_uganda) { this.r28_uganda = r28_uganda; }
+		public BigDecimal getR28_c10() { return r28_c10; }
+		public void setR28_c10(BigDecimal r28_c10) { this.r28_c10 = r28_c10; }
+		public BigDecimal getR28_c11() { return r28_c11; }
+		public void setR28_c11(BigDecimal r28_c11) { this.r28_c11 = r28_c11; }
+		public BigDecimal getR28_c12() { return r28_c12; }
+		public void setR28_c12(BigDecimal r28_c12) { this.r28_c12 = r28_c12; }
+		public BigDecimal getR28_c13() { return r28_c13; }
+		public void setR28_c13(BigDecimal r28_c13) { this.r28_c13 = r28_c13; }
+		public BigDecimal getR28_c14() { return r28_c14; }
+		public void setR28_c14(BigDecimal r28_c14) { this.r28_c14 = r28_c14; }
+		public BigDecimal getR28_c15() { return r28_c15; }
+		public void setR28_c15(BigDecimal r28_c15) { this.r28_c15 = r28_c15; }
+		public BigDecimal getR28_c16() { return r28_c16; }
+		public void setR28_c16(BigDecimal r28_c16) { this.r28_c16 = r28_c16; }
+		public BigDecimal getR28_total() { return r28_total; }
+		public void setR28_total(BigDecimal r28_total) { this.r28_total = r28_total; }
+		public String getR29_product() { return r29_product; }
+		public void setR29_product(String r29_product) { this.r29_product = r29_product; }
+		public BigDecimal getR29_botswana() { return r29_botswana; }
+		public void setR29_botswana(BigDecimal r29_botswana) { this.r29_botswana = r29_botswana; }
+		public BigDecimal getR29_south_africa() { return r29_south_africa; }
+		public void setR29_south_africa(BigDecimal r29_south_africa) { this.r29_south_africa = r29_south_africa; }
+		public BigDecimal getR29_sadc() { return r29_sadc; }
+		public void setR29_sadc(BigDecimal r29_sadc) { this.r29_sadc = r29_sadc; }
+		public BigDecimal getR29_usa() { return r29_usa; }
+		public void setR29_usa(BigDecimal r29_usa) { this.r29_usa = r29_usa; }
+		public BigDecimal getR29_uk() { return r29_uk; }
+		public void setR29_uk(BigDecimal r29_uk) { this.r29_uk = r29_uk; }
+		public BigDecimal getR29_europe() { return r29_europe; }
+		public void setR29_europe(BigDecimal r29_europe) { this.r29_europe = r29_europe; }
+		public BigDecimal getR29_india() { return r29_india; }
+		public void setR29_india(BigDecimal r29_india) { this.r29_india = r29_india; }
+		public BigDecimal getR29_sydney() { return r29_sydney; }
+		public void setR29_sydney(BigDecimal r29_sydney) { this.r29_sydney = r29_sydney; }
+		public BigDecimal getR29_uganda() { return r29_uganda; }
+		public void setR29_uganda(BigDecimal r29_uganda) { this.r29_uganda = r29_uganda; }
+		public BigDecimal getR29_c10() { return r29_c10; }
+		public void setR29_c10(BigDecimal r29_c10) { this.r29_c10 = r29_c10; }
+		public BigDecimal getR29_c11() { return r29_c11; }
+		public void setR29_c11(BigDecimal r29_c11) { this.r29_c11 = r29_c11; }
+		public BigDecimal getR29_c12() { return r29_c12; }
+		public void setR29_c12(BigDecimal r29_c12) { this.r29_c12 = r29_c12; }
+		public BigDecimal getR29_c13() { return r29_c13; }
+		public void setR29_c13(BigDecimal r29_c13) { this.r29_c13 = r29_c13; }
+		public BigDecimal getR29_c14() { return r29_c14; }
+		public void setR29_c14(BigDecimal r29_c14) { this.r29_c14 = r29_c14; }
+		public BigDecimal getR29_c15() { return r29_c15; }
+		public void setR29_c15(BigDecimal r29_c15) { this.r29_c15 = r29_c15; }
+		public BigDecimal getR29_c16() { return r29_c16; }
+		public void setR29_c16(BigDecimal r29_c16) { this.r29_c16 = r29_c16; }
+		public BigDecimal getR29_total() { return r29_total; }
+		public void setR29_total(BigDecimal r29_total) { this.r29_total = r29_total; }
+		public String getR30_product() { return r30_product; }
+		public void setR30_product(String r30_product) { this.r30_product = r30_product; }
+		public BigDecimal getR30_botswana() { return r30_botswana; }
+		public void setR30_botswana(BigDecimal r30_botswana) { this.r30_botswana = r30_botswana; }
+		public BigDecimal getR30_south_africa() { return r30_south_africa; }
+		public void setR30_south_africa(BigDecimal r30_south_africa) { this.r30_south_africa = r30_south_africa; }
+		public BigDecimal getR30_sadc() { return r30_sadc; }
+		public void setR30_sadc(BigDecimal r30_sadc) { this.r30_sadc = r30_sadc; }
+		public BigDecimal getR30_usa() { return r30_usa; }
+		public void setR30_usa(BigDecimal r30_usa) { this.r30_usa = r30_usa; }
+		public BigDecimal getR30_uk() { return r30_uk; }
+		public void setR30_uk(BigDecimal r30_uk) { this.r30_uk = r30_uk; }
+		public BigDecimal getR30_europe() { return r30_europe; }
+		public void setR30_europe(BigDecimal r30_europe) { this.r30_europe = r30_europe; }
+		public BigDecimal getR30_india() { return r30_india; }
+		public void setR30_india(BigDecimal r30_india) { this.r30_india = r30_india; }
+		public BigDecimal getR30_sydney() { return r30_sydney; }
+		public void setR30_sydney(BigDecimal r30_sydney) { this.r30_sydney = r30_sydney; }
+		public BigDecimal getR30_uganda() { return r30_uganda; }
+		public void setR30_uganda(BigDecimal r30_uganda) { this.r30_uganda = r30_uganda; }
+		public BigDecimal getR30_c10() { return r30_c10; }
+		public void setR30_c10(BigDecimal r30_c10) { this.r30_c10 = r30_c10; }
+		public BigDecimal getR30_c11() { return r30_c11; }
+		public void setR30_c11(BigDecimal r30_c11) { this.r30_c11 = r30_c11; }
+		public BigDecimal getR30_c12() { return r30_c12; }
+		public void setR30_c12(BigDecimal r30_c12) { this.r30_c12 = r30_c12; }
+		public BigDecimal getR30_c13() { return r30_c13; }
+		public void setR30_c13(BigDecimal r30_c13) { this.r30_c13 = r30_c13; }
+		public BigDecimal getR30_c14() { return r30_c14; }
+		public void setR30_c14(BigDecimal r30_c14) { this.r30_c14 = r30_c14; }
+		public BigDecimal getR30_c15() { return r30_c15; }
+		public void setR30_c15(BigDecimal r30_c15) { this.r30_c15 = r30_c15; }
+		public BigDecimal getR30_c16() { return r30_c16; }
+		public void setR30_c16(BigDecimal r30_c16) { this.r30_c16 = r30_c16; }
+		public BigDecimal getR30_total() { return r30_total; }
+		public void setR30_total(BigDecimal r30_total) { this.r30_total = r30_total; }
+		public String getR31_product() { return r31_product; }
+		public void setR31_product(String r31_product) { this.r31_product = r31_product; }
+		public BigDecimal getR31_botswana() { return r31_botswana; }
+		public void setR31_botswana(BigDecimal r31_botswana) { this.r31_botswana = r31_botswana; }
+		public BigDecimal getR31_south_africa() { return r31_south_africa; }
+		public void setR31_south_africa(BigDecimal r31_south_africa) { this.r31_south_africa = r31_south_africa; }
+		public BigDecimal getR31_sadc() { return r31_sadc; }
+		public void setR31_sadc(BigDecimal r31_sadc) { this.r31_sadc = r31_sadc; }
+		public BigDecimal getR31_usa() { return r31_usa; }
+		public void setR31_usa(BigDecimal r31_usa) { this.r31_usa = r31_usa; }
+		public BigDecimal getR31_uk() { return r31_uk; }
+		public void setR31_uk(BigDecimal r31_uk) { this.r31_uk = r31_uk; }
+		public BigDecimal getR31_europe() { return r31_europe; }
+		public void setR31_europe(BigDecimal r31_europe) { this.r31_europe = r31_europe; }
+		public BigDecimal getR31_india() { return r31_india; }
+		public void setR31_india(BigDecimal r31_india) { this.r31_india = r31_india; }
+		public BigDecimal getR31_sydney() { return r31_sydney; }
+		public void setR31_sydney(BigDecimal r31_sydney) { this.r31_sydney = r31_sydney; }
+		public BigDecimal getR31_uganda() { return r31_uganda; }
+		public void setR31_uganda(BigDecimal r31_uganda) { this.r31_uganda = r31_uganda; }
+		public BigDecimal getR31_c10() { return r31_c10; }
+		public void setR31_c10(BigDecimal r31_c10) { this.r31_c10 = r31_c10; }
+		public BigDecimal getR31_c11() { return r31_c11; }
+		public void setR31_c11(BigDecimal r31_c11) { this.r31_c11 = r31_c11; }
+		public BigDecimal getR31_c12() { return r31_c12; }
+		public void setR31_c12(BigDecimal r31_c12) { this.r31_c12 = r31_c12; }
+		public BigDecimal getR31_c13() { return r31_c13; }
+		public void setR31_c13(BigDecimal r31_c13) { this.r31_c13 = r31_c13; }
+		public BigDecimal getR31_c14() { return r31_c14; }
+		public void setR31_c14(BigDecimal r31_c14) { this.r31_c14 = r31_c14; }
+		public BigDecimal getR31_c15() { return r31_c15; }
+		public void setR31_c15(BigDecimal r31_c15) { this.r31_c15 = r31_c15; }
+		public BigDecimal getR31_c16() { return r31_c16; }
+		public void setR31_c16(BigDecimal r31_c16) { this.r31_c16 = r31_c16; }
+		public BigDecimal getR31_total() { return r31_total; }
+		public void setR31_total(BigDecimal r31_total) { this.r31_total = r31_total; }
+		public String getR32_product() { return r32_product; }
+		public void setR32_product(String r32_product) { this.r32_product = r32_product; }
+		public BigDecimal getR32_botswana() { return r32_botswana; }
+		public void setR32_botswana(BigDecimal r32_botswana) { this.r32_botswana = r32_botswana; }
+		public BigDecimal getR32_south_africa() { return r32_south_africa; }
+		public void setR32_south_africa(BigDecimal r32_south_africa) { this.r32_south_africa = r32_south_africa; }
+		public BigDecimal getR32_sadc() { return r32_sadc; }
+		public void setR32_sadc(BigDecimal r32_sadc) { this.r32_sadc = r32_sadc; }
+		public BigDecimal getR32_usa() { return r32_usa; }
+		public void setR32_usa(BigDecimal r32_usa) { this.r32_usa = r32_usa; }
+		public BigDecimal getR32_uk() { return r32_uk; }
+		public void setR32_uk(BigDecimal r32_uk) { this.r32_uk = r32_uk; }
+		public BigDecimal getR32_europe() { return r32_europe; }
+		public void setR32_europe(BigDecimal r32_europe) { this.r32_europe = r32_europe; }
+		public BigDecimal getR32_india() { return r32_india; }
+		public void setR32_india(BigDecimal r32_india) { this.r32_india = r32_india; }
+		public BigDecimal getR32_sydney() { return r32_sydney; }
+		public void setR32_sydney(BigDecimal r32_sydney) { this.r32_sydney = r32_sydney; }
+		public BigDecimal getR32_uganda() { return r32_uganda; }
+		public void setR32_uganda(BigDecimal r32_uganda) { this.r32_uganda = r32_uganda; }
+		public BigDecimal getR32_c10() { return r32_c10; }
+		public void setR32_c10(BigDecimal r32_c10) { this.r32_c10 = r32_c10; }
+		public BigDecimal getR32_c11() { return r32_c11; }
+		public void setR32_c11(BigDecimal r32_c11) { this.r32_c11 = r32_c11; }
+		public BigDecimal getR32_c12() { return r32_c12; }
+		public void setR32_c12(BigDecimal r32_c12) { this.r32_c12 = r32_c12; }
+		public BigDecimal getR32_c13() { return r32_c13; }
+		public void setR32_c13(BigDecimal r32_c13) { this.r32_c13 = r32_c13; }
+		public BigDecimal getR32_c14() { return r32_c14; }
+		public void setR32_c14(BigDecimal r32_c14) { this.r32_c14 = r32_c14; }
+		public BigDecimal getR32_c15() { return r32_c15; }
+		public void setR32_c15(BigDecimal r32_c15) { this.r32_c15 = r32_c15; }
+		public BigDecimal getR32_c16() { return r32_c16; }
+		public void setR32_c16(BigDecimal r32_c16) { this.r32_c16 = r32_c16; }
+		public BigDecimal getR32_total() { return r32_total; }
+		public void setR32_total(BigDecimal r32_total) { this.r32_total = r32_total; }
+		public String getR33_product() { return r33_product; }
+		public void setR33_product(String r33_product) { this.r33_product = r33_product; }
+		public BigDecimal getR33_botswana() { return r33_botswana; }
+		public void setR33_botswana(BigDecimal r33_botswana) { this.r33_botswana = r33_botswana; }
+		public BigDecimal getR33_south_africa() { return r33_south_africa; }
+		public void setR33_south_africa(BigDecimal r33_south_africa) { this.r33_south_africa = r33_south_africa; }
+		public BigDecimal getR33_sadc() { return r33_sadc; }
+		public void setR33_sadc(BigDecimal r33_sadc) { this.r33_sadc = r33_sadc; }
+		public BigDecimal getR33_usa() { return r33_usa; }
+		public void setR33_usa(BigDecimal r33_usa) { this.r33_usa = r33_usa; }
+		public BigDecimal getR33_uk() { return r33_uk; }
+		public void setR33_uk(BigDecimal r33_uk) { this.r33_uk = r33_uk; }
+		public BigDecimal getR33_europe() { return r33_europe; }
+		public void setR33_europe(BigDecimal r33_europe) { this.r33_europe = r33_europe; }
+		public BigDecimal getR33_india() { return r33_india; }
+		public void setR33_india(BigDecimal r33_india) { this.r33_india = r33_india; }
+		public BigDecimal getR33_sydney() { return r33_sydney; }
+		public void setR33_sydney(BigDecimal r33_sydney) { this.r33_sydney = r33_sydney; }
+		public BigDecimal getR33_uganda() { return r33_uganda; }
+		public void setR33_uganda(BigDecimal r33_uganda) { this.r33_uganda = r33_uganda; }
+		public BigDecimal getR33_c10() { return r33_c10; }
+		public void setR33_c10(BigDecimal r33_c10) { this.r33_c10 = r33_c10; }
+		public BigDecimal getR33_c11() { return r33_c11; }
+		public void setR33_c11(BigDecimal r33_c11) { this.r33_c11 = r33_c11; }
+		public BigDecimal getR33_c12() { return r33_c12; }
+		public void setR33_c12(BigDecimal r33_c12) { this.r33_c12 = r33_c12; }
+		public BigDecimal getR33_c13() { return r33_c13; }
+		public void setR33_c13(BigDecimal r33_c13) { this.r33_c13 = r33_c13; }
+		public BigDecimal getR33_c14() { return r33_c14; }
+		public void setR33_c14(BigDecimal r33_c14) { this.r33_c14 = r33_c14; }
+		public BigDecimal getR33_c15() { return r33_c15; }
+		public void setR33_c15(BigDecimal r33_c15) { this.r33_c15 = r33_c15; }
+		public BigDecimal getR33_c16() { return r33_c16; }
+		public void setR33_c16(BigDecimal r33_c16) { this.r33_c16 = r33_c16; }
+		public BigDecimal getR33_total() { return r33_total; }
+		public void setR33_total(BigDecimal r33_total) { this.r33_total = r33_total; }
+		public String getR34_product() { return r34_product; }
+		public void setR34_product(String r34_product) { this.r34_product = r34_product; }
+		public BigDecimal getR34_botswana() { return r34_botswana; }
+		public void setR34_botswana(BigDecimal r34_botswana) { this.r34_botswana = r34_botswana; }
+		public BigDecimal getR34_south_africa() { return r34_south_africa; }
+		public void setR34_south_africa(BigDecimal r34_south_africa) { this.r34_south_africa = r34_south_africa; }
+		public BigDecimal getR34_sadc() { return r34_sadc; }
+		public void setR34_sadc(BigDecimal r34_sadc) { this.r34_sadc = r34_sadc; }
+		public BigDecimal getR34_usa() { return r34_usa; }
+		public void setR34_usa(BigDecimal r34_usa) { this.r34_usa = r34_usa; }
+		public BigDecimal getR34_uk() { return r34_uk; }
+		public void setR34_uk(BigDecimal r34_uk) { this.r34_uk = r34_uk; }
+		public BigDecimal getR34_europe() { return r34_europe; }
+		public void setR34_europe(BigDecimal r34_europe) { this.r34_europe = r34_europe; }
+		public BigDecimal getR34_india() { return r34_india; }
+		public void setR34_india(BigDecimal r34_india) { this.r34_india = r34_india; }
+		public BigDecimal getR34_sydney() { return r34_sydney; }
+		public void setR34_sydney(BigDecimal r34_sydney) { this.r34_sydney = r34_sydney; }
+		public BigDecimal getR34_uganda() { return r34_uganda; }
+		public void setR34_uganda(BigDecimal r34_uganda) { this.r34_uganda = r34_uganda; }
+		public BigDecimal getR34_c10() { return r34_c10; }
+		public void setR34_c10(BigDecimal r34_c10) { this.r34_c10 = r34_c10; }
+		public BigDecimal getR34_c11() { return r34_c11; }
+		public void setR34_c11(BigDecimal r34_c11) { this.r34_c11 = r34_c11; }
+		public BigDecimal getR34_c12() { return r34_c12; }
+		public void setR34_c12(BigDecimal r34_c12) { this.r34_c12 = r34_c12; }
+		public BigDecimal getR34_c13() { return r34_c13; }
+		public void setR34_c13(BigDecimal r34_c13) { this.r34_c13 = r34_c13; }
+		public BigDecimal getR34_c14() { return r34_c14; }
+		public void setR34_c14(BigDecimal r34_c14) { this.r34_c14 = r34_c14; }
+		public BigDecimal getR34_c15() { return r34_c15; }
+		public void setR34_c15(BigDecimal r34_c15) { this.r34_c15 = r34_c15; }
+		public BigDecimal getR34_c16() { return r34_c16; }
+		public void setR34_c16(BigDecimal r34_c16) { this.r34_c16 = r34_c16; }
+		public BigDecimal getR34_total() { return r34_total; }
+		public void setR34_total(BigDecimal r34_total) { this.r34_total = r34_total; }
+		public String getR35_product() { return r35_product; }
+		public void setR35_product(String r35_product) { this.r35_product = r35_product; }
+		public BigDecimal getR35_botswana() { return r35_botswana; }
+		public void setR35_botswana(BigDecimal r35_botswana) { this.r35_botswana = r35_botswana; }
+		public BigDecimal getR35_south_africa() { return r35_south_africa; }
+		public void setR35_south_africa(BigDecimal r35_south_africa) { this.r35_south_africa = r35_south_africa; }
+		public BigDecimal getR35_sadc() { return r35_sadc; }
+		public void setR35_sadc(BigDecimal r35_sadc) { this.r35_sadc = r35_sadc; }
+		public BigDecimal getR35_usa() { return r35_usa; }
+		public void setR35_usa(BigDecimal r35_usa) { this.r35_usa = r35_usa; }
+		public BigDecimal getR35_uk() { return r35_uk; }
+		public void setR35_uk(BigDecimal r35_uk) { this.r35_uk = r35_uk; }
+		public BigDecimal getR35_europe() { return r35_europe; }
+		public void setR35_europe(BigDecimal r35_europe) { this.r35_europe = r35_europe; }
+		public BigDecimal getR35_india() { return r35_india; }
+		public void setR35_india(BigDecimal r35_india) { this.r35_india = r35_india; }
+		public BigDecimal getR35_sydney() { return r35_sydney; }
+		public void setR35_sydney(BigDecimal r35_sydney) { this.r35_sydney = r35_sydney; }
+		public BigDecimal getR35_uganda() { return r35_uganda; }
+		public void setR35_uganda(BigDecimal r35_uganda) { this.r35_uganda = r35_uganda; }
+		public BigDecimal getR35_c10() { return r35_c10; }
+		public void setR35_c10(BigDecimal r35_c10) { this.r35_c10 = r35_c10; }
+		public BigDecimal getR35_c11() { return r35_c11; }
+		public void setR35_c11(BigDecimal r35_c11) { this.r35_c11 = r35_c11; }
+		public BigDecimal getR35_c12() { return r35_c12; }
+		public void setR35_c12(BigDecimal r35_c12) { this.r35_c12 = r35_c12; }
+		public BigDecimal getR35_c13() { return r35_c13; }
+		public void setR35_c13(BigDecimal r35_c13) { this.r35_c13 = r35_c13; }
+		public BigDecimal getR35_c14() { return r35_c14; }
+		public void setR35_c14(BigDecimal r35_c14) { this.r35_c14 = r35_c14; }
+		public BigDecimal getR35_c15() { return r35_c15; }
+		public void setR35_c15(BigDecimal r35_c15) { this.r35_c15 = r35_c15; }
+		public BigDecimal getR35_c16() { return r35_c16; }
+		public void setR35_c16(BigDecimal r35_c16) { this.r35_c16 = r35_c16; }
+		public BigDecimal getR35_total() { return r35_total; }
+		public void setR35_total(BigDecimal r35_total) { this.r35_total = r35_total; }
+		public String getR36_product() { return r36_product; }
+		public void setR36_product(String r36_product) { this.r36_product = r36_product; }
+		public BigDecimal getR36_botswana() { return r36_botswana; }
+		public void setR36_botswana(BigDecimal r36_botswana) { this.r36_botswana = r36_botswana; }
+		public BigDecimal getR36_south_africa() { return r36_south_africa; }
+		public void setR36_south_africa(BigDecimal r36_south_africa) { this.r36_south_africa = r36_south_africa; }
+		public BigDecimal getR36_sadc() { return r36_sadc; }
+		public void setR36_sadc(BigDecimal r36_sadc) { this.r36_sadc = r36_sadc; }
+		public BigDecimal getR36_usa() { return r36_usa; }
+		public void setR36_usa(BigDecimal r36_usa) { this.r36_usa = r36_usa; }
+		public BigDecimal getR36_uk() { return r36_uk; }
+		public void setR36_uk(BigDecimal r36_uk) { this.r36_uk = r36_uk; }
+		public BigDecimal getR36_europe() { return r36_europe; }
+		public void setR36_europe(BigDecimal r36_europe) { this.r36_europe = r36_europe; }
+		public BigDecimal getR36_india() { return r36_india; }
+		public void setR36_india(BigDecimal r36_india) { this.r36_india = r36_india; }
+		public BigDecimal getR36_sydney() { return r36_sydney; }
+		public void setR36_sydney(BigDecimal r36_sydney) { this.r36_sydney = r36_sydney; }
+		public BigDecimal getR36_uganda() { return r36_uganda; }
+		public void setR36_uganda(BigDecimal r36_uganda) { this.r36_uganda = r36_uganda; }
+		public BigDecimal getR36_c10() { return r36_c10; }
+		public void setR36_c10(BigDecimal r36_c10) { this.r36_c10 = r36_c10; }
+		public BigDecimal getR36_c11() { return r36_c11; }
+		public void setR36_c11(BigDecimal r36_c11) { this.r36_c11 = r36_c11; }
+		public BigDecimal getR36_c12() { return r36_c12; }
+		public void setR36_c12(BigDecimal r36_c12) { this.r36_c12 = r36_c12; }
+		public BigDecimal getR36_c13() { return r36_c13; }
+		public void setR36_c13(BigDecimal r36_c13) { this.r36_c13 = r36_c13; }
+		public BigDecimal getR36_c14() { return r36_c14; }
+		public void setR36_c14(BigDecimal r36_c14) { this.r36_c14 = r36_c14; }
+		public BigDecimal getR36_c15() { return r36_c15; }
+		public void setR36_c15(BigDecimal r36_c15) { this.r36_c15 = r36_c15; }
+		public BigDecimal getR36_c16() { return r36_c16; }
+		public void setR36_c16(BigDecimal r36_c16) { this.r36_c16 = r36_c16; }
+		public BigDecimal getR36_total() { return r36_total; }
+		public void setR36_total(BigDecimal r36_total) { this.r36_total = r36_total; }
+		public String getR37_product() { return r37_product; }
+		public void setR37_product(String r37_product) { this.r37_product = r37_product; }
+		public BigDecimal getR37_botswana() { return r37_botswana; }
+		public void setR37_botswana(BigDecimal r37_botswana) { this.r37_botswana = r37_botswana; }
+		public BigDecimal getR37_south_africa() { return r37_south_africa; }
+		public void setR37_south_africa(BigDecimal r37_south_africa) { this.r37_south_africa = r37_south_africa; }
+		public BigDecimal getR37_sadc() { return r37_sadc; }
+		public void setR37_sadc(BigDecimal r37_sadc) { this.r37_sadc = r37_sadc; }
+		public BigDecimal getR37_usa() { return r37_usa; }
+		public void setR37_usa(BigDecimal r37_usa) { this.r37_usa = r37_usa; }
+		public BigDecimal getR37_uk() { return r37_uk; }
+		public void setR37_uk(BigDecimal r37_uk) { this.r37_uk = r37_uk; }
+		public BigDecimal getR37_europe() { return r37_europe; }
+		public void setR37_europe(BigDecimal r37_europe) { this.r37_europe = r37_europe; }
+		public BigDecimal getR37_india() { return r37_india; }
+		public void setR37_india(BigDecimal r37_india) { this.r37_india = r37_india; }
+		public BigDecimal getR37_sydney() { return r37_sydney; }
+		public void setR37_sydney(BigDecimal r37_sydney) { this.r37_sydney = r37_sydney; }
+		public BigDecimal getR37_uganda() { return r37_uganda; }
+		public void setR37_uganda(BigDecimal r37_uganda) { this.r37_uganda = r37_uganda; }
+		public BigDecimal getR37_c10() { return r37_c10; }
+		public void setR37_c10(BigDecimal r37_c10) { this.r37_c10 = r37_c10; }
+		public BigDecimal getR37_c11() { return r37_c11; }
+		public void setR37_c11(BigDecimal r37_c11) { this.r37_c11 = r37_c11; }
+		public BigDecimal getR37_c12() { return r37_c12; }
+		public void setR37_c12(BigDecimal r37_c12) { this.r37_c12 = r37_c12; }
+		public BigDecimal getR37_c13() { return r37_c13; }
+		public void setR37_c13(BigDecimal r37_c13) { this.r37_c13 = r37_c13; }
+		public BigDecimal getR37_c14() { return r37_c14; }
+		public void setR37_c14(BigDecimal r37_c14) { this.r37_c14 = r37_c14; }
+		public BigDecimal getR37_c15() { return r37_c15; }
+		public void setR37_c15(BigDecimal r37_c15) { this.r37_c15 = r37_c15; }
+		public BigDecimal getR37_c16() { return r37_c16; }
+		public void setR37_c16(BigDecimal r37_c16) { this.r37_c16 = r37_c16; }
+		public BigDecimal getR37_total() { return r37_total; }
+		public void setR37_total(BigDecimal r37_total) { this.r37_total = r37_total; }
+		public String getR38_product() { return r38_product; }
+		public void setR38_product(String r38_product) { this.r38_product = r38_product; }
+		public BigDecimal getR38_botswana() { return r38_botswana; }
+		public void setR38_botswana(BigDecimal r38_botswana) { this.r38_botswana = r38_botswana; }
+		public BigDecimal getR38_south_africa() { return r38_south_africa; }
+		public void setR38_south_africa(BigDecimal r38_south_africa) { this.r38_south_africa = r38_south_africa; }
+		public BigDecimal getR38_sadc() { return r38_sadc; }
+		public void setR38_sadc(BigDecimal r38_sadc) { this.r38_sadc = r38_sadc; }
+		public BigDecimal getR38_usa() { return r38_usa; }
+		public void setR38_usa(BigDecimal r38_usa) { this.r38_usa = r38_usa; }
+		public BigDecimal getR38_uk() { return r38_uk; }
+		public void setR38_uk(BigDecimal r38_uk) { this.r38_uk = r38_uk; }
+		public BigDecimal getR38_europe() { return r38_europe; }
+		public void setR38_europe(BigDecimal r38_europe) { this.r38_europe = r38_europe; }
+		public BigDecimal getR38_india() { return r38_india; }
+		public void setR38_india(BigDecimal r38_india) { this.r38_india = r38_india; }
+		public BigDecimal getR38_sydney() { return r38_sydney; }
+		public void setR38_sydney(BigDecimal r38_sydney) { this.r38_sydney = r38_sydney; }
+		public BigDecimal getR38_uganda() { return r38_uganda; }
+		public void setR38_uganda(BigDecimal r38_uganda) { this.r38_uganda = r38_uganda; }
+		public BigDecimal getR38_c10() { return r38_c10; }
+		public void setR38_c10(BigDecimal r38_c10) { this.r38_c10 = r38_c10; }
+		public BigDecimal getR38_c11() { return r38_c11; }
+		public void setR38_c11(BigDecimal r38_c11) { this.r38_c11 = r38_c11; }
+		public BigDecimal getR38_c12() { return r38_c12; }
+		public void setR38_c12(BigDecimal r38_c12) { this.r38_c12 = r38_c12; }
+		public BigDecimal getR38_c13() { return r38_c13; }
+		public void setR38_c13(BigDecimal r38_c13) { this.r38_c13 = r38_c13; }
+		public BigDecimal getR38_c14() { return r38_c14; }
+		public void setR38_c14(BigDecimal r38_c14) { this.r38_c14 = r38_c14; }
+		public BigDecimal getR38_c15() { return r38_c15; }
+		public void setR38_c15(BigDecimal r38_c15) { this.r38_c15 = r38_c15; }
+		public BigDecimal getR38_c16() { return r38_c16; }
+		public void setR38_c16(BigDecimal r38_c16) { this.r38_c16 = r38_c16; }
+		public BigDecimal getR38_total() { return r38_total; }
+		public void setR38_total(BigDecimal r38_total) { this.r38_total = r38_total; }
+		public String getR39_product() { return r39_product; }
+		public void setR39_product(String r39_product) { this.r39_product = r39_product; }
+		public BigDecimal getR39_botswana() { return r39_botswana; }
+		public void setR39_botswana(BigDecimal r39_botswana) { this.r39_botswana = r39_botswana; }
+		public BigDecimal getR39_south_africa() { return r39_south_africa; }
+		public void setR39_south_africa(BigDecimal r39_south_africa) { this.r39_south_africa = r39_south_africa; }
+		public BigDecimal getR39_sadc() { return r39_sadc; }
+		public void setR39_sadc(BigDecimal r39_sadc) { this.r39_sadc = r39_sadc; }
+		public BigDecimal getR39_usa() { return r39_usa; }
+		public void setR39_usa(BigDecimal r39_usa) { this.r39_usa = r39_usa; }
+		public BigDecimal getR39_uk() { return r39_uk; }
+		public void setR39_uk(BigDecimal r39_uk) { this.r39_uk = r39_uk; }
+		public BigDecimal getR39_europe() { return r39_europe; }
+		public void setR39_europe(BigDecimal r39_europe) { this.r39_europe = r39_europe; }
+		public BigDecimal getR39_india() { return r39_india; }
+		public void setR39_india(BigDecimal r39_india) { this.r39_india = r39_india; }
+		public BigDecimal getR39_sydney() { return r39_sydney; }
+		public void setR39_sydney(BigDecimal r39_sydney) { this.r39_sydney = r39_sydney; }
+		public BigDecimal getR39_uganda() { return r39_uganda; }
+		public void setR39_uganda(BigDecimal r39_uganda) { this.r39_uganda = r39_uganda; }
+		public BigDecimal getR39_c10() { return r39_c10; }
+		public void setR39_c10(BigDecimal r39_c10) { this.r39_c10 = r39_c10; }
+		public BigDecimal getR39_c11() { return r39_c11; }
+		public void setR39_c11(BigDecimal r39_c11) { this.r39_c11 = r39_c11; }
+		public BigDecimal getR39_c12() { return r39_c12; }
+		public void setR39_c12(BigDecimal r39_c12) { this.r39_c12 = r39_c12; }
+		public BigDecimal getR39_c13() { return r39_c13; }
+		public void setR39_c13(BigDecimal r39_c13) { this.r39_c13 = r39_c13; }
+		public BigDecimal getR39_c14() { return r39_c14; }
+		public void setR39_c14(BigDecimal r39_c14) { this.r39_c14 = r39_c14; }
+		public BigDecimal getR39_c15() { return r39_c15; }
+		public void setR39_c15(BigDecimal r39_c15) { this.r39_c15 = r39_c15; }
+		public BigDecimal getR39_c16() { return r39_c16; }
+		public void setR39_c16(BigDecimal r39_c16) { this.r39_c16 = r39_c16; }
+		public BigDecimal getR39_total() { return r39_total; }
+		public void setR39_total(BigDecimal r39_total) { this.r39_total = r39_total; }
+		public String getR40_product() { return r40_product; }
+		public void setR40_product(String r40_product) { this.r40_product = r40_product; }
+		public BigDecimal getR40_botswana() { return r40_botswana; }
+		public void setR40_botswana(BigDecimal r40_botswana) { this.r40_botswana = r40_botswana; }
+		public BigDecimal getR40_south_africa() { return r40_south_africa; }
+		public void setR40_south_africa(BigDecimal r40_south_africa) { this.r40_south_africa = r40_south_africa; }
+		public BigDecimal getR40_sadc() { return r40_sadc; }
+		public void setR40_sadc(BigDecimal r40_sadc) { this.r40_sadc = r40_sadc; }
+		public BigDecimal getR40_usa() { return r40_usa; }
+		public void setR40_usa(BigDecimal r40_usa) { this.r40_usa = r40_usa; }
+		public BigDecimal getR40_uk() { return r40_uk; }
+		public void setR40_uk(BigDecimal r40_uk) { this.r40_uk = r40_uk; }
+		public BigDecimal getR40_europe() { return r40_europe; }
+		public void setR40_europe(BigDecimal r40_europe) { this.r40_europe = r40_europe; }
+		public BigDecimal getR40_india() { return r40_india; }
+		public void setR40_india(BigDecimal r40_india) { this.r40_india = r40_india; }
+		public BigDecimal getR40_sydney() { return r40_sydney; }
+		public void setR40_sydney(BigDecimal r40_sydney) { this.r40_sydney = r40_sydney; }
+		public BigDecimal getR40_uganda() { return r40_uganda; }
+		public void setR40_uganda(BigDecimal r40_uganda) { this.r40_uganda = r40_uganda; }
+		public BigDecimal getR40_c10() { return r40_c10; }
+		public void setR40_c10(BigDecimal r40_c10) { this.r40_c10 = r40_c10; }
+		public BigDecimal getR40_c11() { return r40_c11; }
+		public void setR40_c11(BigDecimal r40_c11) { this.r40_c11 = r40_c11; }
+		public BigDecimal getR40_c12() { return r40_c12; }
+		public void setR40_c12(BigDecimal r40_c12) { this.r40_c12 = r40_c12; }
+		public BigDecimal getR40_c13() { return r40_c13; }
+		public void setR40_c13(BigDecimal r40_c13) { this.r40_c13 = r40_c13; }
+		public BigDecimal getR40_c14() { return r40_c14; }
+		public void setR40_c14(BigDecimal r40_c14) { this.r40_c14 = r40_c14; }
+		public BigDecimal getR40_c15() { return r40_c15; }
+		public void setR40_c15(BigDecimal r40_c15) { this.r40_c15 = r40_c15; }
+		public BigDecimal getR40_c16() { return r40_c16; }
+		public void setR40_c16(BigDecimal r40_c16) { this.r40_c16 = r40_c16; }
+		public BigDecimal getR40_total() { return r40_total; }
+		public void setR40_total(BigDecimal r40_total) { this.r40_total = r40_total; }
+		public String getR41_product() { return r41_product; }
+		public void setR41_product(String r41_product) { this.r41_product = r41_product; }
+		public BigDecimal getR41_botswana() { return r41_botswana; }
+		public void setR41_botswana(BigDecimal r41_botswana) { this.r41_botswana = r41_botswana; }
+		public BigDecimal getR41_south_africa() { return r41_south_africa; }
+		public void setR41_south_africa(BigDecimal r41_south_africa) { this.r41_south_africa = r41_south_africa; }
+		public BigDecimal getR41_sadc() { return r41_sadc; }
+		public void setR41_sadc(BigDecimal r41_sadc) { this.r41_sadc = r41_sadc; }
+		public BigDecimal getR41_usa() { return r41_usa; }
+		public void setR41_usa(BigDecimal r41_usa) { this.r41_usa = r41_usa; }
+		public BigDecimal getR41_uk() { return r41_uk; }
+		public void setR41_uk(BigDecimal r41_uk) { this.r41_uk = r41_uk; }
+		public BigDecimal getR41_europe() { return r41_europe; }
+		public void setR41_europe(BigDecimal r41_europe) { this.r41_europe = r41_europe; }
+		public BigDecimal getR41_india() { return r41_india; }
+		public void setR41_india(BigDecimal r41_india) { this.r41_india = r41_india; }
+		public BigDecimal getR41_sydney() { return r41_sydney; }
+		public void setR41_sydney(BigDecimal r41_sydney) { this.r41_sydney = r41_sydney; }
+		public BigDecimal getR41_uganda() { return r41_uganda; }
+		public void setR41_uganda(BigDecimal r41_uganda) { this.r41_uganda = r41_uganda; }
+		public BigDecimal getR41_c10() { return r41_c10; }
+		public void setR41_c10(BigDecimal r41_c10) { this.r41_c10 = r41_c10; }
+		public BigDecimal getR41_c11() { return r41_c11; }
+		public void setR41_c11(BigDecimal r41_c11) { this.r41_c11 = r41_c11; }
+		public BigDecimal getR41_c12() { return r41_c12; }
+		public void setR41_c12(BigDecimal r41_c12) { this.r41_c12 = r41_c12; }
+		public BigDecimal getR41_c13() { return r41_c13; }
+		public void setR41_c13(BigDecimal r41_c13) { this.r41_c13 = r41_c13; }
+		public BigDecimal getR41_c14() { return r41_c14; }
+		public void setR41_c14(BigDecimal r41_c14) { this.r41_c14 = r41_c14; }
+		public BigDecimal getR41_c15() { return r41_c15; }
+		public void setR41_c15(BigDecimal r41_c15) { this.r41_c15 = r41_c15; }
+		public BigDecimal getR41_c16() { return r41_c16; }
+		public void setR41_c16(BigDecimal r41_c16) { this.r41_c16 = r41_c16; }
+		public BigDecimal getR41_total() { return r41_total; }
+		public void setR41_total(BigDecimal r41_total) { this.r41_total = r41_total; }
+		public String getR42_product() { return r42_product; }
+		public void setR42_product(String r42_product) { this.r42_product = r42_product; }
+		public BigDecimal getR42_botswana() { return r42_botswana; }
+		public void setR42_botswana(BigDecimal r42_botswana) { this.r42_botswana = r42_botswana; }
+		public BigDecimal getR42_south_africa() { return r42_south_africa; }
+		public void setR42_south_africa(BigDecimal r42_south_africa) { this.r42_south_africa = r42_south_africa; }
+		public BigDecimal getR42_sadc() { return r42_sadc; }
+		public void setR42_sadc(BigDecimal r42_sadc) { this.r42_sadc = r42_sadc; }
+		public BigDecimal getR42_usa() { return r42_usa; }
+		public void setR42_usa(BigDecimal r42_usa) { this.r42_usa = r42_usa; }
+		public BigDecimal getR42_uk() { return r42_uk; }
+		public void setR42_uk(BigDecimal r42_uk) { this.r42_uk = r42_uk; }
+		public BigDecimal getR42_europe() { return r42_europe; }
+		public void setR42_europe(BigDecimal r42_europe) { this.r42_europe = r42_europe; }
+		public BigDecimal getR42_india() { return r42_india; }
+		public void setR42_india(BigDecimal r42_india) { this.r42_india = r42_india; }
+		public BigDecimal getR42_sydney() { return r42_sydney; }
+		public void setR42_sydney(BigDecimal r42_sydney) { this.r42_sydney = r42_sydney; }
+		public BigDecimal getR42_uganda() { return r42_uganda; }
+		public void setR42_uganda(BigDecimal r42_uganda) { this.r42_uganda = r42_uganda; }
+		public BigDecimal getR42_c10() { return r42_c10; }
+		public void setR42_c10(BigDecimal r42_c10) { this.r42_c10 = r42_c10; }
+		public BigDecimal getR42_c11() { return r42_c11; }
+		public void setR42_c11(BigDecimal r42_c11) { this.r42_c11 = r42_c11; }
+		public BigDecimal getR42_c12() { return r42_c12; }
+		public void setR42_c12(BigDecimal r42_c12) { this.r42_c12 = r42_c12; }
+		public BigDecimal getR42_c13() { return r42_c13; }
+		public void setR42_c13(BigDecimal r42_c13) { this.r42_c13 = r42_c13; }
+		public BigDecimal getR42_c14() { return r42_c14; }
+		public void setR42_c14(BigDecimal r42_c14) { this.r42_c14 = r42_c14; }
+		public BigDecimal getR42_c15() { return r42_c15; }
+		public void setR42_c15(BigDecimal r42_c15) { this.r42_c15 = r42_c15; }
+		public BigDecimal getR42_c16() { return r42_c16; }
+		public void setR42_c16(BigDecimal r42_c16) { this.r42_c16 = r42_c16; }
+		public BigDecimal getR42_total() { return r42_total; }
+		public void setR42_total(BigDecimal r42_total) { this.r42_total = r42_total; }
+		public String getR43_product() { return r43_product; }
+		public void setR43_product(String r43_product) { this.r43_product = r43_product; }
+		public BigDecimal getR43_botswana() { return r43_botswana; }
+		public void setR43_botswana(BigDecimal r43_botswana) { this.r43_botswana = r43_botswana; }
+		public BigDecimal getR43_south_africa() { return r43_south_africa; }
+		public void setR43_south_africa(BigDecimal r43_south_africa) { this.r43_south_africa = r43_south_africa; }
+		public BigDecimal getR43_sadc() { return r43_sadc; }
+		public void setR43_sadc(BigDecimal r43_sadc) { this.r43_sadc = r43_sadc; }
+		public BigDecimal getR43_usa() { return r43_usa; }
+		public void setR43_usa(BigDecimal r43_usa) { this.r43_usa = r43_usa; }
+		public BigDecimal getR43_uk() { return r43_uk; }
+		public void setR43_uk(BigDecimal r43_uk) { this.r43_uk = r43_uk; }
+		public BigDecimal getR43_europe() { return r43_europe; }
+		public void setR43_europe(BigDecimal r43_europe) { this.r43_europe = r43_europe; }
+		public BigDecimal getR43_india() { return r43_india; }
+		public void setR43_india(BigDecimal r43_india) { this.r43_india = r43_india; }
+		public BigDecimal getR43_sydney() { return r43_sydney; }
+		public void setR43_sydney(BigDecimal r43_sydney) { this.r43_sydney = r43_sydney; }
+		public BigDecimal getR43_uganda() { return r43_uganda; }
+		public void setR43_uganda(BigDecimal r43_uganda) { this.r43_uganda = r43_uganda; }
+		public BigDecimal getR43_c10() { return r43_c10; }
+		public void setR43_c10(BigDecimal r43_c10) { this.r43_c10 = r43_c10; }
+		public BigDecimal getR43_c11() { return r43_c11; }
+		public void setR43_c11(BigDecimal r43_c11) { this.r43_c11 = r43_c11; }
+		public BigDecimal getR43_c12() { return r43_c12; }
+		public void setR43_c12(BigDecimal r43_c12) { this.r43_c12 = r43_c12; }
+		public BigDecimal getR43_c13() { return r43_c13; }
+		public void setR43_c13(BigDecimal r43_c13) { this.r43_c13 = r43_c13; }
+		public BigDecimal getR43_c14() { return r43_c14; }
+		public void setR43_c14(BigDecimal r43_c14) { this.r43_c14 = r43_c14; }
+		public BigDecimal getR43_c15() { return r43_c15; }
+		public void setR43_c15(BigDecimal r43_c15) { this.r43_c15 = r43_c15; }
+		public BigDecimal getR43_c16() { return r43_c16; }
+		public void setR43_c16(BigDecimal r43_c16) { this.r43_c16 = r43_c16; }
+		public BigDecimal getR43_total() { return r43_total; }
+		public void setR43_total(BigDecimal r43_total) { this.r43_total = r43_total; }
+		public String getR44_product() { return r44_product; }
+		public void setR44_product(String r44_product) { this.r44_product = r44_product; }
+		public BigDecimal getR44_botswana() { return r44_botswana; }
+		public void setR44_botswana(BigDecimal r44_botswana) { this.r44_botswana = r44_botswana; }
+		public BigDecimal getR44_south_africa() { return r44_south_africa; }
+		public void setR44_south_africa(BigDecimal r44_south_africa) { this.r44_south_africa = r44_south_africa; }
+		public BigDecimal getR44_sadc() { return r44_sadc; }
+		public void setR44_sadc(BigDecimal r44_sadc) { this.r44_sadc = r44_sadc; }
+		public BigDecimal getR44_usa() { return r44_usa; }
+		public void setR44_usa(BigDecimal r44_usa) { this.r44_usa = r44_usa; }
+		public BigDecimal getR44_uk() { return r44_uk; }
+		public void setR44_uk(BigDecimal r44_uk) { this.r44_uk = r44_uk; }
+		public BigDecimal getR44_europe() { return r44_europe; }
+		public void setR44_europe(BigDecimal r44_europe) { this.r44_europe = r44_europe; }
+		public BigDecimal getR44_india() { return r44_india; }
+		public void setR44_india(BigDecimal r44_india) { this.r44_india = r44_india; }
+		public BigDecimal getR44_sydney() { return r44_sydney; }
+		public void setR44_sydney(BigDecimal r44_sydney) { this.r44_sydney = r44_sydney; }
+		public BigDecimal getR44_uganda() { return r44_uganda; }
+		public void setR44_uganda(BigDecimal r44_uganda) { this.r44_uganda = r44_uganda; }
+		public BigDecimal getR44_c10() { return r44_c10; }
+		public void setR44_c10(BigDecimal r44_c10) { this.r44_c10 = r44_c10; }
+		public BigDecimal getR44_c11() { return r44_c11; }
+		public void setR44_c11(BigDecimal r44_c11) { this.r44_c11 = r44_c11; }
+		public BigDecimal getR44_c12() { return r44_c12; }
+		public void setR44_c12(BigDecimal r44_c12) { this.r44_c12 = r44_c12; }
+		public BigDecimal getR44_c13() { return r44_c13; }
+		public void setR44_c13(BigDecimal r44_c13) { this.r44_c13 = r44_c13; }
+		public BigDecimal getR44_c14() { return r44_c14; }
+		public void setR44_c14(BigDecimal r44_c14) { this.r44_c14 = r44_c14; }
+		public BigDecimal getR44_c15() { return r44_c15; }
+		public void setR44_c15(BigDecimal r44_c15) { this.r44_c15 = r44_c15; }
+		public BigDecimal getR44_c16() { return r44_c16; }
+		public void setR44_c16(BigDecimal r44_c16) { this.r44_c16 = r44_c16; }
+		public BigDecimal getR44_total() { return r44_total; }
+		public void setR44_total(BigDecimal r44_total) { this.r44_total = r44_total; }
+		public String getR45_product() { return r45_product; }
+		public void setR45_product(String r45_product) { this.r45_product = r45_product; }
+		public BigDecimal getR45_botswana() { return r45_botswana; }
+		public void setR45_botswana(BigDecimal r45_botswana) { this.r45_botswana = r45_botswana; }
+		public BigDecimal getR45_south_africa() { return r45_south_africa; }
+		public void setR45_south_africa(BigDecimal r45_south_africa) { this.r45_south_africa = r45_south_africa; }
+		public BigDecimal getR45_sadc() { return r45_sadc; }
+		public void setR45_sadc(BigDecimal r45_sadc) { this.r45_sadc = r45_sadc; }
+		public BigDecimal getR45_usa() { return r45_usa; }
+		public void setR45_usa(BigDecimal r45_usa) { this.r45_usa = r45_usa; }
+		public BigDecimal getR45_uk() { return r45_uk; }
+		public void setR45_uk(BigDecimal r45_uk) { this.r45_uk = r45_uk; }
+		public BigDecimal getR45_europe() { return r45_europe; }
+		public void setR45_europe(BigDecimal r45_europe) { this.r45_europe = r45_europe; }
+		public BigDecimal getR45_india() { return r45_india; }
+		public void setR45_india(BigDecimal r45_india) { this.r45_india = r45_india; }
+		public BigDecimal getR45_sydney() { return r45_sydney; }
+		public void setR45_sydney(BigDecimal r45_sydney) { this.r45_sydney = r45_sydney; }
+		public BigDecimal getR45_uganda() { return r45_uganda; }
+		public void setR45_uganda(BigDecimal r45_uganda) { this.r45_uganda = r45_uganda; }
+		public BigDecimal getR45_c10() { return r45_c10; }
+		public void setR45_c10(BigDecimal r45_c10) { this.r45_c10 = r45_c10; }
+		public BigDecimal getR45_c11() { return r45_c11; }
+		public void setR45_c11(BigDecimal r45_c11) { this.r45_c11 = r45_c11; }
+		public BigDecimal getR45_c12() { return r45_c12; }
+		public void setR45_c12(BigDecimal r45_c12) { this.r45_c12 = r45_c12; }
+		public BigDecimal getR45_c13() { return r45_c13; }
+		public void setR45_c13(BigDecimal r45_c13) { this.r45_c13 = r45_c13; }
+		public BigDecimal getR45_c14() { return r45_c14; }
+		public void setR45_c14(BigDecimal r45_c14) { this.r45_c14 = r45_c14; }
+		public BigDecimal getR45_c15() { return r45_c15; }
+		public void setR45_c15(BigDecimal r45_c15) { this.r45_c15 = r45_c15; }
+		public BigDecimal getR45_c16() { return r45_c16; }
+		public void setR45_c16(BigDecimal r45_c16) { this.r45_c16 = r45_c16; }
+		public BigDecimal getR45_total() { return r45_total; }
+		public void setR45_total(BigDecimal r45_total) { this.r45_total = r45_total; }
+		public String getR46_product() { return r46_product; }
+		public void setR46_product(String r46_product) { this.r46_product = r46_product; }
+		public BigDecimal getR46_botswana() { return r46_botswana; }
+		public void setR46_botswana(BigDecimal r46_botswana) { this.r46_botswana = r46_botswana; }
+		public BigDecimal getR46_south_africa() { return r46_south_africa; }
+		public void setR46_south_africa(BigDecimal r46_south_africa) { this.r46_south_africa = r46_south_africa; }
+		public BigDecimal getR46_sadc() { return r46_sadc; }
+		public void setR46_sadc(BigDecimal r46_sadc) { this.r46_sadc = r46_sadc; }
+		public BigDecimal getR46_usa() { return r46_usa; }
+		public void setR46_usa(BigDecimal r46_usa) { this.r46_usa = r46_usa; }
+		public BigDecimal getR46_uk() { return r46_uk; }
+		public void setR46_uk(BigDecimal r46_uk) { this.r46_uk = r46_uk; }
+		public BigDecimal getR46_europe() { return r46_europe; }
+		public void setR46_europe(BigDecimal r46_europe) { this.r46_europe = r46_europe; }
+		public BigDecimal getR46_india() { return r46_india; }
+		public void setR46_india(BigDecimal r46_india) { this.r46_india = r46_india; }
+		public BigDecimal getR46_sydney() { return r46_sydney; }
+		public void setR46_sydney(BigDecimal r46_sydney) { this.r46_sydney = r46_sydney; }
+		public BigDecimal getR46_uganda() { return r46_uganda; }
+		public void setR46_uganda(BigDecimal r46_uganda) { this.r46_uganda = r46_uganda; }
+		public BigDecimal getR46_c10() { return r46_c10; }
+		public void setR46_c10(BigDecimal r46_c10) { this.r46_c10 = r46_c10; }
+		public BigDecimal getR46_c11() { return r46_c11; }
+		public void setR46_c11(BigDecimal r46_c11) { this.r46_c11 = r46_c11; }
+		public BigDecimal getR46_c12() { return r46_c12; }
+		public void setR46_c12(BigDecimal r46_c12) { this.r46_c12 = r46_c12; }
+		public BigDecimal getR46_c13() { return r46_c13; }
+		public void setR46_c13(BigDecimal r46_c13) { this.r46_c13 = r46_c13; }
+		public BigDecimal getR46_c14() { return r46_c14; }
+		public void setR46_c14(BigDecimal r46_c14) { this.r46_c14 = r46_c14; }
+		public BigDecimal getR46_c15() { return r46_c15; }
+		public void setR46_c15(BigDecimal r46_c15) { this.r46_c15 = r46_c15; }
+		public BigDecimal getR46_c16() { return r46_c16; }
+		public void setR46_c16(BigDecimal r46_c16) { this.r46_c16 = r46_c16; }
+		public BigDecimal getR46_total() { return r46_total; }
+		public void setR46_total(BigDecimal r46_total) { this.r46_total = r46_total; }
+		public String getR47_product() { return r47_product; }
+		public void setR47_product(String r47_product) { this.r47_product = r47_product; }
+		public BigDecimal getR47_botswana() { return r47_botswana; }
+		public void setR47_botswana(BigDecimal r47_botswana) { this.r47_botswana = r47_botswana; }
+		public BigDecimal getR47_south_africa() { return r47_south_africa; }
+		public void setR47_south_africa(BigDecimal r47_south_africa) { this.r47_south_africa = r47_south_africa; }
+		public BigDecimal getR47_sadc() { return r47_sadc; }
+		public void setR47_sadc(BigDecimal r47_sadc) { this.r47_sadc = r47_sadc; }
+		public BigDecimal getR47_usa() { return r47_usa; }
+		public void setR47_usa(BigDecimal r47_usa) { this.r47_usa = r47_usa; }
+		public BigDecimal getR47_uk() { return r47_uk; }
+		public void setR47_uk(BigDecimal r47_uk) { this.r47_uk = r47_uk; }
+		public BigDecimal getR47_europe() { return r47_europe; }
+		public void setR47_europe(BigDecimal r47_europe) { this.r47_europe = r47_europe; }
+		public BigDecimal getR47_india() { return r47_india; }
+		public void setR47_india(BigDecimal r47_india) { this.r47_india = r47_india; }
+		public BigDecimal getR47_sydney() { return r47_sydney; }
+		public void setR47_sydney(BigDecimal r47_sydney) { this.r47_sydney = r47_sydney; }
+		public BigDecimal getR47_uganda() { return r47_uganda; }
+		public void setR47_uganda(BigDecimal r47_uganda) { this.r47_uganda = r47_uganda; }
+		public BigDecimal getR47_c10() { return r47_c10; }
+		public void setR47_c10(BigDecimal r47_c10) { this.r47_c10 = r47_c10; }
+		public BigDecimal getR47_c11() { return r47_c11; }
+		public void setR47_c11(BigDecimal r47_c11) { this.r47_c11 = r47_c11; }
+		public BigDecimal getR47_c12() { return r47_c12; }
+		public void setR47_c12(BigDecimal r47_c12) { this.r47_c12 = r47_c12; }
+		public BigDecimal getR47_c13() { return r47_c13; }
+		public void setR47_c13(BigDecimal r47_c13) { this.r47_c13 = r47_c13; }
+		public BigDecimal getR47_c14() { return r47_c14; }
+		public void setR47_c14(BigDecimal r47_c14) { this.r47_c14 = r47_c14; }
+		public BigDecimal getR47_c15() { return r47_c15; }
+		public void setR47_c15(BigDecimal r47_c15) { this.r47_c15 = r47_c15; }
+		public BigDecimal getR47_c16() { return r47_c16; }
+		public void setR47_c16(BigDecimal r47_c16) { this.r47_c16 = r47_c16; }
+		public BigDecimal getR47_total() { return r47_total; }
+		public void setR47_total(BigDecimal r47_total) { this.r47_total = r47_total; }
+		public String getR48_product() { return r48_product; }
+		public void setR48_product(String r48_product) { this.r48_product = r48_product; }
+		public BigDecimal getR48_botswana() { return r48_botswana; }
+		public void setR48_botswana(BigDecimal r48_botswana) { this.r48_botswana = r48_botswana; }
+		public BigDecimal getR48_south_africa() { return r48_south_africa; }
+		public void setR48_south_africa(BigDecimal r48_south_africa) { this.r48_south_africa = r48_south_africa; }
+		public BigDecimal getR48_sadc() { return r48_sadc; }
+		public void setR48_sadc(BigDecimal r48_sadc) { this.r48_sadc = r48_sadc; }
+		public BigDecimal getR48_usa() { return r48_usa; }
+		public void setR48_usa(BigDecimal r48_usa) { this.r48_usa = r48_usa; }
+		public BigDecimal getR48_uk() { return r48_uk; }
+		public void setR48_uk(BigDecimal r48_uk) { this.r48_uk = r48_uk; }
+		public BigDecimal getR48_europe() { return r48_europe; }
+		public void setR48_europe(BigDecimal r48_europe) { this.r48_europe = r48_europe; }
+		public BigDecimal getR48_india() { return r48_india; }
+		public void setR48_india(BigDecimal r48_india) { this.r48_india = r48_india; }
+		public BigDecimal getR48_sydney() { return r48_sydney; }
+		public void setR48_sydney(BigDecimal r48_sydney) { this.r48_sydney = r48_sydney; }
+		public BigDecimal getR48_uganda() { return r48_uganda; }
+		public void setR48_uganda(BigDecimal r48_uganda) { this.r48_uganda = r48_uganda; }
+		public BigDecimal getR48_c10() { return r48_c10; }
+		public void setR48_c10(BigDecimal r48_c10) { this.r48_c10 = r48_c10; }
+		public BigDecimal getR48_c11() { return r48_c11; }
+		public void setR48_c11(BigDecimal r48_c11) { this.r48_c11 = r48_c11; }
+		public BigDecimal getR48_c12() { return r48_c12; }
+		public void setR48_c12(BigDecimal r48_c12) { this.r48_c12 = r48_c12; }
+		public BigDecimal getR48_c13() { return r48_c13; }
+		public void setR48_c13(BigDecimal r48_c13) { this.r48_c13 = r48_c13; }
+		public BigDecimal getR48_c14() { return r48_c14; }
+		public void setR48_c14(BigDecimal r48_c14) { this.r48_c14 = r48_c14; }
+		public BigDecimal getR48_c15() { return r48_c15; }
+		public void setR48_c15(BigDecimal r48_c15) { this.r48_c15 = r48_c15; }
+		public BigDecimal getR48_c16() { return r48_c16; }
+		public void setR48_c16(BigDecimal r48_c16) { this.r48_c16 = r48_c16; }
+		public BigDecimal getR48_total() { return r48_total; }
+		public void setR48_total(BigDecimal r48_total) { this.r48_total = r48_total; }
+		public String getR49_product() { return r49_product; }
+		public void setR49_product(String r49_product) { this.r49_product = r49_product; }
+		public BigDecimal getR49_botswana() { return r49_botswana; }
+		public void setR49_botswana(BigDecimal r49_botswana) { this.r49_botswana = r49_botswana; }
+		public BigDecimal getR49_south_africa() { return r49_south_africa; }
+		public void setR49_south_africa(BigDecimal r49_south_africa) { this.r49_south_africa = r49_south_africa; }
+		public BigDecimal getR49_sadc() { return r49_sadc; }
+		public void setR49_sadc(BigDecimal r49_sadc) { this.r49_sadc = r49_sadc; }
+		public BigDecimal getR49_usa() { return r49_usa; }
+		public void setR49_usa(BigDecimal r49_usa) { this.r49_usa = r49_usa; }
+		public BigDecimal getR49_uk() { return r49_uk; }
+		public void setR49_uk(BigDecimal r49_uk) { this.r49_uk = r49_uk; }
+		public BigDecimal getR49_europe() { return r49_europe; }
+		public void setR49_europe(BigDecimal r49_europe) { this.r49_europe = r49_europe; }
+		public BigDecimal getR49_india() { return r49_india; }
+		public void setR49_india(BigDecimal r49_india) { this.r49_india = r49_india; }
+		public BigDecimal getR49_sydney() { return r49_sydney; }
+		public void setR49_sydney(BigDecimal r49_sydney) { this.r49_sydney = r49_sydney; }
+		public BigDecimal getR49_uganda() { return r49_uganda; }
+		public void setR49_uganda(BigDecimal r49_uganda) { this.r49_uganda = r49_uganda; }
+		public BigDecimal getR49_c10() { return r49_c10; }
+		public void setR49_c10(BigDecimal r49_c10) { this.r49_c10 = r49_c10; }
+		public BigDecimal getR49_c11() { return r49_c11; }
+		public void setR49_c11(BigDecimal r49_c11) { this.r49_c11 = r49_c11; }
+		public BigDecimal getR49_c12() { return r49_c12; }
+		public void setR49_c12(BigDecimal r49_c12) { this.r49_c12 = r49_c12; }
+		public BigDecimal getR49_c13() { return r49_c13; }
+		public void setR49_c13(BigDecimal r49_c13) { this.r49_c13 = r49_c13; }
+		public BigDecimal getR49_c14() { return r49_c14; }
+		public void setR49_c14(BigDecimal r49_c14) { this.r49_c14 = r49_c14; }
+		public BigDecimal getR49_c15() { return r49_c15; }
+		public void setR49_c15(BigDecimal r49_c15) { this.r49_c15 = r49_c15; }
+		public BigDecimal getR49_c16() { return r49_c16; }
+		public void setR49_c16(BigDecimal r49_c16) { this.r49_c16 = r49_c16; }
+		public BigDecimal getR49_total() { return r49_total; }
+		public void setR49_total(BigDecimal r49_total) { this.r49_total = r49_total; }
+		public String getR50_product() { return r50_product; }
+		public void setR50_product(String r50_product) { this.r50_product = r50_product; }
+		public BigDecimal getR50_botswana() { return r50_botswana; }
+		public void setR50_botswana(BigDecimal r50_botswana) { this.r50_botswana = r50_botswana; }
+		public BigDecimal getR50_south_africa() { return r50_south_africa; }
+		public void setR50_south_africa(BigDecimal r50_south_africa) { this.r50_south_africa = r50_south_africa; }
+		public BigDecimal getR50_sadc() { return r50_sadc; }
+		public void setR50_sadc(BigDecimal r50_sadc) { this.r50_sadc = r50_sadc; }
+		public BigDecimal getR50_usa() { return r50_usa; }
+		public void setR50_usa(BigDecimal r50_usa) { this.r50_usa = r50_usa; }
+		public BigDecimal getR50_uk() { return r50_uk; }
+		public void setR50_uk(BigDecimal r50_uk) { this.r50_uk = r50_uk; }
+		public BigDecimal getR50_europe() { return r50_europe; }
+		public void setR50_europe(BigDecimal r50_europe) { this.r50_europe = r50_europe; }
+		public BigDecimal getR50_india() { return r50_india; }
+		public void setR50_india(BigDecimal r50_india) { this.r50_india = r50_india; }
+		public BigDecimal getR50_sydney() { return r50_sydney; }
+		public void setR50_sydney(BigDecimal r50_sydney) { this.r50_sydney = r50_sydney; }
+		public BigDecimal getR50_uganda() { return r50_uganda; }
+		public void setR50_uganda(BigDecimal r50_uganda) { this.r50_uganda = r50_uganda; }
+		public BigDecimal getR50_c10() { return r50_c10; }
+		public void setR50_c10(BigDecimal r50_c10) { this.r50_c10 = r50_c10; }
+		public BigDecimal getR50_c11() { return r50_c11; }
+		public void setR50_c11(BigDecimal r50_c11) { this.r50_c11 = r50_c11; }
+		public BigDecimal getR50_c12() { return r50_c12; }
+		public void setR50_c12(BigDecimal r50_c12) { this.r50_c12 = r50_c12; }
+		public BigDecimal getR50_c13() { return r50_c13; }
+		public void setR50_c13(BigDecimal r50_c13) { this.r50_c13 = r50_c13; }
+		public BigDecimal getR50_c14() { return r50_c14; }
+		public void setR50_c14(BigDecimal r50_c14) { this.r50_c14 = r50_c14; }
+		public BigDecimal getR50_c15() { return r50_c15; }
+		public void setR50_c15(BigDecimal r50_c15) { this.r50_c15 = r50_c15; }
+		public BigDecimal getR50_c16() { return r50_c16; }
+		public void setR50_c16(BigDecimal r50_c16) { this.r50_c16 = r50_c16; }
+		public BigDecimal getR50_total() { return r50_total; }
+		public void setR50_total(BigDecimal r50_total) { this.r50_total = r50_total; }
+		public String getR51_product() { return r51_product; }
+		public void setR51_product(String r51_product) { this.r51_product = r51_product; }
+		public BigDecimal getR51_botswana() { return r51_botswana; }
+		public void setR51_botswana(BigDecimal r51_botswana) { this.r51_botswana = r51_botswana; }
+		public BigDecimal getR51_south_africa() { return r51_south_africa; }
+		public void setR51_south_africa(BigDecimal r51_south_africa) { this.r51_south_africa = r51_south_africa; }
+		public BigDecimal getR51_sadc() { return r51_sadc; }
+		public void setR51_sadc(BigDecimal r51_sadc) { this.r51_sadc = r51_sadc; }
+		public BigDecimal getR51_usa() { return r51_usa; }
+		public void setR51_usa(BigDecimal r51_usa) { this.r51_usa = r51_usa; }
+		public BigDecimal getR51_uk() { return r51_uk; }
+		public void setR51_uk(BigDecimal r51_uk) { this.r51_uk = r51_uk; }
+		public BigDecimal getR51_europe() { return r51_europe; }
+		public void setR51_europe(BigDecimal r51_europe) { this.r51_europe = r51_europe; }
+		public BigDecimal getR51_india() { return r51_india; }
+		public void setR51_india(BigDecimal r51_india) { this.r51_india = r51_india; }
+		public BigDecimal getR51_sydney() { return r51_sydney; }
+		public void setR51_sydney(BigDecimal r51_sydney) { this.r51_sydney = r51_sydney; }
+		public BigDecimal getR51_uganda() { return r51_uganda; }
+		public void setR51_uganda(BigDecimal r51_uganda) { this.r51_uganda = r51_uganda; }
+		public BigDecimal getR51_c10() { return r51_c10; }
+		public void setR51_c10(BigDecimal r51_c10) { this.r51_c10 = r51_c10; }
+		public BigDecimal getR51_c11() { return r51_c11; }
+		public void setR51_c11(BigDecimal r51_c11) { this.r51_c11 = r51_c11; }
+		public BigDecimal getR51_c12() { return r51_c12; }
+		public void setR51_c12(BigDecimal r51_c12) { this.r51_c12 = r51_c12; }
+		public BigDecimal getR51_c13() { return r51_c13; }
+		public void setR51_c13(BigDecimal r51_c13) { this.r51_c13 = r51_c13; }
+		public BigDecimal getR51_c14() { return r51_c14; }
+		public void setR51_c14(BigDecimal r51_c14) { this.r51_c14 = r51_c14; }
+		public BigDecimal getR51_c15() { return r51_c15; }
+		public void setR51_c15(BigDecimal r51_c15) { this.r51_c15 = r51_c15; }
+		public BigDecimal getR51_c16() { return r51_c16; }
+		public void setR51_c16(BigDecimal r51_c16) { this.r51_c16 = r51_c16; }
+		public BigDecimal getR51_total() { return r51_total; }
+		public void setR51_total(BigDecimal r51_total) { this.r51_total = r51_total; }
+		public String getR52_product() { return r52_product; }
+		public void setR52_product(String r52_product) { this.r52_product = r52_product; }
+		public BigDecimal getR52_botswana() { return r52_botswana; }
+		public void setR52_botswana(BigDecimal r52_botswana) { this.r52_botswana = r52_botswana; }
+		public BigDecimal getR52_south_africa() { return r52_south_africa; }
+		public void setR52_south_africa(BigDecimal r52_south_africa) { this.r52_south_africa = r52_south_africa; }
+		public BigDecimal getR52_sadc() { return r52_sadc; }
+		public void setR52_sadc(BigDecimal r52_sadc) { this.r52_sadc = r52_sadc; }
+		public BigDecimal getR52_usa() { return r52_usa; }
+		public void setR52_usa(BigDecimal r52_usa) { this.r52_usa = r52_usa; }
+		public BigDecimal getR52_uk() { return r52_uk; }
+		public void setR52_uk(BigDecimal r52_uk) { this.r52_uk = r52_uk; }
+		public BigDecimal getR52_europe() { return r52_europe; }
+		public void setR52_europe(BigDecimal r52_europe) { this.r52_europe = r52_europe; }
+		public BigDecimal getR52_india() { return r52_india; }
+		public void setR52_india(BigDecimal r52_india) { this.r52_india = r52_india; }
+		public BigDecimal getR52_sydney() { return r52_sydney; }
+		public void setR52_sydney(BigDecimal r52_sydney) { this.r52_sydney = r52_sydney; }
+		public BigDecimal getR52_uganda() { return r52_uganda; }
+		public void setR52_uganda(BigDecimal r52_uganda) { this.r52_uganda = r52_uganda; }
+		public BigDecimal getR52_c10() { return r52_c10; }
+		public void setR52_c10(BigDecimal r52_c10) { this.r52_c10 = r52_c10; }
+		public BigDecimal getR52_c11() { return r52_c11; }
+		public void setR52_c11(BigDecimal r52_c11) { this.r52_c11 = r52_c11; }
+		public BigDecimal getR52_c12() { return r52_c12; }
+		public void setR52_c12(BigDecimal r52_c12) { this.r52_c12 = r52_c12; }
+		public BigDecimal getR52_c13() { return r52_c13; }
+		public void setR52_c13(BigDecimal r52_c13) { this.r52_c13 = r52_c13; }
+		public BigDecimal getR52_c14() { return r52_c14; }
+		public void setR52_c14(BigDecimal r52_c14) { this.r52_c14 = r52_c14; }
+		public BigDecimal getR52_c15() { return r52_c15; }
+		public void setR52_c15(BigDecimal r52_c15) { this.r52_c15 = r52_c15; }
+		public BigDecimal getR52_c16() { return r52_c16; }
+		public void setR52_c16(BigDecimal r52_c16) { this.r52_c16 = r52_c16; }
+		public BigDecimal getR52_total() { return r52_total; }
+		public void setR52_total(BigDecimal r52_total) { this.r52_total = r52_total; }
+		public String getR53_product() { return r53_product; }
+		public void setR53_product(String r53_product) { this.r53_product = r53_product; }
+		public BigDecimal getR53_botswana() { return r53_botswana; }
+		public void setR53_botswana(BigDecimal r53_botswana) { this.r53_botswana = r53_botswana; }
+		public BigDecimal getR53_south_africa() { return r53_south_africa; }
+		public void setR53_south_africa(BigDecimal r53_south_africa) { this.r53_south_africa = r53_south_africa; }
+		public BigDecimal getR53_sadc() { return r53_sadc; }
+		public void setR53_sadc(BigDecimal r53_sadc) { this.r53_sadc = r53_sadc; }
+		public BigDecimal getR53_usa() { return r53_usa; }
+		public void setR53_usa(BigDecimal r53_usa) { this.r53_usa = r53_usa; }
+		public BigDecimal getR53_uk() { return r53_uk; }
+		public void setR53_uk(BigDecimal r53_uk) { this.r53_uk = r53_uk; }
+		public BigDecimal getR53_europe() { return r53_europe; }
+		public void setR53_europe(BigDecimal r53_europe) { this.r53_europe = r53_europe; }
+		public BigDecimal getR53_india() { return r53_india; }
+		public void setR53_india(BigDecimal r53_india) { this.r53_india = r53_india; }
+		public BigDecimal getR53_sydney() { return r53_sydney; }
+		public void setR53_sydney(BigDecimal r53_sydney) { this.r53_sydney = r53_sydney; }
+		public BigDecimal getR53_uganda() { return r53_uganda; }
+		public void setR53_uganda(BigDecimal r53_uganda) { this.r53_uganda = r53_uganda; }
+		public BigDecimal getR53_c10() { return r53_c10; }
+		public void setR53_c10(BigDecimal r53_c10) { this.r53_c10 = r53_c10; }
+		public BigDecimal getR53_c11() { return r53_c11; }
+		public void setR53_c11(BigDecimal r53_c11) { this.r53_c11 = r53_c11; }
+		public BigDecimal getR53_c12() { return r53_c12; }
+		public void setR53_c12(BigDecimal r53_c12) { this.r53_c12 = r53_c12; }
+		public BigDecimal getR53_c13() { return r53_c13; }
+		public void setR53_c13(BigDecimal r53_c13) { this.r53_c13 = r53_c13; }
+		public BigDecimal getR53_c14() { return r53_c14; }
+		public void setR53_c14(BigDecimal r53_c14) { this.r53_c14 = r53_c14; }
+		public BigDecimal getR53_c15() { return r53_c15; }
+		public void setR53_c15(BigDecimal r53_c15) { this.r53_c15 = r53_c15; }
+		public BigDecimal getR53_c16() { return r53_c16; }
+		public void setR53_c16(BigDecimal r53_c16) { this.r53_c16 = r53_c16; }
+		public BigDecimal getR53_total() { return r53_total; }
+		public void setR53_total(BigDecimal r53_total) { this.r53_total = r53_total; }
+		public String getR54_product() { return r54_product; }
+		public void setR54_product(String r54_product) { this.r54_product = r54_product; }
+		public BigDecimal getR54_botswana() { return r54_botswana; }
+		public void setR54_botswana(BigDecimal r54_botswana) { this.r54_botswana = r54_botswana; }
+		public BigDecimal getR54_south_africa() { return r54_south_africa; }
+		public void setR54_south_africa(BigDecimal r54_south_africa) { this.r54_south_africa = r54_south_africa; }
+		public BigDecimal getR54_sadc() { return r54_sadc; }
+		public void setR54_sadc(BigDecimal r54_sadc) { this.r54_sadc = r54_sadc; }
+		public BigDecimal getR54_usa() { return r54_usa; }
+		public void setR54_usa(BigDecimal r54_usa) { this.r54_usa = r54_usa; }
+		public BigDecimal getR54_uk() { return r54_uk; }
+		public void setR54_uk(BigDecimal r54_uk) { this.r54_uk = r54_uk; }
+		public BigDecimal getR54_europe() { return r54_europe; }
+		public void setR54_europe(BigDecimal r54_europe) { this.r54_europe = r54_europe; }
+		public BigDecimal getR54_india() { return r54_india; }
+		public void setR54_india(BigDecimal r54_india) { this.r54_india = r54_india; }
+		public BigDecimal getR54_sydney() { return r54_sydney; }
+		public void setR54_sydney(BigDecimal r54_sydney) { this.r54_sydney = r54_sydney; }
+		public BigDecimal getR54_uganda() { return r54_uganda; }
+		public void setR54_uganda(BigDecimal r54_uganda) { this.r54_uganda = r54_uganda; }
+		public BigDecimal getR54_c10() { return r54_c10; }
+		public void setR54_c10(BigDecimal r54_c10) { this.r54_c10 = r54_c10; }
+		public BigDecimal getR54_c11() { return r54_c11; }
+		public void setR54_c11(BigDecimal r54_c11) { this.r54_c11 = r54_c11; }
+		public BigDecimal getR54_c12() { return r54_c12; }
+		public void setR54_c12(BigDecimal r54_c12) { this.r54_c12 = r54_c12; }
+		public BigDecimal getR54_c13() { return r54_c13; }
+		public void setR54_c13(BigDecimal r54_c13) { this.r54_c13 = r54_c13; }
+		public BigDecimal getR54_c14() { return r54_c14; }
+		public void setR54_c14(BigDecimal r54_c14) { this.r54_c14 = r54_c14; }
+		public BigDecimal getR54_c15() { return r54_c15; }
+		public void setR54_c15(BigDecimal r54_c15) { this.r54_c15 = r54_c15; }
+		public BigDecimal getR54_c16() { return r54_c16; }
+		public void setR54_c16(BigDecimal r54_c16) { this.r54_c16 = r54_c16; }
+		public BigDecimal getR54_total() { return r54_total; }
+		public void setR54_total(BigDecimal r54_total) { this.r54_total = r54_total; }
+		public String getR55_product() { return r55_product; }
+		public void setR55_product(String r55_product) { this.r55_product = r55_product; }
+		public BigDecimal getR55_botswana() { return r55_botswana; }
+		public void setR55_botswana(BigDecimal r55_botswana) { this.r55_botswana = r55_botswana; }
+		public BigDecimal getR55_south_africa() { return r55_south_africa; }
+		public void setR55_south_africa(BigDecimal r55_south_africa) { this.r55_south_africa = r55_south_africa; }
+		public BigDecimal getR55_sadc() { return r55_sadc; }
+		public void setR55_sadc(BigDecimal r55_sadc) { this.r55_sadc = r55_sadc; }
+		public BigDecimal getR55_usa() { return r55_usa; }
+		public void setR55_usa(BigDecimal r55_usa) { this.r55_usa = r55_usa; }
+		public BigDecimal getR55_uk() { return r55_uk; }
+		public void setR55_uk(BigDecimal r55_uk) { this.r55_uk = r55_uk; }
+		public BigDecimal getR55_europe() { return r55_europe; }
+		public void setR55_europe(BigDecimal r55_europe) { this.r55_europe = r55_europe; }
+		public BigDecimal getR55_india() { return r55_india; }
+		public void setR55_india(BigDecimal r55_india) { this.r55_india = r55_india; }
+		public BigDecimal getR55_sydney() { return r55_sydney; }
+		public void setR55_sydney(BigDecimal r55_sydney) { this.r55_sydney = r55_sydney; }
+		public BigDecimal getR55_uganda() { return r55_uganda; }
+		public void setR55_uganda(BigDecimal r55_uganda) { this.r55_uganda = r55_uganda; }
+		public BigDecimal getR55_c10() { return r55_c10; }
+		public void setR55_c10(BigDecimal r55_c10) { this.r55_c10 = r55_c10; }
+		public BigDecimal getR55_c11() { return r55_c11; }
+		public void setR55_c11(BigDecimal r55_c11) { this.r55_c11 = r55_c11; }
+		public BigDecimal getR55_c12() { return r55_c12; }
+		public void setR55_c12(BigDecimal r55_c12) { this.r55_c12 = r55_c12; }
+		public BigDecimal getR55_c13() { return r55_c13; }
+		public void setR55_c13(BigDecimal r55_c13) { this.r55_c13 = r55_c13; }
+		public BigDecimal getR55_c14() { return r55_c14; }
+		public void setR55_c14(BigDecimal r55_c14) { this.r55_c14 = r55_c14; }
+		public BigDecimal getR55_c15() { return r55_c15; }
+		public void setR55_c15(BigDecimal r55_c15) { this.r55_c15 = r55_c15; }
+		public BigDecimal getR55_c16() { return r55_c16; }
+		public void setR55_c16(BigDecimal r55_c16) { this.r55_c16 = r55_c16; }
+		public BigDecimal getR55_total() { return r55_total; }
+		public void setR55_total(BigDecimal r55_total) { this.r55_total = r55_total; }
+		public String getR56_product() { return r56_product; }
+		public void setR56_product(String r56_product) { this.r56_product = r56_product; }
+		public BigDecimal getR56_botswana() { return r56_botswana; }
+		public void setR56_botswana(BigDecimal r56_botswana) { this.r56_botswana = r56_botswana; }
+		public BigDecimal getR56_south_africa() { return r56_south_africa; }
+		public void setR56_south_africa(BigDecimal r56_south_africa) { this.r56_south_africa = r56_south_africa; }
+		public BigDecimal getR56_sadc() { return r56_sadc; }
+		public void setR56_sadc(BigDecimal r56_sadc) { this.r56_sadc = r56_sadc; }
+		public BigDecimal getR56_usa() { return r56_usa; }
+		public void setR56_usa(BigDecimal r56_usa) { this.r56_usa = r56_usa; }
+		public BigDecimal getR56_uk() { return r56_uk; }
+		public void setR56_uk(BigDecimal r56_uk) { this.r56_uk = r56_uk; }
+		public BigDecimal getR56_europe() { return r56_europe; }
+		public void setR56_europe(BigDecimal r56_europe) { this.r56_europe = r56_europe; }
+		public BigDecimal getR56_india() { return r56_india; }
+		public void setR56_india(BigDecimal r56_india) { this.r56_india = r56_india; }
+		public BigDecimal getR56_sydney() { return r56_sydney; }
+		public void setR56_sydney(BigDecimal r56_sydney) { this.r56_sydney = r56_sydney; }
+		public BigDecimal getR56_uganda() { return r56_uganda; }
+		public void setR56_uganda(BigDecimal r56_uganda) { this.r56_uganda = r56_uganda; }
+		public BigDecimal getR56_c10() { return r56_c10; }
+		public void setR56_c10(BigDecimal r56_c10) { this.r56_c10 = r56_c10; }
+		public BigDecimal getR56_c11() { return r56_c11; }
+		public void setR56_c11(BigDecimal r56_c11) { this.r56_c11 = r56_c11; }
+		public BigDecimal getR56_c12() { return r56_c12; }
+		public void setR56_c12(BigDecimal r56_c12) { this.r56_c12 = r56_c12; }
+		public BigDecimal getR56_c13() { return r56_c13; }
+		public void setR56_c13(BigDecimal r56_c13) { this.r56_c13 = r56_c13; }
+		public BigDecimal getR56_c14() { return r56_c14; }
+		public void setR56_c14(BigDecimal r56_c14) { this.r56_c14 = r56_c14; }
+		public BigDecimal getR56_c15() { return r56_c15; }
+		public void setR56_c15(BigDecimal r56_c15) { this.r56_c15 = r56_c15; }
+		public BigDecimal getR56_c16() { return r56_c16; }
+		public void setR56_c16(BigDecimal r56_c16) { this.r56_c16 = r56_c16; }
+		public BigDecimal getR56_total() { return r56_total; }
+		public void setR56_total(BigDecimal r56_total) { this.r56_total = r56_total; }
+		public String getR59_product() { return r59_product; }
+		public void setR59_product(String r59_product) { this.r59_product = r59_product; }
+		public BigDecimal getR59_botswana() { return r59_botswana; }
+		public void setR59_botswana(BigDecimal r59_botswana) { this.r59_botswana = r59_botswana; }
+		public BigDecimal getR59_south_africa() { return r59_south_africa; }
+		public void setR59_south_africa(BigDecimal r59_south_africa) { this.r59_south_africa = r59_south_africa; }
+		public BigDecimal getR59_sadc() { return r59_sadc; }
+		public void setR59_sadc(BigDecimal r59_sadc) { this.r59_sadc = r59_sadc; }
+		public BigDecimal getR59_usa() { return r59_usa; }
+		public void setR59_usa(BigDecimal r59_usa) { this.r59_usa = r59_usa; }
+		public BigDecimal getR59_uk() { return r59_uk; }
+		public void setR59_uk(BigDecimal r59_uk) { this.r59_uk = r59_uk; }
+		public BigDecimal getR59_europe() { return r59_europe; }
+		public void setR59_europe(BigDecimal r59_europe) { this.r59_europe = r59_europe; }
+		public BigDecimal getR59_india() { return r59_india; }
+		public void setR59_india(BigDecimal r59_india) { this.r59_india = r59_india; }
+		public BigDecimal getR59_sydney() { return r59_sydney; }
+		public void setR59_sydney(BigDecimal r59_sydney) { this.r59_sydney = r59_sydney; }
+		public BigDecimal getR59_uganda() { return r59_uganda; }
+		public void setR59_uganda(BigDecimal r59_uganda) { this.r59_uganda = r59_uganda; }
+		public BigDecimal getR59_c10() { return r59_c10; }
+		public void setR59_c10(BigDecimal r59_c10) { this.r59_c10 = r59_c10; }
+		public BigDecimal getR59_c11() { return r59_c11; }
+		public void setR59_c11(BigDecimal r59_c11) { this.r59_c11 = r59_c11; }
+		public BigDecimal getR59_c12() { return r59_c12; }
+		public void setR59_c12(BigDecimal r59_c12) { this.r59_c12 = r59_c12; }
+		public BigDecimal getR59_c13() { return r59_c13; }
+		public void setR59_c13(BigDecimal r59_c13) { this.r59_c13 = r59_c13; }
+		public BigDecimal getR59_c14() { return r59_c14; }
+		public void setR59_c14(BigDecimal r59_c14) { this.r59_c14 = r59_c14; }
+		public BigDecimal getR59_c15() { return r59_c15; }
+		public void setR59_c15(BigDecimal r59_c15) { this.r59_c15 = r59_c15; }
+		public BigDecimal getR59_c16() { return r59_c16; }
+		public void setR59_c16(BigDecimal r59_c16) { this.r59_c16 = r59_c16; }
+		public BigDecimal getR59_total() { return r59_total; }
+		public void setR59_total(BigDecimal r59_total) { this.r59_total = r59_total; }
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date report_date) { this.report_date = report_date; }
+		public String getReport_version() { return report_version; }
+		public void setReport_version(String report_version) { this.report_version = report_version; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORSummary2RowMapper implements RowMapper<M_GALOR_Summary_Entity2> {
+		@Override
+		public M_GALOR_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Summary_Entity2 obj = new M_GALOR_Summary_Entity2();
+			obj.setR62_product(rs.getString("R62_PRODUCT"));
+			obj.setR62_botswana(rs.getBigDecimal("R62_BOTSWANA"));
+			obj.setR62_south_africa(rs.getBigDecimal("R62_SOUTH_AFRICA"));
+			obj.setR62_sadc(rs.getBigDecimal("R62_SADC"));
+			obj.setR62_usa(rs.getBigDecimal("R62_USA"));
+			obj.setR62_uk(rs.getBigDecimal("R62_UK"));
+			obj.setR62_europe(rs.getBigDecimal("R62_EUROPE"));
+			obj.setR62_india(rs.getBigDecimal("R62_INDIA"));
+			obj.setR62_sydney(rs.getBigDecimal("R62_SYDNEY"));
+			obj.setR62_uganda(rs.getBigDecimal("R62_UGANDA"));
+			obj.setR62_c10(rs.getBigDecimal("R62_C10"));
+			obj.setR62_c11(rs.getBigDecimal("R62_C11"));
+			obj.setR62_c12(rs.getBigDecimal("R62_C12"));
+			obj.setR62_c13(rs.getBigDecimal("R62_C13"));
+			obj.setR62_c14(rs.getBigDecimal("R62_C14"));
+			obj.setR62_c15(rs.getBigDecimal("R62_C15"));
+			obj.setR62_c16(rs.getBigDecimal("R62_C16"));
+			obj.setR62_total(rs.getBigDecimal("R62_TOTAL"));
+			obj.setR63_product(rs.getString("R63_PRODUCT"));
+			obj.setR63_botswana(rs.getBigDecimal("R63_BOTSWANA"));
+			obj.setR63_south_africa(rs.getBigDecimal("R63_SOUTH_AFRICA"));
+			obj.setR63_sadc(rs.getBigDecimal("R63_SADC"));
+			obj.setR63_usa(rs.getBigDecimal("R63_USA"));
+			obj.setR63_uk(rs.getBigDecimal("R63_UK"));
+			obj.setR63_europe(rs.getBigDecimal("R63_EUROPE"));
+			obj.setR63_india(rs.getBigDecimal("R63_INDIA"));
+			obj.setR63_sydney(rs.getBigDecimal("R63_SYDNEY"));
+			obj.setR63_uganda(rs.getBigDecimal("R63_UGANDA"));
+			obj.setR63_c10(rs.getBigDecimal("R63_C10"));
+			obj.setR63_c11(rs.getBigDecimal("R63_C11"));
+			obj.setR63_c12(rs.getBigDecimal("R63_C12"));
+			obj.setR63_c13(rs.getBigDecimal("R63_C13"));
+			obj.setR63_c14(rs.getBigDecimal("R63_C14"));
+			obj.setR63_c15(rs.getBigDecimal("R63_C15"));
+			obj.setR63_c16(rs.getBigDecimal("R63_C16"));
+			obj.setR63_total(rs.getBigDecimal("R63_TOTAL"));
+			obj.setR66_product(rs.getString("R66_PRODUCT"));
+			obj.setR66_botswana(rs.getBigDecimal("R66_BOTSWANA"));
+			obj.setR66_south_africa(rs.getBigDecimal("R66_SOUTH_AFRICA"));
+			obj.setR66_sadc(rs.getBigDecimal("R66_SADC"));
+			obj.setR66_usa(rs.getBigDecimal("R66_USA"));
+			obj.setR66_uk(rs.getBigDecimal("R66_UK"));
+			obj.setR66_europe(rs.getBigDecimal("R66_EUROPE"));
+			obj.setR66_india(rs.getBigDecimal("R66_INDIA"));
+			obj.setR66_sydney(rs.getBigDecimal("R66_SYDNEY"));
+			obj.setR66_uganda(rs.getBigDecimal("R66_UGANDA"));
+			obj.setR66_c10(rs.getBigDecimal("R66_C10"));
+			obj.setR66_c11(rs.getBigDecimal("R66_C11"));
+			obj.setR66_c12(rs.getBigDecimal("R66_C12"));
+			obj.setR66_c13(rs.getBigDecimal("R66_C13"));
+			obj.setR66_c14(rs.getBigDecimal("R66_C14"));
+			obj.setR66_c15(rs.getBigDecimal("R66_C15"));
+			obj.setR66_c16(rs.getBigDecimal("R66_C16"));
+			obj.setR66_total(rs.getBigDecimal("R66_TOTAL"));
+			obj.setR69_product(rs.getString("R69_PRODUCT"));
+			obj.setR69_botswana(rs.getBigDecimal("R69_BOTSWANA"));
+			obj.setR69_south_africa(rs.getBigDecimal("R69_SOUTH_AFRICA"));
+			obj.setR69_sadc(rs.getBigDecimal("R69_SADC"));
+			obj.setR69_usa(rs.getBigDecimal("R69_USA"));
+			obj.setR69_uk(rs.getBigDecimal("R69_UK"));
+			obj.setR69_europe(rs.getBigDecimal("R69_EUROPE"));
+			obj.setR69_india(rs.getBigDecimal("R69_INDIA"));
+			obj.setR69_sydney(rs.getBigDecimal("R69_SYDNEY"));
+			obj.setR69_uganda(rs.getBigDecimal("R69_UGANDA"));
+			obj.setR69_c10(rs.getBigDecimal("R69_C10"));
+			obj.setR69_c11(rs.getBigDecimal("R69_C11"));
+			obj.setR69_c12(rs.getBigDecimal("R69_C12"));
+			obj.setR69_c13(rs.getBigDecimal("R69_C13"));
+			obj.setR69_c14(rs.getBigDecimal("R69_C14"));
+			obj.setR69_c15(rs.getBigDecimal("R69_C15"));
+			obj.setR69_c16(rs.getBigDecimal("R69_C16"));
+			obj.setR69_total(rs.getBigDecimal("R69_TOTAL"));
+			obj.setR70_product(rs.getString("R70_PRODUCT"));
+			obj.setR70_botswana(rs.getBigDecimal("R70_BOTSWANA"));
+			obj.setR70_south_africa(rs.getBigDecimal("R70_SOUTH_AFRICA"));
+			obj.setR70_sadc(rs.getBigDecimal("R70_SADC"));
+			obj.setR70_usa(rs.getBigDecimal("R70_USA"));
+			obj.setR70_uk(rs.getBigDecimal("R70_UK"));
+			obj.setR70_europe(rs.getBigDecimal("R70_EUROPE"));
+			obj.setR70_india(rs.getBigDecimal("R70_INDIA"));
+			obj.setR70_sydney(rs.getBigDecimal("R70_SYDNEY"));
+			obj.setR70_uganda(rs.getBigDecimal("R70_UGANDA"));
+			obj.setR70_c10(rs.getBigDecimal("R70_C10"));
+			obj.setR70_c11(rs.getBigDecimal("R70_C11"));
+			obj.setR70_c12(rs.getBigDecimal("R70_C12"));
+			obj.setR70_c13(rs.getBigDecimal("R70_C13"));
+			obj.setR70_c14(rs.getBigDecimal("R70_C14"));
+			obj.setR70_c15(rs.getBigDecimal("R70_C15"));
+			obj.setR70_c16(rs.getBigDecimal("R70_C16"));
+			obj.setR70_total(rs.getBigDecimal("R70_TOTAL"));
+			obj.setR71_product(rs.getString("R71_PRODUCT"));
+			obj.setR71_botswana(rs.getBigDecimal("R71_BOTSWANA"));
+			obj.setR71_south_africa(rs.getBigDecimal("R71_SOUTH_AFRICA"));
+			obj.setR71_sadc(rs.getBigDecimal("R71_SADC"));
+			obj.setR71_usa(rs.getBigDecimal("R71_USA"));
+			obj.setR71_uk(rs.getBigDecimal("R71_UK"));
+			obj.setR71_europe(rs.getBigDecimal("R71_EUROPE"));
+			obj.setR71_india(rs.getBigDecimal("R71_INDIA"));
+			obj.setR71_sydney(rs.getBigDecimal("R71_SYDNEY"));
+			obj.setR71_uganda(rs.getBigDecimal("R71_UGANDA"));
+			obj.setR71_c10(rs.getBigDecimal("R71_C10"));
+			obj.setR71_c11(rs.getBigDecimal("R71_C11"));
+			obj.setR71_c12(rs.getBigDecimal("R71_C12"));
+			obj.setR71_c13(rs.getBigDecimal("R71_C13"));
+			obj.setR71_c14(rs.getBigDecimal("R71_C14"));
+			obj.setR71_c15(rs.getBigDecimal("R71_C15"));
+			obj.setR71_c16(rs.getBigDecimal("R71_C16"));
+			obj.setR71_total(rs.getBigDecimal("R71_TOTAL"));
+			obj.setR72_product(rs.getString("R72_PRODUCT"));
+			obj.setR72_botswana(rs.getBigDecimal("R72_BOTSWANA"));
+			obj.setR72_south_africa(rs.getBigDecimal("R72_SOUTH_AFRICA"));
+			obj.setR72_sadc(rs.getBigDecimal("R72_SADC"));
+			obj.setR72_usa(rs.getBigDecimal("R72_USA"));
+			obj.setR72_uk(rs.getBigDecimal("R72_UK"));
+			obj.setR72_europe(rs.getBigDecimal("R72_EUROPE"));
+			obj.setR72_india(rs.getBigDecimal("R72_INDIA"));
+			obj.setR72_sydney(rs.getBigDecimal("R72_SYDNEY"));
+			obj.setR72_uganda(rs.getBigDecimal("R72_UGANDA"));
+			obj.setR72_c10(rs.getBigDecimal("R72_C10"));
+			obj.setR72_c11(rs.getBigDecimal("R72_C11"));
+			obj.setR72_c12(rs.getBigDecimal("R72_C12"));
+			obj.setR72_c13(rs.getBigDecimal("R72_C13"));
+			obj.setR72_c14(rs.getBigDecimal("R72_C14"));
+			obj.setR72_c15(rs.getBigDecimal("R72_C15"));
+			obj.setR72_c16(rs.getBigDecimal("R72_C16"));
+			obj.setR72_total(rs.getBigDecimal("R72_TOTAL"));
+			obj.setR73_product(rs.getString("R73_PRODUCT"));
+			obj.setR73_botswana(rs.getBigDecimal("R73_BOTSWANA"));
+			obj.setR73_south_africa(rs.getBigDecimal("R73_SOUTH_AFRICA"));
+			obj.setR73_sadc(rs.getBigDecimal("R73_SADC"));
+			obj.setR73_usa(rs.getBigDecimal("R73_USA"));
+			obj.setR73_uk(rs.getBigDecimal("R73_UK"));
+			obj.setR73_europe(rs.getBigDecimal("R73_EUROPE"));
+			obj.setR73_india(rs.getBigDecimal("R73_INDIA"));
+			obj.setR73_sydney(rs.getBigDecimal("R73_SYDNEY"));
+			obj.setR73_uganda(rs.getBigDecimal("R73_UGANDA"));
+			obj.setR73_c10(rs.getBigDecimal("R73_C10"));
+			obj.setR73_c11(rs.getBigDecimal("R73_C11"));
+			obj.setR73_c12(rs.getBigDecimal("R73_C12"));
+			obj.setR73_c13(rs.getBigDecimal("R73_C13"));
+			obj.setR73_c14(rs.getBigDecimal("R73_C14"));
+			obj.setR73_c15(rs.getBigDecimal("R73_C15"));
+			obj.setR73_c16(rs.getBigDecimal("R73_C16"));
+			obj.setR73_total(rs.getBigDecimal("R73_TOTAL"));
+			obj.setR74_product(rs.getString("R74_PRODUCT"));
+			obj.setR74_botswana(rs.getBigDecimal("R74_BOTSWANA"));
+			obj.setR74_south_africa(rs.getBigDecimal("R74_SOUTH_AFRICA"));
+			obj.setR74_sadc(rs.getBigDecimal("R74_SADC"));
+			obj.setR74_usa(rs.getBigDecimal("R74_USA"));
+			obj.setR74_uk(rs.getBigDecimal("R74_UK"));
+			obj.setR74_europe(rs.getBigDecimal("R74_EUROPE"));
+			obj.setR74_india(rs.getBigDecimal("R74_INDIA"));
+			obj.setR74_sydney(rs.getBigDecimal("R74_SYDNEY"));
+			obj.setR74_uganda(rs.getBigDecimal("R74_UGANDA"));
+			obj.setR74_c10(rs.getBigDecimal("R74_C10"));
+			obj.setR74_c11(rs.getBigDecimal("R74_C11"));
+			obj.setR74_c12(rs.getBigDecimal("R74_C12"));
+			obj.setR74_c13(rs.getBigDecimal("R74_C13"));
+			obj.setR74_c14(rs.getBigDecimal("R74_C14"));
+			obj.setR74_c15(rs.getBigDecimal("R74_C15"));
+			obj.setR74_c16(rs.getBigDecimal("R74_C16"));
+			obj.setR74_total(rs.getBigDecimal("R74_TOTAL"));
+			obj.setR75_product(rs.getString("R75_PRODUCT"));
+			obj.setR75_botswana(rs.getBigDecimal("R75_BOTSWANA"));
+			obj.setR75_south_africa(rs.getBigDecimal("R75_SOUTH_AFRICA"));
+			obj.setR75_sadc(rs.getBigDecimal("R75_SADC"));
+			obj.setR75_usa(rs.getBigDecimal("R75_USA"));
+			obj.setR75_uk(rs.getBigDecimal("R75_UK"));
+			obj.setR75_europe(rs.getBigDecimal("R75_EUROPE"));
+			obj.setR75_india(rs.getBigDecimal("R75_INDIA"));
+			obj.setR75_sydney(rs.getBigDecimal("R75_SYDNEY"));
+			obj.setR75_uganda(rs.getBigDecimal("R75_UGANDA"));
+			obj.setR75_c10(rs.getBigDecimal("R75_C10"));
+			obj.setR75_c11(rs.getBigDecimal("R75_C11"));
+			obj.setR75_c12(rs.getBigDecimal("R75_C12"));
+			obj.setR75_c13(rs.getBigDecimal("R75_C13"));
+			obj.setR75_c14(rs.getBigDecimal("R75_C14"));
+			obj.setR75_c15(rs.getBigDecimal("R75_C15"));
+			obj.setR75_c16(rs.getBigDecimal("R75_C16"));
+			obj.setR75_total(rs.getBigDecimal("R75_TOTAL"));
+			obj.setR76_product(rs.getString("R76_PRODUCT"));
+			obj.setR76_botswana(rs.getBigDecimal("R76_BOTSWANA"));
+			obj.setR76_south_africa(rs.getBigDecimal("R76_SOUTH_AFRICA"));
+			obj.setR76_sadc(rs.getBigDecimal("R76_SADC"));
+			obj.setR76_usa(rs.getBigDecimal("R76_USA"));
+			obj.setR76_uk(rs.getBigDecimal("R76_UK"));
+			obj.setR76_europe(rs.getBigDecimal("R76_EUROPE"));
+			obj.setR76_india(rs.getBigDecimal("R76_INDIA"));
+			obj.setR76_sydney(rs.getBigDecimal("R76_SYDNEY"));
+			obj.setR76_uganda(rs.getBigDecimal("R76_UGANDA"));
+			obj.setR76_c10(rs.getBigDecimal("R76_C10"));
+			obj.setR76_c11(rs.getBigDecimal("R76_C11"));
+			obj.setR76_c12(rs.getBigDecimal("R76_C12"));
+			obj.setR76_c13(rs.getBigDecimal("R76_C13"));
+			obj.setR76_c14(rs.getBigDecimal("R76_C14"));
+			obj.setR76_c15(rs.getBigDecimal("R76_C15"));
+			obj.setR76_c16(rs.getBigDecimal("R76_C16"));
+			obj.setR76_total(rs.getBigDecimal("R76_TOTAL"));
+			obj.setR77_product(rs.getString("R77_PRODUCT"));
+			obj.setR77_botswana(rs.getBigDecimal("R77_BOTSWANA"));
+			obj.setR77_south_africa(rs.getBigDecimal("R77_SOUTH_AFRICA"));
+			obj.setR77_sadc(rs.getBigDecimal("R77_SADC"));
+			obj.setR77_usa(rs.getBigDecimal("R77_USA"));
+			obj.setR77_uk(rs.getBigDecimal("R77_UK"));
+			obj.setR77_europe(rs.getBigDecimal("R77_EUROPE"));
+			obj.setR77_india(rs.getBigDecimal("R77_INDIA"));
+			obj.setR77_sydney(rs.getBigDecimal("R77_SYDNEY"));
+			obj.setR77_uganda(rs.getBigDecimal("R77_UGANDA"));
+			obj.setR77_c10(rs.getBigDecimal("R77_C10"));
+			obj.setR77_c11(rs.getBigDecimal("R77_C11"));
+			obj.setR77_c12(rs.getBigDecimal("R77_C12"));
+			obj.setR77_c13(rs.getBigDecimal("R77_C13"));
+			obj.setR77_c14(rs.getBigDecimal("R77_C14"));
+			obj.setR77_c15(rs.getBigDecimal("R77_C15"));
+			obj.setR77_c16(rs.getBigDecimal("R77_C16"));
+			obj.setR77_total(rs.getBigDecimal("R77_TOTAL"));
+			obj.setR78_product(rs.getString("R78_PRODUCT"));
+			obj.setR78_botswana(rs.getBigDecimal("R78_BOTSWANA"));
+			obj.setR78_south_africa(rs.getBigDecimal("R78_SOUTH_AFRICA"));
+			obj.setR78_sadc(rs.getBigDecimal("R78_SADC"));
+			obj.setR78_usa(rs.getBigDecimal("R78_USA"));
+			obj.setR78_uk(rs.getBigDecimal("R78_UK"));
+			obj.setR78_europe(rs.getBigDecimal("R78_EUROPE"));
+			obj.setR78_india(rs.getBigDecimal("R78_INDIA"));
+			obj.setR78_sydney(rs.getBigDecimal("R78_SYDNEY"));
+			obj.setR78_uganda(rs.getBigDecimal("R78_UGANDA"));
+			obj.setR78_c10(rs.getBigDecimal("R78_C10"));
+			obj.setR78_c11(rs.getBigDecimal("R78_C11"));
+			obj.setR78_c12(rs.getBigDecimal("R78_C12"));
+			obj.setR78_c13(rs.getBigDecimal("R78_C13"));
+			obj.setR78_c14(rs.getBigDecimal("R78_C14"));
+			obj.setR78_c15(rs.getBigDecimal("R78_C15"));
+			obj.setR78_c16(rs.getBigDecimal("R78_C16"));
+			obj.setR78_total(rs.getBigDecimal("R78_TOTAL"));
+			obj.setR79_product(rs.getString("R79_PRODUCT"));
+			obj.setR79_botswana(rs.getBigDecimal("R79_BOTSWANA"));
+			obj.setR79_south_africa(rs.getBigDecimal("R79_SOUTH_AFRICA"));
+			obj.setR79_sadc(rs.getBigDecimal("R79_SADC"));
+			obj.setR79_usa(rs.getBigDecimal("R79_USA"));
+			obj.setR79_uk(rs.getBigDecimal("R79_UK"));
+			obj.setR79_europe(rs.getBigDecimal("R79_EUROPE"));
+			obj.setR79_india(rs.getBigDecimal("R79_INDIA"));
+			obj.setR79_sydney(rs.getBigDecimal("R79_SYDNEY"));
+			obj.setR79_uganda(rs.getBigDecimal("R79_UGANDA"));
+			obj.setR79_c10(rs.getBigDecimal("R79_C10"));
+			obj.setR79_c11(rs.getBigDecimal("R79_C11"));
+			obj.setR79_c12(rs.getBigDecimal("R79_C12"));
+			obj.setR79_c13(rs.getBigDecimal("R79_C13"));
+			obj.setR79_c14(rs.getBigDecimal("R79_C14"));
+			obj.setR79_c15(rs.getBigDecimal("R79_C15"));
+			obj.setR79_c16(rs.getBigDecimal("R79_C16"));
+			obj.setR79_total(rs.getBigDecimal("R79_TOTAL"));
+			obj.setR80_product(rs.getString("R80_PRODUCT"));
+			obj.setR80_botswana(rs.getBigDecimal("R80_BOTSWANA"));
+			obj.setR80_south_africa(rs.getBigDecimal("R80_SOUTH_AFRICA"));
+			obj.setR80_sadc(rs.getBigDecimal("R80_SADC"));
+			obj.setR80_usa(rs.getBigDecimal("R80_USA"));
+			obj.setR80_uk(rs.getBigDecimal("R80_UK"));
+			obj.setR80_europe(rs.getBigDecimal("R80_EUROPE"));
+			obj.setR80_india(rs.getBigDecimal("R80_INDIA"));
+			obj.setR80_sydney(rs.getBigDecimal("R80_SYDNEY"));
+			obj.setR80_uganda(rs.getBigDecimal("R80_UGANDA"));
+			obj.setR80_c10(rs.getBigDecimal("R80_C10"));
+			obj.setR80_c11(rs.getBigDecimal("R80_C11"));
+			obj.setR80_c12(rs.getBigDecimal("R80_C12"));
+			obj.setR80_c13(rs.getBigDecimal("R80_C13"));
+			obj.setR80_c14(rs.getBigDecimal("R80_C14"));
+			obj.setR80_c15(rs.getBigDecimal("R80_C15"));
+			obj.setR80_c16(rs.getBigDecimal("R80_C16"));
+			obj.setR80_total(rs.getBigDecimal("R80_TOTAL"));
+			obj.setR81_product(rs.getString("R81_PRODUCT"));
+			obj.setR81_botswana(rs.getBigDecimal("R81_BOTSWANA"));
+			obj.setR81_south_africa(rs.getBigDecimal("R81_SOUTH_AFRICA"));
+			obj.setR81_sadc(rs.getBigDecimal("R81_SADC"));
+			obj.setR81_usa(rs.getBigDecimal("R81_USA"));
+			obj.setR81_uk(rs.getBigDecimal("R81_UK"));
+			obj.setR81_europe(rs.getBigDecimal("R81_EUROPE"));
+			obj.setR81_india(rs.getBigDecimal("R81_INDIA"));
+			obj.setR81_sydney(rs.getBigDecimal("R81_SYDNEY"));
+			obj.setR81_uganda(rs.getBigDecimal("R81_UGANDA"));
+			obj.setR81_c10(rs.getBigDecimal("R81_C10"));
+			obj.setR81_c11(rs.getBigDecimal("R81_C11"));
+			obj.setR81_c12(rs.getBigDecimal("R81_C12"));
+			obj.setR81_c13(rs.getBigDecimal("R81_C13"));
+			obj.setR81_c14(rs.getBigDecimal("R81_C14"));
+			obj.setR81_c15(rs.getBigDecimal("R81_C15"));
+			obj.setR81_c16(rs.getBigDecimal("R81_C16"));
+			obj.setR81_total(rs.getBigDecimal("R81_TOTAL"));
+			obj.setR82_product(rs.getString("R82_PRODUCT"));
+			obj.setR82_botswana(rs.getBigDecimal("R82_BOTSWANA"));
+			obj.setR82_south_africa(rs.getBigDecimal("R82_SOUTH_AFRICA"));
+			obj.setR82_sadc(rs.getBigDecimal("R82_SADC"));
+			obj.setR82_usa(rs.getBigDecimal("R82_USA"));
+			obj.setR82_uk(rs.getBigDecimal("R82_UK"));
+			obj.setR82_europe(rs.getBigDecimal("R82_EUROPE"));
+			obj.setR82_india(rs.getBigDecimal("R82_INDIA"));
+			obj.setR82_sydney(rs.getBigDecimal("R82_SYDNEY"));
+			obj.setR82_uganda(rs.getBigDecimal("R82_UGANDA"));
+			obj.setR82_c10(rs.getBigDecimal("R82_C10"));
+			obj.setR82_c11(rs.getBigDecimal("R82_C11"));
+			obj.setR82_c12(rs.getBigDecimal("R82_C12"));
+			obj.setR82_c13(rs.getBigDecimal("R82_C13"));
+			obj.setR82_c14(rs.getBigDecimal("R82_C14"));
+			obj.setR82_c15(rs.getBigDecimal("R82_C15"));
+			obj.setR82_c16(rs.getBigDecimal("R82_C16"));
+			obj.setR82_total(rs.getBigDecimal("R82_TOTAL"));
+			obj.setR83_product(rs.getString("R83_PRODUCT"));
+			obj.setR83_botswana(rs.getBigDecimal("R83_BOTSWANA"));
+			obj.setR83_south_africa(rs.getBigDecimal("R83_SOUTH_AFRICA"));
+			obj.setR83_sadc(rs.getBigDecimal("R83_SADC"));
+			obj.setR83_usa(rs.getBigDecimal("R83_USA"));
+			obj.setR83_uk(rs.getBigDecimal("R83_UK"));
+			obj.setR83_europe(rs.getBigDecimal("R83_EUROPE"));
+			obj.setR83_india(rs.getBigDecimal("R83_INDIA"));
+			obj.setR83_sydney(rs.getBigDecimal("R83_SYDNEY"));
+			obj.setR83_uganda(rs.getBigDecimal("R83_UGANDA"));
+			obj.setR83_c10(rs.getBigDecimal("R83_C10"));
+			obj.setR83_c11(rs.getBigDecimal("R83_C11"));
+			obj.setR83_c12(rs.getBigDecimal("R83_C12"));
+			obj.setR83_c13(rs.getBigDecimal("R83_C13"));
+			obj.setR83_c14(rs.getBigDecimal("R83_C14"));
+			obj.setR83_c15(rs.getBigDecimal("R83_C15"));
+			obj.setR83_c16(rs.getBigDecimal("R83_C16"));
+			obj.setR83_total(rs.getBigDecimal("R83_TOTAL"));
+			obj.setR84_product(rs.getString("R84_PRODUCT"));
+			obj.setR84_botswana(rs.getBigDecimal("R84_BOTSWANA"));
+			obj.setR84_south_africa(rs.getBigDecimal("R84_SOUTH_AFRICA"));
+			obj.setR84_sadc(rs.getBigDecimal("R84_SADC"));
+			obj.setR84_usa(rs.getBigDecimal("R84_USA"));
+			obj.setR84_uk(rs.getBigDecimal("R84_UK"));
+			obj.setR84_europe(rs.getBigDecimal("R84_EUROPE"));
+			obj.setR84_india(rs.getBigDecimal("R84_INDIA"));
+			obj.setR84_sydney(rs.getBigDecimal("R84_SYDNEY"));
+			obj.setR84_uganda(rs.getBigDecimal("R84_UGANDA"));
+			obj.setR84_c10(rs.getBigDecimal("R84_C10"));
+			obj.setR84_c11(rs.getBigDecimal("R84_C11"));
+			obj.setR84_c12(rs.getBigDecimal("R84_C12"));
+			obj.setR84_c13(rs.getBigDecimal("R84_C13"));
+			obj.setR84_c14(rs.getBigDecimal("R84_C14"));
+			obj.setR84_c15(rs.getBigDecimal("R84_C15"));
+			obj.setR84_c16(rs.getBigDecimal("R84_C16"));
+			obj.setR84_total(rs.getBigDecimal("R84_TOTAL"));
+			obj.setR85_product(rs.getString("R85_PRODUCT"));
+			obj.setR85_botswana(rs.getBigDecimal("R85_BOTSWANA"));
+			obj.setR85_south_africa(rs.getBigDecimal("R85_SOUTH_AFRICA"));
+			obj.setR85_sadc(rs.getBigDecimal("R85_SADC"));
+			obj.setR85_usa(rs.getBigDecimal("R85_USA"));
+			obj.setR85_uk(rs.getBigDecimal("R85_UK"));
+			obj.setR85_europe(rs.getBigDecimal("R85_EUROPE"));
+			obj.setR85_india(rs.getBigDecimal("R85_INDIA"));
+			obj.setR85_sydney(rs.getBigDecimal("R85_SYDNEY"));
+			obj.setR85_uganda(rs.getBigDecimal("R85_UGANDA"));
+			obj.setR85_c10(rs.getBigDecimal("R85_C10"));
+			obj.setR85_c11(rs.getBigDecimal("R85_C11"));
+			obj.setR85_c12(rs.getBigDecimal("R85_C12"));
+			obj.setR85_c13(rs.getBigDecimal("R85_C13"));
+			obj.setR85_c14(rs.getBigDecimal("R85_C14"));
+			obj.setR85_c15(rs.getBigDecimal("R85_C15"));
+			obj.setR85_c16(rs.getBigDecimal("R85_C16"));
+			obj.setR85_total(rs.getBigDecimal("R85_TOTAL"));
+			obj.setR86_product(rs.getString("R86_PRODUCT"));
+			obj.setR86_botswana(rs.getBigDecimal("R86_BOTSWANA"));
+			obj.setR86_south_africa(rs.getBigDecimal("R86_SOUTH_AFRICA"));
+			obj.setR86_sadc(rs.getBigDecimal("R86_SADC"));
+			obj.setR86_usa(rs.getBigDecimal("R86_USA"));
+			obj.setR86_uk(rs.getBigDecimal("R86_UK"));
+			obj.setR86_europe(rs.getBigDecimal("R86_EUROPE"));
+			obj.setR86_india(rs.getBigDecimal("R86_INDIA"));
+			obj.setR86_sydney(rs.getBigDecimal("R86_SYDNEY"));
+			obj.setR86_uganda(rs.getBigDecimal("R86_UGANDA"));
+			obj.setR86_c10(rs.getBigDecimal("R86_C10"));
+			obj.setR86_c11(rs.getBigDecimal("R86_C11"));
+			obj.setR86_c12(rs.getBigDecimal("R86_C12"));
+			obj.setR86_c13(rs.getBigDecimal("R86_C13"));
+			obj.setR86_c14(rs.getBigDecimal("R86_C14"));
+			obj.setR86_c15(rs.getBigDecimal("R86_C15"));
+			obj.setR86_c16(rs.getBigDecimal("R86_C16"));
+			obj.setR86_total(rs.getBigDecimal("R86_TOTAL"));
+			obj.setR87_product(rs.getString("R87_PRODUCT"));
+			obj.setR87_botswana(rs.getBigDecimal("R87_BOTSWANA"));
+			obj.setR87_south_africa(rs.getBigDecimal("R87_SOUTH_AFRICA"));
+			obj.setR87_sadc(rs.getBigDecimal("R87_SADC"));
+			obj.setR87_usa(rs.getBigDecimal("R87_USA"));
+			obj.setR87_uk(rs.getBigDecimal("R87_UK"));
+			obj.setR87_europe(rs.getBigDecimal("R87_EUROPE"));
+			obj.setR87_india(rs.getBigDecimal("R87_INDIA"));
+			obj.setR87_sydney(rs.getBigDecimal("R87_SYDNEY"));
+			obj.setR87_uganda(rs.getBigDecimal("R87_UGANDA"));
+			obj.setR87_c10(rs.getBigDecimal("R87_C10"));
+			obj.setR87_c11(rs.getBigDecimal("R87_C11"));
+			obj.setR87_c12(rs.getBigDecimal("R87_C12"));
+			obj.setR87_c13(rs.getBigDecimal("R87_C13"));
+			obj.setR87_c14(rs.getBigDecimal("R87_C14"));
+			obj.setR87_c15(rs.getBigDecimal("R87_C15"));
+			obj.setR87_c16(rs.getBigDecimal("R87_C16"));
+			obj.setR87_total(rs.getBigDecimal("R87_TOTAL"));
+			obj.setR88_product(rs.getString("R88_PRODUCT"));
+			obj.setR88_botswana(rs.getBigDecimal("R88_BOTSWANA"));
+			obj.setR88_south_africa(rs.getBigDecimal("R88_SOUTH_AFRICA"));
+			obj.setR88_sadc(rs.getBigDecimal("R88_SADC"));
+			obj.setR88_usa(rs.getBigDecimal("R88_USA"));
+			obj.setR88_uk(rs.getBigDecimal("R88_UK"));
+			obj.setR88_europe(rs.getBigDecimal("R88_EUROPE"));
+			obj.setR88_india(rs.getBigDecimal("R88_INDIA"));
+			obj.setR88_sydney(rs.getBigDecimal("R88_SYDNEY"));
+			obj.setR88_uganda(rs.getBigDecimal("R88_UGANDA"));
+			obj.setR88_c10(rs.getBigDecimal("R88_C10"));
+			obj.setR88_c11(rs.getBigDecimal("R88_C11"));
+			obj.setR88_c12(rs.getBigDecimal("R88_C12"));
+			obj.setR88_c13(rs.getBigDecimal("R88_C13"));
+			obj.setR88_c14(rs.getBigDecimal("R88_C14"));
+			obj.setR88_c15(rs.getBigDecimal("R88_C15"));
+			obj.setR88_c16(rs.getBigDecimal("R88_C16"));
+			obj.setR88_total(rs.getBigDecimal("R88_TOTAL"));
+			obj.setR89_product(rs.getString("R89_PRODUCT"));
+			obj.setR89_botswana(rs.getBigDecimal("R89_BOTSWANA"));
+			obj.setR89_south_africa(rs.getBigDecimal("R89_SOUTH_AFRICA"));
+			obj.setR89_sadc(rs.getBigDecimal("R89_SADC"));
+			obj.setR89_usa(rs.getBigDecimal("R89_USA"));
+			obj.setR89_uk(rs.getBigDecimal("R89_UK"));
+			obj.setR89_europe(rs.getBigDecimal("R89_EUROPE"));
+			obj.setR89_india(rs.getBigDecimal("R89_INDIA"));
+			obj.setR89_sydney(rs.getBigDecimal("R89_SYDNEY"));
+			obj.setR89_uganda(rs.getBigDecimal("R89_UGANDA"));
+			obj.setR89_c10(rs.getBigDecimal("R89_C10"));
+			obj.setR89_c11(rs.getBigDecimal("R89_C11"));
+			obj.setR89_c12(rs.getBigDecimal("R89_C12"));
+			obj.setR89_c13(rs.getBigDecimal("R89_C13"));
+			obj.setR89_c14(rs.getBigDecimal("R89_C14"));
+			obj.setR89_c15(rs.getBigDecimal("R89_C15"));
+			obj.setR89_c16(rs.getBigDecimal("R89_C16"));
+			obj.setR89_total(rs.getBigDecimal("R89_TOTAL"));
+			obj.setR90_product(rs.getString("R90_PRODUCT"));
+			obj.setR90_botswana(rs.getBigDecimal("R90_BOTSWANA"));
+			obj.setR90_south_africa(rs.getBigDecimal("R90_SOUTH_AFRICA"));
+			obj.setR90_sadc(rs.getBigDecimal("R90_SADC"));
+			obj.setR90_usa(rs.getBigDecimal("R90_USA"));
+			obj.setR90_uk(rs.getBigDecimal("R90_UK"));
+			obj.setR90_europe(rs.getBigDecimal("R90_EUROPE"));
+			obj.setR90_india(rs.getBigDecimal("R90_INDIA"));
+			obj.setR90_sydney(rs.getBigDecimal("R90_SYDNEY"));
+			obj.setR90_uganda(rs.getBigDecimal("R90_UGANDA"));
+			obj.setR90_c10(rs.getBigDecimal("R90_C10"));
+			obj.setR90_c11(rs.getBigDecimal("R90_C11"));
+			obj.setR90_c12(rs.getBigDecimal("R90_C12"));
+			obj.setR90_c13(rs.getBigDecimal("R90_C13"));
+			obj.setR90_c14(rs.getBigDecimal("R90_C14"));
+			obj.setR90_c15(rs.getBigDecimal("R90_C15"));
+			obj.setR90_c16(rs.getBigDecimal("R90_C16"));
+			obj.setR90_total(rs.getBigDecimal("R90_TOTAL"));
+			obj.setR91_product(rs.getString("R91_PRODUCT"));
+			obj.setR91_botswana(rs.getBigDecimal("R91_BOTSWANA"));
+			obj.setR91_south_africa(rs.getBigDecimal("R91_SOUTH_AFRICA"));
+			obj.setR91_sadc(rs.getBigDecimal("R91_SADC"));
+			obj.setR91_usa(rs.getBigDecimal("R91_USA"));
+			obj.setR91_uk(rs.getBigDecimal("R91_UK"));
+			obj.setR91_europe(rs.getBigDecimal("R91_EUROPE"));
+			obj.setR91_india(rs.getBigDecimal("R91_INDIA"));
+			obj.setR91_sydney(rs.getBigDecimal("R91_SYDNEY"));
+			obj.setR91_uganda(rs.getBigDecimal("R91_UGANDA"));
+			obj.setR91_c10(rs.getBigDecimal("R91_C10"));
+			obj.setR91_c11(rs.getBigDecimal("R91_C11"));
+			obj.setR91_c12(rs.getBigDecimal("R91_C12"));
+			obj.setR91_c13(rs.getBigDecimal("R91_C13"));
+			obj.setR91_c14(rs.getBigDecimal("R91_C14"));
+			obj.setR91_c15(rs.getBigDecimal("R91_C15"));
+			obj.setR91_c16(rs.getBigDecimal("R91_C16"));
+			obj.setR91_total(rs.getBigDecimal("R91_TOTAL"));
+			obj.setR92_product(rs.getString("R92_PRODUCT"));
+			obj.setR92_botswana(rs.getBigDecimal("R92_BOTSWANA"));
+			obj.setR92_south_africa(rs.getBigDecimal("R92_SOUTH_AFRICA"));
+			obj.setR92_sadc(rs.getBigDecimal("R92_SADC"));
+			obj.setR92_usa(rs.getBigDecimal("R92_USA"));
+			obj.setR92_uk(rs.getBigDecimal("R92_UK"));
+			obj.setR92_europe(rs.getBigDecimal("R92_EUROPE"));
+			obj.setR92_india(rs.getBigDecimal("R92_INDIA"));
+			obj.setR92_sydney(rs.getBigDecimal("R92_SYDNEY"));
+			obj.setR92_uganda(rs.getBigDecimal("R92_UGANDA"));
+			obj.setR92_c10(rs.getBigDecimal("R92_C10"));
+			obj.setR92_c11(rs.getBigDecimal("R92_C11"));
+			obj.setR92_c12(rs.getBigDecimal("R92_C12"));
+			obj.setR92_c13(rs.getBigDecimal("R92_C13"));
+			obj.setR92_c14(rs.getBigDecimal("R92_C14"));
+			obj.setR92_c15(rs.getBigDecimal("R92_C15"));
+			obj.setR92_c16(rs.getBigDecimal("R92_C16"));
+			obj.setR92_total(rs.getBigDecimal("R92_TOTAL"));
+			obj.setR93_product(rs.getString("R93_PRODUCT"));
+			obj.setR93_botswana(rs.getBigDecimal("R93_BOTSWANA"));
+			obj.setR93_south_africa(rs.getBigDecimal("R93_SOUTH_AFRICA"));
+			obj.setR93_sadc(rs.getBigDecimal("R93_SADC"));
+			obj.setR93_usa(rs.getBigDecimal("R93_USA"));
+			obj.setR93_uk(rs.getBigDecimal("R93_UK"));
+			obj.setR93_europe(rs.getBigDecimal("R93_EUROPE"));
+			obj.setR93_india(rs.getBigDecimal("R93_INDIA"));
+			obj.setR93_sydney(rs.getBigDecimal("R93_SYDNEY"));
+			obj.setR93_uganda(rs.getBigDecimal("R93_UGANDA"));
+			obj.setR93_c10(rs.getBigDecimal("R93_C10"));
+			obj.setR93_c11(rs.getBigDecimal("R93_C11"));
+			obj.setR93_c12(rs.getBigDecimal("R93_C12"));
+			obj.setR93_c13(rs.getBigDecimal("R93_C13"));
+			obj.setR93_c14(rs.getBigDecimal("R93_C14"));
+			obj.setR93_c15(rs.getBigDecimal("R93_C15"));
+			obj.setR93_c16(rs.getBigDecimal("R93_C16"));
+			obj.setR93_total(rs.getBigDecimal("R93_TOTAL"));
+			obj.setR94_product(rs.getString("R94_PRODUCT"));
+			obj.setR94_botswana(rs.getBigDecimal("R94_BOTSWANA"));
+			obj.setR94_south_africa(rs.getBigDecimal("R94_SOUTH_AFRICA"));
+			obj.setR94_sadc(rs.getBigDecimal("R94_SADC"));
+			obj.setR94_usa(rs.getBigDecimal("R94_USA"));
+			obj.setR94_uk(rs.getBigDecimal("R94_UK"));
+			obj.setR94_europe(rs.getBigDecimal("R94_EUROPE"));
+			obj.setR94_india(rs.getBigDecimal("R94_INDIA"));
+			obj.setR94_sydney(rs.getBigDecimal("R94_SYDNEY"));
+			obj.setR94_uganda(rs.getBigDecimal("R94_UGANDA"));
+			obj.setR94_c10(rs.getBigDecimal("R94_C10"));
+			obj.setR94_c11(rs.getBigDecimal("R94_C11"));
+			obj.setR94_c12(rs.getBigDecimal("R94_C12"));
+			obj.setR94_c13(rs.getBigDecimal("R94_C13"));
+			obj.setR94_c14(rs.getBigDecimal("R94_C14"));
+			obj.setR94_c15(rs.getBigDecimal("R94_C15"));
+			obj.setR94_c16(rs.getBigDecimal("R94_C16"));
+			obj.setR94_total(rs.getBigDecimal("R94_TOTAL"));
+			obj.setR95_product(rs.getString("R95_PRODUCT"));
+			obj.setR95_botswana(rs.getBigDecimal("R95_BOTSWANA"));
+			obj.setR95_south_africa(rs.getBigDecimal("R95_SOUTH_AFRICA"));
+			obj.setR95_sadc(rs.getBigDecimal("R95_SADC"));
+			obj.setR95_usa(rs.getBigDecimal("R95_USA"));
+			obj.setR95_uk(rs.getBigDecimal("R95_UK"));
+			obj.setR95_europe(rs.getBigDecimal("R95_EUROPE"));
+			obj.setR95_india(rs.getBigDecimal("R95_INDIA"));
+			obj.setR95_sydney(rs.getBigDecimal("R95_SYDNEY"));
+			obj.setR95_uganda(rs.getBigDecimal("R95_UGANDA"));
+			obj.setR95_c10(rs.getBigDecimal("R95_C10"));
+			obj.setR95_c11(rs.getBigDecimal("R95_C11"));
+			obj.setR95_c12(rs.getBigDecimal("R95_C12"));
+			obj.setR95_c13(rs.getBigDecimal("R95_C13"));
+			obj.setR95_c14(rs.getBigDecimal("R95_C14"));
+			obj.setR95_c15(rs.getBigDecimal("R95_C15"));
+			obj.setR95_c16(rs.getBigDecimal("R95_C16"));
+			obj.setR95_total(rs.getBigDecimal("R95_TOTAL"));
+			obj.setR96_product(rs.getString("R96_PRODUCT"));
+			obj.setR96_botswana(rs.getBigDecimal("R96_BOTSWANA"));
+			obj.setR96_south_africa(rs.getBigDecimal("R96_SOUTH_AFRICA"));
+			obj.setR96_sadc(rs.getBigDecimal("R96_SADC"));
+			obj.setR96_usa(rs.getBigDecimal("R96_USA"));
+			obj.setR96_uk(rs.getBigDecimal("R96_UK"));
+			obj.setR96_europe(rs.getBigDecimal("R96_EUROPE"));
+			obj.setR96_india(rs.getBigDecimal("R96_INDIA"));
+			obj.setR96_sydney(rs.getBigDecimal("R96_SYDNEY"));
+			obj.setR96_uganda(rs.getBigDecimal("R96_UGANDA"));
+			obj.setR96_c10(rs.getBigDecimal("R96_C10"));
+			obj.setR96_c11(rs.getBigDecimal("R96_C11"));
+			obj.setR96_c12(rs.getBigDecimal("R96_C12"));
+			obj.setR96_c13(rs.getBigDecimal("R96_C13"));
+			obj.setR96_c14(rs.getBigDecimal("R96_C14"));
+			obj.setR96_c15(rs.getBigDecimal("R96_C15"));
+			obj.setR96_c16(rs.getBigDecimal("R96_C16"));
+			obj.setR96_total(rs.getBigDecimal("R96_TOTAL"));
+			obj.setR97_product(rs.getString("R97_PRODUCT"));
+			obj.setR97_botswana(rs.getBigDecimal("R97_BOTSWANA"));
+			obj.setR97_south_africa(rs.getBigDecimal("R97_SOUTH_AFRICA"));
+			obj.setR97_sadc(rs.getBigDecimal("R97_SADC"));
+			obj.setR97_usa(rs.getBigDecimal("R97_USA"));
+			obj.setR97_uk(rs.getBigDecimal("R97_UK"));
+			obj.setR97_europe(rs.getBigDecimal("R97_EUROPE"));
+			obj.setR97_india(rs.getBigDecimal("R97_INDIA"));
+			obj.setR97_sydney(rs.getBigDecimal("R97_SYDNEY"));
+			obj.setR97_uganda(rs.getBigDecimal("R97_UGANDA"));
+			obj.setR97_c10(rs.getBigDecimal("R97_C10"));
+			obj.setR97_c11(rs.getBigDecimal("R97_C11"));
+			obj.setR97_c12(rs.getBigDecimal("R97_C12"));
+			obj.setR97_c13(rs.getBigDecimal("R97_C13"));
+			obj.setR97_c14(rs.getBigDecimal("R97_C14"));
+			obj.setR97_c15(rs.getBigDecimal("R97_C15"));
+			obj.setR97_c16(rs.getBigDecimal("R97_C16"));
+			obj.setR97_total(rs.getBigDecimal("R97_TOTAL"));
+			obj.setR98_product(rs.getString("R98_PRODUCT"));
+			obj.setR98_botswana(rs.getBigDecimal("R98_BOTSWANA"));
+			obj.setR98_south_africa(rs.getBigDecimal("R98_SOUTH_AFRICA"));
+			obj.setR98_sadc(rs.getBigDecimal("R98_SADC"));
+			obj.setR98_usa(rs.getBigDecimal("R98_USA"));
+			obj.setR98_uk(rs.getBigDecimal("R98_UK"));
+			obj.setR98_europe(rs.getBigDecimal("R98_EUROPE"));
+			obj.setR98_india(rs.getBigDecimal("R98_INDIA"));
+			obj.setR98_sydney(rs.getBigDecimal("R98_SYDNEY"));
+			obj.setR98_uganda(rs.getBigDecimal("R98_UGANDA"));
+			obj.setR98_c10(rs.getBigDecimal("R98_C10"));
+			obj.setR98_c11(rs.getBigDecimal("R98_C11"));
+			obj.setR98_c12(rs.getBigDecimal("R98_C12"));
+			obj.setR98_c13(rs.getBigDecimal("R98_C13"));
+			obj.setR98_c14(rs.getBigDecimal("R98_C14"));
+			obj.setR98_c15(rs.getBigDecimal("R98_C15"));
+			obj.setR98_c16(rs.getBigDecimal("R98_C16"));
+			obj.setR98_total(rs.getBigDecimal("R98_TOTAL"));
+			obj.setR99_product(rs.getString("R99_PRODUCT"));
+			obj.setR99_botswana(rs.getBigDecimal("R99_BOTSWANA"));
+			obj.setR99_south_africa(rs.getBigDecimal("R99_SOUTH_AFRICA"));
+			obj.setR99_sadc(rs.getBigDecimal("R99_SADC"));
+			obj.setR99_usa(rs.getBigDecimal("R99_USA"));
+			obj.setR99_uk(rs.getBigDecimal("R99_UK"));
+			obj.setR99_europe(rs.getBigDecimal("R99_EUROPE"));
+			obj.setR99_india(rs.getBigDecimal("R99_INDIA"));
+			obj.setR99_sydney(rs.getBigDecimal("R99_SYDNEY"));
+			obj.setR99_uganda(rs.getBigDecimal("R99_UGANDA"));
+			obj.setR99_c10(rs.getBigDecimal("R99_C10"));
+			obj.setR99_c11(rs.getBigDecimal("R99_C11"));
+			obj.setR99_c12(rs.getBigDecimal("R99_C12"));
+			obj.setR99_c13(rs.getBigDecimal("R99_C13"));
+			obj.setR99_c14(rs.getBigDecimal("R99_C14"));
+			obj.setR99_c15(rs.getBigDecimal("R99_C15"));
+			obj.setR99_c16(rs.getBigDecimal("R99_C16"));
+			obj.setR99_total(rs.getBigDecimal("R99_TOTAL"));
+			obj.setR100_product(rs.getString("R100_PRODUCT"));
+			obj.setR100_botswana(rs.getBigDecimal("R100_BOTSWANA"));
+			obj.setR100_south_africa(rs.getBigDecimal("R100_SOUTH_AFRICA"));
+			obj.setR100_sadc(rs.getBigDecimal("R100_SADC"));
+			obj.setR100_usa(rs.getBigDecimal("R100_USA"));
+			obj.setR100_uk(rs.getBigDecimal("R100_UK"));
+			obj.setR100_europe(rs.getBigDecimal("R100_EUROPE"));
+			obj.setR100_india(rs.getBigDecimal("R100_INDIA"));
+			obj.setR100_sydney(rs.getBigDecimal("R100_SYDNEY"));
+			obj.setR100_uganda(rs.getBigDecimal("R100_UGANDA"));
+			obj.setR100_c10(rs.getBigDecimal("R100_C10"));
+			obj.setR100_c11(rs.getBigDecimal("R100_C11"));
+			obj.setR100_c12(rs.getBigDecimal("R100_C12"));
+			obj.setR100_c13(rs.getBigDecimal("R100_C13"));
+			obj.setR100_c14(rs.getBigDecimal("R100_C14"));
+			obj.setR100_c15(rs.getBigDecimal("R100_C15"));
+			obj.setR100_c16(rs.getBigDecimal("R100_C16"));
+			obj.setR100_total(rs.getBigDecimal("R100_TOTAL"));
+			obj.setR101_product(rs.getString("R101_PRODUCT"));
+			obj.setR101_botswana(rs.getBigDecimal("R101_BOTSWANA"));
+			obj.setR101_south_africa(rs.getBigDecimal("R101_SOUTH_AFRICA"));
+			obj.setR101_sadc(rs.getBigDecimal("R101_SADC"));
+			obj.setR101_usa(rs.getBigDecimal("R101_USA"));
+			obj.setR101_uk(rs.getBigDecimal("R101_UK"));
+			obj.setR101_europe(rs.getBigDecimal("R101_EUROPE"));
+			obj.setR101_india(rs.getBigDecimal("R101_INDIA"));
+			obj.setR101_sydney(rs.getBigDecimal("R101_SYDNEY"));
+			obj.setR101_uganda(rs.getBigDecimal("R101_UGANDA"));
+			obj.setR101_c10(rs.getBigDecimal("R101_C10"));
+			obj.setR101_c11(rs.getBigDecimal("R101_C11"));
+			obj.setR101_c12(rs.getBigDecimal("R101_C12"));
+			obj.setR101_c13(rs.getBigDecimal("R101_C13"));
+			obj.setR101_c14(rs.getBigDecimal("R101_C14"));
+			obj.setR101_c15(rs.getBigDecimal("R101_C15"));
+			obj.setR101_c16(rs.getBigDecimal("R101_C16"));
+			obj.setR101_total(rs.getBigDecimal("R101_TOTAL"));
+			obj.setR102_product(rs.getString("R102_PRODUCT"));
+			obj.setR102_botswana(rs.getBigDecimal("R102_BOTSWANA"));
+			obj.setR102_south_africa(rs.getBigDecimal("R102_SOUTH_AFRICA"));
+			obj.setR102_sadc(rs.getBigDecimal("R102_SADC"));
+			obj.setR102_usa(rs.getBigDecimal("R102_USA"));
+			obj.setR102_uk(rs.getBigDecimal("R102_UK"));
+			obj.setR102_europe(rs.getBigDecimal("R102_EUROPE"));
+			obj.setR102_india(rs.getBigDecimal("R102_INDIA"));
+			obj.setR102_sydney(rs.getBigDecimal("R102_SYDNEY"));
+			obj.setR102_uganda(rs.getBigDecimal("R102_UGANDA"));
+			obj.setR102_c10(rs.getBigDecimal("R102_C10"));
+			obj.setR102_c11(rs.getBigDecimal("R102_C11"));
+			obj.setR102_c12(rs.getBigDecimal("R102_C12"));
+			obj.setR102_c13(rs.getBigDecimal("R102_C13"));
+			obj.setR102_c14(rs.getBigDecimal("R102_C14"));
+			obj.setR102_c15(rs.getBigDecimal("R102_C15"));
+			obj.setR102_c16(rs.getBigDecimal("R102_C16"));
+			obj.setR102_total(rs.getBigDecimal("R102_TOTAL"));
+			obj.setR103_product(rs.getString("R103_PRODUCT"));
+			obj.setR103_botswana(rs.getBigDecimal("R103_BOTSWANA"));
+			obj.setR103_south_africa(rs.getBigDecimal("R103_SOUTH_AFRICA"));
+			obj.setR103_sadc(rs.getBigDecimal("R103_SADC"));
+			obj.setR103_usa(rs.getBigDecimal("R103_USA"));
+			obj.setR103_uk(rs.getBigDecimal("R103_UK"));
+			obj.setR103_europe(rs.getBigDecimal("R103_EUROPE"));
+			obj.setR103_india(rs.getBigDecimal("R103_INDIA"));
+			obj.setR103_sydney(rs.getBigDecimal("R103_SYDNEY"));
+			obj.setR103_uganda(rs.getBigDecimal("R103_UGANDA"));
+			obj.setR103_c10(rs.getBigDecimal("R103_C10"));
+			obj.setR103_c11(rs.getBigDecimal("R103_C11"));
+			obj.setR103_c12(rs.getBigDecimal("R103_C12"));
+			obj.setR103_c13(rs.getBigDecimal("R103_C13"));
+			obj.setR103_c14(rs.getBigDecimal("R103_C14"));
+			obj.setR103_c15(rs.getBigDecimal("R103_C15"));
+			obj.setR103_c16(rs.getBigDecimal("R103_C16"));
+			obj.setR103_total(rs.getBigDecimal("R103_TOTAL"));
+			obj.setR104_product(rs.getString("R104_PRODUCT"));
+			obj.setR104_botswana(rs.getBigDecimal("R104_BOTSWANA"));
+			obj.setR104_south_africa(rs.getBigDecimal("R104_SOUTH_AFRICA"));
+			obj.setR104_sadc(rs.getBigDecimal("R104_SADC"));
+			obj.setR104_usa(rs.getBigDecimal("R104_USA"));
+			obj.setR104_uk(rs.getBigDecimal("R104_UK"));
+			obj.setR104_europe(rs.getBigDecimal("R104_EUROPE"));
+			obj.setR104_india(rs.getBigDecimal("R104_INDIA"));
+			obj.setR104_sydney(rs.getBigDecimal("R104_SYDNEY"));
+			obj.setR104_uganda(rs.getBigDecimal("R104_UGANDA"));
+			obj.setR104_c10(rs.getBigDecimal("R104_C10"));
+			obj.setR104_c11(rs.getBigDecimal("R104_C11"));
+			obj.setR104_c12(rs.getBigDecimal("R104_C12"));
+			obj.setR104_c13(rs.getBigDecimal("R104_C13"));
+			obj.setR104_c14(rs.getBigDecimal("R104_C14"));
+			obj.setR104_c15(rs.getBigDecimal("R104_C15"));
+			obj.setR104_c16(rs.getBigDecimal("R104_C16"));
+			obj.setR104_total(rs.getBigDecimal("R104_TOTAL"));
+			obj.setR105_product(rs.getString("R105_PRODUCT"));
+			obj.setR105_botswana(rs.getBigDecimal("R105_BOTSWANA"));
+			obj.setR105_south_africa(rs.getBigDecimal("R105_SOUTH_AFRICA"));
+			obj.setR105_sadc(rs.getBigDecimal("R105_SADC"));
+			obj.setR105_usa(rs.getBigDecimal("R105_USA"));
+			obj.setR105_uk(rs.getBigDecimal("R105_UK"));
+			obj.setR105_europe(rs.getBigDecimal("R105_EUROPE"));
+			obj.setR105_india(rs.getBigDecimal("R105_INDIA"));
+			obj.setR105_sydney(rs.getBigDecimal("R105_SYDNEY"));
+			obj.setR105_uganda(rs.getBigDecimal("R105_UGANDA"));
+			obj.setR105_c10(rs.getBigDecimal("R105_C10"));
+			obj.setR105_c11(rs.getBigDecimal("R105_C11"));
+			obj.setR105_c12(rs.getBigDecimal("R105_C12"));
+			obj.setR105_c13(rs.getBigDecimal("R105_C13"));
+			obj.setR105_c14(rs.getBigDecimal("R105_C14"));
+			obj.setR105_c15(rs.getBigDecimal("R105_C15"));
+			obj.setR105_c16(rs.getBigDecimal("R105_C16"));
+			obj.setR105_total(rs.getBigDecimal("R105_TOTAL"));
+			obj.setR106_product(rs.getString("R106_PRODUCT"));
+			obj.setR106_botswana(rs.getBigDecimal("R106_BOTSWANA"));
+			obj.setR106_south_africa(rs.getBigDecimal("R106_SOUTH_AFRICA"));
+			obj.setR106_sadc(rs.getBigDecimal("R106_SADC"));
+			obj.setR106_usa(rs.getBigDecimal("R106_USA"));
+			obj.setR106_uk(rs.getBigDecimal("R106_UK"));
+			obj.setR106_europe(rs.getBigDecimal("R106_EUROPE"));
+			obj.setR106_india(rs.getBigDecimal("R106_INDIA"));
+			obj.setR106_sydney(rs.getBigDecimal("R106_SYDNEY"));
+			obj.setR106_uganda(rs.getBigDecimal("R106_UGANDA"));
+			obj.setR106_c10(rs.getBigDecimal("R106_C10"));
+			obj.setR106_c11(rs.getBigDecimal("R106_C11"));
+			obj.setR106_c12(rs.getBigDecimal("R106_C12"));
+			obj.setR106_c13(rs.getBigDecimal("R106_C13"));
+			obj.setR106_c14(rs.getBigDecimal("R106_C14"));
+			obj.setR106_c15(rs.getBigDecimal("R106_C15"));
+			obj.setR106_c16(rs.getBigDecimal("R106_C16"));
+			obj.setR106_total(rs.getBigDecimal("R106_TOTAL"));
+			obj.setR107_product(rs.getString("R107_PRODUCT"));
+			obj.setR107_botswana(rs.getBigDecimal("R107_BOTSWANA"));
+			obj.setR107_south_africa(rs.getBigDecimal("R107_SOUTH_AFRICA"));
+			obj.setR107_sadc(rs.getBigDecimal("R107_SADC"));
+			obj.setR107_usa(rs.getBigDecimal("R107_USA"));
+			obj.setR107_uk(rs.getBigDecimal("R107_UK"));
+			obj.setR107_europe(rs.getBigDecimal("R107_EUROPE"));
+			obj.setR107_india(rs.getBigDecimal("R107_INDIA"));
+			obj.setR107_sydney(rs.getBigDecimal("R107_SYDNEY"));
+			obj.setR107_uganda(rs.getBigDecimal("R107_UGANDA"));
+			obj.setR107_c10(rs.getBigDecimal("R107_C10"));
+			obj.setR107_c11(rs.getBigDecimal("R107_C11"));
+			obj.setR107_c12(rs.getBigDecimal("R107_C12"));
+			obj.setR107_c13(rs.getBigDecimal("R107_C13"));
+			obj.setR107_c14(rs.getBigDecimal("R107_C14"));
+			obj.setR107_c15(rs.getBigDecimal("R107_C15"));
+			obj.setR107_c16(rs.getBigDecimal("R107_C16"));
+			obj.setR107_total(rs.getBigDecimal("R107_TOTAL"));
+			obj.setR108_product(rs.getString("R108_PRODUCT"));
+			obj.setR108_botswana(rs.getBigDecimal("R108_BOTSWANA"));
+			obj.setR108_south_africa(rs.getBigDecimal("R108_SOUTH_AFRICA"));
+			obj.setR108_sadc(rs.getBigDecimal("R108_SADC"));
+			obj.setR108_usa(rs.getBigDecimal("R108_USA"));
+			obj.setR108_uk(rs.getBigDecimal("R108_UK"));
+			obj.setR108_europe(rs.getBigDecimal("R108_EUROPE"));
+			obj.setR108_india(rs.getBigDecimal("R108_INDIA"));
+			obj.setR108_sydney(rs.getBigDecimal("R108_SYDNEY"));
+			obj.setR108_uganda(rs.getBigDecimal("R108_UGANDA"));
+			obj.setR108_c10(rs.getBigDecimal("R108_C10"));
+			obj.setR108_c11(rs.getBigDecimal("R108_C11"));
+			obj.setR108_c12(rs.getBigDecimal("R108_C12"));
+			obj.setR108_c13(rs.getBigDecimal("R108_C13"));
+			obj.setR108_c14(rs.getBigDecimal("R108_C14"));
+			obj.setR108_c15(rs.getBigDecimal("R108_C15"));
+			obj.setR108_c16(rs.getBigDecimal("R108_C16"));
+			obj.setR108_total(rs.getBigDecimal("R108_TOTAL"));
+			obj.setR109_product(rs.getString("R109_PRODUCT"));
+			obj.setR109_botswana(rs.getBigDecimal("R109_BOTSWANA"));
+			obj.setR109_south_africa(rs.getBigDecimal("R109_SOUTH_AFRICA"));
+			obj.setR109_sadc(rs.getBigDecimal("R109_SADC"));
+			obj.setR109_usa(rs.getBigDecimal("R109_USA"));
+			obj.setR109_uk(rs.getBigDecimal("R109_UK"));
+			obj.setR109_europe(rs.getBigDecimal("R109_EUROPE"));
+			obj.setR109_india(rs.getBigDecimal("R109_INDIA"));
+			obj.setR109_sydney(rs.getBigDecimal("R109_SYDNEY"));
+			obj.setR109_uganda(rs.getBigDecimal("R109_UGANDA"));
+			obj.setR109_c10(rs.getBigDecimal("R109_C10"));
+			obj.setR109_c11(rs.getBigDecimal("R109_C11"));
+			obj.setR109_c12(rs.getBigDecimal("R109_C12"));
+			obj.setR109_c13(rs.getBigDecimal("R109_C13"));
+			obj.setR109_c14(rs.getBigDecimal("R109_C14"));
+			obj.setR109_c15(rs.getBigDecimal("R109_C15"));
+			obj.setR109_c16(rs.getBigDecimal("R109_C16"));
+			obj.setR109_total(rs.getBigDecimal("R109_TOTAL"));
+			obj.setR110_product(rs.getString("R110_PRODUCT"));
+			obj.setR110_botswana(rs.getBigDecimal("R110_BOTSWANA"));
+			obj.setR110_south_africa(rs.getBigDecimal("R110_SOUTH_AFRICA"));
+			obj.setR110_sadc(rs.getBigDecimal("R110_SADC"));
+			obj.setR110_usa(rs.getBigDecimal("R110_USA"));
+			obj.setR110_uk(rs.getBigDecimal("R110_UK"));
+			obj.setR110_europe(rs.getBigDecimal("R110_EUROPE"));
+			obj.setR110_india(rs.getBigDecimal("R110_INDIA"));
+			obj.setR110_sydney(rs.getBigDecimal("R110_SYDNEY"));
+			obj.setR110_uganda(rs.getBigDecimal("R110_UGANDA"));
+			obj.setR110_c10(rs.getBigDecimal("R110_C10"));
+			obj.setR110_c11(rs.getBigDecimal("R110_C11"));
+			obj.setR110_c12(rs.getBigDecimal("R110_C12"));
+			obj.setR110_c13(rs.getBigDecimal("R110_C13"));
+			obj.setR110_c14(rs.getBigDecimal("R110_C14"));
+			obj.setR110_c15(rs.getBigDecimal("R110_C15"));
+			obj.setR110_c16(rs.getBigDecimal("R110_C16"));
+			obj.setR110_total(rs.getBigDecimal("R110_TOTAL"));
+			obj.setR111_product(rs.getString("R111_PRODUCT"));
+			obj.setR111_south_africa(rs.getBigDecimal("R111_SOUTH_AFRICA"));
+			obj.setR111_sadc(rs.getBigDecimal("R111_SADC"));
+			obj.setR111_usa(rs.getBigDecimal("R111_USA"));
+			obj.setR111_uk(rs.getBigDecimal("R111_UK"));
+			obj.setR111_europe(rs.getBigDecimal("R111_EUROPE"));
+			obj.setR111_india(rs.getBigDecimal("R111_INDIA"));
+			obj.setR111_sydney(rs.getBigDecimal("R111_SYDNEY"));
+			obj.setR111_uganda(rs.getBigDecimal("R111_UGANDA"));
+			obj.setR111_c10(rs.getBigDecimal("R111_C10"));
+			obj.setR111_c11(rs.getBigDecimal("R111_C11"));
+			obj.setR111_c12(rs.getBigDecimal("R111_C12"));
+			obj.setR111_c13(rs.getBigDecimal("R111_C13"));
+			obj.setR111_c14(rs.getBigDecimal("R111_C14"));
+			obj.setR111_c15(rs.getBigDecimal("R111_C15"));
+			obj.setR111_c16(rs.getBigDecimal("R111_C16"));
+			obj.setR111_total(rs.getBigDecimal("R111_TOTAL"));
+			obj.setR112_product(rs.getString("R112_PRODUCT"));
+			obj.setR112_south_africa(rs.getBigDecimal("R112_SOUTH_AFRICA"));
+			obj.setR112_sadc(rs.getBigDecimal("R112_SADC"));
+			obj.setR112_usa(rs.getBigDecimal("R112_USA"));
+			obj.setR112_uk(rs.getBigDecimal("R112_UK"));
+			obj.setR112_europe(rs.getBigDecimal("R112_EUROPE"));
+			obj.setR112_india(rs.getBigDecimal("R112_INDIA"));
+			obj.setR112_sydney(rs.getBigDecimal("R112_SYDNEY"));
+			obj.setR112_uganda(rs.getBigDecimal("R112_UGANDA"));
+			obj.setR112_c10(rs.getBigDecimal("R112_C10"));
+			obj.setR112_c11(rs.getBigDecimal("R112_C11"));
+			obj.setR112_c12(rs.getBigDecimal("R112_C12"));
+			obj.setR112_c13(rs.getBigDecimal("R112_C13"));
+			obj.setR112_c14(rs.getBigDecimal("R112_C14"));
+			obj.setR112_c15(rs.getBigDecimal("R112_C15"));
+			obj.setR112_c16(rs.getBigDecimal("R112_C16"));
+			obj.setR112_total(rs.getBigDecimal("R112_TOTAL"));
+			obj.setR113_product(rs.getString("R113_PRODUCT"));
+			obj.setR113_south_africa(rs.getBigDecimal("R113_SOUTH_AFRICA"));
+			obj.setR113_sadc(rs.getBigDecimal("R113_SADC"));
+			obj.setR113_usa(rs.getBigDecimal("R113_USA"));
+			obj.setR113_uk(rs.getBigDecimal("R113_UK"));
+			obj.setR113_europe(rs.getBigDecimal("R113_EUROPE"));
+			obj.setR113_india(rs.getBigDecimal("R113_INDIA"));
+			obj.setR113_sydney(rs.getBigDecimal("R113_SYDNEY"));
+			obj.setR113_uganda(rs.getBigDecimal("R113_UGANDA"));
+			obj.setR113_c10(rs.getBigDecimal("R113_C10"));
+			obj.setR113_c11(rs.getBigDecimal("R113_C11"));
+			obj.setR113_c12(rs.getBigDecimal("R113_C12"));
+			obj.setR113_c13(rs.getBigDecimal("R113_C13"));
+			obj.setR113_c14(rs.getBigDecimal("R113_C14"));
+			obj.setR113_c15(rs.getBigDecimal("R113_C15"));
+			obj.setR113_c16(rs.getBigDecimal("R113_C16"));
+			obj.setR113_total(rs.getBigDecimal("R113_TOTAL"));
+			obj.setR114_product(rs.getString("R114_PRODUCT"));
+			obj.setR114_south_africa(rs.getBigDecimal("R114_SOUTH_AFRICA"));
+			obj.setR114_sadc(rs.getBigDecimal("R114_SADC"));
+			obj.setR114_usa(rs.getBigDecimal("R114_USA"));
+			obj.setR114_uk(rs.getBigDecimal("R114_UK"));
+			obj.setR114_europe(rs.getBigDecimal("R114_EUROPE"));
+			obj.setR114_india(rs.getBigDecimal("R114_INDIA"));
+			obj.setR114_sydney(rs.getBigDecimal("R114_SYDNEY"));
+			obj.setR114_uganda(rs.getBigDecimal("R114_UGANDA"));
+			obj.setR114_c10(rs.getBigDecimal("R114_C10"));
+			obj.setR114_c11(rs.getBigDecimal("R114_C11"));
+			obj.setR114_c12(rs.getBigDecimal("R114_C12"));
+			obj.setR114_c13(rs.getBigDecimal("R114_C13"));
+			obj.setR114_c14(rs.getBigDecimal("R114_C14"));
+			obj.setR114_c15(rs.getBigDecimal("R114_C15"));
+			obj.setR114_c16(rs.getBigDecimal("R114_C16"));
+			obj.setR114_total(rs.getBigDecimal("R114_TOTAL"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getString("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Summary_Entity2 {
+		private String r62_product;
+		private BigDecimal r62_botswana;
+		private BigDecimal r62_south_africa;
+		private BigDecimal r62_sadc;
+		private BigDecimal r62_usa;
+		private BigDecimal r62_uk;
+		private BigDecimal r62_europe;
+		private BigDecimal r62_india;
+		private BigDecimal r62_sydney;
+		private BigDecimal r62_uganda;
+		private BigDecimal r62_c10;
+		private BigDecimal r62_c11;
+		private BigDecimal r62_c12;
+		private BigDecimal r62_c13;
+		private BigDecimal r62_c14;
+		private BigDecimal r62_c15;
+		private BigDecimal r62_c16;
+		private BigDecimal r62_total;
+		private String r63_product;
+		private BigDecimal r63_botswana;
+		private BigDecimal r63_south_africa;
+		private BigDecimal r63_sadc;
+		private BigDecimal r63_usa;
+		private BigDecimal r63_uk;
+		private BigDecimal r63_europe;
+		private BigDecimal r63_india;
+		private BigDecimal r63_sydney;
+		private BigDecimal r63_uganda;
+		private BigDecimal r63_c10;
+		private BigDecimal r63_c11;
+		private BigDecimal r63_c12;
+		private BigDecimal r63_c13;
+		private BigDecimal r63_c14;
+		private BigDecimal r63_c15;
+		private BigDecimal r63_c16;
+		private BigDecimal r63_total;
+		private String r66_product;
+		private BigDecimal r66_botswana;
+		private BigDecimal r66_south_africa;
+		private BigDecimal r66_sadc;
+		private BigDecimal r66_usa;
+		private BigDecimal r66_uk;
+		private BigDecimal r66_europe;
+		private BigDecimal r66_india;
+		private BigDecimal r66_sydney;
+		private BigDecimal r66_uganda;
+		private BigDecimal r66_c10;
+		private BigDecimal r66_c11;
+		private BigDecimal r66_c12;
+		private BigDecimal r66_c13;
+		private BigDecimal r66_c14;
+		private BigDecimal r66_c15;
+		private BigDecimal r66_c16;
+		private BigDecimal r66_total;
+		private String r69_product;
+		private BigDecimal r69_botswana;
+		private BigDecimal r69_south_africa;
+		private BigDecimal r69_sadc;
+		private BigDecimal r69_usa;
+		private BigDecimal r69_uk;
+		private BigDecimal r69_europe;
+		private BigDecimal r69_india;
+		private BigDecimal r69_sydney;
+		private BigDecimal r69_uganda;
+		private BigDecimal r69_c10;
+		private BigDecimal r69_c11;
+		private BigDecimal r69_c12;
+		private BigDecimal r69_c13;
+		private BigDecimal r69_c14;
+		private BigDecimal r69_c15;
+		private BigDecimal r69_c16;
+		private BigDecimal r69_total;
+		private String r70_product;
+		private BigDecimal r70_botswana;
+		private BigDecimal r70_south_africa;
+		private BigDecimal r70_sadc;
+		private BigDecimal r70_usa;
+		private BigDecimal r70_uk;
+		private BigDecimal r70_europe;
+		private BigDecimal r70_india;
+		private BigDecimal r70_sydney;
+		private BigDecimal r70_uganda;
+		private BigDecimal r70_c10;
+		private BigDecimal r70_c11;
+		private BigDecimal r70_c12;
+		private BigDecimal r70_c13;
+		private BigDecimal r70_c14;
+		private BigDecimal r70_c15;
+		private BigDecimal r70_c16;
+		private BigDecimal r70_total;
+		private String r71_product;
+		private BigDecimal r71_botswana;
+		private BigDecimal r71_south_africa;
+		private BigDecimal r71_sadc;
+		private BigDecimal r71_usa;
+		private BigDecimal r71_uk;
+		private BigDecimal r71_europe;
+		private BigDecimal r71_india;
+		private BigDecimal r71_sydney;
+		private BigDecimal r71_uganda;
+		private BigDecimal r71_c10;
+		private BigDecimal r71_c11;
+		private BigDecimal r71_c12;
+		private BigDecimal r71_c13;
+		private BigDecimal r71_c14;
+		private BigDecimal r71_c15;
+		private BigDecimal r71_c16;
+		private BigDecimal r71_total;
+		private String r72_product;
+		private BigDecimal r72_botswana;
+		private BigDecimal r72_south_africa;
+		private BigDecimal r72_sadc;
+		private BigDecimal r72_usa;
+		private BigDecimal r72_uk;
+		private BigDecimal r72_europe;
+		private BigDecimal r72_india;
+		private BigDecimal r72_sydney;
+		private BigDecimal r72_uganda;
+		private BigDecimal r72_c10;
+		private BigDecimal r72_c11;
+		private BigDecimal r72_c12;
+		private BigDecimal r72_c13;
+		private BigDecimal r72_c14;
+		private BigDecimal r72_c15;
+		private BigDecimal r72_c16;
+		private BigDecimal r72_total;
+		private String r73_product;
+		private BigDecimal r73_botswana;
+		private BigDecimal r73_south_africa;
+		private BigDecimal r73_sadc;
+		private BigDecimal r73_usa;
+		private BigDecimal r73_uk;
+		private BigDecimal r73_europe;
+		private BigDecimal r73_india;
+		private BigDecimal r73_sydney;
+		private BigDecimal r73_uganda;
+		private BigDecimal r73_c10;
+		private BigDecimal r73_c11;
+		private BigDecimal r73_c12;
+		private BigDecimal r73_c13;
+		private BigDecimal r73_c14;
+		private BigDecimal r73_c15;
+		private BigDecimal r73_c16;
+		private BigDecimal r73_total;
+		private String r74_product;
+		private BigDecimal r74_botswana;
+		private BigDecimal r74_south_africa;
+		private BigDecimal r74_sadc;
+		private BigDecimal r74_usa;
+		private BigDecimal r74_uk;
+		private BigDecimal r74_europe;
+		private BigDecimal r74_india;
+		private BigDecimal r74_sydney;
+		private BigDecimal r74_uganda;
+		private BigDecimal r74_c10;
+		private BigDecimal r74_c11;
+		private BigDecimal r74_c12;
+		private BigDecimal r74_c13;
+		private BigDecimal r74_c14;
+		private BigDecimal r74_c15;
+		private BigDecimal r74_c16;
+		private BigDecimal r74_total;
+		private String r75_product;
+		private BigDecimal r75_botswana;
+		private BigDecimal r75_south_africa;
+		private BigDecimal r75_sadc;
+		private BigDecimal r75_usa;
+		private BigDecimal r75_uk;
+		private BigDecimal r75_europe;
+		private BigDecimal r75_india;
+		private BigDecimal r75_sydney;
+		private BigDecimal r75_uganda;
+		private BigDecimal r75_c10;
+		private BigDecimal r75_c11;
+		private BigDecimal r75_c12;
+		private BigDecimal r75_c13;
+		private BigDecimal r75_c14;
+		private BigDecimal r75_c15;
+		private BigDecimal r75_c16;
+		private BigDecimal r75_total;
+		private String r76_product;
+		private BigDecimal r76_botswana;
+		private BigDecimal r76_south_africa;
+		private BigDecimal r76_sadc;
+		private BigDecimal r76_usa;
+		private BigDecimal r76_uk;
+		private BigDecimal r76_europe;
+		private BigDecimal r76_india;
+		private BigDecimal r76_sydney;
+		private BigDecimal r76_uganda;
+		private BigDecimal r76_c10;
+		private BigDecimal r76_c11;
+		private BigDecimal r76_c12;
+		private BigDecimal r76_c13;
+		private BigDecimal r76_c14;
+		private BigDecimal r76_c15;
+		private BigDecimal r76_c16;
+		private BigDecimal r76_total;
+		private String r77_product;
+		private BigDecimal r77_botswana;
+		private BigDecimal r77_south_africa;
+		private BigDecimal r77_sadc;
+		private BigDecimal r77_usa;
+		private BigDecimal r77_uk;
+		private BigDecimal r77_europe;
+		private BigDecimal r77_india;
+		private BigDecimal r77_sydney;
+		private BigDecimal r77_uganda;
+		private BigDecimal r77_c10;
+		private BigDecimal r77_c11;
+		private BigDecimal r77_c12;
+		private BigDecimal r77_c13;
+		private BigDecimal r77_c14;
+		private BigDecimal r77_c15;
+		private BigDecimal r77_c16;
+		private BigDecimal r77_total;
+		private String r78_product;
+		private BigDecimal r78_botswana;
+		private BigDecimal r78_south_africa;
+		private BigDecimal r78_sadc;
+		private BigDecimal r78_usa;
+		private BigDecimal r78_uk;
+		private BigDecimal r78_europe;
+		private BigDecimal r78_india;
+		private BigDecimal r78_sydney;
+		private BigDecimal r78_uganda;
+		private BigDecimal r78_c10;
+		private BigDecimal r78_c11;
+		private BigDecimal r78_c12;
+		private BigDecimal r78_c13;
+		private BigDecimal r78_c14;
+		private BigDecimal r78_c15;
+		private BigDecimal r78_c16;
+		private BigDecimal r78_total;
+		private String r79_product;
+		private BigDecimal r79_botswana;
+		private BigDecimal r79_south_africa;
+		private BigDecimal r79_sadc;
+		private BigDecimal r79_usa;
+		private BigDecimal r79_uk;
+		private BigDecimal r79_europe;
+		private BigDecimal r79_india;
+		private BigDecimal r79_sydney;
+		private BigDecimal r79_uganda;
+		private BigDecimal r79_c10;
+		private BigDecimal r79_c11;
+		private BigDecimal r79_c12;
+		private BigDecimal r79_c13;
+		private BigDecimal r79_c14;
+		private BigDecimal r79_c15;
+		private BigDecimal r79_c16;
+		private BigDecimal r79_total;
+		private String r80_product;
+		private BigDecimal r80_botswana;
+		private BigDecimal r80_south_africa;
+		private BigDecimal r80_sadc;
+		private BigDecimal r80_usa;
+		private BigDecimal r80_uk;
+		private BigDecimal r80_europe;
+		private BigDecimal r80_india;
+		private BigDecimal r80_sydney;
+		private BigDecimal r80_uganda;
+		private BigDecimal r80_c10;
+		private BigDecimal r80_c11;
+		private BigDecimal r80_c12;
+		private BigDecimal r80_c13;
+		private BigDecimal r80_c14;
+		private BigDecimal r80_c15;
+		private BigDecimal r80_c16;
+		private BigDecimal r80_total;
+		private String r81_product;
+		private BigDecimal r81_botswana;
+		private BigDecimal r81_south_africa;
+		private BigDecimal r81_sadc;
+		private BigDecimal r81_usa;
+		private BigDecimal r81_uk;
+		private BigDecimal r81_europe;
+		private BigDecimal r81_india;
+		private BigDecimal r81_sydney;
+		private BigDecimal r81_uganda;
+		private BigDecimal r81_c10;
+		private BigDecimal r81_c11;
+		private BigDecimal r81_c12;
+		private BigDecimal r81_c13;
+		private BigDecimal r81_c14;
+		private BigDecimal r81_c15;
+		private BigDecimal r81_c16;
+		private BigDecimal r81_total;
+		private String r82_product;
+		private BigDecimal r82_botswana;
+		private BigDecimal r82_south_africa;
+		private BigDecimal r82_sadc;
+		private BigDecimal r82_usa;
+		private BigDecimal r82_uk;
+		private BigDecimal r82_europe;
+		private BigDecimal r82_india;
+		private BigDecimal r82_sydney;
+		private BigDecimal r82_uganda;
+		private BigDecimal r82_c10;
+		private BigDecimal r82_c11;
+		private BigDecimal r82_c12;
+		private BigDecimal r82_c13;
+		private BigDecimal r82_c14;
+		private BigDecimal r82_c15;
+		private BigDecimal r82_c16;
+		private BigDecimal r82_total;
+		private String r83_product;
+		private BigDecimal r83_botswana;
+		private BigDecimal r83_south_africa;
+		private BigDecimal r83_sadc;
+		private BigDecimal r83_usa;
+		private BigDecimal r83_uk;
+		private BigDecimal r83_europe;
+		private BigDecimal r83_india;
+		private BigDecimal r83_sydney;
+		private BigDecimal r83_uganda;
+		private BigDecimal r83_c10;
+		private BigDecimal r83_c11;
+		private BigDecimal r83_c12;
+		private BigDecimal r83_c13;
+		private BigDecimal r83_c14;
+		private BigDecimal r83_c15;
+		private BigDecimal r83_c16;
+		private BigDecimal r83_total;
+		private String r84_product;
+		private BigDecimal r84_botswana;
+		private BigDecimal r84_south_africa;
+		private BigDecimal r84_sadc;
+		private BigDecimal r84_usa;
+		private BigDecimal r84_uk;
+		private BigDecimal r84_europe;
+		private BigDecimal r84_india;
+		private BigDecimal r84_sydney;
+		private BigDecimal r84_uganda;
+		private BigDecimal r84_c10;
+		private BigDecimal r84_c11;
+		private BigDecimal r84_c12;
+		private BigDecimal r84_c13;
+		private BigDecimal r84_c14;
+		private BigDecimal r84_c15;
+		private BigDecimal r84_c16;
+		private BigDecimal r84_total;
+		private String r85_product;
+		private BigDecimal r85_botswana;
+		private BigDecimal r85_south_africa;
+		private BigDecimal r85_sadc;
+		private BigDecimal r85_usa;
+		private BigDecimal r85_uk;
+		private BigDecimal r85_europe;
+		private BigDecimal r85_india;
+		private BigDecimal r85_sydney;
+		private BigDecimal r85_uganda;
+		private BigDecimal r85_c10;
+		private BigDecimal r85_c11;
+		private BigDecimal r85_c12;
+		private BigDecimal r85_c13;
+		private BigDecimal r85_c14;
+		private BigDecimal r85_c15;
+		private BigDecimal r85_c16;
+		private BigDecimal r85_total;
+		private String r86_product;
+		private BigDecimal r86_botswana;
+		private BigDecimal r86_south_africa;
+		private BigDecimal r86_sadc;
+		private BigDecimal r86_usa;
+		private BigDecimal r86_uk;
+		private BigDecimal r86_europe;
+		private BigDecimal r86_india;
+		private BigDecimal r86_sydney;
+		private BigDecimal r86_uganda;
+		private BigDecimal r86_c10;
+		private BigDecimal r86_c11;
+		private BigDecimal r86_c12;
+		private BigDecimal r86_c13;
+		private BigDecimal r86_c14;
+		private BigDecimal r86_c15;
+		private BigDecimal r86_c16;
+		private BigDecimal r86_total;
+		private String r87_product;
+		private BigDecimal r87_botswana;
+		private BigDecimal r87_south_africa;
+		private BigDecimal r87_sadc;
+		private BigDecimal r87_usa;
+		private BigDecimal r87_uk;
+		private BigDecimal r87_europe;
+		private BigDecimal r87_india;
+		private BigDecimal r87_sydney;
+		private BigDecimal r87_uganda;
+		private BigDecimal r87_c10;
+		private BigDecimal r87_c11;
+		private BigDecimal r87_c12;
+		private BigDecimal r87_c13;
+		private BigDecimal r87_c14;
+		private BigDecimal r87_c15;
+		private BigDecimal r87_c16;
+		private BigDecimal r87_total;
+		private String r88_product;
+		private BigDecimal r88_botswana;
+		private BigDecimal r88_south_africa;
+		private BigDecimal r88_sadc;
+		private BigDecimal r88_usa;
+		private BigDecimal r88_uk;
+		private BigDecimal r88_europe;
+		private BigDecimal r88_india;
+		private BigDecimal r88_sydney;
+		private BigDecimal r88_uganda;
+		private BigDecimal r88_c10;
+		private BigDecimal r88_c11;
+		private BigDecimal r88_c12;
+		private BigDecimal r88_c13;
+		private BigDecimal r88_c14;
+		private BigDecimal r88_c15;
+		private BigDecimal r88_c16;
+		private BigDecimal r88_total;
+		private String r89_product;
+		private BigDecimal r89_botswana;
+		private BigDecimal r89_south_africa;
+		private BigDecimal r89_sadc;
+		private BigDecimal r89_usa;
+		private BigDecimal r89_uk;
+		private BigDecimal r89_europe;
+		private BigDecimal r89_india;
+		private BigDecimal r89_sydney;
+		private BigDecimal r89_uganda;
+		private BigDecimal r89_c10;
+		private BigDecimal r89_c11;
+		private BigDecimal r89_c12;
+		private BigDecimal r89_c13;
+		private BigDecimal r89_c14;
+		private BigDecimal r89_c15;
+		private BigDecimal r89_c16;
+		private BigDecimal r89_total;
+		private String r90_product;
+		private BigDecimal r90_botswana;
+		private BigDecimal r90_south_africa;
+		private BigDecimal r90_sadc;
+		private BigDecimal r90_usa;
+		private BigDecimal r90_uk;
+		private BigDecimal r90_europe;
+		private BigDecimal r90_india;
+		private BigDecimal r90_sydney;
+		private BigDecimal r90_uganda;
+		private BigDecimal r90_c10;
+		private BigDecimal r90_c11;
+		private BigDecimal r90_c12;
+		private BigDecimal r90_c13;
+		private BigDecimal r90_c14;
+		private BigDecimal r90_c15;
+		private BigDecimal r90_c16;
+		private BigDecimal r90_total;
+		private String r91_product;
+		private BigDecimal r91_botswana;
+		private BigDecimal r91_south_africa;
+		private BigDecimal r91_sadc;
+		private BigDecimal r91_usa;
+		private BigDecimal r91_uk;
+		private BigDecimal r91_europe;
+		private BigDecimal r91_india;
+		private BigDecimal r91_sydney;
+		private BigDecimal r91_uganda;
+		private BigDecimal r91_c10;
+		private BigDecimal r91_c11;
+		private BigDecimal r91_c12;
+		private BigDecimal r91_c13;
+		private BigDecimal r91_c14;
+		private BigDecimal r91_c15;
+		private BigDecimal r91_c16;
+		private BigDecimal r91_total;
+		private String r92_product;
+		private BigDecimal r92_botswana;
+		private BigDecimal r92_south_africa;
+		private BigDecimal r92_sadc;
+		private BigDecimal r92_usa;
+		private BigDecimal r92_uk;
+		private BigDecimal r92_europe;
+		private BigDecimal r92_india;
+		private BigDecimal r92_sydney;
+		private BigDecimal r92_uganda;
+		private BigDecimal r92_c10;
+		private BigDecimal r92_c11;
+		private BigDecimal r92_c12;
+		private BigDecimal r92_c13;
+		private BigDecimal r92_c14;
+		private BigDecimal r92_c15;
+		private BigDecimal r92_c16;
+		private BigDecimal r92_total;
+		private String r93_product;
+		private BigDecimal r93_botswana;
+		private BigDecimal r93_south_africa;
+		private BigDecimal r93_sadc;
+		private BigDecimal r93_usa;
+		private BigDecimal r93_uk;
+		private BigDecimal r93_europe;
+		private BigDecimal r93_india;
+		private BigDecimal r93_sydney;
+		private BigDecimal r93_uganda;
+		private BigDecimal r93_c10;
+		private BigDecimal r93_c11;
+		private BigDecimal r93_c12;
+		private BigDecimal r93_c13;
+		private BigDecimal r93_c14;
+		private BigDecimal r93_c15;
+		private BigDecimal r93_c16;
+		private BigDecimal r93_total;
+		private String r94_product;
+		private BigDecimal r94_botswana;
+		private BigDecimal r94_south_africa;
+		private BigDecimal r94_sadc;
+		private BigDecimal r94_usa;
+		private BigDecimal r94_uk;
+		private BigDecimal r94_europe;
+		private BigDecimal r94_india;
+		private BigDecimal r94_sydney;
+		private BigDecimal r94_uganda;
+		private BigDecimal r94_c10;
+		private BigDecimal r94_c11;
+		private BigDecimal r94_c12;
+		private BigDecimal r94_c13;
+		private BigDecimal r94_c14;
+		private BigDecimal r94_c15;
+		private BigDecimal r94_c16;
+		private BigDecimal r94_total;
+		private String r95_product;
+		private BigDecimal r95_botswana;
+		private BigDecimal r95_south_africa;
+		private BigDecimal r95_sadc;
+		private BigDecimal r95_usa;
+		private BigDecimal r95_uk;
+		private BigDecimal r95_europe;
+		private BigDecimal r95_india;
+		private BigDecimal r95_sydney;
+		private BigDecimal r95_uganda;
+		private BigDecimal r95_c10;
+		private BigDecimal r95_c11;
+		private BigDecimal r95_c12;
+		private BigDecimal r95_c13;
+		private BigDecimal r95_c14;
+		private BigDecimal r95_c15;
+		private BigDecimal r95_c16;
+		private BigDecimal r95_total;
+		private String r96_product;
+		private BigDecimal r96_botswana;
+		private BigDecimal r96_south_africa;
+		private BigDecimal r96_sadc;
+		private BigDecimal r96_usa;
+		private BigDecimal r96_uk;
+		private BigDecimal r96_europe;
+		private BigDecimal r96_india;
+		private BigDecimal r96_sydney;
+		private BigDecimal r96_uganda;
+		private BigDecimal r96_c10;
+		private BigDecimal r96_c11;
+		private BigDecimal r96_c12;
+		private BigDecimal r96_c13;
+		private BigDecimal r96_c14;
+		private BigDecimal r96_c15;
+		private BigDecimal r96_c16;
+		private BigDecimal r96_total;
+		private String r97_product;
+		private BigDecimal r97_botswana;
+		private BigDecimal r97_south_africa;
+		private BigDecimal r97_sadc;
+		private BigDecimal r97_usa;
+		private BigDecimal r97_uk;
+		private BigDecimal r97_europe;
+		private BigDecimal r97_india;
+		private BigDecimal r97_sydney;
+		private BigDecimal r97_uganda;
+		private BigDecimal r97_c10;
+		private BigDecimal r97_c11;
+		private BigDecimal r97_c12;
+		private BigDecimal r97_c13;
+		private BigDecimal r97_c14;
+		private BigDecimal r97_c15;
+		private BigDecimal r97_c16;
+		private BigDecimal r97_total;
+		private String r98_product;
+		private BigDecimal r98_botswana;
+		private BigDecimal r98_south_africa;
+		private BigDecimal r98_sadc;
+		private BigDecimal r98_usa;
+		private BigDecimal r98_uk;
+		private BigDecimal r98_europe;
+		private BigDecimal r98_india;
+		private BigDecimal r98_sydney;
+		private BigDecimal r98_uganda;
+		private BigDecimal r98_c10;
+		private BigDecimal r98_c11;
+		private BigDecimal r98_c12;
+		private BigDecimal r98_c13;
+		private BigDecimal r98_c14;
+		private BigDecimal r98_c15;
+		private BigDecimal r98_c16;
+		private BigDecimal r98_total;
+		private String r99_product;
+		private BigDecimal r99_botswana;
+		private BigDecimal r99_south_africa;
+		private BigDecimal r99_sadc;
+		private BigDecimal r99_usa;
+		private BigDecimal r99_uk;
+		private BigDecimal r99_europe;
+		private BigDecimal r99_india;
+		private BigDecimal r99_sydney;
+		private BigDecimal r99_uganda;
+		private BigDecimal r99_c10;
+		private BigDecimal r99_c11;
+		private BigDecimal r99_c12;
+		private BigDecimal r99_c13;
+		private BigDecimal r99_c14;
+		private BigDecimal r99_c15;
+		private BigDecimal r99_c16;
+		private BigDecimal r99_total;
+		private String r100_product;
+		private BigDecimal r100_botswana;
+		private BigDecimal r100_south_africa;
+		private BigDecimal r100_sadc;
+		private BigDecimal r100_usa;
+		private BigDecimal r100_uk;
+		private BigDecimal r100_europe;
+		private BigDecimal r100_india;
+		private BigDecimal r100_sydney;
+		private BigDecimal r100_uganda;
+		private BigDecimal r100_c10;
+		private BigDecimal r100_c11;
+		private BigDecimal r100_c12;
+		private BigDecimal r100_c13;
+		private BigDecimal r100_c14;
+		private BigDecimal r100_c15;
+		private BigDecimal r100_c16;
+		private BigDecimal r100_total;
+		private String r101_product;
+		private BigDecimal r101_botswana;
+		private BigDecimal r101_south_africa;
+		private BigDecimal r101_sadc;
+		private BigDecimal r101_usa;
+		private BigDecimal r101_uk;
+		private BigDecimal r101_europe;
+		private BigDecimal r101_india;
+		private BigDecimal r101_sydney;
+		private BigDecimal r101_uganda;
+		private BigDecimal r101_c10;
+		private BigDecimal r101_c11;
+		private BigDecimal r101_c12;
+		private BigDecimal r101_c13;
+		private BigDecimal r101_c14;
+		private BigDecimal r101_c15;
+		private BigDecimal r101_c16;
+		private BigDecimal r101_total;
+		private String r102_product;
+		private BigDecimal r102_botswana;
+		private BigDecimal r102_south_africa;
+		private BigDecimal r102_sadc;
+		private BigDecimal r102_usa;
+		private BigDecimal r102_uk;
+		private BigDecimal r102_europe;
+		private BigDecimal r102_india;
+		private BigDecimal r102_sydney;
+		private BigDecimal r102_uganda;
+		private BigDecimal r102_c10;
+		private BigDecimal r102_c11;
+		private BigDecimal r102_c12;
+		private BigDecimal r102_c13;
+		private BigDecimal r102_c14;
+		private BigDecimal r102_c15;
+		private BigDecimal r102_c16;
+		private BigDecimal r102_total;
+		private String r103_product;
+		private BigDecimal r103_botswana;
+		private BigDecimal r103_south_africa;
+		private BigDecimal r103_sadc;
+		private BigDecimal r103_usa;
+		private BigDecimal r103_uk;
+		private BigDecimal r103_europe;
+		private BigDecimal r103_india;
+		private BigDecimal r103_sydney;
+		private BigDecimal r103_uganda;
+		private BigDecimal r103_c10;
+		private BigDecimal r103_c11;
+		private BigDecimal r103_c12;
+		private BigDecimal r103_c13;
+		private BigDecimal r103_c14;
+		private BigDecimal r103_c15;
+		private BigDecimal r103_c16;
+		private BigDecimal r103_total;
+		private String r104_product;
+		private BigDecimal r104_botswana;
+		private BigDecimal r104_south_africa;
+		private BigDecimal r104_sadc;
+		private BigDecimal r104_usa;
+		private BigDecimal r104_uk;
+		private BigDecimal r104_europe;
+		private BigDecimal r104_india;
+		private BigDecimal r104_sydney;
+		private BigDecimal r104_uganda;
+		private BigDecimal r104_c10;
+		private BigDecimal r104_c11;
+		private BigDecimal r104_c12;
+		private BigDecimal r104_c13;
+		private BigDecimal r104_c14;
+		private BigDecimal r104_c15;
+		private BigDecimal r104_c16;
+		private BigDecimal r104_total;
+		private String r105_product;
+		private BigDecimal r105_botswana;
+		private BigDecimal r105_south_africa;
+		private BigDecimal r105_sadc;
+		private BigDecimal r105_usa;
+		private BigDecimal r105_uk;
+		private BigDecimal r105_europe;
+		private BigDecimal r105_india;
+		private BigDecimal r105_sydney;
+		private BigDecimal r105_uganda;
+		private BigDecimal r105_c10;
+		private BigDecimal r105_c11;
+		private BigDecimal r105_c12;
+		private BigDecimal r105_c13;
+		private BigDecimal r105_c14;
+		private BigDecimal r105_c15;
+		private BigDecimal r105_c16;
+		private BigDecimal r105_total;
+		private String r106_product;
+		private BigDecimal r106_botswana;
+		private BigDecimal r106_south_africa;
+		private BigDecimal r106_sadc;
+		private BigDecimal r106_usa;
+		private BigDecimal r106_uk;
+		private BigDecimal r106_europe;
+		private BigDecimal r106_india;
+		private BigDecimal r106_sydney;
+		private BigDecimal r106_uganda;
+		private BigDecimal r106_c10;
+		private BigDecimal r106_c11;
+		private BigDecimal r106_c12;
+		private BigDecimal r106_c13;
+		private BigDecimal r106_c14;
+		private BigDecimal r106_c15;
+		private BigDecimal r106_c16;
+		private BigDecimal r106_total;
+		private String r107_product;
+		private BigDecimal r107_botswana;
+		private BigDecimal r107_south_africa;
+		private BigDecimal r107_sadc;
+		private BigDecimal r107_usa;
+		private BigDecimal r107_uk;
+		private BigDecimal r107_europe;
+		private BigDecimal r107_india;
+		private BigDecimal r107_sydney;
+		private BigDecimal r107_uganda;
+		private BigDecimal r107_c10;
+		private BigDecimal r107_c11;
+		private BigDecimal r107_c12;
+		private BigDecimal r107_c13;
+		private BigDecimal r107_c14;
+		private BigDecimal r107_c15;
+		private BigDecimal r107_c16;
+		private BigDecimal r107_total;
+		private String r108_product;
+		private BigDecimal r108_botswana;
+		private BigDecimal r108_south_africa;
+		private BigDecimal r108_sadc;
+		private BigDecimal r108_usa;
+		private BigDecimal r108_uk;
+		private BigDecimal r108_europe;
+		private BigDecimal r108_india;
+		private BigDecimal r108_sydney;
+		private BigDecimal r108_uganda;
+		private BigDecimal r108_c10;
+		private BigDecimal r108_c11;
+		private BigDecimal r108_c12;
+		private BigDecimal r108_c13;
+		private BigDecimal r108_c14;
+		private BigDecimal r108_c15;
+		private BigDecimal r108_c16;
+		private BigDecimal r108_total;
+		private String r109_product;
+		private BigDecimal r109_botswana;
+		private BigDecimal r109_south_africa;
+		private BigDecimal r109_sadc;
+		private BigDecimal r109_usa;
+		private BigDecimal r109_uk;
+		private BigDecimal r109_europe;
+		private BigDecimal r109_india;
+		private BigDecimal r109_sydney;
+		private BigDecimal r109_uganda;
+		private BigDecimal r109_c10;
+		private BigDecimal r109_c11;
+		private BigDecimal r109_c12;
+		private BigDecimal r109_c13;
+		private BigDecimal r109_c14;
+		private BigDecimal r109_c15;
+		private BigDecimal r109_c16;
+		private BigDecimal r109_total;
+		private String r110_product;
+		private BigDecimal r110_botswana;
+		private BigDecimal r110_south_africa;
+		private BigDecimal r110_sadc;
+		private BigDecimal r110_usa;
+		private BigDecimal r110_uk;
+		private BigDecimal r110_europe;
+		private BigDecimal r110_india;
+		private BigDecimal r110_sydney;
+		private BigDecimal r110_uganda;
+		private BigDecimal r110_c10;
+		private BigDecimal r110_c11;
+		private BigDecimal r110_c12;
+		private BigDecimal r110_c13;
+		private BigDecimal r110_c14;
+		private BigDecimal r110_c15;
+		private BigDecimal r110_c16;
+		private BigDecimal r110_total;
+		private String r111_product;
+		private BigDecimal r111_south_africa;
+		private BigDecimal r111_sadc;
+		private BigDecimal r111_usa;
+		private BigDecimal r111_uk;
+		private BigDecimal r111_europe;
+		private BigDecimal r111_india;
+		private BigDecimal r111_sydney;
+		private BigDecimal r111_uganda;
+		private BigDecimal r111_c10;
+		private BigDecimal r111_c11;
+		private BigDecimal r111_c12;
+		private BigDecimal r111_c13;
+		private BigDecimal r111_c14;
+		private BigDecimal r111_c15;
+		private BigDecimal r111_c16;
+		private BigDecimal r111_total;
+		private String r112_product;
+		private BigDecimal r112_south_africa;
+		private BigDecimal r112_sadc;
+		private BigDecimal r112_usa;
+		private BigDecimal r112_uk;
+		private BigDecimal r112_europe;
+		private BigDecimal r112_india;
+		private BigDecimal r112_sydney;
+		private BigDecimal r112_uganda;
+		private BigDecimal r112_c10;
+		private BigDecimal r112_c11;
+		private BigDecimal r112_c12;
+		private BigDecimal r112_c13;
+		private BigDecimal r112_c14;
+		private BigDecimal r112_c15;
+		private BigDecimal r112_c16;
+		private BigDecimal r112_total;
+		private String r113_product;
+		private BigDecimal r113_south_africa;
+		private BigDecimal r113_sadc;
+		private BigDecimal r113_usa;
+		private BigDecimal r113_uk;
+		private BigDecimal r113_europe;
+		private BigDecimal r113_india;
+		private BigDecimal r113_sydney;
+		private BigDecimal r113_uganda;
+		private BigDecimal r113_c10;
+		private BigDecimal r113_c11;
+		private BigDecimal r113_c12;
+		private BigDecimal r113_c13;
+		private BigDecimal r113_c14;
+		private BigDecimal r113_c15;
+		private BigDecimal r113_c16;
+		private BigDecimal r113_total;
+		private String r114_product;
+		private BigDecimal r114_south_africa;
+		private BigDecimal r114_sadc;
+		private BigDecimal r114_usa;
+		private BigDecimal r114_uk;
+		private BigDecimal r114_europe;
+		private BigDecimal r114_india;
+		private BigDecimal r114_sydney;
+		private BigDecimal r114_uganda;
+		private BigDecimal r114_c10;
+		private BigDecimal r114_c11;
+		private BigDecimal r114_c12;
+		private BigDecimal r114_c13;
+		private BigDecimal r114_c14;
+		private BigDecimal r114_c15;
+		private BigDecimal r114_c16;
+		private BigDecimal r114_total;
+		private Date report_date;
+		private String report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR62_product() { return r62_product; }
+		public void setR62_product(String r62_product) { this.r62_product = r62_product; }
+		public BigDecimal getR62_botswana() { return r62_botswana; }
+		public void setR62_botswana(BigDecimal r62_botswana) { this.r62_botswana = r62_botswana; }
+		public BigDecimal getR62_south_africa() { return r62_south_africa; }
+		public void setR62_south_africa(BigDecimal r62_south_africa) { this.r62_south_africa = r62_south_africa; }
+		public BigDecimal getR62_sadc() { return r62_sadc; }
+		public void setR62_sadc(BigDecimal r62_sadc) { this.r62_sadc = r62_sadc; }
+		public BigDecimal getR62_usa() { return r62_usa; }
+		public void setR62_usa(BigDecimal r62_usa) { this.r62_usa = r62_usa; }
+		public BigDecimal getR62_uk() { return r62_uk; }
+		public void setR62_uk(BigDecimal r62_uk) { this.r62_uk = r62_uk; }
+		public BigDecimal getR62_europe() { return r62_europe; }
+		public void setR62_europe(BigDecimal r62_europe) { this.r62_europe = r62_europe; }
+		public BigDecimal getR62_india() { return r62_india; }
+		public void setR62_india(BigDecimal r62_india) { this.r62_india = r62_india; }
+		public BigDecimal getR62_sydney() { return r62_sydney; }
+		public void setR62_sydney(BigDecimal r62_sydney) { this.r62_sydney = r62_sydney; }
+		public BigDecimal getR62_uganda() { return r62_uganda; }
+		public void setR62_uganda(BigDecimal r62_uganda) { this.r62_uganda = r62_uganda; }
+		public BigDecimal getR62_c10() { return r62_c10; }
+		public void setR62_c10(BigDecimal r62_c10) { this.r62_c10 = r62_c10; }
+		public BigDecimal getR62_c11() { return r62_c11; }
+		public void setR62_c11(BigDecimal r62_c11) { this.r62_c11 = r62_c11; }
+		public BigDecimal getR62_c12() { return r62_c12; }
+		public void setR62_c12(BigDecimal r62_c12) { this.r62_c12 = r62_c12; }
+		public BigDecimal getR62_c13() { return r62_c13; }
+		public void setR62_c13(BigDecimal r62_c13) { this.r62_c13 = r62_c13; }
+		public BigDecimal getR62_c14() { return r62_c14; }
+		public void setR62_c14(BigDecimal r62_c14) { this.r62_c14 = r62_c14; }
+		public BigDecimal getR62_c15() { return r62_c15; }
+		public void setR62_c15(BigDecimal r62_c15) { this.r62_c15 = r62_c15; }
+		public BigDecimal getR62_c16() { return r62_c16; }
+		public void setR62_c16(BigDecimal r62_c16) { this.r62_c16 = r62_c16; }
+		public BigDecimal getR62_total() { return r62_total; }
+		public void setR62_total(BigDecimal r62_total) { this.r62_total = r62_total; }
+		public String getR63_product() { return r63_product; }
+		public void setR63_product(String r63_product) { this.r63_product = r63_product; }
+		public BigDecimal getR63_botswana() { return r63_botswana; }
+		public void setR63_botswana(BigDecimal r63_botswana) { this.r63_botswana = r63_botswana; }
+		public BigDecimal getR63_south_africa() { return r63_south_africa; }
+		public void setR63_south_africa(BigDecimal r63_south_africa) { this.r63_south_africa = r63_south_africa; }
+		public BigDecimal getR63_sadc() { return r63_sadc; }
+		public void setR63_sadc(BigDecimal r63_sadc) { this.r63_sadc = r63_sadc; }
+		public BigDecimal getR63_usa() { return r63_usa; }
+		public void setR63_usa(BigDecimal r63_usa) { this.r63_usa = r63_usa; }
+		public BigDecimal getR63_uk() { return r63_uk; }
+		public void setR63_uk(BigDecimal r63_uk) { this.r63_uk = r63_uk; }
+		public BigDecimal getR63_europe() { return r63_europe; }
+		public void setR63_europe(BigDecimal r63_europe) { this.r63_europe = r63_europe; }
+		public BigDecimal getR63_india() { return r63_india; }
+		public void setR63_india(BigDecimal r63_india) { this.r63_india = r63_india; }
+		public BigDecimal getR63_sydney() { return r63_sydney; }
+		public void setR63_sydney(BigDecimal r63_sydney) { this.r63_sydney = r63_sydney; }
+		public BigDecimal getR63_uganda() { return r63_uganda; }
+		public void setR63_uganda(BigDecimal r63_uganda) { this.r63_uganda = r63_uganda; }
+		public BigDecimal getR63_c10() { return r63_c10; }
+		public void setR63_c10(BigDecimal r63_c10) { this.r63_c10 = r63_c10; }
+		public BigDecimal getR63_c11() { return r63_c11; }
+		public void setR63_c11(BigDecimal r63_c11) { this.r63_c11 = r63_c11; }
+		public BigDecimal getR63_c12() { return r63_c12; }
+		public void setR63_c12(BigDecimal r63_c12) { this.r63_c12 = r63_c12; }
+		public BigDecimal getR63_c13() { return r63_c13; }
+		public void setR63_c13(BigDecimal r63_c13) { this.r63_c13 = r63_c13; }
+		public BigDecimal getR63_c14() { return r63_c14; }
+		public void setR63_c14(BigDecimal r63_c14) { this.r63_c14 = r63_c14; }
+		public BigDecimal getR63_c15() { return r63_c15; }
+		public void setR63_c15(BigDecimal r63_c15) { this.r63_c15 = r63_c15; }
+		public BigDecimal getR63_c16() { return r63_c16; }
+		public void setR63_c16(BigDecimal r63_c16) { this.r63_c16 = r63_c16; }
+		public BigDecimal getR63_total() { return r63_total; }
+		public void setR63_total(BigDecimal r63_total) { this.r63_total = r63_total; }
+		public String getR66_product() { return r66_product; }
+		public void setR66_product(String r66_product) { this.r66_product = r66_product; }
+		public BigDecimal getR66_botswana() { return r66_botswana; }
+		public void setR66_botswana(BigDecimal r66_botswana) { this.r66_botswana = r66_botswana; }
+		public BigDecimal getR66_south_africa() { return r66_south_africa; }
+		public void setR66_south_africa(BigDecimal r66_south_africa) { this.r66_south_africa = r66_south_africa; }
+		public BigDecimal getR66_sadc() { return r66_sadc; }
+		public void setR66_sadc(BigDecimal r66_sadc) { this.r66_sadc = r66_sadc; }
+		public BigDecimal getR66_usa() { return r66_usa; }
+		public void setR66_usa(BigDecimal r66_usa) { this.r66_usa = r66_usa; }
+		public BigDecimal getR66_uk() { return r66_uk; }
+		public void setR66_uk(BigDecimal r66_uk) { this.r66_uk = r66_uk; }
+		public BigDecimal getR66_europe() { return r66_europe; }
+		public void setR66_europe(BigDecimal r66_europe) { this.r66_europe = r66_europe; }
+		public BigDecimal getR66_india() { return r66_india; }
+		public void setR66_india(BigDecimal r66_india) { this.r66_india = r66_india; }
+		public BigDecimal getR66_sydney() { return r66_sydney; }
+		public void setR66_sydney(BigDecimal r66_sydney) { this.r66_sydney = r66_sydney; }
+		public BigDecimal getR66_uganda() { return r66_uganda; }
+		public void setR66_uganda(BigDecimal r66_uganda) { this.r66_uganda = r66_uganda; }
+		public BigDecimal getR66_c10() { return r66_c10; }
+		public void setR66_c10(BigDecimal r66_c10) { this.r66_c10 = r66_c10; }
+		public BigDecimal getR66_c11() { return r66_c11; }
+		public void setR66_c11(BigDecimal r66_c11) { this.r66_c11 = r66_c11; }
+		public BigDecimal getR66_c12() { return r66_c12; }
+		public void setR66_c12(BigDecimal r66_c12) { this.r66_c12 = r66_c12; }
+		public BigDecimal getR66_c13() { return r66_c13; }
+		public void setR66_c13(BigDecimal r66_c13) { this.r66_c13 = r66_c13; }
+		public BigDecimal getR66_c14() { return r66_c14; }
+		public void setR66_c14(BigDecimal r66_c14) { this.r66_c14 = r66_c14; }
+		public BigDecimal getR66_c15() { return r66_c15; }
+		public void setR66_c15(BigDecimal r66_c15) { this.r66_c15 = r66_c15; }
+		public BigDecimal getR66_c16() { return r66_c16; }
+		public void setR66_c16(BigDecimal r66_c16) { this.r66_c16 = r66_c16; }
+		public BigDecimal getR66_total() { return r66_total; }
+		public void setR66_total(BigDecimal r66_total) { this.r66_total = r66_total; }
+		public String getR69_product() { return r69_product; }
+		public void setR69_product(String r69_product) { this.r69_product = r69_product; }
+		public BigDecimal getR69_botswana() { return r69_botswana; }
+		public void setR69_botswana(BigDecimal r69_botswana) { this.r69_botswana = r69_botswana; }
+		public BigDecimal getR69_south_africa() { return r69_south_africa; }
+		public void setR69_south_africa(BigDecimal r69_south_africa) { this.r69_south_africa = r69_south_africa; }
+		public BigDecimal getR69_sadc() { return r69_sadc; }
+		public void setR69_sadc(BigDecimal r69_sadc) { this.r69_sadc = r69_sadc; }
+		public BigDecimal getR69_usa() { return r69_usa; }
+		public void setR69_usa(BigDecimal r69_usa) { this.r69_usa = r69_usa; }
+		public BigDecimal getR69_uk() { return r69_uk; }
+		public void setR69_uk(BigDecimal r69_uk) { this.r69_uk = r69_uk; }
+		public BigDecimal getR69_europe() { return r69_europe; }
+		public void setR69_europe(BigDecimal r69_europe) { this.r69_europe = r69_europe; }
+		public BigDecimal getR69_india() { return r69_india; }
+		public void setR69_india(BigDecimal r69_india) { this.r69_india = r69_india; }
+		public BigDecimal getR69_sydney() { return r69_sydney; }
+		public void setR69_sydney(BigDecimal r69_sydney) { this.r69_sydney = r69_sydney; }
+		public BigDecimal getR69_uganda() { return r69_uganda; }
+		public void setR69_uganda(BigDecimal r69_uganda) { this.r69_uganda = r69_uganda; }
+		public BigDecimal getR69_c10() { return r69_c10; }
+		public void setR69_c10(BigDecimal r69_c10) { this.r69_c10 = r69_c10; }
+		public BigDecimal getR69_c11() { return r69_c11; }
+		public void setR69_c11(BigDecimal r69_c11) { this.r69_c11 = r69_c11; }
+		public BigDecimal getR69_c12() { return r69_c12; }
+		public void setR69_c12(BigDecimal r69_c12) { this.r69_c12 = r69_c12; }
+		public BigDecimal getR69_c13() { return r69_c13; }
+		public void setR69_c13(BigDecimal r69_c13) { this.r69_c13 = r69_c13; }
+		public BigDecimal getR69_c14() { return r69_c14; }
+		public void setR69_c14(BigDecimal r69_c14) { this.r69_c14 = r69_c14; }
+		public BigDecimal getR69_c15() { return r69_c15; }
+		public void setR69_c15(BigDecimal r69_c15) { this.r69_c15 = r69_c15; }
+		public BigDecimal getR69_c16() { return r69_c16; }
+		public void setR69_c16(BigDecimal r69_c16) { this.r69_c16 = r69_c16; }
+		public BigDecimal getR69_total() { return r69_total; }
+		public void setR69_total(BigDecimal r69_total) { this.r69_total = r69_total; }
+		public String getR70_product() { return r70_product; }
+		public void setR70_product(String r70_product) { this.r70_product = r70_product; }
+		public BigDecimal getR70_botswana() { return r70_botswana; }
+		public void setR70_botswana(BigDecimal r70_botswana) { this.r70_botswana = r70_botswana; }
+		public BigDecimal getR70_south_africa() { return r70_south_africa; }
+		public void setR70_south_africa(BigDecimal r70_south_africa) { this.r70_south_africa = r70_south_africa; }
+		public BigDecimal getR70_sadc() { return r70_sadc; }
+		public void setR70_sadc(BigDecimal r70_sadc) { this.r70_sadc = r70_sadc; }
+		public BigDecimal getR70_usa() { return r70_usa; }
+		public void setR70_usa(BigDecimal r70_usa) { this.r70_usa = r70_usa; }
+		public BigDecimal getR70_uk() { return r70_uk; }
+		public void setR70_uk(BigDecimal r70_uk) { this.r70_uk = r70_uk; }
+		public BigDecimal getR70_europe() { return r70_europe; }
+		public void setR70_europe(BigDecimal r70_europe) { this.r70_europe = r70_europe; }
+		public BigDecimal getR70_india() { return r70_india; }
+		public void setR70_india(BigDecimal r70_india) { this.r70_india = r70_india; }
+		public BigDecimal getR70_sydney() { return r70_sydney; }
+		public void setR70_sydney(BigDecimal r70_sydney) { this.r70_sydney = r70_sydney; }
+		public BigDecimal getR70_uganda() { return r70_uganda; }
+		public void setR70_uganda(BigDecimal r70_uganda) { this.r70_uganda = r70_uganda; }
+		public BigDecimal getR70_c10() { return r70_c10; }
+		public void setR70_c10(BigDecimal r70_c10) { this.r70_c10 = r70_c10; }
+		public BigDecimal getR70_c11() { return r70_c11; }
+		public void setR70_c11(BigDecimal r70_c11) { this.r70_c11 = r70_c11; }
+		public BigDecimal getR70_c12() { return r70_c12; }
+		public void setR70_c12(BigDecimal r70_c12) { this.r70_c12 = r70_c12; }
+		public BigDecimal getR70_c13() { return r70_c13; }
+		public void setR70_c13(BigDecimal r70_c13) { this.r70_c13 = r70_c13; }
+		public BigDecimal getR70_c14() { return r70_c14; }
+		public void setR70_c14(BigDecimal r70_c14) { this.r70_c14 = r70_c14; }
+		public BigDecimal getR70_c15() { return r70_c15; }
+		public void setR70_c15(BigDecimal r70_c15) { this.r70_c15 = r70_c15; }
+		public BigDecimal getR70_c16() { return r70_c16; }
+		public void setR70_c16(BigDecimal r70_c16) { this.r70_c16 = r70_c16; }
+		public BigDecimal getR70_total() { return r70_total; }
+		public void setR70_total(BigDecimal r70_total) { this.r70_total = r70_total; }
+		public String getR71_product() { return r71_product; }
+		public void setR71_product(String r71_product) { this.r71_product = r71_product; }
+		public BigDecimal getR71_botswana() { return r71_botswana; }
+		public void setR71_botswana(BigDecimal r71_botswana) { this.r71_botswana = r71_botswana; }
+		public BigDecimal getR71_south_africa() { return r71_south_africa; }
+		public void setR71_south_africa(BigDecimal r71_south_africa) { this.r71_south_africa = r71_south_africa; }
+		public BigDecimal getR71_sadc() { return r71_sadc; }
+		public void setR71_sadc(BigDecimal r71_sadc) { this.r71_sadc = r71_sadc; }
+		public BigDecimal getR71_usa() { return r71_usa; }
+		public void setR71_usa(BigDecimal r71_usa) { this.r71_usa = r71_usa; }
+		public BigDecimal getR71_uk() { return r71_uk; }
+		public void setR71_uk(BigDecimal r71_uk) { this.r71_uk = r71_uk; }
+		public BigDecimal getR71_europe() { return r71_europe; }
+		public void setR71_europe(BigDecimal r71_europe) { this.r71_europe = r71_europe; }
+		public BigDecimal getR71_india() { return r71_india; }
+		public void setR71_india(BigDecimal r71_india) { this.r71_india = r71_india; }
+		public BigDecimal getR71_sydney() { return r71_sydney; }
+		public void setR71_sydney(BigDecimal r71_sydney) { this.r71_sydney = r71_sydney; }
+		public BigDecimal getR71_uganda() { return r71_uganda; }
+		public void setR71_uganda(BigDecimal r71_uganda) { this.r71_uganda = r71_uganda; }
+		public BigDecimal getR71_c10() { return r71_c10; }
+		public void setR71_c10(BigDecimal r71_c10) { this.r71_c10 = r71_c10; }
+		public BigDecimal getR71_c11() { return r71_c11; }
+		public void setR71_c11(BigDecimal r71_c11) { this.r71_c11 = r71_c11; }
+		public BigDecimal getR71_c12() { return r71_c12; }
+		public void setR71_c12(BigDecimal r71_c12) { this.r71_c12 = r71_c12; }
+		public BigDecimal getR71_c13() { return r71_c13; }
+		public void setR71_c13(BigDecimal r71_c13) { this.r71_c13 = r71_c13; }
+		public BigDecimal getR71_c14() { return r71_c14; }
+		public void setR71_c14(BigDecimal r71_c14) { this.r71_c14 = r71_c14; }
+		public BigDecimal getR71_c15() { return r71_c15; }
+		public void setR71_c15(BigDecimal r71_c15) { this.r71_c15 = r71_c15; }
+		public BigDecimal getR71_c16() { return r71_c16; }
+		public void setR71_c16(BigDecimal r71_c16) { this.r71_c16 = r71_c16; }
+		public BigDecimal getR71_total() { return r71_total; }
+		public void setR71_total(BigDecimal r71_total) { this.r71_total = r71_total; }
+		public String getR72_product() { return r72_product; }
+		public void setR72_product(String r72_product) { this.r72_product = r72_product; }
+		public BigDecimal getR72_botswana() { return r72_botswana; }
+		public void setR72_botswana(BigDecimal r72_botswana) { this.r72_botswana = r72_botswana; }
+		public BigDecimal getR72_south_africa() { return r72_south_africa; }
+		public void setR72_south_africa(BigDecimal r72_south_africa) { this.r72_south_africa = r72_south_africa; }
+		public BigDecimal getR72_sadc() { return r72_sadc; }
+		public void setR72_sadc(BigDecimal r72_sadc) { this.r72_sadc = r72_sadc; }
+		public BigDecimal getR72_usa() { return r72_usa; }
+		public void setR72_usa(BigDecimal r72_usa) { this.r72_usa = r72_usa; }
+		public BigDecimal getR72_uk() { return r72_uk; }
+		public void setR72_uk(BigDecimal r72_uk) { this.r72_uk = r72_uk; }
+		public BigDecimal getR72_europe() { return r72_europe; }
+		public void setR72_europe(BigDecimal r72_europe) { this.r72_europe = r72_europe; }
+		public BigDecimal getR72_india() { return r72_india; }
+		public void setR72_india(BigDecimal r72_india) { this.r72_india = r72_india; }
+		public BigDecimal getR72_sydney() { return r72_sydney; }
+		public void setR72_sydney(BigDecimal r72_sydney) { this.r72_sydney = r72_sydney; }
+		public BigDecimal getR72_uganda() { return r72_uganda; }
+		public void setR72_uganda(BigDecimal r72_uganda) { this.r72_uganda = r72_uganda; }
+		public BigDecimal getR72_c10() { return r72_c10; }
+		public void setR72_c10(BigDecimal r72_c10) { this.r72_c10 = r72_c10; }
+		public BigDecimal getR72_c11() { return r72_c11; }
+		public void setR72_c11(BigDecimal r72_c11) { this.r72_c11 = r72_c11; }
+		public BigDecimal getR72_c12() { return r72_c12; }
+		public void setR72_c12(BigDecimal r72_c12) { this.r72_c12 = r72_c12; }
+		public BigDecimal getR72_c13() { return r72_c13; }
+		public void setR72_c13(BigDecimal r72_c13) { this.r72_c13 = r72_c13; }
+		public BigDecimal getR72_c14() { return r72_c14; }
+		public void setR72_c14(BigDecimal r72_c14) { this.r72_c14 = r72_c14; }
+		public BigDecimal getR72_c15() { return r72_c15; }
+		public void setR72_c15(BigDecimal r72_c15) { this.r72_c15 = r72_c15; }
+		public BigDecimal getR72_c16() { return r72_c16; }
+		public void setR72_c16(BigDecimal r72_c16) { this.r72_c16 = r72_c16; }
+		public BigDecimal getR72_total() { return r72_total; }
+		public void setR72_total(BigDecimal r72_total) { this.r72_total = r72_total; }
+		public String getR73_product() { return r73_product; }
+		public void setR73_product(String r73_product) { this.r73_product = r73_product; }
+		public BigDecimal getR73_botswana() { return r73_botswana; }
+		public void setR73_botswana(BigDecimal r73_botswana) { this.r73_botswana = r73_botswana; }
+		public BigDecimal getR73_south_africa() { return r73_south_africa; }
+		public void setR73_south_africa(BigDecimal r73_south_africa) { this.r73_south_africa = r73_south_africa; }
+		public BigDecimal getR73_sadc() { return r73_sadc; }
+		public void setR73_sadc(BigDecimal r73_sadc) { this.r73_sadc = r73_sadc; }
+		public BigDecimal getR73_usa() { return r73_usa; }
+		public void setR73_usa(BigDecimal r73_usa) { this.r73_usa = r73_usa; }
+		public BigDecimal getR73_uk() { return r73_uk; }
+		public void setR73_uk(BigDecimal r73_uk) { this.r73_uk = r73_uk; }
+		public BigDecimal getR73_europe() { return r73_europe; }
+		public void setR73_europe(BigDecimal r73_europe) { this.r73_europe = r73_europe; }
+		public BigDecimal getR73_india() { return r73_india; }
+		public void setR73_india(BigDecimal r73_india) { this.r73_india = r73_india; }
+		public BigDecimal getR73_sydney() { return r73_sydney; }
+		public void setR73_sydney(BigDecimal r73_sydney) { this.r73_sydney = r73_sydney; }
+		public BigDecimal getR73_uganda() { return r73_uganda; }
+		public void setR73_uganda(BigDecimal r73_uganda) { this.r73_uganda = r73_uganda; }
+		public BigDecimal getR73_c10() { return r73_c10; }
+		public void setR73_c10(BigDecimal r73_c10) { this.r73_c10 = r73_c10; }
+		public BigDecimal getR73_c11() { return r73_c11; }
+		public void setR73_c11(BigDecimal r73_c11) { this.r73_c11 = r73_c11; }
+		public BigDecimal getR73_c12() { return r73_c12; }
+		public void setR73_c12(BigDecimal r73_c12) { this.r73_c12 = r73_c12; }
+		public BigDecimal getR73_c13() { return r73_c13; }
+		public void setR73_c13(BigDecimal r73_c13) { this.r73_c13 = r73_c13; }
+		public BigDecimal getR73_c14() { return r73_c14; }
+		public void setR73_c14(BigDecimal r73_c14) { this.r73_c14 = r73_c14; }
+		public BigDecimal getR73_c15() { return r73_c15; }
+		public void setR73_c15(BigDecimal r73_c15) { this.r73_c15 = r73_c15; }
+		public BigDecimal getR73_c16() { return r73_c16; }
+		public void setR73_c16(BigDecimal r73_c16) { this.r73_c16 = r73_c16; }
+		public BigDecimal getR73_total() { return r73_total; }
+		public void setR73_total(BigDecimal r73_total) { this.r73_total = r73_total; }
+		public String getR74_product() { return r74_product; }
+		public void setR74_product(String r74_product) { this.r74_product = r74_product; }
+		public BigDecimal getR74_botswana() { return r74_botswana; }
+		public void setR74_botswana(BigDecimal r74_botswana) { this.r74_botswana = r74_botswana; }
+		public BigDecimal getR74_south_africa() { return r74_south_africa; }
+		public void setR74_south_africa(BigDecimal r74_south_africa) { this.r74_south_africa = r74_south_africa; }
+		public BigDecimal getR74_sadc() { return r74_sadc; }
+		public void setR74_sadc(BigDecimal r74_sadc) { this.r74_sadc = r74_sadc; }
+		public BigDecimal getR74_usa() { return r74_usa; }
+		public void setR74_usa(BigDecimal r74_usa) { this.r74_usa = r74_usa; }
+		public BigDecimal getR74_uk() { return r74_uk; }
+		public void setR74_uk(BigDecimal r74_uk) { this.r74_uk = r74_uk; }
+		public BigDecimal getR74_europe() { return r74_europe; }
+		public void setR74_europe(BigDecimal r74_europe) { this.r74_europe = r74_europe; }
+		public BigDecimal getR74_india() { return r74_india; }
+		public void setR74_india(BigDecimal r74_india) { this.r74_india = r74_india; }
+		public BigDecimal getR74_sydney() { return r74_sydney; }
+		public void setR74_sydney(BigDecimal r74_sydney) { this.r74_sydney = r74_sydney; }
+		public BigDecimal getR74_uganda() { return r74_uganda; }
+		public void setR74_uganda(BigDecimal r74_uganda) { this.r74_uganda = r74_uganda; }
+		public BigDecimal getR74_c10() { return r74_c10; }
+		public void setR74_c10(BigDecimal r74_c10) { this.r74_c10 = r74_c10; }
+		public BigDecimal getR74_c11() { return r74_c11; }
+		public void setR74_c11(BigDecimal r74_c11) { this.r74_c11 = r74_c11; }
+		public BigDecimal getR74_c12() { return r74_c12; }
+		public void setR74_c12(BigDecimal r74_c12) { this.r74_c12 = r74_c12; }
+		public BigDecimal getR74_c13() { return r74_c13; }
+		public void setR74_c13(BigDecimal r74_c13) { this.r74_c13 = r74_c13; }
+		public BigDecimal getR74_c14() { return r74_c14; }
+		public void setR74_c14(BigDecimal r74_c14) { this.r74_c14 = r74_c14; }
+		public BigDecimal getR74_c15() { return r74_c15; }
+		public void setR74_c15(BigDecimal r74_c15) { this.r74_c15 = r74_c15; }
+		public BigDecimal getR74_c16() { return r74_c16; }
+		public void setR74_c16(BigDecimal r74_c16) { this.r74_c16 = r74_c16; }
+		public BigDecimal getR74_total() { return r74_total; }
+		public void setR74_total(BigDecimal r74_total) { this.r74_total = r74_total; }
+		public String getR75_product() { return r75_product; }
+		public void setR75_product(String r75_product) { this.r75_product = r75_product; }
+		public BigDecimal getR75_botswana() { return r75_botswana; }
+		public void setR75_botswana(BigDecimal r75_botswana) { this.r75_botswana = r75_botswana; }
+		public BigDecimal getR75_south_africa() { return r75_south_africa; }
+		public void setR75_south_africa(BigDecimal r75_south_africa) { this.r75_south_africa = r75_south_africa; }
+		public BigDecimal getR75_sadc() { return r75_sadc; }
+		public void setR75_sadc(BigDecimal r75_sadc) { this.r75_sadc = r75_sadc; }
+		public BigDecimal getR75_usa() { return r75_usa; }
+		public void setR75_usa(BigDecimal r75_usa) { this.r75_usa = r75_usa; }
+		public BigDecimal getR75_uk() { return r75_uk; }
+		public void setR75_uk(BigDecimal r75_uk) { this.r75_uk = r75_uk; }
+		public BigDecimal getR75_europe() { return r75_europe; }
+		public void setR75_europe(BigDecimal r75_europe) { this.r75_europe = r75_europe; }
+		public BigDecimal getR75_india() { return r75_india; }
+		public void setR75_india(BigDecimal r75_india) { this.r75_india = r75_india; }
+		public BigDecimal getR75_sydney() { return r75_sydney; }
+		public void setR75_sydney(BigDecimal r75_sydney) { this.r75_sydney = r75_sydney; }
+		public BigDecimal getR75_uganda() { return r75_uganda; }
+		public void setR75_uganda(BigDecimal r75_uganda) { this.r75_uganda = r75_uganda; }
+		public BigDecimal getR75_c10() { return r75_c10; }
+		public void setR75_c10(BigDecimal r75_c10) { this.r75_c10 = r75_c10; }
+		public BigDecimal getR75_c11() { return r75_c11; }
+		public void setR75_c11(BigDecimal r75_c11) { this.r75_c11 = r75_c11; }
+		public BigDecimal getR75_c12() { return r75_c12; }
+		public void setR75_c12(BigDecimal r75_c12) { this.r75_c12 = r75_c12; }
+		public BigDecimal getR75_c13() { return r75_c13; }
+		public void setR75_c13(BigDecimal r75_c13) { this.r75_c13 = r75_c13; }
+		public BigDecimal getR75_c14() { return r75_c14; }
+		public void setR75_c14(BigDecimal r75_c14) { this.r75_c14 = r75_c14; }
+		public BigDecimal getR75_c15() { return r75_c15; }
+		public void setR75_c15(BigDecimal r75_c15) { this.r75_c15 = r75_c15; }
+		public BigDecimal getR75_c16() { return r75_c16; }
+		public void setR75_c16(BigDecimal r75_c16) { this.r75_c16 = r75_c16; }
+		public BigDecimal getR75_total() { return r75_total; }
+		public void setR75_total(BigDecimal r75_total) { this.r75_total = r75_total; }
+		public String getR76_product() { return r76_product; }
+		public void setR76_product(String r76_product) { this.r76_product = r76_product; }
+		public BigDecimal getR76_botswana() { return r76_botswana; }
+		public void setR76_botswana(BigDecimal r76_botswana) { this.r76_botswana = r76_botswana; }
+		public BigDecimal getR76_south_africa() { return r76_south_africa; }
+		public void setR76_south_africa(BigDecimal r76_south_africa) { this.r76_south_africa = r76_south_africa; }
+		public BigDecimal getR76_sadc() { return r76_sadc; }
+		public void setR76_sadc(BigDecimal r76_sadc) { this.r76_sadc = r76_sadc; }
+		public BigDecimal getR76_usa() { return r76_usa; }
+		public void setR76_usa(BigDecimal r76_usa) { this.r76_usa = r76_usa; }
+		public BigDecimal getR76_uk() { return r76_uk; }
+		public void setR76_uk(BigDecimal r76_uk) { this.r76_uk = r76_uk; }
+		public BigDecimal getR76_europe() { return r76_europe; }
+		public void setR76_europe(BigDecimal r76_europe) { this.r76_europe = r76_europe; }
+		public BigDecimal getR76_india() { return r76_india; }
+		public void setR76_india(BigDecimal r76_india) { this.r76_india = r76_india; }
+		public BigDecimal getR76_sydney() { return r76_sydney; }
+		public void setR76_sydney(BigDecimal r76_sydney) { this.r76_sydney = r76_sydney; }
+		public BigDecimal getR76_uganda() { return r76_uganda; }
+		public void setR76_uganda(BigDecimal r76_uganda) { this.r76_uganda = r76_uganda; }
+		public BigDecimal getR76_c10() { return r76_c10; }
+		public void setR76_c10(BigDecimal r76_c10) { this.r76_c10 = r76_c10; }
+		public BigDecimal getR76_c11() { return r76_c11; }
+		public void setR76_c11(BigDecimal r76_c11) { this.r76_c11 = r76_c11; }
+		public BigDecimal getR76_c12() { return r76_c12; }
+		public void setR76_c12(BigDecimal r76_c12) { this.r76_c12 = r76_c12; }
+		public BigDecimal getR76_c13() { return r76_c13; }
+		public void setR76_c13(BigDecimal r76_c13) { this.r76_c13 = r76_c13; }
+		public BigDecimal getR76_c14() { return r76_c14; }
+		public void setR76_c14(BigDecimal r76_c14) { this.r76_c14 = r76_c14; }
+		public BigDecimal getR76_c15() { return r76_c15; }
+		public void setR76_c15(BigDecimal r76_c15) { this.r76_c15 = r76_c15; }
+		public BigDecimal getR76_c16() { return r76_c16; }
+		public void setR76_c16(BigDecimal r76_c16) { this.r76_c16 = r76_c16; }
+		public BigDecimal getR76_total() { return r76_total; }
+		public void setR76_total(BigDecimal r76_total) { this.r76_total = r76_total; }
+		public String getR77_product() { return r77_product; }
+		public void setR77_product(String r77_product) { this.r77_product = r77_product; }
+		public BigDecimal getR77_botswana() { return r77_botswana; }
+		public void setR77_botswana(BigDecimal r77_botswana) { this.r77_botswana = r77_botswana; }
+		public BigDecimal getR77_south_africa() { return r77_south_africa; }
+		public void setR77_south_africa(BigDecimal r77_south_africa) { this.r77_south_africa = r77_south_africa; }
+		public BigDecimal getR77_sadc() { return r77_sadc; }
+		public void setR77_sadc(BigDecimal r77_sadc) { this.r77_sadc = r77_sadc; }
+		public BigDecimal getR77_usa() { return r77_usa; }
+		public void setR77_usa(BigDecimal r77_usa) { this.r77_usa = r77_usa; }
+		public BigDecimal getR77_uk() { return r77_uk; }
+		public void setR77_uk(BigDecimal r77_uk) { this.r77_uk = r77_uk; }
+		public BigDecimal getR77_europe() { return r77_europe; }
+		public void setR77_europe(BigDecimal r77_europe) { this.r77_europe = r77_europe; }
+		public BigDecimal getR77_india() { return r77_india; }
+		public void setR77_india(BigDecimal r77_india) { this.r77_india = r77_india; }
+		public BigDecimal getR77_sydney() { return r77_sydney; }
+		public void setR77_sydney(BigDecimal r77_sydney) { this.r77_sydney = r77_sydney; }
+		public BigDecimal getR77_uganda() { return r77_uganda; }
+		public void setR77_uganda(BigDecimal r77_uganda) { this.r77_uganda = r77_uganda; }
+		public BigDecimal getR77_c10() { return r77_c10; }
+		public void setR77_c10(BigDecimal r77_c10) { this.r77_c10 = r77_c10; }
+		public BigDecimal getR77_c11() { return r77_c11; }
+		public void setR77_c11(BigDecimal r77_c11) { this.r77_c11 = r77_c11; }
+		public BigDecimal getR77_c12() { return r77_c12; }
+		public void setR77_c12(BigDecimal r77_c12) { this.r77_c12 = r77_c12; }
+		public BigDecimal getR77_c13() { return r77_c13; }
+		public void setR77_c13(BigDecimal r77_c13) { this.r77_c13 = r77_c13; }
+		public BigDecimal getR77_c14() { return r77_c14; }
+		public void setR77_c14(BigDecimal r77_c14) { this.r77_c14 = r77_c14; }
+		public BigDecimal getR77_c15() { return r77_c15; }
+		public void setR77_c15(BigDecimal r77_c15) { this.r77_c15 = r77_c15; }
+		public BigDecimal getR77_c16() { return r77_c16; }
+		public void setR77_c16(BigDecimal r77_c16) { this.r77_c16 = r77_c16; }
+		public BigDecimal getR77_total() { return r77_total; }
+		public void setR77_total(BigDecimal r77_total) { this.r77_total = r77_total; }
+		public String getR78_product() { return r78_product; }
+		public void setR78_product(String r78_product) { this.r78_product = r78_product; }
+		public BigDecimal getR78_botswana() { return r78_botswana; }
+		public void setR78_botswana(BigDecimal r78_botswana) { this.r78_botswana = r78_botswana; }
+		public BigDecimal getR78_south_africa() { return r78_south_africa; }
+		public void setR78_south_africa(BigDecimal r78_south_africa) { this.r78_south_africa = r78_south_africa; }
+		public BigDecimal getR78_sadc() { return r78_sadc; }
+		public void setR78_sadc(BigDecimal r78_sadc) { this.r78_sadc = r78_sadc; }
+		public BigDecimal getR78_usa() { return r78_usa; }
+		public void setR78_usa(BigDecimal r78_usa) { this.r78_usa = r78_usa; }
+		public BigDecimal getR78_uk() { return r78_uk; }
+		public void setR78_uk(BigDecimal r78_uk) { this.r78_uk = r78_uk; }
+		public BigDecimal getR78_europe() { return r78_europe; }
+		public void setR78_europe(BigDecimal r78_europe) { this.r78_europe = r78_europe; }
+		public BigDecimal getR78_india() { return r78_india; }
+		public void setR78_india(BigDecimal r78_india) { this.r78_india = r78_india; }
+		public BigDecimal getR78_sydney() { return r78_sydney; }
+		public void setR78_sydney(BigDecimal r78_sydney) { this.r78_sydney = r78_sydney; }
+		public BigDecimal getR78_uganda() { return r78_uganda; }
+		public void setR78_uganda(BigDecimal r78_uganda) { this.r78_uganda = r78_uganda; }
+		public BigDecimal getR78_c10() { return r78_c10; }
+		public void setR78_c10(BigDecimal r78_c10) { this.r78_c10 = r78_c10; }
+		public BigDecimal getR78_c11() { return r78_c11; }
+		public void setR78_c11(BigDecimal r78_c11) { this.r78_c11 = r78_c11; }
+		public BigDecimal getR78_c12() { return r78_c12; }
+		public void setR78_c12(BigDecimal r78_c12) { this.r78_c12 = r78_c12; }
+		public BigDecimal getR78_c13() { return r78_c13; }
+		public void setR78_c13(BigDecimal r78_c13) { this.r78_c13 = r78_c13; }
+		public BigDecimal getR78_c14() { return r78_c14; }
+		public void setR78_c14(BigDecimal r78_c14) { this.r78_c14 = r78_c14; }
+		public BigDecimal getR78_c15() { return r78_c15; }
+		public void setR78_c15(BigDecimal r78_c15) { this.r78_c15 = r78_c15; }
+		public BigDecimal getR78_c16() { return r78_c16; }
+		public void setR78_c16(BigDecimal r78_c16) { this.r78_c16 = r78_c16; }
+		public BigDecimal getR78_total() { return r78_total; }
+		public void setR78_total(BigDecimal r78_total) { this.r78_total = r78_total; }
+		public String getR79_product() { return r79_product; }
+		public void setR79_product(String r79_product) { this.r79_product = r79_product; }
+		public BigDecimal getR79_botswana() { return r79_botswana; }
+		public void setR79_botswana(BigDecimal r79_botswana) { this.r79_botswana = r79_botswana; }
+		public BigDecimal getR79_south_africa() { return r79_south_africa; }
+		public void setR79_south_africa(BigDecimal r79_south_africa) { this.r79_south_africa = r79_south_africa; }
+		public BigDecimal getR79_sadc() { return r79_sadc; }
+		public void setR79_sadc(BigDecimal r79_sadc) { this.r79_sadc = r79_sadc; }
+		public BigDecimal getR79_usa() { return r79_usa; }
+		public void setR79_usa(BigDecimal r79_usa) { this.r79_usa = r79_usa; }
+		public BigDecimal getR79_uk() { return r79_uk; }
+		public void setR79_uk(BigDecimal r79_uk) { this.r79_uk = r79_uk; }
+		public BigDecimal getR79_europe() { return r79_europe; }
+		public void setR79_europe(BigDecimal r79_europe) { this.r79_europe = r79_europe; }
+		public BigDecimal getR79_india() { return r79_india; }
+		public void setR79_india(BigDecimal r79_india) { this.r79_india = r79_india; }
+		public BigDecimal getR79_sydney() { return r79_sydney; }
+		public void setR79_sydney(BigDecimal r79_sydney) { this.r79_sydney = r79_sydney; }
+		public BigDecimal getR79_uganda() { return r79_uganda; }
+		public void setR79_uganda(BigDecimal r79_uganda) { this.r79_uganda = r79_uganda; }
+		public BigDecimal getR79_c10() { return r79_c10; }
+		public void setR79_c10(BigDecimal r79_c10) { this.r79_c10 = r79_c10; }
+		public BigDecimal getR79_c11() { return r79_c11; }
+		public void setR79_c11(BigDecimal r79_c11) { this.r79_c11 = r79_c11; }
+		public BigDecimal getR79_c12() { return r79_c12; }
+		public void setR79_c12(BigDecimal r79_c12) { this.r79_c12 = r79_c12; }
+		public BigDecimal getR79_c13() { return r79_c13; }
+		public void setR79_c13(BigDecimal r79_c13) { this.r79_c13 = r79_c13; }
+		public BigDecimal getR79_c14() { return r79_c14; }
+		public void setR79_c14(BigDecimal r79_c14) { this.r79_c14 = r79_c14; }
+		public BigDecimal getR79_c15() { return r79_c15; }
+		public void setR79_c15(BigDecimal r79_c15) { this.r79_c15 = r79_c15; }
+		public BigDecimal getR79_c16() { return r79_c16; }
+		public void setR79_c16(BigDecimal r79_c16) { this.r79_c16 = r79_c16; }
+		public BigDecimal getR79_total() { return r79_total; }
+		public void setR79_total(BigDecimal r79_total) { this.r79_total = r79_total; }
+		public String getR80_product() { return r80_product; }
+		public void setR80_product(String r80_product) { this.r80_product = r80_product; }
+		public BigDecimal getR80_botswana() { return r80_botswana; }
+		public void setR80_botswana(BigDecimal r80_botswana) { this.r80_botswana = r80_botswana; }
+		public BigDecimal getR80_south_africa() { return r80_south_africa; }
+		public void setR80_south_africa(BigDecimal r80_south_africa) { this.r80_south_africa = r80_south_africa; }
+		public BigDecimal getR80_sadc() { return r80_sadc; }
+		public void setR80_sadc(BigDecimal r80_sadc) { this.r80_sadc = r80_sadc; }
+		public BigDecimal getR80_usa() { return r80_usa; }
+		public void setR80_usa(BigDecimal r80_usa) { this.r80_usa = r80_usa; }
+		public BigDecimal getR80_uk() { return r80_uk; }
+		public void setR80_uk(BigDecimal r80_uk) { this.r80_uk = r80_uk; }
+		public BigDecimal getR80_europe() { return r80_europe; }
+		public void setR80_europe(BigDecimal r80_europe) { this.r80_europe = r80_europe; }
+		public BigDecimal getR80_india() { return r80_india; }
+		public void setR80_india(BigDecimal r80_india) { this.r80_india = r80_india; }
+		public BigDecimal getR80_sydney() { return r80_sydney; }
+		public void setR80_sydney(BigDecimal r80_sydney) { this.r80_sydney = r80_sydney; }
+		public BigDecimal getR80_uganda() { return r80_uganda; }
+		public void setR80_uganda(BigDecimal r80_uganda) { this.r80_uganda = r80_uganda; }
+		public BigDecimal getR80_c10() { return r80_c10; }
+		public void setR80_c10(BigDecimal r80_c10) { this.r80_c10 = r80_c10; }
+		public BigDecimal getR80_c11() { return r80_c11; }
+		public void setR80_c11(BigDecimal r80_c11) { this.r80_c11 = r80_c11; }
+		public BigDecimal getR80_c12() { return r80_c12; }
+		public void setR80_c12(BigDecimal r80_c12) { this.r80_c12 = r80_c12; }
+		public BigDecimal getR80_c13() { return r80_c13; }
+		public void setR80_c13(BigDecimal r80_c13) { this.r80_c13 = r80_c13; }
+		public BigDecimal getR80_c14() { return r80_c14; }
+		public void setR80_c14(BigDecimal r80_c14) { this.r80_c14 = r80_c14; }
+		public BigDecimal getR80_c15() { return r80_c15; }
+		public void setR80_c15(BigDecimal r80_c15) { this.r80_c15 = r80_c15; }
+		public BigDecimal getR80_c16() { return r80_c16; }
+		public void setR80_c16(BigDecimal r80_c16) { this.r80_c16 = r80_c16; }
+		public BigDecimal getR80_total() { return r80_total; }
+		public void setR80_total(BigDecimal r80_total) { this.r80_total = r80_total; }
+		public String getR81_product() { return r81_product; }
+		public void setR81_product(String r81_product) { this.r81_product = r81_product; }
+		public BigDecimal getR81_botswana() { return r81_botswana; }
+		public void setR81_botswana(BigDecimal r81_botswana) { this.r81_botswana = r81_botswana; }
+		public BigDecimal getR81_south_africa() { return r81_south_africa; }
+		public void setR81_south_africa(BigDecimal r81_south_africa) { this.r81_south_africa = r81_south_africa; }
+		public BigDecimal getR81_sadc() { return r81_sadc; }
+		public void setR81_sadc(BigDecimal r81_sadc) { this.r81_sadc = r81_sadc; }
+		public BigDecimal getR81_usa() { return r81_usa; }
+		public void setR81_usa(BigDecimal r81_usa) { this.r81_usa = r81_usa; }
+		public BigDecimal getR81_uk() { return r81_uk; }
+		public void setR81_uk(BigDecimal r81_uk) { this.r81_uk = r81_uk; }
+		public BigDecimal getR81_europe() { return r81_europe; }
+		public void setR81_europe(BigDecimal r81_europe) { this.r81_europe = r81_europe; }
+		public BigDecimal getR81_india() { return r81_india; }
+		public void setR81_india(BigDecimal r81_india) { this.r81_india = r81_india; }
+		public BigDecimal getR81_sydney() { return r81_sydney; }
+		public void setR81_sydney(BigDecimal r81_sydney) { this.r81_sydney = r81_sydney; }
+		public BigDecimal getR81_uganda() { return r81_uganda; }
+		public void setR81_uganda(BigDecimal r81_uganda) { this.r81_uganda = r81_uganda; }
+		public BigDecimal getR81_c10() { return r81_c10; }
+		public void setR81_c10(BigDecimal r81_c10) { this.r81_c10 = r81_c10; }
+		public BigDecimal getR81_c11() { return r81_c11; }
+		public void setR81_c11(BigDecimal r81_c11) { this.r81_c11 = r81_c11; }
+		public BigDecimal getR81_c12() { return r81_c12; }
+		public void setR81_c12(BigDecimal r81_c12) { this.r81_c12 = r81_c12; }
+		public BigDecimal getR81_c13() { return r81_c13; }
+		public void setR81_c13(BigDecimal r81_c13) { this.r81_c13 = r81_c13; }
+		public BigDecimal getR81_c14() { return r81_c14; }
+		public void setR81_c14(BigDecimal r81_c14) { this.r81_c14 = r81_c14; }
+		public BigDecimal getR81_c15() { return r81_c15; }
+		public void setR81_c15(BigDecimal r81_c15) { this.r81_c15 = r81_c15; }
+		public BigDecimal getR81_c16() { return r81_c16; }
+		public void setR81_c16(BigDecimal r81_c16) { this.r81_c16 = r81_c16; }
+		public BigDecimal getR81_total() { return r81_total; }
+		public void setR81_total(BigDecimal r81_total) { this.r81_total = r81_total; }
+		public String getR82_product() { return r82_product; }
+		public void setR82_product(String r82_product) { this.r82_product = r82_product; }
+		public BigDecimal getR82_botswana() { return r82_botswana; }
+		public void setR82_botswana(BigDecimal r82_botswana) { this.r82_botswana = r82_botswana; }
+		public BigDecimal getR82_south_africa() { return r82_south_africa; }
+		public void setR82_south_africa(BigDecimal r82_south_africa) { this.r82_south_africa = r82_south_africa; }
+		public BigDecimal getR82_sadc() { return r82_sadc; }
+		public void setR82_sadc(BigDecimal r82_sadc) { this.r82_sadc = r82_sadc; }
+		public BigDecimal getR82_usa() { return r82_usa; }
+		public void setR82_usa(BigDecimal r82_usa) { this.r82_usa = r82_usa; }
+		public BigDecimal getR82_uk() { return r82_uk; }
+		public void setR82_uk(BigDecimal r82_uk) { this.r82_uk = r82_uk; }
+		public BigDecimal getR82_europe() { return r82_europe; }
+		public void setR82_europe(BigDecimal r82_europe) { this.r82_europe = r82_europe; }
+		public BigDecimal getR82_india() { return r82_india; }
+		public void setR82_india(BigDecimal r82_india) { this.r82_india = r82_india; }
+		public BigDecimal getR82_sydney() { return r82_sydney; }
+		public void setR82_sydney(BigDecimal r82_sydney) { this.r82_sydney = r82_sydney; }
+		public BigDecimal getR82_uganda() { return r82_uganda; }
+		public void setR82_uganda(BigDecimal r82_uganda) { this.r82_uganda = r82_uganda; }
+		public BigDecimal getR82_c10() { return r82_c10; }
+		public void setR82_c10(BigDecimal r82_c10) { this.r82_c10 = r82_c10; }
+		public BigDecimal getR82_c11() { return r82_c11; }
+		public void setR82_c11(BigDecimal r82_c11) { this.r82_c11 = r82_c11; }
+		public BigDecimal getR82_c12() { return r82_c12; }
+		public void setR82_c12(BigDecimal r82_c12) { this.r82_c12 = r82_c12; }
+		public BigDecimal getR82_c13() { return r82_c13; }
+		public void setR82_c13(BigDecimal r82_c13) { this.r82_c13 = r82_c13; }
+		public BigDecimal getR82_c14() { return r82_c14; }
+		public void setR82_c14(BigDecimal r82_c14) { this.r82_c14 = r82_c14; }
+		public BigDecimal getR82_c15() { return r82_c15; }
+		public void setR82_c15(BigDecimal r82_c15) { this.r82_c15 = r82_c15; }
+		public BigDecimal getR82_c16() { return r82_c16; }
+		public void setR82_c16(BigDecimal r82_c16) { this.r82_c16 = r82_c16; }
+		public BigDecimal getR82_total() { return r82_total; }
+		public void setR82_total(BigDecimal r82_total) { this.r82_total = r82_total; }
+		public String getR83_product() { return r83_product; }
+		public void setR83_product(String r83_product) { this.r83_product = r83_product; }
+		public BigDecimal getR83_botswana() { return r83_botswana; }
+		public void setR83_botswana(BigDecimal r83_botswana) { this.r83_botswana = r83_botswana; }
+		public BigDecimal getR83_south_africa() { return r83_south_africa; }
+		public void setR83_south_africa(BigDecimal r83_south_africa) { this.r83_south_africa = r83_south_africa; }
+		public BigDecimal getR83_sadc() { return r83_sadc; }
+		public void setR83_sadc(BigDecimal r83_sadc) { this.r83_sadc = r83_sadc; }
+		public BigDecimal getR83_usa() { return r83_usa; }
+		public void setR83_usa(BigDecimal r83_usa) { this.r83_usa = r83_usa; }
+		public BigDecimal getR83_uk() { return r83_uk; }
+		public void setR83_uk(BigDecimal r83_uk) { this.r83_uk = r83_uk; }
+		public BigDecimal getR83_europe() { return r83_europe; }
+		public void setR83_europe(BigDecimal r83_europe) { this.r83_europe = r83_europe; }
+		public BigDecimal getR83_india() { return r83_india; }
+		public void setR83_india(BigDecimal r83_india) { this.r83_india = r83_india; }
+		public BigDecimal getR83_sydney() { return r83_sydney; }
+		public void setR83_sydney(BigDecimal r83_sydney) { this.r83_sydney = r83_sydney; }
+		public BigDecimal getR83_uganda() { return r83_uganda; }
+		public void setR83_uganda(BigDecimal r83_uganda) { this.r83_uganda = r83_uganda; }
+		public BigDecimal getR83_c10() { return r83_c10; }
+		public void setR83_c10(BigDecimal r83_c10) { this.r83_c10 = r83_c10; }
+		public BigDecimal getR83_c11() { return r83_c11; }
+		public void setR83_c11(BigDecimal r83_c11) { this.r83_c11 = r83_c11; }
+		public BigDecimal getR83_c12() { return r83_c12; }
+		public void setR83_c12(BigDecimal r83_c12) { this.r83_c12 = r83_c12; }
+		public BigDecimal getR83_c13() { return r83_c13; }
+		public void setR83_c13(BigDecimal r83_c13) { this.r83_c13 = r83_c13; }
+		public BigDecimal getR83_c14() { return r83_c14; }
+		public void setR83_c14(BigDecimal r83_c14) { this.r83_c14 = r83_c14; }
+		public BigDecimal getR83_c15() { return r83_c15; }
+		public void setR83_c15(BigDecimal r83_c15) { this.r83_c15 = r83_c15; }
+		public BigDecimal getR83_c16() { return r83_c16; }
+		public void setR83_c16(BigDecimal r83_c16) { this.r83_c16 = r83_c16; }
+		public BigDecimal getR83_total() { return r83_total; }
+		public void setR83_total(BigDecimal r83_total) { this.r83_total = r83_total; }
+		public String getR84_product() { return r84_product; }
+		public void setR84_product(String r84_product) { this.r84_product = r84_product; }
+		public BigDecimal getR84_botswana() { return r84_botswana; }
+		public void setR84_botswana(BigDecimal r84_botswana) { this.r84_botswana = r84_botswana; }
+		public BigDecimal getR84_south_africa() { return r84_south_africa; }
+		public void setR84_south_africa(BigDecimal r84_south_africa) { this.r84_south_africa = r84_south_africa; }
+		public BigDecimal getR84_sadc() { return r84_sadc; }
+		public void setR84_sadc(BigDecimal r84_sadc) { this.r84_sadc = r84_sadc; }
+		public BigDecimal getR84_usa() { return r84_usa; }
+		public void setR84_usa(BigDecimal r84_usa) { this.r84_usa = r84_usa; }
+		public BigDecimal getR84_uk() { return r84_uk; }
+		public void setR84_uk(BigDecimal r84_uk) { this.r84_uk = r84_uk; }
+		public BigDecimal getR84_europe() { return r84_europe; }
+		public void setR84_europe(BigDecimal r84_europe) { this.r84_europe = r84_europe; }
+		public BigDecimal getR84_india() { return r84_india; }
+		public void setR84_india(BigDecimal r84_india) { this.r84_india = r84_india; }
+		public BigDecimal getR84_sydney() { return r84_sydney; }
+		public void setR84_sydney(BigDecimal r84_sydney) { this.r84_sydney = r84_sydney; }
+		public BigDecimal getR84_uganda() { return r84_uganda; }
+		public void setR84_uganda(BigDecimal r84_uganda) { this.r84_uganda = r84_uganda; }
+		public BigDecimal getR84_c10() { return r84_c10; }
+		public void setR84_c10(BigDecimal r84_c10) { this.r84_c10 = r84_c10; }
+		public BigDecimal getR84_c11() { return r84_c11; }
+		public void setR84_c11(BigDecimal r84_c11) { this.r84_c11 = r84_c11; }
+		public BigDecimal getR84_c12() { return r84_c12; }
+		public void setR84_c12(BigDecimal r84_c12) { this.r84_c12 = r84_c12; }
+		public BigDecimal getR84_c13() { return r84_c13; }
+		public void setR84_c13(BigDecimal r84_c13) { this.r84_c13 = r84_c13; }
+		public BigDecimal getR84_c14() { return r84_c14; }
+		public void setR84_c14(BigDecimal r84_c14) { this.r84_c14 = r84_c14; }
+		public BigDecimal getR84_c15() { return r84_c15; }
+		public void setR84_c15(BigDecimal r84_c15) { this.r84_c15 = r84_c15; }
+		public BigDecimal getR84_c16() { return r84_c16; }
+		public void setR84_c16(BigDecimal r84_c16) { this.r84_c16 = r84_c16; }
+		public BigDecimal getR84_total() { return r84_total; }
+		public void setR84_total(BigDecimal r84_total) { this.r84_total = r84_total; }
+		public String getR85_product() { return r85_product; }
+		public void setR85_product(String r85_product) { this.r85_product = r85_product; }
+		public BigDecimal getR85_botswana() { return r85_botswana; }
+		public void setR85_botswana(BigDecimal r85_botswana) { this.r85_botswana = r85_botswana; }
+		public BigDecimal getR85_south_africa() { return r85_south_africa; }
+		public void setR85_south_africa(BigDecimal r85_south_africa) { this.r85_south_africa = r85_south_africa; }
+		public BigDecimal getR85_sadc() { return r85_sadc; }
+		public void setR85_sadc(BigDecimal r85_sadc) { this.r85_sadc = r85_sadc; }
+		public BigDecimal getR85_usa() { return r85_usa; }
+		public void setR85_usa(BigDecimal r85_usa) { this.r85_usa = r85_usa; }
+		public BigDecimal getR85_uk() { return r85_uk; }
+		public void setR85_uk(BigDecimal r85_uk) { this.r85_uk = r85_uk; }
+		public BigDecimal getR85_europe() { return r85_europe; }
+		public void setR85_europe(BigDecimal r85_europe) { this.r85_europe = r85_europe; }
+		public BigDecimal getR85_india() { return r85_india; }
+		public void setR85_india(BigDecimal r85_india) { this.r85_india = r85_india; }
+		public BigDecimal getR85_sydney() { return r85_sydney; }
+		public void setR85_sydney(BigDecimal r85_sydney) { this.r85_sydney = r85_sydney; }
+		public BigDecimal getR85_uganda() { return r85_uganda; }
+		public void setR85_uganda(BigDecimal r85_uganda) { this.r85_uganda = r85_uganda; }
+		public BigDecimal getR85_c10() { return r85_c10; }
+		public void setR85_c10(BigDecimal r85_c10) { this.r85_c10 = r85_c10; }
+		public BigDecimal getR85_c11() { return r85_c11; }
+		public void setR85_c11(BigDecimal r85_c11) { this.r85_c11 = r85_c11; }
+		public BigDecimal getR85_c12() { return r85_c12; }
+		public void setR85_c12(BigDecimal r85_c12) { this.r85_c12 = r85_c12; }
+		public BigDecimal getR85_c13() { return r85_c13; }
+		public void setR85_c13(BigDecimal r85_c13) { this.r85_c13 = r85_c13; }
+		public BigDecimal getR85_c14() { return r85_c14; }
+		public void setR85_c14(BigDecimal r85_c14) { this.r85_c14 = r85_c14; }
+		public BigDecimal getR85_c15() { return r85_c15; }
+		public void setR85_c15(BigDecimal r85_c15) { this.r85_c15 = r85_c15; }
+		public BigDecimal getR85_c16() { return r85_c16; }
+		public void setR85_c16(BigDecimal r85_c16) { this.r85_c16 = r85_c16; }
+		public BigDecimal getR85_total() { return r85_total; }
+		public void setR85_total(BigDecimal r85_total) { this.r85_total = r85_total; }
+		public String getR86_product() { return r86_product; }
+		public void setR86_product(String r86_product) { this.r86_product = r86_product; }
+		public BigDecimal getR86_botswana() { return r86_botswana; }
+		public void setR86_botswana(BigDecimal r86_botswana) { this.r86_botswana = r86_botswana; }
+		public BigDecimal getR86_south_africa() { return r86_south_africa; }
+		public void setR86_south_africa(BigDecimal r86_south_africa) { this.r86_south_africa = r86_south_africa; }
+		public BigDecimal getR86_sadc() { return r86_sadc; }
+		public void setR86_sadc(BigDecimal r86_sadc) { this.r86_sadc = r86_sadc; }
+		public BigDecimal getR86_usa() { return r86_usa; }
+		public void setR86_usa(BigDecimal r86_usa) { this.r86_usa = r86_usa; }
+		public BigDecimal getR86_uk() { return r86_uk; }
+		public void setR86_uk(BigDecimal r86_uk) { this.r86_uk = r86_uk; }
+		public BigDecimal getR86_europe() { return r86_europe; }
+		public void setR86_europe(BigDecimal r86_europe) { this.r86_europe = r86_europe; }
+		public BigDecimal getR86_india() { return r86_india; }
+		public void setR86_india(BigDecimal r86_india) { this.r86_india = r86_india; }
+		public BigDecimal getR86_sydney() { return r86_sydney; }
+		public void setR86_sydney(BigDecimal r86_sydney) { this.r86_sydney = r86_sydney; }
+		public BigDecimal getR86_uganda() { return r86_uganda; }
+		public void setR86_uganda(BigDecimal r86_uganda) { this.r86_uganda = r86_uganda; }
+		public BigDecimal getR86_c10() { return r86_c10; }
+		public void setR86_c10(BigDecimal r86_c10) { this.r86_c10 = r86_c10; }
+		public BigDecimal getR86_c11() { return r86_c11; }
+		public void setR86_c11(BigDecimal r86_c11) { this.r86_c11 = r86_c11; }
+		public BigDecimal getR86_c12() { return r86_c12; }
+		public void setR86_c12(BigDecimal r86_c12) { this.r86_c12 = r86_c12; }
+		public BigDecimal getR86_c13() { return r86_c13; }
+		public void setR86_c13(BigDecimal r86_c13) { this.r86_c13 = r86_c13; }
+		public BigDecimal getR86_c14() { return r86_c14; }
+		public void setR86_c14(BigDecimal r86_c14) { this.r86_c14 = r86_c14; }
+		public BigDecimal getR86_c15() { return r86_c15; }
+		public void setR86_c15(BigDecimal r86_c15) { this.r86_c15 = r86_c15; }
+		public BigDecimal getR86_c16() { return r86_c16; }
+		public void setR86_c16(BigDecimal r86_c16) { this.r86_c16 = r86_c16; }
+		public BigDecimal getR86_total() { return r86_total; }
+		public void setR86_total(BigDecimal r86_total) { this.r86_total = r86_total; }
+		public String getR87_product() { return r87_product; }
+		public void setR87_product(String r87_product) { this.r87_product = r87_product; }
+		public BigDecimal getR87_botswana() { return r87_botswana; }
+		public void setR87_botswana(BigDecimal r87_botswana) { this.r87_botswana = r87_botswana; }
+		public BigDecimal getR87_south_africa() { return r87_south_africa; }
+		public void setR87_south_africa(BigDecimal r87_south_africa) { this.r87_south_africa = r87_south_africa; }
+		public BigDecimal getR87_sadc() { return r87_sadc; }
+		public void setR87_sadc(BigDecimal r87_sadc) { this.r87_sadc = r87_sadc; }
+		public BigDecimal getR87_usa() { return r87_usa; }
+		public void setR87_usa(BigDecimal r87_usa) { this.r87_usa = r87_usa; }
+		public BigDecimal getR87_uk() { return r87_uk; }
+		public void setR87_uk(BigDecimal r87_uk) { this.r87_uk = r87_uk; }
+		public BigDecimal getR87_europe() { return r87_europe; }
+		public void setR87_europe(BigDecimal r87_europe) { this.r87_europe = r87_europe; }
+		public BigDecimal getR87_india() { return r87_india; }
+		public void setR87_india(BigDecimal r87_india) { this.r87_india = r87_india; }
+		public BigDecimal getR87_sydney() { return r87_sydney; }
+		public void setR87_sydney(BigDecimal r87_sydney) { this.r87_sydney = r87_sydney; }
+		public BigDecimal getR87_uganda() { return r87_uganda; }
+		public void setR87_uganda(BigDecimal r87_uganda) { this.r87_uganda = r87_uganda; }
+		public BigDecimal getR87_c10() { return r87_c10; }
+		public void setR87_c10(BigDecimal r87_c10) { this.r87_c10 = r87_c10; }
+		public BigDecimal getR87_c11() { return r87_c11; }
+		public void setR87_c11(BigDecimal r87_c11) { this.r87_c11 = r87_c11; }
+		public BigDecimal getR87_c12() { return r87_c12; }
+		public void setR87_c12(BigDecimal r87_c12) { this.r87_c12 = r87_c12; }
+		public BigDecimal getR87_c13() { return r87_c13; }
+		public void setR87_c13(BigDecimal r87_c13) { this.r87_c13 = r87_c13; }
+		public BigDecimal getR87_c14() { return r87_c14; }
+		public void setR87_c14(BigDecimal r87_c14) { this.r87_c14 = r87_c14; }
+		public BigDecimal getR87_c15() { return r87_c15; }
+		public void setR87_c15(BigDecimal r87_c15) { this.r87_c15 = r87_c15; }
+		public BigDecimal getR87_c16() { return r87_c16; }
+		public void setR87_c16(BigDecimal r87_c16) { this.r87_c16 = r87_c16; }
+		public BigDecimal getR87_total() { return r87_total; }
+		public void setR87_total(BigDecimal r87_total) { this.r87_total = r87_total; }
+		public String getR88_product() { return r88_product; }
+		public void setR88_product(String r88_product) { this.r88_product = r88_product; }
+		public BigDecimal getR88_botswana() { return r88_botswana; }
+		public void setR88_botswana(BigDecimal r88_botswana) { this.r88_botswana = r88_botswana; }
+		public BigDecimal getR88_south_africa() { return r88_south_africa; }
+		public void setR88_south_africa(BigDecimal r88_south_africa) { this.r88_south_africa = r88_south_africa; }
+		public BigDecimal getR88_sadc() { return r88_sadc; }
+		public void setR88_sadc(BigDecimal r88_sadc) { this.r88_sadc = r88_sadc; }
+		public BigDecimal getR88_usa() { return r88_usa; }
+		public void setR88_usa(BigDecimal r88_usa) { this.r88_usa = r88_usa; }
+		public BigDecimal getR88_uk() { return r88_uk; }
+		public void setR88_uk(BigDecimal r88_uk) { this.r88_uk = r88_uk; }
+		public BigDecimal getR88_europe() { return r88_europe; }
+		public void setR88_europe(BigDecimal r88_europe) { this.r88_europe = r88_europe; }
+		public BigDecimal getR88_india() { return r88_india; }
+		public void setR88_india(BigDecimal r88_india) { this.r88_india = r88_india; }
+		public BigDecimal getR88_sydney() { return r88_sydney; }
+		public void setR88_sydney(BigDecimal r88_sydney) { this.r88_sydney = r88_sydney; }
+		public BigDecimal getR88_uganda() { return r88_uganda; }
+		public void setR88_uganda(BigDecimal r88_uganda) { this.r88_uganda = r88_uganda; }
+		public BigDecimal getR88_c10() { return r88_c10; }
+		public void setR88_c10(BigDecimal r88_c10) { this.r88_c10 = r88_c10; }
+		public BigDecimal getR88_c11() { return r88_c11; }
+		public void setR88_c11(BigDecimal r88_c11) { this.r88_c11 = r88_c11; }
+		public BigDecimal getR88_c12() { return r88_c12; }
+		public void setR88_c12(BigDecimal r88_c12) { this.r88_c12 = r88_c12; }
+		public BigDecimal getR88_c13() { return r88_c13; }
+		public void setR88_c13(BigDecimal r88_c13) { this.r88_c13 = r88_c13; }
+		public BigDecimal getR88_c14() { return r88_c14; }
+		public void setR88_c14(BigDecimal r88_c14) { this.r88_c14 = r88_c14; }
+		public BigDecimal getR88_c15() { return r88_c15; }
+		public void setR88_c15(BigDecimal r88_c15) { this.r88_c15 = r88_c15; }
+		public BigDecimal getR88_c16() { return r88_c16; }
+		public void setR88_c16(BigDecimal r88_c16) { this.r88_c16 = r88_c16; }
+		public BigDecimal getR88_total() { return r88_total; }
+		public void setR88_total(BigDecimal r88_total) { this.r88_total = r88_total; }
+		public String getR89_product() { return r89_product; }
+		public void setR89_product(String r89_product) { this.r89_product = r89_product; }
+		public BigDecimal getR89_botswana() { return r89_botswana; }
+		public void setR89_botswana(BigDecimal r89_botswana) { this.r89_botswana = r89_botswana; }
+		public BigDecimal getR89_south_africa() { return r89_south_africa; }
+		public void setR89_south_africa(BigDecimal r89_south_africa) { this.r89_south_africa = r89_south_africa; }
+		public BigDecimal getR89_sadc() { return r89_sadc; }
+		public void setR89_sadc(BigDecimal r89_sadc) { this.r89_sadc = r89_sadc; }
+		public BigDecimal getR89_usa() { return r89_usa; }
+		public void setR89_usa(BigDecimal r89_usa) { this.r89_usa = r89_usa; }
+		public BigDecimal getR89_uk() { return r89_uk; }
+		public void setR89_uk(BigDecimal r89_uk) { this.r89_uk = r89_uk; }
+		public BigDecimal getR89_europe() { return r89_europe; }
+		public void setR89_europe(BigDecimal r89_europe) { this.r89_europe = r89_europe; }
+		public BigDecimal getR89_india() { return r89_india; }
+		public void setR89_india(BigDecimal r89_india) { this.r89_india = r89_india; }
+		public BigDecimal getR89_sydney() { return r89_sydney; }
+		public void setR89_sydney(BigDecimal r89_sydney) { this.r89_sydney = r89_sydney; }
+		public BigDecimal getR89_uganda() { return r89_uganda; }
+		public void setR89_uganda(BigDecimal r89_uganda) { this.r89_uganda = r89_uganda; }
+		public BigDecimal getR89_c10() { return r89_c10; }
+		public void setR89_c10(BigDecimal r89_c10) { this.r89_c10 = r89_c10; }
+		public BigDecimal getR89_c11() { return r89_c11; }
+		public void setR89_c11(BigDecimal r89_c11) { this.r89_c11 = r89_c11; }
+		public BigDecimal getR89_c12() { return r89_c12; }
+		public void setR89_c12(BigDecimal r89_c12) { this.r89_c12 = r89_c12; }
+		public BigDecimal getR89_c13() { return r89_c13; }
+		public void setR89_c13(BigDecimal r89_c13) { this.r89_c13 = r89_c13; }
+		public BigDecimal getR89_c14() { return r89_c14; }
+		public void setR89_c14(BigDecimal r89_c14) { this.r89_c14 = r89_c14; }
+		public BigDecimal getR89_c15() { return r89_c15; }
+		public void setR89_c15(BigDecimal r89_c15) { this.r89_c15 = r89_c15; }
+		public BigDecimal getR89_c16() { return r89_c16; }
+		public void setR89_c16(BigDecimal r89_c16) { this.r89_c16 = r89_c16; }
+		public BigDecimal getR89_total() { return r89_total; }
+		public void setR89_total(BigDecimal r89_total) { this.r89_total = r89_total; }
+		public String getR90_product() { return r90_product; }
+		public void setR90_product(String r90_product) { this.r90_product = r90_product; }
+		public BigDecimal getR90_botswana() { return r90_botswana; }
+		public void setR90_botswana(BigDecimal r90_botswana) { this.r90_botswana = r90_botswana; }
+		public BigDecimal getR90_south_africa() { return r90_south_africa; }
+		public void setR90_south_africa(BigDecimal r90_south_africa) { this.r90_south_africa = r90_south_africa; }
+		public BigDecimal getR90_sadc() { return r90_sadc; }
+		public void setR90_sadc(BigDecimal r90_sadc) { this.r90_sadc = r90_sadc; }
+		public BigDecimal getR90_usa() { return r90_usa; }
+		public void setR90_usa(BigDecimal r90_usa) { this.r90_usa = r90_usa; }
+		public BigDecimal getR90_uk() { return r90_uk; }
+		public void setR90_uk(BigDecimal r90_uk) { this.r90_uk = r90_uk; }
+		public BigDecimal getR90_europe() { return r90_europe; }
+		public void setR90_europe(BigDecimal r90_europe) { this.r90_europe = r90_europe; }
+		public BigDecimal getR90_india() { return r90_india; }
+		public void setR90_india(BigDecimal r90_india) { this.r90_india = r90_india; }
+		public BigDecimal getR90_sydney() { return r90_sydney; }
+		public void setR90_sydney(BigDecimal r90_sydney) { this.r90_sydney = r90_sydney; }
+		public BigDecimal getR90_uganda() { return r90_uganda; }
+		public void setR90_uganda(BigDecimal r90_uganda) { this.r90_uganda = r90_uganda; }
+		public BigDecimal getR90_c10() { return r90_c10; }
+		public void setR90_c10(BigDecimal r90_c10) { this.r90_c10 = r90_c10; }
+		public BigDecimal getR90_c11() { return r90_c11; }
+		public void setR90_c11(BigDecimal r90_c11) { this.r90_c11 = r90_c11; }
+		public BigDecimal getR90_c12() { return r90_c12; }
+		public void setR90_c12(BigDecimal r90_c12) { this.r90_c12 = r90_c12; }
+		public BigDecimal getR90_c13() { return r90_c13; }
+		public void setR90_c13(BigDecimal r90_c13) { this.r90_c13 = r90_c13; }
+		public BigDecimal getR90_c14() { return r90_c14; }
+		public void setR90_c14(BigDecimal r90_c14) { this.r90_c14 = r90_c14; }
+		public BigDecimal getR90_c15() { return r90_c15; }
+		public void setR90_c15(BigDecimal r90_c15) { this.r90_c15 = r90_c15; }
+		public BigDecimal getR90_c16() { return r90_c16; }
+		public void setR90_c16(BigDecimal r90_c16) { this.r90_c16 = r90_c16; }
+		public BigDecimal getR90_total() { return r90_total; }
+		public void setR90_total(BigDecimal r90_total) { this.r90_total = r90_total; }
+		public String getR91_product() { return r91_product; }
+		public void setR91_product(String r91_product) { this.r91_product = r91_product; }
+		public BigDecimal getR91_botswana() { return r91_botswana; }
+		public void setR91_botswana(BigDecimal r91_botswana) { this.r91_botswana = r91_botswana; }
+		public BigDecimal getR91_south_africa() { return r91_south_africa; }
+		public void setR91_south_africa(BigDecimal r91_south_africa) { this.r91_south_africa = r91_south_africa; }
+		public BigDecimal getR91_sadc() { return r91_sadc; }
+		public void setR91_sadc(BigDecimal r91_sadc) { this.r91_sadc = r91_sadc; }
+		public BigDecimal getR91_usa() { return r91_usa; }
+		public void setR91_usa(BigDecimal r91_usa) { this.r91_usa = r91_usa; }
+		public BigDecimal getR91_uk() { return r91_uk; }
+		public void setR91_uk(BigDecimal r91_uk) { this.r91_uk = r91_uk; }
+		public BigDecimal getR91_europe() { return r91_europe; }
+		public void setR91_europe(BigDecimal r91_europe) { this.r91_europe = r91_europe; }
+		public BigDecimal getR91_india() { return r91_india; }
+		public void setR91_india(BigDecimal r91_india) { this.r91_india = r91_india; }
+		public BigDecimal getR91_sydney() { return r91_sydney; }
+		public void setR91_sydney(BigDecimal r91_sydney) { this.r91_sydney = r91_sydney; }
+		public BigDecimal getR91_uganda() { return r91_uganda; }
+		public void setR91_uganda(BigDecimal r91_uganda) { this.r91_uganda = r91_uganda; }
+		public BigDecimal getR91_c10() { return r91_c10; }
+		public void setR91_c10(BigDecimal r91_c10) { this.r91_c10 = r91_c10; }
+		public BigDecimal getR91_c11() { return r91_c11; }
+		public void setR91_c11(BigDecimal r91_c11) { this.r91_c11 = r91_c11; }
+		public BigDecimal getR91_c12() { return r91_c12; }
+		public void setR91_c12(BigDecimal r91_c12) { this.r91_c12 = r91_c12; }
+		public BigDecimal getR91_c13() { return r91_c13; }
+		public void setR91_c13(BigDecimal r91_c13) { this.r91_c13 = r91_c13; }
+		public BigDecimal getR91_c14() { return r91_c14; }
+		public void setR91_c14(BigDecimal r91_c14) { this.r91_c14 = r91_c14; }
+		public BigDecimal getR91_c15() { return r91_c15; }
+		public void setR91_c15(BigDecimal r91_c15) { this.r91_c15 = r91_c15; }
+		public BigDecimal getR91_c16() { return r91_c16; }
+		public void setR91_c16(BigDecimal r91_c16) { this.r91_c16 = r91_c16; }
+		public BigDecimal getR91_total() { return r91_total; }
+		public void setR91_total(BigDecimal r91_total) { this.r91_total = r91_total; }
+		public String getR92_product() { return r92_product; }
+		public void setR92_product(String r92_product) { this.r92_product = r92_product; }
+		public BigDecimal getR92_botswana() { return r92_botswana; }
+		public void setR92_botswana(BigDecimal r92_botswana) { this.r92_botswana = r92_botswana; }
+		public BigDecimal getR92_south_africa() { return r92_south_africa; }
+		public void setR92_south_africa(BigDecimal r92_south_africa) { this.r92_south_africa = r92_south_africa; }
+		public BigDecimal getR92_sadc() { return r92_sadc; }
+		public void setR92_sadc(BigDecimal r92_sadc) { this.r92_sadc = r92_sadc; }
+		public BigDecimal getR92_usa() { return r92_usa; }
+		public void setR92_usa(BigDecimal r92_usa) { this.r92_usa = r92_usa; }
+		public BigDecimal getR92_uk() { return r92_uk; }
+		public void setR92_uk(BigDecimal r92_uk) { this.r92_uk = r92_uk; }
+		public BigDecimal getR92_europe() { return r92_europe; }
+		public void setR92_europe(BigDecimal r92_europe) { this.r92_europe = r92_europe; }
+		public BigDecimal getR92_india() { return r92_india; }
+		public void setR92_india(BigDecimal r92_india) { this.r92_india = r92_india; }
+		public BigDecimal getR92_sydney() { return r92_sydney; }
+		public void setR92_sydney(BigDecimal r92_sydney) { this.r92_sydney = r92_sydney; }
+		public BigDecimal getR92_uganda() { return r92_uganda; }
+		public void setR92_uganda(BigDecimal r92_uganda) { this.r92_uganda = r92_uganda; }
+		public BigDecimal getR92_c10() { return r92_c10; }
+		public void setR92_c10(BigDecimal r92_c10) { this.r92_c10 = r92_c10; }
+		public BigDecimal getR92_c11() { return r92_c11; }
+		public void setR92_c11(BigDecimal r92_c11) { this.r92_c11 = r92_c11; }
+		public BigDecimal getR92_c12() { return r92_c12; }
+		public void setR92_c12(BigDecimal r92_c12) { this.r92_c12 = r92_c12; }
+		public BigDecimal getR92_c13() { return r92_c13; }
+		public void setR92_c13(BigDecimal r92_c13) { this.r92_c13 = r92_c13; }
+		public BigDecimal getR92_c14() { return r92_c14; }
+		public void setR92_c14(BigDecimal r92_c14) { this.r92_c14 = r92_c14; }
+		public BigDecimal getR92_c15() { return r92_c15; }
+		public void setR92_c15(BigDecimal r92_c15) { this.r92_c15 = r92_c15; }
+		public BigDecimal getR92_c16() { return r92_c16; }
+		public void setR92_c16(BigDecimal r92_c16) { this.r92_c16 = r92_c16; }
+		public BigDecimal getR92_total() { return r92_total; }
+		public void setR92_total(BigDecimal r92_total) { this.r92_total = r92_total; }
+		public String getR93_product() { return r93_product; }
+		public void setR93_product(String r93_product) { this.r93_product = r93_product; }
+		public BigDecimal getR93_botswana() { return r93_botswana; }
+		public void setR93_botswana(BigDecimal r93_botswana) { this.r93_botswana = r93_botswana; }
+		public BigDecimal getR93_south_africa() { return r93_south_africa; }
+		public void setR93_south_africa(BigDecimal r93_south_africa) { this.r93_south_africa = r93_south_africa; }
+		public BigDecimal getR93_sadc() { return r93_sadc; }
+		public void setR93_sadc(BigDecimal r93_sadc) { this.r93_sadc = r93_sadc; }
+		public BigDecimal getR93_usa() { return r93_usa; }
+		public void setR93_usa(BigDecimal r93_usa) { this.r93_usa = r93_usa; }
+		public BigDecimal getR93_uk() { return r93_uk; }
+		public void setR93_uk(BigDecimal r93_uk) { this.r93_uk = r93_uk; }
+		public BigDecimal getR93_europe() { return r93_europe; }
+		public void setR93_europe(BigDecimal r93_europe) { this.r93_europe = r93_europe; }
+		public BigDecimal getR93_india() { return r93_india; }
+		public void setR93_india(BigDecimal r93_india) { this.r93_india = r93_india; }
+		public BigDecimal getR93_sydney() { return r93_sydney; }
+		public void setR93_sydney(BigDecimal r93_sydney) { this.r93_sydney = r93_sydney; }
+		public BigDecimal getR93_uganda() { return r93_uganda; }
+		public void setR93_uganda(BigDecimal r93_uganda) { this.r93_uganda = r93_uganda; }
+		public BigDecimal getR93_c10() { return r93_c10; }
+		public void setR93_c10(BigDecimal r93_c10) { this.r93_c10 = r93_c10; }
+		public BigDecimal getR93_c11() { return r93_c11; }
+		public void setR93_c11(BigDecimal r93_c11) { this.r93_c11 = r93_c11; }
+		public BigDecimal getR93_c12() { return r93_c12; }
+		public void setR93_c12(BigDecimal r93_c12) { this.r93_c12 = r93_c12; }
+		public BigDecimal getR93_c13() { return r93_c13; }
+		public void setR93_c13(BigDecimal r93_c13) { this.r93_c13 = r93_c13; }
+		public BigDecimal getR93_c14() { return r93_c14; }
+		public void setR93_c14(BigDecimal r93_c14) { this.r93_c14 = r93_c14; }
+		public BigDecimal getR93_c15() { return r93_c15; }
+		public void setR93_c15(BigDecimal r93_c15) { this.r93_c15 = r93_c15; }
+		public BigDecimal getR93_c16() { return r93_c16; }
+		public void setR93_c16(BigDecimal r93_c16) { this.r93_c16 = r93_c16; }
+		public BigDecimal getR93_total() { return r93_total; }
+		public void setR93_total(BigDecimal r93_total) { this.r93_total = r93_total; }
+		public String getR94_product() { return r94_product; }
+		public void setR94_product(String r94_product) { this.r94_product = r94_product; }
+		public BigDecimal getR94_botswana() { return r94_botswana; }
+		public void setR94_botswana(BigDecimal r94_botswana) { this.r94_botswana = r94_botswana; }
+		public BigDecimal getR94_south_africa() { return r94_south_africa; }
+		public void setR94_south_africa(BigDecimal r94_south_africa) { this.r94_south_africa = r94_south_africa; }
+		public BigDecimal getR94_sadc() { return r94_sadc; }
+		public void setR94_sadc(BigDecimal r94_sadc) { this.r94_sadc = r94_sadc; }
+		public BigDecimal getR94_usa() { return r94_usa; }
+		public void setR94_usa(BigDecimal r94_usa) { this.r94_usa = r94_usa; }
+		public BigDecimal getR94_uk() { return r94_uk; }
+		public void setR94_uk(BigDecimal r94_uk) { this.r94_uk = r94_uk; }
+		public BigDecimal getR94_europe() { return r94_europe; }
+		public void setR94_europe(BigDecimal r94_europe) { this.r94_europe = r94_europe; }
+		public BigDecimal getR94_india() { return r94_india; }
+		public void setR94_india(BigDecimal r94_india) { this.r94_india = r94_india; }
+		public BigDecimal getR94_sydney() { return r94_sydney; }
+		public void setR94_sydney(BigDecimal r94_sydney) { this.r94_sydney = r94_sydney; }
+		public BigDecimal getR94_uganda() { return r94_uganda; }
+		public void setR94_uganda(BigDecimal r94_uganda) { this.r94_uganda = r94_uganda; }
+		public BigDecimal getR94_c10() { return r94_c10; }
+		public void setR94_c10(BigDecimal r94_c10) { this.r94_c10 = r94_c10; }
+		public BigDecimal getR94_c11() { return r94_c11; }
+		public void setR94_c11(BigDecimal r94_c11) { this.r94_c11 = r94_c11; }
+		public BigDecimal getR94_c12() { return r94_c12; }
+		public void setR94_c12(BigDecimal r94_c12) { this.r94_c12 = r94_c12; }
+		public BigDecimal getR94_c13() { return r94_c13; }
+		public void setR94_c13(BigDecimal r94_c13) { this.r94_c13 = r94_c13; }
+		public BigDecimal getR94_c14() { return r94_c14; }
+		public void setR94_c14(BigDecimal r94_c14) { this.r94_c14 = r94_c14; }
+		public BigDecimal getR94_c15() { return r94_c15; }
+		public void setR94_c15(BigDecimal r94_c15) { this.r94_c15 = r94_c15; }
+		public BigDecimal getR94_c16() { return r94_c16; }
+		public void setR94_c16(BigDecimal r94_c16) { this.r94_c16 = r94_c16; }
+		public BigDecimal getR94_total() { return r94_total; }
+		public void setR94_total(BigDecimal r94_total) { this.r94_total = r94_total; }
+		public String getR95_product() { return r95_product; }
+		public void setR95_product(String r95_product) { this.r95_product = r95_product; }
+		public BigDecimal getR95_botswana() { return r95_botswana; }
+		public void setR95_botswana(BigDecimal r95_botswana) { this.r95_botswana = r95_botswana; }
+		public BigDecimal getR95_south_africa() { return r95_south_africa; }
+		public void setR95_south_africa(BigDecimal r95_south_africa) { this.r95_south_africa = r95_south_africa; }
+		public BigDecimal getR95_sadc() { return r95_sadc; }
+		public void setR95_sadc(BigDecimal r95_sadc) { this.r95_sadc = r95_sadc; }
+		public BigDecimal getR95_usa() { return r95_usa; }
+		public void setR95_usa(BigDecimal r95_usa) { this.r95_usa = r95_usa; }
+		public BigDecimal getR95_uk() { return r95_uk; }
+		public void setR95_uk(BigDecimal r95_uk) { this.r95_uk = r95_uk; }
+		public BigDecimal getR95_europe() { return r95_europe; }
+		public void setR95_europe(BigDecimal r95_europe) { this.r95_europe = r95_europe; }
+		public BigDecimal getR95_india() { return r95_india; }
+		public void setR95_india(BigDecimal r95_india) { this.r95_india = r95_india; }
+		public BigDecimal getR95_sydney() { return r95_sydney; }
+		public void setR95_sydney(BigDecimal r95_sydney) { this.r95_sydney = r95_sydney; }
+		public BigDecimal getR95_uganda() { return r95_uganda; }
+		public void setR95_uganda(BigDecimal r95_uganda) { this.r95_uganda = r95_uganda; }
+		public BigDecimal getR95_c10() { return r95_c10; }
+		public void setR95_c10(BigDecimal r95_c10) { this.r95_c10 = r95_c10; }
+		public BigDecimal getR95_c11() { return r95_c11; }
+		public void setR95_c11(BigDecimal r95_c11) { this.r95_c11 = r95_c11; }
+		public BigDecimal getR95_c12() { return r95_c12; }
+		public void setR95_c12(BigDecimal r95_c12) { this.r95_c12 = r95_c12; }
+		public BigDecimal getR95_c13() { return r95_c13; }
+		public void setR95_c13(BigDecimal r95_c13) { this.r95_c13 = r95_c13; }
+		public BigDecimal getR95_c14() { return r95_c14; }
+		public void setR95_c14(BigDecimal r95_c14) { this.r95_c14 = r95_c14; }
+		public BigDecimal getR95_c15() { return r95_c15; }
+		public void setR95_c15(BigDecimal r95_c15) { this.r95_c15 = r95_c15; }
+		public BigDecimal getR95_c16() { return r95_c16; }
+		public void setR95_c16(BigDecimal r95_c16) { this.r95_c16 = r95_c16; }
+		public BigDecimal getR95_total() { return r95_total; }
+		public void setR95_total(BigDecimal r95_total) { this.r95_total = r95_total; }
+		public String getR96_product() { return r96_product; }
+		public void setR96_product(String r96_product) { this.r96_product = r96_product; }
+		public BigDecimal getR96_botswana() { return r96_botswana; }
+		public void setR96_botswana(BigDecimal r96_botswana) { this.r96_botswana = r96_botswana; }
+		public BigDecimal getR96_south_africa() { return r96_south_africa; }
+		public void setR96_south_africa(BigDecimal r96_south_africa) { this.r96_south_africa = r96_south_africa; }
+		public BigDecimal getR96_sadc() { return r96_sadc; }
+		public void setR96_sadc(BigDecimal r96_sadc) { this.r96_sadc = r96_sadc; }
+		public BigDecimal getR96_usa() { return r96_usa; }
+		public void setR96_usa(BigDecimal r96_usa) { this.r96_usa = r96_usa; }
+		public BigDecimal getR96_uk() { return r96_uk; }
+		public void setR96_uk(BigDecimal r96_uk) { this.r96_uk = r96_uk; }
+		public BigDecimal getR96_europe() { return r96_europe; }
+		public void setR96_europe(BigDecimal r96_europe) { this.r96_europe = r96_europe; }
+		public BigDecimal getR96_india() { return r96_india; }
+		public void setR96_india(BigDecimal r96_india) { this.r96_india = r96_india; }
+		public BigDecimal getR96_sydney() { return r96_sydney; }
+		public void setR96_sydney(BigDecimal r96_sydney) { this.r96_sydney = r96_sydney; }
+		public BigDecimal getR96_uganda() { return r96_uganda; }
+		public void setR96_uganda(BigDecimal r96_uganda) { this.r96_uganda = r96_uganda; }
+		public BigDecimal getR96_c10() { return r96_c10; }
+		public void setR96_c10(BigDecimal r96_c10) { this.r96_c10 = r96_c10; }
+		public BigDecimal getR96_c11() { return r96_c11; }
+		public void setR96_c11(BigDecimal r96_c11) { this.r96_c11 = r96_c11; }
+		public BigDecimal getR96_c12() { return r96_c12; }
+		public void setR96_c12(BigDecimal r96_c12) { this.r96_c12 = r96_c12; }
+		public BigDecimal getR96_c13() { return r96_c13; }
+		public void setR96_c13(BigDecimal r96_c13) { this.r96_c13 = r96_c13; }
+		public BigDecimal getR96_c14() { return r96_c14; }
+		public void setR96_c14(BigDecimal r96_c14) { this.r96_c14 = r96_c14; }
+		public BigDecimal getR96_c15() { return r96_c15; }
+		public void setR96_c15(BigDecimal r96_c15) { this.r96_c15 = r96_c15; }
+		public BigDecimal getR96_c16() { return r96_c16; }
+		public void setR96_c16(BigDecimal r96_c16) { this.r96_c16 = r96_c16; }
+		public BigDecimal getR96_total() { return r96_total; }
+		public void setR96_total(BigDecimal r96_total) { this.r96_total = r96_total; }
+		public String getR97_product() { return r97_product; }
+		public void setR97_product(String r97_product) { this.r97_product = r97_product; }
+		public BigDecimal getR97_botswana() { return r97_botswana; }
+		public void setR97_botswana(BigDecimal r97_botswana) { this.r97_botswana = r97_botswana; }
+		public BigDecimal getR97_south_africa() { return r97_south_africa; }
+		public void setR97_south_africa(BigDecimal r97_south_africa) { this.r97_south_africa = r97_south_africa; }
+		public BigDecimal getR97_sadc() { return r97_sadc; }
+		public void setR97_sadc(BigDecimal r97_sadc) { this.r97_sadc = r97_sadc; }
+		public BigDecimal getR97_usa() { return r97_usa; }
+		public void setR97_usa(BigDecimal r97_usa) { this.r97_usa = r97_usa; }
+		public BigDecimal getR97_uk() { return r97_uk; }
+		public void setR97_uk(BigDecimal r97_uk) { this.r97_uk = r97_uk; }
+		public BigDecimal getR97_europe() { return r97_europe; }
+		public void setR97_europe(BigDecimal r97_europe) { this.r97_europe = r97_europe; }
+		public BigDecimal getR97_india() { return r97_india; }
+		public void setR97_india(BigDecimal r97_india) { this.r97_india = r97_india; }
+		public BigDecimal getR97_sydney() { return r97_sydney; }
+		public void setR97_sydney(BigDecimal r97_sydney) { this.r97_sydney = r97_sydney; }
+		public BigDecimal getR97_uganda() { return r97_uganda; }
+		public void setR97_uganda(BigDecimal r97_uganda) { this.r97_uganda = r97_uganda; }
+		public BigDecimal getR97_c10() { return r97_c10; }
+		public void setR97_c10(BigDecimal r97_c10) { this.r97_c10 = r97_c10; }
+		public BigDecimal getR97_c11() { return r97_c11; }
+		public void setR97_c11(BigDecimal r97_c11) { this.r97_c11 = r97_c11; }
+		public BigDecimal getR97_c12() { return r97_c12; }
+		public void setR97_c12(BigDecimal r97_c12) { this.r97_c12 = r97_c12; }
+		public BigDecimal getR97_c13() { return r97_c13; }
+		public void setR97_c13(BigDecimal r97_c13) { this.r97_c13 = r97_c13; }
+		public BigDecimal getR97_c14() { return r97_c14; }
+		public void setR97_c14(BigDecimal r97_c14) { this.r97_c14 = r97_c14; }
+		public BigDecimal getR97_c15() { return r97_c15; }
+		public void setR97_c15(BigDecimal r97_c15) { this.r97_c15 = r97_c15; }
+		public BigDecimal getR97_c16() { return r97_c16; }
+		public void setR97_c16(BigDecimal r97_c16) { this.r97_c16 = r97_c16; }
+		public BigDecimal getR97_total() { return r97_total; }
+		public void setR97_total(BigDecimal r97_total) { this.r97_total = r97_total; }
+		public String getR98_product() { return r98_product; }
+		public void setR98_product(String r98_product) { this.r98_product = r98_product; }
+		public BigDecimal getR98_botswana() { return r98_botswana; }
+		public void setR98_botswana(BigDecimal r98_botswana) { this.r98_botswana = r98_botswana; }
+		public BigDecimal getR98_south_africa() { return r98_south_africa; }
+		public void setR98_south_africa(BigDecimal r98_south_africa) { this.r98_south_africa = r98_south_africa; }
+		public BigDecimal getR98_sadc() { return r98_sadc; }
+		public void setR98_sadc(BigDecimal r98_sadc) { this.r98_sadc = r98_sadc; }
+		public BigDecimal getR98_usa() { return r98_usa; }
+		public void setR98_usa(BigDecimal r98_usa) { this.r98_usa = r98_usa; }
+		public BigDecimal getR98_uk() { return r98_uk; }
+		public void setR98_uk(BigDecimal r98_uk) { this.r98_uk = r98_uk; }
+		public BigDecimal getR98_europe() { return r98_europe; }
+		public void setR98_europe(BigDecimal r98_europe) { this.r98_europe = r98_europe; }
+		public BigDecimal getR98_india() { return r98_india; }
+		public void setR98_india(BigDecimal r98_india) { this.r98_india = r98_india; }
+		public BigDecimal getR98_sydney() { return r98_sydney; }
+		public void setR98_sydney(BigDecimal r98_sydney) { this.r98_sydney = r98_sydney; }
+		public BigDecimal getR98_uganda() { return r98_uganda; }
+		public void setR98_uganda(BigDecimal r98_uganda) { this.r98_uganda = r98_uganda; }
+		public BigDecimal getR98_c10() { return r98_c10; }
+		public void setR98_c10(BigDecimal r98_c10) { this.r98_c10 = r98_c10; }
+		public BigDecimal getR98_c11() { return r98_c11; }
+		public void setR98_c11(BigDecimal r98_c11) { this.r98_c11 = r98_c11; }
+		public BigDecimal getR98_c12() { return r98_c12; }
+		public void setR98_c12(BigDecimal r98_c12) { this.r98_c12 = r98_c12; }
+		public BigDecimal getR98_c13() { return r98_c13; }
+		public void setR98_c13(BigDecimal r98_c13) { this.r98_c13 = r98_c13; }
+		public BigDecimal getR98_c14() { return r98_c14; }
+		public void setR98_c14(BigDecimal r98_c14) { this.r98_c14 = r98_c14; }
+		public BigDecimal getR98_c15() { return r98_c15; }
+		public void setR98_c15(BigDecimal r98_c15) { this.r98_c15 = r98_c15; }
+		public BigDecimal getR98_c16() { return r98_c16; }
+		public void setR98_c16(BigDecimal r98_c16) { this.r98_c16 = r98_c16; }
+		public BigDecimal getR98_total() { return r98_total; }
+		public void setR98_total(BigDecimal r98_total) { this.r98_total = r98_total; }
+		public String getR99_product() { return r99_product; }
+		public void setR99_product(String r99_product) { this.r99_product = r99_product; }
+		public BigDecimal getR99_botswana() { return r99_botswana; }
+		public void setR99_botswana(BigDecimal r99_botswana) { this.r99_botswana = r99_botswana; }
+		public BigDecimal getR99_south_africa() { return r99_south_africa; }
+		public void setR99_south_africa(BigDecimal r99_south_africa) { this.r99_south_africa = r99_south_africa; }
+		public BigDecimal getR99_sadc() { return r99_sadc; }
+		public void setR99_sadc(BigDecimal r99_sadc) { this.r99_sadc = r99_sadc; }
+		public BigDecimal getR99_usa() { return r99_usa; }
+		public void setR99_usa(BigDecimal r99_usa) { this.r99_usa = r99_usa; }
+		public BigDecimal getR99_uk() { return r99_uk; }
+		public void setR99_uk(BigDecimal r99_uk) { this.r99_uk = r99_uk; }
+		public BigDecimal getR99_europe() { return r99_europe; }
+		public void setR99_europe(BigDecimal r99_europe) { this.r99_europe = r99_europe; }
+		public BigDecimal getR99_india() { return r99_india; }
+		public void setR99_india(BigDecimal r99_india) { this.r99_india = r99_india; }
+		public BigDecimal getR99_sydney() { return r99_sydney; }
+		public void setR99_sydney(BigDecimal r99_sydney) { this.r99_sydney = r99_sydney; }
+		public BigDecimal getR99_uganda() { return r99_uganda; }
+		public void setR99_uganda(BigDecimal r99_uganda) { this.r99_uganda = r99_uganda; }
+		public BigDecimal getR99_c10() { return r99_c10; }
+		public void setR99_c10(BigDecimal r99_c10) { this.r99_c10 = r99_c10; }
+		public BigDecimal getR99_c11() { return r99_c11; }
+		public void setR99_c11(BigDecimal r99_c11) { this.r99_c11 = r99_c11; }
+		public BigDecimal getR99_c12() { return r99_c12; }
+		public void setR99_c12(BigDecimal r99_c12) { this.r99_c12 = r99_c12; }
+		public BigDecimal getR99_c13() { return r99_c13; }
+		public void setR99_c13(BigDecimal r99_c13) { this.r99_c13 = r99_c13; }
+		public BigDecimal getR99_c14() { return r99_c14; }
+		public void setR99_c14(BigDecimal r99_c14) { this.r99_c14 = r99_c14; }
+		public BigDecimal getR99_c15() { return r99_c15; }
+		public void setR99_c15(BigDecimal r99_c15) { this.r99_c15 = r99_c15; }
+		public BigDecimal getR99_c16() { return r99_c16; }
+		public void setR99_c16(BigDecimal r99_c16) { this.r99_c16 = r99_c16; }
+		public BigDecimal getR99_total() { return r99_total; }
+		public void setR99_total(BigDecimal r99_total) { this.r99_total = r99_total; }
+		public String getR100_product() { return r100_product; }
+		public void setR100_product(String r100_product) { this.r100_product = r100_product; }
+		public BigDecimal getR100_botswana() { return r100_botswana; }
+		public void setR100_botswana(BigDecimal r100_botswana) { this.r100_botswana = r100_botswana; }
+		public BigDecimal getR100_south_africa() { return r100_south_africa; }
+		public void setR100_south_africa(BigDecimal r100_south_africa) { this.r100_south_africa = r100_south_africa; }
+		public BigDecimal getR100_sadc() { return r100_sadc; }
+		public void setR100_sadc(BigDecimal r100_sadc) { this.r100_sadc = r100_sadc; }
+		public BigDecimal getR100_usa() { return r100_usa; }
+		public void setR100_usa(BigDecimal r100_usa) { this.r100_usa = r100_usa; }
+		public BigDecimal getR100_uk() { return r100_uk; }
+		public void setR100_uk(BigDecimal r100_uk) { this.r100_uk = r100_uk; }
+		public BigDecimal getR100_europe() { return r100_europe; }
+		public void setR100_europe(BigDecimal r100_europe) { this.r100_europe = r100_europe; }
+		public BigDecimal getR100_india() { return r100_india; }
+		public void setR100_india(BigDecimal r100_india) { this.r100_india = r100_india; }
+		public BigDecimal getR100_sydney() { return r100_sydney; }
+		public void setR100_sydney(BigDecimal r100_sydney) { this.r100_sydney = r100_sydney; }
+		public BigDecimal getR100_uganda() { return r100_uganda; }
+		public void setR100_uganda(BigDecimal r100_uganda) { this.r100_uganda = r100_uganda; }
+		public BigDecimal getR100_c10() { return r100_c10; }
+		public void setR100_c10(BigDecimal r100_c10) { this.r100_c10 = r100_c10; }
+		public BigDecimal getR100_c11() { return r100_c11; }
+		public void setR100_c11(BigDecimal r100_c11) { this.r100_c11 = r100_c11; }
+		public BigDecimal getR100_c12() { return r100_c12; }
+		public void setR100_c12(BigDecimal r100_c12) { this.r100_c12 = r100_c12; }
+		public BigDecimal getR100_c13() { return r100_c13; }
+		public void setR100_c13(BigDecimal r100_c13) { this.r100_c13 = r100_c13; }
+		public BigDecimal getR100_c14() { return r100_c14; }
+		public void setR100_c14(BigDecimal r100_c14) { this.r100_c14 = r100_c14; }
+		public BigDecimal getR100_c15() { return r100_c15; }
+		public void setR100_c15(BigDecimal r100_c15) { this.r100_c15 = r100_c15; }
+		public BigDecimal getR100_c16() { return r100_c16; }
+		public void setR100_c16(BigDecimal r100_c16) { this.r100_c16 = r100_c16; }
+		public BigDecimal getR100_total() { return r100_total; }
+		public void setR100_total(BigDecimal r100_total) { this.r100_total = r100_total; }
+		public String getR101_product() { return r101_product; }
+		public void setR101_product(String r101_product) { this.r101_product = r101_product; }
+		public BigDecimal getR101_botswana() { return r101_botswana; }
+		public void setR101_botswana(BigDecimal r101_botswana) { this.r101_botswana = r101_botswana; }
+		public BigDecimal getR101_south_africa() { return r101_south_africa; }
+		public void setR101_south_africa(BigDecimal r101_south_africa) { this.r101_south_africa = r101_south_africa; }
+		public BigDecimal getR101_sadc() { return r101_sadc; }
+		public void setR101_sadc(BigDecimal r101_sadc) { this.r101_sadc = r101_sadc; }
+		public BigDecimal getR101_usa() { return r101_usa; }
+		public void setR101_usa(BigDecimal r101_usa) { this.r101_usa = r101_usa; }
+		public BigDecimal getR101_uk() { return r101_uk; }
+		public void setR101_uk(BigDecimal r101_uk) { this.r101_uk = r101_uk; }
+		public BigDecimal getR101_europe() { return r101_europe; }
+		public void setR101_europe(BigDecimal r101_europe) { this.r101_europe = r101_europe; }
+		public BigDecimal getR101_india() { return r101_india; }
+		public void setR101_india(BigDecimal r101_india) { this.r101_india = r101_india; }
+		public BigDecimal getR101_sydney() { return r101_sydney; }
+		public void setR101_sydney(BigDecimal r101_sydney) { this.r101_sydney = r101_sydney; }
+		public BigDecimal getR101_uganda() { return r101_uganda; }
+		public void setR101_uganda(BigDecimal r101_uganda) { this.r101_uganda = r101_uganda; }
+		public BigDecimal getR101_c10() { return r101_c10; }
+		public void setR101_c10(BigDecimal r101_c10) { this.r101_c10 = r101_c10; }
+		public BigDecimal getR101_c11() { return r101_c11; }
+		public void setR101_c11(BigDecimal r101_c11) { this.r101_c11 = r101_c11; }
+		public BigDecimal getR101_c12() { return r101_c12; }
+		public void setR101_c12(BigDecimal r101_c12) { this.r101_c12 = r101_c12; }
+		public BigDecimal getR101_c13() { return r101_c13; }
+		public void setR101_c13(BigDecimal r101_c13) { this.r101_c13 = r101_c13; }
+		public BigDecimal getR101_c14() { return r101_c14; }
+		public void setR101_c14(BigDecimal r101_c14) { this.r101_c14 = r101_c14; }
+		public BigDecimal getR101_c15() { return r101_c15; }
+		public void setR101_c15(BigDecimal r101_c15) { this.r101_c15 = r101_c15; }
+		public BigDecimal getR101_c16() { return r101_c16; }
+		public void setR101_c16(BigDecimal r101_c16) { this.r101_c16 = r101_c16; }
+		public BigDecimal getR101_total() { return r101_total; }
+		public void setR101_total(BigDecimal r101_total) { this.r101_total = r101_total; }
+		public String getR102_product() { return r102_product; }
+		public void setR102_product(String r102_product) { this.r102_product = r102_product; }
+		public BigDecimal getR102_botswana() { return r102_botswana; }
+		public void setR102_botswana(BigDecimal r102_botswana) { this.r102_botswana = r102_botswana; }
+		public BigDecimal getR102_south_africa() { return r102_south_africa; }
+		public void setR102_south_africa(BigDecimal r102_south_africa) { this.r102_south_africa = r102_south_africa; }
+		public BigDecimal getR102_sadc() { return r102_sadc; }
+		public void setR102_sadc(BigDecimal r102_sadc) { this.r102_sadc = r102_sadc; }
+		public BigDecimal getR102_usa() { return r102_usa; }
+		public void setR102_usa(BigDecimal r102_usa) { this.r102_usa = r102_usa; }
+		public BigDecimal getR102_uk() { return r102_uk; }
+		public void setR102_uk(BigDecimal r102_uk) { this.r102_uk = r102_uk; }
+		public BigDecimal getR102_europe() { return r102_europe; }
+		public void setR102_europe(BigDecimal r102_europe) { this.r102_europe = r102_europe; }
+		public BigDecimal getR102_india() { return r102_india; }
+		public void setR102_india(BigDecimal r102_india) { this.r102_india = r102_india; }
+		public BigDecimal getR102_sydney() { return r102_sydney; }
+		public void setR102_sydney(BigDecimal r102_sydney) { this.r102_sydney = r102_sydney; }
+		public BigDecimal getR102_uganda() { return r102_uganda; }
+		public void setR102_uganda(BigDecimal r102_uganda) { this.r102_uganda = r102_uganda; }
+		public BigDecimal getR102_c10() { return r102_c10; }
+		public void setR102_c10(BigDecimal r102_c10) { this.r102_c10 = r102_c10; }
+		public BigDecimal getR102_c11() { return r102_c11; }
+		public void setR102_c11(BigDecimal r102_c11) { this.r102_c11 = r102_c11; }
+		public BigDecimal getR102_c12() { return r102_c12; }
+		public void setR102_c12(BigDecimal r102_c12) { this.r102_c12 = r102_c12; }
+		public BigDecimal getR102_c13() { return r102_c13; }
+		public void setR102_c13(BigDecimal r102_c13) { this.r102_c13 = r102_c13; }
+		public BigDecimal getR102_c14() { return r102_c14; }
+		public void setR102_c14(BigDecimal r102_c14) { this.r102_c14 = r102_c14; }
+		public BigDecimal getR102_c15() { return r102_c15; }
+		public void setR102_c15(BigDecimal r102_c15) { this.r102_c15 = r102_c15; }
+		public BigDecimal getR102_c16() { return r102_c16; }
+		public void setR102_c16(BigDecimal r102_c16) { this.r102_c16 = r102_c16; }
+		public BigDecimal getR102_total() { return r102_total; }
+		public void setR102_total(BigDecimal r102_total) { this.r102_total = r102_total; }
+		public String getR103_product() { return r103_product; }
+		public void setR103_product(String r103_product) { this.r103_product = r103_product; }
+		public BigDecimal getR103_botswana() { return r103_botswana; }
+		public void setR103_botswana(BigDecimal r103_botswana) { this.r103_botswana = r103_botswana; }
+		public BigDecimal getR103_south_africa() { return r103_south_africa; }
+		public void setR103_south_africa(BigDecimal r103_south_africa) { this.r103_south_africa = r103_south_africa; }
+		public BigDecimal getR103_sadc() { return r103_sadc; }
+		public void setR103_sadc(BigDecimal r103_sadc) { this.r103_sadc = r103_sadc; }
+		public BigDecimal getR103_usa() { return r103_usa; }
+		public void setR103_usa(BigDecimal r103_usa) { this.r103_usa = r103_usa; }
+		public BigDecimal getR103_uk() { return r103_uk; }
+		public void setR103_uk(BigDecimal r103_uk) { this.r103_uk = r103_uk; }
+		public BigDecimal getR103_europe() { return r103_europe; }
+		public void setR103_europe(BigDecimal r103_europe) { this.r103_europe = r103_europe; }
+		public BigDecimal getR103_india() { return r103_india; }
+		public void setR103_india(BigDecimal r103_india) { this.r103_india = r103_india; }
+		public BigDecimal getR103_sydney() { return r103_sydney; }
+		public void setR103_sydney(BigDecimal r103_sydney) { this.r103_sydney = r103_sydney; }
+		public BigDecimal getR103_uganda() { return r103_uganda; }
+		public void setR103_uganda(BigDecimal r103_uganda) { this.r103_uganda = r103_uganda; }
+		public BigDecimal getR103_c10() { return r103_c10; }
+		public void setR103_c10(BigDecimal r103_c10) { this.r103_c10 = r103_c10; }
+		public BigDecimal getR103_c11() { return r103_c11; }
+		public void setR103_c11(BigDecimal r103_c11) { this.r103_c11 = r103_c11; }
+		public BigDecimal getR103_c12() { return r103_c12; }
+		public void setR103_c12(BigDecimal r103_c12) { this.r103_c12 = r103_c12; }
+		public BigDecimal getR103_c13() { return r103_c13; }
+		public void setR103_c13(BigDecimal r103_c13) { this.r103_c13 = r103_c13; }
+		public BigDecimal getR103_c14() { return r103_c14; }
+		public void setR103_c14(BigDecimal r103_c14) { this.r103_c14 = r103_c14; }
+		public BigDecimal getR103_c15() { return r103_c15; }
+		public void setR103_c15(BigDecimal r103_c15) { this.r103_c15 = r103_c15; }
+		public BigDecimal getR103_c16() { return r103_c16; }
+		public void setR103_c16(BigDecimal r103_c16) { this.r103_c16 = r103_c16; }
+		public BigDecimal getR103_total() { return r103_total; }
+		public void setR103_total(BigDecimal r103_total) { this.r103_total = r103_total; }
+		public String getR104_product() { return r104_product; }
+		public void setR104_product(String r104_product) { this.r104_product = r104_product; }
+		public BigDecimal getR104_botswana() { return r104_botswana; }
+		public void setR104_botswana(BigDecimal r104_botswana) { this.r104_botswana = r104_botswana; }
+		public BigDecimal getR104_south_africa() { return r104_south_africa; }
+		public void setR104_south_africa(BigDecimal r104_south_africa) { this.r104_south_africa = r104_south_africa; }
+		public BigDecimal getR104_sadc() { return r104_sadc; }
+		public void setR104_sadc(BigDecimal r104_sadc) { this.r104_sadc = r104_sadc; }
+		public BigDecimal getR104_usa() { return r104_usa; }
+		public void setR104_usa(BigDecimal r104_usa) { this.r104_usa = r104_usa; }
+		public BigDecimal getR104_uk() { return r104_uk; }
+		public void setR104_uk(BigDecimal r104_uk) { this.r104_uk = r104_uk; }
+		public BigDecimal getR104_europe() { return r104_europe; }
+		public void setR104_europe(BigDecimal r104_europe) { this.r104_europe = r104_europe; }
+		public BigDecimal getR104_india() { return r104_india; }
+		public void setR104_india(BigDecimal r104_india) { this.r104_india = r104_india; }
+		public BigDecimal getR104_sydney() { return r104_sydney; }
+		public void setR104_sydney(BigDecimal r104_sydney) { this.r104_sydney = r104_sydney; }
+		public BigDecimal getR104_uganda() { return r104_uganda; }
+		public void setR104_uganda(BigDecimal r104_uganda) { this.r104_uganda = r104_uganda; }
+		public BigDecimal getR104_c10() { return r104_c10; }
+		public void setR104_c10(BigDecimal r104_c10) { this.r104_c10 = r104_c10; }
+		public BigDecimal getR104_c11() { return r104_c11; }
+		public void setR104_c11(BigDecimal r104_c11) { this.r104_c11 = r104_c11; }
+		public BigDecimal getR104_c12() { return r104_c12; }
+		public void setR104_c12(BigDecimal r104_c12) { this.r104_c12 = r104_c12; }
+		public BigDecimal getR104_c13() { return r104_c13; }
+		public void setR104_c13(BigDecimal r104_c13) { this.r104_c13 = r104_c13; }
+		public BigDecimal getR104_c14() { return r104_c14; }
+		public void setR104_c14(BigDecimal r104_c14) { this.r104_c14 = r104_c14; }
+		public BigDecimal getR104_c15() { return r104_c15; }
+		public void setR104_c15(BigDecimal r104_c15) { this.r104_c15 = r104_c15; }
+		public BigDecimal getR104_c16() { return r104_c16; }
+		public void setR104_c16(BigDecimal r104_c16) { this.r104_c16 = r104_c16; }
+		public BigDecimal getR104_total() { return r104_total; }
+		public void setR104_total(BigDecimal r104_total) { this.r104_total = r104_total; }
+		public String getR105_product() { return r105_product; }
+		public void setR105_product(String r105_product) { this.r105_product = r105_product; }
+		public BigDecimal getR105_botswana() { return r105_botswana; }
+		public void setR105_botswana(BigDecimal r105_botswana) { this.r105_botswana = r105_botswana; }
+		public BigDecimal getR105_south_africa() { return r105_south_africa; }
+		public void setR105_south_africa(BigDecimal r105_south_africa) { this.r105_south_africa = r105_south_africa; }
+		public BigDecimal getR105_sadc() { return r105_sadc; }
+		public void setR105_sadc(BigDecimal r105_sadc) { this.r105_sadc = r105_sadc; }
+		public BigDecimal getR105_usa() { return r105_usa; }
+		public void setR105_usa(BigDecimal r105_usa) { this.r105_usa = r105_usa; }
+		public BigDecimal getR105_uk() { return r105_uk; }
+		public void setR105_uk(BigDecimal r105_uk) { this.r105_uk = r105_uk; }
+		public BigDecimal getR105_europe() { return r105_europe; }
+		public void setR105_europe(BigDecimal r105_europe) { this.r105_europe = r105_europe; }
+		public BigDecimal getR105_india() { return r105_india; }
+		public void setR105_india(BigDecimal r105_india) { this.r105_india = r105_india; }
+		public BigDecimal getR105_sydney() { return r105_sydney; }
+		public void setR105_sydney(BigDecimal r105_sydney) { this.r105_sydney = r105_sydney; }
+		public BigDecimal getR105_uganda() { return r105_uganda; }
+		public void setR105_uganda(BigDecimal r105_uganda) { this.r105_uganda = r105_uganda; }
+		public BigDecimal getR105_c10() { return r105_c10; }
+		public void setR105_c10(BigDecimal r105_c10) { this.r105_c10 = r105_c10; }
+		public BigDecimal getR105_c11() { return r105_c11; }
+		public void setR105_c11(BigDecimal r105_c11) { this.r105_c11 = r105_c11; }
+		public BigDecimal getR105_c12() { return r105_c12; }
+		public void setR105_c12(BigDecimal r105_c12) { this.r105_c12 = r105_c12; }
+		public BigDecimal getR105_c13() { return r105_c13; }
+		public void setR105_c13(BigDecimal r105_c13) { this.r105_c13 = r105_c13; }
+		public BigDecimal getR105_c14() { return r105_c14; }
+		public void setR105_c14(BigDecimal r105_c14) { this.r105_c14 = r105_c14; }
+		public BigDecimal getR105_c15() { return r105_c15; }
+		public void setR105_c15(BigDecimal r105_c15) { this.r105_c15 = r105_c15; }
+		public BigDecimal getR105_c16() { return r105_c16; }
+		public void setR105_c16(BigDecimal r105_c16) { this.r105_c16 = r105_c16; }
+		public BigDecimal getR105_total() { return r105_total; }
+		public void setR105_total(BigDecimal r105_total) { this.r105_total = r105_total; }
+		public String getR106_product() { return r106_product; }
+		public void setR106_product(String r106_product) { this.r106_product = r106_product; }
+		public BigDecimal getR106_botswana() { return r106_botswana; }
+		public void setR106_botswana(BigDecimal r106_botswana) { this.r106_botswana = r106_botswana; }
+		public BigDecimal getR106_south_africa() { return r106_south_africa; }
+		public void setR106_south_africa(BigDecimal r106_south_africa) { this.r106_south_africa = r106_south_africa; }
+		public BigDecimal getR106_sadc() { return r106_sadc; }
+		public void setR106_sadc(BigDecimal r106_sadc) { this.r106_sadc = r106_sadc; }
+		public BigDecimal getR106_usa() { return r106_usa; }
+		public void setR106_usa(BigDecimal r106_usa) { this.r106_usa = r106_usa; }
+		public BigDecimal getR106_uk() { return r106_uk; }
+		public void setR106_uk(BigDecimal r106_uk) { this.r106_uk = r106_uk; }
+		public BigDecimal getR106_europe() { return r106_europe; }
+		public void setR106_europe(BigDecimal r106_europe) { this.r106_europe = r106_europe; }
+		public BigDecimal getR106_india() { return r106_india; }
+		public void setR106_india(BigDecimal r106_india) { this.r106_india = r106_india; }
+		public BigDecimal getR106_sydney() { return r106_sydney; }
+		public void setR106_sydney(BigDecimal r106_sydney) { this.r106_sydney = r106_sydney; }
+		public BigDecimal getR106_uganda() { return r106_uganda; }
+		public void setR106_uganda(BigDecimal r106_uganda) { this.r106_uganda = r106_uganda; }
+		public BigDecimal getR106_c10() { return r106_c10; }
+		public void setR106_c10(BigDecimal r106_c10) { this.r106_c10 = r106_c10; }
+		public BigDecimal getR106_c11() { return r106_c11; }
+		public void setR106_c11(BigDecimal r106_c11) { this.r106_c11 = r106_c11; }
+		public BigDecimal getR106_c12() { return r106_c12; }
+		public void setR106_c12(BigDecimal r106_c12) { this.r106_c12 = r106_c12; }
+		public BigDecimal getR106_c13() { return r106_c13; }
+		public void setR106_c13(BigDecimal r106_c13) { this.r106_c13 = r106_c13; }
+		public BigDecimal getR106_c14() { return r106_c14; }
+		public void setR106_c14(BigDecimal r106_c14) { this.r106_c14 = r106_c14; }
+		public BigDecimal getR106_c15() { return r106_c15; }
+		public void setR106_c15(BigDecimal r106_c15) { this.r106_c15 = r106_c15; }
+		public BigDecimal getR106_c16() { return r106_c16; }
+		public void setR106_c16(BigDecimal r106_c16) { this.r106_c16 = r106_c16; }
+		public BigDecimal getR106_total() { return r106_total; }
+		public void setR106_total(BigDecimal r106_total) { this.r106_total = r106_total; }
+		public String getR107_product() { return r107_product; }
+		public void setR107_product(String r107_product) { this.r107_product = r107_product; }
+		public BigDecimal getR107_botswana() { return r107_botswana; }
+		public void setR107_botswana(BigDecimal r107_botswana) { this.r107_botswana = r107_botswana; }
+		public BigDecimal getR107_south_africa() { return r107_south_africa; }
+		public void setR107_south_africa(BigDecimal r107_south_africa) { this.r107_south_africa = r107_south_africa; }
+		public BigDecimal getR107_sadc() { return r107_sadc; }
+		public void setR107_sadc(BigDecimal r107_sadc) { this.r107_sadc = r107_sadc; }
+		public BigDecimal getR107_usa() { return r107_usa; }
+		public void setR107_usa(BigDecimal r107_usa) { this.r107_usa = r107_usa; }
+		public BigDecimal getR107_uk() { return r107_uk; }
+		public void setR107_uk(BigDecimal r107_uk) { this.r107_uk = r107_uk; }
+		public BigDecimal getR107_europe() { return r107_europe; }
+		public void setR107_europe(BigDecimal r107_europe) { this.r107_europe = r107_europe; }
+		public BigDecimal getR107_india() { return r107_india; }
+		public void setR107_india(BigDecimal r107_india) { this.r107_india = r107_india; }
+		public BigDecimal getR107_sydney() { return r107_sydney; }
+		public void setR107_sydney(BigDecimal r107_sydney) { this.r107_sydney = r107_sydney; }
+		public BigDecimal getR107_uganda() { return r107_uganda; }
+		public void setR107_uganda(BigDecimal r107_uganda) { this.r107_uganda = r107_uganda; }
+		public BigDecimal getR107_c10() { return r107_c10; }
+		public void setR107_c10(BigDecimal r107_c10) { this.r107_c10 = r107_c10; }
+		public BigDecimal getR107_c11() { return r107_c11; }
+		public void setR107_c11(BigDecimal r107_c11) { this.r107_c11 = r107_c11; }
+		public BigDecimal getR107_c12() { return r107_c12; }
+		public void setR107_c12(BigDecimal r107_c12) { this.r107_c12 = r107_c12; }
+		public BigDecimal getR107_c13() { return r107_c13; }
+		public void setR107_c13(BigDecimal r107_c13) { this.r107_c13 = r107_c13; }
+		public BigDecimal getR107_c14() { return r107_c14; }
+		public void setR107_c14(BigDecimal r107_c14) { this.r107_c14 = r107_c14; }
+		public BigDecimal getR107_c15() { return r107_c15; }
+		public void setR107_c15(BigDecimal r107_c15) { this.r107_c15 = r107_c15; }
+		public BigDecimal getR107_c16() { return r107_c16; }
+		public void setR107_c16(BigDecimal r107_c16) { this.r107_c16 = r107_c16; }
+		public BigDecimal getR107_total() { return r107_total; }
+		public void setR107_total(BigDecimal r107_total) { this.r107_total = r107_total; }
+		public String getR108_product() { return r108_product; }
+		public void setR108_product(String r108_product) { this.r108_product = r108_product; }
+		public BigDecimal getR108_botswana() { return r108_botswana; }
+		public void setR108_botswana(BigDecimal r108_botswana) { this.r108_botswana = r108_botswana; }
+		public BigDecimal getR108_south_africa() { return r108_south_africa; }
+		public void setR108_south_africa(BigDecimal r108_south_africa) { this.r108_south_africa = r108_south_africa; }
+		public BigDecimal getR108_sadc() { return r108_sadc; }
+		public void setR108_sadc(BigDecimal r108_sadc) { this.r108_sadc = r108_sadc; }
+		public BigDecimal getR108_usa() { return r108_usa; }
+		public void setR108_usa(BigDecimal r108_usa) { this.r108_usa = r108_usa; }
+		public BigDecimal getR108_uk() { return r108_uk; }
+		public void setR108_uk(BigDecimal r108_uk) { this.r108_uk = r108_uk; }
+		public BigDecimal getR108_europe() { return r108_europe; }
+		public void setR108_europe(BigDecimal r108_europe) { this.r108_europe = r108_europe; }
+		public BigDecimal getR108_india() { return r108_india; }
+		public void setR108_india(BigDecimal r108_india) { this.r108_india = r108_india; }
+		public BigDecimal getR108_sydney() { return r108_sydney; }
+		public void setR108_sydney(BigDecimal r108_sydney) { this.r108_sydney = r108_sydney; }
+		public BigDecimal getR108_uganda() { return r108_uganda; }
+		public void setR108_uganda(BigDecimal r108_uganda) { this.r108_uganda = r108_uganda; }
+		public BigDecimal getR108_c10() { return r108_c10; }
+		public void setR108_c10(BigDecimal r108_c10) { this.r108_c10 = r108_c10; }
+		public BigDecimal getR108_c11() { return r108_c11; }
+		public void setR108_c11(BigDecimal r108_c11) { this.r108_c11 = r108_c11; }
+		public BigDecimal getR108_c12() { return r108_c12; }
+		public void setR108_c12(BigDecimal r108_c12) { this.r108_c12 = r108_c12; }
+		public BigDecimal getR108_c13() { return r108_c13; }
+		public void setR108_c13(BigDecimal r108_c13) { this.r108_c13 = r108_c13; }
+		public BigDecimal getR108_c14() { return r108_c14; }
+		public void setR108_c14(BigDecimal r108_c14) { this.r108_c14 = r108_c14; }
+		public BigDecimal getR108_c15() { return r108_c15; }
+		public void setR108_c15(BigDecimal r108_c15) { this.r108_c15 = r108_c15; }
+		public BigDecimal getR108_c16() { return r108_c16; }
+		public void setR108_c16(BigDecimal r108_c16) { this.r108_c16 = r108_c16; }
+		public BigDecimal getR108_total() { return r108_total; }
+		public void setR108_total(BigDecimal r108_total) { this.r108_total = r108_total; }
+		public String getR109_product() { return r109_product; }
+		public void setR109_product(String r109_product) { this.r109_product = r109_product; }
+		public BigDecimal getR109_botswana() { return r109_botswana; }
+		public void setR109_botswana(BigDecimal r109_botswana) { this.r109_botswana = r109_botswana; }
+		public BigDecimal getR109_south_africa() { return r109_south_africa; }
+		public void setR109_south_africa(BigDecimal r109_south_africa) { this.r109_south_africa = r109_south_africa; }
+		public BigDecimal getR109_sadc() { return r109_sadc; }
+		public void setR109_sadc(BigDecimal r109_sadc) { this.r109_sadc = r109_sadc; }
+		public BigDecimal getR109_usa() { return r109_usa; }
+		public void setR109_usa(BigDecimal r109_usa) { this.r109_usa = r109_usa; }
+		public BigDecimal getR109_uk() { return r109_uk; }
+		public void setR109_uk(BigDecimal r109_uk) { this.r109_uk = r109_uk; }
+		public BigDecimal getR109_europe() { return r109_europe; }
+		public void setR109_europe(BigDecimal r109_europe) { this.r109_europe = r109_europe; }
+		public BigDecimal getR109_india() { return r109_india; }
+		public void setR109_india(BigDecimal r109_india) { this.r109_india = r109_india; }
+		public BigDecimal getR109_sydney() { return r109_sydney; }
+		public void setR109_sydney(BigDecimal r109_sydney) { this.r109_sydney = r109_sydney; }
+		public BigDecimal getR109_uganda() { return r109_uganda; }
+		public void setR109_uganda(BigDecimal r109_uganda) { this.r109_uganda = r109_uganda; }
+		public BigDecimal getR109_c10() { return r109_c10; }
+		public void setR109_c10(BigDecimal r109_c10) { this.r109_c10 = r109_c10; }
+		public BigDecimal getR109_c11() { return r109_c11; }
+		public void setR109_c11(BigDecimal r109_c11) { this.r109_c11 = r109_c11; }
+		public BigDecimal getR109_c12() { return r109_c12; }
+		public void setR109_c12(BigDecimal r109_c12) { this.r109_c12 = r109_c12; }
+		public BigDecimal getR109_c13() { return r109_c13; }
+		public void setR109_c13(BigDecimal r109_c13) { this.r109_c13 = r109_c13; }
+		public BigDecimal getR109_c14() { return r109_c14; }
+		public void setR109_c14(BigDecimal r109_c14) { this.r109_c14 = r109_c14; }
+		public BigDecimal getR109_c15() { return r109_c15; }
+		public void setR109_c15(BigDecimal r109_c15) { this.r109_c15 = r109_c15; }
+		public BigDecimal getR109_c16() { return r109_c16; }
+		public void setR109_c16(BigDecimal r109_c16) { this.r109_c16 = r109_c16; }
+		public BigDecimal getR109_total() { return r109_total; }
+		public void setR109_total(BigDecimal r109_total) { this.r109_total = r109_total; }
+		public String getR110_product() { return r110_product; }
+		public void setR110_product(String r110_product) { this.r110_product = r110_product; }
+		public BigDecimal getR110_botswana() { return r110_botswana; }
+		public void setR110_botswana(BigDecimal r110_botswana) { this.r110_botswana = r110_botswana; }
+		public BigDecimal getR110_south_africa() { return r110_south_africa; }
+		public void setR110_south_africa(BigDecimal r110_south_africa) { this.r110_south_africa = r110_south_africa; }
+		public BigDecimal getR110_sadc() { return r110_sadc; }
+		public void setR110_sadc(BigDecimal r110_sadc) { this.r110_sadc = r110_sadc; }
+		public BigDecimal getR110_usa() { return r110_usa; }
+		public void setR110_usa(BigDecimal r110_usa) { this.r110_usa = r110_usa; }
+		public BigDecimal getR110_uk() { return r110_uk; }
+		public void setR110_uk(BigDecimal r110_uk) { this.r110_uk = r110_uk; }
+		public BigDecimal getR110_europe() { return r110_europe; }
+		public void setR110_europe(BigDecimal r110_europe) { this.r110_europe = r110_europe; }
+		public BigDecimal getR110_india() { return r110_india; }
+		public void setR110_india(BigDecimal r110_india) { this.r110_india = r110_india; }
+		public BigDecimal getR110_sydney() { return r110_sydney; }
+		public void setR110_sydney(BigDecimal r110_sydney) { this.r110_sydney = r110_sydney; }
+		public BigDecimal getR110_uganda() { return r110_uganda; }
+		public void setR110_uganda(BigDecimal r110_uganda) { this.r110_uganda = r110_uganda; }
+		public BigDecimal getR110_c10() { return r110_c10; }
+		public void setR110_c10(BigDecimal r110_c10) { this.r110_c10 = r110_c10; }
+		public BigDecimal getR110_c11() { return r110_c11; }
+		public void setR110_c11(BigDecimal r110_c11) { this.r110_c11 = r110_c11; }
+		public BigDecimal getR110_c12() { return r110_c12; }
+		public void setR110_c12(BigDecimal r110_c12) { this.r110_c12 = r110_c12; }
+		public BigDecimal getR110_c13() { return r110_c13; }
+		public void setR110_c13(BigDecimal r110_c13) { this.r110_c13 = r110_c13; }
+		public BigDecimal getR110_c14() { return r110_c14; }
+		public void setR110_c14(BigDecimal r110_c14) { this.r110_c14 = r110_c14; }
+		public BigDecimal getR110_c15() { return r110_c15; }
+		public void setR110_c15(BigDecimal r110_c15) { this.r110_c15 = r110_c15; }
+		public BigDecimal getR110_c16() { return r110_c16; }
+		public void setR110_c16(BigDecimal r110_c16) { this.r110_c16 = r110_c16; }
+		public BigDecimal getR110_total() { return r110_total; }
+		public void setR110_total(BigDecimal r110_total) { this.r110_total = r110_total; }
+		public String getR111_product() { return r111_product; }
+		public void setR111_product(String r111_product) { this.r111_product = r111_product; }
+		public BigDecimal getR111_south_africa() { return r111_south_africa; }
+		public void setR111_south_africa(BigDecimal r111_south_africa) { this.r111_south_africa = r111_south_africa; }
+		public BigDecimal getR111_sadc() { return r111_sadc; }
+		public void setR111_sadc(BigDecimal r111_sadc) { this.r111_sadc = r111_sadc; }
+		public BigDecimal getR111_usa() { return r111_usa; }
+		public void setR111_usa(BigDecimal r111_usa) { this.r111_usa = r111_usa; }
+		public BigDecimal getR111_uk() { return r111_uk; }
+		public void setR111_uk(BigDecimal r111_uk) { this.r111_uk = r111_uk; }
+		public BigDecimal getR111_europe() { return r111_europe; }
+		public void setR111_europe(BigDecimal r111_europe) { this.r111_europe = r111_europe; }
+		public BigDecimal getR111_india() { return r111_india; }
+		public void setR111_india(BigDecimal r111_india) { this.r111_india = r111_india; }
+		public BigDecimal getR111_sydney() { return r111_sydney; }
+		public void setR111_sydney(BigDecimal r111_sydney) { this.r111_sydney = r111_sydney; }
+		public BigDecimal getR111_uganda() { return r111_uganda; }
+		public void setR111_uganda(BigDecimal r111_uganda) { this.r111_uganda = r111_uganda; }
+		public BigDecimal getR111_c10() { return r111_c10; }
+		public void setR111_c10(BigDecimal r111_c10) { this.r111_c10 = r111_c10; }
+		public BigDecimal getR111_c11() { return r111_c11; }
+		public void setR111_c11(BigDecimal r111_c11) { this.r111_c11 = r111_c11; }
+		public BigDecimal getR111_c12() { return r111_c12; }
+		public void setR111_c12(BigDecimal r111_c12) { this.r111_c12 = r111_c12; }
+		public BigDecimal getR111_c13() { return r111_c13; }
+		public void setR111_c13(BigDecimal r111_c13) { this.r111_c13 = r111_c13; }
+		public BigDecimal getR111_c14() { return r111_c14; }
+		public void setR111_c14(BigDecimal r111_c14) { this.r111_c14 = r111_c14; }
+		public BigDecimal getR111_c15() { return r111_c15; }
+		public void setR111_c15(BigDecimal r111_c15) { this.r111_c15 = r111_c15; }
+		public BigDecimal getR111_c16() { return r111_c16; }
+		public void setR111_c16(BigDecimal r111_c16) { this.r111_c16 = r111_c16; }
+		public BigDecimal getR111_total() { return r111_total; }
+		public void setR111_total(BigDecimal r111_total) { this.r111_total = r111_total; }
+		public String getR112_product() { return r112_product; }
+		public void setR112_product(String r112_product) { this.r112_product = r112_product; }
+		public BigDecimal getR112_south_africa() { return r112_south_africa; }
+		public void setR112_south_africa(BigDecimal r112_south_africa) { this.r112_south_africa = r112_south_africa; }
+		public BigDecimal getR112_sadc() { return r112_sadc; }
+		public void setR112_sadc(BigDecimal r112_sadc) { this.r112_sadc = r112_sadc; }
+		public BigDecimal getR112_usa() { return r112_usa; }
+		public void setR112_usa(BigDecimal r112_usa) { this.r112_usa = r112_usa; }
+		public BigDecimal getR112_uk() { return r112_uk; }
+		public void setR112_uk(BigDecimal r112_uk) { this.r112_uk = r112_uk; }
+		public BigDecimal getR112_europe() { return r112_europe; }
+		public void setR112_europe(BigDecimal r112_europe) { this.r112_europe = r112_europe; }
+		public BigDecimal getR112_india() { return r112_india; }
+		public void setR112_india(BigDecimal r112_india) { this.r112_india = r112_india; }
+		public BigDecimal getR112_sydney() { return r112_sydney; }
+		public void setR112_sydney(BigDecimal r112_sydney) { this.r112_sydney = r112_sydney; }
+		public BigDecimal getR112_uganda() { return r112_uganda; }
+		public void setR112_uganda(BigDecimal r112_uganda) { this.r112_uganda = r112_uganda; }
+		public BigDecimal getR112_c10() { return r112_c10; }
+		public void setR112_c10(BigDecimal r112_c10) { this.r112_c10 = r112_c10; }
+		public BigDecimal getR112_c11() { return r112_c11; }
+		public void setR112_c11(BigDecimal r112_c11) { this.r112_c11 = r112_c11; }
+		public BigDecimal getR112_c12() { return r112_c12; }
+		public void setR112_c12(BigDecimal r112_c12) { this.r112_c12 = r112_c12; }
+		public BigDecimal getR112_c13() { return r112_c13; }
+		public void setR112_c13(BigDecimal r112_c13) { this.r112_c13 = r112_c13; }
+		public BigDecimal getR112_c14() { return r112_c14; }
+		public void setR112_c14(BigDecimal r112_c14) { this.r112_c14 = r112_c14; }
+		public BigDecimal getR112_c15() { return r112_c15; }
+		public void setR112_c15(BigDecimal r112_c15) { this.r112_c15 = r112_c15; }
+		public BigDecimal getR112_c16() { return r112_c16; }
+		public void setR112_c16(BigDecimal r112_c16) { this.r112_c16 = r112_c16; }
+		public BigDecimal getR112_total() { return r112_total; }
+		public void setR112_total(BigDecimal r112_total) { this.r112_total = r112_total; }
+		public String getR113_product() { return r113_product; }
+		public void setR113_product(String r113_product) { this.r113_product = r113_product; }
+		public BigDecimal getR113_south_africa() { return r113_south_africa; }
+		public void setR113_south_africa(BigDecimal r113_south_africa) { this.r113_south_africa = r113_south_africa; }
+		public BigDecimal getR113_sadc() { return r113_sadc; }
+		public void setR113_sadc(BigDecimal r113_sadc) { this.r113_sadc = r113_sadc; }
+		public BigDecimal getR113_usa() { return r113_usa; }
+		public void setR113_usa(BigDecimal r113_usa) { this.r113_usa = r113_usa; }
+		public BigDecimal getR113_uk() { return r113_uk; }
+		public void setR113_uk(BigDecimal r113_uk) { this.r113_uk = r113_uk; }
+		public BigDecimal getR113_europe() { return r113_europe; }
+		public void setR113_europe(BigDecimal r113_europe) { this.r113_europe = r113_europe; }
+		public BigDecimal getR113_india() { return r113_india; }
+		public void setR113_india(BigDecimal r113_india) { this.r113_india = r113_india; }
+		public BigDecimal getR113_sydney() { return r113_sydney; }
+		public void setR113_sydney(BigDecimal r113_sydney) { this.r113_sydney = r113_sydney; }
+		public BigDecimal getR113_uganda() { return r113_uganda; }
+		public void setR113_uganda(BigDecimal r113_uganda) { this.r113_uganda = r113_uganda; }
+		public BigDecimal getR113_c10() { return r113_c10; }
+		public void setR113_c10(BigDecimal r113_c10) { this.r113_c10 = r113_c10; }
+		public BigDecimal getR113_c11() { return r113_c11; }
+		public void setR113_c11(BigDecimal r113_c11) { this.r113_c11 = r113_c11; }
+		public BigDecimal getR113_c12() { return r113_c12; }
+		public void setR113_c12(BigDecimal r113_c12) { this.r113_c12 = r113_c12; }
+		public BigDecimal getR113_c13() { return r113_c13; }
+		public void setR113_c13(BigDecimal r113_c13) { this.r113_c13 = r113_c13; }
+		public BigDecimal getR113_c14() { return r113_c14; }
+		public void setR113_c14(BigDecimal r113_c14) { this.r113_c14 = r113_c14; }
+		public BigDecimal getR113_c15() { return r113_c15; }
+		public void setR113_c15(BigDecimal r113_c15) { this.r113_c15 = r113_c15; }
+		public BigDecimal getR113_c16() { return r113_c16; }
+		public void setR113_c16(BigDecimal r113_c16) { this.r113_c16 = r113_c16; }
+		public BigDecimal getR113_total() { return r113_total; }
+		public void setR113_total(BigDecimal r113_total) { this.r113_total = r113_total; }
+		public String getR114_product() { return r114_product; }
+		public void setR114_product(String r114_product) { this.r114_product = r114_product; }
+		public BigDecimal getR114_south_africa() { return r114_south_africa; }
+		public void setR114_south_africa(BigDecimal r114_south_africa) { this.r114_south_africa = r114_south_africa; }
+		public BigDecimal getR114_sadc() { return r114_sadc; }
+		public void setR114_sadc(BigDecimal r114_sadc) { this.r114_sadc = r114_sadc; }
+		public BigDecimal getR114_usa() { return r114_usa; }
+		public void setR114_usa(BigDecimal r114_usa) { this.r114_usa = r114_usa; }
+		public BigDecimal getR114_uk() { return r114_uk; }
+		public void setR114_uk(BigDecimal r114_uk) { this.r114_uk = r114_uk; }
+		public BigDecimal getR114_europe() { return r114_europe; }
+		public void setR114_europe(BigDecimal r114_europe) { this.r114_europe = r114_europe; }
+		public BigDecimal getR114_india() { return r114_india; }
+		public void setR114_india(BigDecimal r114_india) { this.r114_india = r114_india; }
+		public BigDecimal getR114_sydney() { return r114_sydney; }
+		public void setR114_sydney(BigDecimal r114_sydney) { this.r114_sydney = r114_sydney; }
+		public BigDecimal getR114_uganda() { return r114_uganda; }
+		public void setR114_uganda(BigDecimal r114_uganda) { this.r114_uganda = r114_uganda; }
+		public BigDecimal getR114_c10() { return r114_c10; }
+		public void setR114_c10(BigDecimal r114_c10) { this.r114_c10 = r114_c10; }
+		public BigDecimal getR114_c11() { return r114_c11; }
+		public void setR114_c11(BigDecimal r114_c11) { this.r114_c11 = r114_c11; }
+		public BigDecimal getR114_c12() { return r114_c12; }
+		public void setR114_c12(BigDecimal r114_c12) { this.r114_c12 = r114_c12; }
+		public BigDecimal getR114_c13() { return r114_c13; }
+		public void setR114_c13(BigDecimal r114_c13) { this.r114_c13 = r114_c13; }
+		public BigDecimal getR114_c14() { return r114_c14; }
+		public void setR114_c14(BigDecimal r114_c14) { this.r114_c14 = r114_c14; }
+		public BigDecimal getR114_c15() { return r114_c15; }
+		public void setR114_c15(BigDecimal r114_c15) { this.r114_c15 = r114_c15; }
+		public BigDecimal getR114_c16() { return r114_c16; }
+		public void setR114_c16(BigDecimal r114_c16) { this.r114_c16 = r114_c16; }
+		public BigDecimal getR114_total() { return r114_total; }
+		public void setR114_total(BigDecimal r114_total) { this.r114_total = r114_total; }
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date report_date) { this.report_date = report_date; }
+		public String getReport_version() { return report_version; }
+		public void setReport_version(String report_version) { this.report_version = report_version; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORManualSummaryRowMapper implements RowMapper<M_GALOR_Manual_Summary_Entity> {
+		@Override
+		public M_GALOR_Manual_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Manual_Summary_Entity obj = new M_GALOR_Manual_Summary_Entity();
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_botswana(rs.getBigDecimal("R22_BOTSWANA"));
+			obj.setR22_south_africa(rs.getBigDecimal("R22_SOUTH_AFRICA"));
+			obj.setR22_sadc(rs.getBigDecimal("R22_SADC"));
+			obj.setR22_usa(rs.getBigDecimal("R22_USA"));
+			obj.setR22_uk(rs.getBigDecimal("R22_UK"));
+			obj.setR22_europe(rs.getBigDecimal("R22_EUROPE"));
+			obj.setR22_india(rs.getBigDecimal("R22_INDIA"));
+			obj.setR22_sydney(rs.getBigDecimal("R22_SYDNEY"));
+			obj.setR22_uganda(rs.getBigDecimal("R22_UGANDA"));
+			obj.setR22_c10(rs.getBigDecimal("R22_C10"));
+			obj.setR22_c11(rs.getBigDecimal("R22_C11"));
+			obj.setR22_c12(rs.getBigDecimal("R22_C12"));
+			obj.setR22_c13(rs.getBigDecimal("R22_C13"));
+			obj.setR22_c14(rs.getBigDecimal("R22_C14"));
+			obj.setR22_c15(rs.getBigDecimal("R22_C15"));
+			obj.setR22_c16(rs.getBigDecimal("R22_C16"));
+			obj.setR22_total(rs.getBigDecimal("R22_TOTAL"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_botswana(rs.getBigDecimal("R23_BOTSWANA"));
+			obj.setR23_south_africa(rs.getBigDecimal("R23_SOUTH_AFRICA"));
+			obj.setR23_sadc(rs.getBigDecimal("R23_SADC"));
+			obj.setR23_usa(rs.getBigDecimal("R23_USA"));
+			obj.setR23_uk(rs.getBigDecimal("R23_UK"));
+			obj.setR23_europe(rs.getBigDecimal("R23_EUROPE"));
+			obj.setR23_india(rs.getBigDecimal("R23_INDIA"));
+			obj.setR23_sydney(rs.getBigDecimal("R23_SYDNEY"));
+			obj.setR23_uganda(rs.getBigDecimal("R23_UGANDA"));
+			obj.setR23_c10(rs.getBigDecimal("R23_C10"));
+			obj.setR23_c11(rs.getBigDecimal("R23_C11"));
+			obj.setR23_c12(rs.getBigDecimal("R23_C12"));
+			obj.setR23_c13(rs.getBigDecimal("R23_C13"));
+			obj.setR23_c14(rs.getBigDecimal("R23_C14"));
+			obj.setR23_c15(rs.getBigDecimal("R23_C15"));
+			obj.setR23_c16(rs.getBigDecimal("R23_C16"));
+			obj.setR23_total(rs.getBigDecimal("R23_TOTAL"));
+			obj.setR57_product(rs.getString("R57_PRODUCT"));
+			obj.setR57_botswana(rs.getBigDecimal("R57_BOTSWANA"));
+			obj.setR57_south_africa(rs.getBigDecimal("R57_SOUTH_AFRICA"));
+			obj.setR57_sadc(rs.getBigDecimal("R57_SADC"));
+			obj.setR57_usa(rs.getBigDecimal("R57_USA"));
+			obj.setR57_uk(rs.getBigDecimal("R57_UK"));
+			obj.setR57_europe(rs.getBigDecimal("R57_EUROPE"));
+			obj.setR57_india(rs.getBigDecimal("R57_INDIA"));
+			obj.setR57_sydney(rs.getBigDecimal("R57_SYDNEY"));
+			obj.setR57_uganda(rs.getBigDecimal("R57_UGANDA"));
+			obj.setR57_c10(rs.getBigDecimal("R57_C10"));
+			obj.setR57_c11(rs.getBigDecimal("R57_C11"));
+			obj.setR57_c12(rs.getBigDecimal("R57_C12"));
+			obj.setR57_c13(rs.getBigDecimal("R57_C13"));
+			obj.setR57_c14(rs.getBigDecimal("R57_C14"));
+			obj.setR57_c15(rs.getBigDecimal("R57_C15"));
+			obj.setR57_c16(rs.getBigDecimal("R57_C16"));
+			obj.setR57_total(rs.getBigDecimal("R57_TOTAL"));
+			obj.setR58_product(rs.getString("R58_PRODUCT"));
+			obj.setR58_botswana(rs.getBigDecimal("R58_BOTSWANA"));
+			obj.setR58_south_africa(rs.getBigDecimal("R58_SOUTH_AFRICA"));
+			obj.setR58_sadc(rs.getBigDecimal("R58_SADC"));
+			obj.setR58_usa(rs.getBigDecimal("R58_USA"));
+			obj.setR58_uk(rs.getBigDecimal("R58_UK"));
+			obj.setR58_europe(rs.getBigDecimal("R58_EUROPE"));
+			obj.setR58_india(rs.getBigDecimal("R58_INDIA"));
+			obj.setR58_sydney(rs.getBigDecimal("R58_SYDNEY"));
+			obj.setR58_uganda(rs.getBigDecimal("R58_UGANDA"));
+			obj.setR58_c10(rs.getBigDecimal("R58_C10"));
+			obj.setR58_c11(rs.getBigDecimal("R58_C11"));
+			obj.setR58_c12(rs.getBigDecimal("R58_C12"));
+			obj.setR58_c13(rs.getBigDecimal("R58_C13"));
+			obj.setR58_c14(rs.getBigDecimal("R58_C14"));
+			obj.setR58_c15(rs.getBigDecimal("R58_C15"));
+			obj.setR58_c16(rs.getBigDecimal("R58_C16"));
+			obj.setR58_total(rs.getBigDecimal("R58_TOTAL"));
+			obj.setR60_product(rs.getString("R60_PRODUCT"));
+			obj.setR60_botswana(rs.getBigDecimal("R60_BOTSWANA"));
+			obj.setR60_south_africa(rs.getBigDecimal("R60_SOUTH_AFRICA"));
+			obj.setR60_sadc(rs.getBigDecimal("R60_SADC"));
+			obj.setR60_usa(rs.getBigDecimal("R60_USA"));
+			obj.setR60_uk(rs.getBigDecimal("R60_UK"));
+			obj.setR60_europe(rs.getBigDecimal("R60_EUROPE"));
+			obj.setR60_india(rs.getBigDecimal("R60_INDIA"));
+			obj.setR60_sydney(rs.getBigDecimal("R60_SYDNEY"));
+			obj.setR60_uganda(rs.getBigDecimal("R60_UGANDA"));
+			obj.setR60_c10(rs.getBigDecimal("R60_C10"));
+			obj.setR60_c11(rs.getBigDecimal("R60_C11"));
+			obj.setR60_c12(rs.getBigDecimal("R60_C12"));
+			obj.setR60_c13(rs.getBigDecimal("R60_C13"));
+			obj.setR60_c14(rs.getBigDecimal("R60_C14"));
+			obj.setR60_c15(rs.getBigDecimal("R60_C15"));
+			obj.setR60_c16(rs.getBigDecimal("R60_C16"));
+			obj.setR60_total(rs.getBigDecimal("R60_TOTAL"));
+			obj.setR61_product(rs.getString("R61_PRODUCT"));
+			obj.setR61_botswana(rs.getBigDecimal("R61_BOTSWANA"));
+			obj.setR61_south_africa(rs.getBigDecimal("R61_SOUTH_AFRICA"));
+			obj.setR61_sadc(rs.getBigDecimal("R61_SADC"));
+			obj.setR61_usa(rs.getBigDecimal("R61_USA"));
+			obj.setR61_uk(rs.getBigDecimal("R61_UK"));
+			obj.setR61_europe(rs.getBigDecimal("R61_EUROPE"));
+			obj.setR61_india(rs.getBigDecimal("R61_INDIA"));
+			obj.setR61_sydney(rs.getBigDecimal("R61_SYDNEY"));
+			obj.setR61_uganda(rs.getBigDecimal("R61_UGANDA"));
+			obj.setR61_c10(rs.getBigDecimal("R61_C10"));
+			obj.setR61_c11(rs.getBigDecimal("R61_C11"));
+			obj.setR61_c12(rs.getBigDecimal("R61_C12"));
+			obj.setR61_c13(rs.getBigDecimal("R61_C13"));
+			obj.setR61_c14(rs.getBigDecimal("R61_C14"));
+			obj.setR61_c15(rs.getBigDecimal("R61_C15"));
+			obj.setR61_c16(rs.getBigDecimal("R61_C16"));
+			obj.setR61_total(rs.getBigDecimal("R61_TOTAL"));
+			obj.setR64_product(rs.getString("R64_PRODUCT"));
+			obj.setR64_botswana(rs.getBigDecimal("R64_BOTSWANA"));
+			obj.setR64_south_africa(rs.getBigDecimal("R64_SOUTH_AFRICA"));
+			obj.setR64_sadc(rs.getBigDecimal("R64_SADC"));
+			obj.setR64_usa(rs.getBigDecimal("R64_USA"));
+			obj.setR64_uk(rs.getBigDecimal("R64_UK"));
+			obj.setR64_europe(rs.getBigDecimal("R64_EUROPE"));
+			obj.setR64_india(rs.getBigDecimal("R64_INDIA"));
+			obj.setR64_sydney(rs.getBigDecimal("R64_SYDNEY"));
+			obj.setR64_uganda(rs.getBigDecimal("R64_UGANDA"));
+			obj.setR64_c10(rs.getBigDecimal("R64_C10"));
+			obj.setR64_c11(rs.getBigDecimal("R64_C11"));
+			obj.setR64_c12(rs.getBigDecimal("R64_C12"));
+			obj.setR64_c13(rs.getBigDecimal("R64_C13"));
+			obj.setR64_c14(rs.getBigDecimal("R64_C14"));
+			obj.setR64_c15(rs.getBigDecimal("R64_C15"));
+			obj.setR64_c16(rs.getBigDecimal("R64_C16"));
+			obj.setR64_total(rs.getBigDecimal("R64_TOTAL"));
+			obj.setR65_product(rs.getString("R65_PRODUCT"));
+			obj.setR65_botswana(rs.getBigDecimal("R65_BOTSWANA"));
+			obj.setR65_south_africa(rs.getBigDecimal("R65_SOUTH_AFRICA"));
+			obj.setR65_sadc(rs.getBigDecimal("R65_SADC"));
+			obj.setR65_usa(rs.getBigDecimal("R65_USA"));
+			obj.setR65_uk(rs.getBigDecimal("R65_UK"));
+			obj.setR65_europe(rs.getBigDecimal("R65_EUROPE"));
+			obj.setR65_india(rs.getBigDecimal("R65_INDIA"));
+			obj.setR65_sydney(rs.getBigDecimal("R65_SYDNEY"));
+			obj.setR65_uganda(rs.getBigDecimal("R65_UGANDA"));
+			obj.setR65_c10(rs.getBigDecimal("R65_C10"));
+			obj.setR65_c11(rs.getBigDecimal("R65_C11"));
+			obj.setR65_c12(rs.getBigDecimal("R65_C12"));
+			obj.setR65_c13(rs.getBigDecimal("R65_C13"));
+			obj.setR65_c14(rs.getBigDecimal("R65_C14"));
+			obj.setR65_c15(rs.getBigDecimal("R65_C15"));
+			obj.setR65_c16(rs.getBigDecimal("R65_C16"));
+			obj.setR65_total(rs.getBigDecimal("R65_TOTAL"));
+			obj.setR67_product(rs.getString("R67_PRODUCT"));
+			obj.setR67_botswana(rs.getBigDecimal("R67_BOTSWANA"));
+			obj.setR67_south_africa(rs.getBigDecimal("R67_SOUTH_AFRICA"));
+			obj.setR67_sadc(rs.getBigDecimal("R67_SADC"));
+			obj.setR67_usa(rs.getBigDecimal("R67_USA"));
+			obj.setR67_uk(rs.getBigDecimal("R67_UK"));
+			obj.setR67_europe(rs.getBigDecimal("R67_EUROPE"));
+			obj.setR67_india(rs.getBigDecimal("R67_INDIA"));
+			obj.setR67_sydney(rs.getBigDecimal("R67_SYDNEY"));
+			obj.setR67_uganda(rs.getBigDecimal("R67_UGANDA"));
+			obj.setR67_c10(rs.getBigDecimal("R67_C10"));
+			obj.setR67_c11(rs.getBigDecimal("R67_C11"));
+			obj.setR67_c12(rs.getBigDecimal("R67_C12"));
+			obj.setR67_c13(rs.getBigDecimal("R67_C13"));
+			obj.setR67_c14(rs.getBigDecimal("R67_C14"));
+			obj.setR67_c15(rs.getBigDecimal("R67_C15"));
+			obj.setR67_c16(rs.getBigDecimal("R67_C16"));
+			obj.setR67_total(rs.getBigDecimal("R67_TOTAL"));
+			obj.setR68_product(rs.getString("R68_PRODUCT"));
+			obj.setR68_botswana(rs.getBigDecimal("R68_BOTSWANA"));
+			obj.setR68_south_africa(rs.getBigDecimal("R68_SOUTH_AFRICA"));
+			obj.setR68_sadc(rs.getBigDecimal("R68_SADC"));
+			obj.setR68_usa(rs.getBigDecimal("R68_USA"));
+			obj.setR68_uk(rs.getBigDecimal("R68_UK"));
+			obj.setR68_europe(rs.getBigDecimal("R68_EUROPE"));
+			obj.setR68_india(rs.getBigDecimal("R68_INDIA"));
+			obj.setR68_sydney(rs.getBigDecimal("R68_SYDNEY"));
+			obj.setR68_uganda(rs.getBigDecimal("R68_UGANDA"));
+			obj.setR68_c10(rs.getBigDecimal("R68_C10"));
+			obj.setR68_c11(rs.getBigDecimal("R68_C11"));
+			obj.setR68_c12(rs.getBigDecimal("R68_C12"));
+			obj.setR68_c13(rs.getBigDecimal("R68_C13"));
+			obj.setR68_c14(rs.getBigDecimal("R68_C14"));
+			obj.setR68_c15(rs.getBigDecimal("R68_C15"));
+			obj.setR68_c16(rs.getBigDecimal("R68_C16"));
+			obj.setR68_total(rs.getBigDecimal("R68_TOTAL"));
+			obj.setR111_botswana(rs.getBigDecimal("R111_BOTSWANA"));
+			obj.setR112_botswana(rs.getBigDecimal("R112_BOTSWANA"));
+			obj.setR113_botswana(rs.getBigDecimal("R113_BOTSWANA"));
+			obj.setR114_botswana(rs.getBigDecimal("R114_BOTSWANA"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getString("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Manual_Summary_Entity {
+		private String r22_product;
+		private BigDecimal r22_botswana;
+		private BigDecimal r22_south_africa;
+		private BigDecimal r22_sadc;
+		private BigDecimal r22_usa;
+		private BigDecimal r22_uk;
+		private BigDecimal r22_europe;
+		private BigDecimal r22_india;
+		private BigDecimal r22_sydney;
+		private BigDecimal r22_uganda;
+		private BigDecimal r22_c10;
+		private BigDecimal r22_c11;
+		private BigDecimal r22_c12;
+		private BigDecimal r22_c13;
+		private BigDecimal r22_c14;
+		private BigDecimal r22_c15;
+		private BigDecimal r22_c16;
+		private BigDecimal r22_total;
+		private String r23_product;
+		private BigDecimal r23_botswana;
+		private BigDecimal r23_south_africa;
+		private BigDecimal r23_sadc;
+		private BigDecimal r23_usa;
+		private BigDecimal r23_uk;
+		private BigDecimal r23_europe;
+		private BigDecimal r23_india;
+		private BigDecimal r23_sydney;
+		private BigDecimal r23_uganda;
+		private BigDecimal r23_c10;
+		private BigDecimal r23_c11;
+		private BigDecimal r23_c12;
+		private BigDecimal r23_c13;
+		private BigDecimal r23_c14;
+		private BigDecimal r23_c15;
+		private BigDecimal r23_c16;
+		private BigDecimal r23_total;
+		private String r57_product;
+		private BigDecimal r57_botswana;
+		private BigDecimal r57_south_africa;
+		private BigDecimal r57_sadc;
+		private BigDecimal r57_usa;
+		private BigDecimal r57_uk;
+		private BigDecimal r57_europe;
+		private BigDecimal r57_india;
+		private BigDecimal r57_sydney;
+		private BigDecimal r57_uganda;
+		private BigDecimal r57_c10;
+		private BigDecimal r57_c11;
+		private BigDecimal r57_c12;
+		private BigDecimal r57_c13;
+		private BigDecimal r57_c14;
+		private BigDecimal r57_c15;
+		private BigDecimal r57_c16;
+		private BigDecimal r57_total;
+		private String r58_product;
+		private BigDecimal r58_botswana;
+		private BigDecimal r58_south_africa;
+		private BigDecimal r58_sadc;
+		private BigDecimal r58_usa;
+		private BigDecimal r58_uk;
+		private BigDecimal r58_europe;
+		private BigDecimal r58_india;
+		private BigDecimal r58_sydney;
+		private BigDecimal r58_uganda;
+		private BigDecimal r58_c10;
+		private BigDecimal r58_c11;
+		private BigDecimal r58_c12;
+		private BigDecimal r58_c13;
+		private BigDecimal r58_c14;
+		private BigDecimal r58_c15;
+		private BigDecimal r58_c16;
+		private BigDecimal r58_total;
+		private String r60_product;
+		private BigDecimal r60_botswana;
+		private BigDecimal r60_south_africa;
+		private BigDecimal r60_sadc;
+		private BigDecimal r60_usa;
+		private BigDecimal r60_uk;
+		private BigDecimal r60_europe;
+		private BigDecimal r60_india;
+		private BigDecimal r60_sydney;
+		private BigDecimal r60_uganda;
+		private BigDecimal r60_c10;
+		private BigDecimal r60_c11;
+		private BigDecimal r60_c12;
+		private BigDecimal r60_c13;
+		private BigDecimal r60_c14;
+		private BigDecimal r60_c15;
+		private BigDecimal r60_c16;
+		private BigDecimal r60_total;
+		private String r61_product;
+		private BigDecimal r61_botswana;
+		private BigDecimal r61_south_africa;
+		private BigDecimal r61_sadc;
+		private BigDecimal r61_usa;
+		private BigDecimal r61_uk;
+		private BigDecimal r61_europe;
+		private BigDecimal r61_india;
+		private BigDecimal r61_sydney;
+		private BigDecimal r61_uganda;
+		private BigDecimal r61_c10;
+		private BigDecimal r61_c11;
+		private BigDecimal r61_c12;
+		private BigDecimal r61_c13;
+		private BigDecimal r61_c14;
+		private BigDecimal r61_c15;
+		private BigDecimal r61_c16;
+		private BigDecimal r61_total;
+		private String r64_product;
+		private BigDecimal r64_botswana;
+		private BigDecimal r64_south_africa;
+		private BigDecimal r64_sadc;
+		private BigDecimal r64_usa;
+		private BigDecimal r64_uk;
+		private BigDecimal r64_europe;
+		private BigDecimal r64_india;
+		private BigDecimal r64_sydney;
+		private BigDecimal r64_uganda;
+		private BigDecimal r64_c10;
+		private BigDecimal r64_c11;
+		private BigDecimal r64_c12;
+		private BigDecimal r64_c13;
+		private BigDecimal r64_c14;
+		private BigDecimal r64_c15;
+		private BigDecimal r64_c16;
+		private BigDecimal r64_total;
+		private String r65_product;
+		private BigDecimal r65_botswana;
+		private BigDecimal r65_south_africa;
+		private BigDecimal r65_sadc;
+		private BigDecimal r65_usa;
+		private BigDecimal r65_uk;
+		private BigDecimal r65_europe;
+		private BigDecimal r65_india;
+		private BigDecimal r65_sydney;
+		private BigDecimal r65_uganda;
+		private BigDecimal r65_c10;
+		private BigDecimal r65_c11;
+		private BigDecimal r65_c12;
+		private BigDecimal r65_c13;
+		private BigDecimal r65_c14;
+		private BigDecimal r65_c15;
+		private BigDecimal r65_c16;
+		private BigDecimal r65_total;
+		private String r67_product;
+		private BigDecimal r67_botswana;
+		private BigDecimal r67_south_africa;
+		private BigDecimal r67_sadc;
+		private BigDecimal r67_usa;
+		private BigDecimal r67_uk;
+		private BigDecimal r67_europe;
+		private BigDecimal r67_india;
+		private BigDecimal r67_sydney;
+		private BigDecimal r67_uganda;
+		private BigDecimal r67_c10;
+		private BigDecimal r67_c11;
+		private BigDecimal r67_c12;
+		private BigDecimal r67_c13;
+		private BigDecimal r67_c14;
+		private BigDecimal r67_c15;
+		private BigDecimal r67_c16;
+		private BigDecimal r67_total;
+		private String r68_product;
+		private BigDecimal r68_botswana;
+		private BigDecimal r68_south_africa;
+		private BigDecimal r68_sadc;
+		private BigDecimal r68_usa;
+		private BigDecimal r68_uk;
+		private BigDecimal r68_europe;
+		private BigDecimal r68_india;
+		private BigDecimal r68_sydney;
+		private BigDecimal r68_uganda;
+		private BigDecimal r68_c10;
+		private BigDecimal r68_c11;
+		private BigDecimal r68_c12;
+		private BigDecimal r68_c13;
+		private BigDecimal r68_c14;
+		private BigDecimal r68_c15;
+		private BigDecimal r68_c16;
+		private BigDecimal r68_total;
+		private BigDecimal r111_botswana;
+		private BigDecimal r112_botswana;
+		private BigDecimal r113_botswana;
+		private BigDecimal r114_botswana;
+		private Date report_date;
+		private String report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR22_product() { return r22_product; }
+		public void setR22_product(String r22_product) { this.r22_product = r22_product; }
+		public BigDecimal getR22_botswana() { return r22_botswana; }
+		public void setR22_botswana(BigDecimal r22_botswana) { this.r22_botswana = r22_botswana; }
+		public BigDecimal getR22_south_africa() { return r22_south_africa; }
+		public void setR22_south_africa(BigDecimal r22_south_africa) { this.r22_south_africa = r22_south_africa; }
+		public BigDecimal getR22_sadc() { return r22_sadc; }
+		public void setR22_sadc(BigDecimal r22_sadc) { this.r22_sadc = r22_sadc; }
+		public BigDecimal getR22_usa() { return r22_usa; }
+		public void setR22_usa(BigDecimal r22_usa) { this.r22_usa = r22_usa; }
+		public BigDecimal getR22_uk() { return r22_uk; }
+		public void setR22_uk(BigDecimal r22_uk) { this.r22_uk = r22_uk; }
+		public BigDecimal getR22_europe() { return r22_europe; }
+		public void setR22_europe(BigDecimal r22_europe) { this.r22_europe = r22_europe; }
+		public BigDecimal getR22_india() { return r22_india; }
+		public void setR22_india(BigDecimal r22_india) { this.r22_india = r22_india; }
+		public BigDecimal getR22_sydney() { return r22_sydney; }
+		public void setR22_sydney(BigDecimal r22_sydney) { this.r22_sydney = r22_sydney; }
+		public BigDecimal getR22_uganda() { return r22_uganda; }
+		public void setR22_uganda(BigDecimal r22_uganda) { this.r22_uganda = r22_uganda; }
+		public BigDecimal getR22_c10() { return r22_c10; }
+		public void setR22_c10(BigDecimal r22_c10) { this.r22_c10 = r22_c10; }
+		public BigDecimal getR22_c11() { return r22_c11; }
+		public void setR22_c11(BigDecimal r22_c11) { this.r22_c11 = r22_c11; }
+		public BigDecimal getR22_c12() { return r22_c12; }
+		public void setR22_c12(BigDecimal r22_c12) { this.r22_c12 = r22_c12; }
+		public BigDecimal getR22_c13() { return r22_c13; }
+		public void setR22_c13(BigDecimal r22_c13) { this.r22_c13 = r22_c13; }
+		public BigDecimal getR22_c14() { return r22_c14; }
+		public void setR22_c14(BigDecimal r22_c14) { this.r22_c14 = r22_c14; }
+		public BigDecimal getR22_c15() { return r22_c15; }
+		public void setR22_c15(BigDecimal r22_c15) { this.r22_c15 = r22_c15; }
+		public BigDecimal getR22_c16() { return r22_c16; }
+		public void setR22_c16(BigDecimal r22_c16) { this.r22_c16 = r22_c16; }
+		public BigDecimal getR22_total() { return r22_total; }
+		public void setR22_total(BigDecimal r22_total) { this.r22_total = r22_total; }
+		public String getR23_product() { return r23_product; }
+		public void setR23_product(String r23_product) { this.r23_product = r23_product; }
+		public BigDecimal getR23_botswana() { return r23_botswana; }
+		public void setR23_botswana(BigDecimal r23_botswana) { this.r23_botswana = r23_botswana; }
+		public BigDecimal getR23_south_africa() { return r23_south_africa; }
+		public void setR23_south_africa(BigDecimal r23_south_africa) { this.r23_south_africa = r23_south_africa; }
+		public BigDecimal getR23_sadc() { return r23_sadc; }
+		public void setR23_sadc(BigDecimal r23_sadc) { this.r23_sadc = r23_sadc; }
+		public BigDecimal getR23_usa() { return r23_usa; }
+		public void setR23_usa(BigDecimal r23_usa) { this.r23_usa = r23_usa; }
+		public BigDecimal getR23_uk() { return r23_uk; }
+		public void setR23_uk(BigDecimal r23_uk) { this.r23_uk = r23_uk; }
+		public BigDecimal getR23_europe() { return r23_europe; }
+		public void setR23_europe(BigDecimal r23_europe) { this.r23_europe = r23_europe; }
+		public BigDecimal getR23_india() { return r23_india; }
+		public void setR23_india(BigDecimal r23_india) { this.r23_india = r23_india; }
+		public BigDecimal getR23_sydney() { return r23_sydney; }
+		public void setR23_sydney(BigDecimal r23_sydney) { this.r23_sydney = r23_sydney; }
+		public BigDecimal getR23_uganda() { return r23_uganda; }
+		public void setR23_uganda(BigDecimal r23_uganda) { this.r23_uganda = r23_uganda; }
+		public BigDecimal getR23_c10() { return r23_c10; }
+		public void setR23_c10(BigDecimal r23_c10) { this.r23_c10 = r23_c10; }
+		public BigDecimal getR23_c11() { return r23_c11; }
+		public void setR23_c11(BigDecimal r23_c11) { this.r23_c11 = r23_c11; }
+		public BigDecimal getR23_c12() { return r23_c12; }
+		public void setR23_c12(BigDecimal r23_c12) { this.r23_c12 = r23_c12; }
+		public BigDecimal getR23_c13() { return r23_c13; }
+		public void setR23_c13(BigDecimal r23_c13) { this.r23_c13 = r23_c13; }
+		public BigDecimal getR23_c14() { return r23_c14; }
+		public void setR23_c14(BigDecimal r23_c14) { this.r23_c14 = r23_c14; }
+		public BigDecimal getR23_c15() { return r23_c15; }
+		public void setR23_c15(BigDecimal r23_c15) { this.r23_c15 = r23_c15; }
+		public BigDecimal getR23_c16() { return r23_c16; }
+		public void setR23_c16(BigDecimal r23_c16) { this.r23_c16 = r23_c16; }
+		public BigDecimal getR23_total() { return r23_total; }
+		public void setR23_total(BigDecimal r23_total) { this.r23_total = r23_total; }
+		public String getR57_product() { return r57_product; }
+		public void setR57_product(String r57_product) { this.r57_product = r57_product; }
+		public BigDecimal getR57_botswana() { return r57_botswana; }
+		public void setR57_botswana(BigDecimal r57_botswana) { this.r57_botswana = r57_botswana; }
+		public BigDecimal getR57_south_africa() { return r57_south_africa; }
+		public void setR57_south_africa(BigDecimal r57_south_africa) { this.r57_south_africa = r57_south_africa; }
+		public BigDecimal getR57_sadc() { return r57_sadc; }
+		public void setR57_sadc(BigDecimal r57_sadc) { this.r57_sadc = r57_sadc; }
+		public BigDecimal getR57_usa() { return r57_usa; }
+		public void setR57_usa(BigDecimal r57_usa) { this.r57_usa = r57_usa; }
+		public BigDecimal getR57_uk() { return r57_uk; }
+		public void setR57_uk(BigDecimal r57_uk) { this.r57_uk = r57_uk; }
+		public BigDecimal getR57_europe() { return r57_europe; }
+		public void setR57_europe(BigDecimal r57_europe) { this.r57_europe = r57_europe; }
+		public BigDecimal getR57_india() { return r57_india; }
+		public void setR57_india(BigDecimal r57_india) { this.r57_india = r57_india; }
+		public BigDecimal getR57_sydney() { return r57_sydney; }
+		public void setR57_sydney(BigDecimal r57_sydney) { this.r57_sydney = r57_sydney; }
+		public BigDecimal getR57_uganda() { return r57_uganda; }
+		public void setR57_uganda(BigDecimal r57_uganda) { this.r57_uganda = r57_uganda; }
+		public BigDecimal getR57_c10() { return r57_c10; }
+		public void setR57_c10(BigDecimal r57_c10) { this.r57_c10 = r57_c10; }
+		public BigDecimal getR57_c11() { return r57_c11; }
+		public void setR57_c11(BigDecimal r57_c11) { this.r57_c11 = r57_c11; }
+		public BigDecimal getR57_c12() { return r57_c12; }
+		public void setR57_c12(BigDecimal r57_c12) { this.r57_c12 = r57_c12; }
+		public BigDecimal getR57_c13() { return r57_c13; }
+		public void setR57_c13(BigDecimal r57_c13) { this.r57_c13 = r57_c13; }
+		public BigDecimal getR57_c14() { return r57_c14; }
+		public void setR57_c14(BigDecimal r57_c14) { this.r57_c14 = r57_c14; }
+		public BigDecimal getR57_c15() { return r57_c15; }
+		public void setR57_c15(BigDecimal r57_c15) { this.r57_c15 = r57_c15; }
+		public BigDecimal getR57_c16() { return r57_c16; }
+		public void setR57_c16(BigDecimal r57_c16) { this.r57_c16 = r57_c16; }
+		public BigDecimal getR57_total() { return r57_total; }
+		public void setR57_total(BigDecimal r57_total) { this.r57_total = r57_total; }
+		public String getR58_product() { return r58_product; }
+		public void setR58_product(String r58_product) { this.r58_product = r58_product; }
+		public BigDecimal getR58_botswana() { return r58_botswana; }
+		public void setR58_botswana(BigDecimal r58_botswana) { this.r58_botswana = r58_botswana; }
+		public BigDecimal getR58_south_africa() { return r58_south_africa; }
+		public void setR58_south_africa(BigDecimal r58_south_africa) { this.r58_south_africa = r58_south_africa; }
+		public BigDecimal getR58_sadc() { return r58_sadc; }
+		public void setR58_sadc(BigDecimal r58_sadc) { this.r58_sadc = r58_sadc; }
+		public BigDecimal getR58_usa() { return r58_usa; }
+		public void setR58_usa(BigDecimal r58_usa) { this.r58_usa = r58_usa; }
+		public BigDecimal getR58_uk() { return r58_uk; }
+		public void setR58_uk(BigDecimal r58_uk) { this.r58_uk = r58_uk; }
+		public BigDecimal getR58_europe() { return r58_europe; }
+		public void setR58_europe(BigDecimal r58_europe) { this.r58_europe = r58_europe; }
+		public BigDecimal getR58_india() { return r58_india; }
+		public void setR58_india(BigDecimal r58_india) { this.r58_india = r58_india; }
+		public BigDecimal getR58_sydney() { return r58_sydney; }
+		public void setR58_sydney(BigDecimal r58_sydney) { this.r58_sydney = r58_sydney; }
+		public BigDecimal getR58_uganda() { return r58_uganda; }
+		public void setR58_uganda(BigDecimal r58_uganda) { this.r58_uganda = r58_uganda; }
+		public BigDecimal getR58_c10() { return r58_c10; }
+		public void setR58_c10(BigDecimal r58_c10) { this.r58_c10 = r58_c10; }
+		public BigDecimal getR58_c11() { return r58_c11; }
+		public void setR58_c11(BigDecimal r58_c11) { this.r58_c11 = r58_c11; }
+		public BigDecimal getR58_c12() { return r58_c12; }
+		public void setR58_c12(BigDecimal r58_c12) { this.r58_c12 = r58_c12; }
+		public BigDecimal getR58_c13() { return r58_c13; }
+		public void setR58_c13(BigDecimal r58_c13) { this.r58_c13 = r58_c13; }
+		public BigDecimal getR58_c14() { return r58_c14; }
+		public void setR58_c14(BigDecimal r58_c14) { this.r58_c14 = r58_c14; }
+		public BigDecimal getR58_c15() { return r58_c15; }
+		public void setR58_c15(BigDecimal r58_c15) { this.r58_c15 = r58_c15; }
+		public BigDecimal getR58_c16() { return r58_c16; }
+		public void setR58_c16(BigDecimal r58_c16) { this.r58_c16 = r58_c16; }
+		public BigDecimal getR58_total() { return r58_total; }
+		public void setR58_total(BigDecimal r58_total) { this.r58_total = r58_total; }
+		public String getR60_product() { return r60_product; }
+		public void setR60_product(String r60_product) { this.r60_product = r60_product; }
+		public BigDecimal getR60_botswana() { return r60_botswana; }
+		public void setR60_botswana(BigDecimal r60_botswana) { this.r60_botswana = r60_botswana; }
+		public BigDecimal getR60_south_africa() { return r60_south_africa; }
+		public void setR60_south_africa(BigDecimal r60_south_africa) { this.r60_south_africa = r60_south_africa; }
+		public BigDecimal getR60_sadc() { return r60_sadc; }
+		public void setR60_sadc(BigDecimal r60_sadc) { this.r60_sadc = r60_sadc; }
+		public BigDecimal getR60_usa() { return r60_usa; }
+		public void setR60_usa(BigDecimal r60_usa) { this.r60_usa = r60_usa; }
+		public BigDecimal getR60_uk() { return r60_uk; }
+		public void setR60_uk(BigDecimal r60_uk) { this.r60_uk = r60_uk; }
+		public BigDecimal getR60_europe() { return r60_europe; }
+		public void setR60_europe(BigDecimal r60_europe) { this.r60_europe = r60_europe; }
+		public BigDecimal getR60_india() { return r60_india; }
+		public void setR60_india(BigDecimal r60_india) { this.r60_india = r60_india; }
+		public BigDecimal getR60_sydney() { return r60_sydney; }
+		public void setR60_sydney(BigDecimal r60_sydney) { this.r60_sydney = r60_sydney; }
+		public BigDecimal getR60_uganda() { return r60_uganda; }
+		public void setR60_uganda(BigDecimal r60_uganda) { this.r60_uganda = r60_uganda; }
+		public BigDecimal getR60_c10() { return r60_c10; }
+		public void setR60_c10(BigDecimal r60_c10) { this.r60_c10 = r60_c10; }
+		public BigDecimal getR60_c11() { return r60_c11; }
+		public void setR60_c11(BigDecimal r60_c11) { this.r60_c11 = r60_c11; }
+		public BigDecimal getR60_c12() { return r60_c12; }
+		public void setR60_c12(BigDecimal r60_c12) { this.r60_c12 = r60_c12; }
+		public BigDecimal getR60_c13() { return r60_c13; }
+		public void setR60_c13(BigDecimal r60_c13) { this.r60_c13 = r60_c13; }
+		public BigDecimal getR60_c14() { return r60_c14; }
+		public void setR60_c14(BigDecimal r60_c14) { this.r60_c14 = r60_c14; }
+		public BigDecimal getR60_c15() { return r60_c15; }
+		public void setR60_c15(BigDecimal r60_c15) { this.r60_c15 = r60_c15; }
+		public BigDecimal getR60_c16() { return r60_c16; }
+		public void setR60_c16(BigDecimal r60_c16) { this.r60_c16 = r60_c16; }
+		public BigDecimal getR60_total() { return r60_total; }
+		public void setR60_total(BigDecimal r60_total) { this.r60_total = r60_total; }
+		public String getR61_product() { return r61_product; }
+		public void setR61_product(String r61_product) { this.r61_product = r61_product; }
+		public BigDecimal getR61_botswana() { return r61_botswana; }
+		public void setR61_botswana(BigDecimal r61_botswana) { this.r61_botswana = r61_botswana; }
+		public BigDecimal getR61_south_africa() { return r61_south_africa; }
+		public void setR61_south_africa(BigDecimal r61_south_africa) { this.r61_south_africa = r61_south_africa; }
+		public BigDecimal getR61_sadc() { return r61_sadc; }
+		public void setR61_sadc(BigDecimal r61_sadc) { this.r61_sadc = r61_sadc; }
+		public BigDecimal getR61_usa() { return r61_usa; }
+		public void setR61_usa(BigDecimal r61_usa) { this.r61_usa = r61_usa; }
+		public BigDecimal getR61_uk() { return r61_uk; }
+		public void setR61_uk(BigDecimal r61_uk) { this.r61_uk = r61_uk; }
+		public BigDecimal getR61_europe() { return r61_europe; }
+		public void setR61_europe(BigDecimal r61_europe) { this.r61_europe = r61_europe; }
+		public BigDecimal getR61_india() { return r61_india; }
+		public void setR61_india(BigDecimal r61_india) { this.r61_india = r61_india; }
+		public BigDecimal getR61_sydney() { return r61_sydney; }
+		public void setR61_sydney(BigDecimal r61_sydney) { this.r61_sydney = r61_sydney; }
+		public BigDecimal getR61_uganda() { return r61_uganda; }
+		public void setR61_uganda(BigDecimal r61_uganda) { this.r61_uganda = r61_uganda; }
+		public BigDecimal getR61_c10() { return r61_c10; }
+		public void setR61_c10(BigDecimal r61_c10) { this.r61_c10 = r61_c10; }
+		public BigDecimal getR61_c11() { return r61_c11; }
+		public void setR61_c11(BigDecimal r61_c11) { this.r61_c11 = r61_c11; }
+		public BigDecimal getR61_c12() { return r61_c12; }
+		public void setR61_c12(BigDecimal r61_c12) { this.r61_c12 = r61_c12; }
+		public BigDecimal getR61_c13() { return r61_c13; }
+		public void setR61_c13(BigDecimal r61_c13) { this.r61_c13 = r61_c13; }
+		public BigDecimal getR61_c14() { return r61_c14; }
+		public void setR61_c14(BigDecimal r61_c14) { this.r61_c14 = r61_c14; }
+		public BigDecimal getR61_c15() { return r61_c15; }
+		public void setR61_c15(BigDecimal r61_c15) { this.r61_c15 = r61_c15; }
+		public BigDecimal getR61_c16() { return r61_c16; }
+		public void setR61_c16(BigDecimal r61_c16) { this.r61_c16 = r61_c16; }
+		public BigDecimal getR61_total() { return r61_total; }
+		public void setR61_total(BigDecimal r61_total) { this.r61_total = r61_total; }
+		public String getR64_product() { return r64_product; }
+		public void setR64_product(String r64_product) { this.r64_product = r64_product; }
+		public BigDecimal getR64_botswana() { return r64_botswana; }
+		public void setR64_botswana(BigDecimal r64_botswana) { this.r64_botswana = r64_botswana; }
+		public BigDecimal getR64_south_africa() { return r64_south_africa; }
+		public void setR64_south_africa(BigDecimal r64_south_africa) { this.r64_south_africa = r64_south_africa; }
+		public BigDecimal getR64_sadc() { return r64_sadc; }
+		public void setR64_sadc(BigDecimal r64_sadc) { this.r64_sadc = r64_sadc; }
+		public BigDecimal getR64_usa() { return r64_usa; }
+		public void setR64_usa(BigDecimal r64_usa) { this.r64_usa = r64_usa; }
+		public BigDecimal getR64_uk() { return r64_uk; }
+		public void setR64_uk(BigDecimal r64_uk) { this.r64_uk = r64_uk; }
+		public BigDecimal getR64_europe() { return r64_europe; }
+		public void setR64_europe(BigDecimal r64_europe) { this.r64_europe = r64_europe; }
+		public BigDecimal getR64_india() { return r64_india; }
+		public void setR64_india(BigDecimal r64_india) { this.r64_india = r64_india; }
+		public BigDecimal getR64_sydney() { return r64_sydney; }
+		public void setR64_sydney(BigDecimal r64_sydney) { this.r64_sydney = r64_sydney; }
+		public BigDecimal getR64_uganda() { return r64_uganda; }
+		public void setR64_uganda(BigDecimal r64_uganda) { this.r64_uganda = r64_uganda; }
+		public BigDecimal getR64_c10() { return r64_c10; }
+		public void setR64_c10(BigDecimal r64_c10) { this.r64_c10 = r64_c10; }
+		public BigDecimal getR64_c11() { return r64_c11; }
+		public void setR64_c11(BigDecimal r64_c11) { this.r64_c11 = r64_c11; }
+		public BigDecimal getR64_c12() { return r64_c12; }
+		public void setR64_c12(BigDecimal r64_c12) { this.r64_c12 = r64_c12; }
+		public BigDecimal getR64_c13() { return r64_c13; }
+		public void setR64_c13(BigDecimal r64_c13) { this.r64_c13 = r64_c13; }
+		public BigDecimal getR64_c14() { return r64_c14; }
+		public void setR64_c14(BigDecimal r64_c14) { this.r64_c14 = r64_c14; }
+		public BigDecimal getR64_c15() { return r64_c15; }
+		public void setR64_c15(BigDecimal r64_c15) { this.r64_c15 = r64_c15; }
+		public BigDecimal getR64_c16() { return r64_c16; }
+		public void setR64_c16(BigDecimal r64_c16) { this.r64_c16 = r64_c16; }
+		public BigDecimal getR64_total() { return r64_total; }
+		public void setR64_total(BigDecimal r64_total) { this.r64_total = r64_total; }
+		public String getR65_product() { return r65_product; }
+		public void setR65_product(String r65_product) { this.r65_product = r65_product; }
+		public BigDecimal getR65_botswana() { return r65_botswana; }
+		public void setR65_botswana(BigDecimal r65_botswana) { this.r65_botswana = r65_botswana; }
+		public BigDecimal getR65_south_africa() { return r65_south_africa; }
+		public void setR65_south_africa(BigDecimal r65_south_africa) { this.r65_south_africa = r65_south_africa; }
+		public BigDecimal getR65_sadc() { return r65_sadc; }
+		public void setR65_sadc(BigDecimal r65_sadc) { this.r65_sadc = r65_sadc; }
+		public BigDecimal getR65_usa() { return r65_usa; }
+		public void setR65_usa(BigDecimal r65_usa) { this.r65_usa = r65_usa; }
+		public BigDecimal getR65_uk() { return r65_uk; }
+		public void setR65_uk(BigDecimal r65_uk) { this.r65_uk = r65_uk; }
+		public BigDecimal getR65_europe() { return r65_europe; }
+		public void setR65_europe(BigDecimal r65_europe) { this.r65_europe = r65_europe; }
+		public BigDecimal getR65_india() { return r65_india; }
+		public void setR65_india(BigDecimal r65_india) { this.r65_india = r65_india; }
+		public BigDecimal getR65_sydney() { return r65_sydney; }
+		public void setR65_sydney(BigDecimal r65_sydney) { this.r65_sydney = r65_sydney; }
+		public BigDecimal getR65_uganda() { return r65_uganda; }
+		public void setR65_uganda(BigDecimal r65_uganda) { this.r65_uganda = r65_uganda; }
+		public BigDecimal getR65_c10() { return r65_c10; }
+		public void setR65_c10(BigDecimal r65_c10) { this.r65_c10 = r65_c10; }
+		public BigDecimal getR65_c11() { return r65_c11; }
+		public void setR65_c11(BigDecimal r65_c11) { this.r65_c11 = r65_c11; }
+		public BigDecimal getR65_c12() { return r65_c12; }
+		public void setR65_c12(BigDecimal r65_c12) { this.r65_c12 = r65_c12; }
+		public BigDecimal getR65_c13() { return r65_c13; }
+		public void setR65_c13(BigDecimal r65_c13) { this.r65_c13 = r65_c13; }
+		public BigDecimal getR65_c14() { return r65_c14; }
+		public void setR65_c14(BigDecimal r65_c14) { this.r65_c14 = r65_c14; }
+		public BigDecimal getR65_c15() { return r65_c15; }
+		public void setR65_c15(BigDecimal r65_c15) { this.r65_c15 = r65_c15; }
+		public BigDecimal getR65_c16() { return r65_c16; }
+		public void setR65_c16(BigDecimal r65_c16) { this.r65_c16 = r65_c16; }
+		public BigDecimal getR65_total() { return r65_total; }
+		public void setR65_total(BigDecimal r65_total) { this.r65_total = r65_total; }
+		public String getR67_product() { return r67_product; }
+		public void setR67_product(String r67_product) { this.r67_product = r67_product; }
+		public BigDecimal getR67_botswana() { return r67_botswana; }
+		public void setR67_botswana(BigDecimal r67_botswana) { this.r67_botswana = r67_botswana; }
+		public BigDecimal getR67_south_africa() { return r67_south_africa; }
+		public void setR67_south_africa(BigDecimal r67_south_africa) { this.r67_south_africa = r67_south_africa; }
+		public BigDecimal getR67_sadc() { return r67_sadc; }
+		public void setR67_sadc(BigDecimal r67_sadc) { this.r67_sadc = r67_sadc; }
+		public BigDecimal getR67_usa() { return r67_usa; }
+		public void setR67_usa(BigDecimal r67_usa) { this.r67_usa = r67_usa; }
+		public BigDecimal getR67_uk() { return r67_uk; }
+		public void setR67_uk(BigDecimal r67_uk) { this.r67_uk = r67_uk; }
+		public BigDecimal getR67_europe() { return r67_europe; }
+		public void setR67_europe(BigDecimal r67_europe) { this.r67_europe = r67_europe; }
+		public BigDecimal getR67_india() { return r67_india; }
+		public void setR67_india(BigDecimal r67_india) { this.r67_india = r67_india; }
+		public BigDecimal getR67_sydney() { return r67_sydney; }
+		public void setR67_sydney(BigDecimal r67_sydney) { this.r67_sydney = r67_sydney; }
+		public BigDecimal getR67_uganda() { return r67_uganda; }
+		public void setR67_uganda(BigDecimal r67_uganda) { this.r67_uganda = r67_uganda; }
+		public BigDecimal getR67_c10() { return r67_c10; }
+		public void setR67_c10(BigDecimal r67_c10) { this.r67_c10 = r67_c10; }
+		public BigDecimal getR67_c11() { return r67_c11; }
+		public void setR67_c11(BigDecimal r67_c11) { this.r67_c11 = r67_c11; }
+		public BigDecimal getR67_c12() { return r67_c12; }
+		public void setR67_c12(BigDecimal r67_c12) { this.r67_c12 = r67_c12; }
+		public BigDecimal getR67_c13() { return r67_c13; }
+		public void setR67_c13(BigDecimal r67_c13) { this.r67_c13 = r67_c13; }
+		public BigDecimal getR67_c14() { return r67_c14; }
+		public void setR67_c14(BigDecimal r67_c14) { this.r67_c14 = r67_c14; }
+		public BigDecimal getR67_c15() { return r67_c15; }
+		public void setR67_c15(BigDecimal r67_c15) { this.r67_c15 = r67_c15; }
+		public BigDecimal getR67_c16() { return r67_c16; }
+		public void setR67_c16(BigDecimal r67_c16) { this.r67_c16 = r67_c16; }
+		public BigDecimal getR67_total() { return r67_total; }
+		public void setR67_total(BigDecimal r67_total) { this.r67_total = r67_total; }
+		public String getR68_product() { return r68_product; }
+		public void setR68_product(String r68_product) { this.r68_product = r68_product; }
+		public BigDecimal getR68_botswana() { return r68_botswana; }
+		public void setR68_botswana(BigDecimal r68_botswana) { this.r68_botswana = r68_botswana; }
+		public BigDecimal getR68_south_africa() { return r68_south_africa; }
+		public void setR68_south_africa(BigDecimal r68_south_africa) { this.r68_south_africa = r68_south_africa; }
+		public BigDecimal getR68_sadc() { return r68_sadc; }
+		public void setR68_sadc(BigDecimal r68_sadc) { this.r68_sadc = r68_sadc; }
+		public BigDecimal getR68_usa() { return r68_usa; }
+		public void setR68_usa(BigDecimal r68_usa) { this.r68_usa = r68_usa; }
+		public BigDecimal getR68_uk() { return r68_uk; }
+		public void setR68_uk(BigDecimal r68_uk) { this.r68_uk = r68_uk; }
+		public BigDecimal getR68_europe() { return r68_europe; }
+		public void setR68_europe(BigDecimal r68_europe) { this.r68_europe = r68_europe; }
+		public BigDecimal getR68_india() { return r68_india; }
+		public void setR68_india(BigDecimal r68_india) { this.r68_india = r68_india; }
+		public BigDecimal getR68_sydney() { return r68_sydney; }
+		public void setR68_sydney(BigDecimal r68_sydney) { this.r68_sydney = r68_sydney; }
+		public BigDecimal getR68_uganda() { return r68_uganda; }
+		public void setR68_uganda(BigDecimal r68_uganda) { this.r68_uganda = r68_uganda; }
+		public BigDecimal getR68_c10() { return r68_c10; }
+		public void setR68_c10(BigDecimal r68_c10) { this.r68_c10 = r68_c10; }
+		public BigDecimal getR68_c11() { return r68_c11; }
+		public void setR68_c11(BigDecimal r68_c11) { this.r68_c11 = r68_c11; }
+		public BigDecimal getR68_c12() { return r68_c12; }
+		public void setR68_c12(BigDecimal r68_c12) { this.r68_c12 = r68_c12; }
+		public BigDecimal getR68_c13() { return r68_c13; }
+		public void setR68_c13(BigDecimal r68_c13) { this.r68_c13 = r68_c13; }
+		public BigDecimal getR68_c14() { return r68_c14; }
+		public void setR68_c14(BigDecimal r68_c14) { this.r68_c14 = r68_c14; }
+		public BigDecimal getR68_c15() { return r68_c15; }
+		public void setR68_c15(BigDecimal r68_c15) { this.r68_c15 = r68_c15; }
+		public BigDecimal getR68_c16() { return r68_c16; }
+		public void setR68_c16(BigDecimal r68_c16) { this.r68_c16 = r68_c16; }
+		public BigDecimal getR68_total() { return r68_total; }
+		public void setR68_total(BigDecimal r68_total) { this.r68_total = r68_total; }
+		public BigDecimal getR111_botswana() { return r111_botswana; }
+		public void setR111_botswana(BigDecimal r111_botswana) { this.r111_botswana = r111_botswana; }
+		public BigDecimal getR112_botswana() { return r112_botswana; }
+		public void setR112_botswana(BigDecimal r112_botswana) { this.r112_botswana = r112_botswana; }
+		public BigDecimal getR113_botswana() { return r113_botswana; }
+		public void setR113_botswana(BigDecimal r113_botswana) { this.r113_botswana = r113_botswana; }
+		public BigDecimal getR114_botswana() { return r114_botswana; }
+		public void setR114_botswana(BigDecimal r114_botswana) { this.r114_botswana = r114_botswana; }
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date report_date) { this.report_date = report_date; }
+		public String getReport_version() { return report_version; }
+		public void setReport_version(String report_version) { this.report_version = report_version; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORDetailRowMapper implements RowMapper<M_GALOR_Detail_Entity> {
+		@Override
+		public M_GALOR_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Detail_Entity obj = new M_GALOR_Detail_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLable(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportAddlCriteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReportAddlCriteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setSanctionLimit(rs.getString("SANCTION_LIMIT"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Detail_Entity {
+		private Long sno;
+		private String custId;
+		private String acct_number;
+		private String acctName;
+		private String dataType;
+		private String reportName;
+		private String reportLable;
+		private String reportAddlCriteria_1;
+		private String reportAddlCriteria_2;
+		private String reportAddlCriteria_3;
+		private String reportRemarks;
+		private String sanctionLimit;
+		private String modificationRemarks;
+		private String dataEntryVersion;
+		private BigDecimal acctBalanceInpula;
+		private Date reportDate;
+		private String createUser;
+		private Date createTime;
+		private String modifyUser;
+		private Date modifyTime;
+		private String verifyUser;
+		private Date verifyTime;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getCustId() { return custId; }
+		public void setCustId(String custId) { this.custId = custId; }
+		public String getAcctNumber() { return acct_number; }
+		public void setAcctNumber(String acctNumber) { this.acct_number = acctNumber; }
+		public String getAcctName() { return acctName; }
+		public void setAcctName(String acctName) { this.acctName = acctName; }
+		public String getDataType() { return dataType; }
+		public void setDataType(String dataType) { this.dataType = dataType; }
+		public String getReportName() { return reportName; }
+		public void setReportName(String reportName) { this.reportName = reportName; }
+		public String getReportLable() { return reportLable; }
+		public void setReportLable(String reportLable) { this.reportLable = reportLable; }
+		public String getReportAddlCriteria_1() { return reportAddlCriteria_1; }
+		public void setReportAddlCriteria_1(String v) { this.reportAddlCriteria_1 = v; }
+		public String getReportAddlCriteria_2() { return reportAddlCriteria_2; }
+		public void setReportAddlCriteria_2(String v) { this.reportAddlCriteria_2 = v; }
+		public String getReportAddlCriteria_3() { return reportAddlCriteria_3; }
+		public void setReportAddlCriteria_3(String v) { this.reportAddlCriteria_3 = v; }
+		public String getReportRemarks() { return reportRemarks; }
+		public void setReportRemarks(String v) { this.reportRemarks = v; }
+		public String getSanctionLimit() { return sanctionLimit; }
+		public void setSanctionLimit(String v) { this.sanctionLimit = v; }
+		public String getModificationRemarks() { return modificationRemarks; }
+		public void setModificationRemarks(String v) { this.modificationRemarks = v; }
+		public String getDataEntryVersion() { return dataEntryVersion; }
+		public void setDataEntryVersion(String v) { this.dataEntryVersion = v; }
+		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; }
+		public void setAcctBalanceInpula(BigDecimal v) { this.acctBalanceInpula = v; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public String getCreateUser() { return createUser; }
+		public void setCreateUser(String v) { this.createUser = v; }
+		public Date getCreateTime() { return createTime; }
+		public void setCreateTime(Date v) { this.createTime = v; }
+		public String getModifyUser() { return modifyUser; }
+		public void setModifyUser(String v) { this.modifyUser = v; }
+		public Date getModifyTime() { return modifyTime; }
+		public void setModifyTime(Date v) { this.modifyTime = v; }
+		public String getVerifyUser() { return verifyUser; }
+		public void setVerifyUser(String v) { this.verifyUser = v; }
+		public Date getVerifyTime() { return verifyTime; }
+		public void setVerifyTime(Date v) { this.verifyTime = v; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String v) { this.entityFlg = v; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String v) { this.modifyFlg = v; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String v) { this.delFlg = v; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORArchivalSummary1RowMapper implements RowMapper<M_GALOR_Archival_Summary_Entity1> {
+		@Override
+		public M_GALOR_Archival_Summary_Entity1 mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Archival_Summary_Entity1 obj = new M_GALOR_Archival_Summary_Entity1();
+			obj.setR10_product(rs.getString("R10_PRODUCT"));
+			obj.setR10_botswana(rs.getBigDecimal("R10_BOTSWANA"));
+			obj.setR10_south_africa(rs.getBigDecimal("R10_SOUTH_AFRICA"));
+			obj.setR10_sadc(rs.getBigDecimal("R10_SADC"));
+			obj.setR10_usa(rs.getBigDecimal("R10_USA"));
+			obj.setR10_uk(rs.getBigDecimal("R10_UK"));
+			obj.setR10_europe(rs.getBigDecimal("R10_EUROPE"));
+			obj.setR10_india(rs.getBigDecimal("R10_INDIA"));
+			obj.setR10_sydney(rs.getBigDecimal("R10_SYDNEY"));
+			obj.setR10_uganda(rs.getBigDecimal("R10_UGANDA"));
+			obj.setR10_c10(rs.getBigDecimal("R10_C10"));
+			obj.setR10_c11(rs.getBigDecimal("R10_C11"));
+			obj.setR10_c12(rs.getBigDecimal("R10_C12"));
+			obj.setR10_c13(rs.getBigDecimal("R10_C13"));
+			obj.setR10_c14(rs.getBigDecimal("R10_C14"));
+			obj.setR10_c15(rs.getBigDecimal("R10_C15"));
+			obj.setR10_c16(rs.getBigDecimal("R10_C16"));
+			obj.setR10_total(rs.getBigDecimal("R10_TOTAL"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_botswana(rs.getBigDecimal("R11_BOTSWANA"));
+			obj.setR11_south_africa(rs.getBigDecimal("R11_SOUTH_AFRICA"));
+			obj.setR11_sadc(rs.getBigDecimal("R11_SADC"));
+			obj.setR11_usa(rs.getBigDecimal("R11_USA"));
+			obj.setR11_uk(rs.getBigDecimal("R11_UK"));
+			obj.setR11_europe(rs.getBigDecimal("R11_EUROPE"));
+			obj.setR11_india(rs.getBigDecimal("R11_INDIA"));
+			obj.setR11_sydney(rs.getBigDecimal("R11_SYDNEY"));
+			obj.setR11_uganda(rs.getBigDecimal("R11_UGANDA"));
+			obj.setR11_c10(rs.getBigDecimal("R11_C10"));
+			obj.setR11_c11(rs.getBigDecimal("R11_C11"));
+			obj.setR11_c12(rs.getBigDecimal("R11_C12"));
+			obj.setR11_c13(rs.getBigDecimal("R11_C13"));
+			obj.setR11_c14(rs.getBigDecimal("R11_C14"));
+			obj.setR11_c15(rs.getBigDecimal("R11_C15"));
+			obj.setR11_c16(rs.getBigDecimal("R11_C16"));
+			obj.setR11_total(rs.getBigDecimal("R11_TOTAL"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_botswana(rs.getBigDecimal("R12_BOTSWANA"));
+			obj.setR12_south_africa(rs.getBigDecimal("R12_SOUTH_AFRICA"));
+			obj.setR12_sadc(rs.getBigDecimal("R12_SADC"));
+			obj.setR12_usa(rs.getBigDecimal("R12_USA"));
+			obj.setR12_uk(rs.getBigDecimal("R12_UK"));
+			obj.setR12_europe(rs.getBigDecimal("R12_EUROPE"));
+			obj.setR12_india(rs.getBigDecimal("R12_INDIA"));
+			obj.setR12_sydney(rs.getBigDecimal("R12_SYDNEY"));
+			obj.setR12_uganda(rs.getBigDecimal("R12_UGANDA"));
+			obj.setR12_c10(rs.getBigDecimal("R12_C10"));
+			obj.setR12_c11(rs.getBigDecimal("R12_C11"));
+			obj.setR12_c12(rs.getBigDecimal("R12_C12"));
+			obj.setR12_c13(rs.getBigDecimal("R12_C13"));
+			obj.setR12_c14(rs.getBigDecimal("R12_C14"));
+			obj.setR12_c15(rs.getBigDecimal("R12_C15"));
+			obj.setR12_c16(rs.getBigDecimal("R12_C16"));
+			obj.setR12_total(rs.getBigDecimal("R12_TOTAL"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_botswana(rs.getBigDecimal("R13_BOTSWANA"));
+			obj.setR13_south_africa(rs.getBigDecimal("R13_SOUTH_AFRICA"));
+			obj.setR13_sadc(rs.getBigDecimal("R13_SADC"));
+			obj.setR13_usa(rs.getBigDecimal("R13_USA"));
+			obj.setR13_uk(rs.getBigDecimal("R13_UK"));
+			obj.setR13_europe(rs.getBigDecimal("R13_EUROPE"));
+			obj.setR13_india(rs.getBigDecimal("R13_INDIA"));
+			obj.setR13_sydney(rs.getBigDecimal("R13_SYDNEY"));
+			obj.setR13_uganda(rs.getBigDecimal("R13_UGANDA"));
+			obj.setR13_c10(rs.getBigDecimal("R13_C10"));
+			obj.setR13_c11(rs.getBigDecimal("R13_C11"));
+			obj.setR13_c12(rs.getBigDecimal("R13_C12"));
+			obj.setR13_c13(rs.getBigDecimal("R13_C13"));
+			obj.setR13_c14(rs.getBigDecimal("R13_C14"));
+			obj.setR13_c15(rs.getBigDecimal("R13_C15"));
+			obj.setR13_c16(rs.getBigDecimal("R13_C16"));
+			obj.setR13_total(rs.getBigDecimal("R13_TOTAL"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_botswana(rs.getBigDecimal("R14_BOTSWANA"));
+			obj.setR14_south_africa(rs.getBigDecimal("R14_SOUTH_AFRICA"));
+			obj.setR14_sadc(rs.getBigDecimal("R14_SADC"));
+			obj.setR14_usa(rs.getBigDecimal("R14_USA"));
+			obj.setR14_uk(rs.getBigDecimal("R14_UK"));
+			obj.setR14_europe(rs.getBigDecimal("R14_EUROPE"));
+			obj.setR14_india(rs.getBigDecimal("R14_INDIA"));
+			obj.setR14_sydney(rs.getBigDecimal("R14_SYDNEY"));
+			obj.setR14_uganda(rs.getBigDecimal("R14_UGANDA"));
+			obj.setR14_c10(rs.getBigDecimal("R14_C10"));
+			obj.setR14_c11(rs.getBigDecimal("R14_C11"));
+			obj.setR14_c12(rs.getBigDecimal("R14_C12"));
+			obj.setR14_c13(rs.getBigDecimal("R14_C13"));
+			obj.setR14_c14(rs.getBigDecimal("R14_C14"));
+			obj.setR14_c15(rs.getBigDecimal("R14_C15"));
+			obj.setR14_c16(rs.getBigDecimal("R14_C16"));
+			obj.setR14_total(rs.getBigDecimal("R14_TOTAL"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_botswana(rs.getBigDecimal("R15_BOTSWANA"));
+			obj.setR15_south_africa(rs.getBigDecimal("R15_SOUTH_AFRICA"));
+			obj.setR15_sadc(rs.getBigDecimal("R15_SADC"));
+			obj.setR15_usa(rs.getBigDecimal("R15_USA"));
+			obj.setR15_uk(rs.getBigDecimal("R15_UK"));
+			obj.setR15_europe(rs.getBigDecimal("R15_EUROPE"));
+			obj.setR15_india(rs.getBigDecimal("R15_INDIA"));
+			obj.setR15_sydney(rs.getBigDecimal("R15_SYDNEY"));
+			obj.setR15_uganda(rs.getBigDecimal("R15_UGANDA"));
+			obj.setR15_c10(rs.getBigDecimal("R15_C10"));
+			obj.setR15_c11(rs.getBigDecimal("R15_C11"));
+			obj.setR15_c12(rs.getBigDecimal("R15_C12"));
+			obj.setR15_c13(rs.getBigDecimal("R15_C13"));
+			obj.setR15_c14(rs.getBigDecimal("R15_C14"));
+			obj.setR15_c15(rs.getBigDecimal("R15_C15"));
+			obj.setR15_c16(rs.getBigDecimal("R15_C16"));
+			obj.setR15_total(rs.getBigDecimal("R15_TOTAL"));
+			obj.setR16_product(rs.getString("R16_PRODUCT"));
+			obj.setR16_botswana(rs.getBigDecimal("R16_BOTSWANA"));
+			obj.setR16_south_africa(rs.getBigDecimal("R16_SOUTH_AFRICA"));
+			obj.setR16_sadc(rs.getBigDecimal("R16_SADC"));
+			obj.setR16_usa(rs.getBigDecimal("R16_USA"));
+			obj.setR16_uk(rs.getBigDecimal("R16_UK"));
+			obj.setR16_europe(rs.getBigDecimal("R16_EUROPE"));
+			obj.setR16_india(rs.getBigDecimal("R16_INDIA"));
+			obj.setR16_sydney(rs.getBigDecimal("R16_SYDNEY"));
+			obj.setR16_uganda(rs.getBigDecimal("R16_UGANDA"));
+			obj.setR16_c10(rs.getBigDecimal("R16_C10"));
+			obj.setR16_c11(rs.getBigDecimal("R16_C11"));
+			obj.setR16_c12(rs.getBigDecimal("R16_C12"));
+			obj.setR16_c13(rs.getBigDecimal("R16_C13"));
+			obj.setR16_c14(rs.getBigDecimal("R16_C14"));
+			obj.setR16_c15(rs.getBigDecimal("R16_C15"));
+			obj.setR16_c16(rs.getBigDecimal("R16_C16"));
+			obj.setR16_total(rs.getBigDecimal("R16_TOTAL"));
+			obj.setR17_product(rs.getString("R17_PRODUCT"));
+			obj.setR17_botswana(rs.getBigDecimal("R17_BOTSWANA"));
+			obj.setR17_south_africa(rs.getBigDecimal("R17_SOUTH_AFRICA"));
+			obj.setR17_sadc(rs.getBigDecimal("R17_SADC"));
+			obj.setR17_usa(rs.getBigDecimal("R17_USA"));
+			obj.setR17_uk(rs.getBigDecimal("R17_UK"));
+			obj.setR17_europe(rs.getBigDecimal("R17_EUROPE"));
+			obj.setR17_india(rs.getBigDecimal("R17_INDIA"));
+			obj.setR17_sydney(rs.getBigDecimal("R17_SYDNEY"));
+			obj.setR17_uganda(rs.getBigDecimal("R17_UGANDA"));
+			obj.setR17_c10(rs.getBigDecimal("R17_C10"));
+			obj.setR17_c11(rs.getBigDecimal("R17_C11"));
+			obj.setR17_c12(rs.getBigDecimal("R17_C12"));
+			obj.setR17_c13(rs.getBigDecimal("R17_C13"));
+			obj.setR17_c14(rs.getBigDecimal("R17_C14"));
+			obj.setR17_c15(rs.getBigDecimal("R17_C15"));
+			obj.setR17_c16(rs.getBigDecimal("R17_C16"));
+			obj.setR17_total(rs.getBigDecimal("R17_TOTAL"));
+			obj.setR18_product(rs.getString("R18_PRODUCT"));
+			obj.setR18_botswana(rs.getBigDecimal("R18_BOTSWANA"));
+			obj.setR18_south_africa(rs.getBigDecimal("R18_SOUTH_AFRICA"));
+			obj.setR18_sadc(rs.getBigDecimal("R18_SADC"));
+			obj.setR18_usa(rs.getBigDecimal("R18_USA"));
+			obj.setR18_uk(rs.getBigDecimal("R18_UK"));
+			obj.setR18_europe(rs.getBigDecimal("R18_EUROPE"));
+			obj.setR18_india(rs.getBigDecimal("R18_INDIA"));
+			obj.setR18_sydney(rs.getBigDecimal("R18_SYDNEY"));
+			obj.setR18_uganda(rs.getBigDecimal("R18_UGANDA"));
+			obj.setR18_c10(rs.getBigDecimal("R18_C10"));
+			obj.setR18_c11(rs.getBigDecimal("R18_C11"));
+			obj.setR18_c12(rs.getBigDecimal("R18_C12"));
+			obj.setR18_c13(rs.getBigDecimal("R18_C13"));
+			obj.setR18_c14(rs.getBigDecimal("R18_C14"));
+			obj.setR18_c15(rs.getBigDecimal("R18_C15"));
+			obj.setR18_c16(rs.getBigDecimal("R18_C16"));
+			obj.setR18_total(rs.getBigDecimal("R18_TOTAL"));
+			obj.setR19_product(rs.getString("R19_PRODUCT"));
+			obj.setR19_botswana(rs.getBigDecimal("R19_BOTSWANA"));
+			obj.setR19_south_africa(rs.getBigDecimal("R19_SOUTH_AFRICA"));
+			obj.setR19_sadc(rs.getBigDecimal("R19_SADC"));
+			obj.setR19_usa(rs.getBigDecimal("R19_USA"));
+			obj.setR19_uk(rs.getBigDecimal("R19_UK"));
+			obj.setR19_europe(rs.getBigDecimal("R19_EUROPE"));
+			obj.setR19_india(rs.getBigDecimal("R19_INDIA"));
+			obj.setR19_sydney(rs.getBigDecimal("R19_SYDNEY"));
+			obj.setR19_uganda(rs.getBigDecimal("R19_UGANDA"));
+			obj.setR19_c10(rs.getBigDecimal("R19_C10"));
+			obj.setR19_c11(rs.getBigDecimal("R19_C11"));
+			obj.setR19_c12(rs.getBigDecimal("R19_C12"));
+			obj.setR19_c13(rs.getBigDecimal("R19_C13"));
+			obj.setR19_c14(rs.getBigDecimal("R19_C14"));
+			obj.setR19_c15(rs.getBigDecimal("R19_C15"));
+			obj.setR19_c16(rs.getBigDecimal("R19_C16"));
+			obj.setR19_total(rs.getBigDecimal("R19_TOTAL"));
+			obj.setR20_product(rs.getString("R20_PRODUCT"));
+			obj.setR20_botswana(rs.getBigDecimal("R20_BOTSWANA"));
+			obj.setR20_south_africa(rs.getBigDecimal("R20_SOUTH_AFRICA"));
+			obj.setR20_sadc(rs.getBigDecimal("R20_SADC"));
+			obj.setR20_usa(rs.getBigDecimal("R20_USA"));
+			obj.setR20_uk(rs.getBigDecimal("R20_UK"));
+			obj.setR20_europe(rs.getBigDecimal("R20_EUROPE"));
+			obj.setR20_india(rs.getBigDecimal("R20_INDIA"));
+			obj.setR20_sydney(rs.getBigDecimal("R20_SYDNEY"));
+			obj.setR20_uganda(rs.getBigDecimal("R20_UGANDA"));
+			obj.setR20_c10(rs.getBigDecimal("R20_C10"));
+			obj.setR20_c11(rs.getBigDecimal("R20_C11"));
+			obj.setR20_c12(rs.getBigDecimal("R20_C12"));
+			obj.setR20_c13(rs.getBigDecimal("R20_C13"));
+			obj.setR20_c14(rs.getBigDecimal("R20_C14"));
+			obj.setR20_c15(rs.getBigDecimal("R20_C15"));
+			obj.setR20_c16(rs.getBigDecimal("R20_C16"));
+			obj.setR20_total(rs.getBigDecimal("R20_TOTAL"));
+			obj.setR21_product(rs.getString("R21_PRODUCT"));
+			obj.setR21_botswana(rs.getBigDecimal("R21_BOTSWANA"));
+			obj.setR21_south_africa(rs.getBigDecimal("R21_SOUTH_AFRICA"));
+			obj.setR21_sadc(rs.getBigDecimal("R21_SADC"));
+			obj.setR21_usa(rs.getBigDecimal("R21_USA"));
+			obj.setR21_uk(rs.getBigDecimal("R21_UK"));
+			obj.setR21_europe(rs.getBigDecimal("R21_EUROPE"));
+			obj.setR21_india(rs.getBigDecimal("R21_INDIA"));
+			obj.setR21_sydney(rs.getBigDecimal("R21_SYDNEY"));
+			obj.setR21_uganda(rs.getBigDecimal("R21_UGANDA"));
+			obj.setR21_c10(rs.getBigDecimal("R21_C10"));
+			obj.setR21_c11(rs.getBigDecimal("R21_C11"));
+			obj.setR21_c12(rs.getBigDecimal("R21_C12"));
+			obj.setR21_c13(rs.getBigDecimal("R21_C13"));
+			obj.setR21_c14(rs.getBigDecimal("R21_C14"));
+			obj.setR21_c15(rs.getBigDecimal("R21_C15"));
+			obj.setR21_c16(rs.getBigDecimal("R21_C16"));
+			obj.setR21_total(rs.getBigDecimal("R21_TOTAL"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_botswana(rs.getBigDecimal("R24_BOTSWANA"));
+			obj.setR24_south_africa(rs.getBigDecimal("R24_SOUTH_AFRICA"));
+			obj.setR24_sadc(rs.getBigDecimal("R24_SADC"));
+			obj.setR24_usa(rs.getBigDecimal("R24_USA"));
+			obj.setR24_uk(rs.getBigDecimal("R24_UK"));
+			obj.setR24_europe(rs.getBigDecimal("R24_EUROPE"));
+			obj.setR24_india(rs.getBigDecimal("R24_INDIA"));
+			obj.setR24_sydney(rs.getBigDecimal("R24_SYDNEY"));
+			obj.setR24_uganda(rs.getBigDecimal("R24_UGANDA"));
+			obj.setR24_c10(rs.getBigDecimal("R24_C10"));
+			obj.setR24_c11(rs.getBigDecimal("R24_C11"));
+			obj.setR24_c12(rs.getBigDecimal("R24_C12"));
+			obj.setR24_c13(rs.getBigDecimal("R24_C13"));
+			obj.setR24_c14(rs.getBigDecimal("R24_C14"));
+			obj.setR24_c15(rs.getBigDecimal("R24_C15"));
+			obj.setR24_c16(rs.getBigDecimal("R24_C16"));
+			obj.setR24_total(rs.getBigDecimal("R24_TOTAL"));
+			obj.setR25_product(rs.getString("R25_PRODUCT"));
+			obj.setR25_botswana(rs.getBigDecimal("R25_BOTSWANA"));
+			obj.setR25_south_africa(rs.getBigDecimal("R25_SOUTH_AFRICA"));
+			obj.setR25_sadc(rs.getBigDecimal("R25_SADC"));
+			obj.setR25_usa(rs.getBigDecimal("R25_USA"));
+			obj.setR25_uk(rs.getBigDecimal("R25_UK"));
+			obj.setR25_europe(rs.getBigDecimal("R25_EUROPE"));
+			obj.setR25_india(rs.getBigDecimal("R25_INDIA"));
+			obj.setR25_sydney(rs.getBigDecimal("R25_SYDNEY"));
+			obj.setR25_uganda(rs.getBigDecimal("R25_UGANDA"));
+			obj.setR25_c10(rs.getBigDecimal("R25_C10"));
+			obj.setR25_c11(rs.getBigDecimal("R25_C11"));
+			obj.setR25_c12(rs.getBigDecimal("R25_C12"));
+			obj.setR25_c13(rs.getBigDecimal("R25_C13"));
+			obj.setR25_c14(rs.getBigDecimal("R25_C14"));
+			obj.setR25_c15(rs.getBigDecimal("R25_C15"));
+			obj.setR25_c16(rs.getBigDecimal("R25_C16"));
+			obj.setR25_total(rs.getBigDecimal("R25_TOTAL"));
+			obj.setR26_product(rs.getString("R26_PRODUCT"));
+			obj.setR26_botswana(rs.getBigDecimal("R26_BOTSWANA"));
+			obj.setR26_south_africa(rs.getBigDecimal("R26_SOUTH_AFRICA"));
+			obj.setR26_sadc(rs.getBigDecimal("R26_SADC"));
+			obj.setR26_usa(rs.getBigDecimal("R26_USA"));
+			obj.setR26_uk(rs.getBigDecimal("R26_UK"));
+			obj.setR26_europe(rs.getBigDecimal("R26_EUROPE"));
+			obj.setR26_india(rs.getBigDecimal("R26_INDIA"));
+			obj.setR26_sydney(rs.getBigDecimal("R26_SYDNEY"));
+			obj.setR26_uganda(rs.getBigDecimal("R26_UGANDA"));
+			obj.setR26_c10(rs.getBigDecimal("R26_C10"));
+			obj.setR26_c11(rs.getBigDecimal("R26_C11"));
+			obj.setR26_c12(rs.getBigDecimal("R26_C12"));
+			obj.setR26_c13(rs.getBigDecimal("R26_C13"));
+			obj.setR26_c14(rs.getBigDecimal("R26_C14"));
+			obj.setR26_c15(rs.getBigDecimal("R26_C15"));
+			obj.setR26_c16(rs.getBigDecimal("R26_C16"));
+			obj.setR26_total(rs.getBigDecimal("R26_TOTAL"));
+			obj.setR27_product(rs.getString("R27_PRODUCT"));
+			obj.setR27_botswana(rs.getBigDecimal("R27_BOTSWANA"));
+			obj.setR27_south_africa(rs.getBigDecimal("R27_SOUTH_AFRICA"));
+			obj.setR27_sadc(rs.getBigDecimal("R27_SADC"));
+			obj.setR27_usa(rs.getBigDecimal("R27_USA"));
+			obj.setR27_uk(rs.getBigDecimal("R27_UK"));
+			obj.setR27_europe(rs.getBigDecimal("R27_EUROPE"));
+			obj.setR27_india(rs.getBigDecimal("R27_INDIA"));
+			obj.setR27_sydney(rs.getBigDecimal("R27_SYDNEY"));
+			obj.setR27_uganda(rs.getBigDecimal("R27_UGANDA"));
+			obj.setR27_c10(rs.getBigDecimal("R27_C10"));
+			obj.setR27_c11(rs.getBigDecimal("R27_C11"));
+			obj.setR27_c12(rs.getBigDecimal("R27_C12"));
+			obj.setR27_c13(rs.getBigDecimal("R27_C13"));
+			obj.setR27_c14(rs.getBigDecimal("R27_C14"));
+			obj.setR27_c15(rs.getBigDecimal("R27_C15"));
+			obj.setR27_c16(rs.getBigDecimal("R27_C16"));
+			obj.setR27_total(rs.getBigDecimal("R27_TOTAL"));
+			obj.setR28_product(rs.getString("R28_PRODUCT"));
+			obj.setR28_botswana(rs.getBigDecimal("R28_BOTSWANA"));
+			obj.setR28_south_africa(rs.getBigDecimal("R28_SOUTH_AFRICA"));
+			obj.setR28_sadc(rs.getBigDecimal("R28_SADC"));
+			obj.setR28_usa(rs.getBigDecimal("R28_USA"));
+			obj.setR28_uk(rs.getBigDecimal("R28_UK"));
+			obj.setR28_europe(rs.getBigDecimal("R28_EUROPE"));
+			obj.setR28_india(rs.getBigDecimal("R28_INDIA"));
+			obj.setR28_sydney(rs.getBigDecimal("R28_SYDNEY"));
+			obj.setR28_uganda(rs.getBigDecimal("R28_UGANDA"));
+			obj.setR28_c10(rs.getBigDecimal("R28_C10"));
+			obj.setR28_c11(rs.getBigDecimal("R28_C11"));
+			obj.setR28_c12(rs.getBigDecimal("R28_C12"));
+			obj.setR28_c13(rs.getBigDecimal("R28_C13"));
+			obj.setR28_c14(rs.getBigDecimal("R28_C14"));
+			obj.setR28_c15(rs.getBigDecimal("R28_C15"));
+			obj.setR28_c16(rs.getBigDecimal("R28_C16"));
+			obj.setR28_total(rs.getBigDecimal("R28_TOTAL"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_botswana(rs.getBigDecimal("R29_BOTSWANA"));
+			obj.setR29_south_africa(rs.getBigDecimal("R29_SOUTH_AFRICA"));
+			obj.setR29_sadc(rs.getBigDecimal("R29_SADC"));
+			obj.setR29_usa(rs.getBigDecimal("R29_USA"));
+			obj.setR29_uk(rs.getBigDecimal("R29_UK"));
+			obj.setR29_europe(rs.getBigDecimal("R29_EUROPE"));
+			obj.setR29_india(rs.getBigDecimal("R29_INDIA"));
+			obj.setR29_sydney(rs.getBigDecimal("R29_SYDNEY"));
+			obj.setR29_uganda(rs.getBigDecimal("R29_UGANDA"));
+			obj.setR29_c10(rs.getBigDecimal("R29_C10"));
+			obj.setR29_c11(rs.getBigDecimal("R29_C11"));
+			obj.setR29_c12(rs.getBigDecimal("R29_C12"));
+			obj.setR29_c13(rs.getBigDecimal("R29_C13"));
+			obj.setR29_c14(rs.getBigDecimal("R29_C14"));
+			obj.setR29_c15(rs.getBigDecimal("R29_C15"));
+			obj.setR29_c16(rs.getBigDecimal("R29_C16"));
+			obj.setR29_total(rs.getBigDecimal("R29_TOTAL"));
+			obj.setR30_product(rs.getString("R30_PRODUCT"));
+			obj.setR30_botswana(rs.getBigDecimal("R30_BOTSWANA"));
+			obj.setR30_south_africa(rs.getBigDecimal("R30_SOUTH_AFRICA"));
+			obj.setR30_sadc(rs.getBigDecimal("R30_SADC"));
+			obj.setR30_usa(rs.getBigDecimal("R30_USA"));
+			obj.setR30_uk(rs.getBigDecimal("R30_UK"));
+			obj.setR30_europe(rs.getBigDecimal("R30_EUROPE"));
+			obj.setR30_india(rs.getBigDecimal("R30_INDIA"));
+			obj.setR30_sydney(rs.getBigDecimal("R30_SYDNEY"));
+			obj.setR30_uganda(rs.getBigDecimal("R30_UGANDA"));
+			obj.setR30_c10(rs.getBigDecimal("R30_C10"));
+			obj.setR30_c11(rs.getBigDecimal("R30_C11"));
+			obj.setR30_c12(rs.getBigDecimal("R30_C12"));
+			obj.setR30_c13(rs.getBigDecimal("R30_C13"));
+			obj.setR30_c14(rs.getBigDecimal("R30_C14"));
+			obj.setR30_c15(rs.getBigDecimal("R30_C15"));
+			obj.setR30_c16(rs.getBigDecimal("R30_C16"));
+			obj.setR30_total(rs.getBigDecimal("R30_TOTAL"));
+			obj.setR31_product(rs.getString("R31_PRODUCT"));
+			obj.setR31_botswana(rs.getBigDecimal("R31_BOTSWANA"));
+			obj.setR31_south_africa(rs.getBigDecimal("R31_SOUTH_AFRICA"));
+			obj.setR31_sadc(rs.getBigDecimal("R31_SADC"));
+			obj.setR31_usa(rs.getBigDecimal("R31_USA"));
+			obj.setR31_uk(rs.getBigDecimal("R31_UK"));
+			obj.setR31_europe(rs.getBigDecimal("R31_EUROPE"));
+			obj.setR31_india(rs.getBigDecimal("R31_INDIA"));
+			obj.setR31_sydney(rs.getBigDecimal("R31_SYDNEY"));
+			obj.setR31_uganda(rs.getBigDecimal("R31_UGANDA"));
+			obj.setR31_c10(rs.getBigDecimal("R31_C10"));
+			obj.setR31_c11(rs.getBigDecimal("R31_C11"));
+			obj.setR31_c12(rs.getBigDecimal("R31_C12"));
+			obj.setR31_c13(rs.getBigDecimal("R31_C13"));
+			obj.setR31_c14(rs.getBigDecimal("R31_C14"));
+			obj.setR31_c15(rs.getBigDecimal("R31_C15"));
+			obj.setR31_c16(rs.getBigDecimal("R31_C16"));
+			obj.setR31_total(rs.getBigDecimal("R31_TOTAL"));
+			obj.setR32_product(rs.getString("R32_PRODUCT"));
+			obj.setR32_botswana(rs.getBigDecimal("R32_BOTSWANA"));
+			obj.setR32_south_africa(rs.getBigDecimal("R32_SOUTH_AFRICA"));
+			obj.setR32_sadc(rs.getBigDecimal("R32_SADC"));
+			obj.setR32_usa(rs.getBigDecimal("R32_USA"));
+			obj.setR32_uk(rs.getBigDecimal("R32_UK"));
+			obj.setR32_europe(rs.getBigDecimal("R32_EUROPE"));
+			obj.setR32_india(rs.getBigDecimal("R32_INDIA"));
+			obj.setR32_sydney(rs.getBigDecimal("R32_SYDNEY"));
+			obj.setR32_uganda(rs.getBigDecimal("R32_UGANDA"));
+			obj.setR32_c10(rs.getBigDecimal("R32_C10"));
+			obj.setR32_c11(rs.getBigDecimal("R32_C11"));
+			obj.setR32_c12(rs.getBigDecimal("R32_C12"));
+			obj.setR32_c13(rs.getBigDecimal("R32_C13"));
+			obj.setR32_c14(rs.getBigDecimal("R32_C14"));
+			obj.setR32_c15(rs.getBigDecimal("R32_C15"));
+			obj.setR32_c16(rs.getBigDecimal("R32_C16"));
+			obj.setR32_total(rs.getBigDecimal("R32_TOTAL"));
+			obj.setR33_product(rs.getString("R33_PRODUCT"));
+			obj.setR33_botswana(rs.getBigDecimal("R33_BOTSWANA"));
+			obj.setR33_south_africa(rs.getBigDecimal("R33_SOUTH_AFRICA"));
+			obj.setR33_sadc(rs.getBigDecimal("R33_SADC"));
+			obj.setR33_usa(rs.getBigDecimal("R33_USA"));
+			obj.setR33_uk(rs.getBigDecimal("R33_UK"));
+			obj.setR33_europe(rs.getBigDecimal("R33_EUROPE"));
+			obj.setR33_india(rs.getBigDecimal("R33_INDIA"));
+			obj.setR33_sydney(rs.getBigDecimal("R33_SYDNEY"));
+			obj.setR33_uganda(rs.getBigDecimal("R33_UGANDA"));
+			obj.setR33_c10(rs.getBigDecimal("R33_C10"));
+			obj.setR33_c11(rs.getBigDecimal("R33_C11"));
+			obj.setR33_c12(rs.getBigDecimal("R33_C12"));
+			obj.setR33_c13(rs.getBigDecimal("R33_C13"));
+			obj.setR33_c14(rs.getBigDecimal("R33_C14"));
+			obj.setR33_c15(rs.getBigDecimal("R33_C15"));
+			obj.setR33_c16(rs.getBigDecimal("R33_C16"));
+			obj.setR33_total(rs.getBigDecimal("R33_TOTAL"));
+			obj.setR34_product(rs.getString("R34_PRODUCT"));
+			obj.setR34_botswana(rs.getBigDecimal("R34_BOTSWANA"));
+			obj.setR34_south_africa(rs.getBigDecimal("R34_SOUTH_AFRICA"));
+			obj.setR34_sadc(rs.getBigDecimal("R34_SADC"));
+			obj.setR34_usa(rs.getBigDecimal("R34_USA"));
+			obj.setR34_uk(rs.getBigDecimal("R34_UK"));
+			obj.setR34_europe(rs.getBigDecimal("R34_EUROPE"));
+			obj.setR34_india(rs.getBigDecimal("R34_INDIA"));
+			obj.setR34_sydney(rs.getBigDecimal("R34_SYDNEY"));
+			obj.setR34_uganda(rs.getBigDecimal("R34_UGANDA"));
+			obj.setR34_c10(rs.getBigDecimal("R34_C10"));
+			obj.setR34_c11(rs.getBigDecimal("R34_C11"));
+			obj.setR34_c12(rs.getBigDecimal("R34_C12"));
+			obj.setR34_c13(rs.getBigDecimal("R34_C13"));
+			obj.setR34_c14(rs.getBigDecimal("R34_C14"));
+			obj.setR34_c15(rs.getBigDecimal("R34_C15"));
+			obj.setR34_c16(rs.getBigDecimal("R34_C16"));
+			obj.setR34_total(rs.getBigDecimal("R34_TOTAL"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_botswana(rs.getBigDecimal("R35_BOTSWANA"));
+			obj.setR35_south_africa(rs.getBigDecimal("R35_SOUTH_AFRICA"));
+			obj.setR35_sadc(rs.getBigDecimal("R35_SADC"));
+			obj.setR35_usa(rs.getBigDecimal("R35_USA"));
+			obj.setR35_uk(rs.getBigDecimal("R35_UK"));
+			obj.setR35_europe(rs.getBigDecimal("R35_EUROPE"));
+			obj.setR35_india(rs.getBigDecimal("R35_INDIA"));
+			obj.setR35_sydney(rs.getBigDecimal("R35_SYDNEY"));
+			obj.setR35_uganda(rs.getBigDecimal("R35_UGANDA"));
+			obj.setR35_c10(rs.getBigDecimal("R35_C10"));
+			obj.setR35_c11(rs.getBigDecimal("R35_C11"));
+			obj.setR35_c12(rs.getBigDecimal("R35_C12"));
+			obj.setR35_c13(rs.getBigDecimal("R35_C13"));
+			obj.setR35_c14(rs.getBigDecimal("R35_C14"));
+			obj.setR35_c15(rs.getBigDecimal("R35_C15"));
+			obj.setR35_c16(rs.getBigDecimal("R35_C16"));
+			obj.setR35_total(rs.getBigDecimal("R35_TOTAL"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_botswana(rs.getBigDecimal("R36_BOTSWANA"));
+			obj.setR36_south_africa(rs.getBigDecimal("R36_SOUTH_AFRICA"));
+			obj.setR36_sadc(rs.getBigDecimal("R36_SADC"));
+			obj.setR36_usa(rs.getBigDecimal("R36_USA"));
+			obj.setR36_uk(rs.getBigDecimal("R36_UK"));
+			obj.setR36_europe(rs.getBigDecimal("R36_EUROPE"));
+			obj.setR36_india(rs.getBigDecimal("R36_INDIA"));
+			obj.setR36_sydney(rs.getBigDecimal("R36_SYDNEY"));
+			obj.setR36_uganda(rs.getBigDecimal("R36_UGANDA"));
+			obj.setR36_c10(rs.getBigDecimal("R36_C10"));
+			obj.setR36_c11(rs.getBigDecimal("R36_C11"));
+			obj.setR36_c12(rs.getBigDecimal("R36_C12"));
+			obj.setR36_c13(rs.getBigDecimal("R36_C13"));
+			obj.setR36_c14(rs.getBigDecimal("R36_C14"));
+			obj.setR36_c15(rs.getBigDecimal("R36_C15"));
+			obj.setR36_c16(rs.getBigDecimal("R36_C16"));
+			obj.setR36_total(rs.getBigDecimal("R36_TOTAL"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_botswana(rs.getBigDecimal("R37_BOTSWANA"));
+			obj.setR37_south_africa(rs.getBigDecimal("R37_SOUTH_AFRICA"));
+			obj.setR37_sadc(rs.getBigDecimal("R37_SADC"));
+			obj.setR37_usa(rs.getBigDecimal("R37_USA"));
+			obj.setR37_uk(rs.getBigDecimal("R37_UK"));
+			obj.setR37_europe(rs.getBigDecimal("R37_EUROPE"));
+			obj.setR37_india(rs.getBigDecimal("R37_INDIA"));
+			obj.setR37_sydney(rs.getBigDecimal("R37_SYDNEY"));
+			obj.setR37_uganda(rs.getBigDecimal("R37_UGANDA"));
+			obj.setR37_c10(rs.getBigDecimal("R37_C10"));
+			obj.setR37_c11(rs.getBigDecimal("R37_C11"));
+			obj.setR37_c12(rs.getBigDecimal("R37_C12"));
+			obj.setR37_c13(rs.getBigDecimal("R37_C13"));
+			obj.setR37_c14(rs.getBigDecimal("R37_C14"));
+			obj.setR37_c15(rs.getBigDecimal("R37_C15"));
+			obj.setR37_c16(rs.getBigDecimal("R37_C16"));
+			obj.setR37_total(rs.getBigDecimal("R37_TOTAL"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_botswana(rs.getBigDecimal("R38_BOTSWANA"));
+			obj.setR38_south_africa(rs.getBigDecimal("R38_SOUTH_AFRICA"));
+			obj.setR38_sadc(rs.getBigDecimal("R38_SADC"));
+			obj.setR38_usa(rs.getBigDecimal("R38_USA"));
+			obj.setR38_uk(rs.getBigDecimal("R38_UK"));
+			obj.setR38_europe(rs.getBigDecimal("R38_EUROPE"));
+			obj.setR38_india(rs.getBigDecimal("R38_INDIA"));
+			obj.setR38_sydney(rs.getBigDecimal("R38_SYDNEY"));
+			obj.setR38_uganda(rs.getBigDecimal("R38_UGANDA"));
+			obj.setR38_c10(rs.getBigDecimal("R38_C10"));
+			obj.setR38_c11(rs.getBigDecimal("R38_C11"));
+			obj.setR38_c12(rs.getBigDecimal("R38_C12"));
+			obj.setR38_c13(rs.getBigDecimal("R38_C13"));
+			obj.setR38_c14(rs.getBigDecimal("R38_C14"));
+			obj.setR38_c15(rs.getBigDecimal("R38_C15"));
+			obj.setR38_c16(rs.getBigDecimal("R38_C16"));
+			obj.setR38_total(rs.getBigDecimal("R38_TOTAL"));
+			obj.setR39_product(rs.getString("R39_PRODUCT"));
+			obj.setR39_botswana(rs.getBigDecimal("R39_BOTSWANA"));
+			obj.setR39_south_africa(rs.getBigDecimal("R39_SOUTH_AFRICA"));
+			obj.setR39_sadc(rs.getBigDecimal("R39_SADC"));
+			obj.setR39_usa(rs.getBigDecimal("R39_USA"));
+			obj.setR39_uk(rs.getBigDecimal("R39_UK"));
+			obj.setR39_europe(rs.getBigDecimal("R39_EUROPE"));
+			obj.setR39_india(rs.getBigDecimal("R39_INDIA"));
+			obj.setR39_sydney(rs.getBigDecimal("R39_SYDNEY"));
+			obj.setR39_uganda(rs.getBigDecimal("R39_UGANDA"));
+			obj.setR39_c10(rs.getBigDecimal("R39_C10"));
+			obj.setR39_c11(rs.getBigDecimal("R39_C11"));
+			obj.setR39_c12(rs.getBigDecimal("R39_C12"));
+			obj.setR39_c13(rs.getBigDecimal("R39_C13"));
+			obj.setR39_c14(rs.getBigDecimal("R39_C14"));
+			obj.setR39_c15(rs.getBigDecimal("R39_C15"));
+			obj.setR39_c16(rs.getBigDecimal("R39_C16"));
+			obj.setR39_total(rs.getBigDecimal("R39_TOTAL"));
+			obj.setR40_product(rs.getString("R40_PRODUCT"));
+			obj.setR40_botswana(rs.getBigDecimal("R40_BOTSWANA"));
+			obj.setR40_south_africa(rs.getBigDecimal("R40_SOUTH_AFRICA"));
+			obj.setR40_sadc(rs.getBigDecimal("R40_SADC"));
+			obj.setR40_usa(rs.getBigDecimal("R40_USA"));
+			obj.setR40_uk(rs.getBigDecimal("R40_UK"));
+			obj.setR40_europe(rs.getBigDecimal("R40_EUROPE"));
+			obj.setR40_india(rs.getBigDecimal("R40_INDIA"));
+			obj.setR40_sydney(rs.getBigDecimal("R40_SYDNEY"));
+			obj.setR40_uganda(rs.getBigDecimal("R40_UGANDA"));
+			obj.setR40_c10(rs.getBigDecimal("R40_C10"));
+			obj.setR40_c11(rs.getBigDecimal("R40_C11"));
+			obj.setR40_c12(rs.getBigDecimal("R40_C12"));
+			obj.setR40_c13(rs.getBigDecimal("R40_C13"));
+			obj.setR40_c14(rs.getBigDecimal("R40_C14"));
+			obj.setR40_c15(rs.getBigDecimal("R40_C15"));
+			obj.setR40_c16(rs.getBigDecimal("R40_C16"));
+			obj.setR40_total(rs.getBigDecimal("R40_TOTAL"));
+			obj.setR41_product(rs.getString("R41_PRODUCT"));
+			obj.setR41_botswana(rs.getBigDecimal("R41_BOTSWANA"));
+			obj.setR41_south_africa(rs.getBigDecimal("R41_SOUTH_AFRICA"));
+			obj.setR41_sadc(rs.getBigDecimal("R41_SADC"));
+			obj.setR41_usa(rs.getBigDecimal("R41_USA"));
+			obj.setR41_uk(rs.getBigDecimal("R41_UK"));
+			obj.setR41_europe(rs.getBigDecimal("R41_EUROPE"));
+			obj.setR41_india(rs.getBigDecimal("R41_INDIA"));
+			obj.setR41_sydney(rs.getBigDecimal("R41_SYDNEY"));
+			obj.setR41_uganda(rs.getBigDecimal("R41_UGANDA"));
+			obj.setR41_c10(rs.getBigDecimal("R41_C10"));
+			obj.setR41_c11(rs.getBigDecimal("R41_C11"));
+			obj.setR41_c12(rs.getBigDecimal("R41_C12"));
+			obj.setR41_c13(rs.getBigDecimal("R41_C13"));
+			obj.setR41_c14(rs.getBigDecimal("R41_C14"));
+			obj.setR41_c15(rs.getBigDecimal("R41_C15"));
+			obj.setR41_c16(rs.getBigDecimal("R41_C16"));
+			obj.setR41_total(rs.getBigDecimal("R41_TOTAL"));
+			obj.setR42_product(rs.getString("R42_PRODUCT"));
+			obj.setR42_botswana(rs.getBigDecimal("R42_BOTSWANA"));
+			obj.setR42_south_africa(rs.getBigDecimal("R42_SOUTH_AFRICA"));
+			obj.setR42_sadc(rs.getBigDecimal("R42_SADC"));
+			obj.setR42_usa(rs.getBigDecimal("R42_USA"));
+			obj.setR42_uk(rs.getBigDecimal("R42_UK"));
+			obj.setR42_europe(rs.getBigDecimal("R42_EUROPE"));
+			obj.setR42_india(rs.getBigDecimal("R42_INDIA"));
+			obj.setR42_sydney(rs.getBigDecimal("R42_SYDNEY"));
+			obj.setR42_uganda(rs.getBigDecimal("R42_UGANDA"));
+			obj.setR42_c10(rs.getBigDecimal("R42_C10"));
+			obj.setR42_c11(rs.getBigDecimal("R42_C11"));
+			obj.setR42_c12(rs.getBigDecimal("R42_C12"));
+			obj.setR42_c13(rs.getBigDecimal("R42_C13"));
+			obj.setR42_c14(rs.getBigDecimal("R42_C14"));
+			obj.setR42_c15(rs.getBigDecimal("R42_C15"));
+			obj.setR42_c16(rs.getBigDecimal("R42_C16"));
+			obj.setR42_total(rs.getBigDecimal("R42_TOTAL"));
+			obj.setR43_product(rs.getString("R43_PRODUCT"));
+			obj.setR43_botswana(rs.getBigDecimal("R43_BOTSWANA"));
+			obj.setR43_south_africa(rs.getBigDecimal("R43_SOUTH_AFRICA"));
+			obj.setR43_sadc(rs.getBigDecimal("R43_SADC"));
+			obj.setR43_usa(rs.getBigDecimal("R43_USA"));
+			obj.setR43_uk(rs.getBigDecimal("R43_UK"));
+			obj.setR43_europe(rs.getBigDecimal("R43_EUROPE"));
+			obj.setR43_india(rs.getBigDecimal("R43_INDIA"));
+			obj.setR43_sydney(rs.getBigDecimal("R43_SYDNEY"));
+			obj.setR43_uganda(rs.getBigDecimal("R43_UGANDA"));
+			obj.setR43_c10(rs.getBigDecimal("R43_C10"));
+			obj.setR43_c11(rs.getBigDecimal("R43_C11"));
+			obj.setR43_c12(rs.getBigDecimal("R43_C12"));
+			obj.setR43_c13(rs.getBigDecimal("R43_C13"));
+			obj.setR43_c14(rs.getBigDecimal("R43_C14"));
+			obj.setR43_c15(rs.getBigDecimal("R43_C15"));
+			obj.setR43_c16(rs.getBigDecimal("R43_C16"));
+			obj.setR43_total(rs.getBigDecimal("R43_TOTAL"));
+			obj.setR44_product(rs.getString("R44_PRODUCT"));
+			obj.setR44_botswana(rs.getBigDecimal("R44_BOTSWANA"));
+			obj.setR44_south_africa(rs.getBigDecimal("R44_SOUTH_AFRICA"));
+			obj.setR44_sadc(rs.getBigDecimal("R44_SADC"));
+			obj.setR44_usa(rs.getBigDecimal("R44_USA"));
+			obj.setR44_uk(rs.getBigDecimal("R44_UK"));
+			obj.setR44_europe(rs.getBigDecimal("R44_EUROPE"));
+			obj.setR44_india(rs.getBigDecimal("R44_INDIA"));
+			obj.setR44_sydney(rs.getBigDecimal("R44_SYDNEY"));
+			obj.setR44_uganda(rs.getBigDecimal("R44_UGANDA"));
+			obj.setR44_c10(rs.getBigDecimal("R44_C10"));
+			obj.setR44_c11(rs.getBigDecimal("R44_C11"));
+			obj.setR44_c12(rs.getBigDecimal("R44_C12"));
+			obj.setR44_c13(rs.getBigDecimal("R44_C13"));
+			obj.setR44_c14(rs.getBigDecimal("R44_C14"));
+			obj.setR44_c15(rs.getBigDecimal("R44_C15"));
+			obj.setR44_c16(rs.getBigDecimal("R44_C16"));
+			obj.setR44_total(rs.getBigDecimal("R44_TOTAL"));
+			obj.setR45_product(rs.getString("R45_PRODUCT"));
+			obj.setR45_botswana(rs.getBigDecimal("R45_BOTSWANA"));
+			obj.setR45_south_africa(rs.getBigDecimal("R45_SOUTH_AFRICA"));
+			obj.setR45_sadc(rs.getBigDecimal("R45_SADC"));
+			obj.setR45_usa(rs.getBigDecimal("R45_USA"));
+			obj.setR45_uk(rs.getBigDecimal("R45_UK"));
+			obj.setR45_europe(rs.getBigDecimal("R45_EUROPE"));
+			obj.setR45_india(rs.getBigDecimal("R45_INDIA"));
+			obj.setR45_sydney(rs.getBigDecimal("R45_SYDNEY"));
+			obj.setR45_uganda(rs.getBigDecimal("R45_UGANDA"));
+			obj.setR45_c10(rs.getBigDecimal("R45_C10"));
+			obj.setR45_c11(rs.getBigDecimal("R45_C11"));
+			obj.setR45_c12(rs.getBigDecimal("R45_C12"));
+			obj.setR45_c13(rs.getBigDecimal("R45_C13"));
+			obj.setR45_c14(rs.getBigDecimal("R45_C14"));
+			obj.setR45_c15(rs.getBigDecimal("R45_C15"));
+			obj.setR45_c16(rs.getBigDecimal("R45_C16"));
+			obj.setR45_total(rs.getBigDecimal("R45_TOTAL"));
+			obj.setR46_product(rs.getString("R46_PRODUCT"));
+			obj.setR46_botswana(rs.getBigDecimal("R46_BOTSWANA"));
+			obj.setR46_south_africa(rs.getBigDecimal("R46_SOUTH_AFRICA"));
+			obj.setR46_sadc(rs.getBigDecimal("R46_SADC"));
+			obj.setR46_usa(rs.getBigDecimal("R46_USA"));
+			obj.setR46_uk(rs.getBigDecimal("R46_UK"));
+			obj.setR46_europe(rs.getBigDecimal("R46_EUROPE"));
+			obj.setR46_india(rs.getBigDecimal("R46_INDIA"));
+			obj.setR46_sydney(rs.getBigDecimal("R46_SYDNEY"));
+			obj.setR46_uganda(rs.getBigDecimal("R46_UGANDA"));
+			obj.setR46_c10(rs.getBigDecimal("R46_C10"));
+			obj.setR46_c11(rs.getBigDecimal("R46_C11"));
+			obj.setR46_c12(rs.getBigDecimal("R46_C12"));
+			obj.setR46_c13(rs.getBigDecimal("R46_C13"));
+			obj.setR46_c14(rs.getBigDecimal("R46_C14"));
+			obj.setR46_c15(rs.getBigDecimal("R46_C15"));
+			obj.setR46_c16(rs.getBigDecimal("R46_C16"));
+			obj.setR46_total(rs.getBigDecimal("R46_TOTAL"));
+			obj.setR47_product(rs.getString("R47_PRODUCT"));
+			obj.setR47_botswana(rs.getBigDecimal("R47_BOTSWANA"));
+			obj.setR47_south_africa(rs.getBigDecimal("R47_SOUTH_AFRICA"));
+			obj.setR47_sadc(rs.getBigDecimal("R47_SADC"));
+			obj.setR47_usa(rs.getBigDecimal("R47_USA"));
+			obj.setR47_uk(rs.getBigDecimal("R47_UK"));
+			obj.setR47_europe(rs.getBigDecimal("R47_EUROPE"));
+			obj.setR47_india(rs.getBigDecimal("R47_INDIA"));
+			obj.setR47_sydney(rs.getBigDecimal("R47_SYDNEY"));
+			obj.setR47_uganda(rs.getBigDecimal("R47_UGANDA"));
+			obj.setR47_c10(rs.getBigDecimal("R47_C10"));
+			obj.setR47_c11(rs.getBigDecimal("R47_C11"));
+			obj.setR47_c12(rs.getBigDecimal("R47_C12"));
+			obj.setR47_c13(rs.getBigDecimal("R47_C13"));
+			obj.setR47_c14(rs.getBigDecimal("R47_C14"));
+			obj.setR47_c15(rs.getBigDecimal("R47_C15"));
+			obj.setR47_c16(rs.getBigDecimal("R47_C16"));
+			obj.setR47_total(rs.getBigDecimal("R47_TOTAL"));
+			obj.setR48_product(rs.getString("R48_PRODUCT"));
+			obj.setR48_botswana(rs.getBigDecimal("R48_BOTSWANA"));
+			obj.setR48_south_africa(rs.getBigDecimal("R48_SOUTH_AFRICA"));
+			obj.setR48_sadc(rs.getBigDecimal("R48_SADC"));
+			obj.setR48_usa(rs.getBigDecimal("R48_USA"));
+			obj.setR48_uk(rs.getBigDecimal("R48_UK"));
+			obj.setR48_europe(rs.getBigDecimal("R48_EUROPE"));
+			obj.setR48_india(rs.getBigDecimal("R48_INDIA"));
+			obj.setR48_sydney(rs.getBigDecimal("R48_SYDNEY"));
+			obj.setR48_uganda(rs.getBigDecimal("R48_UGANDA"));
+			obj.setR48_c10(rs.getBigDecimal("R48_C10"));
+			obj.setR48_c11(rs.getBigDecimal("R48_C11"));
+			obj.setR48_c12(rs.getBigDecimal("R48_C12"));
+			obj.setR48_c13(rs.getBigDecimal("R48_C13"));
+			obj.setR48_c14(rs.getBigDecimal("R48_C14"));
+			obj.setR48_c15(rs.getBigDecimal("R48_C15"));
+			obj.setR48_c16(rs.getBigDecimal("R48_C16"));
+			obj.setR48_total(rs.getBigDecimal("R48_TOTAL"));
+			obj.setR49_product(rs.getString("R49_PRODUCT"));
+			obj.setR49_botswana(rs.getBigDecimal("R49_BOTSWANA"));
+			obj.setR49_south_africa(rs.getBigDecimal("R49_SOUTH_AFRICA"));
+			obj.setR49_sadc(rs.getBigDecimal("R49_SADC"));
+			obj.setR49_usa(rs.getBigDecimal("R49_USA"));
+			obj.setR49_uk(rs.getBigDecimal("R49_UK"));
+			obj.setR49_europe(rs.getBigDecimal("R49_EUROPE"));
+			obj.setR49_india(rs.getBigDecimal("R49_INDIA"));
+			obj.setR49_sydney(rs.getBigDecimal("R49_SYDNEY"));
+			obj.setR49_uganda(rs.getBigDecimal("R49_UGANDA"));
+			obj.setR49_c10(rs.getBigDecimal("R49_C10"));
+			obj.setR49_c11(rs.getBigDecimal("R49_C11"));
+			obj.setR49_c12(rs.getBigDecimal("R49_C12"));
+			obj.setR49_c13(rs.getBigDecimal("R49_C13"));
+			obj.setR49_c14(rs.getBigDecimal("R49_C14"));
+			obj.setR49_c15(rs.getBigDecimal("R49_C15"));
+			obj.setR49_c16(rs.getBigDecimal("R49_C16"));
+			obj.setR49_total(rs.getBigDecimal("R49_TOTAL"));
+			obj.setR50_product(rs.getString("R50_PRODUCT"));
+			obj.setR50_botswana(rs.getBigDecimal("R50_BOTSWANA"));
+			obj.setR50_south_africa(rs.getBigDecimal("R50_SOUTH_AFRICA"));
+			obj.setR50_sadc(rs.getBigDecimal("R50_SADC"));
+			obj.setR50_usa(rs.getBigDecimal("R50_USA"));
+			obj.setR50_uk(rs.getBigDecimal("R50_UK"));
+			obj.setR50_europe(rs.getBigDecimal("R50_EUROPE"));
+			obj.setR50_india(rs.getBigDecimal("R50_INDIA"));
+			obj.setR50_sydney(rs.getBigDecimal("R50_SYDNEY"));
+			obj.setR50_uganda(rs.getBigDecimal("R50_UGANDA"));
+			obj.setR50_c10(rs.getBigDecimal("R50_C10"));
+			obj.setR50_c11(rs.getBigDecimal("R50_C11"));
+			obj.setR50_c12(rs.getBigDecimal("R50_C12"));
+			obj.setR50_c13(rs.getBigDecimal("R50_C13"));
+			obj.setR50_c14(rs.getBigDecimal("R50_C14"));
+			obj.setR50_c15(rs.getBigDecimal("R50_C15"));
+			obj.setR50_c16(rs.getBigDecimal("R50_C16"));
+			obj.setR50_total(rs.getBigDecimal("R50_TOTAL"));
+			obj.setR51_product(rs.getString("R51_PRODUCT"));
+			obj.setR51_botswana(rs.getBigDecimal("R51_BOTSWANA"));
+			obj.setR51_south_africa(rs.getBigDecimal("R51_SOUTH_AFRICA"));
+			obj.setR51_sadc(rs.getBigDecimal("R51_SADC"));
+			obj.setR51_usa(rs.getBigDecimal("R51_USA"));
+			obj.setR51_uk(rs.getBigDecimal("R51_UK"));
+			obj.setR51_europe(rs.getBigDecimal("R51_EUROPE"));
+			obj.setR51_india(rs.getBigDecimal("R51_INDIA"));
+			obj.setR51_sydney(rs.getBigDecimal("R51_SYDNEY"));
+			obj.setR51_uganda(rs.getBigDecimal("R51_UGANDA"));
+			obj.setR51_c10(rs.getBigDecimal("R51_C10"));
+			obj.setR51_c11(rs.getBigDecimal("R51_C11"));
+			obj.setR51_c12(rs.getBigDecimal("R51_C12"));
+			obj.setR51_c13(rs.getBigDecimal("R51_C13"));
+			obj.setR51_c14(rs.getBigDecimal("R51_C14"));
+			obj.setR51_c15(rs.getBigDecimal("R51_C15"));
+			obj.setR51_c16(rs.getBigDecimal("R51_C16"));
+			obj.setR51_total(rs.getBigDecimal("R51_TOTAL"));
+			obj.setR52_product(rs.getString("R52_PRODUCT"));
+			obj.setR52_botswana(rs.getBigDecimal("R52_BOTSWANA"));
+			obj.setR52_south_africa(rs.getBigDecimal("R52_SOUTH_AFRICA"));
+			obj.setR52_sadc(rs.getBigDecimal("R52_SADC"));
+			obj.setR52_usa(rs.getBigDecimal("R52_USA"));
+			obj.setR52_uk(rs.getBigDecimal("R52_UK"));
+			obj.setR52_europe(rs.getBigDecimal("R52_EUROPE"));
+			obj.setR52_india(rs.getBigDecimal("R52_INDIA"));
+			obj.setR52_sydney(rs.getBigDecimal("R52_SYDNEY"));
+			obj.setR52_uganda(rs.getBigDecimal("R52_UGANDA"));
+			obj.setR52_c10(rs.getBigDecimal("R52_C10"));
+			obj.setR52_c11(rs.getBigDecimal("R52_C11"));
+			obj.setR52_c12(rs.getBigDecimal("R52_C12"));
+			obj.setR52_c13(rs.getBigDecimal("R52_C13"));
+			obj.setR52_c14(rs.getBigDecimal("R52_C14"));
+			obj.setR52_c15(rs.getBigDecimal("R52_C15"));
+			obj.setR52_c16(rs.getBigDecimal("R52_C16"));
+			obj.setR52_total(rs.getBigDecimal("R52_TOTAL"));
+			obj.setR53_product(rs.getString("R53_PRODUCT"));
+			obj.setR53_botswana(rs.getBigDecimal("R53_BOTSWANA"));
+			obj.setR53_south_africa(rs.getBigDecimal("R53_SOUTH_AFRICA"));
+			obj.setR53_sadc(rs.getBigDecimal("R53_SADC"));
+			obj.setR53_usa(rs.getBigDecimal("R53_USA"));
+			obj.setR53_uk(rs.getBigDecimal("R53_UK"));
+			obj.setR53_europe(rs.getBigDecimal("R53_EUROPE"));
+			obj.setR53_india(rs.getBigDecimal("R53_INDIA"));
+			obj.setR53_sydney(rs.getBigDecimal("R53_SYDNEY"));
+			obj.setR53_uganda(rs.getBigDecimal("R53_UGANDA"));
+			obj.setR53_c10(rs.getBigDecimal("R53_C10"));
+			obj.setR53_c11(rs.getBigDecimal("R53_C11"));
+			obj.setR53_c12(rs.getBigDecimal("R53_C12"));
+			obj.setR53_c13(rs.getBigDecimal("R53_C13"));
+			obj.setR53_c14(rs.getBigDecimal("R53_C14"));
+			obj.setR53_c15(rs.getBigDecimal("R53_C15"));
+			obj.setR53_c16(rs.getBigDecimal("R53_C16"));
+			obj.setR53_total(rs.getBigDecimal("R53_TOTAL"));
+			obj.setR54_product(rs.getString("R54_PRODUCT"));
+			obj.setR54_botswana(rs.getBigDecimal("R54_BOTSWANA"));
+			obj.setR54_south_africa(rs.getBigDecimal("R54_SOUTH_AFRICA"));
+			obj.setR54_sadc(rs.getBigDecimal("R54_SADC"));
+			obj.setR54_usa(rs.getBigDecimal("R54_USA"));
+			obj.setR54_uk(rs.getBigDecimal("R54_UK"));
+			obj.setR54_europe(rs.getBigDecimal("R54_EUROPE"));
+			obj.setR54_india(rs.getBigDecimal("R54_INDIA"));
+			obj.setR54_sydney(rs.getBigDecimal("R54_SYDNEY"));
+			obj.setR54_uganda(rs.getBigDecimal("R54_UGANDA"));
+			obj.setR54_c10(rs.getBigDecimal("R54_C10"));
+			obj.setR54_c11(rs.getBigDecimal("R54_C11"));
+			obj.setR54_c12(rs.getBigDecimal("R54_C12"));
+			obj.setR54_c13(rs.getBigDecimal("R54_C13"));
+			obj.setR54_c14(rs.getBigDecimal("R54_C14"));
+			obj.setR54_c15(rs.getBigDecimal("R54_C15"));
+			obj.setR54_c16(rs.getBigDecimal("R54_C16"));
+			obj.setR54_total(rs.getBigDecimal("R54_TOTAL"));
+			obj.setR55_product(rs.getString("R55_PRODUCT"));
+			obj.setR55_botswana(rs.getBigDecimal("R55_BOTSWANA"));
+			obj.setR55_south_africa(rs.getBigDecimal("R55_SOUTH_AFRICA"));
+			obj.setR55_sadc(rs.getBigDecimal("R55_SADC"));
+			obj.setR55_usa(rs.getBigDecimal("R55_USA"));
+			obj.setR55_uk(rs.getBigDecimal("R55_UK"));
+			obj.setR55_europe(rs.getBigDecimal("R55_EUROPE"));
+			obj.setR55_india(rs.getBigDecimal("R55_INDIA"));
+			obj.setR55_sydney(rs.getBigDecimal("R55_SYDNEY"));
+			obj.setR55_uganda(rs.getBigDecimal("R55_UGANDA"));
+			obj.setR55_c10(rs.getBigDecimal("R55_C10"));
+			obj.setR55_c11(rs.getBigDecimal("R55_C11"));
+			obj.setR55_c12(rs.getBigDecimal("R55_C12"));
+			obj.setR55_c13(rs.getBigDecimal("R55_C13"));
+			obj.setR55_c14(rs.getBigDecimal("R55_C14"));
+			obj.setR55_c15(rs.getBigDecimal("R55_C15"));
+			obj.setR55_c16(rs.getBigDecimal("R55_C16"));
+			obj.setR55_total(rs.getBigDecimal("R55_TOTAL"));
+			obj.setR56_product(rs.getString("R56_PRODUCT"));
+			obj.setR56_botswana(rs.getBigDecimal("R56_BOTSWANA"));
+			obj.setR56_south_africa(rs.getBigDecimal("R56_SOUTH_AFRICA"));
+			obj.setR56_sadc(rs.getBigDecimal("R56_SADC"));
+			obj.setR56_usa(rs.getBigDecimal("R56_USA"));
+			obj.setR56_uk(rs.getBigDecimal("R56_UK"));
+			obj.setR56_europe(rs.getBigDecimal("R56_EUROPE"));
+			obj.setR56_india(rs.getBigDecimal("R56_INDIA"));
+			obj.setR56_sydney(rs.getBigDecimal("R56_SYDNEY"));
+			obj.setR56_uganda(rs.getBigDecimal("R56_UGANDA"));
+			obj.setR56_c10(rs.getBigDecimal("R56_C10"));
+			obj.setR56_c11(rs.getBigDecimal("R56_C11"));
+			obj.setR56_c12(rs.getBigDecimal("R56_C12"));
+			obj.setR56_c13(rs.getBigDecimal("R56_C13"));
+			obj.setR56_c14(rs.getBigDecimal("R56_C14"));
+			obj.setR56_c15(rs.getBigDecimal("R56_C15"));
+			obj.setR56_c16(rs.getBigDecimal("R56_C16"));
+			obj.setR56_total(rs.getBigDecimal("R56_TOTAL"));
+			obj.setR59_product(rs.getString("R59_PRODUCT"));
+			obj.setR59_botswana(rs.getBigDecimal("R59_BOTSWANA"));
+			obj.setR59_south_africa(rs.getBigDecimal("R59_SOUTH_AFRICA"));
+			obj.setR59_sadc(rs.getBigDecimal("R59_SADC"));
+			obj.setR59_usa(rs.getBigDecimal("R59_USA"));
+			obj.setR59_uk(rs.getBigDecimal("R59_UK"));
+			obj.setR59_europe(rs.getBigDecimal("R59_EUROPE"));
+			obj.setR59_india(rs.getBigDecimal("R59_INDIA"));
+			obj.setR59_sydney(rs.getBigDecimal("R59_SYDNEY"));
+			obj.setR59_uganda(rs.getBigDecimal("R59_UGANDA"));
+			obj.setR59_c10(rs.getBigDecimal("R59_C10"));
+			obj.setR59_c11(rs.getBigDecimal("R59_C11"));
+			obj.setR59_c12(rs.getBigDecimal("R59_C12"));
+			obj.setR59_c13(rs.getBigDecimal("R59_C13"));
+			obj.setR59_c14(rs.getBigDecimal("R59_C14"));
+			obj.setR59_c15(rs.getBigDecimal("R59_C15"));
+			obj.setR59_c16(rs.getBigDecimal("R59_C16"));
+			obj.setR59_total(rs.getBigDecimal("R59_TOTAL"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Archival_Summary_Entity1 {
+		private String r10_product;
+		private BigDecimal r10_botswana;
+		private BigDecimal r10_south_africa;
+		private BigDecimal r10_sadc;
+		private BigDecimal r10_usa;
+		private BigDecimal r10_uk;
+		private BigDecimal r10_europe;
+		private BigDecimal r10_india;
+		private BigDecimal r10_sydney;
+		private BigDecimal r10_uganda;
+		private BigDecimal r10_c10;
+		private BigDecimal r10_c11;
+		private BigDecimal r10_c12;
+		private BigDecimal r10_c13;
+		private BigDecimal r10_c14;
+		private BigDecimal r10_c15;
+		private BigDecimal r10_c16;
+		private BigDecimal r10_total;
+		private String r11_product;
+		private BigDecimal r11_botswana;
+		private BigDecimal r11_south_africa;
+		private BigDecimal r11_sadc;
+		private BigDecimal r11_usa;
+		private BigDecimal r11_uk;
+		private BigDecimal r11_europe;
+		private BigDecimal r11_india;
+		private BigDecimal r11_sydney;
+		private BigDecimal r11_uganda;
+		private BigDecimal r11_c10;
+		private BigDecimal r11_c11;
+		private BigDecimal r11_c12;
+		private BigDecimal r11_c13;
+		private BigDecimal r11_c14;
+		private BigDecimal r11_c15;
+		private BigDecimal r11_c16;
+		private BigDecimal r11_total;
+		private String r12_product;
+		private BigDecimal r12_botswana;
+		private BigDecimal r12_south_africa;
+		private BigDecimal r12_sadc;
+		private BigDecimal r12_usa;
+		private BigDecimal r12_uk;
+		private BigDecimal r12_europe;
+		private BigDecimal r12_india;
+		private BigDecimal r12_sydney;
+		private BigDecimal r12_uganda;
+		private BigDecimal r12_c10;
+		private BigDecimal r12_c11;
+		private BigDecimal r12_c12;
+		private BigDecimal r12_c13;
+		private BigDecimal r12_c14;
+		private BigDecimal r12_c15;
+		private BigDecimal r12_c16;
+		private BigDecimal r12_total;
+		private String r13_product;
+		private BigDecimal r13_botswana;
+		private BigDecimal r13_south_africa;
+		private BigDecimal r13_sadc;
+		private BigDecimal r13_usa;
+		private BigDecimal r13_uk;
+		private BigDecimal r13_europe;
+		private BigDecimal r13_india;
+		private BigDecimal r13_sydney;
+		private BigDecimal r13_uganda;
+		private BigDecimal r13_c10;
+		private BigDecimal r13_c11;
+		private BigDecimal r13_c12;
+		private BigDecimal r13_c13;
+		private BigDecimal r13_c14;
+		private BigDecimal r13_c15;
+		private BigDecimal r13_c16;
+		private BigDecimal r13_total;
+		private String r14_product;
+		private BigDecimal r14_botswana;
+		private BigDecimal r14_south_africa;
+		private BigDecimal r14_sadc;
+		private BigDecimal r14_usa;
+		private BigDecimal r14_uk;
+		private BigDecimal r14_europe;
+		private BigDecimal r14_india;
+		private BigDecimal r14_sydney;
+		private BigDecimal r14_uganda;
+		private BigDecimal r14_c10;
+		private BigDecimal r14_c11;
+		private BigDecimal r14_c12;
+		private BigDecimal r14_c13;
+		private BigDecimal r14_c14;
+		private BigDecimal r14_c15;
+		private BigDecimal r14_c16;
+		private BigDecimal r14_total;
+		private String r15_product;
+		private BigDecimal r15_botswana;
+		private BigDecimal r15_south_africa;
+		private BigDecimal r15_sadc;
+		private BigDecimal r15_usa;
+		private BigDecimal r15_uk;
+		private BigDecimal r15_europe;
+		private BigDecimal r15_india;
+		private BigDecimal r15_sydney;
+		private BigDecimal r15_uganda;
+		private BigDecimal r15_c10;
+		private BigDecimal r15_c11;
+		private BigDecimal r15_c12;
+		private BigDecimal r15_c13;
+		private BigDecimal r15_c14;
+		private BigDecimal r15_c15;
+		private BigDecimal r15_c16;
+		private BigDecimal r15_total;
+		private String r16_product;
+		private BigDecimal r16_botswana;
+		private BigDecimal r16_south_africa;
+		private BigDecimal r16_sadc;
+		private BigDecimal r16_usa;
+		private BigDecimal r16_uk;
+		private BigDecimal r16_europe;
+		private BigDecimal r16_india;
+		private BigDecimal r16_sydney;
+		private BigDecimal r16_uganda;
+		private BigDecimal r16_c10;
+		private BigDecimal r16_c11;
+		private BigDecimal r16_c12;
+		private BigDecimal r16_c13;
+		private BigDecimal r16_c14;
+		private BigDecimal r16_c15;
+		private BigDecimal r16_c16;
+		private BigDecimal r16_total;
+		private String r17_product;
+		private BigDecimal r17_botswana;
+		private BigDecimal r17_south_africa;
+		private BigDecimal r17_sadc;
+		private BigDecimal r17_usa;
+		private BigDecimal r17_uk;
+		private BigDecimal r17_europe;
+		private BigDecimal r17_india;
+		private BigDecimal r17_sydney;
+		private BigDecimal r17_uganda;
+		private BigDecimal r17_c10;
+		private BigDecimal r17_c11;
+		private BigDecimal r17_c12;
+		private BigDecimal r17_c13;
+		private BigDecimal r17_c14;
+		private BigDecimal r17_c15;
+		private BigDecimal r17_c16;
+		private BigDecimal r17_total;
+		private String r18_product;
+		private BigDecimal r18_botswana;
+		private BigDecimal r18_south_africa;
+		private BigDecimal r18_sadc;
+		private BigDecimal r18_usa;
+		private BigDecimal r18_uk;
+		private BigDecimal r18_europe;
+		private BigDecimal r18_india;
+		private BigDecimal r18_sydney;
+		private BigDecimal r18_uganda;
+		private BigDecimal r18_c10;
+		private BigDecimal r18_c11;
+		private BigDecimal r18_c12;
+		private BigDecimal r18_c13;
+		private BigDecimal r18_c14;
+		private BigDecimal r18_c15;
+		private BigDecimal r18_c16;
+		private BigDecimal r18_total;
+		private String r19_product;
+		private BigDecimal r19_botswana;
+		private BigDecimal r19_south_africa;
+		private BigDecimal r19_sadc;
+		private BigDecimal r19_usa;
+		private BigDecimal r19_uk;
+		private BigDecimal r19_europe;
+		private BigDecimal r19_india;
+		private BigDecimal r19_sydney;
+		private BigDecimal r19_uganda;
+		private BigDecimal r19_c10;
+		private BigDecimal r19_c11;
+		private BigDecimal r19_c12;
+		private BigDecimal r19_c13;
+		private BigDecimal r19_c14;
+		private BigDecimal r19_c15;
+		private BigDecimal r19_c16;
+		private BigDecimal r19_total;
+		private String r20_product;
+		private BigDecimal r20_botswana;
+		private BigDecimal r20_south_africa;
+		private BigDecimal r20_sadc;
+		private BigDecimal r20_usa;
+		private BigDecimal r20_uk;
+		private BigDecimal r20_europe;
+		private BigDecimal r20_india;
+		private BigDecimal r20_sydney;
+		private BigDecimal r20_uganda;
+		private BigDecimal r20_c10;
+		private BigDecimal r20_c11;
+		private BigDecimal r20_c12;
+		private BigDecimal r20_c13;
+		private BigDecimal r20_c14;
+		private BigDecimal r20_c15;
+		private BigDecimal r20_c16;
+		private BigDecimal r20_total;
+		private String r21_product;
+		private BigDecimal r21_botswana;
+		private BigDecimal r21_south_africa;
+		private BigDecimal r21_sadc;
+		private BigDecimal r21_usa;
+		private BigDecimal r21_uk;
+		private BigDecimal r21_europe;
+		private BigDecimal r21_india;
+		private BigDecimal r21_sydney;
+		private BigDecimal r21_uganda;
+		private BigDecimal r21_c10;
+		private BigDecimal r21_c11;
+		private BigDecimal r21_c12;
+		private BigDecimal r21_c13;
+		private BigDecimal r21_c14;
+		private BigDecimal r21_c15;
+		private BigDecimal r21_c16;
+		private BigDecimal r21_total;
+		private String r24_product;
+		private BigDecimal r24_botswana;
+		private BigDecimal r24_south_africa;
+		private BigDecimal r24_sadc;
+		private BigDecimal r24_usa;
+		private BigDecimal r24_uk;
+		private BigDecimal r24_europe;
+		private BigDecimal r24_india;
+		private BigDecimal r24_sydney;
+		private BigDecimal r24_uganda;
+		private BigDecimal r24_c10;
+		private BigDecimal r24_c11;
+		private BigDecimal r24_c12;
+		private BigDecimal r24_c13;
+		private BigDecimal r24_c14;
+		private BigDecimal r24_c15;
+		private BigDecimal r24_c16;
+		private BigDecimal r24_total;
+		private String r25_product;
+		private BigDecimal r25_botswana;
+		private BigDecimal r25_south_africa;
+		private BigDecimal r25_sadc;
+		private BigDecimal r25_usa;
+		private BigDecimal r25_uk;
+		private BigDecimal r25_europe;
+		private BigDecimal r25_india;
+		private BigDecimal r25_sydney;
+		private BigDecimal r25_uganda;
+		private BigDecimal r25_c10;
+		private BigDecimal r25_c11;
+		private BigDecimal r25_c12;
+		private BigDecimal r25_c13;
+		private BigDecimal r25_c14;
+		private BigDecimal r25_c15;
+		private BigDecimal r25_c16;
+		private BigDecimal r25_total;
+		private String r26_product;
+		private BigDecimal r26_botswana;
+		private BigDecimal r26_south_africa;
+		private BigDecimal r26_sadc;
+		private BigDecimal r26_usa;
+		private BigDecimal r26_uk;
+		private BigDecimal r26_europe;
+		private BigDecimal r26_india;
+		private BigDecimal r26_sydney;
+		private BigDecimal r26_uganda;
+		private BigDecimal r26_c10;
+		private BigDecimal r26_c11;
+		private BigDecimal r26_c12;
+		private BigDecimal r26_c13;
+		private BigDecimal r26_c14;
+		private BigDecimal r26_c15;
+		private BigDecimal r26_c16;
+		private BigDecimal r26_total;
+		private String r27_product;
+		private BigDecimal r27_botswana;
+		private BigDecimal r27_south_africa;
+		private BigDecimal r27_sadc;
+		private BigDecimal r27_usa;
+		private BigDecimal r27_uk;
+		private BigDecimal r27_europe;
+		private BigDecimal r27_india;
+		private BigDecimal r27_sydney;
+		private BigDecimal r27_uganda;
+		private BigDecimal r27_c10;
+		private BigDecimal r27_c11;
+		private BigDecimal r27_c12;
+		private BigDecimal r27_c13;
+		private BigDecimal r27_c14;
+		private BigDecimal r27_c15;
+		private BigDecimal r27_c16;
+		private BigDecimal r27_total;
+		private String r28_product;
+		private BigDecimal r28_botswana;
+		private BigDecimal r28_south_africa;
+		private BigDecimal r28_sadc;
+		private BigDecimal r28_usa;
+		private BigDecimal r28_uk;
+		private BigDecimal r28_europe;
+		private BigDecimal r28_india;
+		private BigDecimal r28_sydney;
+		private BigDecimal r28_uganda;
+		private BigDecimal r28_c10;
+		private BigDecimal r28_c11;
+		private BigDecimal r28_c12;
+		private BigDecimal r28_c13;
+		private BigDecimal r28_c14;
+		private BigDecimal r28_c15;
+		private BigDecimal r28_c16;
+		private BigDecimal r28_total;
+		private String r29_product;
+		private BigDecimal r29_botswana;
+		private BigDecimal r29_south_africa;
+		private BigDecimal r29_sadc;
+		private BigDecimal r29_usa;
+		private BigDecimal r29_uk;
+		private BigDecimal r29_europe;
+		private BigDecimal r29_india;
+		private BigDecimal r29_sydney;
+		private BigDecimal r29_uganda;
+		private BigDecimal r29_c10;
+		private BigDecimal r29_c11;
+		private BigDecimal r29_c12;
+		private BigDecimal r29_c13;
+		private BigDecimal r29_c14;
+		private BigDecimal r29_c15;
+		private BigDecimal r29_c16;
+		private BigDecimal r29_total;
+		private String r30_product;
+		private BigDecimal r30_botswana;
+		private BigDecimal r30_south_africa;
+		private BigDecimal r30_sadc;
+		private BigDecimal r30_usa;
+		private BigDecimal r30_uk;
+		private BigDecimal r30_europe;
+		private BigDecimal r30_india;
+		private BigDecimal r30_sydney;
+		private BigDecimal r30_uganda;
+		private BigDecimal r30_c10;
+		private BigDecimal r30_c11;
+		private BigDecimal r30_c12;
+		private BigDecimal r30_c13;
+		private BigDecimal r30_c14;
+		private BigDecimal r30_c15;
+		private BigDecimal r30_c16;
+		private BigDecimal r30_total;
+		private String r31_product;
+		private BigDecimal r31_botswana;
+		private BigDecimal r31_south_africa;
+		private BigDecimal r31_sadc;
+		private BigDecimal r31_usa;
+		private BigDecimal r31_uk;
+		private BigDecimal r31_europe;
+		private BigDecimal r31_india;
+		private BigDecimal r31_sydney;
+		private BigDecimal r31_uganda;
+		private BigDecimal r31_c10;
+		private BigDecimal r31_c11;
+		private BigDecimal r31_c12;
+		private BigDecimal r31_c13;
+		private BigDecimal r31_c14;
+		private BigDecimal r31_c15;
+		private BigDecimal r31_c16;
+		private BigDecimal r31_total;
+		private String r32_product;
+		private BigDecimal r32_botswana;
+		private BigDecimal r32_south_africa;
+		private BigDecimal r32_sadc;
+		private BigDecimal r32_usa;
+		private BigDecimal r32_uk;
+		private BigDecimal r32_europe;
+		private BigDecimal r32_india;
+		private BigDecimal r32_sydney;
+		private BigDecimal r32_uganda;
+		private BigDecimal r32_c10;
+		private BigDecimal r32_c11;
+		private BigDecimal r32_c12;
+		private BigDecimal r32_c13;
+		private BigDecimal r32_c14;
+		private BigDecimal r32_c15;
+		private BigDecimal r32_c16;
+		private BigDecimal r32_total;
+		private String r33_product;
+		private BigDecimal r33_botswana;
+		private BigDecimal r33_south_africa;
+		private BigDecimal r33_sadc;
+		private BigDecimal r33_usa;
+		private BigDecimal r33_uk;
+		private BigDecimal r33_europe;
+		private BigDecimal r33_india;
+		private BigDecimal r33_sydney;
+		private BigDecimal r33_uganda;
+		private BigDecimal r33_c10;
+		private BigDecimal r33_c11;
+		private BigDecimal r33_c12;
+		private BigDecimal r33_c13;
+		private BigDecimal r33_c14;
+		private BigDecimal r33_c15;
+		private BigDecimal r33_c16;
+		private BigDecimal r33_total;
+		private String r34_product;
+		private BigDecimal r34_botswana;
+		private BigDecimal r34_south_africa;
+		private BigDecimal r34_sadc;
+		private BigDecimal r34_usa;
+		private BigDecimal r34_uk;
+		private BigDecimal r34_europe;
+		private BigDecimal r34_india;
+		private BigDecimal r34_sydney;
+		private BigDecimal r34_uganda;
+		private BigDecimal r34_c10;
+		private BigDecimal r34_c11;
+		private BigDecimal r34_c12;
+		private BigDecimal r34_c13;
+		private BigDecimal r34_c14;
+		private BigDecimal r34_c15;
+		private BigDecimal r34_c16;
+		private BigDecimal r34_total;
+		private String r35_product;
+		private BigDecimal r35_botswana;
+		private BigDecimal r35_south_africa;
+		private BigDecimal r35_sadc;
+		private BigDecimal r35_usa;
+		private BigDecimal r35_uk;
+		private BigDecimal r35_europe;
+		private BigDecimal r35_india;
+		private BigDecimal r35_sydney;
+		private BigDecimal r35_uganda;
+		private BigDecimal r35_c10;
+		private BigDecimal r35_c11;
+		private BigDecimal r35_c12;
+		private BigDecimal r35_c13;
+		private BigDecimal r35_c14;
+		private BigDecimal r35_c15;
+		private BigDecimal r35_c16;
+		private BigDecimal r35_total;
+		private String r36_product;
+		private BigDecimal r36_botswana;
+		private BigDecimal r36_south_africa;
+		private BigDecimal r36_sadc;
+		private BigDecimal r36_usa;
+		private BigDecimal r36_uk;
+		private BigDecimal r36_europe;
+		private BigDecimal r36_india;
+		private BigDecimal r36_sydney;
+		private BigDecimal r36_uganda;
+		private BigDecimal r36_c10;
+		private BigDecimal r36_c11;
+		private BigDecimal r36_c12;
+		private BigDecimal r36_c13;
+		private BigDecimal r36_c14;
+		private BigDecimal r36_c15;
+		private BigDecimal r36_c16;
+		private BigDecimal r36_total;
+		private String r37_product;
+		private BigDecimal r37_botswana;
+		private BigDecimal r37_south_africa;
+		private BigDecimal r37_sadc;
+		private BigDecimal r37_usa;
+		private BigDecimal r37_uk;
+		private BigDecimal r37_europe;
+		private BigDecimal r37_india;
+		private BigDecimal r37_sydney;
+		private BigDecimal r37_uganda;
+		private BigDecimal r37_c10;
+		private BigDecimal r37_c11;
+		private BigDecimal r37_c12;
+		private BigDecimal r37_c13;
+		private BigDecimal r37_c14;
+		private BigDecimal r37_c15;
+		private BigDecimal r37_c16;
+		private BigDecimal r37_total;
+		private String r38_product;
+		private BigDecimal r38_botswana;
+		private BigDecimal r38_south_africa;
+		private BigDecimal r38_sadc;
+		private BigDecimal r38_usa;
+		private BigDecimal r38_uk;
+		private BigDecimal r38_europe;
+		private BigDecimal r38_india;
+		private BigDecimal r38_sydney;
+		private BigDecimal r38_uganda;
+		private BigDecimal r38_c10;
+		private BigDecimal r38_c11;
+		private BigDecimal r38_c12;
+		private BigDecimal r38_c13;
+		private BigDecimal r38_c14;
+		private BigDecimal r38_c15;
+		private BigDecimal r38_c16;
+		private BigDecimal r38_total;
+		private String r39_product;
+		private BigDecimal r39_botswana;
+		private BigDecimal r39_south_africa;
+		private BigDecimal r39_sadc;
+		private BigDecimal r39_usa;
+		private BigDecimal r39_uk;
+		private BigDecimal r39_europe;
+		private BigDecimal r39_india;
+		private BigDecimal r39_sydney;
+		private BigDecimal r39_uganda;
+		private BigDecimal r39_c10;
+		private BigDecimal r39_c11;
+		private BigDecimal r39_c12;
+		private BigDecimal r39_c13;
+		private BigDecimal r39_c14;
+		private BigDecimal r39_c15;
+		private BigDecimal r39_c16;
+		private BigDecimal r39_total;
+		private String r40_product;
+		private BigDecimal r40_botswana;
+		private BigDecimal r40_south_africa;
+		private BigDecimal r40_sadc;
+		private BigDecimal r40_usa;
+		private BigDecimal r40_uk;
+		private BigDecimal r40_europe;
+		private BigDecimal r40_india;
+		private BigDecimal r40_sydney;
+		private BigDecimal r40_uganda;
+		private BigDecimal r40_c10;
+		private BigDecimal r40_c11;
+		private BigDecimal r40_c12;
+		private BigDecimal r40_c13;
+		private BigDecimal r40_c14;
+		private BigDecimal r40_c15;
+		private BigDecimal r40_c16;
+		private BigDecimal r40_total;
+		private String r41_product;
+		private BigDecimal r41_botswana;
+		private BigDecimal r41_south_africa;
+		private BigDecimal r41_sadc;
+		private BigDecimal r41_usa;
+		private BigDecimal r41_uk;
+		private BigDecimal r41_europe;
+		private BigDecimal r41_india;
+		private BigDecimal r41_sydney;
+		private BigDecimal r41_uganda;
+		private BigDecimal r41_c10;
+		private BigDecimal r41_c11;
+		private BigDecimal r41_c12;
+		private BigDecimal r41_c13;
+		private BigDecimal r41_c14;
+		private BigDecimal r41_c15;
+		private BigDecimal r41_c16;
+		private BigDecimal r41_total;
+		private String r42_product;
+		private BigDecimal r42_botswana;
+		private BigDecimal r42_south_africa;
+		private BigDecimal r42_sadc;
+		private BigDecimal r42_usa;
+		private BigDecimal r42_uk;
+		private BigDecimal r42_europe;
+		private BigDecimal r42_india;
+		private BigDecimal r42_sydney;
+		private BigDecimal r42_uganda;
+		private BigDecimal r42_c10;
+		private BigDecimal r42_c11;
+		private BigDecimal r42_c12;
+		private BigDecimal r42_c13;
+		private BigDecimal r42_c14;
+		private BigDecimal r42_c15;
+		private BigDecimal r42_c16;
+		private BigDecimal r42_total;
+		private String r43_product;
+		private BigDecimal r43_botswana;
+		private BigDecimal r43_south_africa;
+		private BigDecimal r43_sadc;
+		private BigDecimal r43_usa;
+		private BigDecimal r43_uk;
+		private BigDecimal r43_europe;
+		private BigDecimal r43_india;
+		private BigDecimal r43_sydney;
+		private BigDecimal r43_uganda;
+		private BigDecimal r43_c10;
+		private BigDecimal r43_c11;
+		private BigDecimal r43_c12;
+		private BigDecimal r43_c13;
+		private BigDecimal r43_c14;
+		private BigDecimal r43_c15;
+		private BigDecimal r43_c16;
+		private BigDecimal r43_total;
+		private String r44_product;
+		private BigDecimal r44_botswana;
+		private BigDecimal r44_south_africa;
+		private BigDecimal r44_sadc;
+		private BigDecimal r44_usa;
+		private BigDecimal r44_uk;
+		private BigDecimal r44_europe;
+		private BigDecimal r44_india;
+		private BigDecimal r44_sydney;
+		private BigDecimal r44_uganda;
+		private BigDecimal r44_c10;
+		private BigDecimal r44_c11;
+		private BigDecimal r44_c12;
+		private BigDecimal r44_c13;
+		private BigDecimal r44_c14;
+		private BigDecimal r44_c15;
+		private BigDecimal r44_c16;
+		private BigDecimal r44_total;
+		private String r45_product;
+		private BigDecimal r45_botswana;
+		private BigDecimal r45_south_africa;
+		private BigDecimal r45_sadc;
+		private BigDecimal r45_usa;
+		private BigDecimal r45_uk;
+		private BigDecimal r45_europe;
+		private BigDecimal r45_india;
+		private BigDecimal r45_sydney;
+		private BigDecimal r45_uganda;
+		private BigDecimal r45_c10;
+		private BigDecimal r45_c11;
+		private BigDecimal r45_c12;
+		private BigDecimal r45_c13;
+		private BigDecimal r45_c14;
+		private BigDecimal r45_c15;
+		private BigDecimal r45_c16;
+		private BigDecimal r45_total;
+		private String r46_product;
+		private BigDecimal r46_botswana;
+		private BigDecimal r46_south_africa;
+		private BigDecimal r46_sadc;
+		private BigDecimal r46_usa;
+		private BigDecimal r46_uk;
+		private BigDecimal r46_europe;
+		private BigDecimal r46_india;
+		private BigDecimal r46_sydney;
+		private BigDecimal r46_uganda;
+		private BigDecimal r46_c10;
+		private BigDecimal r46_c11;
+		private BigDecimal r46_c12;
+		private BigDecimal r46_c13;
+		private BigDecimal r46_c14;
+		private BigDecimal r46_c15;
+		private BigDecimal r46_c16;
+		private BigDecimal r46_total;
+		private String r47_product;
+		private BigDecimal r47_botswana;
+		private BigDecimal r47_south_africa;
+		private BigDecimal r47_sadc;
+		private BigDecimal r47_usa;
+		private BigDecimal r47_uk;
+		private BigDecimal r47_europe;
+		private BigDecimal r47_india;
+		private BigDecimal r47_sydney;
+		private BigDecimal r47_uganda;
+		private BigDecimal r47_c10;
+		private BigDecimal r47_c11;
+		private BigDecimal r47_c12;
+		private BigDecimal r47_c13;
+		private BigDecimal r47_c14;
+		private BigDecimal r47_c15;
+		private BigDecimal r47_c16;
+		private BigDecimal r47_total;
+		private String r48_product;
+		private BigDecimal r48_botswana;
+		private BigDecimal r48_south_africa;
+		private BigDecimal r48_sadc;
+		private BigDecimal r48_usa;
+		private BigDecimal r48_uk;
+		private BigDecimal r48_europe;
+		private BigDecimal r48_india;
+		private BigDecimal r48_sydney;
+		private BigDecimal r48_uganda;
+		private BigDecimal r48_c10;
+		private BigDecimal r48_c11;
+		private BigDecimal r48_c12;
+		private BigDecimal r48_c13;
+		private BigDecimal r48_c14;
+		private BigDecimal r48_c15;
+		private BigDecimal r48_c16;
+		private BigDecimal r48_total;
+		private String r49_product;
+		private BigDecimal r49_botswana;
+		private BigDecimal r49_south_africa;
+		private BigDecimal r49_sadc;
+		private BigDecimal r49_usa;
+		private BigDecimal r49_uk;
+		private BigDecimal r49_europe;
+		private BigDecimal r49_india;
+		private BigDecimal r49_sydney;
+		private BigDecimal r49_uganda;
+		private BigDecimal r49_c10;
+		private BigDecimal r49_c11;
+		private BigDecimal r49_c12;
+		private BigDecimal r49_c13;
+		private BigDecimal r49_c14;
+		private BigDecimal r49_c15;
+		private BigDecimal r49_c16;
+		private BigDecimal r49_total;
+		private String r50_product;
+		private BigDecimal r50_botswana;
+		private BigDecimal r50_south_africa;
+		private BigDecimal r50_sadc;
+		private BigDecimal r50_usa;
+		private BigDecimal r50_uk;
+		private BigDecimal r50_europe;
+		private BigDecimal r50_india;
+		private BigDecimal r50_sydney;
+		private BigDecimal r50_uganda;
+		private BigDecimal r50_c10;
+		private BigDecimal r50_c11;
+		private BigDecimal r50_c12;
+		private BigDecimal r50_c13;
+		private BigDecimal r50_c14;
+		private BigDecimal r50_c15;
+		private BigDecimal r50_c16;
+		private BigDecimal r50_total;
+		private String r51_product;
+		private BigDecimal r51_botswana;
+		private BigDecimal r51_south_africa;
+		private BigDecimal r51_sadc;
+		private BigDecimal r51_usa;
+		private BigDecimal r51_uk;
+		private BigDecimal r51_europe;
+		private BigDecimal r51_india;
+		private BigDecimal r51_sydney;
+		private BigDecimal r51_uganda;
+		private BigDecimal r51_c10;
+		private BigDecimal r51_c11;
+		private BigDecimal r51_c12;
+		private BigDecimal r51_c13;
+		private BigDecimal r51_c14;
+		private BigDecimal r51_c15;
+		private BigDecimal r51_c16;
+		private BigDecimal r51_total;
+		private String r52_product;
+		private BigDecimal r52_botswana;
+		private BigDecimal r52_south_africa;
+		private BigDecimal r52_sadc;
+		private BigDecimal r52_usa;
+		private BigDecimal r52_uk;
+		private BigDecimal r52_europe;
+		private BigDecimal r52_india;
+		private BigDecimal r52_sydney;
+		private BigDecimal r52_uganda;
+		private BigDecimal r52_c10;
+		private BigDecimal r52_c11;
+		private BigDecimal r52_c12;
+		private BigDecimal r52_c13;
+		private BigDecimal r52_c14;
+		private BigDecimal r52_c15;
+		private BigDecimal r52_c16;
+		private BigDecimal r52_total;
+		private String r53_product;
+		private BigDecimal r53_botswana;
+		private BigDecimal r53_south_africa;
+		private BigDecimal r53_sadc;
+		private BigDecimal r53_usa;
+		private BigDecimal r53_uk;
+		private BigDecimal r53_europe;
+		private BigDecimal r53_india;
+		private BigDecimal r53_sydney;
+		private BigDecimal r53_uganda;
+		private BigDecimal r53_c10;
+		private BigDecimal r53_c11;
+		private BigDecimal r53_c12;
+		private BigDecimal r53_c13;
+		private BigDecimal r53_c14;
+		private BigDecimal r53_c15;
+		private BigDecimal r53_c16;
+		private BigDecimal r53_total;
+		private String r54_product;
+		private BigDecimal r54_botswana;
+		private BigDecimal r54_south_africa;
+		private BigDecimal r54_sadc;
+		private BigDecimal r54_usa;
+		private BigDecimal r54_uk;
+		private BigDecimal r54_europe;
+		private BigDecimal r54_india;
+		private BigDecimal r54_sydney;
+		private BigDecimal r54_uganda;
+		private BigDecimal r54_c10;
+		private BigDecimal r54_c11;
+		private BigDecimal r54_c12;
+		private BigDecimal r54_c13;
+		private BigDecimal r54_c14;
+		private BigDecimal r54_c15;
+		private BigDecimal r54_c16;
+		private BigDecimal r54_total;
+		private String r55_product;
+		private BigDecimal r55_botswana;
+		private BigDecimal r55_south_africa;
+		private BigDecimal r55_sadc;
+		private BigDecimal r55_usa;
+		private BigDecimal r55_uk;
+		private BigDecimal r55_europe;
+		private BigDecimal r55_india;
+		private BigDecimal r55_sydney;
+		private BigDecimal r55_uganda;
+		private BigDecimal r55_c10;
+		private BigDecimal r55_c11;
+		private BigDecimal r55_c12;
+		private BigDecimal r55_c13;
+		private BigDecimal r55_c14;
+		private BigDecimal r55_c15;
+		private BigDecimal r55_c16;
+		private BigDecimal r55_total;
+		private String r56_product;
+		private BigDecimal r56_botswana;
+		private BigDecimal r56_south_africa;
+		private BigDecimal r56_sadc;
+		private BigDecimal r56_usa;
+		private BigDecimal r56_uk;
+		private BigDecimal r56_europe;
+		private BigDecimal r56_india;
+		private BigDecimal r56_sydney;
+		private BigDecimal r56_uganda;
+		private BigDecimal r56_c10;
+		private BigDecimal r56_c11;
+		private BigDecimal r56_c12;
+		private BigDecimal r56_c13;
+		private BigDecimal r56_c14;
+		private BigDecimal r56_c15;
+		private BigDecimal r56_c16;
+		private BigDecimal r56_total;
+		private String r59_product;
+		private BigDecimal r59_botswana;
+		private BigDecimal r59_south_africa;
+		private BigDecimal r59_sadc;
+		private BigDecimal r59_usa;
+		private BigDecimal r59_uk;
+		private BigDecimal r59_europe;
+		private BigDecimal r59_india;
+		private BigDecimal r59_sydney;
+		private BigDecimal r59_uganda;
+		private BigDecimal r59_c10;
+		private BigDecimal r59_c11;
+		private BigDecimal r59_c12;
+		private BigDecimal r59_c13;
+		private BigDecimal r59_c14;
+		private BigDecimal r59_c15;
+		private BigDecimal r59_c16;
+		private BigDecimal r59_total;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR10_product() { return r10_product; }
+		public void setR10_product(String r10_product) { this.r10_product = r10_product; }
+		public BigDecimal getR10_botswana() { return r10_botswana; }
+		public void setR10_botswana(BigDecimal r10_botswana) { this.r10_botswana = r10_botswana; }
+		public BigDecimal getR10_south_africa() { return r10_south_africa; }
+		public void setR10_south_africa(BigDecimal r10_south_africa) { this.r10_south_africa = r10_south_africa; }
+		public BigDecimal getR10_sadc() { return r10_sadc; }
+		public void setR10_sadc(BigDecimal r10_sadc) { this.r10_sadc = r10_sadc; }
+		public BigDecimal getR10_usa() { return r10_usa; }
+		public void setR10_usa(BigDecimal r10_usa) { this.r10_usa = r10_usa; }
+		public BigDecimal getR10_uk() { return r10_uk; }
+		public void setR10_uk(BigDecimal r10_uk) { this.r10_uk = r10_uk; }
+		public BigDecimal getR10_europe() { return r10_europe; }
+		public void setR10_europe(BigDecimal r10_europe) { this.r10_europe = r10_europe; }
+		public BigDecimal getR10_india() { return r10_india; }
+		public void setR10_india(BigDecimal r10_india) { this.r10_india = r10_india; }
+		public BigDecimal getR10_sydney() { return r10_sydney; }
+		public void setR10_sydney(BigDecimal r10_sydney) { this.r10_sydney = r10_sydney; }
+		public BigDecimal getR10_uganda() { return r10_uganda; }
+		public void setR10_uganda(BigDecimal r10_uganda) { this.r10_uganda = r10_uganda; }
+		public BigDecimal getR10_c10() { return r10_c10; }
+		public void setR10_c10(BigDecimal r10_c10) { this.r10_c10 = r10_c10; }
+		public BigDecimal getR10_c11() { return r10_c11; }
+		public void setR10_c11(BigDecimal r10_c11) { this.r10_c11 = r10_c11; }
+		public BigDecimal getR10_c12() { return r10_c12; }
+		public void setR10_c12(BigDecimal r10_c12) { this.r10_c12 = r10_c12; }
+		public BigDecimal getR10_c13() { return r10_c13; }
+		public void setR10_c13(BigDecimal r10_c13) { this.r10_c13 = r10_c13; }
+		public BigDecimal getR10_c14() { return r10_c14; }
+		public void setR10_c14(BigDecimal r10_c14) { this.r10_c14 = r10_c14; }
+		public BigDecimal getR10_c15() { return r10_c15; }
+		public void setR10_c15(BigDecimal r10_c15) { this.r10_c15 = r10_c15; }
+		public BigDecimal getR10_c16() { return r10_c16; }
+		public void setR10_c16(BigDecimal r10_c16) { this.r10_c16 = r10_c16; }
+		public BigDecimal getR10_total() { return r10_total; }
+		public void setR10_total(BigDecimal r10_total) { this.r10_total = r10_total; }
+		public String getR11_product() { return r11_product; }
+		public void setR11_product(String r11_product) { this.r11_product = r11_product; }
+		public BigDecimal getR11_botswana() { return r11_botswana; }
+		public void setR11_botswana(BigDecimal r11_botswana) { this.r11_botswana = r11_botswana; }
+		public BigDecimal getR11_south_africa() { return r11_south_africa; }
+		public void setR11_south_africa(BigDecimal r11_south_africa) { this.r11_south_africa = r11_south_africa; }
+		public BigDecimal getR11_sadc() { return r11_sadc; }
+		public void setR11_sadc(BigDecimal r11_sadc) { this.r11_sadc = r11_sadc; }
+		public BigDecimal getR11_usa() { return r11_usa; }
+		public void setR11_usa(BigDecimal r11_usa) { this.r11_usa = r11_usa; }
+		public BigDecimal getR11_uk() { return r11_uk; }
+		public void setR11_uk(BigDecimal r11_uk) { this.r11_uk = r11_uk; }
+		public BigDecimal getR11_europe() { return r11_europe; }
+		public void setR11_europe(BigDecimal r11_europe) { this.r11_europe = r11_europe; }
+		public BigDecimal getR11_india() { return r11_india; }
+		public void setR11_india(BigDecimal r11_india) { this.r11_india = r11_india; }
+		public BigDecimal getR11_sydney() { return r11_sydney; }
+		public void setR11_sydney(BigDecimal r11_sydney) { this.r11_sydney = r11_sydney; }
+		public BigDecimal getR11_uganda() { return r11_uganda; }
+		public void setR11_uganda(BigDecimal r11_uganda) { this.r11_uganda = r11_uganda; }
+		public BigDecimal getR11_c10() { return r11_c10; }
+		public void setR11_c10(BigDecimal r11_c10) { this.r11_c10 = r11_c10; }
+		public BigDecimal getR11_c11() { return r11_c11; }
+		public void setR11_c11(BigDecimal r11_c11) { this.r11_c11 = r11_c11; }
+		public BigDecimal getR11_c12() { return r11_c12; }
+		public void setR11_c12(BigDecimal r11_c12) { this.r11_c12 = r11_c12; }
+		public BigDecimal getR11_c13() { return r11_c13; }
+		public void setR11_c13(BigDecimal r11_c13) { this.r11_c13 = r11_c13; }
+		public BigDecimal getR11_c14() { return r11_c14; }
+		public void setR11_c14(BigDecimal r11_c14) { this.r11_c14 = r11_c14; }
+		public BigDecimal getR11_c15() { return r11_c15; }
+		public void setR11_c15(BigDecimal r11_c15) { this.r11_c15 = r11_c15; }
+		public BigDecimal getR11_c16() { return r11_c16; }
+		public void setR11_c16(BigDecimal r11_c16) { this.r11_c16 = r11_c16; }
+		public BigDecimal getR11_total() { return r11_total; }
+		public void setR11_total(BigDecimal r11_total) { this.r11_total = r11_total; }
+		public String getR12_product() { return r12_product; }
+		public void setR12_product(String r12_product) { this.r12_product = r12_product; }
+		public BigDecimal getR12_botswana() { return r12_botswana; }
+		public void setR12_botswana(BigDecimal r12_botswana) { this.r12_botswana = r12_botswana; }
+		public BigDecimal getR12_south_africa() { return r12_south_africa; }
+		public void setR12_south_africa(BigDecimal r12_south_africa) { this.r12_south_africa = r12_south_africa; }
+		public BigDecimal getR12_sadc() { return r12_sadc; }
+		public void setR12_sadc(BigDecimal r12_sadc) { this.r12_sadc = r12_sadc; }
+		public BigDecimal getR12_usa() { return r12_usa; }
+		public void setR12_usa(BigDecimal r12_usa) { this.r12_usa = r12_usa; }
+		public BigDecimal getR12_uk() { return r12_uk; }
+		public void setR12_uk(BigDecimal r12_uk) { this.r12_uk = r12_uk; }
+		public BigDecimal getR12_europe() { return r12_europe; }
+		public void setR12_europe(BigDecimal r12_europe) { this.r12_europe = r12_europe; }
+		public BigDecimal getR12_india() { return r12_india; }
+		public void setR12_india(BigDecimal r12_india) { this.r12_india = r12_india; }
+		public BigDecimal getR12_sydney() { return r12_sydney; }
+		public void setR12_sydney(BigDecimal r12_sydney) { this.r12_sydney = r12_sydney; }
+		public BigDecimal getR12_uganda() { return r12_uganda; }
+		public void setR12_uganda(BigDecimal r12_uganda) { this.r12_uganda = r12_uganda; }
+		public BigDecimal getR12_c10() { return r12_c10; }
+		public void setR12_c10(BigDecimal r12_c10) { this.r12_c10 = r12_c10; }
+		public BigDecimal getR12_c11() { return r12_c11; }
+		public void setR12_c11(BigDecimal r12_c11) { this.r12_c11 = r12_c11; }
+		public BigDecimal getR12_c12() { return r12_c12; }
+		public void setR12_c12(BigDecimal r12_c12) { this.r12_c12 = r12_c12; }
+		public BigDecimal getR12_c13() { return r12_c13; }
+		public void setR12_c13(BigDecimal r12_c13) { this.r12_c13 = r12_c13; }
+		public BigDecimal getR12_c14() { return r12_c14; }
+		public void setR12_c14(BigDecimal r12_c14) { this.r12_c14 = r12_c14; }
+		public BigDecimal getR12_c15() { return r12_c15; }
+		public void setR12_c15(BigDecimal r12_c15) { this.r12_c15 = r12_c15; }
+		public BigDecimal getR12_c16() { return r12_c16; }
+		public void setR12_c16(BigDecimal r12_c16) { this.r12_c16 = r12_c16; }
+		public BigDecimal getR12_total() { return r12_total; }
+		public void setR12_total(BigDecimal r12_total) { this.r12_total = r12_total; }
+		public String getR13_product() { return r13_product; }
+		public void setR13_product(String r13_product) { this.r13_product = r13_product; }
+		public BigDecimal getR13_botswana() { return r13_botswana; }
+		public void setR13_botswana(BigDecimal r13_botswana) { this.r13_botswana = r13_botswana; }
+		public BigDecimal getR13_south_africa() { return r13_south_africa; }
+		public void setR13_south_africa(BigDecimal r13_south_africa) { this.r13_south_africa = r13_south_africa; }
+		public BigDecimal getR13_sadc() { return r13_sadc; }
+		public void setR13_sadc(BigDecimal r13_sadc) { this.r13_sadc = r13_sadc; }
+		public BigDecimal getR13_usa() { return r13_usa; }
+		public void setR13_usa(BigDecimal r13_usa) { this.r13_usa = r13_usa; }
+		public BigDecimal getR13_uk() { return r13_uk; }
+		public void setR13_uk(BigDecimal r13_uk) { this.r13_uk = r13_uk; }
+		public BigDecimal getR13_europe() { return r13_europe; }
+		public void setR13_europe(BigDecimal r13_europe) { this.r13_europe = r13_europe; }
+		public BigDecimal getR13_india() { return r13_india; }
+		public void setR13_india(BigDecimal r13_india) { this.r13_india = r13_india; }
+		public BigDecimal getR13_sydney() { return r13_sydney; }
+		public void setR13_sydney(BigDecimal r13_sydney) { this.r13_sydney = r13_sydney; }
+		public BigDecimal getR13_uganda() { return r13_uganda; }
+		public void setR13_uganda(BigDecimal r13_uganda) { this.r13_uganda = r13_uganda; }
+		public BigDecimal getR13_c10() { return r13_c10; }
+		public void setR13_c10(BigDecimal r13_c10) { this.r13_c10 = r13_c10; }
+		public BigDecimal getR13_c11() { return r13_c11; }
+		public void setR13_c11(BigDecimal r13_c11) { this.r13_c11 = r13_c11; }
+		public BigDecimal getR13_c12() { return r13_c12; }
+		public void setR13_c12(BigDecimal r13_c12) { this.r13_c12 = r13_c12; }
+		public BigDecimal getR13_c13() { return r13_c13; }
+		public void setR13_c13(BigDecimal r13_c13) { this.r13_c13 = r13_c13; }
+		public BigDecimal getR13_c14() { return r13_c14; }
+		public void setR13_c14(BigDecimal r13_c14) { this.r13_c14 = r13_c14; }
+		public BigDecimal getR13_c15() { return r13_c15; }
+		public void setR13_c15(BigDecimal r13_c15) { this.r13_c15 = r13_c15; }
+		public BigDecimal getR13_c16() { return r13_c16; }
+		public void setR13_c16(BigDecimal r13_c16) { this.r13_c16 = r13_c16; }
+		public BigDecimal getR13_total() { return r13_total; }
+		public void setR13_total(BigDecimal r13_total) { this.r13_total = r13_total; }
+		public String getR14_product() { return r14_product; }
+		public void setR14_product(String r14_product) { this.r14_product = r14_product; }
+		public BigDecimal getR14_botswana() { return r14_botswana; }
+		public void setR14_botswana(BigDecimal r14_botswana) { this.r14_botswana = r14_botswana; }
+		public BigDecimal getR14_south_africa() { return r14_south_africa; }
+		public void setR14_south_africa(BigDecimal r14_south_africa) { this.r14_south_africa = r14_south_africa; }
+		public BigDecimal getR14_sadc() { return r14_sadc; }
+		public void setR14_sadc(BigDecimal r14_sadc) { this.r14_sadc = r14_sadc; }
+		public BigDecimal getR14_usa() { return r14_usa; }
+		public void setR14_usa(BigDecimal r14_usa) { this.r14_usa = r14_usa; }
+		public BigDecimal getR14_uk() { return r14_uk; }
+		public void setR14_uk(BigDecimal r14_uk) { this.r14_uk = r14_uk; }
+		public BigDecimal getR14_europe() { return r14_europe; }
+		public void setR14_europe(BigDecimal r14_europe) { this.r14_europe = r14_europe; }
+		public BigDecimal getR14_india() { return r14_india; }
+		public void setR14_india(BigDecimal r14_india) { this.r14_india = r14_india; }
+		public BigDecimal getR14_sydney() { return r14_sydney; }
+		public void setR14_sydney(BigDecimal r14_sydney) { this.r14_sydney = r14_sydney; }
+		public BigDecimal getR14_uganda() { return r14_uganda; }
+		public void setR14_uganda(BigDecimal r14_uganda) { this.r14_uganda = r14_uganda; }
+		public BigDecimal getR14_c10() { return r14_c10; }
+		public void setR14_c10(BigDecimal r14_c10) { this.r14_c10 = r14_c10; }
+		public BigDecimal getR14_c11() { return r14_c11; }
+		public void setR14_c11(BigDecimal r14_c11) { this.r14_c11 = r14_c11; }
+		public BigDecimal getR14_c12() { return r14_c12; }
+		public void setR14_c12(BigDecimal r14_c12) { this.r14_c12 = r14_c12; }
+		public BigDecimal getR14_c13() { return r14_c13; }
+		public void setR14_c13(BigDecimal r14_c13) { this.r14_c13 = r14_c13; }
+		public BigDecimal getR14_c14() { return r14_c14; }
+		public void setR14_c14(BigDecimal r14_c14) { this.r14_c14 = r14_c14; }
+		public BigDecimal getR14_c15() { return r14_c15; }
+		public void setR14_c15(BigDecimal r14_c15) { this.r14_c15 = r14_c15; }
+		public BigDecimal getR14_c16() { return r14_c16; }
+		public void setR14_c16(BigDecimal r14_c16) { this.r14_c16 = r14_c16; }
+		public BigDecimal getR14_total() { return r14_total; }
+		public void setR14_total(BigDecimal r14_total) { this.r14_total = r14_total; }
+		public String getR15_product() { return r15_product; }
+		public void setR15_product(String r15_product) { this.r15_product = r15_product; }
+		public BigDecimal getR15_botswana() { return r15_botswana; }
+		public void setR15_botswana(BigDecimal r15_botswana) { this.r15_botswana = r15_botswana; }
+		public BigDecimal getR15_south_africa() { return r15_south_africa; }
+		public void setR15_south_africa(BigDecimal r15_south_africa) { this.r15_south_africa = r15_south_africa; }
+		public BigDecimal getR15_sadc() { return r15_sadc; }
+		public void setR15_sadc(BigDecimal r15_sadc) { this.r15_sadc = r15_sadc; }
+		public BigDecimal getR15_usa() { return r15_usa; }
+		public void setR15_usa(BigDecimal r15_usa) { this.r15_usa = r15_usa; }
+		public BigDecimal getR15_uk() { return r15_uk; }
+		public void setR15_uk(BigDecimal r15_uk) { this.r15_uk = r15_uk; }
+		public BigDecimal getR15_europe() { return r15_europe; }
+		public void setR15_europe(BigDecimal r15_europe) { this.r15_europe = r15_europe; }
+		public BigDecimal getR15_india() { return r15_india; }
+		public void setR15_india(BigDecimal r15_india) { this.r15_india = r15_india; }
+		public BigDecimal getR15_sydney() { return r15_sydney; }
+		public void setR15_sydney(BigDecimal r15_sydney) { this.r15_sydney = r15_sydney; }
+		public BigDecimal getR15_uganda() { return r15_uganda; }
+		public void setR15_uganda(BigDecimal r15_uganda) { this.r15_uganda = r15_uganda; }
+		public BigDecimal getR15_c10() { return r15_c10; }
+		public void setR15_c10(BigDecimal r15_c10) { this.r15_c10 = r15_c10; }
+		public BigDecimal getR15_c11() { return r15_c11; }
+		public void setR15_c11(BigDecimal r15_c11) { this.r15_c11 = r15_c11; }
+		public BigDecimal getR15_c12() { return r15_c12; }
+		public void setR15_c12(BigDecimal r15_c12) { this.r15_c12 = r15_c12; }
+		public BigDecimal getR15_c13() { return r15_c13; }
+		public void setR15_c13(BigDecimal r15_c13) { this.r15_c13 = r15_c13; }
+		public BigDecimal getR15_c14() { return r15_c14; }
+		public void setR15_c14(BigDecimal r15_c14) { this.r15_c14 = r15_c14; }
+		public BigDecimal getR15_c15() { return r15_c15; }
+		public void setR15_c15(BigDecimal r15_c15) { this.r15_c15 = r15_c15; }
+		public BigDecimal getR15_c16() { return r15_c16; }
+		public void setR15_c16(BigDecimal r15_c16) { this.r15_c16 = r15_c16; }
+		public BigDecimal getR15_total() { return r15_total; }
+		public void setR15_total(BigDecimal r15_total) { this.r15_total = r15_total; }
+		public String getR16_product() { return r16_product; }
+		public void setR16_product(String r16_product) { this.r16_product = r16_product; }
+		public BigDecimal getR16_botswana() { return r16_botswana; }
+		public void setR16_botswana(BigDecimal r16_botswana) { this.r16_botswana = r16_botswana; }
+		public BigDecimal getR16_south_africa() { return r16_south_africa; }
+		public void setR16_south_africa(BigDecimal r16_south_africa) { this.r16_south_africa = r16_south_africa; }
+		public BigDecimal getR16_sadc() { return r16_sadc; }
+		public void setR16_sadc(BigDecimal r16_sadc) { this.r16_sadc = r16_sadc; }
+		public BigDecimal getR16_usa() { return r16_usa; }
+		public void setR16_usa(BigDecimal r16_usa) { this.r16_usa = r16_usa; }
+		public BigDecimal getR16_uk() { return r16_uk; }
+		public void setR16_uk(BigDecimal r16_uk) { this.r16_uk = r16_uk; }
+		public BigDecimal getR16_europe() { return r16_europe; }
+		public void setR16_europe(BigDecimal r16_europe) { this.r16_europe = r16_europe; }
+		public BigDecimal getR16_india() { return r16_india; }
+		public void setR16_india(BigDecimal r16_india) { this.r16_india = r16_india; }
+		public BigDecimal getR16_sydney() { return r16_sydney; }
+		public void setR16_sydney(BigDecimal r16_sydney) { this.r16_sydney = r16_sydney; }
+		public BigDecimal getR16_uganda() { return r16_uganda; }
+		public void setR16_uganda(BigDecimal r16_uganda) { this.r16_uganda = r16_uganda; }
+		public BigDecimal getR16_c10() { return r16_c10; }
+		public void setR16_c10(BigDecimal r16_c10) { this.r16_c10 = r16_c10; }
+		public BigDecimal getR16_c11() { return r16_c11; }
+		public void setR16_c11(BigDecimal r16_c11) { this.r16_c11 = r16_c11; }
+		public BigDecimal getR16_c12() { return r16_c12; }
+		public void setR16_c12(BigDecimal r16_c12) { this.r16_c12 = r16_c12; }
+		public BigDecimal getR16_c13() { return r16_c13; }
+		public void setR16_c13(BigDecimal r16_c13) { this.r16_c13 = r16_c13; }
+		public BigDecimal getR16_c14() { return r16_c14; }
+		public void setR16_c14(BigDecimal r16_c14) { this.r16_c14 = r16_c14; }
+		public BigDecimal getR16_c15() { return r16_c15; }
+		public void setR16_c15(BigDecimal r16_c15) { this.r16_c15 = r16_c15; }
+		public BigDecimal getR16_c16() { return r16_c16; }
+		public void setR16_c16(BigDecimal r16_c16) { this.r16_c16 = r16_c16; }
+		public BigDecimal getR16_total() { return r16_total; }
+		public void setR16_total(BigDecimal r16_total) { this.r16_total = r16_total; }
+		public String getR17_product() { return r17_product; }
+		public void setR17_product(String r17_product) { this.r17_product = r17_product; }
+		public BigDecimal getR17_botswana() { return r17_botswana; }
+		public void setR17_botswana(BigDecimal r17_botswana) { this.r17_botswana = r17_botswana; }
+		public BigDecimal getR17_south_africa() { return r17_south_africa; }
+		public void setR17_south_africa(BigDecimal r17_south_africa) { this.r17_south_africa = r17_south_africa; }
+		public BigDecimal getR17_sadc() { return r17_sadc; }
+		public void setR17_sadc(BigDecimal r17_sadc) { this.r17_sadc = r17_sadc; }
+		public BigDecimal getR17_usa() { return r17_usa; }
+		public void setR17_usa(BigDecimal r17_usa) { this.r17_usa = r17_usa; }
+		public BigDecimal getR17_uk() { return r17_uk; }
+		public void setR17_uk(BigDecimal r17_uk) { this.r17_uk = r17_uk; }
+		public BigDecimal getR17_europe() { return r17_europe; }
+		public void setR17_europe(BigDecimal r17_europe) { this.r17_europe = r17_europe; }
+		public BigDecimal getR17_india() { return r17_india; }
+		public void setR17_india(BigDecimal r17_india) { this.r17_india = r17_india; }
+		public BigDecimal getR17_sydney() { return r17_sydney; }
+		public void setR17_sydney(BigDecimal r17_sydney) { this.r17_sydney = r17_sydney; }
+		public BigDecimal getR17_uganda() { return r17_uganda; }
+		public void setR17_uganda(BigDecimal r17_uganda) { this.r17_uganda = r17_uganda; }
+		public BigDecimal getR17_c10() { return r17_c10; }
+		public void setR17_c10(BigDecimal r17_c10) { this.r17_c10 = r17_c10; }
+		public BigDecimal getR17_c11() { return r17_c11; }
+		public void setR17_c11(BigDecimal r17_c11) { this.r17_c11 = r17_c11; }
+		public BigDecimal getR17_c12() { return r17_c12; }
+		public void setR17_c12(BigDecimal r17_c12) { this.r17_c12 = r17_c12; }
+		public BigDecimal getR17_c13() { return r17_c13; }
+		public void setR17_c13(BigDecimal r17_c13) { this.r17_c13 = r17_c13; }
+		public BigDecimal getR17_c14() { return r17_c14; }
+		public void setR17_c14(BigDecimal r17_c14) { this.r17_c14 = r17_c14; }
+		public BigDecimal getR17_c15() { return r17_c15; }
+		public void setR17_c15(BigDecimal r17_c15) { this.r17_c15 = r17_c15; }
+		public BigDecimal getR17_c16() { return r17_c16; }
+		public void setR17_c16(BigDecimal r17_c16) { this.r17_c16 = r17_c16; }
+		public BigDecimal getR17_total() { return r17_total; }
+		public void setR17_total(BigDecimal r17_total) { this.r17_total = r17_total; }
+		public String getR18_product() { return r18_product; }
+		public void setR18_product(String r18_product) { this.r18_product = r18_product; }
+		public BigDecimal getR18_botswana() { return r18_botswana; }
+		public void setR18_botswana(BigDecimal r18_botswana) { this.r18_botswana = r18_botswana; }
+		public BigDecimal getR18_south_africa() { return r18_south_africa; }
+		public void setR18_south_africa(BigDecimal r18_south_africa) { this.r18_south_africa = r18_south_africa; }
+		public BigDecimal getR18_sadc() { return r18_sadc; }
+		public void setR18_sadc(BigDecimal r18_sadc) { this.r18_sadc = r18_sadc; }
+		public BigDecimal getR18_usa() { return r18_usa; }
+		public void setR18_usa(BigDecimal r18_usa) { this.r18_usa = r18_usa; }
+		public BigDecimal getR18_uk() { return r18_uk; }
+		public void setR18_uk(BigDecimal r18_uk) { this.r18_uk = r18_uk; }
+		public BigDecimal getR18_europe() { return r18_europe; }
+		public void setR18_europe(BigDecimal r18_europe) { this.r18_europe = r18_europe; }
+		public BigDecimal getR18_india() { return r18_india; }
+		public void setR18_india(BigDecimal r18_india) { this.r18_india = r18_india; }
+		public BigDecimal getR18_sydney() { return r18_sydney; }
+		public void setR18_sydney(BigDecimal r18_sydney) { this.r18_sydney = r18_sydney; }
+		public BigDecimal getR18_uganda() { return r18_uganda; }
+		public void setR18_uganda(BigDecimal r18_uganda) { this.r18_uganda = r18_uganda; }
+		public BigDecimal getR18_c10() { return r18_c10; }
+		public void setR18_c10(BigDecimal r18_c10) { this.r18_c10 = r18_c10; }
+		public BigDecimal getR18_c11() { return r18_c11; }
+		public void setR18_c11(BigDecimal r18_c11) { this.r18_c11 = r18_c11; }
+		public BigDecimal getR18_c12() { return r18_c12; }
+		public void setR18_c12(BigDecimal r18_c12) { this.r18_c12 = r18_c12; }
+		public BigDecimal getR18_c13() { return r18_c13; }
+		public void setR18_c13(BigDecimal r18_c13) { this.r18_c13 = r18_c13; }
+		public BigDecimal getR18_c14() { return r18_c14; }
+		public void setR18_c14(BigDecimal r18_c14) { this.r18_c14 = r18_c14; }
+		public BigDecimal getR18_c15() { return r18_c15; }
+		public void setR18_c15(BigDecimal r18_c15) { this.r18_c15 = r18_c15; }
+		public BigDecimal getR18_c16() { return r18_c16; }
+		public void setR18_c16(BigDecimal r18_c16) { this.r18_c16 = r18_c16; }
+		public BigDecimal getR18_total() { return r18_total; }
+		public void setR18_total(BigDecimal r18_total) { this.r18_total = r18_total; }
+		public String getR19_product() { return r19_product; }
+		public void setR19_product(String r19_product) { this.r19_product = r19_product; }
+		public BigDecimal getR19_botswana() { return r19_botswana; }
+		public void setR19_botswana(BigDecimal r19_botswana) { this.r19_botswana = r19_botswana; }
+		public BigDecimal getR19_south_africa() { return r19_south_africa; }
+		public void setR19_south_africa(BigDecimal r19_south_africa) { this.r19_south_africa = r19_south_africa; }
+		public BigDecimal getR19_sadc() { return r19_sadc; }
+		public void setR19_sadc(BigDecimal r19_sadc) { this.r19_sadc = r19_sadc; }
+		public BigDecimal getR19_usa() { return r19_usa; }
+		public void setR19_usa(BigDecimal r19_usa) { this.r19_usa = r19_usa; }
+		public BigDecimal getR19_uk() { return r19_uk; }
+		public void setR19_uk(BigDecimal r19_uk) { this.r19_uk = r19_uk; }
+		public BigDecimal getR19_europe() { return r19_europe; }
+		public void setR19_europe(BigDecimal r19_europe) { this.r19_europe = r19_europe; }
+		public BigDecimal getR19_india() { return r19_india; }
+		public void setR19_india(BigDecimal r19_india) { this.r19_india = r19_india; }
+		public BigDecimal getR19_sydney() { return r19_sydney; }
+		public void setR19_sydney(BigDecimal r19_sydney) { this.r19_sydney = r19_sydney; }
+		public BigDecimal getR19_uganda() { return r19_uganda; }
+		public void setR19_uganda(BigDecimal r19_uganda) { this.r19_uganda = r19_uganda; }
+		public BigDecimal getR19_c10() { return r19_c10; }
+		public void setR19_c10(BigDecimal r19_c10) { this.r19_c10 = r19_c10; }
+		public BigDecimal getR19_c11() { return r19_c11; }
+		public void setR19_c11(BigDecimal r19_c11) { this.r19_c11 = r19_c11; }
+		public BigDecimal getR19_c12() { return r19_c12; }
+		public void setR19_c12(BigDecimal r19_c12) { this.r19_c12 = r19_c12; }
+		public BigDecimal getR19_c13() { return r19_c13; }
+		public void setR19_c13(BigDecimal r19_c13) { this.r19_c13 = r19_c13; }
+		public BigDecimal getR19_c14() { return r19_c14; }
+		public void setR19_c14(BigDecimal r19_c14) { this.r19_c14 = r19_c14; }
+		public BigDecimal getR19_c15() { return r19_c15; }
+		public void setR19_c15(BigDecimal r19_c15) { this.r19_c15 = r19_c15; }
+		public BigDecimal getR19_c16() { return r19_c16; }
+		public void setR19_c16(BigDecimal r19_c16) { this.r19_c16 = r19_c16; }
+		public BigDecimal getR19_total() { return r19_total; }
+		public void setR19_total(BigDecimal r19_total) { this.r19_total = r19_total; }
+		public String getR20_product() { return r20_product; }
+		public void setR20_product(String r20_product) { this.r20_product = r20_product; }
+		public BigDecimal getR20_botswana() { return r20_botswana; }
+		public void setR20_botswana(BigDecimal r20_botswana) { this.r20_botswana = r20_botswana; }
+		public BigDecimal getR20_south_africa() { return r20_south_africa; }
+		public void setR20_south_africa(BigDecimal r20_south_africa) { this.r20_south_africa = r20_south_africa; }
+		public BigDecimal getR20_sadc() { return r20_sadc; }
+		public void setR20_sadc(BigDecimal r20_sadc) { this.r20_sadc = r20_sadc; }
+		public BigDecimal getR20_usa() { return r20_usa; }
+		public void setR20_usa(BigDecimal r20_usa) { this.r20_usa = r20_usa; }
+		public BigDecimal getR20_uk() { return r20_uk; }
+		public void setR20_uk(BigDecimal r20_uk) { this.r20_uk = r20_uk; }
+		public BigDecimal getR20_europe() { return r20_europe; }
+		public void setR20_europe(BigDecimal r20_europe) { this.r20_europe = r20_europe; }
+		public BigDecimal getR20_india() { return r20_india; }
+		public void setR20_india(BigDecimal r20_india) { this.r20_india = r20_india; }
+		public BigDecimal getR20_sydney() { return r20_sydney; }
+		public void setR20_sydney(BigDecimal r20_sydney) { this.r20_sydney = r20_sydney; }
+		public BigDecimal getR20_uganda() { return r20_uganda; }
+		public void setR20_uganda(BigDecimal r20_uganda) { this.r20_uganda = r20_uganda; }
+		public BigDecimal getR20_c10() { return r20_c10; }
+		public void setR20_c10(BigDecimal r20_c10) { this.r20_c10 = r20_c10; }
+		public BigDecimal getR20_c11() { return r20_c11; }
+		public void setR20_c11(BigDecimal r20_c11) { this.r20_c11 = r20_c11; }
+		public BigDecimal getR20_c12() { return r20_c12; }
+		public void setR20_c12(BigDecimal r20_c12) { this.r20_c12 = r20_c12; }
+		public BigDecimal getR20_c13() { return r20_c13; }
+		public void setR20_c13(BigDecimal r20_c13) { this.r20_c13 = r20_c13; }
+		public BigDecimal getR20_c14() { return r20_c14; }
+		public void setR20_c14(BigDecimal r20_c14) { this.r20_c14 = r20_c14; }
+		public BigDecimal getR20_c15() { return r20_c15; }
+		public void setR20_c15(BigDecimal r20_c15) { this.r20_c15 = r20_c15; }
+		public BigDecimal getR20_c16() { return r20_c16; }
+		public void setR20_c16(BigDecimal r20_c16) { this.r20_c16 = r20_c16; }
+		public BigDecimal getR20_total() { return r20_total; }
+		public void setR20_total(BigDecimal r20_total) { this.r20_total = r20_total; }
+		public String getR21_product() { return r21_product; }
+		public void setR21_product(String r21_product) { this.r21_product = r21_product; }
+		public BigDecimal getR21_botswana() { return r21_botswana; }
+		public void setR21_botswana(BigDecimal r21_botswana) { this.r21_botswana = r21_botswana; }
+		public BigDecimal getR21_south_africa() { return r21_south_africa; }
+		public void setR21_south_africa(BigDecimal r21_south_africa) { this.r21_south_africa = r21_south_africa; }
+		public BigDecimal getR21_sadc() { return r21_sadc; }
+		public void setR21_sadc(BigDecimal r21_sadc) { this.r21_sadc = r21_sadc; }
+		public BigDecimal getR21_usa() { return r21_usa; }
+		public void setR21_usa(BigDecimal r21_usa) { this.r21_usa = r21_usa; }
+		public BigDecimal getR21_uk() { return r21_uk; }
+		public void setR21_uk(BigDecimal r21_uk) { this.r21_uk = r21_uk; }
+		public BigDecimal getR21_europe() { return r21_europe; }
+		public void setR21_europe(BigDecimal r21_europe) { this.r21_europe = r21_europe; }
+		public BigDecimal getR21_india() { return r21_india; }
+		public void setR21_india(BigDecimal r21_india) { this.r21_india = r21_india; }
+		public BigDecimal getR21_sydney() { return r21_sydney; }
+		public void setR21_sydney(BigDecimal r21_sydney) { this.r21_sydney = r21_sydney; }
+		public BigDecimal getR21_uganda() { return r21_uganda; }
+		public void setR21_uganda(BigDecimal r21_uganda) { this.r21_uganda = r21_uganda; }
+		public BigDecimal getR21_c10() { return r21_c10; }
+		public void setR21_c10(BigDecimal r21_c10) { this.r21_c10 = r21_c10; }
+		public BigDecimal getR21_c11() { return r21_c11; }
+		public void setR21_c11(BigDecimal r21_c11) { this.r21_c11 = r21_c11; }
+		public BigDecimal getR21_c12() { return r21_c12; }
+		public void setR21_c12(BigDecimal r21_c12) { this.r21_c12 = r21_c12; }
+		public BigDecimal getR21_c13() { return r21_c13; }
+		public void setR21_c13(BigDecimal r21_c13) { this.r21_c13 = r21_c13; }
+		public BigDecimal getR21_c14() { return r21_c14; }
+		public void setR21_c14(BigDecimal r21_c14) { this.r21_c14 = r21_c14; }
+		public BigDecimal getR21_c15() { return r21_c15; }
+		public void setR21_c15(BigDecimal r21_c15) { this.r21_c15 = r21_c15; }
+		public BigDecimal getR21_c16() { return r21_c16; }
+		public void setR21_c16(BigDecimal r21_c16) { this.r21_c16 = r21_c16; }
+		public BigDecimal getR21_total() { return r21_total; }
+		public void setR21_total(BigDecimal r21_total) { this.r21_total = r21_total; }
+		public String getR24_product() { return r24_product; }
+		public void setR24_product(String r24_product) { this.r24_product = r24_product; }
+		public BigDecimal getR24_botswana() { return r24_botswana; }
+		public void setR24_botswana(BigDecimal r24_botswana) { this.r24_botswana = r24_botswana; }
+		public BigDecimal getR24_south_africa() { return r24_south_africa; }
+		public void setR24_south_africa(BigDecimal r24_south_africa) { this.r24_south_africa = r24_south_africa; }
+		public BigDecimal getR24_sadc() { return r24_sadc; }
+		public void setR24_sadc(BigDecimal r24_sadc) { this.r24_sadc = r24_sadc; }
+		public BigDecimal getR24_usa() { return r24_usa; }
+		public void setR24_usa(BigDecimal r24_usa) { this.r24_usa = r24_usa; }
+		public BigDecimal getR24_uk() { return r24_uk; }
+		public void setR24_uk(BigDecimal r24_uk) { this.r24_uk = r24_uk; }
+		public BigDecimal getR24_europe() { return r24_europe; }
+		public void setR24_europe(BigDecimal r24_europe) { this.r24_europe = r24_europe; }
+		public BigDecimal getR24_india() { return r24_india; }
+		public void setR24_india(BigDecimal r24_india) { this.r24_india = r24_india; }
+		public BigDecimal getR24_sydney() { return r24_sydney; }
+		public void setR24_sydney(BigDecimal r24_sydney) { this.r24_sydney = r24_sydney; }
+		public BigDecimal getR24_uganda() { return r24_uganda; }
+		public void setR24_uganda(BigDecimal r24_uganda) { this.r24_uganda = r24_uganda; }
+		public BigDecimal getR24_c10() { return r24_c10; }
+		public void setR24_c10(BigDecimal r24_c10) { this.r24_c10 = r24_c10; }
+		public BigDecimal getR24_c11() { return r24_c11; }
+		public void setR24_c11(BigDecimal r24_c11) { this.r24_c11 = r24_c11; }
+		public BigDecimal getR24_c12() { return r24_c12; }
+		public void setR24_c12(BigDecimal r24_c12) { this.r24_c12 = r24_c12; }
+		public BigDecimal getR24_c13() { return r24_c13; }
+		public void setR24_c13(BigDecimal r24_c13) { this.r24_c13 = r24_c13; }
+		public BigDecimal getR24_c14() { return r24_c14; }
+		public void setR24_c14(BigDecimal r24_c14) { this.r24_c14 = r24_c14; }
+		public BigDecimal getR24_c15() { return r24_c15; }
+		public void setR24_c15(BigDecimal r24_c15) { this.r24_c15 = r24_c15; }
+		public BigDecimal getR24_c16() { return r24_c16; }
+		public void setR24_c16(BigDecimal r24_c16) { this.r24_c16 = r24_c16; }
+		public BigDecimal getR24_total() { return r24_total; }
+		public void setR24_total(BigDecimal r24_total) { this.r24_total = r24_total; }
+		public String getR25_product() { return r25_product; }
+		public void setR25_product(String r25_product) { this.r25_product = r25_product; }
+		public BigDecimal getR25_botswana() { return r25_botswana; }
+		public void setR25_botswana(BigDecimal r25_botswana) { this.r25_botswana = r25_botswana; }
+		public BigDecimal getR25_south_africa() { return r25_south_africa; }
+		public void setR25_south_africa(BigDecimal r25_south_africa) { this.r25_south_africa = r25_south_africa; }
+		public BigDecimal getR25_sadc() { return r25_sadc; }
+		public void setR25_sadc(BigDecimal r25_sadc) { this.r25_sadc = r25_sadc; }
+		public BigDecimal getR25_usa() { return r25_usa; }
+		public void setR25_usa(BigDecimal r25_usa) { this.r25_usa = r25_usa; }
+		public BigDecimal getR25_uk() { return r25_uk; }
+		public void setR25_uk(BigDecimal r25_uk) { this.r25_uk = r25_uk; }
+		public BigDecimal getR25_europe() { return r25_europe; }
+		public void setR25_europe(BigDecimal r25_europe) { this.r25_europe = r25_europe; }
+		public BigDecimal getR25_india() { return r25_india; }
+		public void setR25_india(BigDecimal r25_india) { this.r25_india = r25_india; }
+		public BigDecimal getR25_sydney() { return r25_sydney; }
+		public void setR25_sydney(BigDecimal r25_sydney) { this.r25_sydney = r25_sydney; }
+		public BigDecimal getR25_uganda() { return r25_uganda; }
+		public void setR25_uganda(BigDecimal r25_uganda) { this.r25_uganda = r25_uganda; }
+		public BigDecimal getR25_c10() { return r25_c10; }
+		public void setR25_c10(BigDecimal r25_c10) { this.r25_c10 = r25_c10; }
+		public BigDecimal getR25_c11() { return r25_c11; }
+		public void setR25_c11(BigDecimal r25_c11) { this.r25_c11 = r25_c11; }
+		public BigDecimal getR25_c12() { return r25_c12; }
+		public void setR25_c12(BigDecimal r25_c12) { this.r25_c12 = r25_c12; }
+		public BigDecimal getR25_c13() { return r25_c13; }
+		public void setR25_c13(BigDecimal r25_c13) { this.r25_c13 = r25_c13; }
+		public BigDecimal getR25_c14() { return r25_c14; }
+		public void setR25_c14(BigDecimal r25_c14) { this.r25_c14 = r25_c14; }
+		public BigDecimal getR25_c15() { return r25_c15; }
+		public void setR25_c15(BigDecimal r25_c15) { this.r25_c15 = r25_c15; }
+		public BigDecimal getR25_c16() { return r25_c16; }
+		public void setR25_c16(BigDecimal r25_c16) { this.r25_c16 = r25_c16; }
+		public BigDecimal getR25_total() { return r25_total; }
+		public void setR25_total(BigDecimal r25_total) { this.r25_total = r25_total; }
+		public String getR26_product() { return r26_product; }
+		public void setR26_product(String r26_product) { this.r26_product = r26_product; }
+		public BigDecimal getR26_botswana() { return r26_botswana; }
+		public void setR26_botswana(BigDecimal r26_botswana) { this.r26_botswana = r26_botswana; }
+		public BigDecimal getR26_south_africa() { return r26_south_africa; }
+		public void setR26_south_africa(BigDecimal r26_south_africa) { this.r26_south_africa = r26_south_africa; }
+		public BigDecimal getR26_sadc() { return r26_sadc; }
+		public void setR26_sadc(BigDecimal r26_sadc) { this.r26_sadc = r26_sadc; }
+		public BigDecimal getR26_usa() { return r26_usa; }
+		public void setR26_usa(BigDecimal r26_usa) { this.r26_usa = r26_usa; }
+		public BigDecimal getR26_uk() { return r26_uk; }
+		public void setR26_uk(BigDecimal r26_uk) { this.r26_uk = r26_uk; }
+		public BigDecimal getR26_europe() { return r26_europe; }
+		public void setR26_europe(BigDecimal r26_europe) { this.r26_europe = r26_europe; }
+		public BigDecimal getR26_india() { return r26_india; }
+		public void setR26_india(BigDecimal r26_india) { this.r26_india = r26_india; }
+		public BigDecimal getR26_sydney() { return r26_sydney; }
+		public void setR26_sydney(BigDecimal r26_sydney) { this.r26_sydney = r26_sydney; }
+		public BigDecimal getR26_uganda() { return r26_uganda; }
+		public void setR26_uganda(BigDecimal r26_uganda) { this.r26_uganda = r26_uganda; }
+		public BigDecimal getR26_c10() { return r26_c10; }
+		public void setR26_c10(BigDecimal r26_c10) { this.r26_c10 = r26_c10; }
+		public BigDecimal getR26_c11() { return r26_c11; }
+		public void setR26_c11(BigDecimal r26_c11) { this.r26_c11 = r26_c11; }
+		public BigDecimal getR26_c12() { return r26_c12; }
+		public void setR26_c12(BigDecimal r26_c12) { this.r26_c12 = r26_c12; }
+		public BigDecimal getR26_c13() { return r26_c13; }
+		public void setR26_c13(BigDecimal r26_c13) { this.r26_c13 = r26_c13; }
+		public BigDecimal getR26_c14() { return r26_c14; }
+		public void setR26_c14(BigDecimal r26_c14) { this.r26_c14 = r26_c14; }
+		public BigDecimal getR26_c15() { return r26_c15; }
+		public void setR26_c15(BigDecimal r26_c15) { this.r26_c15 = r26_c15; }
+		public BigDecimal getR26_c16() { return r26_c16; }
+		public void setR26_c16(BigDecimal r26_c16) { this.r26_c16 = r26_c16; }
+		public BigDecimal getR26_total() { return r26_total; }
+		public void setR26_total(BigDecimal r26_total) { this.r26_total = r26_total; }
+		public String getR27_product() { return r27_product; }
+		public void setR27_product(String r27_product) { this.r27_product = r27_product; }
+		public BigDecimal getR27_botswana() { return r27_botswana; }
+		public void setR27_botswana(BigDecimal r27_botswana) { this.r27_botswana = r27_botswana; }
+		public BigDecimal getR27_south_africa() { return r27_south_africa; }
+		public void setR27_south_africa(BigDecimal r27_south_africa) { this.r27_south_africa = r27_south_africa; }
+		public BigDecimal getR27_sadc() { return r27_sadc; }
+		public void setR27_sadc(BigDecimal r27_sadc) { this.r27_sadc = r27_sadc; }
+		public BigDecimal getR27_usa() { return r27_usa; }
+		public void setR27_usa(BigDecimal r27_usa) { this.r27_usa = r27_usa; }
+		public BigDecimal getR27_uk() { return r27_uk; }
+		public void setR27_uk(BigDecimal r27_uk) { this.r27_uk = r27_uk; }
+		public BigDecimal getR27_europe() { return r27_europe; }
+		public void setR27_europe(BigDecimal r27_europe) { this.r27_europe = r27_europe; }
+		public BigDecimal getR27_india() { return r27_india; }
+		public void setR27_india(BigDecimal r27_india) { this.r27_india = r27_india; }
+		public BigDecimal getR27_sydney() { return r27_sydney; }
+		public void setR27_sydney(BigDecimal r27_sydney) { this.r27_sydney = r27_sydney; }
+		public BigDecimal getR27_uganda() { return r27_uganda; }
+		public void setR27_uganda(BigDecimal r27_uganda) { this.r27_uganda = r27_uganda; }
+		public BigDecimal getR27_c10() { return r27_c10; }
+		public void setR27_c10(BigDecimal r27_c10) { this.r27_c10 = r27_c10; }
+		public BigDecimal getR27_c11() { return r27_c11; }
+		public void setR27_c11(BigDecimal r27_c11) { this.r27_c11 = r27_c11; }
+		public BigDecimal getR27_c12() { return r27_c12; }
+		public void setR27_c12(BigDecimal r27_c12) { this.r27_c12 = r27_c12; }
+		public BigDecimal getR27_c13() { return r27_c13; }
+		public void setR27_c13(BigDecimal r27_c13) { this.r27_c13 = r27_c13; }
+		public BigDecimal getR27_c14() { return r27_c14; }
+		public void setR27_c14(BigDecimal r27_c14) { this.r27_c14 = r27_c14; }
+		public BigDecimal getR27_c15() { return r27_c15; }
+		public void setR27_c15(BigDecimal r27_c15) { this.r27_c15 = r27_c15; }
+		public BigDecimal getR27_c16() { return r27_c16; }
+		public void setR27_c16(BigDecimal r27_c16) { this.r27_c16 = r27_c16; }
+		public BigDecimal getR27_total() { return r27_total; }
+		public void setR27_total(BigDecimal r27_total) { this.r27_total = r27_total; }
+		public String getR28_product() { return r28_product; }
+		public void setR28_product(String r28_product) { this.r28_product = r28_product; }
+		public BigDecimal getR28_botswana() { return r28_botswana; }
+		public void setR28_botswana(BigDecimal r28_botswana) { this.r28_botswana = r28_botswana; }
+		public BigDecimal getR28_south_africa() { return r28_south_africa; }
+		public void setR28_south_africa(BigDecimal r28_south_africa) { this.r28_south_africa = r28_south_africa; }
+		public BigDecimal getR28_sadc() { return r28_sadc; }
+		public void setR28_sadc(BigDecimal r28_sadc) { this.r28_sadc = r28_sadc; }
+		public BigDecimal getR28_usa() { return r28_usa; }
+		public void setR28_usa(BigDecimal r28_usa) { this.r28_usa = r28_usa; }
+		public BigDecimal getR28_uk() { return r28_uk; }
+		public void setR28_uk(BigDecimal r28_uk) { this.r28_uk = r28_uk; }
+		public BigDecimal getR28_europe() { return r28_europe; }
+		public void setR28_europe(BigDecimal r28_europe) { this.r28_europe = r28_europe; }
+		public BigDecimal getR28_india() { return r28_india; }
+		public void setR28_india(BigDecimal r28_india) { this.r28_india = r28_india; }
+		public BigDecimal getR28_sydney() { return r28_sydney; }
+		public void setR28_sydney(BigDecimal r28_sydney) { this.r28_sydney = r28_sydney; }
+		public BigDecimal getR28_uganda() { return r28_uganda; }
+		public void setR28_uganda(BigDecimal r28_uganda) { this.r28_uganda = r28_uganda; }
+		public BigDecimal getR28_c10() { return r28_c10; }
+		public void setR28_c10(BigDecimal r28_c10) { this.r28_c10 = r28_c10; }
+		public BigDecimal getR28_c11() { return r28_c11; }
+		public void setR28_c11(BigDecimal r28_c11) { this.r28_c11 = r28_c11; }
+		public BigDecimal getR28_c12() { return r28_c12; }
+		public void setR28_c12(BigDecimal r28_c12) { this.r28_c12 = r28_c12; }
+		public BigDecimal getR28_c13() { return r28_c13; }
+		public void setR28_c13(BigDecimal r28_c13) { this.r28_c13 = r28_c13; }
+		public BigDecimal getR28_c14() { return r28_c14; }
+		public void setR28_c14(BigDecimal r28_c14) { this.r28_c14 = r28_c14; }
+		public BigDecimal getR28_c15() { return r28_c15; }
+		public void setR28_c15(BigDecimal r28_c15) { this.r28_c15 = r28_c15; }
+		public BigDecimal getR28_c16() { return r28_c16; }
+		public void setR28_c16(BigDecimal r28_c16) { this.r28_c16 = r28_c16; }
+		public BigDecimal getR28_total() { return r28_total; }
+		public void setR28_total(BigDecimal r28_total) { this.r28_total = r28_total; }
+		public String getR29_product() { return r29_product; }
+		public void setR29_product(String r29_product) { this.r29_product = r29_product; }
+		public BigDecimal getR29_botswana() { return r29_botswana; }
+		public void setR29_botswana(BigDecimal r29_botswana) { this.r29_botswana = r29_botswana; }
+		public BigDecimal getR29_south_africa() { return r29_south_africa; }
+		public void setR29_south_africa(BigDecimal r29_south_africa) { this.r29_south_africa = r29_south_africa; }
+		public BigDecimal getR29_sadc() { return r29_sadc; }
+		public void setR29_sadc(BigDecimal r29_sadc) { this.r29_sadc = r29_sadc; }
+		public BigDecimal getR29_usa() { return r29_usa; }
+		public void setR29_usa(BigDecimal r29_usa) { this.r29_usa = r29_usa; }
+		public BigDecimal getR29_uk() { return r29_uk; }
+		public void setR29_uk(BigDecimal r29_uk) { this.r29_uk = r29_uk; }
+		public BigDecimal getR29_europe() { return r29_europe; }
+		public void setR29_europe(BigDecimal r29_europe) { this.r29_europe = r29_europe; }
+		public BigDecimal getR29_india() { return r29_india; }
+		public void setR29_india(BigDecimal r29_india) { this.r29_india = r29_india; }
+		public BigDecimal getR29_sydney() { return r29_sydney; }
+		public void setR29_sydney(BigDecimal r29_sydney) { this.r29_sydney = r29_sydney; }
+		public BigDecimal getR29_uganda() { return r29_uganda; }
+		public void setR29_uganda(BigDecimal r29_uganda) { this.r29_uganda = r29_uganda; }
+		public BigDecimal getR29_c10() { return r29_c10; }
+		public void setR29_c10(BigDecimal r29_c10) { this.r29_c10 = r29_c10; }
+		public BigDecimal getR29_c11() { return r29_c11; }
+		public void setR29_c11(BigDecimal r29_c11) { this.r29_c11 = r29_c11; }
+		public BigDecimal getR29_c12() { return r29_c12; }
+		public void setR29_c12(BigDecimal r29_c12) { this.r29_c12 = r29_c12; }
+		public BigDecimal getR29_c13() { return r29_c13; }
+		public void setR29_c13(BigDecimal r29_c13) { this.r29_c13 = r29_c13; }
+		public BigDecimal getR29_c14() { return r29_c14; }
+		public void setR29_c14(BigDecimal r29_c14) { this.r29_c14 = r29_c14; }
+		public BigDecimal getR29_c15() { return r29_c15; }
+		public void setR29_c15(BigDecimal r29_c15) { this.r29_c15 = r29_c15; }
+		public BigDecimal getR29_c16() { return r29_c16; }
+		public void setR29_c16(BigDecimal r29_c16) { this.r29_c16 = r29_c16; }
+		public BigDecimal getR29_total() { return r29_total; }
+		public void setR29_total(BigDecimal r29_total) { this.r29_total = r29_total; }
+		public String getR30_product() { return r30_product; }
+		public void setR30_product(String r30_product) { this.r30_product = r30_product; }
+		public BigDecimal getR30_botswana() { return r30_botswana; }
+		public void setR30_botswana(BigDecimal r30_botswana) { this.r30_botswana = r30_botswana; }
+		public BigDecimal getR30_south_africa() { return r30_south_africa; }
+		public void setR30_south_africa(BigDecimal r30_south_africa) { this.r30_south_africa = r30_south_africa; }
+		public BigDecimal getR30_sadc() { return r30_sadc; }
+		public void setR30_sadc(BigDecimal r30_sadc) { this.r30_sadc = r30_sadc; }
+		public BigDecimal getR30_usa() { return r30_usa; }
+		public void setR30_usa(BigDecimal r30_usa) { this.r30_usa = r30_usa; }
+		public BigDecimal getR30_uk() { return r30_uk; }
+		public void setR30_uk(BigDecimal r30_uk) { this.r30_uk = r30_uk; }
+		public BigDecimal getR30_europe() { return r30_europe; }
+		public void setR30_europe(BigDecimal r30_europe) { this.r30_europe = r30_europe; }
+		public BigDecimal getR30_india() { return r30_india; }
+		public void setR30_india(BigDecimal r30_india) { this.r30_india = r30_india; }
+		public BigDecimal getR30_sydney() { return r30_sydney; }
+		public void setR30_sydney(BigDecimal r30_sydney) { this.r30_sydney = r30_sydney; }
+		public BigDecimal getR30_uganda() { return r30_uganda; }
+		public void setR30_uganda(BigDecimal r30_uganda) { this.r30_uganda = r30_uganda; }
+		public BigDecimal getR30_c10() { return r30_c10; }
+		public void setR30_c10(BigDecimal r30_c10) { this.r30_c10 = r30_c10; }
+		public BigDecimal getR30_c11() { return r30_c11; }
+		public void setR30_c11(BigDecimal r30_c11) { this.r30_c11 = r30_c11; }
+		public BigDecimal getR30_c12() { return r30_c12; }
+		public void setR30_c12(BigDecimal r30_c12) { this.r30_c12 = r30_c12; }
+		public BigDecimal getR30_c13() { return r30_c13; }
+		public void setR30_c13(BigDecimal r30_c13) { this.r30_c13 = r30_c13; }
+		public BigDecimal getR30_c14() { return r30_c14; }
+		public void setR30_c14(BigDecimal r30_c14) { this.r30_c14 = r30_c14; }
+		public BigDecimal getR30_c15() { return r30_c15; }
+		public void setR30_c15(BigDecimal r30_c15) { this.r30_c15 = r30_c15; }
+		public BigDecimal getR30_c16() { return r30_c16; }
+		public void setR30_c16(BigDecimal r30_c16) { this.r30_c16 = r30_c16; }
+		public BigDecimal getR30_total() { return r30_total; }
+		public void setR30_total(BigDecimal r30_total) { this.r30_total = r30_total; }
+		public String getR31_product() { return r31_product; }
+		public void setR31_product(String r31_product) { this.r31_product = r31_product; }
+		public BigDecimal getR31_botswana() { return r31_botswana; }
+		public void setR31_botswana(BigDecimal r31_botswana) { this.r31_botswana = r31_botswana; }
+		public BigDecimal getR31_south_africa() { return r31_south_africa; }
+		public void setR31_south_africa(BigDecimal r31_south_africa) { this.r31_south_africa = r31_south_africa; }
+		public BigDecimal getR31_sadc() { return r31_sadc; }
+		public void setR31_sadc(BigDecimal r31_sadc) { this.r31_sadc = r31_sadc; }
+		public BigDecimal getR31_usa() { return r31_usa; }
+		public void setR31_usa(BigDecimal r31_usa) { this.r31_usa = r31_usa; }
+		public BigDecimal getR31_uk() { return r31_uk; }
+		public void setR31_uk(BigDecimal r31_uk) { this.r31_uk = r31_uk; }
+		public BigDecimal getR31_europe() { return r31_europe; }
+		public void setR31_europe(BigDecimal r31_europe) { this.r31_europe = r31_europe; }
+		public BigDecimal getR31_india() { return r31_india; }
+		public void setR31_india(BigDecimal r31_india) { this.r31_india = r31_india; }
+		public BigDecimal getR31_sydney() { return r31_sydney; }
+		public void setR31_sydney(BigDecimal r31_sydney) { this.r31_sydney = r31_sydney; }
+		public BigDecimal getR31_uganda() { return r31_uganda; }
+		public void setR31_uganda(BigDecimal r31_uganda) { this.r31_uganda = r31_uganda; }
+		public BigDecimal getR31_c10() { return r31_c10; }
+		public void setR31_c10(BigDecimal r31_c10) { this.r31_c10 = r31_c10; }
+		public BigDecimal getR31_c11() { return r31_c11; }
+		public void setR31_c11(BigDecimal r31_c11) { this.r31_c11 = r31_c11; }
+		public BigDecimal getR31_c12() { return r31_c12; }
+		public void setR31_c12(BigDecimal r31_c12) { this.r31_c12 = r31_c12; }
+		public BigDecimal getR31_c13() { return r31_c13; }
+		public void setR31_c13(BigDecimal r31_c13) { this.r31_c13 = r31_c13; }
+		public BigDecimal getR31_c14() { return r31_c14; }
+		public void setR31_c14(BigDecimal r31_c14) { this.r31_c14 = r31_c14; }
+		public BigDecimal getR31_c15() { return r31_c15; }
+		public void setR31_c15(BigDecimal r31_c15) { this.r31_c15 = r31_c15; }
+		public BigDecimal getR31_c16() { return r31_c16; }
+		public void setR31_c16(BigDecimal r31_c16) { this.r31_c16 = r31_c16; }
+		public BigDecimal getR31_total() { return r31_total; }
+		public void setR31_total(BigDecimal r31_total) { this.r31_total = r31_total; }
+		public String getR32_product() { return r32_product; }
+		public void setR32_product(String r32_product) { this.r32_product = r32_product; }
+		public BigDecimal getR32_botswana() { return r32_botswana; }
+		public void setR32_botswana(BigDecimal r32_botswana) { this.r32_botswana = r32_botswana; }
+		public BigDecimal getR32_south_africa() { return r32_south_africa; }
+		public void setR32_south_africa(BigDecimal r32_south_africa) { this.r32_south_africa = r32_south_africa; }
+		public BigDecimal getR32_sadc() { return r32_sadc; }
+		public void setR32_sadc(BigDecimal r32_sadc) { this.r32_sadc = r32_sadc; }
+		public BigDecimal getR32_usa() { return r32_usa; }
+		public void setR32_usa(BigDecimal r32_usa) { this.r32_usa = r32_usa; }
+		public BigDecimal getR32_uk() { return r32_uk; }
+		public void setR32_uk(BigDecimal r32_uk) { this.r32_uk = r32_uk; }
+		public BigDecimal getR32_europe() { return r32_europe; }
+		public void setR32_europe(BigDecimal r32_europe) { this.r32_europe = r32_europe; }
+		public BigDecimal getR32_india() { return r32_india; }
+		public void setR32_india(BigDecimal r32_india) { this.r32_india = r32_india; }
+		public BigDecimal getR32_sydney() { return r32_sydney; }
+		public void setR32_sydney(BigDecimal r32_sydney) { this.r32_sydney = r32_sydney; }
+		public BigDecimal getR32_uganda() { return r32_uganda; }
+		public void setR32_uganda(BigDecimal r32_uganda) { this.r32_uganda = r32_uganda; }
+		public BigDecimal getR32_c10() { return r32_c10; }
+		public void setR32_c10(BigDecimal r32_c10) { this.r32_c10 = r32_c10; }
+		public BigDecimal getR32_c11() { return r32_c11; }
+		public void setR32_c11(BigDecimal r32_c11) { this.r32_c11 = r32_c11; }
+		public BigDecimal getR32_c12() { return r32_c12; }
+		public void setR32_c12(BigDecimal r32_c12) { this.r32_c12 = r32_c12; }
+		public BigDecimal getR32_c13() { return r32_c13; }
+		public void setR32_c13(BigDecimal r32_c13) { this.r32_c13 = r32_c13; }
+		public BigDecimal getR32_c14() { return r32_c14; }
+		public void setR32_c14(BigDecimal r32_c14) { this.r32_c14 = r32_c14; }
+		public BigDecimal getR32_c15() { return r32_c15; }
+		public void setR32_c15(BigDecimal r32_c15) { this.r32_c15 = r32_c15; }
+		public BigDecimal getR32_c16() { return r32_c16; }
+		public void setR32_c16(BigDecimal r32_c16) { this.r32_c16 = r32_c16; }
+		public BigDecimal getR32_total() { return r32_total; }
+		public void setR32_total(BigDecimal r32_total) { this.r32_total = r32_total; }
+		public String getR33_product() { return r33_product; }
+		public void setR33_product(String r33_product) { this.r33_product = r33_product; }
+		public BigDecimal getR33_botswana() { return r33_botswana; }
+		public void setR33_botswana(BigDecimal r33_botswana) { this.r33_botswana = r33_botswana; }
+		public BigDecimal getR33_south_africa() { return r33_south_africa; }
+		public void setR33_south_africa(BigDecimal r33_south_africa) { this.r33_south_africa = r33_south_africa; }
+		public BigDecimal getR33_sadc() { return r33_sadc; }
+		public void setR33_sadc(BigDecimal r33_sadc) { this.r33_sadc = r33_sadc; }
+		public BigDecimal getR33_usa() { return r33_usa; }
+		public void setR33_usa(BigDecimal r33_usa) { this.r33_usa = r33_usa; }
+		public BigDecimal getR33_uk() { return r33_uk; }
+		public void setR33_uk(BigDecimal r33_uk) { this.r33_uk = r33_uk; }
+		public BigDecimal getR33_europe() { return r33_europe; }
+		public void setR33_europe(BigDecimal r33_europe) { this.r33_europe = r33_europe; }
+		public BigDecimal getR33_india() { return r33_india; }
+		public void setR33_india(BigDecimal r33_india) { this.r33_india = r33_india; }
+		public BigDecimal getR33_sydney() { return r33_sydney; }
+		public void setR33_sydney(BigDecimal r33_sydney) { this.r33_sydney = r33_sydney; }
+		public BigDecimal getR33_uganda() { return r33_uganda; }
+		public void setR33_uganda(BigDecimal r33_uganda) { this.r33_uganda = r33_uganda; }
+		public BigDecimal getR33_c10() { return r33_c10; }
+		public void setR33_c10(BigDecimal r33_c10) { this.r33_c10 = r33_c10; }
+		public BigDecimal getR33_c11() { return r33_c11; }
+		public void setR33_c11(BigDecimal r33_c11) { this.r33_c11 = r33_c11; }
+		public BigDecimal getR33_c12() { return r33_c12; }
+		public void setR33_c12(BigDecimal r33_c12) { this.r33_c12 = r33_c12; }
+		public BigDecimal getR33_c13() { return r33_c13; }
+		public void setR33_c13(BigDecimal r33_c13) { this.r33_c13 = r33_c13; }
+		public BigDecimal getR33_c14() { return r33_c14; }
+		public void setR33_c14(BigDecimal r33_c14) { this.r33_c14 = r33_c14; }
+		public BigDecimal getR33_c15() { return r33_c15; }
+		public void setR33_c15(BigDecimal r33_c15) { this.r33_c15 = r33_c15; }
+		public BigDecimal getR33_c16() { return r33_c16; }
+		public void setR33_c16(BigDecimal r33_c16) { this.r33_c16 = r33_c16; }
+		public BigDecimal getR33_total() { return r33_total; }
+		public void setR33_total(BigDecimal r33_total) { this.r33_total = r33_total; }
+		public String getR34_product() { return r34_product; }
+		public void setR34_product(String r34_product) { this.r34_product = r34_product; }
+		public BigDecimal getR34_botswana() { return r34_botswana; }
+		public void setR34_botswana(BigDecimal r34_botswana) { this.r34_botswana = r34_botswana; }
+		public BigDecimal getR34_south_africa() { return r34_south_africa; }
+		public void setR34_south_africa(BigDecimal r34_south_africa) { this.r34_south_africa = r34_south_africa; }
+		public BigDecimal getR34_sadc() { return r34_sadc; }
+		public void setR34_sadc(BigDecimal r34_sadc) { this.r34_sadc = r34_sadc; }
+		public BigDecimal getR34_usa() { return r34_usa; }
+		public void setR34_usa(BigDecimal r34_usa) { this.r34_usa = r34_usa; }
+		public BigDecimal getR34_uk() { return r34_uk; }
+		public void setR34_uk(BigDecimal r34_uk) { this.r34_uk = r34_uk; }
+		public BigDecimal getR34_europe() { return r34_europe; }
+		public void setR34_europe(BigDecimal r34_europe) { this.r34_europe = r34_europe; }
+		public BigDecimal getR34_india() { return r34_india; }
+		public void setR34_india(BigDecimal r34_india) { this.r34_india = r34_india; }
+		public BigDecimal getR34_sydney() { return r34_sydney; }
+		public void setR34_sydney(BigDecimal r34_sydney) { this.r34_sydney = r34_sydney; }
+		public BigDecimal getR34_uganda() { return r34_uganda; }
+		public void setR34_uganda(BigDecimal r34_uganda) { this.r34_uganda = r34_uganda; }
+		public BigDecimal getR34_c10() { return r34_c10; }
+		public void setR34_c10(BigDecimal r34_c10) { this.r34_c10 = r34_c10; }
+		public BigDecimal getR34_c11() { return r34_c11; }
+		public void setR34_c11(BigDecimal r34_c11) { this.r34_c11 = r34_c11; }
+		public BigDecimal getR34_c12() { return r34_c12; }
+		public void setR34_c12(BigDecimal r34_c12) { this.r34_c12 = r34_c12; }
+		public BigDecimal getR34_c13() { return r34_c13; }
+		public void setR34_c13(BigDecimal r34_c13) { this.r34_c13 = r34_c13; }
+		public BigDecimal getR34_c14() { return r34_c14; }
+		public void setR34_c14(BigDecimal r34_c14) { this.r34_c14 = r34_c14; }
+		public BigDecimal getR34_c15() { return r34_c15; }
+		public void setR34_c15(BigDecimal r34_c15) { this.r34_c15 = r34_c15; }
+		public BigDecimal getR34_c16() { return r34_c16; }
+		public void setR34_c16(BigDecimal r34_c16) { this.r34_c16 = r34_c16; }
+		public BigDecimal getR34_total() { return r34_total; }
+		public void setR34_total(BigDecimal r34_total) { this.r34_total = r34_total; }
+		public String getR35_product() { return r35_product; }
+		public void setR35_product(String r35_product) { this.r35_product = r35_product; }
+		public BigDecimal getR35_botswana() { return r35_botswana; }
+		public void setR35_botswana(BigDecimal r35_botswana) { this.r35_botswana = r35_botswana; }
+		public BigDecimal getR35_south_africa() { return r35_south_africa; }
+		public void setR35_south_africa(BigDecimal r35_south_africa) { this.r35_south_africa = r35_south_africa; }
+		public BigDecimal getR35_sadc() { return r35_sadc; }
+		public void setR35_sadc(BigDecimal r35_sadc) { this.r35_sadc = r35_sadc; }
+		public BigDecimal getR35_usa() { return r35_usa; }
+		public void setR35_usa(BigDecimal r35_usa) { this.r35_usa = r35_usa; }
+		public BigDecimal getR35_uk() { return r35_uk; }
+		public void setR35_uk(BigDecimal r35_uk) { this.r35_uk = r35_uk; }
+		public BigDecimal getR35_europe() { return r35_europe; }
+		public void setR35_europe(BigDecimal r35_europe) { this.r35_europe = r35_europe; }
+		public BigDecimal getR35_india() { return r35_india; }
+		public void setR35_india(BigDecimal r35_india) { this.r35_india = r35_india; }
+		public BigDecimal getR35_sydney() { return r35_sydney; }
+		public void setR35_sydney(BigDecimal r35_sydney) { this.r35_sydney = r35_sydney; }
+		public BigDecimal getR35_uganda() { return r35_uganda; }
+		public void setR35_uganda(BigDecimal r35_uganda) { this.r35_uganda = r35_uganda; }
+		public BigDecimal getR35_c10() { return r35_c10; }
+		public void setR35_c10(BigDecimal r35_c10) { this.r35_c10 = r35_c10; }
+		public BigDecimal getR35_c11() { return r35_c11; }
+		public void setR35_c11(BigDecimal r35_c11) { this.r35_c11 = r35_c11; }
+		public BigDecimal getR35_c12() { return r35_c12; }
+		public void setR35_c12(BigDecimal r35_c12) { this.r35_c12 = r35_c12; }
+		public BigDecimal getR35_c13() { return r35_c13; }
+		public void setR35_c13(BigDecimal r35_c13) { this.r35_c13 = r35_c13; }
+		public BigDecimal getR35_c14() { return r35_c14; }
+		public void setR35_c14(BigDecimal r35_c14) { this.r35_c14 = r35_c14; }
+		public BigDecimal getR35_c15() { return r35_c15; }
+		public void setR35_c15(BigDecimal r35_c15) { this.r35_c15 = r35_c15; }
+		public BigDecimal getR35_c16() { return r35_c16; }
+		public void setR35_c16(BigDecimal r35_c16) { this.r35_c16 = r35_c16; }
+		public BigDecimal getR35_total() { return r35_total; }
+		public void setR35_total(BigDecimal r35_total) { this.r35_total = r35_total; }
+		public String getR36_product() { return r36_product; }
+		public void setR36_product(String r36_product) { this.r36_product = r36_product; }
+		public BigDecimal getR36_botswana() { return r36_botswana; }
+		public void setR36_botswana(BigDecimal r36_botswana) { this.r36_botswana = r36_botswana; }
+		public BigDecimal getR36_south_africa() { return r36_south_africa; }
+		public void setR36_south_africa(BigDecimal r36_south_africa) { this.r36_south_africa = r36_south_africa; }
+		public BigDecimal getR36_sadc() { return r36_sadc; }
+		public void setR36_sadc(BigDecimal r36_sadc) { this.r36_sadc = r36_sadc; }
+		public BigDecimal getR36_usa() { return r36_usa; }
+		public void setR36_usa(BigDecimal r36_usa) { this.r36_usa = r36_usa; }
+		public BigDecimal getR36_uk() { return r36_uk; }
+		public void setR36_uk(BigDecimal r36_uk) { this.r36_uk = r36_uk; }
+		public BigDecimal getR36_europe() { return r36_europe; }
+		public void setR36_europe(BigDecimal r36_europe) { this.r36_europe = r36_europe; }
+		public BigDecimal getR36_india() { return r36_india; }
+		public void setR36_india(BigDecimal r36_india) { this.r36_india = r36_india; }
+		public BigDecimal getR36_sydney() { return r36_sydney; }
+		public void setR36_sydney(BigDecimal r36_sydney) { this.r36_sydney = r36_sydney; }
+		public BigDecimal getR36_uganda() { return r36_uganda; }
+		public void setR36_uganda(BigDecimal r36_uganda) { this.r36_uganda = r36_uganda; }
+		public BigDecimal getR36_c10() { return r36_c10; }
+		public void setR36_c10(BigDecimal r36_c10) { this.r36_c10 = r36_c10; }
+		public BigDecimal getR36_c11() { return r36_c11; }
+		public void setR36_c11(BigDecimal r36_c11) { this.r36_c11 = r36_c11; }
+		public BigDecimal getR36_c12() { return r36_c12; }
+		public void setR36_c12(BigDecimal r36_c12) { this.r36_c12 = r36_c12; }
+		public BigDecimal getR36_c13() { return r36_c13; }
+		public void setR36_c13(BigDecimal r36_c13) { this.r36_c13 = r36_c13; }
+		public BigDecimal getR36_c14() { return r36_c14; }
+		public void setR36_c14(BigDecimal r36_c14) { this.r36_c14 = r36_c14; }
+		public BigDecimal getR36_c15() { return r36_c15; }
+		public void setR36_c15(BigDecimal r36_c15) { this.r36_c15 = r36_c15; }
+		public BigDecimal getR36_c16() { return r36_c16; }
+		public void setR36_c16(BigDecimal r36_c16) { this.r36_c16 = r36_c16; }
+		public BigDecimal getR36_total() { return r36_total; }
+		public void setR36_total(BigDecimal r36_total) { this.r36_total = r36_total; }
+		public String getR37_product() { return r37_product; }
+		public void setR37_product(String r37_product) { this.r37_product = r37_product; }
+		public BigDecimal getR37_botswana() { return r37_botswana; }
+		public void setR37_botswana(BigDecimal r37_botswana) { this.r37_botswana = r37_botswana; }
+		public BigDecimal getR37_south_africa() { return r37_south_africa; }
+		public void setR37_south_africa(BigDecimal r37_south_africa) { this.r37_south_africa = r37_south_africa; }
+		public BigDecimal getR37_sadc() { return r37_sadc; }
+		public void setR37_sadc(BigDecimal r37_sadc) { this.r37_sadc = r37_sadc; }
+		public BigDecimal getR37_usa() { return r37_usa; }
+		public void setR37_usa(BigDecimal r37_usa) { this.r37_usa = r37_usa; }
+		public BigDecimal getR37_uk() { return r37_uk; }
+		public void setR37_uk(BigDecimal r37_uk) { this.r37_uk = r37_uk; }
+		public BigDecimal getR37_europe() { return r37_europe; }
+		public void setR37_europe(BigDecimal r37_europe) { this.r37_europe = r37_europe; }
+		public BigDecimal getR37_india() { return r37_india; }
+		public void setR37_india(BigDecimal r37_india) { this.r37_india = r37_india; }
+		public BigDecimal getR37_sydney() { return r37_sydney; }
+		public void setR37_sydney(BigDecimal r37_sydney) { this.r37_sydney = r37_sydney; }
+		public BigDecimal getR37_uganda() { return r37_uganda; }
+		public void setR37_uganda(BigDecimal r37_uganda) { this.r37_uganda = r37_uganda; }
+		public BigDecimal getR37_c10() { return r37_c10; }
+		public void setR37_c10(BigDecimal r37_c10) { this.r37_c10 = r37_c10; }
+		public BigDecimal getR37_c11() { return r37_c11; }
+		public void setR37_c11(BigDecimal r37_c11) { this.r37_c11 = r37_c11; }
+		public BigDecimal getR37_c12() { return r37_c12; }
+		public void setR37_c12(BigDecimal r37_c12) { this.r37_c12 = r37_c12; }
+		public BigDecimal getR37_c13() { return r37_c13; }
+		public void setR37_c13(BigDecimal r37_c13) { this.r37_c13 = r37_c13; }
+		public BigDecimal getR37_c14() { return r37_c14; }
+		public void setR37_c14(BigDecimal r37_c14) { this.r37_c14 = r37_c14; }
+		public BigDecimal getR37_c15() { return r37_c15; }
+		public void setR37_c15(BigDecimal r37_c15) { this.r37_c15 = r37_c15; }
+		public BigDecimal getR37_c16() { return r37_c16; }
+		public void setR37_c16(BigDecimal r37_c16) { this.r37_c16 = r37_c16; }
+		public BigDecimal getR37_total() { return r37_total; }
+		public void setR37_total(BigDecimal r37_total) { this.r37_total = r37_total; }
+		public String getR38_product() { return r38_product; }
+		public void setR38_product(String r38_product) { this.r38_product = r38_product; }
+		public BigDecimal getR38_botswana() { return r38_botswana; }
+		public void setR38_botswana(BigDecimal r38_botswana) { this.r38_botswana = r38_botswana; }
+		public BigDecimal getR38_south_africa() { return r38_south_africa; }
+		public void setR38_south_africa(BigDecimal r38_south_africa) { this.r38_south_africa = r38_south_africa; }
+		public BigDecimal getR38_sadc() { return r38_sadc; }
+		public void setR38_sadc(BigDecimal r38_sadc) { this.r38_sadc = r38_sadc; }
+		public BigDecimal getR38_usa() { return r38_usa; }
+		public void setR38_usa(BigDecimal r38_usa) { this.r38_usa = r38_usa; }
+		public BigDecimal getR38_uk() { return r38_uk; }
+		public void setR38_uk(BigDecimal r38_uk) { this.r38_uk = r38_uk; }
+		public BigDecimal getR38_europe() { return r38_europe; }
+		public void setR38_europe(BigDecimal r38_europe) { this.r38_europe = r38_europe; }
+		public BigDecimal getR38_india() { return r38_india; }
+		public void setR38_india(BigDecimal r38_india) { this.r38_india = r38_india; }
+		public BigDecimal getR38_sydney() { return r38_sydney; }
+		public void setR38_sydney(BigDecimal r38_sydney) { this.r38_sydney = r38_sydney; }
+		public BigDecimal getR38_uganda() { return r38_uganda; }
+		public void setR38_uganda(BigDecimal r38_uganda) { this.r38_uganda = r38_uganda; }
+		public BigDecimal getR38_c10() { return r38_c10; }
+		public void setR38_c10(BigDecimal r38_c10) { this.r38_c10 = r38_c10; }
+		public BigDecimal getR38_c11() { return r38_c11; }
+		public void setR38_c11(BigDecimal r38_c11) { this.r38_c11 = r38_c11; }
+		public BigDecimal getR38_c12() { return r38_c12; }
+		public void setR38_c12(BigDecimal r38_c12) { this.r38_c12 = r38_c12; }
+		public BigDecimal getR38_c13() { return r38_c13; }
+		public void setR38_c13(BigDecimal r38_c13) { this.r38_c13 = r38_c13; }
+		public BigDecimal getR38_c14() { return r38_c14; }
+		public void setR38_c14(BigDecimal r38_c14) { this.r38_c14 = r38_c14; }
+		public BigDecimal getR38_c15() { return r38_c15; }
+		public void setR38_c15(BigDecimal r38_c15) { this.r38_c15 = r38_c15; }
+		public BigDecimal getR38_c16() { return r38_c16; }
+		public void setR38_c16(BigDecimal r38_c16) { this.r38_c16 = r38_c16; }
+		public BigDecimal getR38_total() { return r38_total; }
+		public void setR38_total(BigDecimal r38_total) { this.r38_total = r38_total; }
+		public String getR39_product() { return r39_product; }
+		public void setR39_product(String r39_product) { this.r39_product = r39_product; }
+		public BigDecimal getR39_botswana() { return r39_botswana; }
+		public void setR39_botswana(BigDecimal r39_botswana) { this.r39_botswana = r39_botswana; }
+		public BigDecimal getR39_south_africa() { return r39_south_africa; }
+		public void setR39_south_africa(BigDecimal r39_south_africa) { this.r39_south_africa = r39_south_africa; }
+		public BigDecimal getR39_sadc() { return r39_sadc; }
+		public void setR39_sadc(BigDecimal r39_sadc) { this.r39_sadc = r39_sadc; }
+		public BigDecimal getR39_usa() { return r39_usa; }
+		public void setR39_usa(BigDecimal r39_usa) { this.r39_usa = r39_usa; }
+		public BigDecimal getR39_uk() { return r39_uk; }
+		public void setR39_uk(BigDecimal r39_uk) { this.r39_uk = r39_uk; }
+		public BigDecimal getR39_europe() { return r39_europe; }
+		public void setR39_europe(BigDecimal r39_europe) { this.r39_europe = r39_europe; }
+		public BigDecimal getR39_india() { return r39_india; }
+		public void setR39_india(BigDecimal r39_india) { this.r39_india = r39_india; }
+		public BigDecimal getR39_sydney() { return r39_sydney; }
+		public void setR39_sydney(BigDecimal r39_sydney) { this.r39_sydney = r39_sydney; }
+		public BigDecimal getR39_uganda() { return r39_uganda; }
+		public void setR39_uganda(BigDecimal r39_uganda) { this.r39_uganda = r39_uganda; }
+		public BigDecimal getR39_c10() { return r39_c10; }
+		public void setR39_c10(BigDecimal r39_c10) { this.r39_c10 = r39_c10; }
+		public BigDecimal getR39_c11() { return r39_c11; }
+		public void setR39_c11(BigDecimal r39_c11) { this.r39_c11 = r39_c11; }
+		public BigDecimal getR39_c12() { return r39_c12; }
+		public void setR39_c12(BigDecimal r39_c12) { this.r39_c12 = r39_c12; }
+		public BigDecimal getR39_c13() { return r39_c13; }
+		public void setR39_c13(BigDecimal r39_c13) { this.r39_c13 = r39_c13; }
+		public BigDecimal getR39_c14() { return r39_c14; }
+		public void setR39_c14(BigDecimal r39_c14) { this.r39_c14 = r39_c14; }
+		public BigDecimal getR39_c15() { return r39_c15; }
+		public void setR39_c15(BigDecimal r39_c15) { this.r39_c15 = r39_c15; }
+		public BigDecimal getR39_c16() { return r39_c16; }
+		public void setR39_c16(BigDecimal r39_c16) { this.r39_c16 = r39_c16; }
+		public BigDecimal getR39_total() { return r39_total; }
+		public void setR39_total(BigDecimal r39_total) { this.r39_total = r39_total; }
+		public String getR40_product() { return r40_product; }
+		public void setR40_product(String r40_product) { this.r40_product = r40_product; }
+		public BigDecimal getR40_botswana() { return r40_botswana; }
+		public void setR40_botswana(BigDecimal r40_botswana) { this.r40_botswana = r40_botswana; }
+		public BigDecimal getR40_south_africa() { return r40_south_africa; }
+		public void setR40_south_africa(BigDecimal r40_south_africa) { this.r40_south_africa = r40_south_africa; }
+		public BigDecimal getR40_sadc() { return r40_sadc; }
+		public void setR40_sadc(BigDecimal r40_sadc) { this.r40_sadc = r40_sadc; }
+		public BigDecimal getR40_usa() { return r40_usa; }
+		public void setR40_usa(BigDecimal r40_usa) { this.r40_usa = r40_usa; }
+		public BigDecimal getR40_uk() { return r40_uk; }
+		public void setR40_uk(BigDecimal r40_uk) { this.r40_uk = r40_uk; }
+		public BigDecimal getR40_europe() { return r40_europe; }
+		public void setR40_europe(BigDecimal r40_europe) { this.r40_europe = r40_europe; }
+		public BigDecimal getR40_india() { return r40_india; }
+		public void setR40_india(BigDecimal r40_india) { this.r40_india = r40_india; }
+		public BigDecimal getR40_sydney() { return r40_sydney; }
+		public void setR40_sydney(BigDecimal r40_sydney) { this.r40_sydney = r40_sydney; }
+		public BigDecimal getR40_uganda() { return r40_uganda; }
+		public void setR40_uganda(BigDecimal r40_uganda) { this.r40_uganda = r40_uganda; }
+		public BigDecimal getR40_c10() { return r40_c10; }
+		public void setR40_c10(BigDecimal r40_c10) { this.r40_c10 = r40_c10; }
+		public BigDecimal getR40_c11() { return r40_c11; }
+		public void setR40_c11(BigDecimal r40_c11) { this.r40_c11 = r40_c11; }
+		public BigDecimal getR40_c12() { return r40_c12; }
+		public void setR40_c12(BigDecimal r40_c12) { this.r40_c12 = r40_c12; }
+		public BigDecimal getR40_c13() { return r40_c13; }
+		public void setR40_c13(BigDecimal r40_c13) { this.r40_c13 = r40_c13; }
+		public BigDecimal getR40_c14() { return r40_c14; }
+		public void setR40_c14(BigDecimal r40_c14) { this.r40_c14 = r40_c14; }
+		public BigDecimal getR40_c15() { return r40_c15; }
+		public void setR40_c15(BigDecimal r40_c15) { this.r40_c15 = r40_c15; }
+		public BigDecimal getR40_c16() { return r40_c16; }
+		public void setR40_c16(BigDecimal r40_c16) { this.r40_c16 = r40_c16; }
+		public BigDecimal getR40_total() { return r40_total; }
+		public void setR40_total(BigDecimal r40_total) { this.r40_total = r40_total; }
+		public String getR41_product() { return r41_product; }
+		public void setR41_product(String r41_product) { this.r41_product = r41_product; }
+		public BigDecimal getR41_botswana() { return r41_botswana; }
+		public void setR41_botswana(BigDecimal r41_botswana) { this.r41_botswana = r41_botswana; }
+		public BigDecimal getR41_south_africa() { return r41_south_africa; }
+		public void setR41_south_africa(BigDecimal r41_south_africa) { this.r41_south_africa = r41_south_africa; }
+		public BigDecimal getR41_sadc() { return r41_sadc; }
+		public void setR41_sadc(BigDecimal r41_sadc) { this.r41_sadc = r41_sadc; }
+		public BigDecimal getR41_usa() { return r41_usa; }
+		public void setR41_usa(BigDecimal r41_usa) { this.r41_usa = r41_usa; }
+		public BigDecimal getR41_uk() { return r41_uk; }
+		public void setR41_uk(BigDecimal r41_uk) { this.r41_uk = r41_uk; }
+		public BigDecimal getR41_europe() { return r41_europe; }
+		public void setR41_europe(BigDecimal r41_europe) { this.r41_europe = r41_europe; }
+		public BigDecimal getR41_india() { return r41_india; }
+		public void setR41_india(BigDecimal r41_india) { this.r41_india = r41_india; }
+		public BigDecimal getR41_sydney() { return r41_sydney; }
+		public void setR41_sydney(BigDecimal r41_sydney) { this.r41_sydney = r41_sydney; }
+		public BigDecimal getR41_uganda() { return r41_uganda; }
+		public void setR41_uganda(BigDecimal r41_uganda) { this.r41_uganda = r41_uganda; }
+		public BigDecimal getR41_c10() { return r41_c10; }
+		public void setR41_c10(BigDecimal r41_c10) { this.r41_c10 = r41_c10; }
+		public BigDecimal getR41_c11() { return r41_c11; }
+		public void setR41_c11(BigDecimal r41_c11) { this.r41_c11 = r41_c11; }
+		public BigDecimal getR41_c12() { return r41_c12; }
+		public void setR41_c12(BigDecimal r41_c12) { this.r41_c12 = r41_c12; }
+		public BigDecimal getR41_c13() { return r41_c13; }
+		public void setR41_c13(BigDecimal r41_c13) { this.r41_c13 = r41_c13; }
+		public BigDecimal getR41_c14() { return r41_c14; }
+		public void setR41_c14(BigDecimal r41_c14) { this.r41_c14 = r41_c14; }
+		public BigDecimal getR41_c15() { return r41_c15; }
+		public void setR41_c15(BigDecimal r41_c15) { this.r41_c15 = r41_c15; }
+		public BigDecimal getR41_c16() { return r41_c16; }
+		public void setR41_c16(BigDecimal r41_c16) { this.r41_c16 = r41_c16; }
+		public BigDecimal getR41_total() { return r41_total; }
+		public void setR41_total(BigDecimal r41_total) { this.r41_total = r41_total; }
+		public String getR42_product() { return r42_product; }
+		public void setR42_product(String r42_product) { this.r42_product = r42_product; }
+		public BigDecimal getR42_botswana() { return r42_botswana; }
+		public void setR42_botswana(BigDecimal r42_botswana) { this.r42_botswana = r42_botswana; }
+		public BigDecimal getR42_south_africa() { return r42_south_africa; }
+		public void setR42_south_africa(BigDecimal r42_south_africa) { this.r42_south_africa = r42_south_africa; }
+		public BigDecimal getR42_sadc() { return r42_sadc; }
+		public void setR42_sadc(BigDecimal r42_sadc) { this.r42_sadc = r42_sadc; }
+		public BigDecimal getR42_usa() { return r42_usa; }
+		public void setR42_usa(BigDecimal r42_usa) { this.r42_usa = r42_usa; }
+		public BigDecimal getR42_uk() { return r42_uk; }
+		public void setR42_uk(BigDecimal r42_uk) { this.r42_uk = r42_uk; }
+		public BigDecimal getR42_europe() { return r42_europe; }
+		public void setR42_europe(BigDecimal r42_europe) { this.r42_europe = r42_europe; }
+		public BigDecimal getR42_india() { return r42_india; }
+		public void setR42_india(BigDecimal r42_india) { this.r42_india = r42_india; }
+		public BigDecimal getR42_sydney() { return r42_sydney; }
+		public void setR42_sydney(BigDecimal r42_sydney) { this.r42_sydney = r42_sydney; }
+		public BigDecimal getR42_uganda() { return r42_uganda; }
+		public void setR42_uganda(BigDecimal r42_uganda) { this.r42_uganda = r42_uganda; }
+		public BigDecimal getR42_c10() { return r42_c10; }
+		public void setR42_c10(BigDecimal r42_c10) { this.r42_c10 = r42_c10; }
+		public BigDecimal getR42_c11() { return r42_c11; }
+		public void setR42_c11(BigDecimal r42_c11) { this.r42_c11 = r42_c11; }
+		public BigDecimal getR42_c12() { return r42_c12; }
+		public void setR42_c12(BigDecimal r42_c12) { this.r42_c12 = r42_c12; }
+		public BigDecimal getR42_c13() { return r42_c13; }
+		public void setR42_c13(BigDecimal r42_c13) { this.r42_c13 = r42_c13; }
+		public BigDecimal getR42_c14() { return r42_c14; }
+		public void setR42_c14(BigDecimal r42_c14) { this.r42_c14 = r42_c14; }
+		public BigDecimal getR42_c15() { return r42_c15; }
+		public void setR42_c15(BigDecimal r42_c15) { this.r42_c15 = r42_c15; }
+		public BigDecimal getR42_c16() { return r42_c16; }
+		public void setR42_c16(BigDecimal r42_c16) { this.r42_c16 = r42_c16; }
+		public BigDecimal getR42_total() { return r42_total; }
+		public void setR42_total(BigDecimal r42_total) { this.r42_total = r42_total; }
+		public String getR43_product() { return r43_product; }
+		public void setR43_product(String r43_product) { this.r43_product = r43_product; }
+		public BigDecimal getR43_botswana() { return r43_botswana; }
+		public void setR43_botswana(BigDecimal r43_botswana) { this.r43_botswana = r43_botswana; }
+		public BigDecimal getR43_south_africa() { return r43_south_africa; }
+		public void setR43_south_africa(BigDecimal r43_south_africa) { this.r43_south_africa = r43_south_africa; }
+		public BigDecimal getR43_sadc() { return r43_sadc; }
+		public void setR43_sadc(BigDecimal r43_sadc) { this.r43_sadc = r43_sadc; }
+		public BigDecimal getR43_usa() { return r43_usa; }
+		public void setR43_usa(BigDecimal r43_usa) { this.r43_usa = r43_usa; }
+		public BigDecimal getR43_uk() { return r43_uk; }
+		public void setR43_uk(BigDecimal r43_uk) { this.r43_uk = r43_uk; }
+		public BigDecimal getR43_europe() { return r43_europe; }
+		public void setR43_europe(BigDecimal r43_europe) { this.r43_europe = r43_europe; }
+		public BigDecimal getR43_india() { return r43_india; }
+		public void setR43_india(BigDecimal r43_india) { this.r43_india = r43_india; }
+		public BigDecimal getR43_sydney() { return r43_sydney; }
+		public void setR43_sydney(BigDecimal r43_sydney) { this.r43_sydney = r43_sydney; }
+		public BigDecimal getR43_uganda() { return r43_uganda; }
+		public void setR43_uganda(BigDecimal r43_uganda) { this.r43_uganda = r43_uganda; }
+		public BigDecimal getR43_c10() { return r43_c10; }
+		public void setR43_c10(BigDecimal r43_c10) { this.r43_c10 = r43_c10; }
+		public BigDecimal getR43_c11() { return r43_c11; }
+		public void setR43_c11(BigDecimal r43_c11) { this.r43_c11 = r43_c11; }
+		public BigDecimal getR43_c12() { return r43_c12; }
+		public void setR43_c12(BigDecimal r43_c12) { this.r43_c12 = r43_c12; }
+		public BigDecimal getR43_c13() { return r43_c13; }
+		public void setR43_c13(BigDecimal r43_c13) { this.r43_c13 = r43_c13; }
+		public BigDecimal getR43_c14() { return r43_c14; }
+		public void setR43_c14(BigDecimal r43_c14) { this.r43_c14 = r43_c14; }
+		public BigDecimal getR43_c15() { return r43_c15; }
+		public void setR43_c15(BigDecimal r43_c15) { this.r43_c15 = r43_c15; }
+		public BigDecimal getR43_c16() { return r43_c16; }
+		public void setR43_c16(BigDecimal r43_c16) { this.r43_c16 = r43_c16; }
+		public BigDecimal getR43_total() { return r43_total; }
+		public void setR43_total(BigDecimal r43_total) { this.r43_total = r43_total; }
+		public String getR44_product() { return r44_product; }
+		public void setR44_product(String r44_product) { this.r44_product = r44_product; }
+		public BigDecimal getR44_botswana() { return r44_botswana; }
+		public void setR44_botswana(BigDecimal r44_botswana) { this.r44_botswana = r44_botswana; }
+		public BigDecimal getR44_south_africa() { return r44_south_africa; }
+		public void setR44_south_africa(BigDecimal r44_south_africa) { this.r44_south_africa = r44_south_africa; }
+		public BigDecimal getR44_sadc() { return r44_sadc; }
+		public void setR44_sadc(BigDecimal r44_sadc) { this.r44_sadc = r44_sadc; }
+		public BigDecimal getR44_usa() { return r44_usa; }
+		public void setR44_usa(BigDecimal r44_usa) { this.r44_usa = r44_usa; }
+		public BigDecimal getR44_uk() { return r44_uk; }
+		public void setR44_uk(BigDecimal r44_uk) { this.r44_uk = r44_uk; }
+		public BigDecimal getR44_europe() { return r44_europe; }
+		public void setR44_europe(BigDecimal r44_europe) { this.r44_europe = r44_europe; }
+		public BigDecimal getR44_india() { return r44_india; }
+		public void setR44_india(BigDecimal r44_india) { this.r44_india = r44_india; }
+		public BigDecimal getR44_sydney() { return r44_sydney; }
+		public void setR44_sydney(BigDecimal r44_sydney) { this.r44_sydney = r44_sydney; }
+		public BigDecimal getR44_uganda() { return r44_uganda; }
+		public void setR44_uganda(BigDecimal r44_uganda) { this.r44_uganda = r44_uganda; }
+		public BigDecimal getR44_c10() { return r44_c10; }
+		public void setR44_c10(BigDecimal r44_c10) { this.r44_c10 = r44_c10; }
+		public BigDecimal getR44_c11() { return r44_c11; }
+		public void setR44_c11(BigDecimal r44_c11) { this.r44_c11 = r44_c11; }
+		public BigDecimal getR44_c12() { return r44_c12; }
+		public void setR44_c12(BigDecimal r44_c12) { this.r44_c12 = r44_c12; }
+		public BigDecimal getR44_c13() { return r44_c13; }
+		public void setR44_c13(BigDecimal r44_c13) { this.r44_c13 = r44_c13; }
+		public BigDecimal getR44_c14() { return r44_c14; }
+		public void setR44_c14(BigDecimal r44_c14) { this.r44_c14 = r44_c14; }
+		public BigDecimal getR44_c15() { return r44_c15; }
+		public void setR44_c15(BigDecimal r44_c15) { this.r44_c15 = r44_c15; }
+		public BigDecimal getR44_c16() { return r44_c16; }
+		public void setR44_c16(BigDecimal r44_c16) { this.r44_c16 = r44_c16; }
+		public BigDecimal getR44_total() { return r44_total; }
+		public void setR44_total(BigDecimal r44_total) { this.r44_total = r44_total; }
+		public String getR45_product() { return r45_product; }
+		public void setR45_product(String r45_product) { this.r45_product = r45_product; }
+		public BigDecimal getR45_botswana() { return r45_botswana; }
+		public void setR45_botswana(BigDecimal r45_botswana) { this.r45_botswana = r45_botswana; }
+		public BigDecimal getR45_south_africa() { return r45_south_africa; }
+		public void setR45_south_africa(BigDecimal r45_south_africa) { this.r45_south_africa = r45_south_africa; }
+		public BigDecimal getR45_sadc() { return r45_sadc; }
+		public void setR45_sadc(BigDecimal r45_sadc) { this.r45_sadc = r45_sadc; }
+		public BigDecimal getR45_usa() { return r45_usa; }
+		public void setR45_usa(BigDecimal r45_usa) { this.r45_usa = r45_usa; }
+		public BigDecimal getR45_uk() { return r45_uk; }
+		public void setR45_uk(BigDecimal r45_uk) { this.r45_uk = r45_uk; }
+		public BigDecimal getR45_europe() { return r45_europe; }
+		public void setR45_europe(BigDecimal r45_europe) { this.r45_europe = r45_europe; }
+		public BigDecimal getR45_india() { return r45_india; }
+		public void setR45_india(BigDecimal r45_india) { this.r45_india = r45_india; }
+		public BigDecimal getR45_sydney() { return r45_sydney; }
+		public void setR45_sydney(BigDecimal r45_sydney) { this.r45_sydney = r45_sydney; }
+		public BigDecimal getR45_uganda() { return r45_uganda; }
+		public void setR45_uganda(BigDecimal r45_uganda) { this.r45_uganda = r45_uganda; }
+		public BigDecimal getR45_c10() { return r45_c10; }
+		public void setR45_c10(BigDecimal r45_c10) { this.r45_c10 = r45_c10; }
+		public BigDecimal getR45_c11() { return r45_c11; }
+		public void setR45_c11(BigDecimal r45_c11) { this.r45_c11 = r45_c11; }
+		public BigDecimal getR45_c12() { return r45_c12; }
+		public void setR45_c12(BigDecimal r45_c12) { this.r45_c12 = r45_c12; }
+		public BigDecimal getR45_c13() { return r45_c13; }
+		public void setR45_c13(BigDecimal r45_c13) { this.r45_c13 = r45_c13; }
+		public BigDecimal getR45_c14() { return r45_c14; }
+		public void setR45_c14(BigDecimal r45_c14) { this.r45_c14 = r45_c14; }
+		public BigDecimal getR45_c15() { return r45_c15; }
+		public void setR45_c15(BigDecimal r45_c15) { this.r45_c15 = r45_c15; }
+		public BigDecimal getR45_c16() { return r45_c16; }
+		public void setR45_c16(BigDecimal r45_c16) { this.r45_c16 = r45_c16; }
+		public BigDecimal getR45_total() { return r45_total; }
+		public void setR45_total(BigDecimal r45_total) { this.r45_total = r45_total; }
+		public String getR46_product() { return r46_product; }
+		public void setR46_product(String r46_product) { this.r46_product = r46_product; }
+		public BigDecimal getR46_botswana() { return r46_botswana; }
+		public void setR46_botswana(BigDecimal r46_botswana) { this.r46_botswana = r46_botswana; }
+		public BigDecimal getR46_south_africa() { return r46_south_africa; }
+		public void setR46_south_africa(BigDecimal r46_south_africa) { this.r46_south_africa = r46_south_africa; }
+		public BigDecimal getR46_sadc() { return r46_sadc; }
+		public void setR46_sadc(BigDecimal r46_sadc) { this.r46_sadc = r46_sadc; }
+		public BigDecimal getR46_usa() { return r46_usa; }
+		public void setR46_usa(BigDecimal r46_usa) { this.r46_usa = r46_usa; }
+		public BigDecimal getR46_uk() { return r46_uk; }
+		public void setR46_uk(BigDecimal r46_uk) { this.r46_uk = r46_uk; }
+		public BigDecimal getR46_europe() { return r46_europe; }
+		public void setR46_europe(BigDecimal r46_europe) { this.r46_europe = r46_europe; }
+		public BigDecimal getR46_india() { return r46_india; }
+		public void setR46_india(BigDecimal r46_india) { this.r46_india = r46_india; }
+		public BigDecimal getR46_sydney() { return r46_sydney; }
+		public void setR46_sydney(BigDecimal r46_sydney) { this.r46_sydney = r46_sydney; }
+		public BigDecimal getR46_uganda() { return r46_uganda; }
+		public void setR46_uganda(BigDecimal r46_uganda) { this.r46_uganda = r46_uganda; }
+		public BigDecimal getR46_c10() { return r46_c10; }
+		public void setR46_c10(BigDecimal r46_c10) { this.r46_c10 = r46_c10; }
+		public BigDecimal getR46_c11() { return r46_c11; }
+		public void setR46_c11(BigDecimal r46_c11) { this.r46_c11 = r46_c11; }
+		public BigDecimal getR46_c12() { return r46_c12; }
+		public void setR46_c12(BigDecimal r46_c12) { this.r46_c12 = r46_c12; }
+		public BigDecimal getR46_c13() { return r46_c13; }
+		public void setR46_c13(BigDecimal r46_c13) { this.r46_c13 = r46_c13; }
+		public BigDecimal getR46_c14() { return r46_c14; }
+		public void setR46_c14(BigDecimal r46_c14) { this.r46_c14 = r46_c14; }
+		public BigDecimal getR46_c15() { return r46_c15; }
+		public void setR46_c15(BigDecimal r46_c15) { this.r46_c15 = r46_c15; }
+		public BigDecimal getR46_c16() { return r46_c16; }
+		public void setR46_c16(BigDecimal r46_c16) { this.r46_c16 = r46_c16; }
+		public BigDecimal getR46_total() { return r46_total; }
+		public void setR46_total(BigDecimal r46_total) { this.r46_total = r46_total; }
+		public String getR47_product() { return r47_product; }
+		public void setR47_product(String r47_product) { this.r47_product = r47_product; }
+		public BigDecimal getR47_botswana() { return r47_botswana; }
+		public void setR47_botswana(BigDecimal r47_botswana) { this.r47_botswana = r47_botswana; }
+		public BigDecimal getR47_south_africa() { return r47_south_africa; }
+		public void setR47_south_africa(BigDecimal r47_south_africa) { this.r47_south_africa = r47_south_africa; }
+		public BigDecimal getR47_sadc() { return r47_sadc; }
+		public void setR47_sadc(BigDecimal r47_sadc) { this.r47_sadc = r47_sadc; }
+		public BigDecimal getR47_usa() { return r47_usa; }
+		public void setR47_usa(BigDecimal r47_usa) { this.r47_usa = r47_usa; }
+		public BigDecimal getR47_uk() { return r47_uk; }
+		public void setR47_uk(BigDecimal r47_uk) { this.r47_uk = r47_uk; }
+		public BigDecimal getR47_europe() { return r47_europe; }
+		public void setR47_europe(BigDecimal r47_europe) { this.r47_europe = r47_europe; }
+		public BigDecimal getR47_india() { return r47_india; }
+		public void setR47_india(BigDecimal r47_india) { this.r47_india = r47_india; }
+		public BigDecimal getR47_sydney() { return r47_sydney; }
+		public void setR47_sydney(BigDecimal r47_sydney) { this.r47_sydney = r47_sydney; }
+		public BigDecimal getR47_uganda() { return r47_uganda; }
+		public void setR47_uganda(BigDecimal r47_uganda) { this.r47_uganda = r47_uganda; }
+		public BigDecimal getR47_c10() { return r47_c10; }
+		public void setR47_c10(BigDecimal r47_c10) { this.r47_c10 = r47_c10; }
+		public BigDecimal getR47_c11() { return r47_c11; }
+		public void setR47_c11(BigDecimal r47_c11) { this.r47_c11 = r47_c11; }
+		public BigDecimal getR47_c12() { return r47_c12; }
+		public void setR47_c12(BigDecimal r47_c12) { this.r47_c12 = r47_c12; }
+		public BigDecimal getR47_c13() { return r47_c13; }
+		public void setR47_c13(BigDecimal r47_c13) { this.r47_c13 = r47_c13; }
+		public BigDecimal getR47_c14() { return r47_c14; }
+		public void setR47_c14(BigDecimal r47_c14) { this.r47_c14 = r47_c14; }
+		public BigDecimal getR47_c15() { return r47_c15; }
+		public void setR47_c15(BigDecimal r47_c15) { this.r47_c15 = r47_c15; }
+		public BigDecimal getR47_c16() { return r47_c16; }
+		public void setR47_c16(BigDecimal r47_c16) { this.r47_c16 = r47_c16; }
+		public BigDecimal getR47_total() { return r47_total; }
+		public void setR47_total(BigDecimal r47_total) { this.r47_total = r47_total; }
+		public String getR48_product() { return r48_product; }
+		public void setR48_product(String r48_product) { this.r48_product = r48_product; }
+		public BigDecimal getR48_botswana() { return r48_botswana; }
+		public void setR48_botswana(BigDecimal r48_botswana) { this.r48_botswana = r48_botswana; }
+		public BigDecimal getR48_south_africa() { return r48_south_africa; }
+		public void setR48_south_africa(BigDecimal r48_south_africa) { this.r48_south_africa = r48_south_africa; }
+		public BigDecimal getR48_sadc() { return r48_sadc; }
+		public void setR48_sadc(BigDecimal r48_sadc) { this.r48_sadc = r48_sadc; }
+		public BigDecimal getR48_usa() { return r48_usa; }
+		public void setR48_usa(BigDecimal r48_usa) { this.r48_usa = r48_usa; }
+		public BigDecimal getR48_uk() { return r48_uk; }
+		public void setR48_uk(BigDecimal r48_uk) { this.r48_uk = r48_uk; }
+		public BigDecimal getR48_europe() { return r48_europe; }
+		public void setR48_europe(BigDecimal r48_europe) { this.r48_europe = r48_europe; }
+		public BigDecimal getR48_india() { return r48_india; }
+		public void setR48_india(BigDecimal r48_india) { this.r48_india = r48_india; }
+		public BigDecimal getR48_sydney() { return r48_sydney; }
+		public void setR48_sydney(BigDecimal r48_sydney) { this.r48_sydney = r48_sydney; }
+		public BigDecimal getR48_uganda() { return r48_uganda; }
+		public void setR48_uganda(BigDecimal r48_uganda) { this.r48_uganda = r48_uganda; }
+		public BigDecimal getR48_c10() { return r48_c10; }
+		public void setR48_c10(BigDecimal r48_c10) { this.r48_c10 = r48_c10; }
+		public BigDecimal getR48_c11() { return r48_c11; }
+		public void setR48_c11(BigDecimal r48_c11) { this.r48_c11 = r48_c11; }
+		public BigDecimal getR48_c12() { return r48_c12; }
+		public void setR48_c12(BigDecimal r48_c12) { this.r48_c12 = r48_c12; }
+		public BigDecimal getR48_c13() { return r48_c13; }
+		public void setR48_c13(BigDecimal r48_c13) { this.r48_c13 = r48_c13; }
+		public BigDecimal getR48_c14() { return r48_c14; }
+		public void setR48_c14(BigDecimal r48_c14) { this.r48_c14 = r48_c14; }
+		public BigDecimal getR48_c15() { return r48_c15; }
+		public void setR48_c15(BigDecimal r48_c15) { this.r48_c15 = r48_c15; }
+		public BigDecimal getR48_c16() { return r48_c16; }
+		public void setR48_c16(BigDecimal r48_c16) { this.r48_c16 = r48_c16; }
+		public BigDecimal getR48_total() { return r48_total; }
+		public void setR48_total(BigDecimal r48_total) { this.r48_total = r48_total; }
+		public String getR49_product() { return r49_product; }
+		public void setR49_product(String r49_product) { this.r49_product = r49_product; }
+		public BigDecimal getR49_botswana() { return r49_botswana; }
+		public void setR49_botswana(BigDecimal r49_botswana) { this.r49_botswana = r49_botswana; }
+		public BigDecimal getR49_south_africa() { return r49_south_africa; }
+		public void setR49_south_africa(BigDecimal r49_south_africa) { this.r49_south_africa = r49_south_africa; }
+		public BigDecimal getR49_sadc() { return r49_sadc; }
+		public void setR49_sadc(BigDecimal r49_sadc) { this.r49_sadc = r49_sadc; }
+		public BigDecimal getR49_usa() { return r49_usa; }
+		public void setR49_usa(BigDecimal r49_usa) { this.r49_usa = r49_usa; }
+		public BigDecimal getR49_uk() { return r49_uk; }
+		public void setR49_uk(BigDecimal r49_uk) { this.r49_uk = r49_uk; }
+		public BigDecimal getR49_europe() { return r49_europe; }
+		public void setR49_europe(BigDecimal r49_europe) { this.r49_europe = r49_europe; }
+		public BigDecimal getR49_india() { return r49_india; }
+		public void setR49_india(BigDecimal r49_india) { this.r49_india = r49_india; }
+		public BigDecimal getR49_sydney() { return r49_sydney; }
+		public void setR49_sydney(BigDecimal r49_sydney) { this.r49_sydney = r49_sydney; }
+		public BigDecimal getR49_uganda() { return r49_uganda; }
+		public void setR49_uganda(BigDecimal r49_uganda) { this.r49_uganda = r49_uganda; }
+		public BigDecimal getR49_c10() { return r49_c10; }
+		public void setR49_c10(BigDecimal r49_c10) { this.r49_c10 = r49_c10; }
+		public BigDecimal getR49_c11() { return r49_c11; }
+		public void setR49_c11(BigDecimal r49_c11) { this.r49_c11 = r49_c11; }
+		public BigDecimal getR49_c12() { return r49_c12; }
+		public void setR49_c12(BigDecimal r49_c12) { this.r49_c12 = r49_c12; }
+		public BigDecimal getR49_c13() { return r49_c13; }
+		public void setR49_c13(BigDecimal r49_c13) { this.r49_c13 = r49_c13; }
+		public BigDecimal getR49_c14() { return r49_c14; }
+		public void setR49_c14(BigDecimal r49_c14) { this.r49_c14 = r49_c14; }
+		public BigDecimal getR49_c15() { return r49_c15; }
+		public void setR49_c15(BigDecimal r49_c15) { this.r49_c15 = r49_c15; }
+		public BigDecimal getR49_c16() { return r49_c16; }
+		public void setR49_c16(BigDecimal r49_c16) { this.r49_c16 = r49_c16; }
+		public BigDecimal getR49_total() { return r49_total; }
+		public void setR49_total(BigDecimal r49_total) { this.r49_total = r49_total; }
+		public String getR50_product() { return r50_product; }
+		public void setR50_product(String r50_product) { this.r50_product = r50_product; }
+		public BigDecimal getR50_botswana() { return r50_botswana; }
+		public void setR50_botswana(BigDecimal r50_botswana) { this.r50_botswana = r50_botswana; }
+		public BigDecimal getR50_south_africa() { return r50_south_africa; }
+		public void setR50_south_africa(BigDecimal r50_south_africa) { this.r50_south_africa = r50_south_africa; }
+		public BigDecimal getR50_sadc() { return r50_sadc; }
+		public void setR50_sadc(BigDecimal r50_sadc) { this.r50_sadc = r50_sadc; }
+		public BigDecimal getR50_usa() { return r50_usa; }
+		public void setR50_usa(BigDecimal r50_usa) { this.r50_usa = r50_usa; }
+		public BigDecimal getR50_uk() { return r50_uk; }
+		public void setR50_uk(BigDecimal r50_uk) { this.r50_uk = r50_uk; }
+		public BigDecimal getR50_europe() { return r50_europe; }
+		public void setR50_europe(BigDecimal r50_europe) { this.r50_europe = r50_europe; }
+		public BigDecimal getR50_india() { return r50_india; }
+		public void setR50_india(BigDecimal r50_india) { this.r50_india = r50_india; }
+		public BigDecimal getR50_sydney() { return r50_sydney; }
+		public void setR50_sydney(BigDecimal r50_sydney) { this.r50_sydney = r50_sydney; }
+		public BigDecimal getR50_uganda() { return r50_uganda; }
+		public void setR50_uganda(BigDecimal r50_uganda) { this.r50_uganda = r50_uganda; }
+		public BigDecimal getR50_c10() { return r50_c10; }
+		public void setR50_c10(BigDecimal r50_c10) { this.r50_c10 = r50_c10; }
+		public BigDecimal getR50_c11() { return r50_c11; }
+		public void setR50_c11(BigDecimal r50_c11) { this.r50_c11 = r50_c11; }
+		public BigDecimal getR50_c12() { return r50_c12; }
+		public void setR50_c12(BigDecimal r50_c12) { this.r50_c12 = r50_c12; }
+		public BigDecimal getR50_c13() { return r50_c13; }
+		public void setR50_c13(BigDecimal r50_c13) { this.r50_c13 = r50_c13; }
+		public BigDecimal getR50_c14() { return r50_c14; }
+		public void setR50_c14(BigDecimal r50_c14) { this.r50_c14 = r50_c14; }
+		public BigDecimal getR50_c15() { return r50_c15; }
+		public void setR50_c15(BigDecimal r50_c15) { this.r50_c15 = r50_c15; }
+		public BigDecimal getR50_c16() { return r50_c16; }
+		public void setR50_c16(BigDecimal r50_c16) { this.r50_c16 = r50_c16; }
+		public BigDecimal getR50_total() { return r50_total; }
+		public void setR50_total(BigDecimal r50_total) { this.r50_total = r50_total; }
+		public String getR51_product() { return r51_product; }
+		public void setR51_product(String r51_product) { this.r51_product = r51_product; }
+		public BigDecimal getR51_botswana() { return r51_botswana; }
+		public void setR51_botswana(BigDecimal r51_botswana) { this.r51_botswana = r51_botswana; }
+		public BigDecimal getR51_south_africa() { return r51_south_africa; }
+		public void setR51_south_africa(BigDecimal r51_south_africa) { this.r51_south_africa = r51_south_africa; }
+		public BigDecimal getR51_sadc() { return r51_sadc; }
+		public void setR51_sadc(BigDecimal r51_sadc) { this.r51_sadc = r51_sadc; }
+		public BigDecimal getR51_usa() { return r51_usa; }
+		public void setR51_usa(BigDecimal r51_usa) { this.r51_usa = r51_usa; }
+		public BigDecimal getR51_uk() { return r51_uk; }
+		public void setR51_uk(BigDecimal r51_uk) { this.r51_uk = r51_uk; }
+		public BigDecimal getR51_europe() { return r51_europe; }
+		public void setR51_europe(BigDecimal r51_europe) { this.r51_europe = r51_europe; }
+		public BigDecimal getR51_india() { return r51_india; }
+		public void setR51_india(BigDecimal r51_india) { this.r51_india = r51_india; }
+		public BigDecimal getR51_sydney() { return r51_sydney; }
+		public void setR51_sydney(BigDecimal r51_sydney) { this.r51_sydney = r51_sydney; }
+		public BigDecimal getR51_uganda() { return r51_uganda; }
+		public void setR51_uganda(BigDecimal r51_uganda) { this.r51_uganda = r51_uganda; }
+		public BigDecimal getR51_c10() { return r51_c10; }
+		public void setR51_c10(BigDecimal r51_c10) { this.r51_c10 = r51_c10; }
+		public BigDecimal getR51_c11() { return r51_c11; }
+		public void setR51_c11(BigDecimal r51_c11) { this.r51_c11 = r51_c11; }
+		public BigDecimal getR51_c12() { return r51_c12; }
+		public void setR51_c12(BigDecimal r51_c12) { this.r51_c12 = r51_c12; }
+		public BigDecimal getR51_c13() { return r51_c13; }
+		public void setR51_c13(BigDecimal r51_c13) { this.r51_c13 = r51_c13; }
+		public BigDecimal getR51_c14() { return r51_c14; }
+		public void setR51_c14(BigDecimal r51_c14) { this.r51_c14 = r51_c14; }
+		public BigDecimal getR51_c15() { return r51_c15; }
+		public void setR51_c15(BigDecimal r51_c15) { this.r51_c15 = r51_c15; }
+		public BigDecimal getR51_c16() { return r51_c16; }
+		public void setR51_c16(BigDecimal r51_c16) { this.r51_c16 = r51_c16; }
+		public BigDecimal getR51_total() { return r51_total; }
+		public void setR51_total(BigDecimal r51_total) { this.r51_total = r51_total; }
+		public String getR52_product() { return r52_product; }
+		public void setR52_product(String r52_product) { this.r52_product = r52_product; }
+		public BigDecimal getR52_botswana() { return r52_botswana; }
+		public void setR52_botswana(BigDecimal r52_botswana) { this.r52_botswana = r52_botswana; }
+		public BigDecimal getR52_south_africa() { return r52_south_africa; }
+		public void setR52_south_africa(BigDecimal r52_south_africa) { this.r52_south_africa = r52_south_africa; }
+		public BigDecimal getR52_sadc() { return r52_sadc; }
+		public void setR52_sadc(BigDecimal r52_sadc) { this.r52_sadc = r52_sadc; }
+		public BigDecimal getR52_usa() { return r52_usa; }
+		public void setR52_usa(BigDecimal r52_usa) { this.r52_usa = r52_usa; }
+		public BigDecimal getR52_uk() { return r52_uk; }
+		public void setR52_uk(BigDecimal r52_uk) { this.r52_uk = r52_uk; }
+		public BigDecimal getR52_europe() { return r52_europe; }
+		public void setR52_europe(BigDecimal r52_europe) { this.r52_europe = r52_europe; }
+		public BigDecimal getR52_india() { return r52_india; }
+		public void setR52_india(BigDecimal r52_india) { this.r52_india = r52_india; }
+		public BigDecimal getR52_sydney() { return r52_sydney; }
+		public void setR52_sydney(BigDecimal r52_sydney) { this.r52_sydney = r52_sydney; }
+		public BigDecimal getR52_uganda() { return r52_uganda; }
+		public void setR52_uganda(BigDecimal r52_uganda) { this.r52_uganda = r52_uganda; }
+		public BigDecimal getR52_c10() { return r52_c10; }
+		public void setR52_c10(BigDecimal r52_c10) { this.r52_c10 = r52_c10; }
+		public BigDecimal getR52_c11() { return r52_c11; }
+		public void setR52_c11(BigDecimal r52_c11) { this.r52_c11 = r52_c11; }
+		public BigDecimal getR52_c12() { return r52_c12; }
+		public void setR52_c12(BigDecimal r52_c12) { this.r52_c12 = r52_c12; }
+		public BigDecimal getR52_c13() { return r52_c13; }
+		public void setR52_c13(BigDecimal r52_c13) { this.r52_c13 = r52_c13; }
+		public BigDecimal getR52_c14() { return r52_c14; }
+		public void setR52_c14(BigDecimal r52_c14) { this.r52_c14 = r52_c14; }
+		public BigDecimal getR52_c15() { return r52_c15; }
+		public void setR52_c15(BigDecimal r52_c15) { this.r52_c15 = r52_c15; }
+		public BigDecimal getR52_c16() { return r52_c16; }
+		public void setR52_c16(BigDecimal r52_c16) { this.r52_c16 = r52_c16; }
+		public BigDecimal getR52_total() { return r52_total; }
+		public void setR52_total(BigDecimal r52_total) { this.r52_total = r52_total; }
+		public String getR53_product() { return r53_product; }
+		public void setR53_product(String r53_product) { this.r53_product = r53_product; }
+		public BigDecimal getR53_botswana() { return r53_botswana; }
+		public void setR53_botswana(BigDecimal r53_botswana) { this.r53_botswana = r53_botswana; }
+		public BigDecimal getR53_south_africa() { return r53_south_africa; }
+		public void setR53_south_africa(BigDecimal r53_south_africa) { this.r53_south_africa = r53_south_africa; }
+		public BigDecimal getR53_sadc() { return r53_sadc; }
+		public void setR53_sadc(BigDecimal r53_sadc) { this.r53_sadc = r53_sadc; }
+		public BigDecimal getR53_usa() { return r53_usa; }
+		public void setR53_usa(BigDecimal r53_usa) { this.r53_usa = r53_usa; }
+		public BigDecimal getR53_uk() { return r53_uk; }
+		public void setR53_uk(BigDecimal r53_uk) { this.r53_uk = r53_uk; }
+		public BigDecimal getR53_europe() { return r53_europe; }
+		public void setR53_europe(BigDecimal r53_europe) { this.r53_europe = r53_europe; }
+		public BigDecimal getR53_india() { return r53_india; }
+		public void setR53_india(BigDecimal r53_india) { this.r53_india = r53_india; }
+		public BigDecimal getR53_sydney() { return r53_sydney; }
+		public void setR53_sydney(BigDecimal r53_sydney) { this.r53_sydney = r53_sydney; }
+		public BigDecimal getR53_uganda() { return r53_uganda; }
+		public void setR53_uganda(BigDecimal r53_uganda) { this.r53_uganda = r53_uganda; }
+		public BigDecimal getR53_c10() { return r53_c10; }
+		public void setR53_c10(BigDecimal r53_c10) { this.r53_c10 = r53_c10; }
+		public BigDecimal getR53_c11() { return r53_c11; }
+		public void setR53_c11(BigDecimal r53_c11) { this.r53_c11 = r53_c11; }
+		public BigDecimal getR53_c12() { return r53_c12; }
+		public void setR53_c12(BigDecimal r53_c12) { this.r53_c12 = r53_c12; }
+		public BigDecimal getR53_c13() { return r53_c13; }
+		public void setR53_c13(BigDecimal r53_c13) { this.r53_c13 = r53_c13; }
+		public BigDecimal getR53_c14() { return r53_c14; }
+		public void setR53_c14(BigDecimal r53_c14) { this.r53_c14 = r53_c14; }
+		public BigDecimal getR53_c15() { return r53_c15; }
+		public void setR53_c15(BigDecimal r53_c15) { this.r53_c15 = r53_c15; }
+		public BigDecimal getR53_c16() { return r53_c16; }
+		public void setR53_c16(BigDecimal r53_c16) { this.r53_c16 = r53_c16; }
+		public BigDecimal getR53_total() { return r53_total; }
+		public void setR53_total(BigDecimal r53_total) { this.r53_total = r53_total; }
+		public String getR54_product() { return r54_product; }
+		public void setR54_product(String r54_product) { this.r54_product = r54_product; }
+		public BigDecimal getR54_botswana() { return r54_botswana; }
+		public void setR54_botswana(BigDecimal r54_botswana) { this.r54_botswana = r54_botswana; }
+		public BigDecimal getR54_south_africa() { return r54_south_africa; }
+		public void setR54_south_africa(BigDecimal r54_south_africa) { this.r54_south_africa = r54_south_africa; }
+		public BigDecimal getR54_sadc() { return r54_sadc; }
+		public void setR54_sadc(BigDecimal r54_sadc) { this.r54_sadc = r54_sadc; }
+		public BigDecimal getR54_usa() { return r54_usa; }
+		public void setR54_usa(BigDecimal r54_usa) { this.r54_usa = r54_usa; }
+		public BigDecimal getR54_uk() { return r54_uk; }
+		public void setR54_uk(BigDecimal r54_uk) { this.r54_uk = r54_uk; }
+		public BigDecimal getR54_europe() { return r54_europe; }
+		public void setR54_europe(BigDecimal r54_europe) { this.r54_europe = r54_europe; }
+		public BigDecimal getR54_india() { return r54_india; }
+		public void setR54_india(BigDecimal r54_india) { this.r54_india = r54_india; }
+		public BigDecimal getR54_sydney() { return r54_sydney; }
+		public void setR54_sydney(BigDecimal r54_sydney) { this.r54_sydney = r54_sydney; }
+		public BigDecimal getR54_uganda() { return r54_uganda; }
+		public void setR54_uganda(BigDecimal r54_uganda) { this.r54_uganda = r54_uganda; }
+		public BigDecimal getR54_c10() { return r54_c10; }
+		public void setR54_c10(BigDecimal r54_c10) { this.r54_c10 = r54_c10; }
+		public BigDecimal getR54_c11() { return r54_c11; }
+		public void setR54_c11(BigDecimal r54_c11) { this.r54_c11 = r54_c11; }
+		public BigDecimal getR54_c12() { return r54_c12; }
+		public void setR54_c12(BigDecimal r54_c12) { this.r54_c12 = r54_c12; }
+		public BigDecimal getR54_c13() { return r54_c13; }
+		public void setR54_c13(BigDecimal r54_c13) { this.r54_c13 = r54_c13; }
+		public BigDecimal getR54_c14() { return r54_c14; }
+		public void setR54_c14(BigDecimal r54_c14) { this.r54_c14 = r54_c14; }
+		public BigDecimal getR54_c15() { return r54_c15; }
+		public void setR54_c15(BigDecimal r54_c15) { this.r54_c15 = r54_c15; }
+		public BigDecimal getR54_c16() { return r54_c16; }
+		public void setR54_c16(BigDecimal r54_c16) { this.r54_c16 = r54_c16; }
+		public BigDecimal getR54_total() { return r54_total; }
+		public void setR54_total(BigDecimal r54_total) { this.r54_total = r54_total; }
+		public String getR55_product() { return r55_product; }
+		public void setR55_product(String r55_product) { this.r55_product = r55_product; }
+		public BigDecimal getR55_botswana() { return r55_botswana; }
+		public void setR55_botswana(BigDecimal r55_botswana) { this.r55_botswana = r55_botswana; }
+		public BigDecimal getR55_south_africa() { return r55_south_africa; }
+		public void setR55_south_africa(BigDecimal r55_south_africa) { this.r55_south_africa = r55_south_africa; }
+		public BigDecimal getR55_sadc() { return r55_sadc; }
+		public void setR55_sadc(BigDecimal r55_sadc) { this.r55_sadc = r55_sadc; }
+		public BigDecimal getR55_usa() { return r55_usa; }
+		public void setR55_usa(BigDecimal r55_usa) { this.r55_usa = r55_usa; }
+		public BigDecimal getR55_uk() { return r55_uk; }
+		public void setR55_uk(BigDecimal r55_uk) { this.r55_uk = r55_uk; }
+		public BigDecimal getR55_europe() { return r55_europe; }
+		public void setR55_europe(BigDecimal r55_europe) { this.r55_europe = r55_europe; }
+		public BigDecimal getR55_india() { return r55_india; }
+		public void setR55_india(BigDecimal r55_india) { this.r55_india = r55_india; }
+		public BigDecimal getR55_sydney() { return r55_sydney; }
+		public void setR55_sydney(BigDecimal r55_sydney) { this.r55_sydney = r55_sydney; }
+		public BigDecimal getR55_uganda() { return r55_uganda; }
+		public void setR55_uganda(BigDecimal r55_uganda) { this.r55_uganda = r55_uganda; }
+		public BigDecimal getR55_c10() { return r55_c10; }
+		public void setR55_c10(BigDecimal r55_c10) { this.r55_c10 = r55_c10; }
+		public BigDecimal getR55_c11() { return r55_c11; }
+		public void setR55_c11(BigDecimal r55_c11) { this.r55_c11 = r55_c11; }
+		public BigDecimal getR55_c12() { return r55_c12; }
+		public void setR55_c12(BigDecimal r55_c12) { this.r55_c12 = r55_c12; }
+		public BigDecimal getR55_c13() { return r55_c13; }
+		public void setR55_c13(BigDecimal r55_c13) { this.r55_c13 = r55_c13; }
+		public BigDecimal getR55_c14() { return r55_c14; }
+		public void setR55_c14(BigDecimal r55_c14) { this.r55_c14 = r55_c14; }
+		public BigDecimal getR55_c15() { return r55_c15; }
+		public void setR55_c15(BigDecimal r55_c15) { this.r55_c15 = r55_c15; }
+		public BigDecimal getR55_c16() { return r55_c16; }
+		public void setR55_c16(BigDecimal r55_c16) { this.r55_c16 = r55_c16; }
+		public BigDecimal getR55_total() { return r55_total; }
+		public void setR55_total(BigDecimal r55_total) { this.r55_total = r55_total; }
+		public String getR56_product() { return r56_product; }
+		public void setR56_product(String r56_product) { this.r56_product = r56_product; }
+		public BigDecimal getR56_botswana() { return r56_botswana; }
+		public void setR56_botswana(BigDecimal r56_botswana) { this.r56_botswana = r56_botswana; }
+		public BigDecimal getR56_south_africa() { return r56_south_africa; }
+		public void setR56_south_africa(BigDecimal r56_south_africa) { this.r56_south_africa = r56_south_africa; }
+		public BigDecimal getR56_sadc() { return r56_sadc; }
+		public void setR56_sadc(BigDecimal r56_sadc) { this.r56_sadc = r56_sadc; }
+		public BigDecimal getR56_usa() { return r56_usa; }
+		public void setR56_usa(BigDecimal r56_usa) { this.r56_usa = r56_usa; }
+		public BigDecimal getR56_uk() { return r56_uk; }
+		public void setR56_uk(BigDecimal r56_uk) { this.r56_uk = r56_uk; }
+		public BigDecimal getR56_europe() { return r56_europe; }
+		public void setR56_europe(BigDecimal r56_europe) { this.r56_europe = r56_europe; }
+		public BigDecimal getR56_india() { return r56_india; }
+		public void setR56_india(BigDecimal r56_india) { this.r56_india = r56_india; }
+		public BigDecimal getR56_sydney() { return r56_sydney; }
+		public void setR56_sydney(BigDecimal r56_sydney) { this.r56_sydney = r56_sydney; }
+		public BigDecimal getR56_uganda() { return r56_uganda; }
+		public void setR56_uganda(BigDecimal r56_uganda) { this.r56_uganda = r56_uganda; }
+		public BigDecimal getR56_c10() { return r56_c10; }
+		public void setR56_c10(BigDecimal r56_c10) { this.r56_c10 = r56_c10; }
+		public BigDecimal getR56_c11() { return r56_c11; }
+		public void setR56_c11(BigDecimal r56_c11) { this.r56_c11 = r56_c11; }
+		public BigDecimal getR56_c12() { return r56_c12; }
+		public void setR56_c12(BigDecimal r56_c12) { this.r56_c12 = r56_c12; }
+		public BigDecimal getR56_c13() { return r56_c13; }
+		public void setR56_c13(BigDecimal r56_c13) { this.r56_c13 = r56_c13; }
+		public BigDecimal getR56_c14() { return r56_c14; }
+		public void setR56_c14(BigDecimal r56_c14) { this.r56_c14 = r56_c14; }
+		public BigDecimal getR56_c15() { return r56_c15; }
+		public void setR56_c15(BigDecimal r56_c15) { this.r56_c15 = r56_c15; }
+		public BigDecimal getR56_c16() { return r56_c16; }
+		public void setR56_c16(BigDecimal r56_c16) { this.r56_c16 = r56_c16; }
+		public BigDecimal getR56_total() { return r56_total; }
+		public void setR56_total(BigDecimal r56_total) { this.r56_total = r56_total; }
+		public String getR59_product() { return r59_product; }
+		public void setR59_product(String r59_product) { this.r59_product = r59_product; }
+		public BigDecimal getR59_botswana() { return r59_botswana; }
+		public void setR59_botswana(BigDecimal r59_botswana) { this.r59_botswana = r59_botswana; }
+		public BigDecimal getR59_south_africa() { return r59_south_africa; }
+		public void setR59_south_africa(BigDecimal r59_south_africa) { this.r59_south_africa = r59_south_africa; }
+		public BigDecimal getR59_sadc() { return r59_sadc; }
+		public void setR59_sadc(BigDecimal r59_sadc) { this.r59_sadc = r59_sadc; }
+		public BigDecimal getR59_usa() { return r59_usa; }
+		public void setR59_usa(BigDecimal r59_usa) { this.r59_usa = r59_usa; }
+		public BigDecimal getR59_uk() { return r59_uk; }
+		public void setR59_uk(BigDecimal r59_uk) { this.r59_uk = r59_uk; }
+		public BigDecimal getR59_europe() { return r59_europe; }
+		public void setR59_europe(BigDecimal r59_europe) { this.r59_europe = r59_europe; }
+		public BigDecimal getR59_india() { return r59_india; }
+		public void setR59_india(BigDecimal r59_india) { this.r59_india = r59_india; }
+		public BigDecimal getR59_sydney() { return r59_sydney; }
+		public void setR59_sydney(BigDecimal r59_sydney) { this.r59_sydney = r59_sydney; }
+		public BigDecimal getR59_uganda() { return r59_uganda; }
+		public void setR59_uganda(BigDecimal r59_uganda) { this.r59_uganda = r59_uganda; }
+		public BigDecimal getR59_c10() { return r59_c10; }
+		public void setR59_c10(BigDecimal r59_c10) { this.r59_c10 = r59_c10; }
+		public BigDecimal getR59_c11() { return r59_c11; }
+		public void setR59_c11(BigDecimal r59_c11) { this.r59_c11 = r59_c11; }
+		public BigDecimal getR59_c12() { return r59_c12; }
+		public void setR59_c12(BigDecimal r59_c12) { this.r59_c12 = r59_c12; }
+		public BigDecimal getR59_c13() { return r59_c13; }
+		public void setR59_c13(BigDecimal r59_c13) { this.r59_c13 = r59_c13; }
+		public BigDecimal getR59_c14() { return r59_c14; }
+		public void setR59_c14(BigDecimal r59_c14) { this.r59_c14 = r59_c14; }
+		public BigDecimal getR59_c15() { return r59_c15; }
+		public void setR59_c15(BigDecimal r59_c15) { this.r59_c15 = r59_c15; }
+		public BigDecimal getR59_c16() { return r59_c16; }
+		public void setR59_c16(BigDecimal r59_c16) { this.r59_c16 = r59_c16; }
+		public BigDecimal getR59_total() { return r59_total; }
+		public void setR59_total(BigDecimal r59_total) { this.r59_total = r59_total; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public Date getReportResubDate() { return reportResubDate; }
+		public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORArchivalSummary2RowMapper implements RowMapper<M_GALOR_Archival_Summary_Entity2> {
+		@Override
+		public M_GALOR_Archival_Summary_Entity2 mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Archival_Summary_Entity2 obj = new M_GALOR_Archival_Summary_Entity2();
+			obj.setR62_product(rs.getString("R62_PRODUCT"));
+			obj.setR62_botswana(rs.getBigDecimal("R62_BOTSWANA"));
+			obj.setR62_south_africa(rs.getBigDecimal("R62_SOUTH_AFRICA"));
+			obj.setR62_sadc(rs.getBigDecimal("R62_SADC"));
+			obj.setR62_usa(rs.getBigDecimal("R62_USA"));
+			obj.setR62_uk(rs.getBigDecimal("R62_UK"));
+			obj.setR62_europe(rs.getBigDecimal("R62_EUROPE"));
+			obj.setR62_india(rs.getBigDecimal("R62_INDIA"));
+			obj.setR62_sydney(rs.getBigDecimal("R62_SYDNEY"));
+			obj.setR62_uganda(rs.getBigDecimal("R62_UGANDA"));
+			obj.setR62_c10(rs.getBigDecimal("R62_C10"));
+			obj.setR62_c11(rs.getBigDecimal("R62_C11"));
+			obj.setR62_c12(rs.getBigDecimal("R62_C12"));
+			obj.setR62_c13(rs.getBigDecimal("R62_C13"));
+			obj.setR62_c14(rs.getBigDecimal("R62_C14"));
+			obj.setR62_c15(rs.getBigDecimal("R62_C15"));
+			obj.setR62_c16(rs.getBigDecimal("R62_C16"));
+			obj.setR62_total(rs.getBigDecimal("R62_TOTAL"));
+			obj.setR63_product(rs.getString("R63_PRODUCT"));
+			obj.setR63_botswana(rs.getBigDecimal("R63_BOTSWANA"));
+			obj.setR63_south_africa(rs.getBigDecimal("R63_SOUTH_AFRICA"));
+			obj.setR63_sadc(rs.getBigDecimal("R63_SADC"));
+			obj.setR63_usa(rs.getBigDecimal("R63_USA"));
+			obj.setR63_uk(rs.getBigDecimal("R63_UK"));
+			obj.setR63_europe(rs.getBigDecimal("R63_EUROPE"));
+			obj.setR63_india(rs.getBigDecimal("R63_INDIA"));
+			obj.setR63_sydney(rs.getBigDecimal("R63_SYDNEY"));
+			obj.setR63_uganda(rs.getBigDecimal("R63_UGANDA"));
+			obj.setR63_c10(rs.getBigDecimal("R63_C10"));
+			obj.setR63_c11(rs.getBigDecimal("R63_C11"));
+			obj.setR63_c12(rs.getBigDecimal("R63_C12"));
+			obj.setR63_c13(rs.getBigDecimal("R63_C13"));
+			obj.setR63_c14(rs.getBigDecimal("R63_C14"));
+			obj.setR63_c15(rs.getBigDecimal("R63_C15"));
+			obj.setR63_c16(rs.getBigDecimal("R63_C16"));
+			obj.setR63_total(rs.getBigDecimal("R63_TOTAL"));
+			obj.setR66_product(rs.getString("R66_PRODUCT"));
+			obj.setR66_botswana(rs.getBigDecimal("R66_BOTSWANA"));
+			obj.setR66_south_africa(rs.getBigDecimal("R66_SOUTH_AFRICA"));
+			obj.setR66_sadc(rs.getBigDecimal("R66_SADC"));
+			obj.setR66_usa(rs.getBigDecimal("R66_USA"));
+			obj.setR66_uk(rs.getBigDecimal("R66_UK"));
+			obj.setR66_europe(rs.getBigDecimal("R66_EUROPE"));
+			obj.setR66_india(rs.getBigDecimal("R66_INDIA"));
+			obj.setR66_sydney(rs.getBigDecimal("R66_SYDNEY"));
+			obj.setR66_uganda(rs.getBigDecimal("R66_UGANDA"));
+			obj.setR66_c10(rs.getBigDecimal("R66_C10"));
+			obj.setR66_c11(rs.getBigDecimal("R66_C11"));
+			obj.setR66_c12(rs.getBigDecimal("R66_C12"));
+			obj.setR66_c13(rs.getBigDecimal("R66_C13"));
+			obj.setR66_c14(rs.getBigDecimal("R66_C14"));
+			obj.setR66_c15(rs.getBigDecimal("R66_C15"));
+			obj.setR66_c16(rs.getBigDecimal("R66_C16"));
+			obj.setR66_total(rs.getBigDecimal("R66_TOTAL"));
+			obj.setR69_product(rs.getString("R69_PRODUCT"));
+			obj.setR69_botswana(rs.getBigDecimal("R69_BOTSWANA"));
+			obj.setR69_south_africa(rs.getBigDecimal("R69_SOUTH_AFRICA"));
+			obj.setR69_sadc(rs.getBigDecimal("R69_SADC"));
+			obj.setR69_usa(rs.getBigDecimal("R69_USA"));
+			obj.setR69_uk(rs.getBigDecimal("R69_UK"));
+			obj.setR69_europe(rs.getBigDecimal("R69_EUROPE"));
+			obj.setR69_india(rs.getBigDecimal("R69_INDIA"));
+			obj.setR69_sydney(rs.getBigDecimal("R69_SYDNEY"));
+			obj.setR69_uganda(rs.getBigDecimal("R69_UGANDA"));
+			obj.setR69_c10(rs.getBigDecimal("R69_C10"));
+			obj.setR69_c11(rs.getBigDecimal("R69_C11"));
+			obj.setR69_c12(rs.getBigDecimal("R69_C12"));
+			obj.setR69_c13(rs.getBigDecimal("R69_C13"));
+			obj.setR69_c14(rs.getBigDecimal("R69_C14"));
+			obj.setR69_c15(rs.getBigDecimal("R69_C15"));
+			obj.setR69_c16(rs.getBigDecimal("R69_C16"));
+			obj.setR69_total(rs.getBigDecimal("R69_TOTAL"));
+			obj.setR70_product(rs.getString("R70_PRODUCT"));
+			obj.setR70_botswana(rs.getBigDecimal("R70_BOTSWANA"));
+			obj.setR70_south_africa(rs.getBigDecimal("R70_SOUTH_AFRICA"));
+			obj.setR70_sadc(rs.getBigDecimal("R70_SADC"));
+			obj.setR70_usa(rs.getBigDecimal("R70_USA"));
+			obj.setR70_uk(rs.getBigDecimal("R70_UK"));
+			obj.setR70_europe(rs.getBigDecimal("R70_EUROPE"));
+			obj.setR70_india(rs.getBigDecimal("R70_INDIA"));
+			obj.setR70_sydney(rs.getBigDecimal("R70_SYDNEY"));
+			obj.setR70_uganda(rs.getBigDecimal("R70_UGANDA"));
+			obj.setR70_c10(rs.getBigDecimal("R70_C10"));
+			obj.setR70_c11(rs.getBigDecimal("R70_C11"));
+			obj.setR70_c12(rs.getBigDecimal("R70_C12"));
+			obj.setR70_c13(rs.getBigDecimal("R70_C13"));
+			obj.setR70_c14(rs.getBigDecimal("R70_C14"));
+			obj.setR70_c15(rs.getBigDecimal("R70_C15"));
+			obj.setR70_c16(rs.getBigDecimal("R70_C16"));
+			obj.setR70_total(rs.getBigDecimal("R70_TOTAL"));
+			obj.setR71_product(rs.getString("R71_PRODUCT"));
+			obj.setR71_botswana(rs.getBigDecimal("R71_BOTSWANA"));
+			obj.setR71_south_africa(rs.getBigDecimal("R71_SOUTH_AFRICA"));
+			obj.setR71_sadc(rs.getBigDecimal("R71_SADC"));
+			obj.setR71_usa(rs.getBigDecimal("R71_USA"));
+			obj.setR71_uk(rs.getBigDecimal("R71_UK"));
+			obj.setR71_europe(rs.getBigDecimal("R71_EUROPE"));
+			obj.setR71_india(rs.getBigDecimal("R71_INDIA"));
+			obj.setR71_sydney(rs.getBigDecimal("R71_SYDNEY"));
+			obj.setR71_uganda(rs.getBigDecimal("R71_UGANDA"));
+			obj.setR71_c10(rs.getBigDecimal("R71_C10"));
+			obj.setR71_c11(rs.getBigDecimal("R71_C11"));
+			obj.setR71_c12(rs.getBigDecimal("R71_C12"));
+			obj.setR71_c13(rs.getBigDecimal("R71_C13"));
+			obj.setR71_c14(rs.getBigDecimal("R71_C14"));
+			obj.setR71_c15(rs.getBigDecimal("R71_C15"));
+			obj.setR71_c16(rs.getBigDecimal("R71_C16"));
+			obj.setR71_total(rs.getBigDecimal("R71_TOTAL"));
+			obj.setR72_product(rs.getString("R72_PRODUCT"));
+			obj.setR72_botswana(rs.getBigDecimal("R72_BOTSWANA"));
+			obj.setR72_south_africa(rs.getBigDecimal("R72_SOUTH_AFRICA"));
+			obj.setR72_sadc(rs.getBigDecimal("R72_SADC"));
+			obj.setR72_usa(rs.getBigDecimal("R72_USA"));
+			obj.setR72_uk(rs.getBigDecimal("R72_UK"));
+			obj.setR72_europe(rs.getBigDecimal("R72_EUROPE"));
+			obj.setR72_india(rs.getBigDecimal("R72_INDIA"));
+			obj.setR72_sydney(rs.getBigDecimal("R72_SYDNEY"));
+			obj.setR72_uganda(rs.getBigDecimal("R72_UGANDA"));
+			obj.setR72_c10(rs.getBigDecimal("R72_C10"));
+			obj.setR72_c11(rs.getBigDecimal("R72_C11"));
+			obj.setR72_c12(rs.getBigDecimal("R72_C12"));
+			obj.setR72_c13(rs.getBigDecimal("R72_C13"));
+			obj.setR72_c14(rs.getBigDecimal("R72_C14"));
+			obj.setR72_c15(rs.getBigDecimal("R72_C15"));
+			obj.setR72_c16(rs.getBigDecimal("R72_C16"));
+			obj.setR72_total(rs.getBigDecimal("R72_TOTAL"));
+			obj.setR73_product(rs.getString("R73_PRODUCT"));
+			obj.setR73_botswana(rs.getBigDecimal("R73_BOTSWANA"));
+			obj.setR73_south_africa(rs.getBigDecimal("R73_SOUTH_AFRICA"));
+			obj.setR73_sadc(rs.getBigDecimal("R73_SADC"));
+			obj.setR73_usa(rs.getBigDecimal("R73_USA"));
+			obj.setR73_uk(rs.getBigDecimal("R73_UK"));
+			obj.setR73_europe(rs.getBigDecimal("R73_EUROPE"));
+			obj.setR73_india(rs.getBigDecimal("R73_INDIA"));
+			obj.setR73_sydney(rs.getBigDecimal("R73_SYDNEY"));
+			obj.setR73_uganda(rs.getBigDecimal("R73_UGANDA"));
+			obj.setR73_c10(rs.getBigDecimal("R73_C10"));
+			obj.setR73_c11(rs.getBigDecimal("R73_C11"));
+			obj.setR73_c12(rs.getBigDecimal("R73_C12"));
+			obj.setR73_c13(rs.getBigDecimal("R73_C13"));
+			obj.setR73_c14(rs.getBigDecimal("R73_C14"));
+			obj.setR73_c15(rs.getBigDecimal("R73_C15"));
+			obj.setR73_c16(rs.getBigDecimal("R73_C16"));
+			obj.setR73_total(rs.getBigDecimal("R73_TOTAL"));
+			obj.setR74_product(rs.getString("R74_PRODUCT"));
+			obj.setR74_botswana(rs.getBigDecimal("R74_BOTSWANA"));
+			obj.setR74_south_africa(rs.getBigDecimal("R74_SOUTH_AFRICA"));
+			obj.setR74_sadc(rs.getBigDecimal("R74_SADC"));
+			obj.setR74_usa(rs.getBigDecimal("R74_USA"));
+			obj.setR74_uk(rs.getBigDecimal("R74_UK"));
+			obj.setR74_europe(rs.getBigDecimal("R74_EUROPE"));
+			obj.setR74_india(rs.getBigDecimal("R74_INDIA"));
+			obj.setR74_sydney(rs.getBigDecimal("R74_SYDNEY"));
+			obj.setR74_uganda(rs.getBigDecimal("R74_UGANDA"));
+			obj.setR74_c10(rs.getBigDecimal("R74_C10"));
+			obj.setR74_c11(rs.getBigDecimal("R74_C11"));
+			obj.setR74_c12(rs.getBigDecimal("R74_C12"));
+			obj.setR74_c13(rs.getBigDecimal("R74_C13"));
+			obj.setR74_c14(rs.getBigDecimal("R74_C14"));
+			obj.setR74_c15(rs.getBigDecimal("R74_C15"));
+			obj.setR74_c16(rs.getBigDecimal("R74_C16"));
+			obj.setR74_total(rs.getBigDecimal("R74_TOTAL"));
+			obj.setR75_product(rs.getString("R75_PRODUCT"));
+			obj.setR75_botswana(rs.getBigDecimal("R75_BOTSWANA"));
+			obj.setR75_south_africa(rs.getBigDecimal("R75_SOUTH_AFRICA"));
+			obj.setR75_sadc(rs.getBigDecimal("R75_SADC"));
+			obj.setR75_usa(rs.getBigDecimal("R75_USA"));
+			obj.setR75_uk(rs.getBigDecimal("R75_UK"));
+			obj.setR75_europe(rs.getBigDecimal("R75_EUROPE"));
+			obj.setR75_india(rs.getBigDecimal("R75_INDIA"));
+			obj.setR75_sydney(rs.getBigDecimal("R75_SYDNEY"));
+			obj.setR75_uganda(rs.getBigDecimal("R75_UGANDA"));
+			obj.setR75_c10(rs.getBigDecimal("R75_C10"));
+			obj.setR75_c11(rs.getBigDecimal("R75_C11"));
+			obj.setR75_c12(rs.getBigDecimal("R75_C12"));
+			obj.setR75_c13(rs.getBigDecimal("R75_C13"));
+			obj.setR75_c14(rs.getBigDecimal("R75_C14"));
+			obj.setR75_c15(rs.getBigDecimal("R75_C15"));
+			obj.setR75_c16(rs.getBigDecimal("R75_C16"));
+			obj.setR75_total(rs.getBigDecimal("R75_TOTAL"));
+			obj.setR76_product(rs.getString("R76_PRODUCT"));
+			obj.setR76_botswana(rs.getBigDecimal("R76_BOTSWANA"));
+			obj.setR76_south_africa(rs.getBigDecimal("R76_SOUTH_AFRICA"));
+			obj.setR76_sadc(rs.getBigDecimal("R76_SADC"));
+			obj.setR76_usa(rs.getBigDecimal("R76_USA"));
+			obj.setR76_uk(rs.getBigDecimal("R76_UK"));
+			obj.setR76_europe(rs.getBigDecimal("R76_EUROPE"));
+			obj.setR76_india(rs.getBigDecimal("R76_INDIA"));
+			obj.setR76_sydney(rs.getBigDecimal("R76_SYDNEY"));
+			obj.setR76_uganda(rs.getBigDecimal("R76_UGANDA"));
+			obj.setR76_c10(rs.getBigDecimal("R76_C10"));
+			obj.setR76_c11(rs.getBigDecimal("R76_C11"));
+			obj.setR76_c12(rs.getBigDecimal("R76_C12"));
+			obj.setR76_c13(rs.getBigDecimal("R76_C13"));
+			obj.setR76_c14(rs.getBigDecimal("R76_C14"));
+			obj.setR76_c15(rs.getBigDecimal("R76_C15"));
+			obj.setR76_c16(rs.getBigDecimal("R76_C16"));
+			obj.setR76_total(rs.getBigDecimal("R76_TOTAL"));
+			obj.setR77_product(rs.getString("R77_PRODUCT"));
+			obj.setR77_botswana(rs.getBigDecimal("R77_BOTSWANA"));
+			obj.setR77_south_africa(rs.getBigDecimal("R77_SOUTH_AFRICA"));
+			obj.setR77_sadc(rs.getBigDecimal("R77_SADC"));
+			obj.setR77_usa(rs.getBigDecimal("R77_USA"));
+			obj.setR77_uk(rs.getBigDecimal("R77_UK"));
+			obj.setR77_europe(rs.getBigDecimal("R77_EUROPE"));
+			obj.setR77_india(rs.getBigDecimal("R77_INDIA"));
+			obj.setR77_sydney(rs.getBigDecimal("R77_SYDNEY"));
+			obj.setR77_uganda(rs.getBigDecimal("R77_UGANDA"));
+			obj.setR77_c10(rs.getBigDecimal("R77_C10"));
+			obj.setR77_c11(rs.getBigDecimal("R77_C11"));
+			obj.setR77_c12(rs.getBigDecimal("R77_C12"));
+			obj.setR77_c13(rs.getBigDecimal("R77_C13"));
+			obj.setR77_c14(rs.getBigDecimal("R77_C14"));
+			obj.setR77_c15(rs.getBigDecimal("R77_C15"));
+			obj.setR77_c16(rs.getBigDecimal("R77_C16"));
+			obj.setR77_total(rs.getBigDecimal("R77_TOTAL"));
+			obj.setR78_product(rs.getString("R78_PRODUCT"));
+			obj.setR78_botswana(rs.getBigDecimal("R78_BOTSWANA"));
+			obj.setR78_south_africa(rs.getBigDecimal("R78_SOUTH_AFRICA"));
+			obj.setR78_sadc(rs.getBigDecimal("R78_SADC"));
+			obj.setR78_usa(rs.getBigDecimal("R78_USA"));
+			obj.setR78_uk(rs.getBigDecimal("R78_UK"));
+			obj.setR78_europe(rs.getBigDecimal("R78_EUROPE"));
+			obj.setR78_india(rs.getBigDecimal("R78_INDIA"));
+			obj.setR78_sydney(rs.getBigDecimal("R78_SYDNEY"));
+			obj.setR78_uganda(rs.getBigDecimal("R78_UGANDA"));
+			obj.setR78_c10(rs.getBigDecimal("R78_C10"));
+			obj.setR78_c11(rs.getBigDecimal("R78_C11"));
+			obj.setR78_c12(rs.getBigDecimal("R78_C12"));
+			obj.setR78_c13(rs.getBigDecimal("R78_C13"));
+			obj.setR78_c14(rs.getBigDecimal("R78_C14"));
+			obj.setR78_c15(rs.getBigDecimal("R78_C15"));
+			obj.setR78_c16(rs.getBigDecimal("R78_C16"));
+			obj.setR78_total(rs.getBigDecimal("R78_TOTAL"));
+			obj.setR79_product(rs.getString("R79_PRODUCT"));
+			obj.setR79_botswana(rs.getBigDecimal("R79_BOTSWANA"));
+			obj.setR79_south_africa(rs.getBigDecimal("R79_SOUTH_AFRICA"));
+			obj.setR79_sadc(rs.getBigDecimal("R79_SADC"));
+			obj.setR79_usa(rs.getBigDecimal("R79_USA"));
+			obj.setR79_uk(rs.getBigDecimal("R79_UK"));
+			obj.setR79_europe(rs.getBigDecimal("R79_EUROPE"));
+			obj.setR79_india(rs.getBigDecimal("R79_INDIA"));
+			obj.setR79_sydney(rs.getBigDecimal("R79_SYDNEY"));
+			obj.setR79_uganda(rs.getBigDecimal("R79_UGANDA"));
+			obj.setR79_c10(rs.getBigDecimal("R79_C10"));
+			obj.setR79_c11(rs.getBigDecimal("R79_C11"));
+			obj.setR79_c12(rs.getBigDecimal("R79_C12"));
+			obj.setR79_c13(rs.getBigDecimal("R79_C13"));
+			obj.setR79_c14(rs.getBigDecimal("R79_C14"));
+			obj.setR79_c15(rs.getBigDecimal("R79_C15"));
+			obj.setR79_c16(rs.getBigDecimal("R79_C16"));
+			obj.setR79_total(rs.getBigDecimal("R79_TOTAL"));
+			obj.setR80_product(rs.getString("R80_PRODUCT"));
+			obj.setR80_botswana(rs.getBigDecimal("R80_BOTSWANA"));
+			obj.setR80_south_africa(rs.getBigDecimal("R80_SOUTH_AFRICA"));
+			obj.setR80_sadc(rs.getBigDecimal("R80_SADC"));
+			obj.setR80_usa(rs.getBigDecimal("R80_USA"));
+			obj.setR80_uk(rs.getBigDecimal("R80_UK"));
+			obj.setR80_europe(rs.getBigDecimal("R80_EUROPE"));
+			obj.setR80_india(rs.getBigDecimal("R80_INDIA"));
+			obj.setR80_sydney(rs.getBigDecimal("R80_SYDNEY"));
+			obj.setR80_uganda(rs.getBigDecimal("R80_UGANDA"));
+			obj.setR80_c10(rs.getBigDecimal("R80_C10"));
+			obj.setR80_c11(rs.getBigDecimal("R80_C11"));
+			obj.setR80_c12(rs.getBigDecimal("R80_C12"));
+			obj.setR80_c13(rs.getBigDecimal("R80_C13"));
+			obj.setR80_c14(rs.getBigDecimal("R80_C14"));
+			obj.setR80_c15(rs.getBigDecimal("R80_C15"));
+			obj.setR80_c16(rs.getBigDecimal("R80_C16"));
+			obj.setR80_total(rs.getBigDecimal("R80_TOTAL"));
+			obj.setR81_product(rs.getString("R81_PRODUCT"));
+			obj.setR81_botswana(rs.getBigDecimal("R81_BOTSWANA"));
+			obj.setR81_south_africa(rs.getBigDecimal("R81_SOUTH_AFRICA"));
+			obj.setR81_sadc(rs.getBigDecimal("R81_SADC"));
+			obj.setR81_usa(rs.getBigDecimal("R81_USA"));
+			obj.setR81_uk(rs.getBigDecimal("R81_UK"));
+			obj.setR81_europe(rs.getBigDecimal("R81_EUROPE"));
+			obj.setR81_india(rs.getBigDecimal("R81_INDIA"));
+			obj.setR81_sydney(rs.getBigDecimal("R81_SYDNEY"));
+			obj.setR81_uganda(rs.getBigDecimal("R81_UGANDA"));
+			obj.setR81_c10(rs.getBigDecimal("R81_C10"));
+			obj.setR81_c11(rs.getBigDecimal("R81_C11"));
+			obj.setR81_c12(rs.getBigDecimal("R81_C12"));
+			obj.setR81_c13(rs.getBigDecimal("R81_C13"));
+			obj.setR81_c14(rs.getBigDecimal("R81_C14"));
+			obj.setR81_c15(rs.getBigDecimal("R81_C15"));
+			obj.setR81_c16(rs.getBigDecimal("R81_C16"));
+			obj.setR81_total(rs.getBigDecimal("R81_TOTAL"));
+			obj.setR82_product(rs.getString("R82_PRODUCT"));
+			obj.setR82_botswana(rs.getBigDecimal("R82_BOTSWANA"));
+			obj.setR82_south_africa(rs.getBigDecimal("R82_SOUTH_AFRICA"));
+			obj.setR82_sadc(rs.getBigDecimal("R82_SADC"));
+			obj.setR82_usa(rs.getBigDecimal("R82_USA"));
+			obj.setR82_uk(rs.getBigDecimal("R82_UK"));
+			obj.setR82_europe(rs.getBigDecimal("R82_EUROPE"));
+			obj.setR82_india(rs.getBigDecimal("R82_INDIA"));
+			obj.setR82_sydney(rs.getBigDecimal("R82_SYDNEY"));
+			obj.setR82_uganda(rs.getBigDecimal("R82_UGANDA"));
+			obj.setR82_c10(rs.getBigDecimal("R82_C10"));
+			obj.setR82_c11(rs.getBigDecimal("R82_C11"));
+			obj.setR82_c12(rs.getBigDecimal("R82_C12"));
+			obj.setR82_c13(rs.getBigDecimal("R82_C13"));
+			obj.setR82_c14(rs.getBigDecimal("R82_C14"));
+			obj.setR82_c15(rs.getBigDecimal("R82_C15"));
+			obj.setR82_c16(rs.getBigDecimal("R82_C16"));
+			obj.setR82_total(rs.getBigDecimal("R82_TOTAL"));
+			obj.setR83_product(rs.getString("R83_PRODUCT"));
+			obj.setR83_botswana(rs.getBigDecimal("R83_BOTSWANA"));
+			obj.setR83_south_africa(rs.getBigDecimal("R83_SOUTH_AFRICA"));
+			obj.setR83_sadc(rs.getBigDecimal("R83_SADC"));
+			obj.setR83_usa(rs.getBigDecimal("R83_USA"));
+			obj.setR83_uk(rs.getBigDecimal("R83_UK"));
+			obj.setR83_europe(rs.getBigDecimal("R83_EUROPE"));
+			obj.setR83_india(rs.getBigDecimal("R83_INDIA"));
+			obj.setR83_sydney(rs.getBigDecimal("R83_SYDNEY"));
+			obj.setR83_uganda(rs.getBigDecimal("R83_UGANDA"));
+			obj.setR83_c10(rs.getBigDecimal("R83_C10"));
+			obj.setR83_c11(rs.getBigDecimal("R83_C11"));
+			obj.setR83_c12(rs.getBigDecimal("R83_C12"));
+			obj.setR83_c13(rs.getBigDecimal("R83_C13"));
+			obj.setR83_c14(rs.getBigDecimal("R83_C14"));
+			obj.setR83_c15(rs.getBigDecimal("R83_C15"));
+			obj.setR83_c16(rs.getBigDecimal("R83_C16"));
+			obj.setR83_total(rs.getBigDecimal("R83_TOTAL"));
+			obj.setR84_product(rs.getString("R84_PRODUCT"));
+			obj.setR84_botswana(rs.getBigDecimal("R84_BOTSWANA"));
+			obj.setR84_south_africa(rs.getBigDecimal("R84_SOUTH_AFRICA"));
+			obj.setR84_sadc(rs.getBigDecimal("R84_SADC"));
+			obj.setR84_usa(rs.getBigDecimal("R84_USA"));
+			obj.setR84_uk(rs.getBigDecimal("R84_UK"));
+			obj.setR84_europe(rs.getBigDecimal("R84_EUROPE"));
+			obj.setR84_india(rs.getBigDecimal("R84_INDIA"));
+			obj.setR84_sydney(rs.getBigDecimal("R84_SYDNEY"));
+			obj.setR84_uganda(rs.getBigDecimal("R84_UGANDA"));
+			obj.setR84_c10(rs.getBigDecimal("R84_C10"));
+			obj.setR84_c11(rs.getBigDecimal("R84_C11"));
+			obj.setR84_c12(rs.getBigDecimal("R84_C12"));
+			obj.setR84_c13(rs.getBigDecimal("R84_C13"));
+			obj.setR84_c14(rs.getBigDecimal("R84_C14"));
+			obj.setR84_c15(rs.getBigDecimal("R84_C15"));
+			obj.setR84_c16(rs.getBigDecimal("R84_C16"));
+			obj.setR84_total(rs.getBigDecimal("R84_TOTAL"));
+			obj.setR85_product(rs.getString("R85_PRODUCT"));
+			obj.setR85_botswana(rs.getBigDecimal("R85_BOTSWANA"));
+			obj.setR85_south_africa(rs.getBigDecimal("R85_SOUTH_AFRICA"));
+			obj.setR85_sadc(rs.getBigDecimal("R85_SADC"));
+			obj.setR85_usa(rs.getBigDecimal("R85_USA"));
+			obj.setR85_uk(rs.getBigDecimal("R85_UK"));
+			obj.setR85_europe(rs.getBigDecimal("R85_EUROPE"));
+			obj.setR85_india(rs.getBigDecimal("R85_INDIA"));
+			obj.setR85_sydney(rs.getBigDecimal("R85_SYDNEY"));
+			obj.setR85_uganda(rs.getBigDecimal("R85_UGANDA"));
+			obj.setR85_c10(rs.getBigDecimal("R85_C10"));
+			obj.setR85_c11(rs.getBigDecimal("R85_C11"));
+			obj.setR85_c12(rs.getBigDecimal("R85_C12"));
+			obj.setR85_c13(rs.getBigDecimal("R85_C13"));
+			obj.setR85_c14(rs.getBigDecimal("R85_C14"));
+			obj.setR85_c15(rs.getBigDecimal("R85_C15"));
+			obj.setR85_c16(rs.getBigDecimal("R85_C16"));
+			obj.setR85_total(rs.getBigDecimal("R85_TOTAL"));
+			obj.setR86_product(rs.getString("R86_PRODUCT"));
+			obj.setR86_botswana(rs.getBigDecimal("R86_BOTSWANA"));
+			obj.setR86_south_africa(rs.getBigDecimal("R86_SOUTH_AFRICA"));
+			obj.setR86_sadc(rs.getBigDecimal("R86_SADC"));
+			obj.setR86_usa(rs.getBigDecimal("R86_USA"));
+			obj.setR86_uk(rs.getBigDecimal("R86_UK"));
+			obj.setR86_europe(rs.getBigDecimal("R86_EUROPE"));
+			obj.setR86_india(rs.getBigDecimal("R86_INDIA"));
+			obj.setR86_sydney(rs.getBigDecimal("R86_SYDNEY"));
+			obj.setR86_uganda(rs.getBigDecimal("R86_UGANDA"));
+			obj.setR86_c10(rs.getBigDecimal("R86_C10"));
+			obj.setR86_c11(rs.getBigDecimal("R86_C11"));
+			obj.setR86_c12(rs.getBigDecimal("R86_C12"));
+			obj.setR86_c13(rs.getBigDecimal("R86_C13"));
+			obj.setR86_c14(rs.getBigDecimal("R86_C14"));
+			obj.setR86_c15(rs.getBigDecimal("R86_C15"));
+			obj.setR86_c16(rs.getBigDecimal("R86_C16"));
+			obj.setR86_total(rs.getBigDecimal("R86_TOTAL"));
+			obj.setR87_product(rs.getString("R87_PRODUCT"));
+			obj.setR87_botswana(rs.getBigDecimal("R87_BOTSWANA"));
+			obj.setR87_south_africa(rs.getBigDecimal("R87_SOUTH_AFRICA"));
+			obj.setR87_sadc(rs.getBigDecimal("R87_SADC"));
+			obj.setR87_usa(rs.getBigDecimal("R87_USA"));
+			obj.setR87_uk(rs.getBigDecimal("R87_UK"));
+			obj.setR87_europe(rs.getBigDecimal("R87_EUROPE"));
+			obj.setR87_india(rs.getBigDecimal("R87_INDIA"));
+			obj.setR87_sydney(rs.getBigDecimal("R87_SYDNEY"));
+			obj.setR87_uganda(rs.getBigDecimal("R87_UGANDA"));
+			obj.setR87_c10(rs.getBigDecimal("R87_C10"));
+			obj.setR87_c11(rs.getBigDecimal("R87_C11"));
+			obj.setR87_c12(rs.getBigDecimal("R87_C12"));
+			obj.setR87_c13(rs.getBigDecimal("R87_C13"));
+			obj.setR87_c14(rs.getBigDecimal("R87_C14"));
+			obj.setR87_c15(rs.getBigDecimal("R87_C15"));
+			obj.setR87_c16(rs.getBigDecimal("R87_C16"));
+			obj.setR87_total(rs.getBigDecimal("R87_TOTAL"));
+			obj.setR88_product(rs.getString("R88_PRODUCT"));
+			obj.setR88_botswana(rs.getBigDecimal("R88_BOTSWANA"));
+			obj.setR88_south_africa(rs.getBigDecimal("R88_SOUTH_AFRICA"));
+			obj.setR88_sadc(rs.getBigDecimal("R88_SADC"));
+			obj.setR88_usa(rs.getBigDecimal("R88_USA"));
+			obj.setR88_uk(rs.getBigDecimal("R88_UK"));
+			obj.setR88_europe(rs.getBigDecimal("R88_EUROPE"));
+			obj.setR88_india(rs.getBigDecimal("R88_INDIA"));
+			obj.setR88_sydney(rs.getBigDecimal("R88_SYDNEY"));
+			obj.setR88_uganda(rs.getBigDecimal("R88_UGANDA"));
+			obj.setR88_c10(rs.getBigDecimal("R88_C10"));
+			obj.setR88_c11(rs.getBigDecimal("R88_C11"));
+			obj.setR88_c12(rs.getBigDecimal("R88_C12"));
+			obj.setR88_c13(rs.getBigDecimal("R88_C13"));
+			obj.setR88_c14(rs.getBigDecimal("R88_C14"));
+			obj.setR88_c15(rs.getBigDecimal("R88_C15"));
+			obj.setR88_c16(rs.getBigDecimal("R88_C16"));
+			obj.setR88_total(rs.getBigDecimal("R88_TOTAL"));
+			obj.setR89_product(rs.getString("R89_PRODUCT"));
+			obj.setR89_botswana(rs.getBigDecimal("R89_BOTSWANA"));
+			obj.setR89_south_africa(rs.getBigDecimal("R89_SOUTH_AFRICA"));
+			obj.setR89_sadc(rs.getBigDecimal("R89_SADC"));
+			obj.setR89_usa(rs.getBigDecimal("R89_USA"));
+			obj.setR89_uk(rs.getBigDecimal("R89_UK"));
+			obj.setR89_europe(rs.getBigDecimal("R89_EUROPE"));
+			obj.setR89_india(rs.getBigDecimal("R89_INDIA"));
+			obj.setR89_sydney(rs.getBigDecimal("R89_SYDNEY"));
+			obj.setR89_uganda(rs.getBigDecimal("R89_UGANDA"));
+			obj.setR89_c10(rs.getBigDecimal("R89_C10"));
+			obj.setR89_c11(rs.getBigDecimal("R89_C11"));
+			obj.setR89_c12(rs.getBigDecimal("R89_C12"));
+			obj.setR89_c13(rs.getBigDecimal("R89_C13"));
+			obj.setR89_c14(rs.getBigDecimal("R89_C14"));
+			obj.setR89_c15(rs.getBigDecimal("R89_C15"));
+			obj.setR89_c16(rs.getBigDecimal("R89_C16"));
+			obj.setR89_total(rs.getBigDecimal("R89_TOTAL"));
+			obj.setR90_product(rs.getString("R90_PRODUCT"));
+			obj.setR90_botswana(rs.getBigDecimal("R90_BOTSWANA"));
+			obj.setR90_south_africa(rs.getBigDecimal("R90_SOUTH_AFRICA"));
+			obj.setR90_sadc(rs.getBigDecimal("R90_SADC"));
+			obj.setR90_usa(rs.getBigDecimal("R90_USA"));
+			obj.setR90_uk(rs.getBigDecimal("R90_UK"));
+			obj.setR90_europe(rs.getBigDecimal("R90_EUROPE"));
+			obj.setR90_india(rs.getBigDecimal("R90_INDIA"));
+			obj.setR90_sydney(rs.getBigDecimal("R90_SYDNEY"));
+			obj.setR90_uganda(rs.getBigDecimal("R90_UGANDA"));
+			obj.setR90_c10(rs.getBigDecimal("R90_C10"));
+			obj.setR90_c11(rs.getBigDecimal("R90_C11"));
+			obj.setR90_c12(rs.getBigDecimal("R90_C12"));
+			obj.setR90_c13(rs.getBigDecimal("R90_C13"));
+			obj.setR90_c14(rs.getBigDecimal("R90_C14"));
+			obj.setR90_c15(rs.getBigDecimal("R90_C15"));
+			obj.setR90_c16(rs.getBigDecimal("R90_C16"));
+			obj.setR90_total(rs.getBigDecimal("R90_TOTAL"));
+			obj.setR91_product(rs.getString("R91_PRODUCT"));
+			obj.setR91_botswana(rs.getBigDecimal("R91_BOTSWANA"));
+			obj.setR91_south_africa(rs.getBigDecimal("R91_SOUTH_AFRICA"));
+			obj.setR91_sadc(rs.getBigDecimal("R91_SADC"));
+			obj.setR91_usa(rs.getBigDecimal("R91_USA"));
+			obj.setR91_uk(rs.getBigDecimal("R91_UK"));
+			obj.setR91_europe(rs.getBigDecimal("R91_EUROPE"));
+			obj.setR91_india(rs.getBigDecimal("R91_INDIA"));
+			obj.setR91_sydney(rs.getBigDecimal("R91_SYDNEY"));
+			obj.setR91_uganda(rs.getBigDecimal("R91_UGANDA"));
+			obj.setR91_c10(rs.getBigDecimal("R91_C10"));
+			obj.setR91_c11(rs.getBigDecimal("R91_C11"));
+			obj.setR91_c12(rs.getBigDecimal("R91_C12"));
+			obj.setR91_c13(rs.getBigDecimal("R91_C13"));
+			obj.setR91_c14(rs.getBigDecimal("R91_C14"));
+			obj.setR91_c15(rs.getBigDecimal("R91_C15"));
+			obj.setR91_c16(rs.getBigDecimal("R91_C16"));
+			obj.setR91_total(rs.getBigDecimal("R91_TOTAL"));
+			obj.setR92_product(rs.getString("R92_PRODUCT"));
+			obj.setR92_botswana(rs.getBigDecimal("R92_BOTSWANA"));
+			obj.setR92_south_africa(rs.getBigDecimal("R92_SOUTH_AFRICA"));
+			obj.setR92_sadc(rs.getBigDecimal("R92_SADC"));
+			obj.setR92_usa(rs.getBigDecimal("R92_USA"));
+			obj.setR92_uk(rs.getBigDecimal("R92_UK"));
+			obj.setR92_europe(rs.getBigDecimal("R92_EUROPE"));
+			obj.setR92_india(rs.getBigDecimal("R92_INDIA"));
+			obj.setR92_sydney(rs.getBigDecimal("R92_SYDNEY"));
+			obj.setR92_uganda(rs.getBigDecimal("R92_UGANDA"));
+			obj.setR92_c10(rs.getBigDecimal("R92_C10"));
+			obj.setR92_c11(rs.getBigDecimal("R92_C11"));
+			obj.setR92_c12(rs.getBigDecimal("R92_C12"));
+			obj.setR92_c13(rs.getBigDecimal("R92_C13"));
+			obj.setR92_c14(rs.getBigDecimal("R92_C14"));
+			obj.setR92_c15(rs.getBigDecimal("R92_C15"));
+			obj.setR92_c16(rs.getBigDecimal("R92_C16"));
+			obj.setR92_total(rs.getBigDecimal("R92_TOTAL"));
+			obj.setR93_product(rs.getString("R93_PRODUCT"));
+			obj.setR93_botswana(rs.getBigDecimal("R93_BOTSWANA"));
+			obj.setR93_south_africa(rs.getBigDecimal("R93_SOUTH_AFRICA"));
+			obj.setR93_sadc(rs.getBigDecimal("R93_SADC"));
+			obj.setR93_usa(rs.getBigDecimal("R93_USA"));
+			obj.setR93_uk(rs.getBigDecimal("R93_UK"));
+			obj.setR93_europe(rs.getBigDecimal("R93_EUROPE"));
+			obj.setR93_india(rs.getBigDecimal("R93_INDIA"));
+			obj.setR93_sydney(rs.getBigDecimal("R93_SYDNEY"));
+			obj.setR93_uganda(rs.getBigDecimal("R93_UGANDA"));
+			obj.setR93_c10(rs.getBigDecimal("R93_C10"));
+			obj.setR93_c11(rs.getBigDecimal("R93_C11"));
+			obj.setR93_c12(rs.getBigDecimal("R93_C12"));
+			obj.setR93_c13(rs.getBigDecimal("R93_C13"));
+			obj.setR93_c14(rs.getBigDecimal("R93_C14"));
+			obj.setR93_c15(rs.getBigDecimal("R93_C15"));
+			obj.setR93_c16(rs.getBigDecimal("R93_C16"));
+			obj.setR93_total(rs.getBigDecimal("R93_TOTAL"));
+			obj.setR94_product(rs.getString("R94_PRODUCT"));
+			obj.setR94_botswana(rs.getBigDecimal("R94_BOTSWANA"));
+			obj.setR94_south_africa(rs.getBigDecimal("R94_SOUTH_AFRICA"));
+			obj.setR94_sadc(rs.getBigDecimal("R94_SADC"));
+			obj.setR94_usa(rs.getBigDecimal("R94_USA"));
+			obj.setR94_uk(rs.getBigDecimal("R94_UK"));
+			obj.setR94_europe(rs.getBigDecimal("R94_EUROPE"));
+			obj.setR94_india(rs.getBigDecimal("R94_INDIA"));
+			obj.setR94_sydney(rs.getBigDecimal("R94_SYDNEY"));
+			obj.setR94_uganda(rs.getBigDecimal("R94_UGANDA"));
+			obj.setR94_c10(rs.getBigDecimal("R94_C10"));
+			obj.setR94_c11(rs.getBigDecimal("R94_C11"));
+			obj.setR94_c12(rs.getBigDecimal("R94_C12"));
+			obj.setR94_c13(rs.getBigDecimal("R94_C13"));
+			obj.setR94_c14(rs.getBigDecimal("R94_C14"));
+			obj.setR94_c15(rs.getBigDecimal("R94_C15"));
+			obj.setR94_c16(rs.getBigDecimal("R94_C16"));
+			obj.setR94_total(rs.getBigDecimal("R94_TOTAL"));
+			obj.setR95_product(rs.getString("R95_PRODUCT"));
+			obj.setR95_botswana(rs.getBigDecimal("R95_BOTSWANA"));
+			obj.setR95_south_africa(rs.getBigDecimal("R95_SOUTH_AFRICA"));
+			obj.setR95_sadc(rs.getBigDecimal("R95_SADC"));
+			obj.setR95_usa(rs.getBigDecimal("R95_USA"));
+			obj.setR95_uk(rs.getBigDecimal("R95_UK"));
+			obj.setR95_europe(rs.getBigDecimal("R95_EUROPE"));
+			obj.setR95_india(rs.getBigDecimal("R95_INDIA"));
+			obj.setR95_sydney(rs.getBigDecimal("R95_SYDNEY"));
+			obj.setR95_uganda(rs.getBigDecimal("R95_UGANDA"));
+			obj.setR95_c10(rs.getBigDecimal("R95_C10"));
+			obj.setR95_c11(rs.getBigDecimal("R95_C11"));
+			obj.setR95_c12(rs.getBigDecimal("R95_C12"));
+			obj.setR95_c13(rs.getBigDecimal("R95_C13"));
+			obj.setR95_c14(rs.getBigDecimal("R95_C14"));
+			obj.setR95_c15(rs.getBigDecimal("R95_C15"));
+			obj.setR95_c16(rs.getBigDecimal("R95_C16"));
+			obj.setR95_total(rs.getBigDecimal("R95_TOTAL"));
+			obj.setR96_product(rs.getString("R96_PRODUCT"));
+			obj.setR96_botswana(rs.getBigDecimal("R96_BOTSWANA"));
+			obj.setR96_south_africa(rs.getBigDecimal("R96_SOUTH_AFRICA"));
+			obj.setR96_sadc(rs.getBigDecimal("R96_SADC"));
+			obj.setR96_usa(rs.getBigDecimal("R96_USA"));
+			obj.setR96_uk(rs.getBigDecimal("R96_UK"));
+			obj.setR96_europe(rs.getBigDecimal("R96_EUROPE"));
+			obj.setR96_india(rs.getBigDecimal("R96_INDIA"));
+			obj.setR96_sydney(rs.getBigDecimal("R96_SYDNEY"));
+			obj.setR96_uganda(rs.getBigDecimal("R96_UGANDA"));
+			obj.setR96_c10(rs.getBigDecimal("R96_C10"));
+			obj.setR96_c11(rs.getBigDecimal("R96_C11"));
+			obj.setR96_c12(rs.getBigDecimal("R96_C12"));
+			obj.setR96_c13(rs.getBigDecimal("R96_C13"));
+			obj.setR96_c14(rs.getBigDecimal("R96_C14"));
+			obj.setR96_c15(rs.getBigDecimal("R96_C15"));
+			obj.setR96_c16(rs.getBigDecimal("R96_C16"));
+			obj.setR96_total(rs.getBigDecimal("R96_TOTAL"));
+			obj.setR97_product(rs.getString("R97_PRODUCT"));
+			obj.setR97_botswana(rs.getBigDecimal("R97_BOTSWANA"));
+			obj.setR97_south_africa(rs.getBigDecimal("R97_SOUTH_AFRICA"));
+			obj.setR97_sadc(rs.getBigDecimal("R97_SADC"));
+			obj.setR97_usa(rs.getBigDecimal("R97_USA"));
+			obj.setR97_uk(rs.getBigDecimal("R97_UK"));
+			obj.setR97_europe(rs.getBigDecimal("R97_EUROPE"));
+			obj.setR97_india(rs.getBigDecimal("R97_INDIA"));
+			obj.setR97_sydney(rs.getBigDecimal("R97_SYDNEY"));
+			obj.setR97_uganda(rs.getBigDecimal("R97_UGANDA"));
+			obj.setR97_c10(rs.getBigDecimal("R97_C10"));
+			obj.setR97_c11(rs.getBigDecimal("R97_C11"));
+			obj.setR97_c12(rs.getBigDecimal("R97_C12"));
+			obj.setR97_c13(rs.getBigDecimal("R97_C13"));
+			obj.setR97_c14(rs.getBigDecimal("R97_C14"));
+			obj.setR97_c15(rs.getBigDecimal("R97_C15"));
+			obj.setR97_c16(rs.getBigDecimal("R97_C16"));
+			obj.setR97_total(rs.getBigDecimal("R97_TOTAL"));
+			obj.setR98_product(rs.getString("R98_PRODUCT"));
+			obj.setR98_botswana(rs.getBigDecimal("R98_BOTSWANA"));
+			obj.setR98_south_africa(rs.getBigDecimal("R98_SOUTH_AFRICA"));
+			obj.setR98_sadc(rs.getBigDecimal("R98_SADC"));
+			obj.setR98_usa(rs.getBigDecimal("R98_USA"));
+			obj.setR98_uk(rs.getBigDecimal("R98_UK"));
+			obj.setR98_europe(rs.getBigDecimal("R98_EUROPE"));
+			obj.setR98_india(rs.getBigDecimal("R98_INDIA"));
+			obj.setR98_sydney(rs.getBigDecimal("R98_SYDNEY"));
+			obj.setR98_uganda(rs.getBigDecimal("R98_UGANDA"));
+			obj.setR98_c10(rs.getBigDecimal("R98_C10"));
+			obj.setR98_c11(rs.getBigDecimal("R98_C11"));
+			obj.setR98_c12(rs.getBigDecimal("R98_C12"));
+			obj.setR98_c13(rs.getBigDecimal("R98_C13"));
+			obj.setR98_c14(rs.getBigDecimal("R98_C14"));
+			obj.setR98_c15(rs.getBigDecimal("R98_C15"));
+			obj.setR98_c16(rs.getBigDecimal("R98_C16"));
+			obj.setR98_total(rs.getBigDecimal("R98_TOTAL"));
+			obj.setR99_product(rs.getString("R99_PRODUCT"));
+			obj.setR99_botswana(rs.getBigDecimal("R99_BOTSWANA"));
+			obj.setR99_south_africa(rs.getBigDecimal("R99_SOUTH_AFRICA"));
+			obj.setR99_sadc(rs.getBigDecimal("R99_SADC"));
+			obj.setR99_usa(rs.getBigDecimal("R99_USA"));
+			obj.setR99_uk(rs.getBigDecimal("R99_UK"));
+			obj.setR99_europe(rs.getBigDecimal("R99_EUROPE"));
+			obj.setR99_india(rs.getBigDecimal("R99_INDIA"));
+			obj.setR99_sydney(rs.getBigDecimal("R99_SYDNEY"));
+			obj.setR99_uganda(rs.getBigDecimal("R99_UGANDA"));
+			obj.setR99_c10(rs.getBigDecimal("R99_C10"));
+			obj.setR99_c11(rs.getBigDecimal("R99_C11"));
+			obj.setR99_c12(rs.getBigDecimal("R99_C12"));
+			obj.setR99_c13(rs.getBigDecimal("R99_C13"));
+			obj.setR99_c14(rs.getBigDecimal("R99_C14"));
+			obj.setR99_c15(rs.getBigDecimal("R99_C15"));
+			obj.setR99_c16(rs.getBigDecimal("R99_C16"));
+			obj.setR99_total(rs.getBigDecimal("R99_TOTAL"));
+			obj.setR100_product(rs.getString("R100_PRODUCT"));
+			obj.setR100_botswana(rs.getBigDecimal("R100_BOTSWANA"));
+			obj.setR100_south_africa(rs.getBigDecimal("R100_SOUTH_AFRICA"));
+			obj.setR100_sadc(rs.getBigDecimal("R100_SADC"));
+			obj.setR100_usa(rs.getBigDecimal("R100_USA"));
+			obj.setR100_uk(rs.getBigDecimal("R100_UK"));
+			obj.setR100_europe(rs.getBigDecimal("R100_EUROPE"));
+			obj.setR100_india(rs.getBigDecimal("R100_INDIA"));
+			obj.setR100_sydney(rs.getBigDecimal("R100_SYDNEY"));
+			obj.setR100_uganda(rs.getBigDecimal("R100_UGANDA"));
+			obj.setR100_c10(rs.getBigDecimal("R100_C10"));
+			obj.setR100_c11(rs.getBigDecimal("R100_C11"));
+			obj.setR100_c12(rs.getBigDecimal("R100_C12"));
+			obj.setR100_c13(rs.getBigDecimal("R100_C13"));
+			obj.setR100_c14(rs.getBigDecimal("R100_C14"));
+			obj.setR100_c15(rs.getBigDecimal("R100_C15"));
+			obj.setR100_c16(rs.getBigDecimal("R100_C16"));
+			obj.setR100_total(rs.getBigDecimal("R100_TOTAL"));
+			obj.setR101_product(rs.getString("R101_PRODUCT"));
+			obj.setR101_botswana(rs.getBigDecimal("R101_BOTSWANA"));
+			obj.setR101_south_africa(rs.getBigDecimal("R101_SOUTH_AFRICA"));
+			obj.setR101_sadc(rs.getBigDecimal("R101_SADC"));
+			obj.setR101_usa(rs.getBigDecimal("R101_USA"));
+			obj.setR101_uk(rs.getBigDecimal("R101_UK"));
+			obj.setR101_europe(rs.getBigDecimal("R101_EUROPE"));
+			obj.setR101_india(rs.getBigDecimal("R101_INDIA"));
+			obj.setR101_sydney(rs.getBigDecimal("R101_SYDNEY"));
+			obj.setR101_uganda(rs.getBigDecimal("R101_UGANDA"));
+			obj.setR101_c10(rs.getBigDecimal("R101_C10"));
+			obj.setR101_c11(rs.getBigDecimal("R101_C11"));
+			obj.setR101_c12(rs.getBigDecimal("R101_C12"));
+			obj.setR101_c13(rs.getBigDecimal("R101_C13"));
+			obj.setR101_c14(rs.getBigDecimal("R101_C14"));
+			obj.setR101_c15(rs.getBigDecimal("R101_C15"));
+			obj.setR101_c16(rs.getBigDecimal("R101_C16"));
+			obj.setR101_total(rs.getBigDecimal("R101_TOTAL"));
+			obj.setR102_product(rs.getString("R102_PRODUCT"));
+			obj.setR102_botswana(rs.getBigDecimal("R102_BOTSWANA"));
+			obj.setR102_south_africa(rs.getBigDecimal("R102_SOUTH_AFRICA"));
+			obj.setR102_sadc(rs.getBigDecimal("R102_SADC"));
+			obj.setR102_usa(rs.getBigDecimal("R102_USA"));
+			obj.setR102_uk(rs.getBigDecimal("R102_UK"));
+			obj.setR102_europe(rs.getBigDecimal("R102_EUROPE"));
+			obj.setR102_india(rs.getBigDecimal("R102_INDIA"));
+			obj.setR102_sydney(rs.getBigDecimal("R102_SYDNEY"));
+			obj.setR102_uganda(rs.getBigDecimal("R102_UGANDA"));
+			obj.setR102_c10(rs.getBigDecimal("R102_C10"));
+			obj.setR102_c11(rs.getBigDecimal("R102_C11"));
+			obj.setR102_c12(rs.getBigDecimal("R102_C12"));
+			obj.setR102_c13(rs.getBigDecimal("R102_C13"));
+			obj.setR102_c14(rs.getBigDecimal("R102_C14"));
+			obj.setR102_c15(rs.getBigDecimal("R102_C15"));
+			obj.setR102_c16(rs.getBigDecimal("R102_C16"));
+			obj.setR102_total(rs.getBigDecimal("R102_TOTAL"));
+			obj.setR103_product(rs.getString("R103_PRODUCT"));
+			obj.setR103_botswana(rs.getBigDecimal("R103_BOTSWANA"));
+			obj.setR103_south_africa(rs.getBigDecimal("R103_SOUTH_AFRICA"));
+			obj.setR103_sadc(rs.getBigDecimal("R103_SADC"));
+			obj.setR103_usa(rs.getBigDecimal("R103_USA"));
+			obj.setR103_uk(rs.getBigDecimal("R103_UK"));
+			obj.setR103_europe(rs.getBigDecimal("R103_EUROPE"));
+			obj.setR103_india(rs.getBigDecimal("R103_INDIA"));
+			obj.setR103_sydney(rs.getBigDecimal("R103_SYDNEY"));
+			obj.setR103_uganda(rs.getBigDecimal("R103_UGANDA"));
+			obj.setR103_c10(rs.getBigDecimal("R103_C10"));
+			obj.setR103_c11(rs.getBigDecimal("R103_C11"));
+			obj.setR103_c12(rs.getBigDecimal("R103_C12"));
+			obj.setR103_c13(rs.getBigDecimal("R103_C13"));
+			obj.setR103_c14(rs.getBigDecimal("R103_C14"));
+			obj.setR103_c15(rs.getBigDecimal("R103_C15"));
+			obj.setR103_c16(rs.getBigDecimal("R103_C16"));
+			obj.setR103_total(rs.getBigDecimal("R103_TOTAL"));
+			obj.setR104_product(rs.getString("R104_PRODUCT"));
+			obj.setR104_botswana(rs.getBigDecimal("R104_BOTSWANA"));
+			obj.setR104_south_africa(rs.getBigDecimal("R104_SOUTH_AFRICA"));
+			obj.setR104_sadc(rs.getBigDecimal("R104_SADC"));
+			obj.setR104_usa(rs.getBigDecimal("R104_USA"));
+			obj.setR104_uk(rs.getBigDecimal("R104_UK"));
+			obj.setR104_europe(rs.getBigDecimal("R104_EUROPE"));
+			obj.setR104_india(rs.getBigDecimal("R104_INDIA"));
+			obj.setR104_sydney(rs.getBigDecimal("R104_SYDNEY"));
+			obj.setR104_uganda(rs.getBigDecimal("R104_UGANDA"));
+			obj.setR104_c10(rs.getBigDecimal("R104_C10"));
+			obj.setR104_c11(rs.getBigDecimal("R104_C11"));
+			obj.setR104_c12(rs.getBigDecimal("R104_C12"));
+			obj.setR104_c13(rs.getBigDecimal("R104_C13"));
+			obj.setR104_c14(rs.getBigDecimal("R104_C14"));
+			obj.setR104_c15(rs.getBigDecimal("R104_C15"));
+			obj.setR104_c16(rs.getBigDecimal("R104_C16"));
+			obj.setR104_total(rs.getBigDecimal("R104_TOTAL"));
+			obj.setR105_product(rs.getString("R105_PRODUCT"));
+			obj.setR105_botswana(rs.getBigDecimal("R105_BOTSWANA"));
+			obj.setR105_south_africa(rs.getBigDecimal("R105_SOUTH_AFRICA"));
+			obj.setR105_sadc(rs.getBigDecimal("R105_SADC"));
+			obj.setR105_usa(rs.getBigDecimal("R105_USA"));
+			obj.setR105_uk(rs.getBigDecimal("R105_UK"));
+			obj.setR105_europe(rs.getBigDecimal("R105_EUROPE"));
+			obj.setR105_india(rs.getBigDecimal("R105_INDIA"));
+			obj.setR105_sydney(rs.getBigDecimal("R105_SYDNEY"));
+			obj.setR105_uganda(rs.getBigDecimal("R105_UGANDA"));
+			obj.setR105_c10(rs.getBigDecimal("R105_C10"));
+			obj.setR105_c11(rs.getBigDecimal("R105_C11"));
+			obj.setR105_c12(rs.getBigDecimal("R105_C12"));
+			obj.setR105_c13(rs.getBigDecimal("R105_C13"));
+			obj.setR105_c14(rs.getBigDecimal("R105_C14"));
+			obj.setR105_c15(rs.getBigDecimal("R105_C15"));
+			obj.setR105_c16(rs.getBigDecimal("R105_C16"));
+			obj.setR105_total(rs.getBigDecimal("R105_TOTAL"));
+			obj.setR106_product(rs.getString("R106_PRODUCT"));
+			obj.setR106_botswana(rs.getBigDecimal("R106_BOTSWANA"));
+			obj.setR106_south_africa(rs.getBigDecimal("R106_SOUTH_AFRICA"));
+			obj.setR106_sadc(rs.getBigDecimal("R106_SADC"));
+			obj.setR106_usa(rs.getBigDecimal("R106_USA"));
+			obj.setR106_uk(rs.getBigDecimal("R106_UK"));
+			obj.setR106_europe(rs.getBigDecimal("R106_EUROPE"));
+			obj.setR106_india(rs.getBigDecimal("R106_INDIA"));
+			obj.setR106_sydney(rs.getBigDecimal("R106_SYDNEY"));
+			obj.setR106_uganda(rs.getBigDecimal("R106_UGANDA"));
+			obj.setR106_c10(rs.getBigDecimal("R106_C10"));
+			obj.setR106_c11(rs.getBigDecimal("R106_C11"));
+			obj.setR106_c12(rs.getBigDecimal("R106_C12"));
+			obj.setR106_c13(rs.getBigDecimal("R106_C13"));
+			obj.setR106_c14(rs.getBigDecimal("R106_C14"));
+			obj.setR106_c15(rs.getBigDecimal("R106_C15"));
+			obj.setR106_c16(rs.getBigDecimal("R106_C16"));
+			obj.setR106_total(rs.getBigDecimal("R106_TOTAL"));
+			obj.setR107_product(rs.getString("R107_PRODUCT"));
+			obj.setR107_botswana(rs.getBigDecimal("R107_BOTSWANA"));
+			obj.setR107_south_africa(rs.getBigDecimal("R107_SOUTH_AFRICA"));
+			obj.setR107_sadc(rs.getBigDecimal("R107_SADC"));
+			obj.setR107_usa(rs.getBigDecimal("R107_USA"));
+			obj.setR107_uk(rs.getBigDecimal("R107_UK"));
+			obj.setR107_europe(rs.getBigDecimal("R107_EUROPE"));
+			obj.setR107_india(rs.getBigDecimal("R107_INDIA"));
+			obj.setR107_sydney(rs.getBigDecimal("R107_SYDNEY"));
+			obj.setR107_uganda(rs.getBigDecimal("R107_UGANDA"));
+			obj.setR107_c10(rs.getBigDecimal("R107_C10"));
+			obj.setR107_c11(rs.getBigDecimal("R107_C11"));
+			obj.setR107_c12(rs.getBigDecimal("R107_C12"));
+			obj.setR107_c13(rs.getBigDecimal("R107_C13"));
+			obj.setR107_c14(rs.getBigDecimal("R107_C14"));
+			obj.setR107_c15(rs.getBigDecimal("R107_C15"));
+			obj.setR107_c16(rs.getBigDecimal("R107_C16"));
+			obj.setR107_total(rs.getBigDecimal("R107_TOTAL"));
+			obj.setR108_product(rs.getString("R108_PRODUCT"));
+			obj.setR108_botswana(rs.getBigDecimal("R108_BOTSWANA"));
+			obj.setR108_south_africa(rs.getBigDecimal("R108_SOUTH_AFRICA"));
+			obj.setR108_sadc(rs.getBigDecimal("R108_SADC"));
+			obj.setR108_usa(rs.getBigDecimal("R108_USA"));
+			obj.setR108_uk(rs.getBigDecimal("R108_UK"));
+			obj.setR108_europe(rs.getBigDecimal("R108_EUROPE"));
+			obj.setR108_india(rs.getBigDecimal("R108_INDIA"));
+			obj.setR108_sydney(rs.getBigDecimal("R108_SYDNEY"));
+			obj.setR108_uganda(rs.getBigDecimal("R108_UGANDA"));
+			obj.setR108_c10(rs.getBigDecimal("R108_C10"));
+			obj.setR108_c11(rs.getBigDecimal("R108_C11"));
+			obj.setR108_c12(rs.getBigDecimal("R108_C12"));
+			obj.setR108_c13(rs.getBigDecimal("R108_C13"));
+			obj.setR108_c14(rs.getBigDecimal("R108_C14"));
+			obj.setR108_c15(rs.getBigDecimal("R108_C15"));
+			obj.setR108_c16(rs.getBigDecimal("R108_C16"));
+			obj.setR108_total(rs.getBigDecimal("R108_TOTAL"));
+			obj.setR109_product(rs.getString("R109_PRODUCT"));
+			obj.setR109_botswana(rs.getBigDecimal("R109_BOTSWANA"));
+			obj.setR109_south_africa(rs.getBigDecimal("R109_SOUTH_AFRICA"));
+			obj.setR109_sadc(rs.getBigDecimal("R109_SADC"));
+			obj.setR109_usa(rs.getBigDecimal("R109_USA"));
+			obj.setR109_uk(rs.getBigDecimal("R109_UK"));
+			obj.setR109_europe(rs.getBigDecimal("R109_EUROPE"));
+			obj.setR109_india(rs.getBigDecimal("R109_INDIA"));
+			obj.setR109_sydney(rs.getBigDecimal("R109_SYDNEY"));
+			obj.setR109_uganda(rs.getBigDecimal("R109_UGANDA"));
+			obj.setR109_c10(rs.getBigDecimal("R109_C10"));
+			obj.setR109_c11(rs.getBigDecimal("R109_C11"));
+			obj.setR109_c12(rs.getBigDecimal("R109_C12"));
+			obj.setR109_c13(rs.getBigDecimal("R109_C13"));
+			obj.setR109_c14(rs.getBigDecimal("R109_C14"));
+			obj.setR109_c15(rs.getBigDecimal("R109_C15"));
+			obj.setR109_c16(rs.getBigDecimal("R109_C16"));
+			obj.setR109_total(rs.getBigDecimal("R109_TOTAL"));
+			obj.setR110_product(rs.getString("R110_PRODUCT"));
+			obj.setR110_botswana(rs.getBigDecimal("R110_BOTSWANA"));
+			obj.setR110_south_africa(rs.getBigDecimal("R110_SOUTH_AFRICA"));
+			obj.setR110_sadc(rs.getBigDecimal("R110_SADC"));
+			obj.setR110_usa(rs.getBigDecimal("R110_USA"));
+			obj.setR110_uk(rs.getBigDecimal("R110_UK"));
+			obj.setR110_europe(rs.getBigDecimal("R110_EUROPE"));
+			obj.setR110_india(rs.getBigDecimal("R110_INDIA"));
+			obj.setR110_sydney(rs.getBigDecimal("R110_SYDNEY"));
+			obj.setR110_uganda(rs.getBigDecimal("R110_UGANDA"));
+			obj.setR110_c10(rs.getBigDecimal("R110_C10"));
+			obj.setR110_c11(rs.getBigDecimal("R110_C11"));
+			obj.setR110_c12(rs.getBigDecimal("R110_C12"));
+			obj.setR110_c13(rs.getBigDecimal("R110_C13"));
+			obj.setR110_c14(rs.getBigDecimal("R110_C14"));
+			obj.setR110_c15(rs.getBigDecimal("R110_C15"));
+			obj.setR110_c16(rs.getBigDecimal("R110_C16"));
+			obj.setR110_total(rs.getBigDecimal("R110_TOTAL"));
+			obj.setR111_product(rs.getString("R111_PRODUCT"));
+			obj.setR111_south_africa(rs.getBigDecimal("R111_SOUTH_AFRICA"));
+			obj.setR111_sadc(rs.getBigDecimal("R111_SADC"));
+			obj.setR111_usa(rs.getBigDecimal("R111_USA"));
+			obj.setR111_uk(rs.getBigDecimal("R111_UK"));
+			obj.setR111_europe(rs.getBigDecimal("R111_EUROPE"));
+			obj.setR111_india(rs.getBigDecimal("R111_INDIA"));
+			obj.setR111_sydney(rs.getBigDecimal("R111_SYDNEY"));
+			obj.setR111_uganda(rs.getBigDecimal("R111_UGANDA"));
+			obj.setR111_c10(rs.getBigDecimal("R111_C10"));
+			obj.setR111_c11(rs.getBigDecimal("R111_C11"));
+			obj.setR111_c12(rs.getBigDecimal("R111_C12"));
+			obj.setR111_c13(rs.getBigDecimal("R111_C13"));
+			obj.setR111_c14(rs.getBigDecimal("R111_C14"));
+			obj.setR111_c15(rs.getBigDecimal("R111_C15"));
+			obj.setR111_c16(rs.getBigDecimal("R111_C16"));
+			obj.setR111_total(rs.getBigDecimal("R111_TOTAL"));
+			obj.setR112_product(rs.getString("R112_PRODUCT"));
+			obj.setR112_south_africa(rs.getBigDecimal("R112_SOUTH_AFRICA"));
+			obj.setR112_sadc(rs.getBigDecimal("R112_SADC"));
+			obj.setR112_usa(rs.getBigDecimal("R112_USA"));
+			obj.setR112_uk(rs.getBigDecimal("R112_UK"));
+			obj.setR112_europe(rs.getBigDecimal("R112_EUROPE"));
+			obj.setR112_india(rs.getBigDecimal("R112_INDIA"));
+			obj.setR112_sydney(rs.getBigDecimal("R112_SYDNEY"));
+			obj.setR112_uganda(rs.getBigDecimal("R112_UGANDA"));
+			obj.setR112_c10(rs.getBigDecimal("R112_C10"));
+			obj.setR112_c11(rs.getBigDecimal("R112_C11"));
+			obj.setR112_c12(rs.getBigDecimal("R112_C12"));
+			obj.setR112_c13(rs.getBigDecimal("R112_C13"));
+			obj.setR112_c14(rs.getBigDecimal("R112_C14"));
+			obj.setR112_c15(rs.getBigDecimal("R112_C15"));
+			obj.setR112_c16(rs.getBigDecimal("R112_C16"));
+			obj.setR112_total(rs.getBigDecimal("R112_TOTAL"));
+			obj.setR113_product(rs.getString("R113_PRODUCT"));
+			obj.setR113_south_africa(rs.getBigDecimal("R113_SOUTH_AFRICA"));
+			obj.setR113_sadc(rs.getBigDecimal("R113_SADC"));
+			obj.setR113_usa(rs.getBigDecimal("R113_USA"));
+			obj.setR113_uk(rs.getBigDecimal("R113_UK"));
+			obj.setR113_europe(rs.getBigDecimal("R113_EUROPE"));
+			obj.setR113_india(rs.getBigDecimal("R113_INDIA"));
+			obj.setR113_sydney(rs.getBigDecimal("R113_SYDNEY"));
+			obj.setR113_uganda(rs.getBigDecimal("R113_UGANDA"));
+			obj.setR113_c10(rs.getBigDecimal("R113_C10"));
+			obj.setR113_c11(rs.getBigDecimal("R113_C11"));
+			obj.setR113_c12(rs.getBigDecimal("R113_C12"));
+			obj.setR113_c13(rs.getBigDecimal("R113_C13"));
+			obj.setR113_c14(rs.getBigDecimal("R113_C14"));
+			obj.setR113_c15(rs.getBigDecimal("R113_C15"));
+			obj.setR113_c16(rs.getBigDecimal("R113_C16"));
+			obj.setR113_total(rs.getBigDecimal("R113_TOTAL"));
+			obj.setR114_product(rs.getString("R114_PRODUCT"));
+			obj.setR114_south_africa(rs.getBigDecimal("R114_SOUTH_AFRICA"));
+			obj.setR114_sadc(rs.getBigDecimal("R114_SADC"));
+			obj.setR114_usa(rs.getBigDecimal("R114_USA"));
+			obj.setR114_uk(rs.getBigDecimal("R114_UK"));
+			obj.setR114_europe(rs.getBigDecimal("R114_EUROPE"));
+			obj.setR114_india(rs.getBigDecimal("R114_INDIA"));
+			obj.setR114_sydney(rs.getBigDecimal("R114_SYDNEY"));
+			obj.setR114_uganda(rs.getBigDecimal("R114_UGANDA"));
+			obj.setR114_c10(rs.getBigDecimal("R114_C10"));
+			obj.setR114_c11(rs.getBigDecimal("R114_C11"));
+			obj.setR114_c12(rs.getBigDecimal("R114_C12"));
+			obj.setR114_c13(rs.getBigDecimal("R114_C13"));
+			obj.setR114_c14(rs.getBigDecimal("R114_C14"));
+			obj.setR114_c15(rs.getBigDecimal("R114_C15"));
+			obj.setR114_c16(rs.getBigDecimal("R114_C16"));
+			obj.setR114_total(rs.getBigDecimal("R114_TOTAL"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Archival_Summary_Entity2 {
+		private String r62_product;
+		private BigDecimal r62_botswana;
+		private BigDecimal r62_south_africa;
+		private BigDecimal r62_sadc;
+		private BigDecimal r62_usa;
+		private BigDecimal r62_uk;
+		private BigDecimal r62_europe;
+		private BigDecimal r62_india;
+		private BigDecimal r62_sydney;
+		private BigDecimal r62_uganda;
+		private BigDecimal r62_c10;
+		private BigDecimal r62_c11;
+		private BigDecimal r62_c12;
+		private BigDecimal r62_c13;
+		private BigDecimal r62_c14;
+		private BigDecimal r62_c15;
+		private BigDecimal r62_c16;
+		private BigDecimal r62_total;
+		private String r63_product;
+		private BigDecimal r63_botswana;
+		private BigDecimal r63_south_africa;
+		private BigDecimal r63_sadc;
+		private BigDecimal r63_usa;
+		private BigDecimal r63_uk;
+		private BigDecimal r63_europe;
+		private BigDecimal r63_india;
+		private BigDecimal r63_sydney;
+		private BigDecimal r63_uganda;
+		private BigDecimal r63_c10;
+		private BigDecimal r63_c11;
+		private BigDecimal r63_c12;
+		private BigDecimal r63_c13;
+		private BigDecimal r63_c14;
+		private BigDecimal r63_c15;
+		private BigDecimal r63_c16;
+		private BigDecimal r63_total;
+		private String r66_product;
+		private BigDecimal r66_botswana;
+		private BigDecimal r66_south_africa;
+		private BigDecimal r66_sadc;
+		private BigDecimal r66_usa;
+		private BigDecimal r66_uk;
+		private BigDecimal r66_europe;
+		private BigDecimal r66_india;
+		private BigDecimal r66_sydney;
+		private BigDecimal r66_uganda;
+		private BigDecimal r66_c10;
+		private BigDecimal r66_c11;
+		private BigDecimal r66_c12;
+		private BigDecimal r66_c13;
+		private BigDecimal r66_c14;
+		private BigDecimal r66_c15;
+		private BigDecimal r66_c16;
+		private BigDecimal r66_total;
+		private String r69_product;
+		private BigDecimal r69_botswana;
+		private BigDecimal r69_south_africa;
+		private BigDecimal r69_sadc;
+		private BigDecimal r69_usa;
+		private BigDecimal r69_uk;
+		private BigDecimal r69_europe;
+		private BigDecimal r69_india;
+		private BigDecimal r69_sydney;
+		private BigDecimal r69_uganda;
+		private BigDecimal r69_c10;
+		private BigDecimal r69_c11;
+		private BigDecimal r69_c12;
+		private BigDecimal r69_c13;
+		private BigDecimal r69_c14;
+		private BigDecimal r69_c15;
+		private BigDecimal r69_c16;
+		private BigDecimal r69_total;
+		private String r70_product;
+		private BigDecimal r70_botswana;
+		private BigDecimal r70_south_africa;
+		private BigDecimal r70_sadc;
+		private BigDecimal r70_usa;
+		private BigDecimal r70_uk;
+		private BigDecimal r70_europe;
+		private BigDecimal r70_india;
+		private BigDecimal r70_sydney;
+		private BigDecimal r70_uganda;
+		private BigDecimal r70_c10;
+		private BigDecimal r70_c11;
+		private BigDecimal r70_c12;
+		private BigDecimal r70_c13;
+		private BigDecimal r70_c14;
+		private BigDecimal r70_c15;
+		private BigDecimal r70_c16;
+		private BigDecimal r70_total;
+		private String r71_product;
+		private BigDecimal r71_botswana;
+		private BigDecimal r71_south_africa;
+		private BigDecimal r71_sadc;
+		private BigDecimal r71_usa;
+		private BigDecimal r71_uk;
+		private BigDecimal r71_europe;
+		private BigDecimal r71_india;
+		private BigDecimal r71_sydney;
+		private BigDecimal r71_uganda;
+		private BigDecimal r71_c10;
+		private BigDecimal r71_c11;
+		private BigDecimal r71_c12;
+		private BigDecimal r71_c13;
+		private BigDecimal r71_c14;
+		private BigDecimal r71_c15;
+		private BigDecimal r71_c16;
+		private BigDecimal r71_total;
+		private String r72_product;
+		private BigDecimal r72_botswana;
+		private BigDecimal r72_south_africa;
+		private BigDecimal r72_sadc;
+		private BigDecimal r72_usa;
+		private BigDecimal r72_uk;
+		private BigDecimal r72_europe;
+		private BigDecimal r72_india;
+		private BigDecimal r72_sydney;
+		private BigDecimal r72_uganda;
+		private BigDecimal r72_c10;
+		private BigDecimal r72_c11;
+		private BigDecimal r72_c12;
+		private BigDecimal r72_c13;
+		private BigDecimal r72_c14;
+		private BigDecimal r72_c15;
+		private BigDecimal r72_c16;
+		private BigDecimal r72_total;
+		private String r73_product;
+		private BigDecimal r73_botswana;
+		private BigDecimal r73_south_africa;
+		private BigDecimal r73_sadc;
+		private BigDecimal r73_usa;
+		private BigDecimal r73_uk;
+		private BigDecimal r73_europe;
+		private BigDecimal r73_india;
+		private BigDecimal r73_sydney;
+		private BigDecimal r73_uganda;
+		private BigDecimal r73_c10;
+		private BigDecimal r73_c11;
+		private BigDecimal r73_c12;
+		private BigDecimal r73_c13;
+		private BigDecimal r73_c14;
+		private BigDecimal r73_c15;
+		private BigDecimal r73_c16;
+		private BigDecimal r73_total;
+		private String r74_product;
+		private BigDecimal r74_botswana;
+		private BigDecimal r74_south_africa;
+		private BigDecimal r74_sadc;
+		private BigDecimal r74_usa;
+		private BigDecimal r74_uk;
+		private BigDecimal r74_europe;
+		private BigDecimal r74_india;
+		private BigDecimal r74_sydney;
+		private BigDecimal r74_uganda;
+		private BigDecimal r74_c10;
+		private BigDecimal r74_c11;
+		private BigDecimal r74_c12;
+		private BigDecimal r74_c13;
+		private BigDecimal r74_c14;
+		private BigDecimal r74_c15;
+		private BigDecimal r74_c16;
+		private BigDecimal r74_total;
+		private String r75_product;
+		private BigDecimal r75_botswana;
+		private BigDecimal r75_south_africa;
+		private BigDecimal r75_sadc;
+		private BigDecimal r75_usa;
+		private BigDecimal r75_uk;
+		private BigDecimal r75_europe;
+		private BigDecimal r75_india;
+		private BigDecimal r75_sydney;
+		private BigDecimal r75_uganda;
+		private BigDecimal r75_c10;
+		private BigDecimal r75_c11;
+		private BigDecimal r75_c12;
+		private BigDecimal r75_c13;
+		private BigDecimal r75_c14;
+		private BigDecimal r75_c15;
+		private BigDecimal r75_c16;
+		private BigDecimal r75_total;
+		private String r76_product;
+		private BigDecimal r76_botswana;
+		private BigDecimal r76_south_africa;
+		private BigDecimal r76_sadc;
+		private BigDecimal r76_usa;
+		private BigDecimal r76_uk;
+		private BigDecimal r76_europe;
+		private BigDecimal r76_india;
+		private BigDecimal r76_sydney;
+		private BigDecimal r76_uganda;
+		private BigDecimal r76_c10;
+		private BigDecimal r76_c11;
+		private BigDecimal r76_c12;
+		private BigDecimal r76_c13;
+		private BigDecimal r76_c14;
+		private BigDecimal r76_c15;
+		private BigDecimal r76_c16;
+		private BigDecimal r76_total;
+		private String r77_product;
+		private BigDecimal r77_botswana;
+		private BigDecimal r77_south_africa;
+		private BigDecimal r77_sadc;
+		private BigDecimal r77_usa;
+		private BigDecimal r77_uk;
+		private BigDecimal r77_europe;
+		private BigDecimal r77_india;
+		private BigDecimal r77_sydney;
+		private BigDecimal r77_uganda;
+		private BigDecimal r77_c10;
+		private BigDecimal r77_c11;
+		private BigDecimal r77_c12;
+		private BigDecimal r77_c13;
+		private BigDecimal r77_c14;
+		private BigDecimal r77_c15;
+		private BigDecimal r77_c16;
+		private BigDecimal r77_total;
+		private String r78_product;
+		private BigDecimal r78_botswana;
+		private BigDecimal r78_south_africa;
+		private BigDecimal r78_sadc;
+		private BigDecimal r78_usa;
+		private BigDecimal r78_uk;
+		private BigDecimal r78_europe;
+		private BigDecimal r78_india;
+		private BigDecimal r78_sydney;
+		private BigDecimal r78_uganda;
+		private BigDecimal r78_c10;
+		private BigDecimal r78_c11;
+		private BigDecimal r78_c12;
+		private BigDecimal r78_c13;
+		private BigDecimal r78_c14;
+		private BigDecimal r78_c15;
+		private BigDecimal r78_c16;
+		private BigDecimal r78_total;
+		private String r79_product;
+		private BigDecimal r79_botswana;
+		private BigDecimal r79_south_africa;
+		private BigDecimal r79_sadc;
+		private BigDecimal r79_usa;
+		private BigDecimal r79_uk;
+		private BigDecimal r79_europe;
+		private BigDecimal r79_india;
+		private BigDecimal r79_sydney;
+		private BigDecimal r79_uganda;
+		private BigDecimal r79_c10;
+		private BigDecimal r79_c11;
+		private BigDecimal r79_c12;
+		private BigDecimal r79_c13;
+		private BigDecimal r79_c14;
+		private BigDecimal r79_c15;
+		private BigDecimal r79_c16;
+		private BigDecimal r79_total;
+		private String r80_product;
+		private BigDecimal r80_botswana;
+		private BigDecimal r80_south_africa;
+		private BigDecimal r80_sadc;
+		private BigDecimal r80_usa;
+		private BigDecimal r80_uk;
+		private BigDecimal r80_europe;
+		private BigDecimal r80_india;
+		private BigDecimal r80_sydney;
+		private BigDecimal r80_uganda;
+		private BigDecimal r80_c10;
+		private BigDecimal r80_c11;
+		private BigDecimal r80_c12;
+		private BigDecimal r80_c13;
+		private BigDecimal r80_c14;
+		private BigDecimal r80_c15;
+		private BigDecimal r80_c16;
+		private BigDecimal r80_total;
+		private String r81_product;
+		private BigDecimal r81_botswana;
+		private BigDecimal r81_south_africa;
+		private BigDecimal r81_sadc;
+		private BigDecimal r81_usa;
+		private BigDecimal r81_uk;
+		private BigDecimal r81_europe;
+		private BigDecimal r81_india;
+		private BigDecimal r81_sydney;
+		private BigDecimal r81_uganda;
+		private BigDecimal r81_c10;
+		private BigDecimal r81_c11;
+		private BigDecimal r81_c12;
+		private BigDecimal r81_c13;
+		private BigDecimal r81_c14;
+		private BigDecimal r81_c15;
+		private BigDecimal r81_c16;
+		private BigDecimal r81_total;
+		private String r82_product;
+		private BigDecimal r82_botswana;
+		private BigDecimal r82_south_africa;
+		private BigDecimal r82_sadc;
+		private BigDecimal r82_usa;
+		private BigDecimal r82_uk;
+		private BigDecimal r82_europe;
+		private BigDecimal r82_india;
+		private BigDecimal r82_sydney;
+		private BigDecimal r82_uganda;
+		private BigDecimal r82_c10;
+		private BigDecimal r82_c11;
+		private BigDecimal r82_c12;
+		private BigDecimal r82_c13;
+		private BigDecimal r82_c14;
+		private BigDecimal r82_c15;
+		private BigDecimal r82_c16;
+		private BigDecimal r82_total;
+		private String r83_product;
+		private BigDecimal r83_botswana;
+		private BigDecimal r83_south_africa;
+		private BigDecimal r83_sadc;
+		private BigDecimal r83_usa;
+		private BigDecimal r83_uk;
+		private BigDecimal r83_europe;
+		private BigDecimal r83_india;
+		private BigDecimal r83_sydney;
+		private BigDecimal r83_uganda;
+		private BigDecimal r83_c10;
+		private BigDecimal r83_c11;
+		private BigDecimal r83_c12;
+		private BigDecimal r83_c13;
+		private BigDecimal r83_c14;
+		private BigDecimal r83_c15;
+		private BigDecimal r83_c16;
+		private BigDecimal r83_total;
+		private String r84_product;
+		private BigDecimal r84_botswana;
+		private BigDecimal r84_south_africa;
+		private BigDecimal r84_sadc;
+		private BigDecimal r84_usa;
+		private BigDecimal r84_uk;
+		private BigDecimal r84_europe;
+		private BigDecimal r84_india;
+		private BigDecimal r84_sydney;
+		private BigDecimal r84_uganda;
+		private BigDecimal r84_c10;
+		private BigDecimal r84_c11;
+		private BigDecimal r84_c12;
+		private BigDecimal r84_c13;
+		private BigDecimal r84_c14;
+		private BigDecimal r84_c15;
+		private BigDecimal r84_c16;
+		private BigDecimal r84_total;
+		private String r85_product;
+		private BigDecimal r85_botswana;
+		private BigDecimal r85_south_africa;
+		private BigDecimal r85_sadc;
+		private BigDecimal r85_usa;
+		private BigDecimal r85_uk;
+		private BigDecimal r85_europe;
+		private BigDecimal r85_india;
+		private BigDecimal r85_sydney;
+		private BigDecimal r85_uganda;
+		private BigDecimal r85_c10;
+		private BigDecimal r85_c11;
+		private BigDecimal r85_c12;
+		private BigDecimal r85_c13;
+		private BigDecimal r85_c14;
+		private BigDecimal r85_c15;
+		private BigDecimal r85_c16;
+		private BigDecimal r85_total;
+		private String r86_product;
+		private BigDecimal r86_botswana;
+		private BigDecimal r86_south_africa;
+		private BigDecimal r86_sadc;
+		private BigDecimal r86_usa;
+		private BigDecimal r86_uk;
+		private BigDecimal r86_europe;
+		private BigDecimal r86_india;
+		private BigDecimal r86_sydney;
+		private BigDecimal r86_uganda;
+		private BigDecimal r86_c10;
+		private BigDecimal r86_c11;
+		private BigDecimal r86_c12;
+		private BigDecimal r86_c13;
+		private BigDecimal r86_c14;
+		private BigDecimal r86_c15;
+		private BigDecimal r86_c16;
+		private BigDecimal r86_total;
+		private String r87_product;
+		private BigDecimal r87_botswana;
+		private BigDecimal r87_south_africa;
+		private BigDecimal r87_sadc;
+		private BigDecimal r87_usa;
+		private BigDecimal r87_uk;
+		private BigDecimal r87_europe;
+		private BigDecimal r87_india;
+		private BigDecimal r87_sydney;
+		private BigDecimal r87_uganda;
+		private BigDecimal r87_c10;
+		private BigDecimal r87_c11;
+		private BigDecimal r87_c12;
+		private BigDecimal r87_c13;
+		private BigDecimal r87_c14;
+		private BigDecimal r87_c15;
+		private BigDecimal r87_c16;
+		private BigDecimal r87_total;
+		private String r88_product;
+		private BigDecimal r88_botswana;
+		private BigDecimal r88_south_africa;
+		private BigDecimal r88_sadc;
+		private BigDecimal r88_usa;
+		private BigDecimal r88_uk;
+		private BigDecimal r88_europe;
+		private BigDecimal r88_india;
+		private BigDecimal r88_sydney;
+		private BigDecimal r88_uganda;
+		private BigDecimal r88_c10;
+		private BigDecimal r88_c11;
+		private BigDecimal r88_c12;
+		private BigDecimal r88_c13;
+		private BigDecimal r88_c14;
+		private BigDecimal r88_c15;
+		private BigDecimal r88_c16;
+		private BigDecimal r88_total;
+		private String r89_product;
+		private BigDecimal r89_botswana;
+		private BigDecimal r89_south_africa;
+		private BigDecimal r89_sadc;
+		private BigDecimal r89_usa;
+		private BigDecimal r89_uk;
+		private BigDecimal r89_europe;
+		private BigDecimal r89_india;
+		private BigDecimal r89_sydney;
+		private BigDecimal r89_uganda;
+		private BigDecimal r89_c10;
+		private BigDecimal r89_c11;
+		private BigDecimal r89_c12;
+		private BigDecimal r89_c13;
+		private BigDecimal r89_c14;
+		private BigDecimal r89_c15;
+		private BigDecimal r89_c16;
+		private BigDecimal r89_total;
+		private String r90_product;
+		private BigDecimal r90_botswana;
+		private BigDecimal r90_south_africa;
+		private BigDecimal r90_sadc;
+		private BigDecimal r90_usa;
+		private BigDecimal r90_uk;
+		private BigDecimal r90_europe;
+		private BigDecimal r90_india;
+		private BigDecimal r90_sydney;
+		private BigDecimal r90_uganda;
+		private BigDecimal r90_c10;
+		private BigDecimal r90_c11;
+		private BigDecimal r90_c12;
+		private BigDecimal r90_c13;
+		private BigDecimal r90_c14;
+		private BigDecimal r90_c15;
+		private BigDecimal r90_c16;
+		private BigDecimal r90_total;
+		private String r91_product;
+		private BigDecimal r91_botswana;
+		private BigDecimal r91_south_africa;
+		private BigDecimal r91_sadc;
+		private BigDecimal r91_usa;
+		private BigDecimal r91_uk;
+		private BigDecimal r91_europe;
+		private BigDecimal r91_india;
+		private BigDecimal r91_sydney;
+		private BigDecimal r91_uganda;
+		private BigDecimal r91_c10;
+		private BigDecimal r91_c11;
+		private BigDecimal r91_c12;
+		private BigDecimal r91_c13;
+		private BigDecimal r91_c14;
+		private BigDecimal r91_c15;
+		private BigDecimal r91_c16;
+		private BigDecimal r91_total;
+		private String r92_product;
+		private BigDecimal r92_botswana;
+		private BigDecimal r92_south_africa;
+		private BigDecimal r92_sadc;
+		private BigDecimal r92_usa;
+		private BigDecimal r92_uk;
+		private BigDecimal r92_europe;
+		private BigDecimal r92_india;
+		private BigDecimal r92_sydney;
+		private BigDecimal r92_uganda;
+		private BigDecimal r92_c10;
+		private BigDecimal r92_c11;
+		private BigDecimal r92_c12;
+		private BigDecimal r92_c13;
+		private BigDecimal r92_c14;
+		private BigDecimal r92_c15;
+		private BigDecimal r92_c16;
+		private BigDecimal r92_total;
+		private String r93_product;
+		private BigDecimal r93_botswana;
+		private BigDecimal r93_south_africa;
+		private BigDecimal r93_sadc;
+		private BigDecimal r93_usa;
+		private BigDecimal r93_uk;
+		private BigDecimal r93_europe;
+		private BigDecimal r93_india;
+		private BigDecimal r93_sydney;
+		private BigDecimal r93_uganda;
+		private BigDecimal r93_c10;
+		private BigDecimal r93_c11;
+		private BigDecimal r93_c12;
+		private BigDecimal r93_c13;
+		private BigDecimal r93_c14;
+		private BigDecimal r93_c15;
+		private BigDecimal r93_c16;
+		private BigDecimal r93_total;
+		private String r94_product;
+		private BigDecimal r94_botswana;
+		private BigDecimal r94_south_africa;
+		private BigDecimal r94_sadc;
+		private BigDecimal r94_usa;
+		private BigDecimal r94_uk;
+		private BigDecimal r94_europe;
+		private BigDecimal r94_india;
+		private BigDecimal r94_sydney;
+		private BigDecimal r94_uganda;
+		private BigDecimal r94_c10;
+		private BigDecimal r94_c11;
+		private BigDecimal r94_c12;
+		private BigDecimal r94_c13;
+		private BigDecimal r94_c14;
+		private BigDecimal r94_c15;
+		private BigDecimal r94_c16;
+		private BigDecimal r94_total;
+		private String r95_product;
+		private BigDecimal r95_botswana;
+		private BigDecimal r95_south_africa;
+		private BigDecimal r95_sadc;
+		private BigDecimal r95_usa;
+		private BigDecimal r95_uk;
+		private BigDecimal r95_europe;
+		private BigDecimal r95_india;
+		private BigDecimal r95_sydney;
+		private BigDecimal r95_uganda;
+		private BigDecimal r95_c10;
+		private BigDecimal r95_c11;
+		private BigDecimal r95_c12;
+		private BigDecimal r95_c13;
+		private BigDecimal r95_c14;
+		private BigDecimal r95_c15;
+		private BigDecimal r95_c16;
+		private BigDecimal r95_total;
+		private String r96_product;
+		private BigDecimal r96_botswana;
+		private BigDecimal r96_south_africa;
+		private BigDecimal r96_sadc;
+		private BigDecimal r96_usa;
+		private BigDecimal r96_uk;
+		private BigDecimal r96_europe;
+		private BigDecimal r96_india;
+		private BigDecimal r96_sydney;
+		private BigDecimal r96_uganda;
+		private BigDecimal r96_c10;
+		private BigDecimal r96_c11;
+		private BigDecimal r96_c12;
+		private BigDecimal r96_c13;
+		private BigDecimal r96_c14;
+		private BigDecimal r96_c15;
+		private BigDecimal r96_c16;
+		private BigDecimal r96_total;
+		private String r97_product;
+		private BigDecimal r97_botswana;
+		private BigDecimal r97_south_africa;
+		private BigDecimal r97_sadc;
+		private BigDecimal r97_usa;
+		private BigDecimal r97_uk;
+		private BigDecimal r97_europe;
+		private BigDecimal r97_india;
+		private BigDecimal r97_sydney;
+		private BigDecimal r97_uganda;
+		private BigDecimal r97_c10;
+		private BigDecimal r97_c11;
+		private BigDecimal r97_c12;
+		private BigDecimal r97_c13;
+		private BigDecimal r97_c14;
+		private BigDecimal r97_c15;
+		private BigDecimal r97_c16;
+		private BigDecimal r97_total;
+		private String r98_product;
+		private BigDecimal r98_botswana;
+		private BigDecimal r98_south_africa;
+		private BigDecimal r98_sadc;
+		private BigDecimal r98_usa;
+		private BigDecimal r98_uk;
+		private BigDecimal r98_europe;
+		private BigDecimal r98_india;
+		private BigDecimal r98_sydney;
+		private BigDecimal r98_uganda;
+		private BigDecimal r98_c10;
+		private BigDecimal r98_c11;
+		private BigDecimal r98_c12;
+		private BigDecimal r98_c13;
+		private BigDecimal r98_c14;
+		private BigDecimal r98_c15;
+		private BigDecimal r98_c16;
+		private BigDecimal r98_total;
+		private String r99_product;
+		private BigDecimal r99_botswana;
+		private BigDecimal r99_south_africa;
+		private BigDecimal r99_sadc;
+		private BigDecimal r99_usa;
+		private BigDecimal r99_uk;
+		private BigDecimal r99_europe;
+		private BigDecimal r99_india;
+		private BigDecimal r99_sydney;
+		private BigDecimal r99_uganda;
+		private BigDecimal r99_c10;
+		private BigDecimal r99_c11;
+		private BigDecimal r99_c12;
+		private BigDecimal r99_c13;
+		private BigDecimal r99_c14;
+		private BigDecimal r99_c15;
+		private BigDecimal r99_c16;
+		private BigDecimal r99_total;
+		private String r100_product;
+		private BigDecimal r100_botswana;
+		private BigDecimal r100_south_africa;
+		private BigDecimal r100_sadc;
+		private BigDecimal r100_usa;
+		private BigDecimal r100_uk;
+		private BigDecimal r100_europe;
+		private BigDecimal r100_india;
+		private BigDecimal r100_sydney;
+		private BigDecimal r100_uganda;
+		private BigDecimal r100_c10;
+		private BigDecimal r100_c11;
+		private BigDecimal r100_c12;
+		private BigDecimal r100_c13;
+		private BigDecimal r100_c14;
+		private BigDecimal r100_c15;
+		private BigDecimal r100_c16;
+		private BigDecimal r100_total;
+		private String r101_product;
+		private BigDecimal r101_botswana;
+		private BigDecimal r101_south_africa;
+		private BigDecimal r101_sadc;
+		private BigDecimal r101_usa;
+		private BigDecimal r101_uk;
+		private BigDecimal r101_europe;
+		private BigDecimal r101_india;
+		private BigDecimal r101_sydney;
+		private BigDecimal r101_uganda;
+		private BigDecimal r101_c10;
+		private BigDecimal r101_c11;
+		private BigDecimal r101_c12;
+		private BigDecimal r101_c13;
+		private BigDecimal r101_c14;
+		private BigDecimal r101_c15;
+		private BigDecimal r101_c16;
+		private BigDecimal r101_total;
+		private String r102_product;
+		private BigDecimal r102_botswana;
+		private BigDecimal r102_south_africa;
+		private BigDecimal r102_sadc;
+		private BigDecimal r102_usa;
+		private BigDecimal r102_uk;
+		private BigDecimal r102_europe;
+		private BigDecimal r102_india;
+		private BigDecimal r102_sydney;
+		private BigDecimal r102_uganda;
+		private BigDecimal r102_c10;
+		private BigDecimal r102_c11;
+		private BigDecimal r102_c12;
+		private BigDecimal r102_c13;
+		private BigDecimal r102_c14;
+		private BigDecimal r102_c15;
+		private BigDecimal r102_c16;
+		private BigDecimal r102_total;
+		private String r103_product;
+		private BigDecimal r103_botswana;
+		private BigDecimal r103_south_africa;
+		private BigDecimal r103_sadc;
+		private BigDecimal r103_usa;
+		private BigDecimal r103_uk;
+		private BigDecimal r103_europe;
+		private BigDecimal r103_india;
+		private BigDecimal r103_sydney;
+		private BigDecimal r103_uganda;
+		private BigDecimal r103_c10;
+		private BigDecimal r103_c11;
+		private BigDecimal r103_c12;
+		private BigDecimal r103_c13;
+		private BigDecimal r103_c14;
+		private BigDecimal r103_c15;
+		private BigDecimal r103_c16;
+		private BigDecimal r103_total;
+		private String r104_product;
+		private BigDecimal r104_botswana;
+		private BigDecimal r104_south_africa;
+		private BigDecimal r104_sadc;
+		private BigDecimal r104_usa;
+		private BigDecimal r104_uk;
+		private BigDecimal r104_europe;
+		private BigDecimal r104_india;
+		private BigDecimal r104_sydney;
+		private BigDecimal r104_uganda;
+		private BigDecimal r104_c10;
+		private BigDecimal r104_c11;
+		private BigDecimal r104_c12;
+		private BigDecimal r104_c13;
+		private BigDecimal r104_c14;
+		private BigDecimal r104_c15;
+		private BigDecimal r104_c16;
+		private BigDecimal r104_total;
+		private String r105_product;
+		private BigDecimal r105_botswana;
+		private BigDecimal r105_south_africa;
+		private BigDecimal r105_sadc;
+		private BigDecimal r105_usa;
+		private BigDecimal r105_uk;
+		private BigDecimal r105_europe;
+		private BigDecimal r105_india;
+		private BigDecimal r105_sydney;
+		private BigDecimal r105_uganda;
+		private BigDecimal r105_c10;
+		private BigDecimal r105_c11;
+		private BigDecimal r105_c12;
+		private BigDecimal r105_c13;
+		private BigDecimal r105_c14;
+		private BigDecimal r105_c15;
+		private BigDecimal r105_c16;
+		private BigDecimal r105_total;
+		private String r106_product;
+		private BigDecimal r106_botswana;
+		private BigDecimal r106_south_africa;
+		private BigDecimal r106_sadc;
+		private BigDecimal r106_usa;
+		private BigDecimal r106_uk;
+		private BigDecimal r106_europe;
+		private BigDecimal r106_india;
+		private BigDecimal r106_sydney;
+		private BigDecimal r106_uganda;
+		private BigDecimal r106_c10;
+		private BigDecimal r106_c11;
+		private BigDecimal r106_c12;
+		private BigDecimal r106_c13;
+		private BigDecimal r106_c14;
+		private BigDecimal r106_c15;
+		private BigDecimal r106_c16;
+		private BigDecimal r106_total;
+		private String r107_product;
+		private BigDecimal r107_botswana;
+		private BigDecimal r107_south_africa;
+		private BigDecimal r107_sadc;
+		private BigDecimal r107_usa;
+		private BigDecimal r107_uk;
+		private BigDecimal r107_europe;
+		private BigDecimal r107_india;
+		private BigDecimal r107_sydney;
+		private BigDecimal r107_uganda;
+		private BigDecimal r107_c10;
+		private BigDecimal r107_c11;
+		private BigDecimal r107_c12;
+		private BigDecimal r107_c13;
+		private BigDecimal r107_c14;
+		private BigDecimal r107_c15;
+		private BigDecimal r107_c16;
+		private BigDecimal r107_total;
+		private String r108_product;
+		private BigDecimal r108_botswana;
+		private BigDecimal r108_south_africa;
+		private BigDecimal r108_sadc;
+		private BigDecimal r108_usa;
+		private BigDecimal r108_uk;
+		private BigDecimal r108_europe;
+		private BigDecimal r108_india;
+		private BigDecimal r108_sydney;
+		private BigDecimal r108_uganda;
+		private BigDecimal r108_c10;
+		private BigDecimal r108_c11;
+		private BigDecimal r108_c12;
+		private BigDecimal r108_c13;
+		private BigDecimal r108_c14;
+		private BigDecimal r108_c15;
+		private BigDecimal r108_c16;
+		private BigDecimal r108_total;
+		private String r109_product;
+		private BigDecimal r109_botswana;
+		private BigDecimal r109_south_africa;
+		private BigDecimal r109_sadc;
+		private BigDecimal r109_usa;
+		private BigDecimal r109_uk;
+		private BigDecimal r109_europe;
+		private BigDecimal r109_india;
+		private BigDecimal r109_sydney;
+		private BigDecimal r109_uganda;
+		private BigDecimal r109_c10;
+		private BigDecimal r109_c11;
+		private BigDecimal r109_c12;
+		private BigDecimal r109_c13;
+		private BigDecimal r109_c14;
+		private BigDecimal r109_c15;
+		private BigDecimal r109_c16;
+		private BigDecimal r109_total;
+		private String r110_product;
+		private BigDecimal r110_botswana;
+		private BigDecimal r110_south_africa;
+		private BigDecimal r110_sadc;
+		private BigDecimal r110_usa;
+		private BigDecimal r110_uk;
+		private BigDecimal r110_europe;
+		private BigDecimal r110_india;
+		private BigDecimal r110_sydney;
+		private BigDecimal r110_uganda;
+		private BigDecimal r110_c10;
+		private BigDecimal r110_c11;
+		private BigDecimal r110_c12;
+		private BigDecimal r110_c13;
+		private BigDecimal r110_c14;
+		private BigDecimal r110_c15;
+		private BigDecimal r110_c16;
+		private BigDecimal r110_total;
+		private String r111_product;
+		private BigDecimal r111_south_africa;
+		private BigDecimal r111_sadc;
+		private BigDecimal r111_usa;
+		private BigDecimal r111_uk;
+		private BigDecimal r111_europe;
+		private BigDecimal r111_india;
+		private BigDecimal r111_sydney;
+		private BigDecimal r111_uganda;
+		private BigDecimal r111_c10;
+		private BigDecimal r111_c11;
+		private BigDecimal r111_c12;
+		private BigDecimal r111_c13;
+		private BigDecimal r111_c14;
+		private BigDecimal r111_c15;
+		private BigDecimal r111_c16;
+		private BigDecimal r111_total;
+		private String r112_product;
+		private BigDecimal r112_south_africa;
+		private BigDecimal r112_sadc;
+		private BigDecimal r112_usa;
+		private BigDecimal r112_uk;
+		private BigDecimal r112_europe;
+		private BigDecimal r112_india;
+		private BigDecimal r112_sydney;
+		private BigDecimal r112_uganda;
+		private BigDecimal r112_c10;
+		private BigDecimal r112_c11;
+		private BigDecimal r112_c12;
+		private BigDecimal r112_c13;
+		private BigDecimal r112_c14;
+		private BigDecimal r112_c15;
+		private BigDecimal r112_c16;
+		private BigDecimal r112_total;
+		private String r113_product;
+		private BigDecimal r113_south_africa;
+		private BigDecimal r113_sadc;
+		private BigDecimal r113_usa;
+		private BigDecimal r113_uk;
+		private BigDecimal r113_europe;
+		private BigDecimal r113_india;
+		private BigDecimal r113_sydney;
+		private BigDecimal r113_uganda;
+		private BigDecimal r113_c10;
+		private BigDecimal r113_c11;
+		private BigDecimal r113_c12;
+		private BigDecimal r113_c13;
+		private BigDecimal r113_c14;
+		private BigDecimal r113_c15;
+		private BigDecimal r113_c16;
+		private BigDecimal r113_total;
+		private String r114_product;
+		private BigDecimal r114_south_africa;
+		private BigDecimal r114_sadc;
+		private BigDecimal r114_usa;
+		private BigDecimal r114_uk;
+		private BigDecimal r114_europe;
+		private BigDecimal r114_india;
+		private BigDecimal r114_sydney;
+		private BigDecimal r114_uganda;
+		private BigDecimal r114_c10;
+		private BigDecimal r114_c11;
+		private BigDecimal r114_c12;
+		private BigDecimal r114_c13;
+		private BigDecimal r114_c14;
+		private BigDecimal r114_c15;
+		private BigDecimal r114_c16;
+		private BigDecimal r114_total;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR62_product() { return r62_product; }
+		public void setR62_product(String r62_product) { this.r62_product = r62_product; }
+		public BigDecimal getR62_botswana() { return r62_botswana; }
+		public void setR62_botswana(BigDecimal r62_botswana) { this.r62_botswana = r62_botswana; }
+		public BigDecimal getR62_south_africa() { return r62_south_africa; }
+		public void setR62_south_africa(BigDecimal r62_south_africa) { this.r62_south_africa = r62_south_africa; }
+		public BigDecimal getR62_sadc() { return r62_sadc; }
+		public void setR62_sadc(BigDecimal r62_sadc) { this.r62_sadc = r62_sadc; }
+		public BigDecimal getR62_usa() { return r62_usa; }
+		public void setR62_usa(BigDecimal r62_usa) { this.r62_usa = r62_usa; }
+		public BigDecimal getR62_uk() { return r62_uk; }
+		public void setR62_uk(BigDecimal r62_uk) { this.r62_uk = r62_uk; }
+		public BigDecimal getR62_europe() { return r62_europe; }
+		public void setR62_europe(BigDecimal r62_europe) { this.r62_europe = r62_europe; }
+		public BigDecimal getR62_india() { return r62_india; }
+		public void setR62_india(BigDecimal r62_india) { this.r62_india = r62_india; }
+		public BigDecimal getR62_sydney() { return r62_sydney; }
+		public void setR62_sydney(BigDecimal r62_sydney) { this.r62_sydney = r62_sydney; }
+		public BigDecimal getR62_uganda() { return r62_uganda; }
+		public void setR62_uganda(BigDecimal r62_uganda) { this.r62_uganda = r62_uganda; }
+		public BigDecimal getR62_c10() { return r62_c10; }
+		public void setR62_c10(BigDecimal r62_c10) { this.r62_c10 = r62_c10; }
+		public BigDecimal getR62_c11() { return r62_c11; }
+		public void setR62_c11(BigDecimal r62_c11) { this.r62_c11 = r62_c11; }
+		public BigDecimal getR62_c12() { return r62_c12; }
+		public void setR62_c12(BigDecimal r62_c12) { this.r62_c12 = r62_c12; }
+		public BigDecimal getR62_c13() { return r62_c13; }
+		public void setR62_c13(BigDecimal r62_c13) { this.r62_c13 = r62_c13; }
+		public BigDecimal getR62_c14() { return r62_c14; }
+		public void setR62_c14(BigDecimal r62_c14) { this.r62_c14 = r62_c14; }
+		public BigDecimal getR62_c15() { return r62_c15; }
+		public void setR62_c15(BigDecimal r62_c15) { this.r62_c15 = r62_c15; }
+		public BigDecimal getR62_c16() { return r62_c16; }
+		public void setR62_c16(BigDecimal r62_c16) { this.r62_c16 = r62_c16; }
+		public BigDecimal getR62_total() { return r62_total; }
+		public void setR62_total(BigDecimal r62_total) { this.r62_total = r62_total; }
+		public String getR63_product() { return r63_product; }
+		public void setR63_product(String r63_product) { this.r63_product = r63_product; }
+		public BigDecimal getR63_botswana() { return r63_botswana; }
+		public void setR63_botswana(BigDecimal r63_botswana) { this.r63_botswana = r63_botswana; }
+		public BigDecimal getR63_south_africa() { return r63_south_africa; }
+		public void setR63_south_africa(BigDecimal r63_south_africa) { this.r63_south_africa = r63_south_africa; }
+		public BigDecimal getR63_sadc() { return r63_sadc; }
+		public void setR63_sadc(BigDecimal r63_sadc) { this.r63_sadc = r63_sadc; }
+		public BigDecimal getR63_usa() { return r63_usa; }
+		public void setR63_usa(BigDecimal r63_usa) { this.r63_usa = r63_usa; }
+		public BigDecimal getR63_uk() { return r63_uk; }
+		public void setR63_uk(BigDecimal r63_uk) { this.r63_uk = r63_uk; }
+		public BigDecimal getR63_europe() { return r63_europe; }
+		public void setR63_europe(BigDecimal r63_europe) { this.r63_europe = r63_europe; }
+		public BigDecimal getR63_india() { return r63_india; }
+		public void setR63_india(BigDecimal r63_india) { this.r63_india = r63_india; }
+		public BigDecimal getR63_sydney() { return r63_sydney; }
+		public void setR63_sydney(BigDecimal r63_sydney) { this.r63_sydney = r63_sydney; }
+		public BigDecimal getR63_uganda() { return r63_uganda; }
+		public void setR63_uganda(BigDecimal r63_uganda) { this.r63_uganda = r63_uganda; }
+		public BigDecimal getR63_c10() { return r63_c10; }
+		public void setR63_c10(BigDecimal r63_c10) { this.r63_c10 = r63_c10; }
+		public BigDecimal getR63_c11() { return r63_c11; }
+		public void setR63_c11(BigDecimal r63_c11) { this.r63_c11 = r63_c11; }
+		public BigDecimal getR63_c12() { return r63_c12; }
+		public void setR63_c12(BigDecimal r63_c12) { this.r63_c12 = r63_c12; }
+		public BigDecimal getR63_c13() { return r63_c13; }
+		public void setR63_c13(BigDecimal r63_c13) { this.r63_c13 = r63_c13; }
+		public BigDecimal getR63_c14() { return r63_c14; }
+		public void setR63_c14(BigDecimal r63_c14) { this.r63_c14 = r63_c14; }
+		public BigDecimal getR63_c15() { return r63_c15; }
+		public void setR63_c15(BigDecimal r63_c15) { this.r63_c15 = r63_c15; }
+		public BigDecimal getR63_c16() { return r63_c16; }
+		public void setR63_c16(BigDecimal r63_c16) { this.r63_c16 = r63_c16; }
+		public BigDecimal getR63_total() { return r63_total; }
+		public void setR63_total(BigDecimal r63_total) { this.r63_total = r63_total; }
+		public String getR66_product() { return r66_product; }
+		public void setR66_product(String r66_product) { this.r66_product = r66_product; }
+		public BigDecimal getR66_botswana() { return r66_botswana; }
+		public void setR66_botswana(BigDecimal r66_botswana) { this.r66_botswana = r66_botswana; }
+		public BigDecimal getR66_south_africa() { return r66_south_africa; }
+		public void setR66_south_africa(BigDecimal r66_south_africa) { this.r66_south_africa = r66_south_africa; }
+		public BigDecimal getR66_sadc() { return r66_sadc; }
+		public void setR66_sadc(BigDecimal r66_sadc) { this.r66_sadc = r66_sadc; }
+		public BigDecimal getR66_usa() { return r66_usa; }
+		public void setR66_usa(BigDecimal r66_usa) { this.r66_usa = r66_usa; }
+		public BigDecimal getR66_uk() { return r66_uk; }
+		public void setR66_uk(BigDecimal r66_uk) { this.r66_uk = r66_uk; }
+		public BigDecimal getR66_europe() { return r66_europe; }
+		public void setR66_europe(BigDecimal r66_europe) { this.r66_europe = r66_europe; }
+		public BigDecimal getR66_india() { return r66_india; }
+		public void setR66_india(BigDecimal r66_india) { this.r66_india = r66_india; }
+		public BigDecimal getR66_sydney() { return r66_sydney; }
+		public void setR66_sydney(BigDecimal r66_sydney) { this.r66_sydney = r66_sydney; }
+		public BigDecimal getR66_uganda() { return r66_uganda; }
+		public void setR66_uganda(BigDecimal r66_uganda) { this.r66_uganda = r66_uganda; }
+		public BigDecimal getR66_c10() { return r66_c10; }
+		public void setR66_c10(BigDecimal r66_c10) { this.r66_c10 = r66_c10; }
+		public BigDecimal getR66_c11() { return r66_c11; }
+		public void setR66_c11(BigDecimal r66_c11) { this.r66_c11 = r66_c11; }
+		public BigDecimal getR66_c12() { return r66_c12; }
+		public void setR66_c12(BigDecimal r66_c12) { this.r66_c12 = r66_c12; }
+		public BigDecimal getR66_c13() { return r66_c13; }
+		public void setR66_c13(BigDecimal r66_c13) { this.r66_c13 = r66_c13; }
+		public BigDecimal getR66_c14() { return r66_c14; }
+		public void setR66_c14(BigDecimal r66_c14) { this.r66_c14 = r66_c14; }
+		public BigDecimal getR66_c15() { return r66_c15; }
+		public void setR66_c15(BigDecimal r66_c15) { this.r66_c15 = r66_c15; }
+		public BigDecimal getR66_c16() { return r66_c16; }
+		public void setR66_c16(BigDecimal r66_c16) { this.r66_c16 = r66_c16; }
+		public BigDecimal getR66_total() { return r66_total; }
+		public void setR66_total(BigDecimal r66_total) { this.r66_total = r66_total; }
+		public String getR69_product() { return r69_product; }
+		public void setR69_product(String r69_product) { this.r69_product = r69_product; }
+		public BigDecimal getR69_botswana() { return r69_botswana; }
+		public void setR69_botswana(BigDecimal r69_botswana) { this.r69_botswana = r69_botswana; }
+		public BigDecimal getR69_south_africa() { return r69_south_africa; }
+		public void setR69_south_africa(BigDecimal r69_south_africa) { this.r69_south_africa = r69_south_africa; }
+		public BigDecimal getR69_sadc() { return r69_sadc; }
+		public void setR69_sadc(BigDecimal r69_sadc) { this.r69_sadc = r69_sadc; }
+		public BigDecimal getR69_usa() { return r69_usa; }
+		public void setR69_usa(BigDecimal r69_usa) { this.r69_usa = r69_usa; }
+		public BigDecimal getR69_uk() { return r69_uk; }
+		public void setR69_uk(BigDecimal r69_uk) { this.r69_uk = r69_uk; }
+		public BigDecimal getR69_europe() { return r69_europe; }
+		public void setR69_europe(BigDecimal r69_europe) { this.r69_europe = r69_europe; }
+		public BigDecimal getR69_india() { return r69_india; }
+		public void setR69_india(BigDecimal r69_india) { this.r69_india = r69_india; }
+		public BigDecimal getR69_sydney() { return r69_sydney; }
+		public void setR69_sydney(BigDecimal r69_sydney) { this.r69_sydney = r69_sydney; }
+		public BigDecimal getR69_uganda() { return r69_uganda; }
+		public void setR69_uganda(BigDecimal r69_uganda) { this.r69_uganda = r69_uganda; }
+		public BigDecimal getR69_c10() { return r69_c10; }
+		public void setR69_c10(BigDecimal r69_c10) { this.r69_c10 = r69_c10; }
+		public BigDecimal getR69_c11() { return r69_c11; }
+		public void setR69_c11(BigDecimal r69_c11) { this.r69_c11 = r69_c11; }
+		public BigDecimal getR69_c12() { return r69_c12; }
+		public void setR69_c12(BigDecimal r69_c12) { this.r69_c12 = r69_c12; }
+		public BigDecimal getR69_c13() { return r69_c13; }
+		public void setR69_c13(BigDecimal r69_c13) { this.r69_c13 = r69_c13; }
+		public BigDecimal getR69_c14() { return r69_c14; }
+		public void setR69_c14(BigDecimal r69_c14) { this.r69_c14 = r69_c14; }
+		public BigDecimal getR69_c15() { return r69_c15; }
+		public void setR69_c15(BigDecimal r69_c15) { this.r69_c15 = r69_c15; }
+		public BigDecimal getR69_c16() { return r69_c16; }
+		public void setR69_c16(BigDecimal r69_c16) { this.r69_c16 = r69_c16; }
+		public BigDecimal getR69_total() { return r69_total; }
+		public void setR69_total(BigDecimal r69_total) { this.r69_total = r69_total; }
+		public String getR70_product() { return r70_product; }
+		public void setR70_product(String r70_product) { this.r70_product = r70_product; }
+		public BigDecimal getR70_botswana() { return r70_botswana; }
+		public void setR70_botswana(BigDecimal r70_botswana) { this.r70_botswana = r70_botswana; }
+		public BigDecimal getR70_south_africa() { return r70_south_africa; }
+		public void setR70_south_africa(BigDecimal r70_south_africa) { this.r70_south_africa = r70_south_africa; }
+		public BigDecimal getR70_sadc() { return r70_sadc; }
+		public void setR70_sadc(BigDecimal r70_sadc) { this.r70_sadc = r70_sadc; }
+		public BigDecimal getR70_usa() { return r70_usa; }
+		public void setR70_usa(BigDecimal r70_usa) { this.r70_usa = r70_usa; }
+		public BigDecimal getR70_uk() { return r70_uk; }
+		public void setR70_uk(BigDecimal r70_uk) { this.r70_uk = r70_uk; }
+		public BigDecimal getR70_europe() { return r70_europe; }
+		public void setR70_europe(BigDecimal r70_europe) { this.r70_europe = r70_europe; }
+		public BigDecimal getR70_india() { return r70_india; }
+		public void setR70_india(BigDecimal r70_india) { this.r70_india = r70_india; }
+		public BigDecimal getR70_sydney() { return r70_sydney; }
+		public void setR70_sydney(BigDecimal r70_sydney) { this.r70_sydney = r70_sydney; }
+		public BigDecimal getR70_uganda() { return r70_uganda; }
+		public void setR70_uganda(BigDecimal r70_uganda) { this.r70_uganda = r70_uganda; }
+		public BigDecimal getR70_c10() { return r70_c10; }
+		public void setR70_c10(BigDecimal r70_c10) { this.r70_c10 = r70_c10; }
+		public BigDecimal getR70_c11() { return r70_c11; }
+		public void setR70_c11(BigDecimal r70_c11) { this.r70_c11 = r70_c11; }
+		public BigDecimal getR70_c12() { return r70_c12; }
+		public void setR70_c12(BigDecimal r70_c12) { this.r70_c12 = r70_c12; }
+		public BigDecimal getR70_c13() { return r70_c13; }
+		public void setR70_c13(BigDecimal r70_c13) { this.r70_c13 = r70_c13; }
+		public BigDecimal getR70_c14() { return r70_c14; }
+		public void setR70_c14(BigDecimal r70_c14) { this.r70_c14 = r70_c14; }
+		public BigDecimal getR70_c15() { return r70_c15; }
+		public void setR70_c15(BigDecimal r70_c15) { this.r70_c15 = r70_c15; }
+		public BigDecimal getR70_c16() { return r70_c16; }
+		public void setR70_c16(BigDecimal r70_c16) { this.r70_c16 = r70_c16; }
+		public BigDecimal getR70_total() { return r70_total; }
+		public void setR70_total(BigDecimal r70_total) { this.r70_total = r70_total; }
+		public String getR71_product() { return r71_product; }
+		public void setR71_product(String r71_product) { this.r71_product = r71_product; }
+		public BigDecimal getR71_botswana() { return r71_botswana; }
+		public void setR71_botswana(BigDecimal r71_botswana) { this.r71_botswana = r71_botswana; }
+		public BigDecimal getR71_south_africa() { return r71_south_africa; }
+		public void setR71_south_africa(BigDecimal r71_south_africa) { this.r71_south_africa = r71_south_africa; }
+		public BigDecimal getR71_sadc() { return r71_sadc; }
+		public void setR71_sadc(BigDecimal r71_sadc) { this.r71_sadc = r71_sadc; }
+		public BigDecimal getR71_usa() { return r71_usa; }
+		public void setR71_usa(BigDecimal r71_usa) { this.r71_usa = r71_usa; }
+		public BigDecimal getR71_uk() { return r71_uk; }
+		public void setR71_uk(BigDecimal r71_uk) { this.r71_uk = r71_uk; }
+		public BigDecimal getR71_europe() { return r71_europe; }
+		public void setR71_europe(BigDecimal r71_europe) { this.r71_europe = r71_europe; }
+		public BigDecimal getR71_india() { return r71_india; }
+		public void setR71_india(BigDecimal r71_india) { this.r71_india = r71_india; }
+		public BigDecimal getR71_sydney() { return r71_sydney; }
+		public void setR71_sydney(BigDecimal r71_sydney) { this.r71_sydney = r71_sydney; }
+		public BigDecimal getR71_uganda() { return r71_uganda; }
+		public void setR71_uganda(BigDecimal r71_uganda) { this.r71_uganda = r71_uganda; }
+		public BigDecimal getR71_c10() { return r71_c10; }
+		public void setR71_c10(BigDecimal r71_c10) { this.r71_c10 = r71_c10; }
+		public BigDecimal getR71_c11() { return r71_c11; }
+		public void setR71_c11(BigDecimal r71_c11) { this.r71_c11 = r71_c11; }
+		public BigDecimal getR71_c12() { return r71_c12; }
+		public void setR71_c12(BigDecimal r71_c12) { this.r71_c12 = r71_c12; }
+		public BigDecimal getR71_c13() { return r71_c13; }
+		public void setR71_c13(BigDecimal r71_c13) { this.r71_c13 = r71_c13; }
+		public BigDecimal getR71_c14() { return r71_c14; }
+		public void setR71_c14(BigDecimal r71_c14) { this.r71_c14 = r71_c14; }
+		public BigDecimal getR71_c15() { return r71_c15; }
+		public void setR71_c15(BigDecimal r71_c15) { this.r71_c15 = r71_c15; }
+		public BigDecimal getR71_c16() { return r71_c16; }
+		public void setR71_c16(BigDecimal r71_c16) { this.r71_c16 = r71_c16; }
+		public BigDecimal getR71_total() { return r71_total; }
+		public void setR71_total(BigDecimal r71_total) { this.r71_total = r71_total; }
+		public String getR72_product() { return r72_product; }
+		public void setR72_product(String r72_product) { this.r72_product = r72_product; }
+		public BigDecimal getR72_botswana() { return r72_botswana; }
+		public void setR72_botswana(BigDecimal r72_botswana) { this.r72_botswana = r72_botswana; }
+		public BigDecimal getR72_south_africa() { return r72_south_africa; }
+		public void setR72_south_africa(BigDecimal r72_south_africa) { this.r72_south_africa = r72_south_africa; }
+		public BigDecimal getR72_sadc() { return r72_sadc; }
+		public void setR72_sadc(BigDecimal r72_sadc) { this.r72_sadc = r72_sadc; }
+		public BigDecimal getR72_usa() { return r72_usa; }
+		public void setR72_usa(BigDecimal r72_usa) { this.r72_usa = r72_usa; }
+		public BigDecimal getR72_uk() { return r72_uk; }
+		public void setR72_uk(BigDecimal r72_uk) { this.r72_uk = r72_uk; }
+		public BigDecimal getR72_europe() { return r72_europe; }
+		public void setR72_europe(BigDecimal r72_europe) { this.r72_europe = r72_europe; }
+		public BigDecimal getR72_india() { return r72_india; }
+		public void setR72_india(BigDecimal r72_india) { this.r72_india = r72_india; }
+		public BigDecimal getR72_sydney() { return r72_sydney; }
+		public void setR72_sydney(BigDecimal r72_sydney) { this.r72_sydney = r72_sydney; }
+		public BigDecimal getR72_uganda() { return r72_uganda; }
+		public void setR72_uganda(BigDecimal r72_uganda) { this.r72_uganda = r72_uganda; }
+		public BigDecimal getR72_c10() { return r72_c10; }
+		public void setR72_c10(BigDecimal r72_c10) { this.r72_c10 = r72_c10; }
+		public BigDecimal getR72_c11() { return r72_c11; }
+		public void setR72_c11(BigDecimal r72_c11) { this.r72_c11 = r72_c11; }
+		public BigDecimal getR72_c12() { return r72_c12; }
+		public void setR72_c12(BigDecimal r72_c12) { this.r72_c12 = r72_c12; }
+		public BigDecimal getR72_c13() { return r72_c13; }
+		public void setR72_c13(BigDecimal r72_c13) { this.r72_c13 = r72_c13; }
+		public BigDecimal getR72_c14() { return r72_c14; }
+		public void setR72_c14(BigDecimal r72_c14) { this.r72_c14 = r72_c14; }
+		public BigDecimal getR72_c15() { return r72_c15; }
+		public void setR72_c15(BigDecimal r72_c15) { this.r72_c15 = r72_c15; }
+		public BigDecimal getR72_c16() { return r72_c16; }
+		public void setR72_c16(BigDecimal r72_c16) { this.r72_c16 = r72_c16; }
+		public BigDecimal getR72_total() { return r72_total; }
+		public void setR72_total(BigDecimal r72_total) { this.r72_total = r72_total; }
+		public String getR73_product() { return r73_product; }
+		public void setR73_product(String r73_product) { this.r73_product = r73_product; }
+		public BigDecimal getR73_botswana() { return r73_botswana; }
+		public void setR73_botswana(BigDecimal r73_botswana) { this.r73_botswana = r73_botswana; }
+		public BigDecimal getR73_south_africa() { return r73_south_africa; }
+		public void setR73_south_africa(BigDecimal r73_south_africa) { this.r73_south_africa = r73_south_africa; }
+		public BigDecimal getR73_sadc() { return r73_sadc; }
+		public void setR73_sadc(BigDecimal r73_sadc) { this.r73_sadc = r73_sadc; }
+		public BigDecimal getR73_usa() { return r73_usa; }
+		public void setR73_usa(BigDecimal r73_usa) { this.r73_usa = r73_usa; }
+		public BigDecimal getR73_uk() { return r73_uk; }
+		public void setR73_uk(BigDecimal r73_uk) { this.r73_uk = r73_uk; }
+		public BigDecimal getR73_europe() { return r73_europe; }
+		public void setR73_europe(BigDecimal r73_europe) { this.r73_europe = r73_europe; }
+		public BigDecimal getR73_india() { return r73_india; }
+		public void setR73_india(BigDecimal r73_india) { this.r73_india = r73_india; }
+		public BigDecimal getR73_sydney() { return r73_sydney; }
+		public void setR73_sydney(BigDecimal r73_sydney) { this.r73_sydney = r73_sydney; }
+		public BigDecimal getR73_uganda() { return r73_uganda; }
+		public void setR73_uganda(BigDecimal r73_uganda) { this.r73_uganda = r73_uganda; }
+		public BigDecimal getR73_c10() { return r73_c10; }
+		public void setR73_c10(BigDecimal r73_c10) { this.r73_c10 = r73_c10; }
+		public BigDecimal getR73_c11() { return r73_c11; }
+		public void setR73_c11(BigDecimal r73_c11) { this.r73_c11 = r73_c11; }
+		public BigDecimal getR73_c12() { return r73_c12; }
+		public void setR73_c12(BigDecimal r73_c12) { this.r73_c12 = r73_c12; }
+		public BigDecimal getR73_c13() { return r73_c13; }
+		public void setR73_c13(BigDecimal r73_c13) { this.r73_c13 = r73_c13; }
+		public BigDecimal getR73_c14() { return r73_c14; }
+		public void setR73_c14(BigDecimal r73_c14) { this.r73_c14 = r73_c14; }
+		public BigDecimal getR73_c15() { return r73_c15; }
+		public void setR73_c15(BigDecimal r73_c15) { this.r73_c15 = r73_c15; }
+		public BigDecimal getR73_c16() { return r73_c16; }
+		public void setR73_c16(BigDecimal r73_c16) { this.r73_c16 = r73_c16; }
+		public BigDecimal getR73_total() { return r73_total; }
+		public void setR73_total(BigDecimal r73_total) { this.r73_total = r73_total; }
+		public String getR74_product() { return r74_product; }
+		public void setR74_product(String r74_product) { this.r74_product = r74_product; }
+		public BigDecimal getR74_botswana() { return r74_botswana; }
+		public void setR74_botswana(BigDecimal r74_botswana) { this.r74_botswana = r74_botswana; }
+		public BigDecimal getR74_south_africa() { return r74_south_africa; }
+		public void setR74_south_africa(BigDecimal r74_south_africa) { this.r74_south_africa = r74_south_africa; }
+		public BigDecimal getR74_sadc() { return r74_sadc; }
+		public void setR74_sadc(BigDecimal r74_sadc) { this.r74_sadc = r74_sadc; }
+		public BigDecimal getR74_usa() { return r74_usa; }
+		public void setR74_usa(BigDecimal r74_usa) { this.r74_usa = r74_usa; }
+		public BigDecimal getR74_uk() { return r74_uk; }
+		public void setR74_uk(BigDecimal r74_uk) { this.r74_uk = r74_uk; }
+		public BigDecimal getR74_europe() { return r74_europe; }
+		public void setR74_europe(BigDecimal r74_europe) { this.r74_europe = r74_europe; }
+		public BigDecimal getR74_india() { return r74_india; }
+		public void setR74_india(BigDecimal r74_india) { this.r74_india = r74_india; }
+		public BigDecimal getR74_sydney() { return r74_sydney; }
+		public void setR74_sydney(BigDecimal r74_sydney) { this.r74_sydney = r74_sydney; }
+		public BigDecimal getR74_uganda() { return r74_uganda; }
+		public void setR74_uganda(BigDecimal r74_uganda) { this.r74_uganda = r74_uganda; }
+		public BigDecimal getR74_c10() { return r74_c10; }
+		public void setR74_c10(BigDecimal r74_c10) { this.r74_c10 = r74_c10; }
+		public BigDecimal getR74_c11() { return r74_c11; }
+		public void setR74_c11(BigDecimal r74_c11) { this.r74_c11 = r74_c11; }
+		public BigDecimal getR74_c12() { return r74_c12; }
+		public void setR74_c12(BigDecimal r74_c12) { this.r74_c12 = r74_c12; }
+		public BigDecimal getR74_c13() { return r74_c13; }
+		public void setR74_c13(BigDecimal r74_c13) { this.r74_c13 = r74_c13; }
+		public BigDecimal getR74_c14() { return r74_c14; }
+		public void setR74_c14(BigDecimal r74_c14) { this.r74_c14 = r74_c14; }
+		public BigDecimal getR74_c15() { return r74_c15; }
+		public void setR74_c15(BigDecimal r74_c15) { this.r74_c15 = r74_c15; }
+		public BigDecimal getR74_c16() { return r74_c16; }
+		public void setR74_c16(BigDecimal r74_c16) { this.r74_c16 = r74_c16; }
+		public BigDecimal getR74_total() { return r74_total; }
+		public void setR74_total(BigDecimal r74_total) { this.r74_total = r74_total; }
+		public String getR75_product() { return r75_product; }
+		public void setR75_product(String r75_product) { this.r75_product = r75_product; }
+		public BigDecimal getR75_botswana() { return r75_botswana; }
+		public void setR75_botswana(BigDecimal r75_botswana) { this.r75_botswana = r75_botswana; }
+		public BigDecimal getR75_south_africa() { return r75_south_africa; }
+		public void setR75_south_africa(BigDecimal r75_south_africa) { this.r75_south_africa = r75_south_africa; }
+		public BigDecimal getR75_sadc() { return r75_sadc; }
+		public void setR75_sadc(BigDecimal r75_sadc) { this.r75_sadc = r75_sadc; }
+		public BigDecimal getR75_usa() { return r75_usa; }
+		public void setR75_usa(BigDecimal r75_usa) { this.r75_usa = r75_usa; }
+		public BigDecimal getR75_uk() { return r75_uk; }
+		public void setR75_uk(BigDecimal r75_uk) { this.r75_uk = r75_uk; }
+		public BigDecimal getR75_europe() { return r75_europe; }
+		public void setR75_europe(BigDecimal r75_europe) { this.r75_europe = r75_europe; }
+		public BigDecimal getR75_india() { return r75_india; }
+		public void setR75_india(BigDecimal r75_india) { this.r75_india = r75_india; }
+		public BigDecimal getR75_sydney() { return r75_sydney; }
+		public void setR75_sydney(BigDecimal r75_sydney) { this.r75_sydney = r75_sydney; }
+		public BigDecimal getR75_uganda() { return r75_uganda; }
+		public void setR75_uganda(BigDecimal r75_uganda) { this.r75_uganda = r75_uganda; }
+		public BigDecimal getR75_c10() { return r75_c10; }
+		public void setR75_c10(BigDecimal r75_c10) { this.r75_c10 = r75_c10; }
+		public BigDecimal getR75_c11() { return r75_c11; }
+		public void setR75_c11(BigDecimal r75_c11) { this.r75_c11 = r75_c11; }
+		public BigDecimal getR75_c12() { return r75_c12; }
+		public void setR75_c12(BigDecimal r75_c12) { this.r75_c12 = r75_c12; }
+		public BigDecimal getR75_c13() { return r75_c13; }
+		public void setR75_c13(BigDecimal r75_c13) { this.r75_c13 = r75_c13; }
+		public BigDecimal getR75_c14() { return r75_c14; }
+		public void setR75_c14(BigDecimal r75_c14) { this.r75_c14 = r75_c14; }
+		public BigDecimal getR75_c15() { return r75_c15; }
+		public void setR75_c15(BigDecimal r75_c15) { this.r75_c15 = r75_c15; }
+		public BigDecimal getR75_c16() { return r75_c16; }
+		public void setR75_c16(BigDecimal r75_c16) { this.r75_c16 = r75_c16; }
+		public BigDecimal getR75_total() { return r75_total; }
+		public void setR75_total(BigDecimal r75_total) { this.r75_total = r75_total; }
+		public String getR76_product() { return r76_product; }
+		public void setR76_product(String r76_product) { this.r76_product = r76_product; }
+		public BigDecimal getR76_botswana() { return r76_botswana; }
+		public void setR76_botswana(BigDecimal r76_botswana) { this.r76_botswana = r76_botswana; }
+		public BigDecimal getR76_south_africa() { return r76_south_africa; }
+		public void setR76_south_africa(BigDecimal r76_south_africa) { this.r76_south_africa = r76_south_africa; }
+		public BigDecimal getR76_sadc() { return r76_sadc; }
+		public void setR76_sadc(BigDecimal r76_sadc) { this.r76_sadc = r76_sadc; }
+		public BigDecimal getR76_usa() { return r76_usa; }
+		public void setR76_usa(BigDecimal r76_usa) { this.r76_usa = r76_usa; }
+		public BigDecimal getR76_uk() { return r76_uk; }
+		public void setR76_uk(BigDecimal r76_uk) { this.r76_uk = r76_uk; }
+		public BigDecimal getR76_europe() { return r76_europe; }
+		public void setR76_europe(BigDecimal r76_europe) { this.r76_europe = r76_europe; }
+		public BigDecimal getR76_india() { return r76_india; }
+		public void setR76_india(BigDecimal r76_india) { this.r76_india = r76_india; }
+		public BigDecimal getR76_sydney() { return r76_sydney; }
+		public void setR76_sydney(BigDecimal r76_sydney) { this.r76_sydney = r76_sydney; }
+		public BigDecimal getR76_uganda() { return r76_uganda; }
+		public void setR76_uganda(BigDecimal r76_uganda) { this.r76_uganda = r76_uganda; }
+		public BigDecimal getR76_c10() { return r76_c10; }
+		public void setR76_c10(BigDecimal r76_c10) { this.r76_c10 = r76_c10; }
+		public BigDecimal getR76_c11() { return r76_c11; }
+		public void setR76_c11(BigDecimal r76_c11) { this.r76_c11 = r76_c11; }
+		public BigDecimal getR76_c12() { return r76_c12; }
+		public void setR76_c12(BigDecimal r76_c12) { this.r76_c12 = r76_c12; }
+		public BigDecimal getR76_c13() { return r76_c13; }
+		public void setR76_c13(BigDecimal r76_c13) { this.r76_c13 = r76_c13; }
+		public BigDecimal getR76_c14() { return r76_c14; }
+		public void setR76_c14(BigDecimal r76_c14) { this.r76_c14 = r76_c14; }
+		public BigDecimal getR76_c15() { return r76_c15; }
+		public void setR76_c15(BigDecimal r76_c15) { this.r76_c15 = r76_c15; }
+		public BigDecimal getR76_c16() { return r76_c16; }
+		public void setR76_c16(BigDecimal r76_c16) { this.r76_c16 = r76_c16; }
+		public BigDecimal getR76_total() { return r76_total; }
+		public void setR76_total(BigDecimal r76_total) { this.r76_total = r76_total; }
+		public String getR77_product() { return r77_product; }
+		public void setR77_product(String r77_product) { this.r77_product = r77_product; }
+		public BigDecimal getR77_botswana() { return r77_botswana; }
+		public void setR77_botswana(BigDecimal r77_botswana) { this.r77_botswana = r77_botswana; }
+		public BigDecimal getR77_south_africa() { return r77_south_africa; }
+		public void setR77_south_africa(BigDecimal r77_south_africa) { this.r77_south_africa = r77_south_africa; }
+		public BigDecimal getR77_sadc() { return r77_sadc; }
+		public void setR77_sadc(BigDecimal r77_sadc) { this.r77_sadc = r77_sadc; }
+		public BigDecimal getR77_usa() { return r77_usa; }
+		public void setR77_usa(BigDecimal r77_usa) { this.r77_usa = r77_usa; }
+		public BigDecimal getR77_uk() { return r77_uk; }
+		public void setR77_uk(BigDecimal r77_uk) { this.r77_uk = r77_uk; }
+		public BigDecimal getR77_europe() { return r77_europe; }
+		public void setR77_europe(BigDecimal r77_europe) { this.r77_europe = r77_europe; }
+		public BigDecimal getR77_india() { return r77_india; }
+		public void setR77_india(BigDecimal r77_india) { this.r77_india = r77_india; }
+		public BigDecimal getR77_sydney() { return r77_sydney; }
+		public void setR77_sydney(BigDecimal r77_sydney) { this.r77_sydney = r77_sydney; }
+		public BigDecimal getR77_uganda() { return r77_uganda; }
+		public void setR77_uganda(BigDecimal r77_uganda) { this.r77_uganda = r77_uganda; }
+		public BigDecimal getR77_c10() { return r77_c10; }
+		public void setR77_c10(BigDecimal r77_c10) { this.r77_c10 = r77_c10; }
+		public BigDecimal getR77_c11() { return r77_c11; }
+		public void setR77_c11(BigDecimal r77_c11) { this.r77_c11 = r77_c11; }
+		public BigDecimal getR77_c12() { return r77_c12; }
+		public void setR77_c12(BigDecimal r77_c12) { this.r77_c12 = r77_c12; }
+		public BigDecimal getR77_c13() { return r77_c13; }
+		public void setR77_c13(BigDecimal r77_c13) { this.r77_c13 = r77_c13; }
+		public BigDecimal getR77_c14() { return r77_c14; }
+		public void setR77_c14(BigDecimal r77_c14) { this.r77_c14 = r77_c14; }
+		public BigDecimal getR77_c15() { return r77_c15; }
+		public void setR77_c15(BigDecimal r77_c15) { this.r77_c15 = r77_c15; }
+		public BigDecimal getR77_c16() { return r77_c16; }
+		public void setR77_c16(BigDecimal r77_c16) { this.r77_c16 = r77_c16; }
+		public BigDecimal getR77_total() { return r77_total; }
+		public void setR77_total(BigDecimal r77_total) { this.r77_total = r77_total; }
+		public String getR78_product() { return r78_product; }
+		public void setR78_product(String r78_product) { this.r78_product = r78_product; }
+		public BigDecimal getR78_botswana() { return r78_botswana; }
+		public void setR78_botswana(BigDecimal r78_botswana) { this.r78_botswana = r78_botswana; }
+		public BigDecimal getR78_south_africa() { return r78_south_africa; }
+		public void setR78_south_africa(BigDecimal r78_south_africa) { this.r78_south_africa = r78_south_africa; }
+		public BigDecimal getR78_sadc() { return r78_sadc; }
+		public void setR78_sadc(BigDecimal r78_sadc) { this.r78_sadc = r78_sadc; }
+		public BigDecimal getR78_usa() { return r78_usa; }
+		public void setR78_usa(BigDecimal r78_usa) { this.r78_usa = r78_usa; }
+		public BigDecimal getR78_uk() { return r78_uk; }
+		public void setR78_uk(BigDecimal r78_uk) { this.r78_uk = r78_uk; }
+		public BigDecimal getR78_europe() { return r78_europe; }
+		public void setR78_europe(BigDecimal r78_europe) { this.r78_europe = r78_europe; }
+		public BigDecimal getR78_india() { return r78_india; }
+		public void setR78_india(BigDecimal r78_india) { this.r78_india = r78_india; }
+		public BigDecimal getR78_sydney() { return r78_sydney; }
+		public void setR78_sydney(BigDecimal r78_sydney) { this.r78_sydney = r78_sydney; }
+		public BigDecimal getR78_uganda() { return r78_uganda; }
+		public void setR78_uganda(BigDecimal r78_uganda) { this.r78_uganda = r78_uganda; }
+		public BigDecimal getR78_c10() { return r78_c10; }
+		public void setR78_c10(BigDecimal r78_c10) { this.r78_c10 = r78_c10; }
+		public BigDecimal getR78_c11() { return r78_c11; }
+		public void setR78_c11(BigDecimal r78_c11) { this.r78_c11 = r78_c11; }
+		public BigDecimal getR78_c12() { return r78_c12; }
+		public void setR78_c12(BigDecimal r78_c12) { this.r78_c12 = r78_c12; }
+		public BigDecimal getR78_c13() { return r78_c13; }
+		public void setR78_c13(BigDecimal r78_c13) { this.r78_c13 = r78_c13; }
+		public BigDecimal getR78_c14() { return r78_c14; }
+		public void setR78_c14(BigDecimal r78_c14) { this.r78_c14 = r78_c14; }
+		public BigDecimal getR78_c15() { return r78_c15; }
+		public void setR78_c15(BigDecimal r78_c15) { this.r78_c15 = r78_c15; }
+		public BigDecimal getR78_c16() { return r78_c16; }
+		public void setR78_c16(BigDecimal r78_c16) { this.r78_c16 = r78_c16; }
+		public BigDecimal getR78_total() { return r78_total; }
+		public void setR78_total(BigDecimal r78_total) { this.r78_total = r78_total; }
+		public String getR79_product() { return r79_product; }
+		public void setR79_product(String r79_product) { this.r79_product = r79_product; }
+		public BigDecimal getR79_botswana() { return r79_botswana; }
+		public void setR79_botswana(BigDecimal r79_botswana) { this.r79_botswana = r79_botswana; }
+		public BigDecimal getR79_south_africa() { return r79_south_africa; }
+		public void setR79_south_africa(BigDecimal r79_south_africa) { this.r79_south_africa = r79_south_africa; }
+		public BigDecimal getR79_sadc() { return r79_sadc; }
+		public void setR79_sadc(BigDecimal r79_sadc) { this.r79_sadc = r79_sadc; }
+		public BigDecimal getR79_usa() { return r79_usa; }
+		public void setR79_usa(BigDecimal r79_usa) { this.r79_usa = r79_usa; }
+		public BigDecimal getR79_uk() { return r79_uk; }
+		public void setR79_uk(BigDecimal r79_uk) { this.r79_uk = r79_uk; }
+		public BigDecimal getR79_europe() { return r79_europe; }
+		public void setR79_europe(BigDecimal r79_europe) { this.r79_europe = r79_europe; }
+		public BigDecimal getR79_india() { return r79_india; }
+		public void setR79_india(BigDecimal r79_india) { this.r79_india = r79_india; }
+		public BigDecimal getR79_sydney() { return r79_sydney; }
+		public void setR79_sydney(BigDecimal r79_sydney) { this.r79_sydney = r79_sydney; }
+		public BigDecimal getR79_uganda() { return r79_uganda; }
+		public void setR79_uganda(BigDecimal r79_uganda) { this.r79_uganda = r79_uganda; }
+		public BigDecimal getR79_c10() { return r79_c10; }
+		public void setR79_c10(BigDecimal r79_c10) { this.r79_c10 = r79_c10; }
+		public BigDecimal getR79_c11() { return r79_c11; }
+		public void setR79_c11(BigDecimal r79_c11) { this.r79_c11 = r79_c11; }
+		public BigDecimal getR79_c12() { return r79_c12; }
+		public void setR79_c12(BigDecimal r79_c12) { this.r79_c12 = r79_c12; }
+		public BigDecimal getR79_c13() { return r79_c13; }
+		public void setR79_c13(BigDecimal r79_c13) { this.r79_c13 = r79_c13; }
+		public BigDecimal getR79_c14() { return r79_c14; }
+		public void setR79_c14(BigDecimal r79_c14) { this.r79_c14 = r79_c14; }
+		public BigDecimal getR79_c15() { return r79_c15; }
+		public void setR79_c15(BigDecimal r79_c15) { this.r79_c15 = r79_c15; }
+		public BigDecimal getR79_c16() { return r79_c16; }
+		public void setR79_c16(BigDecimal r79_c16) { this.r79_c16 = r79_c16; }
+		public BigDecimal getR79_total() { return r79_total; }
+		public void setR79_total(BigDecimal r79_total) { this.r79_total = r79_total; }
+		public String getR80_product() { return r80_product; }
+		public void setR80_product(String r80_product) { this.r80_product = r80_product; }
+		public BigDecimal getR80_botswana() { return r80_botswana; }
+		public void setR80_botswana(BigDecimal r80_botswana) { this.r80_botswana = r80_botswana; }
+		public BigDecimal getR80_south_africa() { return r80_south_africa; }
+		public void setR80_south_africa(BigDecimal r80_south_africa) { this.r80_south_africa = r80_south_africa; }
+		public BigDecimal getR80_sadc() { return r80_sadc; }
+		public void setR80_sadc(BigDecimal r80_sadc) { this.r80_sadc = r80_sadc; }
+		public BigDecimal getR80_usa() { return r80_usa; }
+		public void setR80_usa(BigDecimal r80_usa) { this.r80_usa = r80_usa; }
+		public BigDecimal getR80_uk() { return r80_uk; }
+		public void setR80_uk(BigDecimal r80_uk) { this.r80_uk = r80_uk; }
+		public BigDecimal getR80_europe() { return r80_europe; }
+		public void setR80_europe(BigDecimal r80_europe) { this.r80_europe = r80_europe; }
+		public BigDecimal getR80_india() { return r80_india; }
+		public void setR80_india(BigDecimal r80_india) { this.r80_india = r80_india; }
+		public BigDecimal getR80_sydney() { return r80_sydney; }
+		public void setR80_sydney(BigDecimal r80_sydney) { this.r80_sydney = r80_sydney; }
+		public BigDecimal getR80_uganda() { return r80_uganda; }
+		public void setR80_uganda(BigDecimal r80_uganda) { this.r80_uganda = r80_uganda; }
+		public BigDecimal getR80_c10() { return r80_c10; }
+		public void setR80_c10(BigDecimal r80_c10) { this.r80_c10 = r80_c10; }
+		public BigDecimal getR80_c11() { return r80_c11; }
+		public void setR80_c11(BigDecimal r80_c11) { this.r80_c11 = r80_c11; }
+		public BigDecimal getR80_c12() { return r80_c12; }
+		public void setR80_c12(BigDecimal r80_c12) { this.r80_c12 = r80_c12; }
+		public BigDecimal getR80_c13() { return r80_c13; }
+		public void setR80_c13(BigDecimal r80_c13) { this.r80_c13 = r80_c13; }
+		public BigDecimal getR80_c14() { return r80_c14; }
+		public void setR80_c14(BigDecimal r80_c14) { this.r80_c14 = r80_c14; }
+		public BigDecimal getR80_c15() { return r80_c15; }
+		public void setR80_c15(BigDecimal r80_c15) { this.r80_c15 = r80_c15; }
+		public BigDecimal getR80_c16() { return r80_c16; }
+		public void setR80_c16(BigDecimal r80_c16) { this.r80_c16 = r80_c16; }
+		public BigDecimal getR80_total() { return r80_total; }
+		public void setR80_total(BigDecimal r80_total) { this.r80_total = r80_total; }
+		public String getR81_product() { return r81_product; }
+		public void setR81_product(String r81_product) { this.r81_product = r81_product; }
+		public BigDecimal getR81_botswana() { return r81_botswana; }
+		public void setR81_botswana(BigDecimal r81_botswana) { this.r81_botswana = r81_botswana; }
+		public BigDecimal getR81_south_africa() { return r81_south_africa; }
+		public void setR81_south_africa(BigDecimal r81_south_africa) { this.r81_south_africa = r81_south_africa; }
+		public BigDecimal getR81_sadc() { return r81_sadc; }
+		public void setR81_sadc(BigDecimal r81_sadc) { this.r81_sadc = r81_sadc; }
+		public BigDecimal getR81_usa() { return r81_usa; }
+		public void setR81_usa(BigDecimal r81_usa) { this.r81_usa = r81_usa; }
+		public BigDecimal getR81_uk() { return r81_uk; }
+		public void setR81_uk(BigDecimal r81_uk) { this.r81_uk = r81_uk; }
+		public BigDecimal getR81_europe() { return r81_europe; }
+		public void setR81_europe(BigDecimal r81_europe) { this.r81_europe = r81_europe; }
+		public BigDecimal getR81_india() { return r81_india; }
+		public void setR81_india(BigDecimal r81_india) { this.r81_india = r81_india; }
+		public BigDecimal getR81_sydney() { return r81_sydney; }
+		public void setR81_sydney(BigDecimal r81_sydney) { this.r81_sydney = r81_sydney; }
+		public BigDecimal getR81_uganda() { return r81_uganda; }
+		public void setR81_uganda(BigDecimal r81_uganda) { this.r81_uganda = r81_uganda; }
+		public BigDecimal getR81_c10() { return r81_c10; }
+		public void setR81_c10(BigDecimal r81_c10) { this.r81_c10 = r81_c10; }
+		public BigDecimal getR81_c11() { return r81_c11; }
+		public void setR81_c11(BigDecimal r81_c11) { this.r81_c11 = r81_c11; }
+		public BigDecimal getR81_c12() { return r81_c12; }
+		public void setR81_c12(BigDecimal r81_c12) { this.r81_c12 = r81_c12; }
+		public BigDecimal getR81_c13() { return r81_c13; }
+		public void setR81_c13(BigDecimal r81_c13) { this.r81_c13 = r81_c13; }
+		public BigDecimal getR81_c14() { return r81_c14; }
+		public void setR81_c14(BigDecimal r81_c14) { this.r81_c14 = r81_c14; }
+		public BigDecimal getR81_c15() { return r81_c15; }
+		public void setR81_c15(BigDecimal r81_c15) { this.r81_c15 = r81_c15; }
+		public BigDecimal getR81_c16() { return r81_c16; }
+		public void setR81_c16(BigDecimal r81_c16) { this.r81_c16 = r81_c16; }
+		public BigDecimal getR81_total() { return r81_total; }
+		public void setR81_total(BigDecimal r81_total) { this.r81_total = r81_total; }
+		public String getR82_product() { return r82_product; }
+		public void setR82_product(String r82_product) { this.r82_product = r82_product; }
+		public BigDecimal getR82_botswana() { return r82_botswana; }
+		public void setR82_botswana(BigDecimal r82_botswana) { this.r82_botswana = r82_botswana; }
+		public BigDecimal getR82_south_africa() { return r82_south_africa; }
+		public void setR82_south_africa(BigDecimal r82_south_africa) { this.r82_south_africa = r82_south_africa; }
+		public BigDecimal getR82_sadc() { return r82_sadc; }
+		public void setR82_sadc(BigDecimal r82_sadc) { this.r82_sadc = r82_sadc; }
+		public BigDecimal getR82_usa() { return r82_usa; }
+		public void setR82_usa(BigDecimal r82_usa) { this.r82_usa = r82_usa; }
+		public BigDecimal getR82_uk() { return r82_uk; }
+		public void setR82_uk(BigDecimal r82_uk) { this.r82_uk = r82_uk; }
+		public BigDecimal getR82_europe() { return r82_europe; }
+		public void setR82_europe(BigDecimal r82_europe) { this.r82_europe = r82_europe; }
+		public BigDecimal getR82_india() { return r82_india; }
+		public void setR82_india(BigDecimal r82_india) { this.r82_india = r82_india; }
+		public BigDecimal getR82_sydney() { return r82_sydney; }
+		public void setR82_sydney(BigDecimal r82_sydney) { this.r82_sydney = r82_sydney; }
+		public BigDecimal getR82_uganda() { return r82_uganda; }
+		public void setR82_uganda(BigDecimal r82_uganda) { this.r82_uganda = r82_uganda; }
+		public BigDecimal getR82_c10() { return r82_c10; }
+		public void setR82_c10(BigDecimal r82_c10) { this.r82_c10 = r82_c10; }
+		public BigDecimal getR82_c11() { return r82_c11; }
+		public void setR82_c11(BigDecimal r82_c11) { this.r82_c11 = r82_c11; }
+		public BigDecimal getR82_c12() { return r82_c12; }
+		public void setR82_c12(BigDecimal r82_c12) { this.r82_c12 = r82_c12; }
+		public BigDecimal getR82_c13() { return r82_c13; }
+		public void setR82_c13(BigDecimal r82_c13) { this.r82_c13 = r82_c13; }
+		public BigDecimal getR82_c14() { return r82_c14; }
+		public void setR82_c14(BigDecimal r82_c14) { this.r82_c14 = r82_c14; }
+		public BigDecimal getR82_c15() { return r82_c15; }
+		public void setR82_c15(BigDecimal r82_c15) { this.r82_c15 = r82_c15; }
+		public BigDecimal getR82_c16() { return r82_c16; }
+		public void setR82_c16(BigDecimal r82_c16) { this.r82_c16 = r82_c16; }
+		public BigDecimal getR82_total() { return r82_total; }
+		public void setR82_total(BigDecimal r82_total) { this.r82_total = r82_total; }
+		public String getR83_product() { return r83_product; }
+		public void setR83_product(String r83_product) { this.r83_product = r83_product; }
+		public BigDecimal getR83_botswana() { return r83_botswana; }
+		public void setR83_botswana(BigDecimal r83_botswana) { this.r83_botswana = r83_botswana; }
+		public BigDecimal getR83_south_africa() { return r83_south_africa; }
+		public void setR83_south_africa(BigDecimal r83_south_africa) { this.r83_south_africa = r83_south_africa; }
+		public BigDecimal getR83_sadc() { return r83_sadc; }
+		public void setR83_sadc(BigDecimal r83_sadc) { this.r83_sadc = r83_sadc; }
+		public BigDecimal getR83_usa() { return r83_usa; }
+		public void setR83_usa(BigDecimal r83_usa) { this.r83_usa = r83_usa; }
+		public BigDecimal getR83_uk() { return r83_uk; }
+		public void setR83_uk(BigDecimal r83_uk) { this.r83_uk = r83_uk; }
+		public BigDecimal getR83_europe() { return r83_europe; }
+		public void setR83_europe(BigDecimal r83_europe) { this.r83_europe = r83_europe; }
+		public BigDecimal getR83_india() { return r83_india; }
+		public void setR83_india(BigDecimal r83_india) { this.r83_india = r83_india; }
+		public BigDecimal getR83_sydney() { return r83_sydney; }
+		public void setR83_sydney(BigDecimal r83_sydney) { this.r83_sydney = r83_sydney; }
+		public BigDecimal getR83_uganda() { return r83_uganda; }
+		public void setR83_uganda(BigDecimal r83_uganda) { this.r83_uganda = r83_uganda; }
+		public BigDecimal getR83_c10() { return r83_c10; }
+		public void setR83_c10(BigDecimal r83_c10) { this.r83_c10 = r83_c10; }
+		public BigDecimal getR83_c11() { return r83_c11; }
+		public void setR83_c11(BigDecimal r83_c11) { this.r83_c11 = r83_c11; }
+		public BigDecimal getR83_c12() { return r83_c12; }
+		public void setR83_c12(BigDecimal r83_c12) { this.r83_c12 = r83_c12; }
+		public BigDecimal getR83_c13() { return r83_c13; }
+		public void setR83_c13(BigDecimal r83_c13) { this.r83_c13 = r83_c13; }
+		public BigDecimal getR83_c14() { return r83_c14; }
+		public void setR83_c14(BigDecimal r83_c14) { this.r83_c14 = r83_c14; }
+		public BigDecimal getR83_c15() { return r83_c15; }
+		public void setR83_c15(BigDecimal r83_c15) { this.r83_c15 = r83_c15; }
+		public BigDecimal getR83_c16() { return r83_c16; }
+		public void setR83_c16(BigDecimal r83_c16) { this.r83_c16 = r83_c16; }
+		public BigDecimal getR83_total() { return r83_total; }
+		public void setR83_total(BigDecimal r83_total) { this.r83_total = r83_total; }
+		public String getR84_product() { return r84_product; }
+		public void setR84_product(String r84_product) { this.r84_product = r84_product; }
+		public BigDecimal getR84_botswana() { return r84_botswana; }
+		public void setR84_botswana(BigDecimal r84_botswana) { this.r84_botswana = r84_botswana; }
+		public BigDecimal getR84_south_africa() { return r84_south_africa; }
+		public void setR84_south_africa(BigDecimal r84_south_africa) { this.r84_south_africa = r84_south_africa; }
+		public BigDecimal getR84_sadc() { return r84_sadc; }
+		public void setR84_sadc(BigDecimal r84_sadc) { this.r84_sadc = r84_sadc; }
+		public BigDecimal getR84_usa() { return r84_usa; }
+		public void setR84_usa(BigDecimal r84_usa) { this.r84_usa = r84_usa; }
+		public BigDecimal getR84_uk() { return r84_uk; }
+		public void setR84_uk(BigDecimal r84_uk) { this.r84_uk = r84_uk; }
+		public BigDecimal getR84_europe() { return r84_europe; }
+		public void setR84_europe(BigDecimal r84_europe) { this.r84_europe = r84_europe; }
+		public BigDecimal getR84_india() { return r84_india; }
+		public void setR84_india(BigDecimal r84_india) { this.r84_india = r84_india; }
+		public BigDecimal getR84_sydney() { return r84_sydney; }
+		public void setR84_sydney(BigDecimal r84_sydney) { this.r84_sydney = r84_sydney; }
+		public BigDecimal getR84_uganda() { return r84_uganda; }
+		public void setR84_uganda(BigDecimal r84_uganda) { this.r84_uganda = r84_uganda; }
+		public BigDecimal getR84_c10() { return r84_c10; }
+		public void setR84_c10(BigDecimal r84_c10) { this.r84_c10 = r84_c10; }
+		public BigDecimal getR84_c11() { return r84_c11; }
+		public void setR84_c11(BigDecimal r84_c11) { this.r84_c11 = r84_c11; }
+		public BigDecimal getR84_c12() { return r84_c12; }
+		public void setR84_c12(BigDecimal r84_c12) { this.r84_c12 = r84_c12; }
+		public BigDecimal getR84_c13() { return r84_c13; }
+		public void setR84_c13(BigDecimal r84_c13) { this.r84_c13 = r84_c13; }
+		public BigDecimal getR84_c14() { return r84_c14; }
+		public void setR84_c14(BigDecimal r84_c14) { this.r84_c14 = r84_c14; }
+		public BigDecimal getR84_c15() { return r84_c15; }
+		public void setR84_c15(BigDecimal r84_c15) { this.r84_c15 = r84_c15; }
+		public BigDecimal getR84_c16() { return r84_c16; }
+		public void setR84_c16(BigDecimal r84_c16) { this.r84_c16 = r84_c16; }
+		public BigDecimal getR84_total() { return r84_total; }
+		public void setR84_total(BigDecimal r84_total) { this.r84_total = r84_total; }
+		public String getR85_product() { return r85_product; }
+		public void setR85_product(String r85_product) { this.r85_product = r85_product; }
+		public BigDecimal getR85_botswana() { return r85_botswana; }
+		public void setR85_botswana(BigDecimal r85_botswana) { this.r85_botswana = r85_botswana; }
+		public BigDecimal getR85_south_africa() { return r85_south_africa; }
+		public void setR85_south_africa(BigDecimal r85_south_africa) { this.r85_south_africa = r85_south_africa; }
+		public BigDecimal getR85_sadc() { return r85_sadc; }
+		public void setR85_sadc(BigDecimal r85_sadc) { this.r85_sadc = r85_sadc; }
+		public BigDecimal getR85_usa() { return r85_usa; }
+		public void setR85_usa(BigDecimal r85_usa) { this.r85_usa = r85_usa; }
+		public BigDecimal getR85_uk() { return r85_uk; }
+		public void setR85_uk(BigDecimal r85_uk) { this.r85_uk = r85_uk; }
+		public BigDecimal getR85_europe() { return r85_europe; }
+		public void setR85_europe(BigDecimal r85_europe) { this.r85_europe = r85_europe; }
+		public BigDecimal getR85_india() { return r85_india; }
+		public void setR85_india(BigDecimal r85_india) { this.r85_india = r85_india; }
+		public BigDecimal getR85_sydney() { return r85_sydney; }
+		public void setR85_sydney(BigDecimal r85_sydney) { this.r85_sydney = r85_sydney; }
+		public BigDecimal getR85_uganda() { return r85_uganda; }
+		public void setR85_uganda(BigDecimal r85_uganda) { this.r85_uganda = r85_uganda; }
+		public BigDecimal getR85_c10() { return r85_c10; }
+		public void setR85_c10(BigDecimal r85_c10) { this.r85_c10 = r85_c10; }
+		public BigDecimal getR85_c11() { return r85_c11; }
+		public void setR85_c11(BigDecimal r85_c11) { this.r85_c11 = r85_c11; }
+		public BigDecimal getR85_c12() { return r85_c12; }
+		public void setR85_c12(BigDecimal r85_c12) { this.r85_c12 = r85_c12; }
+		public BigDecimal getR85_c13() { return r85_c13; }
+		public void setR85_c13(BigDecimal r85_c13) { this.r85_c13 = r85_c13; }
+		public BigDecimal getR85_c14() { return r85_c14; }
+		public void setR85_c14(BigDecimal r85_c14) { this.r85_c14 = r85_c14; }
+		public BigDecimal getR85_c15() { return r85_c15; }
+		public void setR85_c15(BigDecimal r85_c15) { this.r85_c15 = r85_c15; }
+		public BigDecimal getR85_c16() { return r85_c16; }
+		public void setR85_c16(BigDecimal r85_c16) { this.r85_c16 = r85_c16; }
+		public BigDecimal getR85_total() { return r85_total; }
+		public void setR85_total(BigDecimal r85_total) { this.r85_total = r85_total; }
+		public String getR86_product() { return r86_product; }
+		public void setR86_product(String r86_product) { this.r86_product = r86_product; }
+		public BigDecimal getR86_botswana() { return r86_botswana; }
+		public void setR86_botswana(BigDecimal r86_botswana) { this.r86_botswana = r86_botswana; }
+		public BigDecimal getR86_south_africa() { return r86_south_africa; }
+		public void setR86_south_africa(BigDecimal r86_south_africa) { this.r86_south_africa = r86_south_africa; }
+		public BigDecimal getR86_sadc() { return r86_sadc; }
+		public void setR86_sadc(BigDecimal r86_sadc) { this.r86_sadc = r86_sadc; }
+		public BigDecimal getR86_usa() { return r86_usa; }
+		public void setR86_usa(BigDecimal r86_usa) { this.r86_usa = r86_usa; }
+		public BigDecimal getR86_uk() { return r86_uk; }
+		public void setR86_uk(BigDecimal r86_uk) { this.r86_uk = r86_uk; }
+		public BigDecimal getR86_europe() { return r86_europe; }
+		public void setR86_europe(BigDecimal r86_europe) { this.r86_europe = r86_europe; }
+		public BigDecimal getR86_india() { return r86_india; }
+		public void setR86_india(BigDecimal r86_india) { this.r86_india = r86_india; }
+		public BigDecimal getR86_sydney() { return r86_sydney; }
+		public void setR86_sydney(BigDecimal r86_sydney) { this.r86_sydney = r86_sydney; }
+		public BigDecimal getR86_uganda() { return r86_uganda; }
+		public void setR86_uganda(BigDecimal r86_uganda) { this.r86_uganda = r86_uganda; }
+		public BigDecimal getR86_c10() { return r86_c10; }
+		public void setR86_c10(BigDecimal r86_c10) { this.r86_c10 = r86_c10; }
+		public BigDecimal getR86_c11() { return r86_c11; }
+		public void setR86_c11(BigDecimal r86_c11) { this.r86_c11 = r86_c11; }
+		public BigDecimal getR86_c12() { return r86_c12; }
+		public void setR86_c12(BigDecimal r86_c12) { this.r86_c12 = r86_c12; }
+		public BigDecimal getR86_c13() { return r86_c13; }
+		public void setR86_c13(BigDecimal r86_c13) { this.r86_c13 = r86_c13; }
+		public BigDecimal getR86_c14() { return r86_c14; }
+		public void setR86_c14(BigDecimal r86_c14) { this.r86_c14 = r86_c14; }
+		public BigDecimal getR86_c15() { return r86_c15; }
+		public void setR86_c15(BigDecimal r86_c15) { this.r86_c15 = r86_c15; }
+		public BigDecimal getR86_c16() { return r86_c16; }
+		public void setR86_c16(BigDecimal r86_c16) { this.r86_c16 = r86_c16; }
+		public BigDecimal getR86_total() { return r86_total; }
+		public void setR86_total(BigDecimal r86_total) { this.r86_total = r86_total; }
+		public String getR87_product() { return r87_product; }
+		public void setR87_product(String r87_product) { this.r87_product = r87_product; }
+		public BigDecimal getR87_botswana() { return r87_botswana; }
+		public void setR87_botswana(BigDecimal r87_botswana) { this.r87_botswana = r87_botswana; }
+		public BigDecimal getR87_south_africa() { return r87_south_africa; }
+		public void setR87_south_africa(BigDecimal r87_south_africa) { this.r87_south_africa = r87_south_africa; }
+		public BigDecimal getR87_sadc() { return r87_sadc; }
+		public void setR87_sadc(BigDecimal r87_sadc) { this.r87_sadc = r87_sadc; }
+		public BigDecimal getR87_usa() { return r87_usa; }
+		public void setR87_usa(BigDecimal r87_usa) { this.r87_usa = r87_usa; }
+		public BigDecimal getR87_uk() { return r87_uk; }
+		public void setR87_uk(BigDecimal r87_uk) { this.r87_uk = r87_uk; }
+		public BigDecimal getR87_europe() { return r87_europe; }
+		public void setR87_europe(BigDecimal r87_europe) { this.r87_europe = r87_europe; }
+		public BigDecimal getR87_india() { return r87_india; }
+		public void setR87_india(BigDecimal r87_india) { this.r87_india = r87_india; }
+		public BigDecimal getR87_sydney() { return r87_sydney; }
+		public void setR87_sydney(BigDecimal r87_sydney) { this.r87_sydney = r87_sydney; }
+		public BigDecimal getR87_uganda() { return r87_uganda; }
+		public void setR87_uganda(BigDecimal r87_uganda) { this.r87_uganda = r87_uganda; }
+		public BigDecimal getR87_c10() { return r87_c10; }
+		public void setR87_c10(BigDecimal r87_c10) { this.r87_c10 = r87_c10; }
+		public BigDecimal getR87_c11() { return r87_c11; }
+		public void setR87_c11(BigDecimal r87_c11) { this.r87_c11 = r87_c11; }
+		public BigDecimal getR87_c12() { return r87_c12; }
+		public void setR87_c12(BigDecimal r87_c12) { this.r87_c12 = r87_c12; }
+		public BigDecimal getR87_c13() { return r87_c13; }
+		public void setR87_c13(BigDecimal r87_c13) { this.r87_c13 = r87_c13; }
+		public BigDecimal getR87_c14() { return r87_c14; }
+		public void setR87_c14(BigDecimal r87_c14) { this.r87_c14 = r87_c14; }
+		public BigDecimal getR87_c15() { return r87_c15; }
+		public void setR87_c15(BigDecimal r87_c15) { this.r87_c15 = r87_c15; }
+		public BigDecimal getR87_c16() { return r87_c16; }
+		public void setR87_c16(BigDecimal r87_c16) { this.r87_c16 = r87_c16; }
+		public BigDecimal getR87_total() { return r87_total; }
+		public void setR87_total(BigDecimal r87_total) { this.r87_total = r87_total; }
+		public String getR88_product() { return r88_product; }
+		public void setR88_product(String r88_product) { this.r88_product = r88_product; }
+		public BigDecimal getR88_botswana() { return r88_botswana; }
+		public void setR88_botswana(BigDecimal r88_botswana) { this.r88_botswana = r88_botswana; }
+		public BigDecimal getR88_south_africa() { return r88_south_africa; }
+		public void setR88_south_africa(BigDecimal r88_south_africa) { this.r88_south_africa = r88_south_africa; }
+		public BigDecimal getR88_sadc() { return r88_sadc; }
+		public void setR88_sadc(BigDecimal r88_sadc) { this.r88_sadc = r88_sadc; }
+		public BigDecimal getR88_usa() { return r88_usa; }
+		public void setR88_usa(BigDecimal r88_usa) { this.r88_usa = r88_usa; }
+		public BigDecimal getR88_uk() { return r88_uk; }
+		public void setR88_uk(BigDecimal r88_uk) { this.r88_uk = r88_uk; }
+		public BigDecimal getR88_europe() { return r88_europe; }
+		public void setR88_europe(BigDecimal r88_europe) { this.r88_europe = r88_europe; }
+		public BigDecimal getR88_india() { return r88_india; }
+		public void setR88_india(BigDecimal r88_india) { this.r88_india = r88_india; }
+		public BigDecimal getR88_sydney() { return r88_sydney; }
+		public void setR88_sydney(BigDecimal r88_sydney) { this.r88_sydney = r88_sydney; }
+		public BigDecimal getR88_uganda() { return r88_uganda; }
+		public void setR88_uganda(BigDecimal r88_uganda) { this.r88_uganda = r88_uganda; }
+		public BigDecimal getR88_c10() { return r88_c10; }
+		public void setR88_c10(BigDecimal r88_c10) { this.r88_c10 = r88_c10; }
+		public BigDecimal getR88_c11() { return r88_c11; }
+		public void setR88_c11(BigDecimal r88_c11) { this.r88_c11 = r88_c11; }
+		public BigDecimal getR88_c12() { return r88_c12; }
+		public void setR88_c12(BigDecimal r88_c12) { this.r88_c12 = r88_c12; }
+		public BigDecimal getR88_c13() { return r88_c13; }
+		public void setR88_c13(BigDecimal r88_c13) { this.r88_c13 = r88_c13; }
+		public BigDecimal getR88_c14() { return r88_c14; }
+		public void setR88_c14(BigDecimal r88_c14) { this.r88_c14 = r88_c14; }
+		public BigDecimal getR88_c15() { return r88_c15; }
+		public void setR88_c15(BigDecimal r88_c15) { this.r88_c15 = r88_c15; }
+		public BigDecimal getR88_c16() { return r88_c16; }
+		public void setR88_c16(BigDecimal r88_c16) { this.r88_c16 = r88_c16; }
+		public BigDecimal getR88_total() { return r88_total; }
+		public void setR88_total(BigDecimal r88_total) { this.r88_total = r88_total; }
+		public String getR89_product() { return r89_product; }
+		public void setR89_product(String r89_product) { this.r89_product = r89_product; }
+		public BigDecimal getR89_botswana() { return r89_botswana; }
+		public void setR89_botswana(BigDecimal r89_botswana) { this.r89_botswana = r89_botswana; }
+		public BigDecimal getR89_south_africa() { return r89_south_africa; }
+		public void setR89_south_africa(BigDecimal r89_south_africa) { this.r89_south_africa = r89_south_africa; }
+		public BigDecimal getR89_sadc() { return r89_sadc; }
+		public void setR89_sadc(BigDecimal r89_sadc) { this.r89_sadc = r89_sadc; }
+		public BigDecimal getR89_usa() { return r89_usa; }
+		public void setR89_usa(BigDecimal r89_usa) { this.r89_usa = r89_usa; }
+		public BigDecimal getR89_uk() { return r89_uk; }
+		public void setR89_uk(BigDecimal r89_uk) { this.r89_uk = r89_uk; }
+		public BigDecimal getR89_europe() { return r89_europe; }
+		public void setR89_europe(BigDecimal r89_europe) { this.r89_europe = r89_europe; }
+		public BigDecimal getR89_india() { return r89_india; }
+		public void setR89_india(BigDecimal r89_india) { this.r89_india = r89_india; }
+		public BigDecimal getR89_sydney() { return r89_sydney; }
+		public void setR89_sydney(BigDecimal r89_sydney) { this.r89_sydney = r89_sydney; }
+		public BigDecimal getR89_uganda() { return r89_uganda; }
+		public void setR89_uganda(BigDecimal r89_uganda) { this.r89_uganda = r89_uganda; }
+		public BigDecimal getR89_c10() { return r89_c10; }
+		public void setR89_c10(BigDecimal r89_c10) { this.r89_c10 = r89_c10; }
+		public BigDecimal getR89_c11() { return r89_c11; }
+		public void setR89_c11(BigDecimal r89_c11) { this.r89_c11 = r89_c11; }
+		public BigDecimal getR89_c12() { return r89_c12; }
+		public void setR89_c12(BigDecimal r89_c12) { this.r89_c12 = r89_c12; }
+		public BigDecimal getR89_c13() { return r89_c13; }
+		public void setR89_c13(BigDecimal r89_c13) { this.r89_c13 = r89_c13; }
+		public BigDecimal getR89_c14() { return r89_c14; }
+		public void setR89_c14(BigDecimal r89_c14) { this.r89_c14 = r89_c14; }
+		public BigDecimal getR89_c15() { return r89_c15; }
+		public void setR89_c15(BigDecimal r89_c15) { this.r89_c15 = r89_c15; }
+		public BigDecimal getR89_c16() { return r89_c16; }
+		public void setR89_c16(BigDecimal r89_c16) { this.r89_c16 = r89_c16; }
+		public BigDecimal getR89_total() { return r89_total; }
+		public void setR89_total(BigDecimal r89_total) { this.r89_total = r89_total; }
+		public String getR90_product() { return r90_product; }
+		public void setR90_product(String r90_product) { this.r90_product = r90_product; }
+		public BigDecimal getR90_botswana() { return r90_botswana; }
+		public void setR90_botswana(BigDecimal r90_botswana) { this.r90_botswana = r90_botswana; }
+		public BigDecimal getR90_south_africa() { return r90_south_africa; }
+		public void setR90_south_africa(BigDecimal r90_south_africa) { this.r90_south_africa = r90_south_africa; }
+		public BigDecimal getR90_sadc() { return r90_sadc; }
+		public void setR90_sadc(BigDecimal r90_sadc) { this.r90_sadc = r90_sadc; }
+		public BigDecimal getR90_usa() { return r90_usa; }
+		public void setR90_usa(BigDecimal r90_usa) { this.r90_usa = r90_usa; }
+		public BigDecimal getR90_uk() { return r90_uk; }
+		public void setR90_uk(BigDecimal r90_uk) { this.r90_uk = r90_uk; }
+		public BigDecimal getR90_europe() { return r90_europe; }
+		public void setR90_europe(BigDecimal r90_europe) { this.r90_europe = r90_europe; }
+		public BigDecimal getR90_india() { return r90_india; }
+		public void setR90_india(BigDecimal r90_india) { this.r90_india = r90_india; }
+		public BigDecimal getR90_sydney() { return r90_sydney; }
+		public void setR90_sydney(BigDecimal r90_sydney) { this.r90_sydney = r90_sydney; }
+		public BigDecimal getR90_uganda() { return r90_uganda; }
+		public void setR90_uganda(BigDecimal r90_uganda) { this.r90_uganda = r90_uganda; }
+		public BigDecimal getR90_c10() { return r90_c10; }
+		public void setR90_c10(BigDecimal r90_c10) { this.r90_c10 = r90_c10; }
+		public BigDecimal getR90_c11() { return r90_c11; }
+		public void setR90_c11(BigDecimal r90_c11) { this.r90_c11 = r90_c11; }
+		public BigDecimal getR90_c12() { return r90_c12; }
+		public void setR90_c12(BigDecimal r90_c12) { this.r90_c12 = r90_c12; }
+		public BigDecimal getR90_c13() { return r90_c13; }
+		public void setR90_c13(BigDecimal r90_c13) { this.r90_c13 = r90_c13; }
+		public BigDecimal getR90_c14() { return r90_c14; }
+		public void setR90_c14(BigDecimal r90_c14) { this.r90_c14 = r90_c14; }
+		public BigDecimal getR90_c15() { return r90_c15; }
+		public void setR90_c15(BigDecimal r90_c15) { this.r90_c15 = r90_c15; }
+		public BigDecimal getR90_c16() { return r90_c16; }
+		public void setR90_c16(BigDecimal r90_c16) { this.r90_c16 = r90_c16; }
+		public BigDecimal getR90_total() { return r90_total; }
+		public void setR90_total(BigDecimal r90_total) { this.r90_total = r90_total; }
+		public String getR91_product() { return r91_product; }
+		public void setR91_product(String r91_product) { this.r91_product = r91_product; }
+		public BigDecimal getR91_botswana() { return r91_botswana; }
+		public void setR91_botswana(BigDecimal r91_botswana) { this.r91_botswana = r91_botswana; }
+		public BigDecimal getR91_south_africa() { return r91_south_africa; }
+		public void setR91_south_africa(BigDecimal r91_south_africa) { this.r91_south_africa = r91_south_africa; }
+		public BigDecimal getR91_sadc() { return r91_sadc; }
+		public void setR91_sadc(BigDecimal r91_sadc) { this.r91_sadc = r91_sadc; }
+		public BigDecimal getR91_usa() { return r91_usa; }
+		public void setR91_usa(BigDecimal r91_usa) { this.r91_usa = r91_usa; }
+		public BigDecimal getR91_uk() { return r91_uk; }
+		public void setR91_uk(BigDecimal r91_uk) { this.r91_uk = r91_uk; }
+		public BigDecimal getR91_europe() { return r91_europe; }
+		public void setR91_europe(BigDecimal r91_europe) { this.r91_europe = r91_europe; }
+		public BigDecimal getR91_india() { return r91_india; }
+		public void setR91_india(BigDecimal r91_india) { this.r91_india = r91_india; }
+		public BigDecimal getR91_sydney() { return r91_sydney; }
+		public void setR91_sydney(BigDecimal r91_sydney) { this.r91_sydney = r91_sydney; }
+		public BigDecimal getR91_uganda() { return r91_uganda; }
+		public void setR91_uganda(BigDecimal r91_uganda) { this.r91_uganda = r91_uganda; }
+		public BigDecimal getR91_c10() { return r91_c10; }
+		public void setR91_c10(BigDecimal r91_c10) { this.r91_c10 = r91_c10; }
+		public BigDecimal getR91_c11() { return r91_c11; }
+		public void setR91_c11(BigDecimal r91_c11) { this.r91_c11 = r91_c11; }
+		public BigDecimal getR91_c12() { return r91_c12; }
+		public void setR91_c12(BigDecimal r91_c12) { this.r91_c12 = r91_c12; }
+		public BigDecimal getR91_c13() { return r91_c13; }
+		public void setR91_c13(BigDecimal r91_c13) { this.r91_c13 = r91_c13; }
+		public BigDecimal getR91_c14() { return r91_c14; }
+		public void setR91_c14(BigDecimal r91_c14) { this.r91_c14 = r91_c14; }
+		public BigDecimal getR91_c15() { return r91_c15; }
+		public void setR91_c15(BigDecimal r91_c15) { this.r91_c15 = r91_c15; }
+		public BigDecimal getR91_c16() { return r91_c16; }
+		public void setR91_c16(BigDecimal r91_c16) { this.r91_c16 = r91_c16; }
+		public BigDecimal getR91_total() { return r91_total; }
+		public void setR91_total(BigDecimal r91_total) { this.r91_total = r91_total; }
+		public String getR92_product() { return r92_product; }
+		public void setR92_product(String r92_product) { this.r92_product = r92_product; }
+		public BigDecimal getR92_botswana() { return r92_botswana; }
+		public void setR92_botswana(BigDecimal r92_botswana) { this.r92_botswana = r92_botswana; }
+		public BigDecimal getR92_south_africa() { return r92_south_africa; }
+		public void setR92_south_africa(BigDecimal r92_south_africa) { this.r92_south_africa = r92_south_africa; }
+		public BigDecimal getR92_sadc() { return r92_sadc; }
+		public void setR92_sadc(BigDecimal r92_sadc) { this.r92_sadc = r92_sadc; }
+		public BigDecimal getR92_usa() { return r92_usa; }
+		public void setR92_usa(BigDecimal r92_usa) { this.r92_usa = r92_usa; }
+		public BigDecimal getR92_uk() { return r92_uk; }
+		public void setR92_uk(BigDecimal r92_uk) { this.r92_uk = r92_uk; }
+		public BigDecimal getR92_europe() { return r92_europe; }
+		public void setR92_europe(BigDecimal r92_europe) { this.r92_europe = r92_europe; }
+		public BigDecimal getR92_india() { return r92_india; }
+		public void setR92_india(BigDecimal r92_india) { this.r92_india = r92_india; }
+		public BigDecimal getR92_sydney() { return r92_sydney; }
+		public void setR92_sydney(BigDecimal r92_sydney) { this.r92_sydney = r92_sydney; }
+		public BigDecimal getR92_uganda() { return r92_uganda; }
+		public void setR92_uganda(BigDecimal r92_uganda) { this.r92_uganda = r92_uganda; }
+		public BigDecimal getR92_c10() { return r92_c10; }
+		public void setR92_c10(BigDecimal r92_c10) { this.r92_c10 = r92_c10; }
+		public BigDecimal getR92_c11() { return r92_c11; }
+		public void setR92_c11(BigDecimal r92_c11) { this.r92_c11 = r92_c11; }
+		public BigDecimal getR92_c12() { return r92_c12; }
+		public void setR92_c12(BigDecimal r92_c12) { this.r92_c12 = r92_c12; }
+		public BigDecimal getR92_c13() { return r92_c13; }
+		public void setR92_c13(BigDecimal r92_c13) { this.r92_c13 = r92_c13; }
+		public BigDecimal getR92_c14() { return r92_c14; }
+		public void setR92_c14(BigDecimal r92_c14) { this.r92_c14 = r92_c14; }
+		public BigDecimal getR92_c15() { return r92_c15; }
+		public void setR92_c15(BigDecimal r92_c15) { this.r92_c15 = r92_c15; }
+		public BigDecimal getR92_c16() { return r92_c16; }
+		public void setR92_c16(BigDecimal r92_c16) { this.r92_c16 = r92_c16; }
+		public BigDecimal getR92_total() { return r92_total; }
+		public void setR92_total(BigDecimal r92_total) { this.r92_total = r92_total; }
+		public String getR93_product() { return r93_product; }
+		public void setR93_product(String r93_product) { this.r93_product = r93_product; }
+		public BigDecimal getR93_botswana() { return r93_botswana; }
+		public void setR93_botswana(BigDecimal r93_botswana) { this.r93_botswana = r93_botswana; }
+		public BigDecimal getR93_south_africa() { return r93_south_africa; }
+		public void setR93_south_africa(BigDecimal r93_south_africa) { this.r93_south_africa = r93_south_africa; }
+		public BigDecimal getR93_sadc() { return r93_sadc; }
+		public void setR93_sadc(BigDecimal r93_sadc) { this.r93_sadc = r93_sadc; }
+		public BigDecimal getR93_usa() { return r93_usa; }
+		public void setR93_usa(BigDecimal r93_usa) { this.r93_usa = r93_usa; }
+		public BigDecimal getR93_uk() { return r93_uk; }
+		public void setR93_uk(BigDecimal r93_uk) { this.r93_uk = r93_uk; }
+		public BigDecimal getR93_europe() { return r93_europe; }
+		public void setR93_europe(BigDecimal r93_europe) { this.r93_europe = r93_europe; }
+		public BigDecimal getR93_india() { return r93_india; }
+		public void setR93_india(BigDecimal r93_india) { this.r93_india = r93_india; }
+		public BigDecimal getR93_sydney() { return r93_sydney; }
+		public void setR93_sydney(BigDecimal r93_sydney) { this.r93_sydney = r93_sydney; }
+		public BigDecimal getR93_uganda() { return r93_uganda; }
+		public void setR93_uganda(BigDecimal r93_uganda) { this.r93_uganda = r93_uganda; }
+		public BigDecimal getR93_c10() { return r93_c10; }
+		public void setR93_c10(BigDecimal r93_c10) { this.r93_c10 = r93_c10; }
+		public BigDecimal getR93_c11() { return r93_c11; }
+		public void setR93_c11(BigDecimal r93_c11) { this.r93_c11 = r93_c11; }
+		public BigDecimal getR93_c12() { return r93_c12; }
+		public void setR93_c12(BigDecimal r93_c12) { this.r93_c12 = r93_c12; }
+		public BigDecimal getR93_c13() { return r93_c13; }
+		public void setR93_c13(BigDecimal r93_c13) { this.r93_c13 = r93_c13; }
+		public BigDecimal getR93_c14() { return r93_c14; }
+		public void setR93_c14(BigDecimal r93_c14) { this.r93_c14 = r93_c14; }
+		public BigDecimal getR93_c15() { return r93_c15; }
+		public void setR93_c15(BigDecimal r93_c15) { this.r93_c15 = r93_c15; }
+		public BigDecimal getR93_c16() { return r93_c16; }
+		public void setR93_c16(BigDecimal r93_c16) { this.r93_c16 = r93_c16; }
+		public BigDecimal getR93_total() { return r93_total; }
+		public void setR93_total(BigDecimal r93_total) { this.r93_total = r93_total; }
+		public String getR94_product() { return r94_product; }
+		public void setR94_product(String r94_product) { this.r94_product = r94_product; }
+		public BigDecimal getR94_botswana() { return r94_botswana; }
+		public void setR94_botswana(BigDecimal r94_botswana) { this.r94_botswana = r94_botswana; }
+		public BigDecimal getR94_south_africa() { return r94_south_africa; }
+		public void setR94_south_africa(BigDecimal r94_south_africa) { this.r94_south_africa = r94_south_africa; }
+		public BigDecimal getR94_sadc() { return r94_sadc; }
+		public void setR94_sadc(BigDecimal r94_sadc) { this.r94_sadc = r94_sadc; }
+		public BigDecimal getR94_usa() { return r94_usa; }
+		public void setR94_usa(BigDecimal r94_usa) { this.r94_usa = r94_usa; }
+		public BigDecimal getR94_uk() { return r94_uk; }
+		public void setR94_uk(BigDecimal r94_uk) { this.r94_uk = r94_uk; }
+		public BigDecimal getR94_europe() { return r94_europe; }
+		public void setR94_europe(BigDecimal r94_europe) { this.r94_europe = r94_europe; }
+		public BigDecimal getR94_india() { return r94_india; }
+		public void setR94_india(BigDecimal r94_india) { this.r94_india = r94_india; }
+		public BigDecimal getR94_sydney() { return r94_sydney; }
+		public void setR94_sydney(BigDecimal r94_sydney) { this.r94_sydney = r94_sydney; }
+		public BigDecimal getR94_uganda() { return r94_uganda; }
+		public void setR94_uganda(BigDecimal r94_uganda) { this.r94_uganda = r94_uganda; }
+		public BigDecimal getR94_c10() { return r94_c10; }
+		public void setR94_c10(BigDecimal r94_c10) { this.r94_c10 = r94_c10; }
+		public BigDecimal getR94_c11() { return r94_c11; }
+		public void setR94_c11(BigDecimal r94_c11) { this.r94_c11 = r94_c11; }
+		public BigDecimal getR94_c12() { return r94_c12; }
+		public void setR94_c12(BigDecimal r94_c12) { this.r94_c12 = r94_c12; }
+		public BigDecimal getR94_c13() { return r94_c13; }
+		public void setR94_c13(BigDecimal r94_c13) { this.r94_c13 = r94_c13; }
+		public BigDecimal getR94_c14() { return r94_c14; }
+		public void setR94_c14(BigDecimal r94_c14) { this.r94_c14 = r94_c14; }
+		public BigDecimal getR94_c15() { return r94_c15; }
+		public void setR94_c15(BigDecimal r94_c15) { this.r94_c15 = r94_c15; }
+		public BigDecimal getR94_c16() { return r94_c16; }
+		public void setR94_c16(BigDecimal r94_c16) { this.r94_c16 = r94_c16; }
+		public BigDecimal getR94_total() { return r94_total; }
+		public void setR94_total(BigDecimal r94_total) { this.r94_total = r94_total; }
+		public String getR95_product() { return r95_product; }
+		public void setR95_product(String r95_product) { this.r95_product = r95_product; }
+		public BigDecimal getR95_botswana() { return r95_botswana; }
+		public void setR95_botswana(BigDecimal r95_botswana) { this.r95_botswana = r95_botswana; }
+		public BigDecimal getR95_south_africa() { return r95_south_africa; }
+		public void setR95_south_africa(BigDecimal r95_south_africa) { this.r95_south_africa = r95_south_africa; }
+		public BigDecimal getR95_sadc() { return r95_sadc; }
+		public void setR95_sadc(BigDecimal r95_sadc) { this.r95_sadc = r95_sadc; }
+		public BigDecimal getR95_usa() { return r95_usa; }
+		public void setR95_usa(BigDecimal r95_usa) { this.r95_usa = r95_usa; }
+		public BigDecimal getR95_uk() { return r95_uk; }
+		public void setR95_uk(BigDecimal r95_uk) { this.r95_uk = r95_uk; }
+		public BigDecimal getR95_europe() { return r95_europe; }
+		public void setR95_europe(BigDecimal r95_europe) { this.r95_europe = r95_europe; }
+		public BigDecimal getR95_india() { return r95_india; }
+		public void setR95_india(BigDecimal r95_india) { this.r95_india = r95_india; }
+		public BigDecimal getR95_sydney() { return r95_sydney; }
+		public void setR95_sydney(BigDecimal r95_sydney) { this.r95_sydney = r95_sydney; }
+		public BigDecimal getR95_uganda() { return r95_uganda; }
+		public void setR95_uganda(BigDecimal r95_uganda) { this.r95_uganda = r95_uganda; }
+		public BigDecimal getR95_c10() { return r95_c10; }
+		public void setR95_c10(BigDecimal r95_c10) { this.r95_c10 = r95_c10; }
+		public BigDecimal getR95_c11() { return r95_c11; }
+		public void setR95_c11(BigDecimal r95_c11) { this.r95_c11 = r95_c11; }
+		public BigDecimal getR95_c12() { return r95_c12; }
+		public void setR95_c12(BigDecimal r95_c12) { this.r95_c12 = r95_c12; }
+		public BigDecimal getR95_c13() { return r95_c13; }
+		public void setR95_c13(BigDecimal r95_c13) { this.r95_c13 = r95_c13; }
+		public BigDecimal getR95_c14() { return r95_c14; }
+		public void setR95_c14(BigDecimal r95_c14) { this.r95_c14 = r95_c14; }
+		public BigDecimal getR95_c15() { return r95_c15; }
+		public void setR95_c15(BigDecimal r95_c15) { this.r95_c15 = r95_c15; }
+		public BigDecimal getR95_c16() { return r95_c16; }
+		public void setR95_c16(BigDecimal r95_c16) { this.r95_c16 = r95_c16; }
+		public BigDecimal getR95_total() { return r95_total; }
+		public void setR95_total(BigDecimal r95_total) { this.r95_total = r95_total; }
+		public String getR96_product() { return r96_product; }
+		public void setR96_product(String r96_product) { this.r96_product = r96_product; }
+		public BigDecimal getR96_botswana() { return r96_botswana; }
+		public void setR96_botswana(BigDecimal r96_botswana) { this.r96_botswana = r96_botswana; }
+		public BigDecimal getR96_south_africa() { return r96_south_africa; }
+		public void setR96_south_africa(BigDecimal r96_south_africa) { this.r96_south_africa = r96_south_africa; }
+		public BigDecimal getR96_sadc() { return r96_sadc; }
+		public void setR96_sadc(BigDecimal r96_sadc) { this.r96_sadc = r96_sadc; }
+		public BigDecimal getR96_usa() { return r96_usa; }
+		public void setR96_usa(BigDecimal r96_usa) { this.r96_usa = r96_usa; }
+		public BigDecimal getR96_uk() { return r96_uk; }
+		public void setR96_uk(BigDecimal r96_uk) { this.r96_uk = r96_uk; }
+		public BigDecimal getR96_europe() { return r96_europe; }
+		public void setR96_europe(BigDecimal r96_europe) { this.r96_europe = r96_europe; }
+		public BigDecimal getR96_india() { return r96_india; }
+		public void setR96_india(BigDecimal r96_india) { this.r96_india = r96_india; }
+		public BigDecimal getR96_sydney() { return r96_sydney; }
+		public void setR96_sydney(BigDecimal r96_sydney) { this.r96_sydney = r96_sydney; }
+		public BigDecimal getR96_uganda() { return r96_uganda; }
+		public void setR96_uganda(BigDecimal r96_uganda) { this.r96_uganda = r96_uganda; }
+		public BigDecimal getR96_c10() { return r96_c10; }
+		public void setR96_c10(BigDecimal r96_c10) { this.r96_c10 = r96_c10; }
+		public BigDecimal getR96_c11() { return r96_c11; }
+		public void setR96_c11(BigDecimal r96_c11) { this.r96_c11 = r96_c11; }
+		public BigDecimal getR96_c12() { return r96_c12; }
+		public void setR96_c12(BigDecimal r96_c12) { this.r96_c12 = r96_c12; }
+		public BigDecimal getR96_c13() { return r96_c13; }
+		public void setR96_c13(BigDecimal r96_c13) { this.r96_c13 = r96_c13; }
+		public BigDecimal getR96_c14() { return r96_c14; }
+		public void setR96_c14(BigDecimal r96_c14) { this.r96_c14 = r96_c14; }
+		public BigDecimal getR96_c15() { return r96_c15; }
+		public void setR96_c15(BigDecimal r96_c15) { this.r96_c15 = r96_c15; }
+		public BigDecimal getR96_c16() { return r96_c16; }
+		public void setR96_c16(BigDecimal r96_c16) { this.r96_c16 = r96_c16; }
+		public BigDecimal getR96_total() { return r96_total; }
+		public void setR96_total(BigDecimal r96_total) { this.r96_total = r96_total; }
+		public String getR97_product() { return r97_product; }
+		public void setR97_product(String r97_product) { this.r97_product = r97_product; }
+		public BigDecimal getR97_botswana() { return r97_botswana; }
+		public void setR97_botswana(BigDecimal r97_botswana) { this.r97_botswana = r97_botswana; }
+		public BigDecimal getR97_south_africa() { return r97_south_africa; }
+		public void setR97_south_africa(BigDecimal r97_south_africa) { this.r97_south_africa = r97_south_africa; }
+		public BigDecimal getR97_sadc() { return r97_sadc; }
+		public void setR97_sadc(BigDecimal r97_sadc) { this.r97_sadc = r97_sadc; }
+		public BigDecimal getR97_usa() { return r97_usa; }
+		public void setR97_usa(BigDecimal r97_usa) { this.r97_usa = r97_usa; }
+		public BigDecimal getR97_uk() { return r97_uk; }
+		public void setR97_uk(BigDecimal r97_uk) { this.r97_uk = r97_uk; }
+		public BigDecimal getR97_europe() { return r97_europe; }
+		public void setR97_europe(BigDecimal r97_europe) { this.r97_europe = r97_europe; }
+		public BigDecimal getR97_india() { return r97_india; }
+		public void setR97_india(BigDecimal r97_india) { this.r97_india = r97_india; }
+		public BigDecimal getR97_sydney() { return r97_sydney; }
+		public void setR97_sydney(BigDecimal r97_sydney) { this.r97_sydney = r97_sydney; }
+		public BigDecimal getR97_uganda() { return r97_uganda; }
+		public void setR97_uganda(BigDecimal r97_uganda) { this.r97_uganda = r97_uganda; }
+		public BigDecimal getR97_c10() { return r97_c10; }
+		public void setR97_c10(BigDecimal r97_c10) { this.r97_c10 = r97_c10; }
+		public BigDecimal getR97_c11() { return r97_c11; }
+		public void setR97_c11(BigDecimal r97_c11) { this.r97_c11 = r97_c11; }
+		public BigDecimal getR97_c12() { return r97_c12; }
+		public void setR97_c12(BigDecimal r97_c12) { this.r97_c12 = r97_c12; }
+		public BigDecimal getR97_c13() { return r97_c13; }
+		public void setR97_c13(BigDecimal r97_c13) { this.r97_c13 = r97_c13; }
+		public BigDecimal getR97_c14() { return r97_c14; }
+		public void setR97_c14(BigDecimal r97_c14) { this.r97_c14 = r97_c14; }
+		public BigDecimal getR97_c15() { return r97_c15; }
+		public void setR97_c15(BigDecimal r97_c15) { this.r97_c15 = r97_c15; }
+		public BigDecimal getR97_c16() { return r97_c16; }
+		public void setR97_c16(BigDecimal r97_c16) { this.r97_c16 = r97_c16; }
+		public BigDecimal getR97_total() { return r97_total; }
+		public void setR97_total(BigDecimal r97_total) { this.r97_total = r97_total; }
+		public String getR98_product() { return r98_product; }
+		public void setR98_product(String r98_product) { this.r98_product = r98_product; }
+		public BigDecimal getR98_botswana() { return r98_botswana; }
+		public void setR98_botswana(BigDecimal r98_botswana) { this.r98_botswana = r98_botswana; }
+		public BigDecimal getR98_south_africa() { return r98_south_africa; }
+		public void setR98_south_africa(BigDecimal r98_south_africa) { this.r98_south_africa = r98_south_africa; }
+		public BigDecimal getR98_sadc() { return r98_sadc; }
+		public void setR98_sadc(BigDecimal r98_sadc) { this.r98_sadc = r98_sadc; }
+		public BigDecimal getR98_usa() { return r98_usa; }
+		public void setR98_usa(BigDecimal r98_usa) { this.r98_usa = r98_usa; }
+		public BigDecimal getR98_uk() { return r98_uk; }
+		public void setR98_uk(BigDecimal r98_uk) { this.r98_uk = r98_uk; }
+		public BigDecimal getR98_europe() { return r98_europe; }
+		public void setR98_europe(BigDecimal r98_europe) { this.r98_europe = r98_europe; }
+		public BigDecimal getR98_india() { return r98_india; }
+		public void setR98_india(BigDecimal r98_india) { this.r98_india = r98_india; }
+		public BigDecimal getR98_sydney() { return r98_sydney; }
+		public void setR98_sydney(BigDecimal r98_sydney) { this.r98_sydney = r98_sydney; }
+		public BigDecimal getR98_uganda() { return r98_uganda; }
+		public void setR98_uganda(BigDecimal r98_uganda) { this.r98_uganda = r98_uganda; }
+		public BigDecimal getR98_c10() { return r98_c10; }
+		public void setR98_c10(BigDecimal r98_c10) { this.r98_c10 = r98_c10; }
+		public BigDecimal getR98_c11() { return r98_c11; }
+		public void setR98_c11(BigDecimal r98_c11) { this.r98_c11 = r98_c11; }
+		public BigDecimal getR98_c12() { return r98_c12; }
+		public void setR98_c12(BigDecimal r98_c12) { this.r98_c12 = r98_c12; }
+		public BigDecimal getR98_c13() { return r98_c13; }
+		public void setR98_c13(BigDecimal r98_c13) { this.r98_c13 = r98_c13; }
+		public BigDecimal getR98_c14() { return r98_c14; }
+		public void setR98_c14(BigDecimal r98_c14) { this.r98_c14 = r98_c14; }
+		public BigDecimal getR98_c15() { return r98_c15; }
+		public void setR98_c15(BigDecimal r98_c15) { this.r98_c15 = r98_c15; }
+		public BigDecimal getR98_c16() { return r98_c16; }
+		public void setR98_c16(BigDecimal r98_c16) { this.r98_c16 = r98_c16; }
+		public BigDecimal getR98_total() { return r98_total; }
+		public void setR98_total(BigDecimal r98_total) { this.r98_total = r98_total; }
+		public String getR99_product() { return r99_product; }
+		public void setR99_product(String r99_product) { this.r99_product = r99_product; }
+		public BigDecimal getR99_botswana() { return r99_botswana; }
+		public void setR99_botswana(BigDecimal r99_botswana) { this.r99_botswana = r99_botswana; }
+		public BigDecimal getR99_south_africa() { return r99_south_africa; }
+		public void setR99_south_africa(BigDecimal r99_south_africa) { this.r99_south_africa = r99_south_africa; }
+		public BigDecimal getR99_sadc() { return r99_sadc; }
+		public void setR99_sadc(BigDecimal r99_sadc) { this.r99_sadc = r99_sadc; }
+		public BigDecimal getR99_usa() { return r99_usa; }
+		public void setR99_usa(BigDecimal r99_usa) { this.r99_usa = r99_usa; }
+		public BigDecimal getR99_uk() { return r99_uk; }
+		public void setR99_uk(BigDecimal r99_uk) { this.r99_uk = r99_uk; }
+		public BigDecimal getR99_europe() { return r99_europe; }
+		public void setR99_europe(BigDecimal r99_europe) { this.r99_europe = r99_europe; }
+		public BigDecimal getR99_india() { return r99_india; }
+		public void setR99_india(BigDecimal r99_india) { this.r99_india = r99_india; }
+		public BigDecimal getR99_sydney() { return r99_sydney; }
+		public void setR99_sydney(BigDecimal r99_sydney) { this.r99_sydney = r99_sydney; }
+		public BigDecimal getR99_uganda() { return r99_uganda; }
+		public void setR99_uganda(BigDecimal r99_uganda) { this.r99_uganda = r99_uganda; }
+		public BigDecimal getR99_c10() { return r99_c10; }
+		public void setR99_c10(BigDecimal r99_c10) { this.r99_c10 = r99_c10; }
+		public BigDecimal getR99_c11() { return r99_c11; }
+		public void setR99_c11(BigDecimal r99_c11) { this.r99_c11 = r99_c11; }
+		public BigDecimal getR99_c12() { return r99_c12; }
+		public void setR99_c12(BigDecimal r99_c12) { this.r99_c12 = r99_c12; }
+		public BigDecimal getR99_c13() { return r99_c13; }
+		public void setR99_c13(BigDecimal r99_c13) { this.r99_c13 = r99_c13; }
+		public BigDecimal getR99_c14() { return r99_c14; }
+		public void setR99_c14(BigDecimal r99_c14) { this.r99_c14 = r99_c14; }
+		public BigDecimal getR99_c15() { return r99_c15; }
+		public void setR99_c15(BigDecimal r99_c15) { this.r99_c15 = r99_c15; }
+		public BigDecimal getR99_c16() { return r99_c16; }
+		public void setR99_c16(BigDecimal r99_c16) { this.r99_c16 = r99_c16; }
+		public BigDecimal getR99_total() { return r99_total; }
+		public void setR99_total(BigDecimal r99_total) { this.r99_total = r99_total; }
+		public String getR100_product() { return r100_product; }
+		public void setR100_product(String r100_product) { this.r100_product = r100_product; }
+		public BigDecimal getR100_botswana() { return r100_botswana; }
+		public void setR100_botswana(BigDecimal r100_botswana) { this.r100_botswana = r100_botswana; }
+		public BigDecimal getR100_south_africa() { return r100_south_africa; }
+		public void setR100_south_africa(BigDecimal r100_south_africa) { this.r100_south_africa = r100_south_africa; }
+		public BigDecimal getR100_sadc() { return r100_sadc; }
+		public void setR100_sadc(BigDecimal r100_sadc) { this.r100_sadc = r100_sadc; }
+		public BigDecimal getR100_usa() { return r100_usa; }
+		public void setR100_usa(BigDecimal r100_usa) { this.r100_usa = r100_usa; }
+		public BigDecimal getR100_uk() { return r100_uk; }
+		public void setR100_uk(BigDecimal r100_uk) { this.r100_uk = r100_uk; }
+		public BigDecimal getR100_europe() { return r100_europe; }
+		public void setR100_europe(BigDecimal r100_europe) { this.r100_europe = r100_europe; }
+		public BigDecimal getR100_india() { return r100_india; }
+		public void setR100_india(BigDecimal r100_india) { this.r100_india = r100_india; }
+		public BigDecimal getR100_sydney() { return r100_sydney; }
+		public void setR100_sydney(BigDecimal r100_sydney) { this.r100_sydney = r100_sydney; }
+		public BigDecimal getR100_uganda() { return r100_uganda; }
+		public void setR100_uganda(BigDecimal r100_uganda) { this.r100_uganda = r100_uganda; }
+		public BigDecimal getR100_c10() { return r100_c10; }
+		public void setR100_c10(BigDecimal r100_c10) { this.r100_c10 = r100_c10; }
+		public BigDecimal getR100_c11() { return r100_c11; }
+		public void setR100_c11(BigDecimal r100_c11) { this.r100_c11 = r100_c11; }
+		public BigDecimal getR100_c12() { return r100_c12; }
+		public void setR100_c12(BigDecimal r100_c12) { this.r100_c12 = r100_c12; }
+		public BigDecimal getR100_c13() { return r100_c13; }
+		public void setR100_c13(BigDecimal r100_c13) { this.r100_c13 = r100_c13; }
+		public BigDecimal getR100_c14() { return r100_c14; }
+		public void setR100_c14(BigDecimal r100_c14) { this.r100_c14 = r100_c14; }
+		public BigDecimal getR100_c15() { return r100_c15; }
+		public void setR100_c15(BigDecimal r100_c15) { this.r100_c15 = r100_c15; }
+		public BigDecimal getR100_c16() { return r100_c16; }
+		public void setR100_c16(BigDecimal r100_c16) { this.r100_c16 = r100_c16; }
+		public BigDecimal getR100_total() { return r100_total; }
+		public void setR100_total(BigDecimal r100_total) { this.r100_total = r100_total; }
+		public String getR101_product() { return r101_product; }
+		public void setR101_product(String r101_product) { this.r101_product = r101_product; }
+		public BigDecimal getR101_botswana() { return r101_botswana; }
+		public void setR101_botswana(BigDecimal r101_botswana) { this.r101_botswana = r101_botswana; }
+		public BigDecimal getR101_south_africa() { return r101_south_africa; }
+		public void setR101_south_africa(BigDecimal r101_south_africa) { this.r101_south_africa = r101_south_africa; }
+		public BigDecimal getR101_sadc() { return r101_sadc; }
+		public void setR101_sadc(BigDecimal r101_sadc) { this.r101_sadc = r101_sadc; }
+		public BigDecimal getR101_usa() { return r101_usa; }
+		public void setR101_usa(BigDecimal r101_usa) { this.r101_usa = r101_usa; }
+		public BigDecimal getR101_uk() { return r101_uk; }
+		public void setR101_uk(BigDecimal r101_uk) { this.r101_uk = r101_uk; }
+		public BigDecimal getR101_europe() { return r101_europe; }
+		public void setR101_europe(BigDecimal r101_europe) { this.r101_europe = r101_europe; }
+		public BigDecimal getR101_india() { return r101_india; }
+		public void setR101_india(BigDecimal r101_india) { this.r101_india = r101_india; }
+		public BigDecimal getR101_sydney() { return r101_sydney; }
+		public void setR101_sydney(BigDecimal r101_sydney) { this.r101_sydney = r101_sydney; }
+		public BigDecimal getR101_uganda() { return r101_uganda; }
+		public void setR101_uganda(BigDecimal r101_uganda) { this.r101_uganda = r101_uganda; }
+		public BigDecimal getR101_c10() { return r101_c10; }
+		public void setR101_c10(BigDecimal r101_c10) { this.r101_c10 = r101_c10; }
+		public BigDecimal getR101_c11() { return r101_c11; }
+		public void setR101_c11(BigDecimal r101_c11) { this.r101_c11 = r101_c11; }
+		public BigDecimal getR101_c12() { return r101_c12; }
+		public void setR101_c12(BigDecimal r101_c12) { this.r101_c12 = r101_c12; }
+		public BigDecimal getR101_c13() { return r101_c13; }
+		public void setR101_c13(BigDecimal r101_c13) { this.r101_c13 = r101_c13; }
+		public BigDecimal getR101_c14() { return r101_c14; }
+		public void setR101_c14(BigDecimal r101_c14) { this.r101_c14 = r101_c14; }
+		public BigDecimal getR101_c15() { return r101_c15; }
+		public void setR101_c15(BigDecimal r101_c15) { this.r101_c15 = r101_c15; }
+		public BigDecimal getR101_c16() { return r101_c16; }
+		public void setR101_c16(BigDecimal r101_c16) { this.r101_c16 = r101_c16; }
+		public BigDecimal getR101_total() { return r101_total; }
+		public void setR101_total(BigDecimal r101_total) { this.r101_total = r101_total; }
+		public String getR102_product() { return r102_product; }
+		public void setR102_product(String r102_product) { this.r102_product = r102_product; }
+		public BigDecimal getR102_botswana() { return r102_botswana; }
+		public void setR102_botswana(BigDecimal r102_botswana) { this.r102_botswana = r102_botswana; }
+		public BigDecimal getR102_south_africa() { return r102_south_africa; }
+		public void setR102_south_africa(BigDecimal r102_south_africa) { this.r102_south_africa = r102_south_africa; }
+		public BigDecimal getR102_sadc() { return r102_sadc; }
+		public void setR102_sadc(BigDecimal r102_sadc) { this.r102_sadc = r102_sadc; }
+		public BigDecimal getR102_usa() { return r102_usa; }
+		public void setR102_usa(BigDecimal r102_usa) { this.r102_usa = r102_usa; }
+		public BigDecimal getR102_uk() { return r102_uk; }
+		public void setR102_uk(BigDecimal r102_uk) { this.r102_uk = r102_uk; }
+		public BigDecimal getR102_europe() { return r102_europe; }
+		public void setR102_europe(BigDecimal r102_europe) { this.r102_europe = r102_europe; }
+		public BigDecimal getR102_india() { return r102_india; }
+		public void setR102_india(BigDecimal r102_india) { this.r102_india = r102_india; }
+		public BigDecimal getR102_sydney() { return r102_sydney; }
+		public void setR102_sydney(BigDecimal r102_sydney) { this.r102_sydney = r102_sydney; }
+		public BigDecimal getR102_uganda() { return r102_uganda; }
+		public void setR102_uganda(BigDecimal r102_uganda) { this.r102_uganda = r102_uganda; }
+		public BigDecimal getR102_c10() { return r102_c10; }
+		public void setR102_c10(BigDecimal r102_c10) { this.r102_c10 = r102_c10; }
+		public BigDecimal getR102_c11() { return r102_c11; }
+		public void setR102_c11(BigDecimal r102_c11) { this.r102_c11 = r102_c11; }
+		public BigDecimal getR102_c12() { return r102_c12; }
+		public void setR102_c12(BigDecimal r102_c12) { this.r102_c12 = r102_c12; }
+		public BigDecimal getR102_c13() { return r102_c13; }
+		public void setR102_c13(BigDecimal r102_c13) { this.r102_c13 = r102_c13; }
+		public BigDecimal getR102_c14() { return r102_c14; }
+		public void setR102_c14(BigDecimal r102_c14) { this.r102_c14 = r102_c14; }
+		public BigDecimal getR102_c15() { return r102_c15; }
+		public void setR102_c15(BigDecimal r102_c15) { this.r102_c15 = r102_c15; }
+		public BigDecimal getR102_c16() { return r102_c16; }
+		public void setR102_c16(BigDecimal r102_c16) { this.r102_c16 = r102_c16; }
+		public BigDecimal getR102_total() { return r102_total; }
+		public void setR102_total(BigDecimal r102_total) { this.r102_total = r102_total; }
+		public String getR103_product() { return r103_product; }
+		public void setR103_product(String r103_product) { this.r103_product = r103_product; }
+		public BigDecimal getR103_botswana() { return r103_botswana; }
+		public void setR103_botswana(BigDecimal r103_botswana) { this.r103_botswana = r103_botswana; }
+		public BigDecimal getR103_south_africa() { return r103_south_africa; }
+		public void setR103_south_africa(BigDecimal r103_south_africa) { this.r103_south_africa = r103_south_africa; }
+		public BigDecimal getR103_sadc() { return r103_sadc; }
+		public void setR103_sadc(BigDecimal r103_sadc) { this.r103_sadc = r103_sadc; }
+		public BigDecimal getR103_usa() { return r103_usa; }
+		public void setR103_usa(BigDecimal r103_usa) { this.r103_usa = r103_usa; }
+		public BigDecimal getR103_uk() { return r103_uk; }
+		public void setR103_uk(BigDecimal r103_uk) { this.r103_uk = r103_uk; }
+		public BigDecimal getR103_europe() { return r103_europe; }
+		public void setR103_europe(BigDecimal r103_europe) { this.r103_europe = r103_europe; }
+		public BigDecimal getR103_india() { return r103_india; }
+		public void setR103_india(BigDecimal r103_india) { this.r103_india = r103_india; }
+		public BigDecimal getR103_sydney() { return r103_sydney; }
+		public void setR103_sydney(BigDecimal r103_sydney) { this.r103_sydney = r103_sydney; }
+		public BigDecimal getR103_uganda() { return r103_uganda; }
+		public void setR103_uganda(BigDecimal r103_uganda) { this.r103_uganda = r103_uganda; }
+		public BigDecimal getR103_c10() { return r103_c10; }
+		public void setR103_c10(BigDecimal r103_c10) { this.r103_c10 = r103_c10; }
+		public BigDecimal getR103_c11() { return r103_c11; }
+		public void setR103_c11(BigDecimal r103_c11) { this.r103_c11 = r103_c11; }
+		public BigDecimal getR103_c12() { return r103_c12; }
+		public void setR103_c12(BigDecimal r103_c12) { this.r103_c12 = r103_c12; }
+		public BigDecimal getR103_c13() { return r103_c13; }
+		public void setR103_c13(BigDecimal r103_c13) { this.r103_c13 = r103_c13; }
+		public BigDecimal getR103_c14() { return r103_c14; }
+		public void setR103_c14(BigDecimal r103_c14) { this.r103_c14 = r103_c14; }
+		public BigDecimal getR103_c15() { return r103_c15; }
+		public void setR103_c15(BigDecimal r103_c15) { this.r103_c15 = r103_c15; }
+		public BigDecimal getR103_c16() { return r103_c16; }
+		public void setR103_c16(BigDecimal r103_c16) { this.r103_c16 = r103_c16; }
+		public BigDecimal getR103_total() { return r103_total; }
+		public void setR103_total(BigDecimal r103_total) { this.r103_total = r103_total; }
+		public String getR104_product() { return r104_product; }
+		public void setR104_product(String r104_product) { this.r104_product = r104_product; }
+		public BigDecimal getR104_botswana() { return r104_botswana; }
+		public void setR104_botswana(BigDecimal r104_botswana) { this.r104_botswana = r104_botswana; }
+		public BigDecimal getR104_south_africa() { return r104_south_africa; }
+		public void setR104_south_africa(BigDecimal r104_south_africa) { this.r104_south_africa = r104_south_africa; }
+		public BigDecimal getR104_sadc() { return r104_sadc; }
+		public void setR104_sadc(BigDecimal r104_sadc) { this.r104_sadc = r104_sadc; }
+		public BigDecimal getR104_usa() { return r104_usa; }
+		public void setR104_usa(BigDecimal r104_usa) { this.r104_usa = r104_usa; }
+		public BigDecimal getR104_uk() { return r104_uk; }
+		public void setR104_uk(BigDecimal r104_uk) { this.r104_uk = r104_uk; }
+		public BigDecimal getR104_europe() { return r104_europe; }
+		public void setR104_europe(BigDecimal r104_europe) { this.r104_europe = r104_europe; }
+		public BigDecimal getR104_india() { return r104_india; }
+		public void setR104_india(BigDecimal r104_india) { this.r104_india = r104_india; }
+		public BigDecimal getR104_sydney() { return r104_sydney; }
+		public void setR104_sydney(BigDecimal r104_sydney) { this.r104_sydney = r104_sydney; }
+		public BigDecimal getR104_uganda() { return r104_uganda; }
+		public void setR104_uganda(BigDecimal r104_uganda) { this.r104_uganda = r104_uganda; }
+		public BigDecimal getR104_c10() { return r104_c10; }
+		public void setR104_c10(BigDecimal r104_c10) { this.r104_c10 = r104_c10; }
+		public BigDecimal getR104_c11() { return r104_c11; }
+		public void setR104_c11(BigDecimal r104_c11) { this.r104_c11 = r104_c11; }
+		public BigDecimal getR104_c12() { return r104_c12; }
+		public void setR104_c12(BigDecimal r104_c12) { this.r104_c12 = r104_c12; }
+		public BigDecimal getR104_c13() { return r104_c13; }
+		public void setR104_c13(BigDecimal r104_c13) { this.r104_c13 = r104_c13; }
+		public BigDecimal getR104_c14() { return r104_c14; }
+		public void setR104_c14(BigDecimal r104_c14) { this.r104_c14 = r104_c14; }
+		public BigDecimal getR104_c15() { return r104_c15; }
+		public void setR104_c15(BigDecimal r104_c15) { this.r104_c15 = r104_c15; }
+		public BigDecimal getR104_c16() { return r104_c16; }
+		public void setR104_c16(BigDecimal r104_c16) { this.r104_c16 = r104_c16; }
+		public BigDecimal getR104_total() { return r104_total; }
+		public void setR104_total(BigDecimal r104_total) { this.r104_total = r104_total; }
+		public String getR105_product() { return r105_product; }
+		public void setR105_product(String r105_product) { this.r105_product = r105_product; }
+		public BigDecimal getR105_botswana() { return r105_botswana; }
+		public void setR105_botswana(BigDecimal r105_botswana) { this.r105_botswana = r105_botswana; }
+		public BigDecimal getR105_south_africa() { return r105_south_africa; }
+		public void setR105_south_africa(BigDecimal r105_south_africa) { this.r105_south_africa = r105_south_africa; }
+		public BigDecimal getR105_sadc() { return r105_sadc; }
+		public void setR105_sadc(BigDecimal r105_sadc) { this.r105_sadc = r105_sadc; }
+		public BigDecimal getR105_usa() { return r105_usa; }
+		public void setR105_usa(BigDecimal r105_usa) { this.r105_usa = r105_usa; }
+		public BigDecimal getR105_uk() { return r105_uk; }
+		public void setR105_uk(BigDecimal r105_uk) { this.r105_uk = r105_uk; }
+		public BigDecimal getR105_europe() { return r105_europe; }
+		public void setR105_europe(BigDecimal r105_europe) { this.r105_europe = r105_europe; }
+		public BigDecimal getR105_india() { return r105_india; }
+		public void setR105_india(BigDecimal r105_india) { this.r105_india = r105_india; }
+		public BigDecimal getR105_sydney() { return r105_sydney; }
+		public void setR105_sydney(BigDecimal r105_sydney) { this.r105_sydney = r105_sydney; }
+		public BigDecimal getR105_uganda() { return r105_uganda; }
+		public void setR105_uganda(BigDecimal r105_uganda) { this.r105_uganda = r105_uganda; }
+		public BigDecimal getR105_c10() { return r105_c10; }
+		public void setR105_c10(BigDecimal r105_c10) { this.r105_c10 = r105_c10; }
+		public BigDecimal getR105_c11() { return r105_c11; }
+		public void setR105_c11(BigDecimal r105_c11) { this.r105_c11 = r105_c11; }
+		public BigDecimal getR105_c12() { return r105_c12; }
+		public void setR105_c12(BigDecimal r105_c12) { this.r105_c12 = r105_c12; }
+		public BigDecimal getR105_c13() { return r105_c13; }
+		public void setR105_c13(BigDecimal r105_c13) { this.r105_c13 = r105_c13; }
+		public BigDecimal getR105_c14() { return r105_c14; }
+		public void setR105_c14(BigDecimal r105_c14) { this.r105_c14 = r105_c14; }
+		public BigDecimal getR105_c15() { return r105_c15; }
+		public void setR105_c15(BigDecimal r105_c15) { this.r105_c15 = r105_c15; }
+		public BigDecimal getR105_c16() { return r105_c16; }
+		public void setR105_c16(BigDecimal r105_c16) { this.r105_c16 = r105_c16; }
+		public BigDecimal getR105_total() { return r105_total; }
+		public void setR105_total(BigDecimal r105_total) { this.r105_total = r105_total; }
+		public String getR106_product() { return r106_product; }
+		public void setR106_product(String r106_product) { this.r106_product = r106_product; }
+		public BigDecimal getR106_botswana() { return r106_botswana; }
+		public void setR106_botswana(BigDecimal r106_botswana) { this.r106_botswana = r106_botswana; }
+		public BigDecimal getR106_south_africa() { return r106_south_africa; }
+		public void setR106_south_africa(BigDecimal r106_south_africa) { this.r106_south_africa = r106_south_africa; }
+		public BigDecimal getR106_sadc() { return r106_sadc; }
+		public void setR106_sadc(BigDecimal r106_sadc) { this.r106_sadc = r106_sadc; }
+		public BigDecimal getR106_usa() { return r106_usa; }
+		public void setR106_usa(BigDecimal r106_usa) { this.r106_usa = r106_usa; }
+		public BigDecimal getR106_uk() { return r106_uk; }
+		public void setR106_uk(BigDecimal r106_uk) { this.r106_uk = r106_uk; }
+		public BigDecimal getR106_europe() { return r106_europe; }
+		public void setR106_europe(BigDecimal r106_europe) { this.r106_europe = r106_europe; }
+		public BigDecimal getR106_india() { return r106_india; }
+		public void setR106_india(BigDecimal r106_india) { this.r106_india = r106_india; }
+		public BigDecimal getR106_sydney() { return r106_sydney; }
+		public void setR106_sydney(BigDecimal r106_sydney) { this.r106_sydney = r106_sydney; }
+		public BigDecimal getR106_uganda() { return r106_uganda; }
+		public void setR106_uganda(BigDecimal r106_uganda) { this.r106_uganda = r106_uganda; }
+		public BigDecimal getR106_c10() { return r106_c10; }
+		public void setR106_c10(BigDecimal r106_c10) { this.r106_c10 = r106_c10; }
+		public BigDecimal getR106_c11() { return r106_c11; }
+		public void setR106_c11(BigDecimal r106_c11) { this.r106_c11 = r106_c11; }
+		public BigDecimal getR106_c12() { return r106_c12; }
+		public void setR106_c12(BigDecimal r106_c12) { this.r106_c12 = r106_c12; }
+		public BigDecimal getR106_c13() { return r106_c13; }
+		public void setR106_c13(BigDecimal r106_c13) { this.r106_c13 = r106_c13; }
+		public BigDecimal getR106_c14() { return r106_c14; }
+		public void setR106_c14(BigDecimal r106_c14) { this.r106_c14 = r106_c14; }
+		public BigDecimal getR106_c15() { return r106_c15; }
+		public void setR106_c15(BigDecimal r106_c15) { this.r106_c15 = r106_c15; }
+		public BigDecimal getR106_c16() { return r106_c16; }
+		public void setR106_c16(BigDecimal r106_c16) { this.r106_c16 = r106_c16; }
+		public BigDecimal getR106_total() { return r106_total; }
+		public void setR106_total(BigDecimal r106_total) { this.r106_total = r106_total; }
+		public String getR107_product() { return r107_product; }
+		public void setR107_product(String r107_product) { this.r107_product = r107_product; }
+		public BigDecimal getR107_botswana() { return r107_botswana; }
+		public void setR107_botswana(BigDecimal r107_botswana) { this.r107_botswana = r107_botswana; }
+		public BigDecimal getR107_south_africa() { return r107_south_africa; }
+		public void setR107_south_africa(BigDecimal r107_south_africa) { this.r107_south_africa = r107_south_africa; }
+		public BigDecimal getR107_sadc() { return r107_sadc; }
+		public void setR107_sadc(BigDecimal r107_sadc) { this.r107_sadc = r107_sadc; }
+		public BigDecimal getR107_usa() { return r107_usa; }
+		public void setR107_usa(BigDecimal r107_usa) { this.r107_usa = r107_usa; }
+		public BigDecimal getR107_uk() { return r107_uk; }
+		public void setR107_uk(BigDecimal r107_uk) { this.r107_uk = r107_uk; }
+		public BigDecimal getR107_europe() { return r107_europe; }
+		public void setR107_europe(BigDecimal r107_europe) { this.r107_europe = r107_europe; }
+		public BigDecimal getR107_india() { return r107_india; }
+		public void setR107_india(BigDecimal r107_india) { this.r107_india = r107_india; }
+		public BigDecimal getR107_sydney() { return r107_sydney; }
+		public void setR107_sydney(BigDecimal r107_sydney) { this.r107_sydney = r107_sydney; }
+		public BigDecimal getR107_uganda() { return r107_uganda; }
+		public void setR107_uganda(BigDecimal r107_uganda) { this.r107_uganda = r107_uganda; }
+		public BigDecimal getR107_c10() { return r107_c10; }
+		public void setR107_c10(BigDecimal r107_c10) { this.r107_c10 = r107_c10; }
+		public BigDecimal getR107_c11() { return r107_c11; }
+		public void setR107_c11(BigDecimal r107_c11) { this.r107_c11 = r107_c11; }
+		public BigDecimal getR107_c12() { return r107_c12; }
+		public void setR107_c12(BigDecimal r107_c12) { this.r107_c12 = r107_c12; }
+		public BigDecimal getR107_c13() { return r107_c13; }
+		public void setR107_c13(BigDecimal r107_c13) { this.r107_c13 = r107_c13; }
+		public BigDecimal getR107_c14() { return r107_c14; }
+		public void setR107_c14(BigDecimal r107_c14) { this.r107_c14 = r107_c14; }
+		public BigDecimal getR107_c15() { return r107_c15; }
+		public void setR107_c15(BigDecimal r107_c15) { this.r107_c15 = r107_c15; }
+		public BigDecimal getR107_c16() { return r107_c16; }
+		public void setR107_c16(BigDecimal r107_c16) { this.r107_c16 = r107_c16; }
+		public BigDecimal getR107_total() { return r107_total; }
+		public void setR107_total(BigDecimal r107_total) { this.r107_total = r107_total; }
+		public String getR108_product() { return r108_product; }
+		public void setR108_product(String r108_product) { this.r108_product = r108_product; }
+		public BigDecimal getR108_botswana() { return r108_botswana; }
+		public void setR108_botswana(BigDecimal r108_botswana) { this.r108_botswana = r108_botswana; }
+		public BigDecimal getR108_south_africa() { return r108_south_africa; }
+		public void setR108_south_africa(BigDecimal r108_south_africa) { this.r108_south_africa = r108_south_africa; }
+		public BigDecimal getR108_sadc() { return r108_sadc; }
+		public void setR108_sadc(BigDecimal r108_sadc) { this.r108_sadc = r108_sadc; }
+		public BigDecimal getR108_usa() { return r108_usa; }
+		public void setR108_usa(BigDecimal r108_usa) { this.r108_usa = r108_usa; }
+		public BigDecimal getR108_uk() { return r108_uk; }
+		public void setR108_uk(BigDecimal r108_uk) { this.r108_uk = r108_uk; }
+		public BigDecimal getR108_europe() { return r108_europe; }
+		public void setR108_europe(BigDecimal r108_europe) { this.r108_europe = r108_europe; }
+		public BigDecimal getR108_india() { return r108_india; }
+		public void setR108_india(BigDecimal r108_india) { this.r108_india = r108_india; }
+		public BigDecimal getR108_sydney() { return r108_sydney; }
+		public void setR108_sydney(BigDecimal r108_sydney) { this.r108_sydney = r108_sydney; }
+		public BigDecimal getR108_uganda() { return r108_uganda; }
+		public void setR108_uganda(BigDecimal r108_uganda) { this.r108_uganda = r108_uganda; }
+		public BigDecimal getR108_c10() { return r108_c10; }
+		public void setR108_c10(BigDecimal r108_c10) { this.r108_c10 = r108_c10; }
+		public BigDecimal getR108_c11() { return r108_c11; }
+		public void setR108_c11(BigDecimal r108_c11) { this.r108_c11 = r108_c11; }
+		public BigDecimal getR108_c12() { return r108_c12; }
+		public void setR108_c12(BigDecimal r108_c12) { this.r108_c12 = r108_c12; }
+		public BigDecimal getR108_c13() { return r108_c13; }
+		public void setR108_c13(BigDecimal r108_c13) { this.r108_c13 = r108_c13; }
+		public BigDecimal getR108_c14() { return r108_c14; }
+		public void setR108_c14(BigDecimal r108_c14) { this.r108_c14 = r108_c14; }
+		public BigDecimal getR108_c15() { return r108_c15; }
+		public void setR108_c15(BigDecimal r108_c15) { this.r108_c15 = r108_c15; }
+		public BigDecimal getR108_c16() { return r108_c16; }
+		public void setR108_c16(BigDecimal r108_c16) { this.r108_c16 = r108_c16; }
+		public BigDecimal getR108_total() { return r108_total; }
+		public void setR108_total(BigDecimal r108_total) { this.r108_total = r108_total; }
+		public String getR109_product() { return r109_product; }
+		public void setR109_product(String r109_product) { this.r109_product = r109_product; }
+		public BigDecimal getR109_botswana() { return r109_botswana; }
+		public void setR109_botswana(BigDecimal r109_botswana) { this.r109_botswana = r109_botswana; }
+		public BigDecimal getR109_south_africa() { return r109_south_africa; }
+		public void setR109_south_africa(BigDecimal r109_south_africa) { this.r109_south_africa = r109_south_africa; }
+		public BigDecimal getR109_sadc() { return r109_sadc; }
+		public void setR109_sadc(BigDecimal r109_sadc) { this.r109_sadc = r109_sadc; }
+		public BigDecimal getR109_usa() { return r109_usa; }
+		public void setR109_usa(BigDecimal r109_usa) { this.r109_usa = r109_usa; }
+		public BigDecimal getR109_uk() { return r109_uk; }
+		public void setR109_uk(BigDecimal r109_uk) { this.r109_uk = r109_uk; }
+		public BigDecimal getR109_europe() { return r109_europe; }
+		public void setR109_europe(BigDecimal r109_europe) { this.r109_europe = r109_europe; }
+		public BigDecimal getR109_india() { return r109_india; }
+		public void setR109_india(BigDecimal r109_india) { this.r109_india = r109_india; }
+		public BigDecimal getR109_sydney() { return r109_sydney; }
+		public void setR109_sydney(BigDecimal r109_sydney) { this.r109_sydney = r109_sydney; }
+		public BigDecimal getR109_uganda() { return r109_uganda; }
+		public void setR109_uganda(BigDecimal r109_uganda) { this.r109_uganda = r109_uganda; }
+		public BigDecimal getR109_c10() { return r109_c10; }
+		public void setR109_c10(BigDecimal r109_c10) { this.r109_c10 = r109_c10; }
+		public BigDecimal getR109_c11() { return r109_c11; }
+		public void setR109_c11(BigDecimal r109_c11) { this.r109_c11 = r109_c11; }
+		public BigDecimal getR109_c12() { return r109_c12; }
+		public void setR109_c12(BigDecimal r109_c12) { this.r109_c12 = r109_c12; }
+		public BigDecimal getR109_c13() { return r109_c13; }
+		public void setR109_c13(BigDecimal r109_c13) { this.r109_c13 = r109_c13; }
+		public BigDecimal getR109_c14() { return r109_c14; }
+		public void setR109_c14(BigDecimal r109_c14) { this.r109_c14 = r109_c14; }
+		public BigDecimal getR109_c15() { return r109_c15; }
+		public void setR109_c15(BigDecimal r109_c15) { this.r109_c15 = r109_c15; }
+		public BigDecimal getR109_c16() { return r109_c16; }
+		public void setR109_c16(BigDecimal r109_c16) { this.r109_c16 = r109_c16; }
+		public BigDecimal getR109_total() { return r109_total; }
+		public void setR109_total(BigDecimal r109_total) { this.r109_total = r109_total; }
+		public String getR110_product() { return r110_product; }
+		public void setR110_product(String r110_product) { this.r110_product = r110_product; }
+		public BigDecimal getR110_botswana() { return r110_botswana; }
+		public void setR110_botswana(BigDecimal r110_botswana) { this.r110_botswana = r110_botswana; }
+		public BigDecimal getR110_south_africa() { return r110_south_africa; }
+		public void setR110_south_africa(BigDecimal r110_south_africa) { this.r110_south_africa = r110_south_africa; }
+		public BigDecimal getR110_sadc() { return r110_sadc; }
+		public void setR110_sadc(BigDecimal r110_sadc) { this.r110_sadc = r110_sadc; }
+		public BigDecimal getR110_usa() { return r110_usa; }
+		public void setR110_usa(BigDecimal r110_usa) { this.r110_usa = r110_usa; }
+		public BigDecimal getR110_uk() { return r110_uk; }
+		public void setR110_uk(BigDecimal r110_uk) { this.r110_uk = r110_uk; }
+		public BigDecimal getR110_europe() { return r110_europe; }
+		public void setR110_europe(BigDecimal r110_europe) { this.r110_europe = r110_europe; }
+		public BigDecimal getR110_india() { return r110_india; }
+		public void setR110_india(BigDecimal r110_india) { this.r110_india = r110_india; }
+		public BigDecimal getR110_sydney() { return r110_sydney; }
+		public void setR110_sydney(BigDecimal r110_sydney) { this.r110_sydney = r110_sydney; }
+		public BigDecimal getR110_uganda() { return r110_uganda; }
+		public void setR110_uganda(BigDecimal r110_uganda) { this.r110_uganda = r110_uganda; }
+		public BigDecimal getR110_c10() { return r110_c10; }
+		public void setR110_c10(BigDecimal r110_c10) { this.r110_c10 = r110_c10; }
+		public BigDecimal getR110_c11() { return r110_c11; }
+		public void setR110_c11(BigDecimal r110_c11) { this.r110_c11 = r110_c11; }
+		public BigDecimal getR110_c12() { return r110_c12; }
+		public void setR110_c12(BigDecimal r110_c12) { this.r110_c12 = r110_c12; }
+		public BigDecimal getR110_c13() { return r110_c13; }
+		public void setR110_c13(BigDecimal r110_c13) { this.r110_c13 = r110_c13; }
+		public BigDecimal getR110_c14() { return r110_c14; }
+		public void setR110_c14(BigDecimal r110_c14) { this.r110_c14 = r110_c14; }
+		public BigDecimal getR110_c15() { return r110_c15; }
+		public void setR110_c15(BigDecimal r110_c15) { this.r110_c15 = r110_c15; }
+		public BigDecimal getR110_c16() { return r110_c16; }
+		public void setR110_c16(BigDecimal r110_c16) { this.r110_c16 = r110_c16; }
+		public BigDecimal getR110_total() { return r110_total; }
+		public void setR110_total(BigDecimal r110_total) { this.r110_total = r110_total; }
+		public String getR111_product() { return r111_product; }
+		public void setR111_product(String r111_product) { this.r111_product = r111_product; }
+		public BigDecimal getR111_south_africa() { return r111_south_africa; }
+		public void setR111_south_africa(BigDecimal r111_south_africa) { this.r111_south_africa = r111_south_africa; }
+		public BigDecimal getR111_sadc() { return r111_sadc; }
+		public void setR111_sadc(BigDecimal r111_sadc) { this.r111_sadc = r111_sadc; }
+		public BigDecimal getR111_usa() { return r111_usa; }
+		public void setR111_usa(BigDecimal r111_usa) { this.r111_usa = r111_usa; }
+		public BigDecimal getR111_uk() { return r111_uk; }
+		public void setR111_uk(BigDecimal r111_uk) { this.r111_uk = r111_uk; }
+		public BigDecimal getR111_europe() { return r111_europe; }
+		public void setR111_europe(BigDecimal r111_europe) { this.r111_europe = r111_europe; }
+		public BigDecimal getR111_india() { return r111_india; }
+		public void setR111_india(BigDecimal r111_india) { this.r111_india = r111_india; }
+		public BigDecimal getR111_sydney() { return r111_sydney; }
+		public void setR111_sydney(BigDecimal r111_sydney) { this.r111_sydney = r111_sydney; }
+		public BigDecimal getR111_uganda() { return r111_uganda; }
+		public void setR111_uganda(BigDecimal r111_uganda) { this.r111_uganda = r111_uganda; }
+		public BigDecimal getR111_c10() { return r111_c10; }
+		public void setR111_c10(BigDecimal r111_c10) { this.r111_c10 = r111_c10; }
+		public BigDecimal getR111_c11() { return r111_c11; }
+		public void setR111_c11(BigDecimal r111_c11) { this.r111_c11 = r111_c11; }
+		public BigDecimal getR111_c12() { return r111_c12; }
+		public void setR111_c12(BigDecimal r111_c12) { this.r111_c12 = r111_c12; }
+		public BigDecimal getR111_c13() { return r111_c13; }
+		public void setR111_c13(BigDecimal r111_c13) { this.r111_c13 = r111_c13; }
+		public BigDecimal getR111_c14() { return r111_c14; }
+		public void setR111_c14(BigDecimal r111_c14) { this.r111_c14 = r111_c14; }
+		public BigDecimal getR111_c15() { return r111_c15; }
+		public void setR111_c15(BigDecimal r111_c15) { this.r111_c15 = r111_c15; }
+		public BigDecimal getR111_c16() { return r111_c16; }
+		public void setR111_c16(BigDecimal r111_c16) { this.r111_c16 = r111_c16; }
+		public BigDecimal getR111_total() { return r111_total; }
+		public void setR111_total(BigDecimal r111_total) { this.r111_total = r111_total; }
+		public String getR112_product() { return r112_product; }
+		public void setR112_product(String r112_product) { this.r112_product = r112_product; }
+		public BigDecimal getR112_south_africa() { return r112_south_africa; }
+		public void setR112_south_africa(BigDecimal r112_south_africa) { this.r112_south_africa = r112_south_africa; }
+		public BigDecimal getR112_sadc() { return r112_sadc; }
+		public void setR112_sadc(BigDecimal r112_sadc) { this.r112_sadc = r112_sadc; }
+		public BigDecimal getR112_usa() { return r112_usa; }
+		public void setR112_usa(BigDecimal r112_usa) { this.r112_usa = r112_usa; }
+		public BigDecimal getR112_uk() { return r112_uk; }
+		public void setR112_uk(BigDecimal r112_uk) { this.r112_uk = r112_uk; }
+		public BigDecimal getR112_europe() { return r112_europe; }
+		public void setR112_europe(BigDecimal r112_europe) { this.r112_europe = r112_europe; }
+		public BigDecimal getR112_india() { return r112_india; }
+		public void setR112_india(BigDecimal r112_india) { this.r112_india = r112_india; }
+		public BigDecimal getR112_sydney() { return r112_sydney; }
+		public void setR112_sydney(BigDecimal r112_sydney) { this.r112_sydney = r112_sydney; }
+		public BigDecimal getR112_uganda() { return r112_uganda; }
+		public void setR112_uganda(BigDecimal r112_uganda) { this.r112_uganda = r112_uganda; }
+		public BigDecimal getR112_c10() { return r112_c10; }
+		public void setR112_c10(BigDecimal r112_c10) { this.r112_c10 = r112_c10; }
+		public BigDecimal getR112_c11() { return r112_c11; }
+		public void setR112_c11(BigDecimal r112_c11) { this.r112_c11 = r112_c11; }
+		public BigDecimal getR112_c12() { return r112_c12; }
+		public void setR112_c12(BigDecimal r112_c12) { this.r112_c12 = r112_c12; }
+		public BigDecimal getR112_c13() { return r112_c13; }
+		public void setR112_c13(BigDecimal r112_c13) { this.r112_c13 = r112_c13; }
+		public BigDecimal getR112_c14() { return r112_c14; }
+		public void setR112_c14(BigDecimal r112_c14) { this.r112_c14 = r112_c14; }
+		public BigDecimal getR112_c15() { return r112_c15; }
+		public void setR112_c15(BigDecimal r112_c15) { this.r112_c15 = r112_c15; }
+		public BigDecimal getR112_c16() { return r112_c16; }
+		public void setR112_c16(BigDecimal r112_c16) { this.r112_c16 = r112_c16; }
+		public BigDecimal getR112_total() { return r112_total; }
+		public void setR112_total(BigDecimal r112_total) { this.r112_total = r112_total; }
+		public String getR113_product() { return r113_product; }
+		public void setR113_product(String r113_product) { this.r113_product = r113_product; }
+		public BigDecimal getR113_south_africa() { return r113_south_africa; }
+		public void setR113_south_africa(BigDecimal r113_south_africa) { this.r113_south_africa = r113_south_africa; }
+		public BigDecimal getR113_sadc() { return r113_sadc; }
+		public void setR113_sadc(BigDecimal r113_sadc) { this.r113_sadc = r113_sadc; }
+		public BigDecimal getR113_usa() { return r113_usa; }
+		public void setR113_usa(BigDecimal r113_usa) { this.r113_usa = r113_usa; }
+		public BigDecimal getR113_uk() { return r113_uk; }
+		public void setR113_uk(BigDecimal r113_uk) { this.r113_uk = r113_uk; }
+		public BigDecimal getR113_europe() { return r113_europe; }
+		public void setR113_europe(BigDecimal r113_europe) { this.r113_europe = r113_europe; }
+		public BigDecimal getR113_india() { return r113_india; }
+		public void setR113_india(BigDecimal r113_india) { this.r113_india = r113_india; }
+		public BigDecimal getR113_sydney() { return r113_sydney; }
+		public void setR113_sydney(BigDecimal r113_sydney) { this.r113_sydney = r113_sydney; }
+		public BigDecimal getR113_uganda() { return r113_uganda; }
+		public void setR113_uganda(BigDecimal r113_uganda) { this.r113_uganda = r113_uganda; }
+		public BigDecimal getR113_c10() { return r113_c10; }
+		public void setR113_c10(BigDecimal r113_c10) { this.r113_c10 = r113_c10; }
+		public BigDecimal getR113_c11() { return r113_c11; }
+		public void setR113_c11(BigDecimal r113_c11) { this.r113_c11 = r113_c11; }
+		public BigDecimal getR113_c12() { return r113_c12; }
+		public void setR113_c12(BigDecimal r113_c12) { this.r113_c12 = r113_c12; }
+		public BigDecimal getR113_c13() { return r113_c13; }
+		public void setR113_c13(BigDecimal r113_c13) { this.r113_c13 = r113_c13; }
+		public BigDecimal getR113_c14() { return r113_c14; }
+		public void setR113_c14(BigDecimal r113_c14) { this.r113_c14 = r113_c14; }
+		public BigDecimal getR113_c15() { return r113_c15; }
+		public void setR113_c15(BigDecimal r113_c15) { this.r113_c15 = r113_c15; }
+		public BigDecimal getR113_c16() { return r113_c16; }
+		public void setR113_c16(BigDecimal r113_c16) { this.r113_c16 = r113_c16; }
+		public BigDecimal getR113_total() { return r113_total; }
+		public void setR113_total(BigDecimal r113_total) { this.r113_total = r113_total; }
+		public String getR114_product() { return r114_product; }
+		public void setR114_product(String r114_product) { this.r114_product = r114_product; }
+		public BigDecimal getR114_south_africa() { return r114_south_africa; }
+		public void setR114_south_africa(BigDecimal r114_south_africa) { this.r114_south_africa = r114_south_africa; }
+		public BigDecimal getR114_sadc() { return r114_sadc; }
+		public void setR114_sadc(BigDecimal r114_sadc) { this.r114_sadc = r114_sadc; }
+		public BigDecimal getR114_usa() { return r114_usa; }
+		public void setR114_usa(BigDecimal r114_usa) { this.r114_usa = r114_usa; }
+		public BigDecimal getR114_uk() { return r114_uk; }
+		public void setR114_uk(BigDecimal r114_uk) { this.r114_uk = r114_uk; }
+		public BigDecimal getR114_europe() { return r114_europe; }
+		public void setR114_europe(BigDecimal r114_europe) { this.r114_europe = r114_europe; }
+		public BigDecimal getR114_india() { return r114_india; }
+		public void setR114_india(BigDecimal r114_india) { this.r114_india = r114_india; }
+		public BigDecimal getR114_sydney() { return r114_sydney; }
+		public void setR114_sydney(BigDecimal r114_sydney) { this.r114_sydney = r114_sydney; }
+		public BigDecimal getR114_uganda() { return r114_uganda; }
+		public void setR114_uganda(BigDecimal r114_uganda) { this.r114_uganda = r114_uganda; }
+		public BigDecimal getR114_c10() { return r114_c10; }
+		public void setR114_c10(BigDecimal r114_c10) { this.r114_c10 = r114_c10; }
+		public BigDecimal getR114_c11() { return r114_c11; }
+		public void setR114_c11(BigDecimal r114_c11) { this.r114_c11 = r114_c11; }
+		public BigDecimal getR114_c12() { return r114_c12; }
+		public void setR114_c12(BigDecimal r114_c12) { this.r114_c12 = r114_c12; }
+		public BigDecimal getR114_c13() { return r114_c13; }
+		public void setR114_c13(BigDecimal r114_c13) { this.r114_c13 = r114_c13; }
+		public BigDecimal getR114_c14() { return r114_c14; }
+		public void setR114_c14(BigDecimal r114_c14) { this.r114_c14 = r114_c14; }
+		public BigDecimal getR114_c15() { return r114_c15; }
+		public void setR114_c15(BigDecimal r114_c15) { this.r114_c15 = r114_c15; }
+		public BigDecimal getR114_c16() { return r114_c16; }
+		public void setR114_c16(BigDecimal r114_c16) { this.r114_c16 = r114_c16; }
+		public BigDecimal getR114_total() { return r114_total; }
+		public void setR114_total(BigDecimal r114_total) { this.r114_total = r114_total; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public Date getReportResubDate() { return reportResubDate; }
+		public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORManualArchivalSummaryRowMapper implements RowMapper<M_GALOR_Manual_Archival_Summary_Entity> {
+		@Override
+		public M_GALOR_Manual_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Manual_Archival_Summary_Entity obj = new M_GALOR_Manual_Archival_Summary_Entity();
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_botswana(rs.getBigDecimal("R22_BOTSWANA"));
+			obj.setR22_south_africa(rs.getBigDecimal("R22_SOUTH_AFRICA"));
+			obj.setR22_sadc(rs.getBigDecimal("R22_SADC"));
+			obj.setR22_usa(rs.getBigDecimal("R22_USA"));
+			obj.setR22_uk(rs.getBigDecimal("R22_UK"));
+			obj.setR22_europe(rs.getBigDecimal("R22_EUROPE"));
+			obj.setR22_india(rs.getBigDecimal("R22_INDIA"));
+			obj.setR22_sydney(rs.getBigDecimal("R22_SYDNEY"));
+			obj.setR22_uganda(rs.getBigDecimal("R22_UGANDA"));
+			obj.setR22_c10(rs.getBigDecimal("R22_C10"));
+			obj.setR22_c11(rs.getBigDecimal("R22_C11"));
+			obj.setR22_c12(rs.getBigDecimal("R22_C12"));
+			obj.setR22_c13(rs.getBigDecimal("R22_C13"));
+			obj.setR22_c14(rs.getBigDecimal("R22_C14"));
+			obj.setR22_c15(rs.getBigDecimal("R22_C15"));
+			obj.setR22_c16(rs.getBigDecimal("R22_C16"));
+			obj.setR22_total(rs.getBigDecimal("R22_TOTAL"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_botswana(rs.getBigDecimal("R23_BOTSWANA"));
+			obj.setR23_south_africa(rs.getBigDecimal("R23_SOUTH_AFRICA"));
+			obj.setR23_sadc(rs.getBigDecimal("R23_SADC"));
+			obj.setR23_usa(rs.getBigDecimal("R23_USA"));
+			obj.setR23_uk(rs.getBigDecimal("R23_UK"));
+			obj.setR23_europe(rs.getBigDecimal("R23_EUROPE"));
+			obj.setR23_india(rs.getBigDecimal("R23_INDIA"));
+			obj.setR23_sydney(rs.getBigDecimal("R23_SYDNEY"));
+			obj.setR23_uganda(rs.getBigDecimal("R23_UGANDA"));
+			obj.setR23_c10(rs.getBigDecimal("R23_C10"));
+			obj.setR23_c11(rs.getBigDecimal("R23_C11"));
+			obj.setR23_c12(rs.getBigDecimal("R23_C12"));
+			obj.setR23_c13(rs.getBigDecimal("R23_C13"));
+			obj.setR23_c14(rs.getBigDecimal("R23_C14"));
+			obj.setR23_c15(rs.getBigDecimal("R23_C15"));
+			obj.setR23_c16(rs.getBigDecimal("R23_C16"));
+			obj.setR23_total(rs.getBigDecimal("R23_TOTAL"));
+			obj.setR57_product(rs.getString("R57_PRODUCT"));
+			obj.setR57_botswana(rs.getBigDecimal("R57_BOTSWANA"));
+			obj.setR57_south_africa(rs.getBigDecimal("R57_SOUTH_AFRICA"));
+			obj.setR57_sadc(rs.getBigDecimal("R57_SADC"));
+			obj.setR57_usa(rs.getBigDecimal("R57_USA"));
+			obj.setR57_uk(rs.getBigDecimal("R57_UK"));
+			obj.setR57_europe(rs.getBigDecimal("R57_EUROPE"));
+			obj.setR57_india(rs.getBigDecimal("R57_INDIA"));
+			obj.setR57_sydney(rs.getBigDecimal("R57_SYDNEY"));
+			obj.setR57_uganda(rs.getBigDecimal("R57_UGANDA"));
+			obj.setR57_c10(rs.getBigDecimal("R57_C10"));
+			obj.setR57_c11(rs.getBigDecimal("R57_C11"));
+			obj.setR57_c12(rs.getBigDecimal("R57_C12"));
+			obj.setR57_c13(rs.getBigDecimal("R57_C13"));
+			obj.setR57_c14(rs.getBigDecimal("R57_C14"));
+			obj.setR57_c15(rs.getBigDecimal("R57_C15"));
+			obj.setR57_c16(rs.getBigDecimal("R57_C16"));
+			obj.setR57_total(rs.getBigDecimal("R57_TOTAL"));
+			obj.setR58_product(rs.getString("R58_PRODUCT"));
+			obj.setR58_botswana(rs.getBigDecimal("R58_BOTSWANA"));
+			obj.setR58_south_africa(rs.getBigDecimal("R58_SOUTH_AFRICA"));
+			obj.setR58_sadc(rs.getBigDecimal("R58_SADC"));
+			obj.setR58_usa(rs.getBigDecimal("R58_USA"));
+			obj.setR58_uk(rs.getBigDecimal("R58_UK"));
+			obj.setR58_europe(rs.getBigDecimal("R58_EUROPE"));
+			obj.setR58_india(rs.getBigDecimal("R58_INDIA"));
+			obj.setR58_sydney(rs.getBigDecimal("R58_SYDNEY"));
+			obj.setR58_uganda(rs.getBigDecimal("R58_UGANDA"));
+			obj.setR58_c10(rs.getBigDecimal("R58_C10"));
+			obj.setR58_c11(rs.getBigDecimal("R58_C11"));
+			obj.setR58_c12(rs.getBigDecimal("R58_C12"));
+			obj.setR58_c13(rs.getBigDecimal("R58_C13"));
+			obj.setR58_c14(rs.getBigDecimal("R58_C14"));
+			obj.setR58_c15(rs.getBigDecimal("R58_C15"));
+			obj.setR58_c16(rs.getBigDecimal("R58_C16"));
+			obj.setR58_total(rs.getBigDecimal("R58_TOTAL"));
+			obj.setR60_product(rs.getString("R60_PRODUCT"));
+			obj.setR60_botswana(rs.getBigDecimal("R60_BOTSWANA"));
+			obj.setR60_south_africa(rs.getBigDecimal("R60_SOUTH_AFRICA"));
+			obj.setR60_sadc(rs.getBigDecimal("R60_SADC"));
+			obj.setR60_usa(rs.getBigDecimal("R60_USA"));
+			obj.setR60_uk(rs.getBigDecimal("R60_UK"));
+			obj.setR60_europe(rs.getBigDecimal("R60_EUROPE"));
+			obj.setR60_india(rs.getBigDecimal("R60_INDIA"));
+			obj.setR60_sydney(rs.getBigDecimal("R60_SYDNEY"));
+			obj.setR60_uganda(rs.getBigDecimal("R60_UGANDA"));
+			obj.setR60_c10(rs.getBigDecimal("R60_C10"));
+			obj.setR60_c11(rs.getBigDecimal("R60_C11"));
+			obj.setR60_c12(rs.getBigDecimal("R60_C12"));
+			obj.setR60_c13(rs.getBigDecimal("R60_C13"));
+			obj.setR60_c14(rs.getBigDecimal("R60_C14"));
+			obj.setR60_c15(rs.getBigDecimal("R60_C15"));
+			obj.setR60_c16(rs.getBigDecimal("R60_C16"));
+			obj.setR60_total(rs.getBigDecimal("R60_TOTAL"));
+			obj.setR61_product(rs.getString("R61_PRODUCT"));
+			obj.setR61_botswana(rs.getBigDecimal("R61_BOTSWANA"));
+			obj.setR61_south_africa(rs.getBigDecimal("R61_SOUTH_AFRICA"));
+			obj.setR61_sadc(rs.getBigDecimal("R61_SADC"));
+			obj.setR61_usa(rs.getBigDecimal("R61_USA"));
+			obj.setR61_uk(rs.getBigDecimal("R61_UK"));
+			obj.setR61_europe(rs.getBigDecimal("R61_EUROPE"));
+			obj.setR61_india(rs.getBigDecimal("R61_INDIA"));
+			obj.setR61_sydney(rs.getBigDecimal("R61_SYDNEY"));
+			obj.setR61_uganda(rs.getBigDecimal("R61_UGANDA"));
+			obj.setR61_c10(rs.getBigDecimal("R61_C10"));
+			obj.setR61_c11(rs.getBigDecimal("R61_C11"));
+			obj.setR61_c12(rs.getBigDecimal("R61_C12"));
+			obj.setR61_c13(rs.getBigDecimal("R61_C13"));
+			obj.setR61_c14(rs.getBigDecimal("R61_C14"));
+			obj.setR61_c15(rs.getBigDecimal("R61_C15"));
+			obj.setR61_c16(rs.getBigDecimal("R61_C16"));
+			obj.setR61_total(rs.getBigDecimal("R61_TOTAL"));
+			obj.setR64_product(rs.getString("R64_PRODUCT"));
+			obj.setR64_botswana(rs.getBigDecimal("R64_BOTSWANA"));
+			obj.setR64_south_africa(rs.getBigDecimal("R64_SOUTH_AFRICA"));
+			obj.setR64_sadc(rs.getBigDecimal("R64_SADC"));
+			obj.setR64_usa(rs.getBigDecimal("R64_USA"));
+			obj.setR64_uk(rs.getBigDecimal("R64_UK"));
+			obj.setR64_europe(rs.getBigDecimal("R64_EUROPE"));
+			obj.setR64_india(rs.getBigDecimal("R64_INDIA"));
+			obj.setR64_sydney(rs.getBigDecimal("R64_SYDNEY"));
+			obj.setR64_uganda(rs.getBigDecimal("R64_UGANDA"));
+			obj.setR64_c10(rs.getBigDecimal("R64_C10"));
+			obj.setR64_c11(rs.getBigDecimal("R64_C11"));
+			obj.setR64_c12(rs.getBigDecimal("R64_C12"));
+			obj.setR64_c13(rs.getBigDecimal("R64_C13"));
+			obj.setR64_c14(rs.getBigDecimal("R64_C14"));
+			obj.setR64_c15(rs.getBigDecimal("R64_C15"));
+			obj.setR64_c16(rs.getBigDecimal("R64_C16"));
+			obj.setR64_total(rs.getBigDecimal("R64_TOTAL"));
+			obj.setR65_product(rs.getString("R65_PRODUCT"));
+			obj.setR65_botswana(rs.getBigDecimal("R65_BOTSWANA"));
+			obj.setR65_south_africa(rs.getBigDecimal("R65_SOUTH_AFRICA"));
+			obj.setR65_sadc(rs.getBigDecimal("R65_SADC"));
+			obj.setR65_usa(rs.getBigDecimal("R65_USA"));
+			obj.setR65_uk(rs.getBigDecimal("R65_UK"));
+			obj.setR65_europe(rs.getBigDecimal("R65_EUROPE"));
+			obj.setR65_india(rs.getBigDecimal("R65_INDIA"));
+			obj.setR65_sydney(rs.getBigDecimal("R65_SYDNEY"));
+			obj.setR65_uganda(rs.getBigDecimal("R65_UGANDA"));
+			obj.setR65_c10(rs.getBigDecimal("R65_C10"));
+			obj.setR65_c11(rs.getBigDecimal("R65_C11"));
+			obj.setR65_c12(rs.getBigDecimal("R65_C12"));
+			obj.setR65_c13(rs.getBigDecimal("R65_C13"));
+			obj.setR65_c14(rs.getBigDecimal("R65_C14"));
+			obj.setR65_c15(rs.getBigDecimal("R65_C15"));
+			obj.setR65_c16(rs.getBigDecimal("R65_C16"));
+			obj.setR65_total(rs.getBigDecimal("R65_TOTAL"));
+			obj.setR67_product(rs.getString("R67_PRODUCT"));
+			obj.setR67_botswana(rs.getBigDecimal("R67_BOTSWANA"));
+			obj.setR67_south_africa(rs.getBigDecimal("R67_SOUTH_AFRICA"));
+			obj.setR67_sadc(rs.getBigDecimal("R67_SADC"));
+			obj.setR67_usa(rs.getBigDecimal("R67_USA"));
+			obj.setR67_uk(rs.getBigDecimal("R67_UK"));
+			obj.setR67_europe(rs.getBigDecimal("R67_EUROPE"));
+			obj.setR67_india(rs.getBigDecimal("R67_INDIA"));
+			obj.setR67_sydney(rs.getBigDecimal("R67_SYDNEY"));
+			obj.setR67_uganda(rs.getBigDecimal("R67_UGANDA"));
+			obj.setR67_c10(rs.getBigDecimal("R67_C10"));
+			obj.setR67_c11(rs.getBigDecimal("R67_C11"));
+			obj.setR67_c12(rs.getBigDecimal("R67_C12"));
+			obj.setR67_c13(rs.getBigDecimal("R67_C13"));
+			obj.setR67_c14(rs.getBigDecimal("R67_C14"));
+			obj.setR67_c15(rs.getBigDecimal("R67_C15"));
+			obj.setR67_c16(rs.getBigDecimal("R67_C16"));
+			obj.setR67_total(rs.getBigDecimal("R67_TOTAL"));
+			obj.setR68_product(rs.getString("R68_PRODUCT"));
+			obj.setR68_botswana(rs.getBigDecimal("R68_BOTSWANA"));
+			obj.setR68_south_africa(rs.getBigDecimal("R68_SOUTH_AFRICA"));
+			obj.setR68_sadc(rs.getBigDecimal("R68_SADC"));
+			obj.setR68_usa(rs.getBigDecimal("R68_USA"));
+			obj.setR68_uk(rs.getBigDecimal("R68_UK"));
+			obj.setR68_europe(rs.getBigDecimal("R68_EUROPE"));
+			obj.setR68_india(rs.getBigDecimal("R68_INDIA"));
+			obj.setR68_sydney(rs.getBigDecimal("R68_SYDNEY"));
+			obj.setR68_uganda(rs.getBigDecimal("R68_UGANDA"));
+			obj.setR68_c10(rs.getBigDecimal("R68_C10"));
+			obj.setR68_c11(rs.getBigDecimal("R68_C11"));
+			obj.setR68_c12(rs.getBigDecimal("R68_C12"));
+			obj.setR68_c13(rs.getBigDecimal("R68_C13"));
+			obj.setR68_c14(rs.getBigDecimal("R68_C14"));
+			obj.setR68_c15(rs.getBigDecimal("R68_C15"));
+			obj.setR68_c16(rs.getBigDecimal("R68_C16"));
+			obj.setR68_total(rs.getBigDecimal("R68_TOTAL"));
+			obj.setR111_botswana(rs.getBigDecimal("R111_BOTSWANA"));
+			obj.setR112_botswana(rs.getBigDecimal("R112_BOTSWANA"));
+			obj.setR113_botswana(rs.getBigDecimal("R113_BOTSWANA"));
+			obj.setR114_botswana(rs.getBigDecimal("R114_BOTSWANA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Manual_Archival_Summary_Entity {
+		private String r22_product;
+		private BigDecimal r22_botswana;
+		private BigDecimal r22_south_africa;
+		private BigDecimal r22_sadc;
+		private BigDecimal r22_usa;
+		private BigDecimal r22_uk;
+		private BigDecimal r22_europe;
+		private BigDecimal r22_india;
+		private BigDecimal r22_sydney;
+		private BigDecimal r22_uganda;
+		private BigDecimal r22_c10;
+		private BigDecimal r22_c11;
+		private BigDecimal r22_c12;
+		private BigDecimal r22_c13;
+		private BigDecimal r22_c14;
+		private BigDecimal r22_c15;
+		private BigDecimal r22_c16;
+		private BigDecimal r22_total;
+		private String r23_product;
+		private BigDecimal r23_botswana;
+		private BigDecimal r23_south_africa;
+		private BigDecimal r23_sadc;
+		private BigDecimal r23_usa;
+		private BigDecimal r23_uk;
+		private BigDecimal r23_europe;
+		private BigDecimal r23_india;
+		private BigDecimal r23_sydney;
+		private BigDecimal r23_uganda;
+		private BigDecimal r23_c10;
+		private BigDecimal r23_c11;
+		private BigDecimal r23_c12;
+		private BigDecimal r23_c13;
+		private BigDecimal r23_c14;
+		private BigDecimal r23_c15;
+		private BigDecimal r23_c16;
+		private BigDecimal r23_total;
+		private String r57_product;
+		private BigDecimal r57_botswana;
+		private BigDecimal r57_south_africa;
+		private BigDecimal r57_sadc;
+		private BigDecimal r57_usa;
+		private BigDecimal r57_uk;
+		private BigDecimal r57_europe;
+		private BigDecimal r57_india;
+		private BigDecimal r57_sydney;
+		private BigDecimal r57_uganda;
+		private BigDecimal r57_c10;
+		private BigDecimal r57_c11;
+		private BigDecimal r57_c12;
+		private BigDecimal r57_c13;
+		private BigDecimal r57_c14;
+		private BigDecimal r57_c15;
+		private BigDecimal r57_c16;
+		private BigDecimal r57_total;
+		private String r58_product;
+		private BigDecimal r58_botswana;
+		private BigDecimal r58_south_africa;
+		private BigDecimal r58_sadc;
+		private BigDecimal r58_usa;
+		private BigDecimal r58_uk;
+		private BigDecimal r58_europe;
+		private BigDecimal r58_india;
+		private BigDecimal r58_sydney;
+		private BigDecimal r58_uganda;
+		private BigDecimal r58_c10;
+		private BigDecimal r58_c11;
+		private BigDecimal r58_c12;
+		private BigDecimal r58_c13;
+		private BigDecimal r58_c14;
+		private BigDecimal r58_c15;
+		private BigDecimal r58_c16;
+		private BigDecimal r58_total;
+		private String r60_product;
+		private BigDecimal r60_botswana;
+		private BigDecimal r60_south_africa;
+		private BigDecimal r60_sadc;
+		private BigDecimal r60_usa;
+		private BigDecimal r60_uk;
+		private BigDecimal r60_europe;
+		private BigDecimal r60_india;
+		private BigDecimal r60_sydney;
+		private BigDecimal r60_uganda;
+		private BigDecimal r60_c10;
+		private BigDecimal r60_c11;
+		private BigDecimal r60_c12;
+		private BigDecimal r60_c13;
+		private BigDecimal r60_c14;
+		private BigDecimal r60_c15;
+		private BigDecimal r60_c16;
+		private BigDecimal r60_total;
+		private String r61_product;
+		private BigDecimal r61_botswana;
+		private BigDecimal r61_south_africa;
+		private BigDecimal r61_sadc;
+		private BigDecimal r61_usa;
+		private BigDecimal r61_uk;
+		private BigDecimal r61_europe;
+		private BigDecimal r61_india;
+		private BigDecimal r61_sydney;
+		private BigDecimal r61_uganda;
+		private BigDecimal r61_c10;
+		private BigDecimal r61_c11;
+		private BigDecimal r61_c12;
+		private BigDecimal r61_c13;
+		private BigDecimal r61_c14;
+		private BigDecimal r61_c15;
+		private BigDecimal r61_c16;
+		private BigDecimal r61_total;
+		private String r64_product;
+		private BigDecimal r64_botswana;
+		private BigDecimal r64_south_africa;
+		private BigDecimal r64_sadc;
+		private BigDecimal r64_usa;
+		private BigDecimal r64_uk;
+		private BigDecimal r64_europe;
+		private BigDecimal r64_india;
+		private BigDecimal r64_sydney;
+		private BigDecimal r64_uganda;
+		private BigDecimal r64_c10;
+		private BigDecimal r64_c11;
+		private BigDecimal r64_c12;
+		private BigDecimal r64_c13;
+		private BigDecimal r64_c14;
+		private BigDecimal r64_c15;
+		private BigDecimal r64_c16;
+		private BigDecimal r64_total;
+		private String r65_product;
+		private BigDecimal r65_botswana;
+		private BigDecimal r65_south_africa;
+		private BigDecimal r65_sadc;
+		private BigDecimal r65_usa;
+		private BigDecimal r65_uk;
+		private BigDecimal r65_europe;
+		private BigDecimal r65_india;
+		private BigDecimal r65_sydney;
+		private BigDecimal r65_uganda;
+		private BigDecimal r65_c10;
+		private BigDecimal r65_c11;
+		private BigDecimal r65_c12;
+		private BigDecimal r65_c13;
+		private BigDecimal r65_c14;
+		private BigDecimal r65_c15;
+		private BigDecimal r65_c16;
+		private BigDecimal r65_total;
+		private String r67_product;
+		private BigDecimal r67_botswana;
+		private BigDecimal r67_south_africa;
+		private BigDecimal r67_sadc;
+		private BigDecimal r67_usa;
+		private BigDecimal r67_uk;
+		private BigDecimal r67_europe;
+		private BigDecimal r67_india;
+		private BigDecimal r67_sydney;
+		private BigDecimal r67_uganda;
+		private BigDecimal r67_c10;
+		private BigDecimal r67_c11;
+		private BigDecimal r67_c12;
+		private BigDecimal r67_c13;
+		private BigDecimal r67_c14;
+		private BigDecimal r67_c15;
+		private BigDecimal r67_c16;
+		private BigDecimal r67_total;
+		private String r68_product;
+		private BigDecimal r68_botswana;
+		private BigDecimal r68_south_africa;
+		private BigDecimal r68_sadc;
+		private BigDecimal r68_usa;
+		private BigDecimal r68_uk;
+		private BigDecimal r68_europe;
+		private BigDecimal r68_india;
+		private BigDecimal r68_sydney;
+		private BigDecimal r68_uganda;
+		private BigDecimal r68_c10;
+		private BigDecimal r68_c11;
+		private BigDecimal r68_c12;
+		private BigDecimal r68_c13;
+		private BigDecimal r68_c14;
+		private BigDecimal r68_c15;
+		private BigDecimal r68_c16;
+		private BigDecimal r68_total;
+		private BigDecimal r111_botswana;
+		private BigDecimal r112_botswana;
+		private BigDecimal r113_botswana;
+		private BigDecimal r114_botswana;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public String getR22_product() { return r22_product; }
+		public void setR22_product(String r22_product) { this.r22_product = r22_product; }
+		public BigDecimal getR22_botswana() { return r22_botswana; }
+		public void setR22_botswana(BigDecimal r22_botswana) { this.r22_botswana = r22_botswana; }
+		public BigDecimal getR22_south_africa() { return r22_south_africa; }
+		public void setR22_south_africa(BigDecimal r22_south_africa) { this.r22_south_africa = r22_south_africa; }
+		public BigDecimal getR22_sadc() { return r22_sadc; }
+		public void setR22_sadc(BigDecimal r22_sadc) { this.r22_sadc = r22_sadc; }
+		public BigDecimal getR22_usa() { return r22_usa; }
+		public void setR22_usa(BigDecimal r22_usa) { this.r22_usa = r22_usa; }
+		public BigDecimal getR22_uk() { return r22_uk; }
+		public void setR22_uk(BigDecimal r22_uk) { this.r22_uk = r22_uk; }
+		public BigDecimal getR22_europe() { return r22_europe; }
+		public void setR22_europe(BigDecimal r22_europe) { this.r22_europe = r22_europe; }
+		public BigDecimal getR22_india() { return r22_india; }
+		public void setR22_india(BigDecimal r22_india) { this.r22_india = r22_india; }
+		public BigDecimal getR22_sydney() { return r22_sydney; }
+		public void setR22_sydney(BigDecimal r22_sydney) { this.r22_sydney = r22_sydney; }
+		public BigDecimal getR22_uganda() { return r22_uganda; }
+		public void setR22_uganda(BigDecimal r22_uganda) { this.r22_uganda = r22_uganda; }
+		public BigDecimal getR22_c10() { return r22_c10; }
+		public void setR22_c10(BigDecimal r22_c10) { this.r22_c10 = r22_c10; }
+		public BigDecimal getR22_c11() { return r22_c11; }
+		public void setR22_c11(BigDecimal r22_c11) { this.r22_c11 = r22_c11; }
+		public BigDecimal getR22_c12() { return r22_c12; }
+		public void setR22_c12(BigDecimal r22_c12) { this.r22_c12 = r22_c12; }
+		public BigDecimal getR22_c13() { return r22_c13; }
+		public void setR22_c13(BigDecimal r22_c13) { this.r22_c13 = r22_c13; }
+		public BigDecimal getR22_c14() { return r22_c14; }
+		public void setR22_c14(BigDecimal r22_c14) { this.r22_c14 = r22_c14; }
+		public BigDecimal getR22_c15() { return r22_c15; }
+		public void setR22_c15(BigDecimal r22_c15) { this.r22_c15 = r22_c15; }
+		public BigDecimal getR22_c16() { return r22_c16; }
+		public void setR22_c16(BigDecimal r22_c16) { this.r22_c16 = r22_c16; }
+		public BigDecimal getR22_total() { return r22_total; }
+		public void setR22_total(BigDecimal r22_total) { this.r22_total = r22_total; }
+		public String getR23_product() { return r23_product; }
+		public void setR23_product(String r23_product) { this.r23_product = r23_product; }
+		public BigDecimal getR23_botswana() { return r23_botswana; }
+		public void setR23_botswana(BigDecimal r23_botswana) { this.r23_botswana = r23_botswana; }
+		public BigDecimal getR23_south_africa() { return r23_south_africa; }
+		public void setR23_south_africa(BigDecimal r23_south_africa) { this.r23_south_africa = r23_south_africa; }
+		public BigDecimal getR23_sadc() { return r23_sadc; }
+		public void setR23_sadc(BigDecimal r23_sadc) { this.r23_sadc = r23_sadc; }
+		public BigDecimal getR23_usa() { return r23_usa; }
+		public void setR23_usa(BigDecimal r23_usa) { this.r23_usa = r23_usa; }
+		public BigDecimal getR23_uk() { return r23_uk; }
+		public void setR23_uk(BigDecimal r23_uk) { this.r23_uk = r23_uk; }
+		public BigDecimal getR23_europe() { return r23_europe; }
+		public void setR23_europe(BigDecimal r23_europe) { this.r23_europe = r23_europe; }
+		public BigDecimal getR23_india() { return r23_india; }
+		public void setR23_india(BigDecimal r23_india) { this.r23_india = r23_india; }
+		public BigDecimal getR23_sydney() { return r23_sydney; }
+		public void setR23_sydney(BigDecimal r23_sydney) { this.r23_sydney = r23_sydney; }
+		public BigDecimal getR23_uganda() { return r23_uganda; }
+		public void setR23_uganda(BigDecimal r23_uganda) { this.r23_uganda = r23_uganda; }
+		public BigDecimal getR23_c10() { return r23_c10; }
+		public void setR23_c10(BigDecimal r23_c10) { this.r23_c10 = r23_c10; }
+		public BigDecimal getR23_c11() { return r23_c11; }
+		public void setR23_c11(BigDecimal r23_c11) { this.r23_c11 = r23_c11; }
+		public BigDecimal getR23_c12() { return r23_c12; }
+		public void setR23_c12(BigDecimal r23_c12) { this.r23_c12 = r23_c12; }
+		public BigDecimal getR23_c13() { return r23_c13; }
+		public void setR23_c13(BigDecimal r23_c13) { this.r23_c13 = r23_c13; }
+		public BigDecimal getR23_c14() { return r23_c14; }
+		public void setR23_c14(BigDecimal r23_c14) { this.r23_c14 = r23_c14; }
+		public BigDecimal getR23_c15() { return r23_c15; }
+		public void setR23_c15(BigDecimal r23_c15) { this.r23_c15 = r23_c15; }
+		public BigDecimal getR23_c16() { return r23_c16; }
+		public void setR23_c16(BigDecimal r23_c16) { this.r23_c16 = r23_c16; }
+		public BigDecimal getR23_total() { return r23_total; }
+		public void setR23_total(BigDecimal r23_total) { this.r23_total = r23_total; }
+		public String getR57_product() { return r57_product; }
+		public void setR57_product(String r57_product) { this.r57_product = r57_product; }
+		public BigDecimal getR57_botswana() { return r57_botswana; }
+		public void setR57_botswana(BigDecimal r57_botswana) { this.r57_botswana = r57_botswana; }
+		public BigDecimal getR57_south_africa() { return r57_south_africa; }
+		public void setR57_south_africa(BigDecimal r57_south_africa) { this.r57_south_africa = r57_south_africa; }
+		public BigDecimal getR57_sadc() { return r57_sadc; }
+		public void setR57_sadc(BigDecimal r57_sadc) { this.r57_sadc = r57_sadc; }
+		public BigDecimal getR57_usa() { return r57_usa; }
+		public void setR57_usa(BigDecimal r57_usa) { this.r57_usa = r57_usa; }
+		public BigDecimal getR57_uk() { return r57_uk; }
+		public void setR57_uk(BigDecimal r57_uk) { this.r57_uk = r57_uk; }
+		public BigDecimal getR57_europe() { return r57_europe; }
+		public void setR57_europe(BigDecimal r57_europe) { this.r57_europe = r57_europe; }
+		public BigDecimal getR57_india() { return r57_india; }
+		public void setR57_india(BigDecimal r57_india) { this.r57_india = r57_india; }
+		public BigDecimal getR57_sydney() { return r57_sydney; }
+		public void setR57_sydney(BigDecimal r57_sydney) { this.r57_sydney = r57_sydney; }
+		public BigDecimal getR57_uganda() { return r57_uganda; }
+		public void setR57_uganda(BigDecimal r57_uganda) { this.r57_uganda = r57_uganda; }
+		public BigDecimal getR57_c10() { return r57_c10; }
+		public void setR57_c10(BigDecimal r57_c10) { this.r57_c10 = r57_c10; }
+		public BigDecimal getR57_c11() { return r57_c11; }
+		public void setR57_c11(BigDecimal r57_c11) { this.r57_c11 = r57_c11; }
+		public BigDecimal getR57_c12() { return r57_c12; }
+		public void setR57_c12(BigDecimal r57_c12) { this.r57_c12 = r57_c12; }
+		public BigDecimal getR57_c13() { return r57_c13; }
+		public void setR57_c13(BigDecimal r57_c13) { this.r57_c13 = r57_c13; }
+		public BigDecimal getR57_c14() { return r57_c14; }
+		public void setR57_c14(BigDecimal r57_c14) { this.r57_c14 = r57_c14; }
+		public BigDecimal getR57_c15() { return r57_c15; }
+		public void setR57_c15(BigDecimal r57_c15) { this.r57_c15 = r57_c15; }
+		public BigDecimal getR57_c16() { return r57_c16; }
+		public void setR57_c16(BigDecimal r57_c16) { this.r57_c16 = r57_c16; }
+		public BigDecimal getR57_total() { return r57_total; }
+		public void setR57_total(BigDecimal r57_total) { this.r57_total = r57_total; }
+		public String getR58_product() { return r58_product; }
+		public void setR58_product(String r58_product) { this.r58_product = r58_product; }
+		public BigDecimal getR58_botswana() { return r58_botswana; }
+		public void setR58_botswana(BigDecimal r58_botswana) { this.r58_botswana = r58_botswana; }
+		public BigDecimal getR58_south_africa() { return r58_south_africa; }
+		public void setR58_south_africa(BigDecimal r58_south_africa) { this.r58_south_africa = r58_south_africa; }
+		public BigDecimal getR58_sadc() { return r58_sadc; }
+		public void setR58_sadc(BigDecimal r58_sadc) { this.r58_sadc = r58_sadc; }
+		public BigDecimal getR58_usa() { return r58_usa; }
+		public void setR58_usa(BigDecimal r58_usa) { this.r58_usa = r58_usa; }
+		public BigDecimal getR58_uk() { return r58_uk; }
+		public void setR58_uk(BigDecimal r58_uk) { this.r58_uk = r58_uk; }
+		public BigDecimal getR58_europe() { return r58_europe; }
+		public void setR58_europe(BigDecimal r58_europe) { this.r58_europe = r58_europe; }
+		public BigDecimal getR58_india() { return r58_india; }
+		public void setR58_india(BigDecimal r58_india) { this.r58_india = r58_india; }
+		public BigDecimal getR58_sydney() { return r58_sydney; }
+		public void setR58_sydney(BigDecimal r58_sydney) { this.r58_sydney = r58_sydney; }
+		public BigDecimal getR58_uganda() { return r58_uganda; }
+		public void setR58_uganda(BigDecimal r58_uganda) { this.r58_uganda = r58_uganda; }
+		public BigDecimal getR58_c10() { return r58_c10; }
+		public void setR58_c10(BigDecimal r58_c10) { this.r58_c10 = r58_c10; }
+		public BigDecimal getR58_c11() { return r58_c11; }
+		public void setR58_c11(BigDecimal r58_c11) { this.r58_c11 = r58_c11; }
+		public BigDecimal getR58_c12() { return r58_c12; }
+		public void setR58_c12(BigDecimal r58_c12) { this.r58_c12 = r58_c12; }
+		public BigDecimal getR58_c13() { return r58_c13; }
+		public void setR58_c13(BigDecimal r58_c13) { this.r58_c13 = r58_c13; }
+		public BigDecimal getR58_c14() { return r58_c14; }
+		public void setR58_c14(BigDecimal r58_c14) { this.r58_c14 = r58_c14; }
+		public BigDecimal getR58_c15() { return r58_c15; }
+		public void setR58_c15(BigDecimal r58_c15) { this.r58_c15 = r58_c15; }
+		public BigDecimal getR58_c16() { return r58_c16; }
+		public void setR58_c16(BigDecimal r58_c16) { this.r58_c16 = r58_c16; }
+		public BigDecimal getR58_total() { return r58_total; }
+		public void setR58_total(BigDecimal r58_total) { this.r58_total = r58_total; }
+		public String getR60_product() { return r60_product; }
+		public void setR60_product(String r60_product) { this.r60_product = r60_product; }
+		public BigDecimal getR60_botswana() { return r60_botswana; }
+		public void setR60_botswana(BigDecimal r60_botswana) { this.r60_botswana = r60_botswana; }
+		public BigDecimal getR60_south_africa() { return r60_south_africa; }
+		public void setR60_south_africa(BigDecimal r60_south_africa) { this.r60_south_africa = r60_south_africa; }
+		public BigDecimal getR60_sadc() { return r60_sadc; }
+		public void setR60_sadc(BigDecimal r60_sadc) { this.r60_sadc = r60_sadc; }
+		public BigDecimal getR60_usa() { return r60_usa; }
+		public void setR60_usa(BigDecimal r60_usa) { this.r60_usa = r60_usa; }
+		public BigDecimal getR60_uk() { return r60_uk; }
+		public void setR60_uk(BigDecimal r60_uk) { this.r60_uk = r60_uk; }
+		public BigDecimal getR60_europe() { return r60_europe; }
+		public void setR60_europe(BigDecimal r60_europe) { this.r60_europe = r60_europe; }
+		public BigDecimal getR60_india() { return r60_india; }
+		public void setR60_india(BigDecimal r60_india) { this.r60_india = r60_india; }
+		public BigDecimal getR60_sydney() { return r60_sydney; }
+		public void setR60_sydney(BigDecimal r60_sydney) { this.r60_sydney = r60_sydney; }
+		public BigDecimal getR60_uganda() { return r60_uganda; }
+		public void setR60_uganda(BigDecimal r60_uganda) { this.r60_uganda = r60_uganda; }
+		public BigDecimal getR60_c10() { return r60_c10; }
+		public void setR60_c10(BigDecimal r60_c10) { this.r60_c10 = r60_c10; }
+		public BigDecimal getR60_c11() { return r60_c11; }
+		public void setR60_c11(BigDecimal r60_c11) { this.r60_c11 = r60_c11; }
+		public BigDecimal getR60_c12() { return r60_c12; }
+		public void setR60_c12(BigDecimal r60_c12) { this.r60_c12 = r60_c12; }
+		public BigDecimal getR60_c13() { return r60_c13; }
+		public void setR60_c13(BigDecimal r60_c13) { this.r60_c13 = r60_c13; }
+		public BigDecimal getR60_c14() { return r60_c14; }
+		public void setR60_c14(BigDecimal r60_c14) { this.r60_c14 = r60_c14; }
+		public BigDecimal getR60_c15() { return r60_c15; }
+		public void setR60_c15(BigDecimal r60_c15) { this.r60_c15 = r60_c15; }
+		public BigDecimal getR60_c16() { return r60_c16; }
+		public void setR60_c16(BigDecimal r60_c16) { this.r60_c16 = r60_c16; }
+		public BigDecimal getR60_total() { return r60_total; }
+		public void setR60_total(BigDecimal r60_total) { this.r60_total = r60_total; }
+		public String getR61_product() { return r61_product; }
+		public void setR61_product(String r61_product) { this.r61_product = r61_product; }
+		public BigDecimal getR61_botswana() { return r61_botswana; }
+		public void setR61_botswana(BigDecimal r61_botswana) { this.r61_botswana = r61_botswana; }
+		public BigDecimal getR61_south_africa() { return r61_south_africa; }
+		public void setR61_south_africa(BigDecimal r61_south_africa) { this.r61_south_africa = r61_south_africa; }
+		public BigDecimal getR61_sadc() { return r61_sadc; }
+		public void setR61_sadc(BigDecimal r61_sadc) { this.r61_sadc = r61_sadc; }
+		public BigDecimal getR61_usa() { return r61_usa; }
+		public void setR61_usa(BigDecimal r61_usa) { this.r61_usa = r61_usa; }
+		public BigDecimal getR61_uk() { return r61_uk; }
+		public void setR61_uk(BigDecimal r61_uk) { this.r61_uk = r61_uk; }
+		public BigDecimal getR61_europe() { return r61_europe; }
+		public void setR61_europe(BigDecimal r61_europe) { this.r61_europe = r61_europe; }
+		public BigDecimal getR61_india() { return r61_india; }
+		public void setR61_india(BigDecimal r61_india) { this.r61_india = r61_india; }
+		public BigDecimal getR61_sydney() { return r61_sydney; }
+		public void setR61_sydney(BigDecimal r61_sydney) { this.r61_sydney = r61_sydney; }
+		public BigDecimal getR61_uganda() { return r61_uganda; }
+		public void setR61_uganda(BigDecimal r61_uganda) { this.r61_uganda = r61_uganda; }
+		public BigDecimal getR61_c10() { return r61_c10; }
+		public void setR61_c10(BigDecimal r61_c10) { this.r61_c10 = r61_c10; }
+		public BigDecimal getR61_c11() { return r61_c11; }
+		public void setR61_c11(BigDecimal r61_c11) { this.r61_c11 = r61_c11; }
+		public BigDecimal getR61_c12() { return r61_c12; }
+		public void setR61_c12(BigDecimal r61_c12) { this.r61_c12 = r61_c12; }
+		public BigDecimal getR61_c13() { return r61_c13; }
+		public void setR61_c13(BigDecimal r61_c13) { this.r61_c13 = r61_c13; }
+		public BigDecimal getR61_c14() { return r61_c14; }
+		public void setR61_c14(BigDecimal r61_c14) { this.r61_c14 = r61_c14; }
+		public BigDecimal getR61_c15() { return r61_c15; }
+		public void setR61_c15(BigDecimal r61_c15) { this.r61_c15 = r61_c15; }
+		public BigDecimal getR61_c16() { return r61_c16; }
+		public void setR61_c16(BigDecimal r61_c16) { this.r61_c16 = r61_c16; }
+		public BigDecimal getR61_total() { return r61_total; }
+		public void setR61_total(BigDecimal r61_total) { this.r61_total = r61_total; }
+		public String getR64_product() { return r64_product; }
+		public void setR64_product(String r64_product) { this.r64_product = r64_product; }
+		public BigDecimal getR64_botswana() { return r64_botswana; }
+		public void setR64_botswana(BigDecimal r64_botswana) { this.r64_botswana = r64_botswana; }
+		public BigDecimal getR64_south_africa() { return r64_south_africa; }
+		public void setR64_south_africa(BigDecimal r64_south_africa) { this.r64_south_africa = r64_south_africa; }
+		public BigDecimal getR64_sadc() { return r64_sadc; }
+		public void setR64_sadc(BigDecimal r64_sadc) { this.r64_sadc = r64_sadc; }
+		public BigDecimal getR64_usa() { return r64_usa; }
+		public void setR64_usa(BigDecimal r64_usa) { this.r64_usa = r64_usa; }
+		public BigDecimal getR64_uk() { return r64_uk; }
+		public void setR64_uk(BigDecimal r64_uk) { this.r64_uk = r64_uk; }
+		public BigDecimal getR64_europe() { return r64_europe; }
+		public void setR64_europe(BigDecimal r64_europe) { this.r64_europe = r64_europe; }
+		public BigDecimal getR64_india() { return r64_india; }
+		public void setR64_india(BigDecimal r64_india) { this.r64_india = r64_india; }
+		public BigDecimal getR64_sydney() { return r64_sydney; }
+		public void setR64_sydney(BigDecimal r64_sydney) { this.r64_sydney = r64_sydney; }
+		public BigDecimal getR64_uganda() { return r64_uganda; }
+		public void setR64_uganda(BigDecimal r64_uganda) { this.r64_uganda = r64_uganda; }
+		public BigDecimal getR64_c10() { return r64_c10; }
+		public void setR64_c10(BigDecimal r64_c10) { this.r64_c10 = r64_c10; }
+		public BigDecimal getR64_c11() { return r64_c11; }
+		public void setR64_c11(BigDecimal r64_c11) { this.r64_c11 = r64_c11; }
+		public BigDecimal getR64_c12() { return r64_c12; }
+		public void setR64_c12(BigDecimal r64_c12) { this.r64_c12 = r64_c12; }
+		public BigDecimal getR64_c13() { return r64_c13; }
+		public void setR64_c13(BigDecimal r64_c13) { this.r64_c13 = r64_c13; }
+		public BigDecimal getR64_c14() { return r64_c14; }
+		public void setR64_c14(BigDecimal r64_c14) { this.r64_c14 = r64_c14; }
+		public BigDecimal getR64_c15() { return r64_c15; }
+		public void setR64_c15(BigDecimal r64_c15) { this.r64_c15 = r64_c15; }
+		public BigDecimal getR64_c16() { return r64_c16; }
+		public void setR64_c16(BigDecimal r64_c16) { this.r64_c16 = r64_c16; }
+		public BigDecimal getR64_total() { return r64_total; }
+		public void setR64_total(BigDecimal r64_total) { this.r64_total = r64_total; }
+		public String getR65_product() { return r65_product; }
+		public void setR65_product(String r65_product) { this.r65_product = r65_product; }
+		public BigDecimal getR65_botswana() { return r65_botswana; }
+		public void setR65_botswana(BigDecimal r65_botswana) { this.r65_botswana = r65_botswana; }
+		public BigDecimal getR65_south_africa() { return r65_south_africa; }
+		public void setR65_south_africa(BigDecimal r65_south_africa) { this.r65_south_africa = r65_south_africa; }
+		public BigDecimal getR65_sadc() { return r65_sadc; }
+		public void setR65_sadc(BigDecimal r65_sadc) { this.r65_sadc = r65_sadc; }
+		public BigDecimal getR65_usa() { return r65_usa; }
+		public void setR65_usa(BigDecimal r65_usa) { this.r65_usa = r65_usa; }
+		public BigDecimal getR65_uk() { return r65_uk; }
+		public void setR65_uk(BigDecimal r65_uk) { this.r65_uk = r65_uk; }
+		public BigDecimal getR65_europe() { return r65_europe; }
+		public void setR65_europe(BigDecimal r65_europe) { this.r65_europe = r65_europe; }
+		public BigDecimal getR65_india() { return r65_india; }
+		public void setR65_india(BigDecimal r65_india) { this.r65_india = r65_india; }
+		public BigDecimal getR65_sydney() { return r65_sydney; }
+		public void setR65_sydney(BigDecimal r65_sydney) { this.r65_sydney = r65_sydney; }
+		public BigDecimal getR65_uganda() { return r65_uganda; }
+		public void setR65_uganda(BigDecimal r65_uganda) { this.r65_uganda = r65_uganda; }
+		public BigDecimal getR65_c10() { return r65_c10; }
+		public void setR65_c10(BigDecimal r65_c10) { this.r65_c10 = r65_c10; }
+		public BigDecimal getR65_c11() { return r65_c11; }
+		public void setR65_c11(BigDecimal r65_c11) { this.r65_c11 = r65_c11; }
+		public BigDecimal getR65_c12() { return r65_c12; }
+		public void setR65_c12(BigDecimal r65_c12) { this.r65_c12 = r65_c12; }
+		public BigDecimal getR65_c13() { return r65_c13; }
+		public void setR65_c13(BigDecimal r65_c13) { this.r65_c13 = r65_c13; }
+		public BigDecimal getR65_c14() { return r65_c14; }
+		public void setR65_c14(BigDecimal r65_c14) { this.r65_c14 = r65_c14; }
+		public BigDecimal getR65_c15() { return r65_c15; }
+		public void setR65_c15(BigDecimal r65_c15) { this.r65_c15 = r65_c15; }
+		public BigDecimal getR65_c16() { return r65_c16; }
+		public void setR65_c16(BigDecimal r65_c16) { this.r65_c16 = r65_c16; }
+		public BigDecimal getR65_total() { return r65_total; }
+		public void setR65_total(BigDecimal r65_total) { this.r65_total = r65_total; }
+		public String getR67_product() { return r67_product; }
+		public void setR67_product(String r67_product) { this.r67_product = r67_product; }
+		public BigDecimal getR67_botswana() { return r67_botswana; }
+		public void setR67_botswana(BigDecimal r67_botswana) { this.r67_botswana = r67_botswana; }
+		public BigDecimal getR67_south_africa() { return r67_south_africa; }
+		public void setR67_south_africa(BigDecimal r67_south_africa) { this.r67_south_africa = r67_south_africa; }
+		public BigDecimal getR67_sadc() { return r67_sadc; }
+		public void setR67_sadc(BigDecimal r67_sadc) { this.r67_sadc = r67_sadc; }
+		public BigDecimal getR67_usa() { return r67_usa; }
+		public void setR67_usa(BigDecimal r67_usa) { this.r67_usa = r67_usa; }
+		public BigDecimal getR67_uk() { return r67_uk; }
+		public void setR67_uk(BigDecimal r67_uk) { this.r67_uk = r67_uk; }
+		public BigDecimal getR67_europe() { return r67_europe; }
+		public void setR67_europe(BigDecimal r67_europe) { this.r67_europe = r67_europe; }
+		public BigDecimal getR67_india() { return r67_india; }
+		public void setR67_india(BigDecimal r67_india) { this.r67_india = r67_india; }
+		public BigDecimal getR67_sydney() { return r67_sydney; }
+		public void setR67_sydney(BigDecimal r67_sydney) { this.r67_sydney = r67_sydney; }
+		public BigDecimal getR67_uganda() { return r67_uganda; }
+		public void setR67_uganda(BigDecimal r67_uganda) { this.r67_uganda = r67_uganda; }
+		public BigDecimal getR67_c10() { return r67_c10; }
+		public void setR67_c10(BigDecimal r67_c10) { this.r67_c10 = r67_c10; }
+		public BigDecimal getR67_c11() { return r67_c11; }
+		public void setR67_c11(BigDecimal r67_c11) { this.r67_c11 = r67_c11; }
+		public BigDecimal getR67_c12() { return r67_c12; }
+		public void setR67_c12(BigDecimal r67_c12) { this.r67_c12 = r67_c12; }
+		public BigDecimal getR67_c13() { return r67_c13; }
+		public void setR67_c13(BigDecimal r67_c13) { this.r67_c13 = r67_c13; }
+		public BigDecimal getR67_c14() { return r67_c14; }
+		public void setR67_c14(BigDecimal r67_c14) { this.r67_c14 = r67_c14; }
+		public BigDecimal getR67_c15() { return r67_c15; }
+		public void setR67_c15(BigDecimal r67_c15) { this.r67_c15 = r67_c15; }
+		public BigDecimal getR67_c16() { return r67_c16; }
+		public void setR67_c16(BigDecimal r67_c16) { this.r67_c16 = r67_c16; }
+		public BigDecimal getR67_total() { return r67_total; }
+		public void setR67_total(BigDecimal r67_total) { this.r67_total = r67_total; }
+		public String getR68_product() { return r68_product; }
+		public void setR68_product(String r68_product) { this.r68_product = r68_product; }
+		public BigDecimal getR68_botswana() { return r68_botswana; }
+		public void setR68_botswana(BigDecimal r68_botswana) { this.r68_botswana = r68_botswana; }
+		public BigDecimal getR68_south_africa() { return r68_south_africa; }
+		public void setR68_south_africa(BigDecimal r68_south_africa) { this.r68_south_africa = r68_south_africa; }
+		public BigDecimal getR68_sadc() { return r68_sadc; }
+		public void setR68_sadc(BigDecimal r68_sadc) { this.r68_sadc = r68_sadc; }
+		public BigDecimal getR68_usa() { return r68_usa; }
+		public void setR68_usa(BigDecimal r68_usa) { this.r68_usa = r68_usa; }
+		public BigDecimal getR68_uk() { return r68_uk; }
+		public void setR68_uk(BigDecimal r68_uk) { this.r68_uk = r68_uk; }
+		public BigDecimal getR68_europe() { return r68_europe; }
+		public void setR68_europe(BigDecimal r68_europe) { this.r68_europe = r68_europe; }
+		public BigDecimal getR68_india() { return r68_india; }
+		public void setR68_india(BigDecimal r68_india) { this.r68_india = r68_india; }
+		public BigDecimal getR68_sydney() { return r68_sydney; }
+		public void setR68_sydney(BigDecimal r68_sydney) { this.r68_sydney = r68_sydney; }
+		public BigDecimal getR68_uganda() { return r68_uganda; }
+		public void setR68_uganda(BigDecimal r68_uganda) { this.r68_uganda = r68_uganda; }
+		public BigDecimal getR68_c10() { return r68_c10; }
+		public void setR68_c10(BigDecimal r68_c10) { this.r68_c10 = r68_c10; }
+		public BigDecimal getR68_c11() { return r68_c11; }
+		public void setR68_c11(BigDecimal r68_c11) { this.r68_c11 = r68_c11; }
+		public BigDecimal getR68_c12() { return r68_c12; }
+		public void setR68_c12(BigDecimal r68_c12) { this.r68_c12 = r68_c12; }
+		public BigDecimal getR68_c13() { return r68_c13; }
+		public void setR68_c13(BigDecimal r68_c13) { this.r68_c13 = r68_c13; }
+		public BigDecimal getR68_c14() { return r68_c14; }
+		public void setR68_c14(BigDecimal r68_c14) { this.r68_c14 = r68_c14; }
+		public BigDecimal getR68_c15() { return r68_c15; }
+		public void setR68_c15(BigDecimal r68_c15) { this.r68_c15 = r68_c15; }
+		public BigDecimal getR68_c16() { return r68_c16; }
+		public void setR68_c16(BigDecimal r68_c16) { this.r68_c16 = r68_c16; }
+		public BigDecimal getR68_total() { return r68_total; }
+		public void setR68_total(BigDecimal r68_total) { this.r68_total = r68_total; }
+		public BigDecimal getR111_botswana() { return r111_botswana; }
+		public void setR111_botswana(BigDecimal r111_botswana) { this.r111_botswana = r111_botswana; }
+		public BigDecimal getR112_botswana() { return r112_botswana; }
+		public void setR112_botswana(BigDecimal r112_botswana) { this.r112_botswana = r112_botswana; }
+		public BigDecimal getR113_botswana() { return r113_botswana; }
+		public void setR113_botswana(BigDecimal r113_botswana) { this.r113_botswana = r113_botswana; }
+		public BigDecimal getR114_botswana() { return r114_botswana; }
+		public void setR114_botswana(BigDecimal r114_botswana) { this.r114_botswana = r114_botswana; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public Date getReportResubDate() { return reportResubDate; }
+		public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+		public String getReport_frequency() { return report_frequency; }
+		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+		public String getReport_code() { return report_code; }
+		public void setReport_code(String report_code) { this.report_code = report_code; }
+		public String getReport_desc() { return report_desc; }
+		public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// =========================================================
+	// ROW MAPPER
+	// =========================================================
+	class M_GALORArchivalDetailRowMapper implements RowMapper<M_GALOR_Archival_Detail_Entity> {
+		@Override
+		public M_GALOR_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_GALOR_Archival_Detail_Entity obj = new M_GALOR_Archival_Detail_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLable(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportAddlCriteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReportAddlCriteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setSanctionLimit(rs.getString("SANCTION_LIMIT"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// ENTITY CLASS
+	// =========================================================
+	public static class M_GALOR_Archival_Detail_Entity {
+		private Long sno;
+		private String custId;
+		private String acctNumber;
+		private String acctName;
+		private String dataType;
+		private String reportName;
+		private String reportLable;
+		private String reportAddlCriteria_1;
+		private String reportAddlCriteria_2;
+		private String reportAddlCriteria_3;
+		private String reportRemarks;
+		private String sanctionLimit;
+		private String modificationRemarks;
+		private String dataEntryVersion;
+		private BigDecimal acctBalanceInpula;
+		private Date reportDate;
+		private String createUser;
+		private Date createTime;
+		private String modifyUser;
+		private Date modifyTime;
+		private String verifyUser;
+		private Date verifyTime;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getCustId() { return custId; }
+		public void setCustId(String custId) { this.custId = custId; }
+		public String getAcctNumber() { return acctNumber; }
+		public void setAcctNumber(String acctNumber) { this.acctNumber = acctNumber; }
+		public String getAcctName() { return acctName; }
+		public void setAcctName(String acctName) { this.acctName = acctName; }
+		public String getDataType() { return dataType; }
+		public void setDataType(String dataType) { this.dataType = dataType; }
+		public String getReportName() { return reportName; }
+		public void setReportName(String reportName) { this.reportName = reportName; }
+		public String getReportLable() { return reportLable; }
+		public void setReportLable(String reportLable) { this.reportLable = reportLable; }
+		public String getReportAddlCriteria_1() { return reportAddlCriteria_1; }
+		public void setReportAddlCriteria_1(String v) { this.reportAddlCriteria_1 = v; }
+		public String getReportAddlCriteria_2() { return reportAddlCriteria_2; }
+		public void setReportAddlCriteria_2(String v) { this.reportAddlCriteria_2 = v; }
+		public String getReportAddlCriteria_3() { return reportAddlCriteria_3; }
+		public void setReportAddlCriteria_3(String v) { this.reportAddlCriteria_3 = v; }
+		public String getReportRemarks() { return reportRemarks; }
+		public void setReportRemarks(String v) { this.reportRemarks = v; }
+		public String getSanctionLimit() { return sanctionLimit; }
+		public void setSanctionLimit(String v) { this.sanctionLimit = v; }
+		public String getModificationRemarks() { return modificationRemarks; }
+		public void setModificationRemarks(String v) { this.modificationRemarks = v; }
+		public String getDataEntryVersion() { return dataEntryVersion; }
+		public void setDataEntryVersion(String v) { this.dataEntryVersion = v; }
+		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; }
+		public void setAcctBalanceInpula(BigDecimal v) { this.acctBalanceInpula = v; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public String getCreateUser() { return createUser; }
+		public void setCreateUser(String v) { this.createUser = v; }
+		public Date getCreateTime() { return createTime; }
+		public void setCreateTime(Date v) { this.createTime = v; }
+		public String getModifyUser() { return modifyUser; }
+		public void setModifyUser(String v) { this.modifyUser = v; }
+		public Date getModifyTime() { return modifyTime; }
+		public void setModifyTime(Date v) { this.modifyTime = v; }
+		public String getVerifyUser() { return verifyUser; }
+		public void setVerifyUser(String v) { this.verifyUser = v; }
+		public Date getVerifyTime() { return verifyTime; }
+		public void setVerifyTime(Date v) { this.verifyTime = v; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String v) { this.entityFlg = v; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String v) { this.modifyFlg = v; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String v) { this.delFlg = v; }
+	}
+
+
 }

@@ -4625,7 +4625,7 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_GALOR_Manual_Summary_Entity request1) {
+			@ModelAttribute BRRS_M_GALOR_ReportService.M_GALOR_Manual_Summary_Entity request1) {
 		try {
 			System.out.println("Came to single controller");
 
