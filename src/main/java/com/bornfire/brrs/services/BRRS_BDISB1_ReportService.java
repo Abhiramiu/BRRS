@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11158,8 +11158,17 @@ public class BRRS_BDISB1_ReportService {
 
 	    try {
 
+	        // Fetch existing record for audit
+	        BDISB1_Summary_Entity oldcopy = jdbcTemplate.queryForObject(
+	                "SELECT * FROM BRRS_BDISB1_SUMMARYTABLE WHERE REPORT_DATE = ?",
+	                new BeanPropertyRowMapper<>(BDISB1_Summary_Entity.class),
+	                request1.getREPORT_DATE());
+
+	        BDISB1_Summary_Entity oldEntity = new BDISB1_Summary_Entity();
+	        BeanUtils.copyProperties(oldcopy, oldEntity);
+
 	        StringBuilder sql = new StringBuilder(
-	            "UPDATE BRRS_BDISB1_SUMMARYTABLE SET ");
+	                "UPDATE BRRS_BDISB1_SUMMARYTABLE SET ");
 
 	        List<Object> params = new ArrayList<>();
 
@@ -11232,6 +11241,23 @@ public class BRRS_BDISB1_ReportService {
 
 	        System.out.println("Rows Updated = " + count);
 
+	        // Audit Logic
+	        BDISB1_Summary_Entity newEntity = new BDISB1_Summary_Entity();
+	        BeanUtils.copyProperties(request1, newEntity);
+
+	        String changes = auditService.getChanges(oldEntity, newEntity);
+
+	        if (!changes.isEmpty()) {
+
+	            auditService.compareEntitiesmanual(
+	                    oldEntity,
+	                    newEntity,
+	                    request1.getREPORT_DATE().toString(),
+	                    "BDISB1 Summary Screen",
+	                    "BRRS_BDISB1_SUMMARYTABLE"
+	            );
+	        }
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        throw new RuntimeException("Error while updating BRRS_BDISB1 Report", e);
@@ -11245,7 +11271,6 @@ public class BRRS_BDISB1_ReportService {
 	        throw new RuntimeException(e);
 	    }
 	}
-	
 
 //////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////
 /// Report Date | Report Version | Domain

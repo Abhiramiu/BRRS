@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -2640,6 +2640,15 @@ public class BRRS_BDISB3_ReportService {
 
 	    try {
 
+	        // Fetch existing record for audit
+	        BDISB3_Summary_Entity oldcopy = jdbcTemplate.queryForObject(
+	                "SELECT * FROM BRRS_BDISB3_SUMMARYTABLE WHERE REPORT_DATE = ?",
+	                new BeanPropertyRowMapper<>(BDISB3_Summary_Entity.class),
+	                request.getREPORT_DATE());
+
+	        BDISB3_Summary_Entity oldEntity = new BDISB3_Summary_Entity();
+	        BeanUtils.copyProperties(oldcopy, oldEntity);
+
 	        StringBuilder sql = new StringBuilder(
 	                "UPDATE BRRS_BDISB3_SUMMARYTABLE SET ");
 
@@ -2666,6 +2675,23 @@ public class BRRS_BDISB3_ReportService {
 	        int count = jdbcTemplate.update(sql.toString(), params.toArray());
 
 	        System.out.println("Rows Updated = " + count);
+
+	        // Audit Logic
+	        BDISB3_Summary_Entity newEntity = new BDISB3_Summary_Entity();
+	        BeanUtils.copyProperties(request, newEntity);
+
+	        String changes = auditService.getChanges(oldEntity, newEntity);
+
+	        if (!changes.isEmpty()) {
+
+	            auditService.compareEntitiesmanual(
+	                    oldEntity,
+	                    newEntity,
+	                    request.getREPORT_DATE().toString(),
+	                    "BDISB3 Summary Screen",
+	                    "BRRS_BDISB3_SUMMARYTABLE"
+	            );
+	        }
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
