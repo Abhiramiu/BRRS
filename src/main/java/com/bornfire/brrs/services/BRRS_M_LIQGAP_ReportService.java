@@ -9363,7 +9363,11 @@ return new byte[0];
 											        
 												}
 
-									workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+									try {
+									    workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+									} catch (RuntimeException e) {
+									    logger.warn("Skipping formula evaluation due to external references: {}", e.getMessage());
+									}
 								} else {
 
 								}

@@ -1803,7 +1803,11 @@ public class BRRS_M_CA1_ReportService {
 
 
 			
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				try {
+				    workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				} catch (RuntimeException e) {
+				    logger.warn("Skipping formula evaluation due to external references: {}", e.getMessage());
+				}
 			} else {
 
 			}

@@ -571,6 +571,24 @@ PURPOSE		: BRRSREPORT
 		        $('#loader').modal('hide');
 		    }, 2000);
 		}
+
+		function emailDownloadSummaryPdf(element) {
+		    var reportid = element.getAttribute('data-reportid');
+		    var fromdate = element.getAttribute('data-fromdate');
+		    var todate   = element.getAttribute('data-todate');
+
+		    $('#loader').modal('show');
+
+		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+		            + '?fromdate=' + encodeURIComponent(fromdate)
+		            + '&todate='   + encodeURIComponent(todate);
+
+		    window.location.href = url;
+
+		    setTimeout(function () {
+		        $('#loader').modal('hide');
+		    }, 2000);
+		}
 		
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -1103,24 +1121,23 @@ PURPOSE		: BRRSREPORT
 										            data-todate=${todate},
 										            data-currency=${currency}, 
 										            data-dtltype=${dtltype},
-										            data-filename='EMAIL_M_DEP41.xlsx',
+										            data-filename='EMAIL_M_DEP4.xlsx',
 										            data-type=${type},
 										            data-format='email',
 										            data-version=${version != null ? version : ''}"
 													style="font-family: Arial; font-weight: bold;font-size: 14px;">
 													<i class="fa fa-download"></i> Email
-
+							
 												</button>
 												
-						 <div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
+						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
 							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-		<button type="button" class="custom-tab-btn dropdown-toggle"
+							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							
 							<div class="dropdown-menu" >
-							<a href="#"
+								<a href="#"
 								   class="nav-link"
 							 	   th:attr=	"data-reportid=${reportid},
 											 data-fromdate=${fromdate},
@@ -1128,9 +1145,17 @@ PURPOSE		: BRRSREPORT
 								   onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
-								
-								</div>
+								<div class="dropdown-divider"></div>
+								<a href="#"
+								   class="nav-link"
+								   th:attr="data-reportid=${reportid},
+											data-fromdate=${fromdate},
+											data-todate=${todate}"
+								   onclick="emailDownloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+								</a>
 							</div>
+						</div>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
