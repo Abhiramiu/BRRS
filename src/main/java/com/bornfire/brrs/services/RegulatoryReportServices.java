@@ -10547,7 +10547,7 @@ public class RegulatoryReportServices {
                     }
                     
 
-        case "Q_SMME_LOANS":
+        case "Q_SMME_LA":
             try {
                 excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(
                         filename,
