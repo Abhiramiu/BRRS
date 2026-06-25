@@ -204,8 +204,6 @@ PURPOSE		: BRRSREPORT
 			pointer-events: none;
 			transition: 0.3s ease;
 		}
-
-		
 	</style>
 
 	<style>
@@ -405,6 +403,7 @@ PURPOSE		: BRRSREPORT
 		/*]]>*/
 	</script>
 	<script>
+
 		function openQSMMELADetail(elem, mode) {
 
 			var type = elem.getAttribute('data-type');
@@ -413,39 +412,136 @@ PURPOSE		: BRRSREPORT
 				showResultModal('BRRS', "Archived Data cannot be modified");
 				return;
 			}
+
 			const acctNo = elem.getAttribute("data-acctNo");
+			const SNO = elem.getAttribute("data-SNo");
 			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+
+			location.href =
+				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+
+
 		}
 	</script>
 	<script>
-		  let previousUrl = document.referrer;
+		let previousUrl = document.referrer;
+
 		function submitQ_SMMEUpdate() {
-			const formData = $('#QSMMEDetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#QSMMEDetailForm').serialize();
+			let userAnswer = null;
 
-			            $('#loader').modal('show');
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-            $.ajax({
-                url: '/BRRS/Reports/' + reportId + '/update',
-                type: 'POST',
-                data: formData,
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitQ_SMMEUpdate();
+				});
 
-                success: function (response) {
-                    $('#loader').modal('hide');
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitQ_SMMEUpdate();
+				});
 
-                    if (response && response.toLowerCase().includes('success')) {
-                        showResultModalDU('BRRS', response);
-                    } else {
-                        showResultModalDU('Information', response || 'No data updated.');
-                    }
-                },
+				return;
+			}
 
-                error: function () {
-                    $('#loader').modal('hide');
-                    showResultModalDU('Error', 'Failed to update record. Please try again.');
-                }
-            });
-        }
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/update',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					if (response && response.toLowerCase().includes('success')) {
+
+						if (userAnswer === 'NO') {
+							let title = 'Success';
+							let message = response;
+							document.getElementById('resultModalLabel2').innerText = title;
+							document.getElementById('resultModalBody2').innerText = message;
+
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
+						} else {
+							showResultModalDU('Success', response);
+						}
+
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to update record. Please try again.');
+				}
+			});
+		}
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+
+			let cleanDate = rawDate.replace(/['"]/g, '');
+
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						let title = 'Success';
+						let message = response;
+						document.getElementById('resultModalLabel2').innerText = title;
+						document.getElementById('resultModalBody2').innerText = message;
+
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to process request. Please try again.');
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
+		}
+		function showResultModalDU(title, message) {
+			document.getElementById('resultModalLabel1').innerText = title;
+			document.getElementById('resultModalBody1').innerText = message;
+
+			const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+			modal.show();
+		}
 	</script>
 
 	<script th:inline="javascript">
@@ -474,7 +570,7 @@ PURPOSE		: BRRSREPORT
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant 
-		
+
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -543,7 +639,7 @@ PURPOSE		: BRRSREPORT
 		}
 
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), { backdrop: 'static', keyboard: false });
+			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 			loader.show();
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
@@ -565,13 +661,13 @@ PURPOSE		: BRRSREPORT
 				fixedHeader: true, // ✅ You can simply set it to true
 				// ✅ Column width settings
 				columnDefs: [
-					{ width: "60px", targets: 0 },
-					{ width: "100px", targets: 1 },
-					{ width: "250px", targets: 5 },
-					{ width: "250px", targets: 7 },
+					{width: "60px", targets: 0},
+					{width: "100px", targets: 1},
+					{width: "250px", targets: 5},
+					{width: "250px", targets: 7},
 
 					// ⭐ Right align these 5 columns
-					{ className: "dt-right", targets: [3, 4, 5, 7, 8] }
+					{className: "dt-right", targets: [3, 4, 5, 7, 8]}
 				],
 
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
@@ -617,94 +713,84 @@ PURPOSE		: BRRSREPORT
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
-function downloadfile(button) {
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-    var reportid = button.getAttribute('data-reportid');
-    var asondate = button.getAttribute('data-asondate');
-    var fromdate = button.getAttribute('data-fromdate');
-    var todate = button.getAttribute('data-todate');
-    var currency = button.getAttribute('data-currency');
-    var subreportid = button.getAttribute('data-subreportid');
-    var secid = button.getAttribute('data-secid');
-    var dtltype = button.getAttribute('data-dtltype');
-    var filename = button.getAttribute('data-filename');
-    var type = button.getAttribute('data-type');
-    var version = button.getAttribute('data-version');
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-    var loader = new bootstrap.Modal(
-        document.getElementById('loader'),
-        { backdrop: 'static', keyboard: false }
-    );
-    loader.show();
+			$('#loader').modal('show');
 
-    // ✅ Build URL safely
-    var url = './downloadExcel?reportid=' + reportid +
-        '&fromdate=' + fromdate +
-        '&asondate=' + asondate +
-        '&todate=' + todate +
-        '&currency=' + currency +
-        '&subreportid=' + subreportid +
-        '&secid=' + secid +
-        '&filename=' + filename +
-        '&type=' + type;
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
 
-    // ✅ ONLY append version if valid
-    if (version && version.trim() !== '') {
-        url += '&version=' + version;
-    }
+		function downloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-    $.ajax({
-        url: url,
-        type: 'GET',
-        xhrFields: { responseType: 'blob' },
+			$('#loader').modal('show');
 
-        success: function (data) {
-            $('#loader').modal('hide');
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-            if (data && data.size > 100) {
-                const blob = new Blob([data], {
-                    type: 'application/vnd.ms-excel'
-                });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+			window.location.href = url;
 
-                showResultModal('BRRS', filename + ' downloaded successfully.');
-            } else {
-                showResultModal('Information', 'No data was available to create a download.');
-            }
-        },
-
-        error: function () {
-            $('#loader').modal('hide');
-            showResultModal('Error', 'An error occurred while downloading the file.');
-        }
-    });
-}
-
-function downloadSummaryPdf(element) {
-    var reportid = element.getAttribute('data-reportid');
-    var fromdate = element.getAttribute('data-fromdate');
-    var todate   = element.getAttribute('data-todate');
-
-    $('#loader').modal('show');
-
-    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-            + '?fromdate=' + encodeURIComponent(fromdate)
-            + '&todate='   + encodeURIComponent(todate);
-
-    window.location.href = url;
-
-    setTimeout(function () {
-        $('#loader').modal('hide');
-    }, 2000);
-}
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
 
 		function editRecord() {
 			showResultModal("Alert", "Development in progress");
@@ -815,10 +901,10 @@ function downloadSummaryPdf(element) {
 					version: button.getAttribute('data-version'),
 					todate: button.getAttribute('data-todate')
 				},
-				xhrFields: { responseType: 'blob' },
+				xhrFields: {responseType: 'blob'},
 				success: function (data) {
 					if (data && data.size > 100) {
-						const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
 
 						const a = document.createElement('a');
@@ -924,7 +1010,7 @@ function downloadSummaryPdf(element) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(5) QUARTERLY SCHEDULE: Q-SMME INT : SMME INTEREST INCOME (P'000)
+							(5) QUARTERLY SCHEDULE: Q-SMME INT : SMME <br> INTEREST INCOME (P'000)
 						</h5>
 
 						<!-- Moving bus-board text -->
@@ -951,7 +1037,7 @@ function downloadSummaryPdf(element) {
 							th:if="${displaymode == 'summary'}">
 							Details
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+						<!--		<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
@@ -963,26 +1049,50 @@ function downloadSummaryPdf(element) {
 					    			 
             data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
+						</button>-->
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' ) or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+											                   data-asondate=${asondate},
+											                   data-fromdate=${fromdate},
+											                   data-todate=${todate},
+											                   data-currency=${currency}, 
+											                   data-dtltype=${dtltype},
+											                   data-filename='Q_SMME_INT.xlsx',
+											                   data-type=${type},
+											                   data-version=${version != null ? version : ''}"
+							style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Format
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' )
+																	          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+																	             data-asondate=${asondate},
+																	             data-fromdate=${fromdate},
+																	             data-todate=${todate},
+																	             data-currency=${currency},
+																	             data-dtltype='email',
+																	             data-filename='EMAIL_Q_SMME.xlsx',
+																	             data-type=${type},
+																				 data-format='email',
+																	             data-version=${version != null ? version : ''}">
+							<i class="fa fa-download"></i> Email
+						</button>
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
-								</a>								
+								</a>
 							</div>
 						</div>
-					
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" th:attr="
         data-reportid=${reportid}, 
@@ -1306,7 +1416,7 @@ function downloadSummaryPdf(element) {
  : '0'}" style="text-align: right" th:attr="RowId='R42', ColumnId='C3'" onclick="showdetailsbyRowAndColumn(this)"></td>
 										</tr>
 										<tr>
-											<td th:text="${reportsummary.R43_caoin}" ></td>
+											<td th:text="${reportsummary.R43_caoin}"></td>
 											<td th:text="${reportsummary.R43_res_carry_amt != null 
 ? #numbers.formatDecimal(reportsummary.R43_res_carry_amt, 1, 'COMMA', 0, 'POINT') 
  : '0'}" style="text-align: right" th:attr="RowId='R43', ColumnId='C2'" onclick="showdetailsbyRowAndColumn(this)"></td>
@@ -1352,17 +1462,17 @@ function downloadSummaryPdf(element) {
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
+
 											<td>
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
-														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openQSMMELADetail(this, 'edit')"></i>
+													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
+																															            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+																															            data-type=${type}" onclick="openQSMMELADetail(this, 'edit')">
+													</i>
 
 												</a>
 											</td>
-
 
 											<td style="text-align:left;" th:text="${srlno.index + 1}"></td>
 											<td style="text-align:left;" th:text="${report.custId}"></td>
@@ -1373,7 +1483,8 @@ function downloadSummaryPdf(element) {
 											</td>
 											<td style="text-align:left;" th:text="${report.reportLabel}"></td>
 											<td style="text-align:left;" th:text="${report.reportAddlCriteria1}"></td>
-											<td style="text-align:left;" th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
+											<td style="text-align:left;"
+												th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -1396,7 +1507,7 @@ function downloadSummaryPdf(element) {
 
 
 					<div class="card-body">
-						<form th:object="${Q_SMMEData}" method="post" id="QSMMEDetailForm">
+						<form th:object="${Q_SMME_Intrest_IncomeData}" method="post" id="QSMMEDetailForm">
 							<div class="row formline" style="margin-top:10px;">
 								<label class="col-sm-2">Customer ID</label>
 								<div class="col-sm-3">
@@ -1450,11 +1561,18 @@ function downloadSummaryPdf(element) {
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" th:field="*{reportDate}" class="form-control form-control-sm"
-										readonly th:value="${#dates.format(Q_SMMEData.reportDate, 'yyyy-MM-dd')}" />
+										readonly
+										th:value="${#dates.format(Q_SMME_Intrest_IncomeData.reportDate, 'yyyy-MM-dd')}" />
 
 								</div>
 							</div>
+							<div class="col-sm-1"></div>
 
+							<div class="col-sm-3">
+								<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
+								<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
+									readonly />
+							</div>
 							<div style="text-align:center; margin-top:20px;">
 								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
 									onclick="submitQ_SMMEUpdate()">Update</button>
@@ -1471,86 +1589,122 @@ function downloadSummaryPdf(element) {
 
 
 
-		
-        <div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content" style="background: transparent;">
-                    <div class="modal-body" style="text-align: center">
-                        <div>
-                            <img th:src=@{/images/loader.gif} id="bfirelogo"
-                                style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-                                alt="Bornfire">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 
-        <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
-        <div class="modal fade" id="resultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <!-- Your custom styled header -->
-                    <div class="menu-title-header">
-                        <div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-                            <!-- Title will be set by JavaScript -->
-                        </div>
-                    </div>
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <p id="resultModalBody"></p>
-                        <!-- Your custom styled button -->
-                        <button type="button" class="custom-tab-btn" onclick="closemodels()"
-                            data-dismiss="modal">Ok</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- For Edit in Detail page -->
-        <div class="modal fade" id="resultModal1" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="menu-title-header">
-                        <div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
-                        </div>
-                    </div>
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <p id="resultModalBody1"></p>
-                        <button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+		<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript -->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						<!-- Your custom styled button -->
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">Ok</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- For Edit in Detail page -->
+		<div class="modal fade" id="resultModal1" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-        <!-- Custom Cellresult Modal -->
-        <div class="modal fade" id="cellresultModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+		<!-- Custom Cellresult Modal -->
+		<div class="modal fade" id="cellresultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
 
-                    <!-- Custom header -->
-                    <div class="menu-title-header"
-                        style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-                        <div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-                            Do you want to open the report?
-                        </div>
-                    </div>
+					<!-- Custom header -->
+					<div class="menu-title-header"
+						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+							Do you want to open the report?
+						</div>
+					</div>
 
-                    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-                        <button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-                            style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-                            Cancel
-                        </button>
-                        <button type="button" class="custom-tab-btn yes-btn"
-                            style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-                            Yes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+							Cancel
+						</button>
+						<button type="button" class="custom-tab-btn yes-btn"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="confirmModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+							Confirmation</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="confirmModalBody">Would you like to make further modifications?</p>
 
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+								<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+									data-dismiss="modal">Modify</button>
+								<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+									Regenerate</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="resultModal2" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;">
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody2"></p>
+						<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 </body>
@@ -1559,45 +1713,45 @@ function downloadSummaryPdf(element) {
 
 
 
-    function closemodel() {
-        $('#alert').modal('hide');
-        $('#resultModal').modal('hide');
+	function closemodel() {
+		$('#alert').modal('hide');
+		$('#resultModal').modal('hide');
 
-    }
-	  function closemodels() {
-            $("#resultModal").modal("hide");
-            $('#loader').modal('hide');
+	}
+	function closemodels() {
+		$("#resultModal").modal("hide");
+		$('#loader').modal('hide');
 
-            // Reload the page after a short delay to ensure the modal animation completes smoothly.
-            setTimeout(function () {
-                location.reload();
-            }, 300);
-        }
-    function showResultModal(title, message) {
-        // Set the text for the modal elements
-        $('#resultModalLabel').text(title);
-        $('#resultModalBody').text(message);
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		setTimeout(function () {
+			location.reload();
+		}, 300);
+	}
+	function showResultModal(title, message) {
+		// Set the text for the modal elements
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
 
-        // Show the modal
-        $('#resultModal').modal('show');
-    }
+		// Show the modal
+		$('#resultModal').modal('show');
+	}
 
-    function showResultModalDU(title, message) {
-        document.getElementById('resultModalLabel1').innerText = title;
-        document.getElementById('resultModalBody1').innerText = message;
+	function showResultModalDU(title, message) {
+		document.getElementById('resultModalLabel1').innerText = title;
+		document.getElementById('resultModalBody1').innerText = message;
 
-        const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
-        modal.show();
-    }
+		const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+		modal.show();
+	}
 
-    function redirectBack() {
-        if (previousUrl) {
-            window.location.href = previousUrl;
-        } else {
-            window.history.back();
-        }
-    }
-	</script>
+	function redirectBack() {
+		if (previousUrl) {
+			window.location.href = previousUrl;
+		} else {
+			window.history.back();
+		}
+	}
+</script>
 <style>
 	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
