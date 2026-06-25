@@ -52,18 +52,14 @@ import com.bornfire.brrs.entities.BRRS_M_GMIRT_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_RESUB_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_RESUB_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_GMIRT_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA4_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA7_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA7_RESUB_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA7_RESUB_Summary_Entity;
+
 import com.bornfire.brrs.entities.M_GMIRT_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Detail_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
-import com.bornfire.brrs.entities.M_GP_Archival_Summary_Entity;
+
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component

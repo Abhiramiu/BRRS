@@ -1357,7 +1357,7 @@ public class RegulatoryReportServices {
 		case "M_GP":
 
 			repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version,req,md);
 
 			break;
 

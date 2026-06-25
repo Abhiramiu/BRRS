@@ -4207,13 +4207,13 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport1(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_GP_Summary_Entity request
+			@ModelAttribute BRRS_M_GP_ReportService.M_GP_Summary_Entity request
 
 	) {
 
 		try {
 			System.out.println("came to single controller");
-			request.setReportDate(asondate);
+			request.setReport_date(asondate);
 
 			BRRS_M_GP_ReportService.updateReport(request);
 
@@ -4230,7 +4230,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_GP_RESUB_Summary_Entity request,
+			@ModelAttribute BRRS_M_GP_ReportService.M_GP_RESUB_Summary_Entity request,
 
 			HttpServletRequest req) {
 
