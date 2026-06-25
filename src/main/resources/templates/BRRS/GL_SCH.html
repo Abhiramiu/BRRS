@@ -882,6 +882,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 	<script>
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
+			
+			console.log("Modify clicked");
 			// IDs that should always remain readonly
 			var readonlyIds = [];
 
@@ -1035,28 +1037,28 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 			/* -------- FIXED UPDATE R59 WHEN R61 CHANGES -------- */
 
-			//   let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
+			 let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
 
 			// store original R59 in hidden field OR data attribute
-			//  let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
+			  let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
 
-			// first time store original value
-			//   if (baseR59 === undefined) {
-			//       baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
-			//       $("#R59_FIG_BAL_BWP1").data("base", baseR59);
-			// }
+			//first time store original value
+			   if (baseR59 === undefined) {
+			      baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
+			     $("#R59_FIG_BAL_BWP1").data("base", baseR59);
+			 }
 
-			// let updatedR59 = baseR59 + r61;
+			 let updatedR59 = baseR59 + r61;
 
-			//   setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
+			setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
 
 
 			/* ------------------ R59 NET CALCULATION ------------------ */
-			// let r59_net_amt_bwp1 =
-			//   getCellValue("#R59_FIG_BAL_BWP1") +
-			//getCellValue("#R59_AMT_ADJ_BWP1");
+			let r59_net_amt_bwp1 =
+			  getCellValue("#R59_FIG_BAL_BWP1") +
+			getCellValue("#R59_AMT_ADJ_BWP1");
 
-			//  setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
+			 setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
 
 			/* ------------------ R61 CALCULATION ------------------ */
 			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
