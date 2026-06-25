@@ -1,4 +1,4 @@
-package com.bornfire.brrs.services;
+﻿package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -34,7 +34,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.SessionFactory;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -44,7 +45,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -53,25 +54,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA2_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA2_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA2_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA2_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA2_RESUB_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA2_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA2_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
+@Transactional
 
 public class BRRS_M_CA2_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA2_ReportService.class);
@@ -80,39 +67,88 @@ public class BRRS_M_CA2_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-	
-	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_CA2_Detail_Repo BRRS_M_CA2_Detail_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Summary_Repo BRRS_M_CA2_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Archival_Detail_Repo BRRS_M_CA2_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Archival_Summary_Repo BRRS_M_CA2_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Manual_Archival_Summary_Repo BRRS_M_CA2_Manual_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Manual_Summary_Repo BRRS_M_CA2_Manual_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Resub_Summary_Repo BRRS_M_CA2_REUSB_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA2_Resub_Detail_Repo BRRS_M_CA2_REUSB_Detail_Repo;
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	UserProfileRep userProfileRep;
-	
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	public List<M_CA2_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			new Object[]{reportDate}, new M_CA2SummaryRowMapper());
+	}
+
+	public List<M_CA2_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA2ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA2_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
+			new M_CA2ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA2_RESUB_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA2ResubSummaryRowMapper());
+	}
+
+	public List<M_CA2_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new M_CA2DetailRowMapper());
+	}
+
+	public int getDetailCount(Date reportDate) {
+		return jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM BRRS_M_CA2_DETAILTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, Integer.class);
+	}
+
+	public List<M_CA2_Detail_Entity> getDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1, Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?",
+			new Object[]{reportLabel, reportAddlCriteria1, reportDate}, new M_CA2DetailRowMapper());
+	}
+
+	public M_CA2_Detail_Entity getDetailByAcctNumber(String acctNumber) {
+		List<M_CA2_Detail_Entity> list = jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE ACCT_NUMBER = ?",
+			new Object[]{acctNumber}, new M_CA2DetailRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA2ArchivalDetailRowMapper());
+	}
+
+	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel, String criteria1, Date reportDate, String version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+			new Object[]{reportLabel, criteria1, reportDate, version}, new M_CA2ArchivalDetailRowMapper());
+	}
+
+	public List<M_CA2_RESUB_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate, String version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA2ResubDetailRowMapper());
+	}
+
+	public List<M_CA2_RESUB_Detail_Entity> getResubDetailByRowIdAndColumnId(String reportLabel, String criteria1, Date reportDate, String version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA2_RESUB_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+			new Object[]{reportLabel, criteria1, reportDate, version}, new M_CA2ResubDetailRowMapper());
+	}
 
 	public ModelAndView getM_CA2View(String reportId, String fromdate, String todate, String currency, String dtltype, // kept
 																														// but
@@ -147,8 +183,7 @@ public class BRRS_M_CA2_ReportService {
 			/* ---------- ARCHIVAL SUMMARY ---------- */
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-				List<M_CA2_Archival_Summary_Entity> summaryList = BRRS_M_CA2_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
+				List<M_CA2_Archival_Summary_Entity> summaryList = getArchivalSummaryByDateAndVersion(d1, version);
 
 				System.out.println("Archival Summary Size : " + summaryList.size());
 
@@ -159,8 +194,7 @@ public class BRRS_M_CA2_ReportService {
 			/* ---------- RESUB SUMMARY ---------- */
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-				List<M_CA2_RESUB_Summary_Entity> summaryList = BRRS_M_CA2_REUSB_Summary_Repo
-						.getdatabydateListarchival(d1, version);
+				List<M_CA2_RESUB_Summary_Entity> summaryList = getResubSummaryByDateAndVersion(d1, version);
 
 				System.out.println("Resub Summary Size : " + summaryList.size());
 
@@ -171,7 +205,7 @@ public class BRRS_M_CA2_ReportService {
 			/* ---------- NORMAL SUMMARY ---------- */
 			else {
 
-				List<M_CA2_Summary_Entity> summaryList = BRRS_M_CA2_Summary_Repo.getdatabydateList(d1);
+				List<M_CA2_Summary_Entity> summaryList = getSummaryByDate(d1);
 
 				System.out.println("Normal Summary Size : " + summaryList.size());
 
@@ -234,10 +268,9 @@ public class BRRS_M_CA2_ReportService {
 				List<M_CA2_Archival_Detail_Entity> T1Dt1;
 
 				if (reportLabel != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = BRRS_M_CA2_Archival_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria_1,
-							parsedDate, version);
+					T1Dt1 = getArchivalDetailByRowIdAndColumnId(reportLabel, reportAddlCriteria_1, parsedDate, version);
 				} else {
-					T1Dt1 = BRRS_M_CA2_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -253,10 +286,9 @@ public class BRRS_M_CA2_ReportService {
 				List<M_CA2_RESUB_Detail_Entity> T1Dt1;
 
 				if (reportLabel != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = BRRS_M_CA2_REUSB_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria_1,
-							parsedDate, version);
+					T1Dt1 = getResubDetailByRowIdAndColumnId(reportLabel, reportAddlCriteria_1, parsedDate, version);
 				} else {
-					T1Dt1 = BRRS_M_CA2_REUSB_Detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = getResubDetailByDateAndVersion(parsedDate, version);
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -272,12 +304,11 @@ public class BRRS_M_CA2_ReportService {
 				List<M_CA2_Detail_Entity> T1Dt1;
 
 				if (reportLabel != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = BRRS_M_CA2_Detail_Repo.GetDataByRowIdAndColumnId(reportLabel, reportAddlCriteria_1,
-							parsedDate);
+					T1Dt1 = getDetailByRowIdAndColumnId(reportLabel, reportAddlCriteria_1, parsedDate);
 				} else {
-					T1Dt1 = BRRS_M_CA2_Detail_Repo.getdatabydateList(parsedDate);
+					T1Dt1 = getDetailByDate(parsedDate);
 
-					totalPages = BRRS_M_CA2_Detail_Repo.getdatacount(parsedDate);
+					totalPages = getDetailCount(parsedDate);
 
 					mv.addObject("pagination", "YES");
 				}
@@ -310,8 +341,7 @@ public class BRRS_M_CA2_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_CA2_Archival_Summary_Entity> repoData = BRRS_M_CA2_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			List<M_CA2_Archival_Summary_Entity> repoData = getArchivalSummaryWithVersion();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_CA2_Archival_Summary_Entity entity : repoData) {
@@ -338,8 +368,7 @@ public class BRRS_M_CA2_ReportService {
 	public List<Object[]> getM_CA2Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_CA2_Archival_Summary_Entity> latestArchivalList = BRRS_M_CA2_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			List<M_CA2_Archival_Summary_Entity> latestArchivalList = getArchivalSummaryWithVersion();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CA2_Archival_Summary_Entity entity : latestArchivalList) {
@@ -358,249 +387,6 @@ public class BRRS_M_CA2_ReportService {
 		return resubList;
 	}
 
-//	@Transactional
-//	public ResponseEntity<?> updateReport(
-//	        M_CA2_Summary_Entity updatedEntity) {
-//
-//	    try {
-//
-//	        System.out.println("Updating CA2 Summary table");
-//
-//	        // =========================================
-//	        // FETCH EXISTING RECORD
-//	        // =========================================
-//
-//	        List<M_CA2_Summary_Entity> list =
-//	                BRRS_M_CA2_Summary_Repo
-//	                        .getdatabydateList(
-//	                                updatedEntity.getReport_date());
-//
-//	        M_CA2_Summary_Entity existing;
-//
-//	        if (list.isEmpty()) {
-//
-//	            System.out.println(
-//	                    "No record found for REPORT_DATE : "
-//	                            + updatedEntity.getReport_date());
-//
-//	            existing = new M_CA2_Summary_Entity();
-//
-//	            existing.setReport_date(
-//	                    updatedEntity.getReport_date());
-//
-//	        } else {
-//
-//	            existing = list.get(0);
-//	        }
-//
-//	        boolean isChanged = false;
-//
-//	        // =========================================
-//	        // ALLOWED ROWS
-//	        // =========================================
-//
-//	        int[] amount2Indexes =
-//	                {11, 32, 42, 44, 43, 46};
-//
-//	        int[] amount1Indexes =
-//	                {14, 15, 16, 18, 19, 21};
-//
-//	        // =========================================
-//	        // AMOUNT_2 UPDATE
-//	        // =========================================
-//
-//	        for (int i : amount2Indexes) {
-//
-//	            String getterName =
-//	                    "getR" + i + "_amount_2";
-//
-//	            String setterName =
-//	                    "setR" + i + "_amount_2";
-//
-//	            try {
-//
-//	                Method getter =
-//	                        M_CA2_Summary_Entity.class
-//	                                .getMethod(getterName);
-//
-//	                Method setter =
-//	                        M_CA2_Summary_Entity.class
-//	                                .getMethod(
-//	                                        setterName,
-//	                                        getter.getReturnType());
-//
-//	                Object newValue =
-//	                        getter.invoke(updatedEntity);
-//
-//	                Object oldValue =
-//	                        getter.invoke(existing);
-//
-//	                System.out.println(
-//	                        "Updating R"
-//	                                + i
-//	                                + "_amount_2 : "
-//	                                + newValue);
-//
-//	                if (newValue != null &&
-//	                        !newValue.equals(oldValue)) {
-//
-//	                    setter.invoke(existing, newValue);
-//
-//	                    isChanged = true;
-//	                }
-//
-//	            } catch (NoSuchMethodException e) {
-//
-//	                continue;
-//	            }
-//	        }
-//
-//	        // =========================================
-//	        // AMOUNT_1 UPDATE
-//	        // =========================================
-//
-//	        for (int i : amount1Indexes) {
-//
-//	            String getterName =
-//	                    "getR" + i + "_amount_1";
-//
-//	            String setterName =
-//	                    "setR" + i + "_amount_1";
-//
-//	            try {
-//
-//	                Method getter =
-//	                        M_CA2_Summary_Entity.class
-//	                                .getMethod(getterName);
-//
-//	                Method setter =
-//	                        M_CA2_Summary_Entity.class
-//	                                .getMethod(
-//	                                        setterName,
-//	                                        getter.getReturnType());
-//
-//	                Object newValue =
-//	                        getter.invoke(updatedEntity);
-//
-//	                Object oldValue =
-//	                        getter.invoke(existing);
-//
-//	                System.out.println(
-//	                        "Updating R"
-//	                                + i
-//	                                + "_amount_1 : "
-//	                                + newValue);
-//
-//	                if (newValue != null &&
-//	                        !newValue.equals(oldValue)) {
-//
-//	                    setter.invoke(existing, newValue);
-//
-//	                    isChanged = true;
-//	                }
-//
-//	            } catch (NoSuchMethodException e) {
-//
-//	                continue;
-//	            }
-//	        }
-//
-//	        // =========================================
-//	        // METADATA
-//	        // =========================================
-//
-//	        existing.setReport_version(
-//	                updatedEntity.getReport_version());
-//
-//	        existing.setReport_frequency(
-//	                updatedEntity.getReport_frequency());
-//
-//	        existing.setReport_code(
-//	                updatedEntity.getReport_code());
-//
-//	        existing.setReport_desc(
-//	                updatedEntity.getReport_desc());
-//
-//	        existing.setEntity_flg(
-//	                updatedEntity.getEntity_flg());
-//
-//	        existing.setModify_flg(
-//	                updatedEntity.getModify_flg());
-//
-//	        existing.setDel_flg(
-//	                updatedEntity.getDel_flg());
-//
-//	        // =========================================
-//	        // SAVE ONLY IF CHANGED
-//	        // =========================================
-//
-//	        if (isChanged) {
-//
-//	            BRRS_M_CA2_Summary_Repo.save(existing);
-//
-//	            System.out.println(
-//	                    "CA2 Summary updated successfully");
-//
-//	            // =========================================
-//	            // FORMAT DATE
-//	            // =========================================
-//
-//	            String formattedDate =
-//	                    new SimpleDateFormat("dd-MM-yyyy")
-//	                            .format(
-//	                                    updatedEntity.getReport_date());
-//
-//	            // =========================================
-//	            // CALL PROCEDURE AFTER COMMIT
-//	            // =========================================
-//
-//	            TransactionSynchronizationManager
-//	                    .registerSynchronization(
-//	                            new TransactionSynchronizationAdapter() {
-//
-//	                                @Override
-//	                                public void afterCommit() {
-//
-//	                                    try {
-//
-//	                                        System.out.println(
-//	                                                "Transaction committed - calling procedure");
-//
-//	                                        jdbcTemplate.update(
-//	                                                "BEGIN BRRS_M_CA2_SUMMARY_PROCEDURE(?); END;",
-//	                                                formattedDate);
-//
-//	                                        System.out.println(
-//	                                                "Procedure executed successfully");
-//
-//	                                    } catch (Exception e) {
-//
-//	                                        e.printStackTrace();
-//	                                    }
-//	                                }
-//	                            });
-//
-//	            return ResponseEntity.ok(
-//	                    "CA2 Summary updated successfully");
-//
-//	        } else {
-//
-//	            return ResponseEntity.ok(
-//	                    "No changes detected");
-//	        }
-//
-//	    } catch (Exception e) {
-//
-//	        e.printStackTrace();
-//
-//	        return ResponseEntity
-//	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//	                .body(
-//	                        "Error updating CA2 Summary : "
-//	                                + e.getMessage());
-//	    }
-//	}
-	
 	@Transactional
 	public ResponseEntity<?> updateReport(
 	        M_CA2_Summary_Entity updatedEntity) {
@@ -613,10 +399,7 @@ public class BRRS_M_CA2_ReportService {
 	        // FETCH EXISTING RECORD
 	        // =========================================
 
-	        List<M_CA2_Summary_Entity> list =
-	                BRRS_M_CA2_Summary_Repo
-	                        .getdatabydateList(
-	                                updatedEntity.getReport_date());
+	        List<M_CA2_Summary_Entity> list = getSummaryByDate(updatedEntity.getReport_date());
 
 	        M_CA2_Summary_Entity existing;
 
@@ -793,7 +576,20 @@ public class BRRS_M_CA2_ReportService {
 	                            oldcopy,
 	                            existing);
 
-	            BRRS_M_CA2_Summary_Repo.save(existing);
+	            jdbcTemplate.update(
+	                "UPDATE BRRS_M_CA2_SUMMARYTABLE SET " +
+	                "R11_AMOUNT_2=?, R32_AMOUNT_2=?, R42_AMOUNT_2=?, R44_AMOUNT_2=?, R43_AMOUNT_2=?, R46_AMOUNT_2=?, " +
+	                "R14_AMOUNT_1=?, R15_AMOUNT_1=?, R16_AMOUNT_1=?, R18_AMOUNT_1=?, R19_AMOUNT_1=?, R21_AMOUNT_1=?, " +
+	                "REPORT_VERSION=?, REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? " +
+	                "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	                existing.getR11_amount_2(), existing.getR32_amount_2(), existing.getR42_amount_2(),
+	                existing.getR44_amount_2(), existing.getR43_amount_2(), existing.getR46_amount_2(),
+	                existing.getR14_amount_1(), existing.getR15_amount_1(), existing.getR16_amount_1(),
+	                existing.getR18_amount_1(), existing.getR19_amount_1(), existing.getR21_amount_1(),
+	                existing.getReport_version(), existing.getReport_frequency(), existing.getReport_code(),
+	                existing.getReport_desc(), existing.getEntity_flg(), existing.getModify_flg(),
+	                existing.getDel_flg(), existing.getReport_date()
+	            );
 
 	            if (!changes.isEmpty()) {
 
@@ -1011,7 +807,7 @@ public class BRRS_M_CA2_ReportService {
 
 // Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_CA2_Detail_Entity> reportData = BRRS_M_CA2_Detail_Repo.getdatabydateList(parsedToDate);
+			List<M_CA2_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -1137,7 +933,7 @@ public class BRRS_M_CA2_ReportService {
 //
 //	        // Get data
 //	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-//	        List<M_CA2_Detail_Entity> reportData = BRRS_M_CA2_Detail_Repo.getdatabydateList(parsedToDate);
+//	        List<M_CA2_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 //
 //	        if (reportData != null && !reportData.isEmpty()) {
 //	            int rowIndex = 1;
@@ -1259,8 +1055,7 @@ public class BRRS_M_CA2_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_CA2_Archival_Detail_Entity> reportData = BRRS_M_CA2_Archival_Detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<M_CA2_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -1322,14 +1117,11 @@ public class BRRS_M_CA2_ReportService {
 		}
 	}
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_CA2"); // ✅ match the report name
 		System.out.println("Hello");
 		if (acctNo != null) {
-			M_CA2_Detail_Entity la1Entity = BRRS_M_CA2_Detail_Repo.findByAcctnumber(acctNo);
+			M_CA2_Detail_Entity la1Entity = getDetailByAcctNumber(acctNo);
 			if (la1Entity != null && la1Entity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -1346,7 +1138,7 @@ public class BRRS_M_CA2_ReportService {
 		ModelAndView mv = new ModelAndView("BRRS/M_CA2"); // ✅ match the report name
 
 		if (acctNo != null) {
-			M_CA2_Detail_Entity la1Entity = BRRS_M_CA2_Detail_Repo.findByAcctnumber(acctNo);
+			M_CA2_Detail_Entity la1Entity = getDetailByAcctNumber(acctNo);
 			if (la1Entity != null && la1Entity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -1370,7 +1162,7 @@ public class BRRS_M_CA2_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			M_CA2_Detail_Entity existing = BRRS_M_CA2_Detail_Repo.findByAcctnumber(acctNo);
+			M_CA2_Detail_Entity existing = getDetailByAcctNumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -1402,7 +1194,9 @@ public class BRRS_M_CA2_ReportService {
 			}
 
 			if (isChanged) {
-				BRRS_M_CA2_Detail_Repo.save(existing);
+				jdbcTemplate.update(
+				"UPDATE BRRS_M_CA2_DETAILTABLE SET ACCT_NAME=?, ACCT_BALANCE_IN_PULA=? WHERE ACCT_NUMBER=?",
+				existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAcctNumber());
 				
 				 // Audit comparison
 	            auditService.compareEntitiesmanual(
@@ -1506,8 +1300,7 @@ public class BRRS_M_CA2_ReportService {
 
 // Fetch data
 
-				List<M_CA2_Summary_Entity> dataList = BRRS_M_CA2_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<M_CA2_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_CA2 report. Returning empty result.");
@@ -1961,7 +1754,7 @@ public class BRRS_M_CA2_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} else {
-			List<M_CA2_Summary_Entity> dataList = BRRS_M_CA2_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+			List<M_CA2_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for BRRS_M_CA2 report. Returning empty result.");
@@ -2413,8 +2206,7 @@ public class BRRS_M_CA2_ReportService {
 			}
 		}
 
-		List<M_CA2_Archival_Summary_Entity> dataList = BRRS_M_CA2_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA2_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA2 report. Returning empty result.");
@@ -2835,8 +2627,7 @@ public class BRRS_M_CA2_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_CA2_Archival_Summary_Entity> dataList = BRRS_M_CA2_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA2_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_CA2 report. Returning empty result.");
@@ -3288,8 +3079,7 @@ public class BRRS_M_CA2_ReportService {
 			}
 		}
 
-		List<M_CA2_RESUB_Summary_Entity> dataList = BRRS_M_CA2_REUSB_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA2_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA2 report. Returning empty result.");
@@ -3711,8 +3501,7 @@ public class BRRS_M_CA2_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_CA2_RESUB_Summary_Entity> dataList = BRRS_M_CA2_REUSB_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA2_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_CA2 report. Returning empty result.");
@@ -4140,6 +3929,667 @@ public class BRRS_M_CA2_ReportService {
 							}
 
 			return out.toByteArray();
+		}
+	}
+
+
+	// =========================================================
+	// RowMapper — external M_CA2_Summary_Entity
+	// =========================================================
+	class M_CA2SummaryRowMapper implements RowMapper<M_CA2_Summary_Entity> {
+		@Override
+		public M_CA2_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_Summary_Entity obj = new M_CA2_Summary_Entity();
+			obj.setR10_product(rs.getString("R10_PRODUCT")); obj.setR10_amount_1(rs.getBigDecimal("R10_AMOUNT_1")); obj.setR10_amount_2(rs.getBigDecimal("R10_AMOUNT_2"));
+			obj.setR11_product(rs.getString("R11_PRODUCT")); obj.setR11_amount_1(rs.getBigDecimal("R11_AMOUNT_1")); obj.setR11_amount_2(rs.getBigDecimal("R11_AMOUNT_2"));
+			obj.setR12_product(rs.getString("R12_PRODUCT")); obj.setR12_amount_1(rs.getBigDecimal("R12_AMOUNT_1")); obj.setR12_amount_2(rs.getBigDecimal("R12_AMOUNT_2"));
+			obj.setR13_product(rs.getString("R13_PRODUCT")); obj.setR13_amount_1(rs.getBigDecimal("R13_AMOUNT_1")); obj.setR13_amount_2(rs.getBigDecimal("R13_AMOUNT_2"));
+			obj.setR14_product(rs.getString("R14_PRODUCT")); obj.setR14_amount_1(rs.getBigDecimal("R14_AMOUNT_1")); obj.setR14_amount_2(rs.getBigDecimal("R14_AMOUNT_2"));
+			obj.setR15_product(rs.getString("R15_PRODUCT")); obj.setR15_amount_1(rs.getBigDecimal("R15_AMOUNT_1")); obj.setR15_amount_2(rs.getBigDecimal("R15_AMOUNT_2"));
+			obj.setR16_product(rs.getString("R16_PRODUCT")); obj.setR16_amount_1(rs.getBigDecimal("R16_AMOUNT_1")); obj.setR16_amount_2(rs.getBigDecimal("R16_AMOUNT_2"));
+			obj.setR17_product(rs.getString("R17_PRODUCT")); obj.setR17_amount_1(rs.getBigDecimal("R17_AMOUNT_1")); obj.setR17_amount_2(rs.getBigDecimal("R17_AMOUNT_2"));
+			obj.setR18_product(rs.getString("R18_PRODUCT")); obj.setR18_amount_1(rs.getBigDecimal("R18_AMOUNT_1")); obj.setR18_amount_2(rs.getBigDecimal("R18_AMOUNT_2"));
+			obj.setR19_product(rs.getString("R19_PRODUCT")); obj.setR19_amount_1(rs.getBigDecimal("R19_AMOUNT_1")); obj.setR19_amount_2(rs.getBigDecimal("R19_AMOUNT_2"));
+			obj.setR20_product(rs.getString("R20_PRODUCT")); obj.setR20_amount_1(rs.getBigDecimal("R20_AMOUNT_1")); obj.setR20_amount_2(rs.getBigDecimal("R20_AMOUNT_2"));
+			obj.setR21_product(rs.getString("R21_PRODUCT")); obj.setR21_amount_1(rs.getBigDecimal("R21_AMOUNT_1")); obj.setR21_amount_2(rs.getBigDecimal("R21_AMOUNT_2"));
+			obj.setR22_product(rs.getString("R22_PRODUCT")); obj.setR22_amount_1(rs.getBigDecimal("R22_AMOUNT_1")); obj.setR22_amount_2(rs.getBigDecimal("R22_AMOUNT_2"));
+			obj.setR23_product(rs.getString("R23_PRODUCT")); obj.setR23_amount_1(rs.getBigDecimal("R23_AMOUNT_1")); obj.setR23_amount_2(rs.getBigDecimal("R23_AMOUNT_2"));
+			obj.setR24_product(rs.getString("R24_PRODUCT")); obj.setR24_amount_1(rs.getBigDecimal("R24_AMOUNT_1")); obj.setR24_amount_2(rs.getBigDecimal("R24_AMOUNT_2"));
+			obj.setR25_product(rs.getString("R25_PRODUCT")); obj.setR25_amount_1(rs.getBigDecimal("R25_AMOUNT_1")); obj.setR25_amount_2(rs.getBigDecimal("R25_AMOUNT_2"));
+			obj.setR26_product(rs.getString("R26_PRODUCT")); obj.setR26_amount_1(rs.getBigDecimal("R26_AMOUNT_1")); obj.setR26_amount_2(rs.getBigDecimal("R26_AMOUNT_2"));
+			obj.setR31_product(rs.getString("R31_PRODUCT")); obj.setR31_amount_1(rs.getBigDecimal("R31_AMOUNT_1")); obj.setR31_amount_2(rs.getBigDecimal("R31_AMOUNT_2"));
+			obj.setR32_product(rs.getString("R32_PRODUCT")); obj.setR32_amount_1(rs.getBigDecimal("R32_AMOUNT_1")); obj.setR32_amount_2(rs.getBigDecimal("R32_AMOUNT_2"));
+			obj.setR33_product(rs.getString("R33_PRODUCT")); obj.setR33_amount_1(rs.getBigDecimal("R33_AMOUNT_1")); obj.setR33_amount_2(rs.getBigDecimal("R33_AMOUNT_2"));
+			obj.setR34_product(rs.getString("R34_PRODUCT")); obj.setR34_amount_1(rs.getBigDecimal("R34_AMOUNT_1")); obj.setR34_amount_2(rs.getBigDecimal("R34_AMOUNT_2"));
+			obj.setR35_product(rs.getString("R35_PRODUCT")); obj.setR35_amount_1(rs.getBigDecimal("R35_AMOUNT_1")); obj.setR35_amount_2(rs.getBigDecimal("R35_AMOUNT_2"));
+			obj.setR36_product(rs.getString("R36_PRODUCT")); obj.setR36_amount_1(rs.getBigDecimal("R36_AMOUNT_1")); obj.setR36_amount_2(rs.getBigDecimal("R36_AMOUNT_2"));
+			obj.setR41_product(rs.getString("R41_PRODUCT")); obj.setR41_amount_1(rs.getBigDecimal("R41_AMOUNT_1")); obj.setR41_amount_2(rs.getBigDecimal("R41_AMOUNT_2"));
+			obj.setR42_product(rs.getString("R42_PRODUCT")); obj.setR42_amount_1(rs.getBigDecimal("R42_AMOUNT_1")); obj.setR42_amount_2(rs.getBigDecimal("R42_AMOUNT_2"));
+			obj.setR43_product(rs.getString("R43_PRODUCT")); obj.setR43_amount_1(rs.getBigDecimal("R43_AMOUNT_1")); obj.setR43_amount_2(rs.getBigDecimal("R43_AMOUNT_2"));
+			obj.setR44_product(rs.getString("R44_PRODUCT")); obj.setR44_amount_1(rs.getBigDecimal("R44_AMOUNT_1")); obj.setR44_amount_2(rs.getBigDecimal("R44_AMOUNT_2"));
+			obj.setR45_product(rs.getString("R45_PRODUCT")); obj.setR45_amount_1(rs.getBigDecimal("R45_AMOUNT_1")); obj.setR45_amount_2(rs.getBigDecimal("R45_AMOUNT_2"));
+			obj.setR46_product(rs.getString("R46_PRODUCT")); obj.setR46_amount_1(rs.getBigDecimal("R46_AMOUNT_1")); obj.setR46_amount_2(rs.getBigDecimal("R46_AMOUNT_2"));
+			obj.setR47_product(rs.getString("R47_PRODUCT")); obj.setR47_amount_1(rs.getBigDecimal("R47_AMOUNT_1")); obj.setR47_amount_2(rs.getBigDecimal("R47_AMOUNT_2"));
+			obj.setR48_product(rs.getString("R48_PRODUCT")); obj.setR48_amount_1(rs.getBigDecimal("R48_AMOUNT_1")); obj.setR48_amount_2(rs.getBigDecimal("R48_AMOUNT_2"));
+			obj.setR49_product(rs.getString("R49_PRODUCT")); obj.setR49_amount_1(rs.getBigDecimal("R49_AMOUNT_1")); obj.setR49_amount_2(rs.getBigDecimal("R49_AMOUNT_2"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getString("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// Inner entity: M_CA2_Archival_Summary_Entity
+	// =========================================================
+	public static class M_CA2_Archival_Summary_Entity {
+		private String r10_product; private java.math.BigDecimal r10_amount_1; private java.math.BigDecimal r10_amount_2;
+		private String r11_product; private java.math.BigDecimal r11_amount_1; private java.math.BigDecimal r11_amount_2;
+		private String r12_product; private java.math.BigDecimal r12_amount_1; private java.math.BigDecimal r12_amount_2;
+		private String r13_product; private java.math.BigDecimal r13_amount_1; private java.math.BigDecimal r13_amount_2;
+		private String r14_product; private java.math.BigDecimal r14_amount_1; private java.math.BigDecimal r14_amount_2;
+		private String r15_product; private java.math.BigDecimal r15_amount_1; private java.math.BigDecimal r15_amount_2;
+		private String r16_product; private java.math.BigDecimal r16_amount_1; private java.math.BigDecimal r16_amount_2;
+		private String r17_product; private java.math.BigDecimal r17_amount_1; private java.math.BigDecimal r17_amount_2;
+		private String r18_product; private java.math.BigDecimal r18_amount_1; private java.math.BigDecimal r18_amount_2;
+		private String r19_product; private java.math.BigDecimal r19_amount_1; private java.math.BigDecimal r19_amount_2;
+		private String r20_product; private java.math.BigDecimal r20_amount_1; private java.math.BigDecimal r20_amount_2;
+		private String r21_product; private java.math.BigDecimal r21_amount_1; private java.math.BigDecimal r21_amount_2;
+		private String r22_product; private java.math.BigDecimal r22_amount_1; private java.math.BigDecimal r22_amount_2;
+		private String r23_product; private java.math.BigDecimal r23_amount_1; private java.math.BigDecimal r23_amount_2;
+		private String r24_product; private java.math.BigDecimal r24_amount_1; private java.math.BigDecimal r24_amount_2;
+		private String r25_product; private java.math.BigDecimal r25_amount_1; private java.math.BigDecimal r25_amount_2;
+		private String r26_product; private java.math.BigDecimal r26_amount_1; private java.math.BigDecimal r26_amount_2;
+		private String r31_product; private java.math.BigDecimal r31_amount_1; private java.math.BigDecimal r31_amount_2;
+		private String r32_product; private java.math.BigDecimal r32_amount_1; private java.math.BigDecimal r32_amount_2;
+		private String r33_product; private java.math.BigDecimal r33_amount_1; private java.math.BigDecimal r33_amount_2;
+		private String r34_product; private java.math.BigDecimal r34_amount_1; private java.math.BigDecimal r34_amount_2;
+		private String r35_product; private java.math.BigDecimal r35_amount_1; private java.math.BigDecimal r35_amount_2;
+		private String r36_product; private java.math.BigDecimal r36_amount_1; private java.math.BigDecimal r36_amount_2;
+		private String r41_product; private java.math.BigDecimal r41_amount_1; private java.math.BigDecimal r41_amount_2;
+		private String r42_product; private java.math.BigDecimal r42_amount_1; private java.math.BigDecimal r42_amount_2;
+		private String r43_product; private java.math.BigDecimal r43_amount_1; private java.math.BigDecimal r43_amount_2;
+		private String r44_product; private java.math.BigDecimal r44_amount_1; private java.math.BigDecimal r44_amount_2;
+		private String r45_product; private java.math.BigDecimal r45_amount_1; private java.math.BigDecimal r45_amount_2;
+		private String r46_product; private java.math.BigDecimal r46_amount_1; private java.math.BigDecimal r46_amount_2;
+		private String r47_product; private java.math.BigDecimal r47_amount_1; private java.math.BigDecimal r47_amount_2;
+		private String r48_product; private java.math.BigDecimal r48_amount_1; private java.math.BigDecimal r48_amount_2;
+		private String r49_product; private java.math.BigDecimal r49_amount_1; private java.math.BigDecimal r49_amount_2;
+		private java.util.Date report_date; private java.math.BigDecimal report_version; private java.util.Date reportResubDate;
+		private String report_frequency; private String report_code; private String report_desc;
+		private String entity_flg; private String modify_flg; private String del_flg;
+		public String getR10_product(){return r10_product;} public void setR10_product(String v){r10_product=v;}
+		public java.math.BigDecimal getR10_amount_1(){return r10_amount_1;} public void setR10_amount_1(java.math.BigDecimal v){r10_amount_1=v;}
+		public java.math.BigDecimal getR10_amount_2(){return r10_amount_2;} public void setR10_amount_2(java.math.BigDecimal v){r10_amount_2=v;}
+		public String getR11_product(){return r11_product;} public void setR11_product(String v){r11_product=v;}
+		public java.math.BigDecimal getR11_amount_1(){return r11_amount_1;} public void setR11_amount_1(java.math.BigDecimal v){r11_amount_1=v;}
+		public java.math.BigDecimal getR11_amount_2(){return r11_amount_2;} public void setR11_amount_2(java.math.BigDecimal v){r11_amount_2=v;}
+		public String getR12_product(){return r12_product;} public void setR12_product(String v){r12_product=v;}
+		public java.math.BigDecimal getR12_amount_1(){return r12_amount_1;} public void setR12_amount_1(java.math.BigDecimal v){r12_amount_1=v;}
+		public java.math.BigDecimal getR12_amount_2(){return r12_amount_2;} public void setR12_amount_2(java.math.BigDecimal v){r12_amount_2=v;}
+		public String getR13_product(){return r13_product;} public void setR13_product(String v){r13_product=v;}
+		public java.math.BigDecimal getR13_amount_1(){return r13_amount_1;} public void setR13_amount_1(java.math.BigDecimal v){r13_amount_1=v;}
+		public java.math.BigDecimal getR13_amount_2(){return r13_amount_2;} public void setR13_amount_2(java.math.BigDecimal v){r13_amount_2=v;}
+		public String getR14_product(){return r14_product;} public void setR14_product(String v){r14_product=v;}
+		public java.math.BigDecimal getR14_amount_1(){return r14_amount_1;} public void setR14_amount_1(java.math.BigDecimal v){r14_amount_1=v;}
+		public java.math.BigDecimal getR14_amount_2(){return r14_amount_2;} public void setR14_amount_2(java.math.BigDecimal v){r14_amount_2=v;}
+		public String getR15_product(){return r15_product;} public void setR15_product(String v){r15_product=v;}
+		public java.math.BigDecimal getR15_amount_1(){return r15_amount_1;} public void setR15_amount_1(java.math.BigDecimal v){r15_amount_1=v;}
+		public java.math.BigDecimal getR15_amount_2(){return r15_amount_2;} public void setR15_amount_2(java.math.BigDecimal v){r15_amount_2=v;}
+		public String getR16_product(){return r16_product;} public void setR16_product(String v){r16_product=v;}
+		public java.math.BigDecimal getR16_amount_1(){return r16_amount_1;} public void setR16_amount_1(java.math.BigDecimal v){r16_amount_1=v;}
+		public java.math.BigDecimal getR16_amount_2(){return r16_amount_2;} public void setR16_amount_2(java.math.BigDecimal v){r16_amount_2=v;}
+		public String getR17_product(){return r17_product;} public void setR17_product(String v){r17_product=v;}
+		public java.math.BigDecimal getR17_amount_1(){return r17_amount_1;} public void setR17_amount_1(java.math.BigDecimal v){r17_amount_1=v;}
+		public java.math.BigDecimal getR17_amount_2(){return r17_amount_2;} public void setR17_amount_2(java.math.BigDecimal v){r17_amount_2=v;}
+		public String getR18_product(){return r18_product;} public void setR18_product(String v){r18_product=v;}
+		public java.math.BigDecimal getR18_amount_1(){return r18_amount_1;} public void setR18_amount_1(java.math.BigDecimal v){r18_amount_1=v;}
+		public java.math.BigDecimal getR18_amount_2(){return r18_amount_2;} public void setR18_amount_2(java.math.BigDecimal v){r18_amount_2=v;}
+		public String getR19_product(){return r19_product;} public void setR19_product(String v){r19_product=v;}
+		public java.math.BigDecimal getR19_amount_1(){return r19_amount_1;} public void setR19_amount_1(java.math.BigDecimal v){r19_amount_1=v;}
+		public java.math.BigDecimal getR19_amount_2(){return r19_amount_2;} public void setR19_amount_2(java.math.BigDecimal v){r19_amount_2=v;}
+		public String getR20_product(){return r20_product;} public void setR20_product(String v){r20_product=v;}
+		public java.math.BigDecimal getR20_amount_1(){return r20_amount_1;} public void setR20_amount_1(java.math.BigDecimal v){r20_amount_1=v;}
+		public java.math.BigDecimal getR20_amount_2(){return r20_amount_2;} public void setR20_amount_2(java.math.BigDecimal v){r20_amount_2=v;}
+		public String getR21_product(){return r21_product;} public void setR21_product(String v){r21_product=v;}
+		public java.math.BigDecimal getR21_amount_1(){return r21_amount_1;} public void setR21_amount_1(java.math.BigDecimal v){r21_amount_1=v;}
+		public java.math.BigDecimal getR21_amount_2(){return r21_amount_2;} public void setR21_amount_2(java.math.BigDecimal v){r21_amount_2=v;}
+		public String getR22_product(){return r22_product;} public void setR22_product(String v){r22_product=v;}
+		public java.math.BigDecimal getR22_amount_1(){return r22_amount_1;} public void setR22_amount_1(java.math.BigDecimal v){r22_amount_1=v;}
+		public java.math.BigDecimal getR22_amount_2(){return r22_amount_2;} public void setR22_amount_2(java.math.BigDecimal v){r22_amount_2=v;}
+		public String getR23_product(){return r23_product;} public void setR23_product(String v){r23_product=v;}
+		public java.math.BigDecimal getR23_amount_1(){return r23_amount_1;} public void setR23_amount_1(java.math.BigDecimal v){r23_amount_1=v;}
+		public java.math.BigDecimal getR23_amount_2(){return r23_amount_2;} public void setR23_amount_2(java.math.BigDecimal v){r23_amount_2=v;}
+		public String getR24_product(){return r24_product;} public void setR24_product(String v){r24_product=v;}
+		public java.math.BigDecimal getR24_amount_1(){return r24_amount_1;} public void setR24_amount_1(java.math.BigDecimal v){r24_amount_1=v;}
+		public java.math.BigDecimal getR24_amount_2(){return r24_amount_2;} public void setR24_amount_2(java.math.BigDecimal v){r24_amount_2=v;}
+		public String getR25_product(){return r25_product;} public void setR25_product(String v){r25_product=v;}
+		public java.math.BigDecimal getR25_amount_1(){return r25_amount_1;} public void setR25_amount_1(java.math.BigDecimal v){r25_amount_1=v;}
+		public java.math.BigDecimal getR25_amount_2(){return r25_amount_2;} public void setR25_amount_2(java.math.BigDecimal v){r25_amount_2=v;}
+		public String getR26_product(){return r26_product;} public void setR26_product(String v){r26_product=v;}
+		public java.math.BigDecimal getR26_amount_1(){return r26_amount_1;} public void setR26_amount_1(java.math.BigDecimal v){r26_amount_1=v;}
+		public java.math.BigDecimal getR26_amount_2(){return r26_amount_2;} public void setR26_amount_2(java.math.BigDecimal v){r26_amount_2=v;}
+		public String getR31_product(){return r31_product;} public void setR31_product(String v){r31_product=v;}
+		public java.math.BigDecimal getR31_amount_1(){return r31_amount_1;} public void setR31_amount_1(java.math.BigDecimal v){r31_amount_1=v;}
+		public java.math.BigDecimal getR31_amount_2(){return r31_amount_2;} public void setR31_amount_2(java.math.BigDecimal v){r31_amount_2=v;}
+		public String getR32_product(){return r32_product;} public void setR32_product(String v){r32_product=v;}
+		public java.math.BigDecimal getR32_amount_1(){return r32_amount_1;} public void setR32_amount_1(java.math.BigDecimal v){r32_amount_1=v;}
+		public java.math.BigDecimal getR32_amount_2(){return r32_amount_2;} public void setR32_amount_2(java.math.BigDecimal v){r32_amount_2=v;}
+		public String getR33_product(){return r33_product;} public void setR33_product(String v){r33_product=v;}
+		public java.math.BigDecimal getR33_amount_1(){return r33_amount_1;} public void setR33_amount_1(java.math.BigDecimal v){r33_amount_1=v;}
+		public java.math.BigDecimal getR33_amount_2(){return r33_amount_2;} public void setR33_amount_2(java.math.BigDecimal v){r33_amount_2=v;}
+		public String getR34_product(){return r34_product;} public void setR34_product(String v){r34_product=v;}
+		public java.math.BigDecimal getR34_amount_1(){return r34_amount_1;} public void setR34_amount_1(java.math.BigDecimal v){r34_amount_1=v;}
+		public java.math.BigDecimal getR34_amount_2(){return r34_amount_2;} public void setR34_amount_2(java.math.BigDecimal v){r34_amount_2=v;}
+		public String getR35_product(){return r35_product;} public void setR35_product(String v){r35_product=v;}
+		public java.math.BigDecimal getR35_amount_1(){return r35_amount_1;} public void setR35_amount_1(java.math.BigDecimal v){r35_amount_1=v;}
+		public java.math.BigDecimal getR35_amount_2(){return r35_amount_2;} public void setR35_amount_2(java.math.BigDecimal v){r35_amount_2=v;}
+		public String getR36_product(){return r36_product;} public void setR36_product(String v){r36_product=v;}
+		public java.math.BigDecimal getR36_amount_1(){return r36_amount_1;} public void setR36_amount_1(java.math.BigDecimal v){r36_amount_1=v;}
+		public java.math.BigDecimal getR36_amount_2(){return r36_amount_2;} public void setR36_amount_2(java.math.BigDecimal v){r36_amount_2=v;}
+		public String getR41_product(){return r41_product;} public void setR41_product(String v){r41_product=v;}
+		public java.math.BigDecimal getR41_amount_1(){return r41_amount_1;} public void setR41_amount_1(java.math.BigDecimal v){r41_amount_1=v;}
+		public java.math.BigDecimal getR41_amount_2(){return r41_amount_2;} public void setR41_amount_2(java.math.BigDecimal v){r41_amount_2=v;}
+		public String getR42_product(){return r42_product;} public void setR42_product(String v){r42_product=v;}
+		public java.math.BigDecimal getR42_amount_1(){return r42_amount_1;} public void setR42_amount_1(java.math.BigDecimal v){r42_amount_1=v;}
+		public java.math.BigDecimal getR42_amount_2(){return r42_amount_2;} public void setR42_amount_2(java.math.BigDecimal v){r42_amount_2=v;}
+		public String getR43_product(){return r43_product;} public void setR43_product(String v){r43_product=v;}
+		public java.math.BigDecimal getR43_amount_1(){return r43_amount_1;} public void setR43_amount_1(java.math.BigDecimal v){r43_amount_1=v;}
+		public java.math.BigDecimal getR43_amount_2(){return r43_amount_2;} public void setR43_amount_2(java.math.BigDecimal v){r43_amount_2=v;}
+		public String getR44_product(){return r44_product;} public void setR44_product(String v){r44_product=v;}
+		public java.math.BigDecimal getR44_amount_1(){return r44_amount_1;} public void setR44_amount_1(java.math.BigDecimal v){r44_amount_1=v;}
+		public java.math.BigDecimal getR44_amount_2(){return r44_amount_2;} public void setR44_amount_2(java.math.BigDecimal v){r44_amount_2=v;}
+		public String getR45_product(){return r45_product;} public void setR45_product(String v){r45_product=v;}
+		public java.math.BigDecimal getR45_amount_1(){return r45_amount_1;} public void setR45_amount_1(java.math.BigDecimal v){r45_amount_1=v;}
+		public java.math.BigDecimal getR45_amount_2(){return r45_amount_2;} public void setR45_amount_2(java.math.BigDecimal v){r45_amount_2=v;}
+		public String getR46_product(){return r46_product;} public void setR46_product(String v){r46_product=v;}
+		public java.math.BigDecimal getR46_amount_1(){return r46_amount_1;} public void setR46_amount_1(java.math.BigDecimal v){r46_amount_1=v;}
+		public java.math.BigDecimal getR46_amount_2(){return r46_amount_2;} public void setR46_amount_2(java.math.BigDecimal v){r46_amount_2=v;}
+		public String getR47_product(){return r47_product;} public void setR47_product(String v){r47_product=v;}
+		public java.math.BigDecimal getR47_amount_1(){return r47_amount_1;} public void setR47_amount_1(java.math.BigDecimal v){r47_amount_1=v;}
+		public java.math.BigDecimal getR47_amount_2(){return r47_amount_2;} public void setR47_amount_2(java.math.BigDecimal v){r47_amount_2=v;}
+		public String getR48_product(){return r48_product;} public void setR48_product(String v){r48_product=v;}
+		public java.math.BigDecimal getR48_amount_1(){return r48_amount_1;} public void setR48_amount_1(java.math.BigDecimal v){r48_amount_1=v;}
+		public java.math.BigDecimal getR48_amount_2(){return r48_amount_2;} public void setR48_amount_2(java.math.BigDecimal v){r48_amount_2=v;}
+		public String getR49_product(){return r49_product;} public void setR49_product(String v){r49_product=v;}
+		public java.math.BigDecimal getR49_amount_1(){return r49_amount_1;} public void setR49_amount_1(java.math.BigDecimal v){r49_amount_1=v;}
+		public java.math.BigDecimal getR49_amount_2(){return r49_amount_2;} public void setR49_amount_2(java.math.BigDecimal v){r49_amount_2=v;}
+		public java.util.Date getReport_date(){return report_date;} public void setReport_date(java.util.Date v){report_date=v;}
+		public java.math.BigDecimal getReport_version(){return report_version;} public void setReport_version(java.math.BigDecimal v){report_version=v;}
+		public java.util.Date getReportResubDate(){return reportResubDate;} public void setReportResubDate(java.util.Date v){reportResubDate=v;}
+		public String getReport_frequency(){return report_frequency;} public void setReport_frequency(String v){report_frequency=v;}
+		public String getReport_code(){return report_code;} public void setReport_code(String v){report_code=v;}
+		public String getReport_desc(){return report_desc;} public void setReport_desc(String v){report_desc=v;}
+		public String getEntity_flg(){return entity_flg;} public void setEntity_flg(String v){entity_flg=v;}
+		public String getModify_flg(){return modify_flg;} public void setModify_flg(String v){modify_flg=v;}
+		public String getDel_flg(){return del_flg;} public void setDel_flg(String v){del_flg=v;}
+	}
+
+	class M_CA2ArchivalSummaryRowMapper implements RowMapper<M_CA2_Archival_Summary_Entity> {
+		@Override
+		public M_CA2_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_Archival_Summary_Entity obj = new M_CA2_Archival_Summary_Entity();
+			obj.setR10_product(rs.getString("R10_PRODUCT")); obj.setR10_amount_1(rs.getBigDecimal("R10_AMOUNT_1")); obj.setR10_amount_2(rs.getBigDecimal("R10_AMOUNT_2"));
+			obj.setR11_product(rs.getString("R11_PRODUCT")); obj.setR11_amount_1(rs.getBigDecimal("R11_AMOUNT_1")); obj.setR11_amount_2(rs.getBigDecimal("R11_AMOUNT_2"));
+			obj.setR12_product(rs.getString("R12_PRODUCT")); obj.setR12_amount_1(rs.getBigDecimal("R12_AMOUNT_1")); obj.setR12_amount_2(rs.getBigDecimal("R12_AMOUNT_2"));
+			obj.setR13_product(rs.getString("R13_PRODUCT")); obj.setR13_amount_1(rs.getBigDecimal("R13_AMOUNT_1")); obj.setR13_amount_2(rs.getBigDecimal("R13_AMOUNT_2"));
+			obj.setR14_product(rs.getString("R14_PRODUCT")); obj.setR14_amount_1(rs.getBigDecimal("R14_AMOUNT_1")); obj.setR14_amount_2(rs.getBigDecimal("R14_AMOUNT_2"));
+			obj.setR15_product(rs.getString("R15_PRODUCT")); obj.setR15_amount_1(rs.getBigDecimal("R15_AMOUNT_1")); obj.setR15_amount_2(rs.getBigDecimal("R15_AMOUNT_2"));
+			obj.setR16_product(rs.getString("R16_PRODUCT")); obj.setR16_amount_1(rs.getBigDecimal("R16_AMOUNT_1")); obj.setR16_amount_2(rs.getBigDecimal("R16_AMOUNT_2"));
+			obj.setR17_product(rs.getString("R17_PRODUCT")); obj.setR17_amount_1(rs.getBigDecimal("R17_AMOUNT_1")); obj.setR17_amount_2(rs.getBigDecimal("R17_AMOUNT_2"));
+			obj.setR18_product(rs.getString("R18_PRODUCT")); obj.setR18_amount_1(rs.getBigDecimal("R18_AMOUNT_1")); obj.setR18_amount_2(rs.getBigDecimal("R18_AMOUNT_2"));
+			obj.setR19_product(rs.getString("R19_PRODUCT")); obj.setR19_amount_1(rs.getBigDecimal("R19_AMOUNT_1")); obj.setR19_amount_2(rs.getBigDecimal("R19_AMOUNT_2"));
+			obj.setR20_product(rs.getString("R20_PRODUCT")); obj.setR20_amount_1(rs.getBigDecimal("R20_AMOUNT_1")); obj.setR20_amount_2(rs.getBigDecimal("R20_AMOUNT_2"));
+			obj.setR21_product(rs.getString("R21_PRODUCT")); obj.setR21_amount_1(rs.getBigDecimal("R21_AMOUNT_1")); obj.setR21_amount_2(rs.getBigDecimal("R21_AMOUNT_2"));
+			obj.setR22_product(rs.getString("R22_PRODUCT")); obj.setR22_amount_1(rs.getBigDecimal("R22_AMOUNT_1")); obj.setR22_amount_2(rs.getBigDecimal("R22_AMOUNT_2"));
+			obj.setR23_product(rs.getString("R23_PRODUCT")); obj.setR23_amount_1(rs.getBigDecimal("R23_AMOUNT_1")); obj.setR23_amount_2(rs.getBigDecimal("R23_AMOUNT_2"));
+			obj.setR24_product(rs.getString("R24_PRODUCT")); obj.setR24_amount_1(rs.getBigDecimal("R24_AMOUNT_1")); obj.setR24_amount_2(rs.getBigDecimal("R24_AMOUNT_2"));
+			obj.setR25_product(rs.getString("R25_PRODUCT")); obj.setR25_amount_1(rs.getBigDecimal("R25_AMOUNT_1")); obj.setR25_amount_2(rs.getBigDecimal("R25_AMOUNT_2"));
+			obj.setR26_product(rs.getString("R26_PRODUCT")); obj.setR26_amount_1(rs.getBigDecimal("R26_AMOUNT_1")); obj.setR26_amount_2(rs.getBigDecimal("R26_AMOUNT_2"));
+			obj.setR31_product(rs.getString("R31_PRODUCT")); obj.setR31_amount_1(rs.getBigDecimal("R31_AMOUNT_1")); obj.setR31_amount_2(rs.getBigDecimal("R31_AMOUNT_2"));
+			obj.setR32_product(rs.getString("R32_PRODUCT")); obj.setR32_amount_1(rs.getBigDecimal("R32_AMOUNT_1")); obj.setR32_amount_2(rs.getBigDecimal("R32_AMOUNT_2"));
+			obj.setR33_product(rs.getString("R33_PRODUCT")); obj.setR33_amount_1(rs.getBigDecimal("R33_AMOUNT_1")); obj.setR33_amount_2(rs.getBigDecimal("R33_AMOUNT_2"));
+			obj.setR34_product(rs.getString("R34_PRODUCT")); obj.setR34_amount_1(rs.getBigDecimal("R34_AMOUNT_1")); obj.setR34_amount_2(rs.getBigDecimal("R34_AMOUNT_2"));
+			obj.setR35_product(rs.getString("R35_PRODUCT")); obj.setR35_amount_1(rs.getBigDecimal("R35_AMOUNT_1")); obj.setR35_amount_2(rs.getBigDecimal("R35_AMOUNT_2"));
+			obj.setR36_product(rs.getString("R36_PRODUCT")); obj.setR36_amount_1(rs.getBigDecimal("R36_AMOUNT_1")); obj.setR36_amount_2(rs.getBigDecimal("R36_AMOUNT_2"));
+			obj.setR41_product(rs.getString("R41_PRODUCT")); obj.setR41_amount_1(rs.getBigDecimal("R41_AMOUNT_1")); obj.setR41_amount_2(rs.getBigDecimal("R41_AMOUNT_2"));
+			obj.setR42_product(rs.getString("R42_PRODUCT")); obj.setR42_amount_1(rs.getBigDecimal("R42_AMOUNT_1")); obj.setR42_amount_2(rs.getBigDecimal("R42_AMOUNT_2"));
+			obj.setR43_product(rs.getString("R43_PRODUCT")); obj.setR43_amount_1(rs.getBigDecimal("R43_AMOUNT_1")); obj.setR43_amount_2(rs.getBigDecimal("R43_AMOUNT_2"));
+			obj.setR44_product(rs.getString("R44_PRODUCT")); obj.setR44_amount_1(rs.getBigDecimal("R44_AMOUNT_1")); obj.setR44_amount_2(rs.getBigDecimal("R44_AMOUNT_2"));
+			obj.setR45_product(rs.getString("R45_PRODUCT")); obj.setR45_amount_1(rs.getBigDecimal("R45_AMOUNT_1")); obj.setR45_amount_2(rs.getBigDecimal("R45_AMOUNT_2"));
+			obj.setR46_product(rs.getString("R46_PRODUCT")); obj.setR46_amount_1(rs.getBigDecimal("R46_AMOUNT_1")); obj.setR46_amount_2(rs.getBigDecimal("R46_AMOUNT_2"));
+			obj.setR47_product(rs.getString("R47_PRODUCT")); obj.setR47_amount_1(rs.getBigDecimal("R47_AMOUNT_1")); obj.setR47_amount_2(rs.getBigDecimal("R47_AMOUNT_2"));
+			obj.setR48_product(rs.getString("R48_PRODUCT")); obj.setR48_amount_1(rs.getBigDecimal("R48_AMOUNT_1")); obj.setR48_amount_2(rs.getBigDecimal("R48_AMOUNT_2"));
+			obj.setR49_product(rs.getString("R49_PRODUCT")); obj.setR49_amount_1(rs.getBigDecimal("R49_AMOUNT_1")); obj.setR49_amount_2(rs.getBigDecimal("R49_AMOUNT_2"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// Inner entity: M_CA2_RESUB_Summary_Entity
+	// =========================================================
+	public static class M_CA2_RESUB_Summary_Entity {
+		private String r10_product; private java.math.BigDecimal r10_amount_1; private java.math.BigDecimal r10_amount_2;
+		private String r11_product; private java.math.BigDecimal r11_amount_1; private java.math.BigDecimal r11_amount_2;
+		private String r12_product; private java.math.BigDecimal r12_amount_1; private java.math.BigDecimal r12_amount_2;
+		private String r13_product; private java.math.BigDecimal r13_amount_1; private java.math.BigDecimal r13_amount_2;
+		private String r14_product; private java.math.BigDecimal r14_amount_1; private java.math.BigDecimal r14_amount_2;
+		private String r15_product; private java.math.BigDecimal r15_amount_1; private java.math.BigDecimal r15_amount_2;
+		private String r16_product; private java.math.BigDecimal r16_amount_1; private java.math.BigDecimal r16_amount_2;
+		private String r17_product; private java.math.BigDecimal r17_amount_1; private java.math.BigDecimal r17_amount_2;
+		private String r18_product; private java.math.BigDecimal r18_amount_1; private java.math.BigDecimal r18_amount_2;
+		private String r19_product; private java.math.BigDecimal r19_amount_1; private java.math.BigDecimal r19_amount_2;
+		private String r20_product; private java.math.BigDecimal r20_amount_1; private java.math.BigDecimal r20_amount_2;
+		private String r21_product; private java.math.BigDecimal r21_amount_1; private java.math.BigDecimal r21_amount_2;
+		private String r22_product; private java.math.BigDecimal r22_amount_1; private java.math.BigDecimal r22_amount_2;
+		private String r23_product; private java.math.BigDecimal r23_amount_1; private java.math.BigDecimal r23_amount_2;
+		private String r24_product; private java.math.BigDecimal r24_amount_1; private java.math.BigDecimal r24_amount_2;
+		private String r25_product; private java.math.BigDecimal r25_amount_1; private java.math.BigDecimal r25_amount_2;
+		private String r26_product; private java.math.BigDecimal r26_amount_1; private java.math.BigDecimal r26_amount_2;
+		private String r31_product; private java.math.BigDecimal r31_amount_1; private java.math.BigDecimal r31_amount_2;
+		private String r32_product; private java.math.BigDecimal r32_amount_1; private java.math.BigDecimal r32_amount_2;
+		private String r33_product; private java.math.BigDecimal r33_amount_1; private java.math.BigDecimal r33_amount_2;
+		private String r34_product; private java.math.BigDecimal r34_amount_1; private java.math.BigDecimal r34_amount_2;
+		private String r35_product; private java.math.BigDecimal r35_amount_1; private java.math.BigDecimal r35_amount_2;
+		private String r36_product; private java.math.BigDecimal r36_amount_1; private java.math.BigDecimal r36_amount_2;
+		private String r41_product; private java.math.BigDecimal r41_amount_1; private java.math.BigDecimal r41_amount_2;
+		private String r42_product; private java.math.BigDecimal r42_amount_1; private java.math.BigDecimal r42_amount_2;
+		private String r43_product; private java.math.BigDecimal r43_amount_1; private java.math.BigDecimal r43_amount_2;
+		private String r44_product; private java.math.BigDecimal r44_amount_1; private java.math.BigDecimal r44_amount_2;
+		private String r45_product; private java.math.BigDecimal r45_amount_1; private java.math.BigDecimal r45_amount_2;
+		private String r46_product; private java.math.BigDecimal r46_amount_1; private java.math.BigDecimal r46_amount_2;
+		private String r47_product; private java.math.BigDecimal r47_amount_1; private java.math.BigDecimal r47_amount_2;
+		private String r48_product; private java.math.BigDecimal r48_amount_1; private java.math.BigDecimal r48_amount_2;
+		private String r49_product; private java.math.BigDecimal r49_amount_1; private java.math.BigDecimal r49_amount_2;
+		private java.util.Date report_date; private java.math.BigDecimal report_version; private java.util.Date reportResubDate;
+		private String report_frequency; private String report_code; private String report_desc;
+		private String entity_flg; private String modify_flg; private String del_flg;
+		public String getR10_product(){return r10_product;} public void setR10_product(String v){r10_product=v;}
+		public java.math.BigDecimal getR10_amount_1(){return r10_amount_1;} public void setR10_amount_1(java.math.BigDecimal v){r10_amount_1=v;}
+		public java.math.BigDecimal getR10_amount_2(){return r10_amount_2;} public void setR10_amount_2(java.math.BigDecimal v){r10_amount_2=v;}
+		public String getR11_product(){return r11_product;} public void setR11_product(String v){r11_product=v;}
+		public java.math.BigDecimal getR11_amount_1(){return r11_amount_1;} public void setR11_amount_1(java.math.BigDecimal v){r11_amount_1=v;}
+		public java.math.BigDecimal getR11_amount_2(){return r11_amount_2;} public void setR11_amount_2(java.math.BigDecimal v){r11_amount_2=v;}
+		public String getR12_product(){return r12_product;} public void setR12_product(String v){r12_product=v;}
+		public java.math.BigDecimal getR12_amount_1(){return r12_amount_1;} public void setR12_amount_1(java.math.BigDecimal v){r12_amount_1=v;}
+		public java.math.BigDecimal getR12_amount_2(){return r12_amount_2;} public void setR12_amount_2(java.math.BigDecimal v){r12_amount_2=v;}
+		public String getR13_product(){return r13_product;} public void setR13_product(String v){r13_product=v;}
+		public java.math.BigDecimal getR13_amount_1(){return r13_amount_1;} public void setR13_amount_1(java.math.BigDecimal v){r13_amount_1=v;}
+		public java.math.BigDecimal getR13_amount_2(){return r13_amount_2;} public void setR13_amount_2(java.math.BigDecimal v){r13_amount_2=v;}
+		public String getR14_product(){return r14_product;} public void setR14_product(String v){r14_product=v;}
+		public java.math.BigDecimal getR14_amount_1(){return r14_amount_1;} public void setR14_amount_1(java.math.BigDecimal v){r14_amount_1=v;}
+		public java.math.BigDecimal getR14_amount_2(){return r14_amount_2;} public void setR14_amount_2(java.math.BigDecimal v){r14_amount_2=v;}
+		public String getR15_product(){return r15_product;} public void setR15_product(String v){r15_product=v;}
+		public java.math.BigDecimal getR15_amount_1(){return r15_amount_1;} public void setR15_amount_1(java.math.BigDecimal v){r15_amount_1=v;}
+		public java.math.BigDecimal getR15_amount_2(){return r15_amount_2;} public void setR15_amount_2(java.math.BigDecimal v){r15_amount_2=v;}
+		public String getR16_product(){return r16_product;} public void setR16_product(String v){r16_product=v;}
+		public java.math.BigDecimal getR16_amount_1(){return r16_amount_1;} public void setR16_amount_1(java.math.BigDecimal v){r16_amount_1=v;}
+		public java.math.BigDecimal getR16_amount_2(){return r16_amount_2;} public void setR16_amount_2(java.math.BigDecimal v){r16_amount_2=v;}
+		public String getR17_product(){return r17_product;} public void setR17_product(String v){r17_product=v;}
+		public java.math.BigDecimal getR17_amount_1(){return r17_amount_1;} public void setR17_amount_1(java.math.BigDecimal v){r17_amount_1=v;}
+		public java.math.BigDecimal getR17_amount_2(){return r17_amount_2;} public void setR17_amount_2(java.math.BigDecimal v){r17_amount_2=v;}
+		public String getR18_product(){return r18_product;} public void setR18_product(String v){r18_product=v;}
+		public java.math.BigDecimal getR18_amount_1(){return r18_amount_1;} public void setR18_amount_1(java.math.BigDecimal v){r18_amount_1=v;}
+		public java.math.BigDecimal getR18_amount_2(){return r18_amount_2;} public void setR18_amount_2(java.math.BigDecimal v){r18_amount_2=v;}
+		public String getR19_product(){return r19_product;} public void setR19_product(String v){r19_product=v;}
+		public java.math.BigDecimal getR19_amount_1(){return r19_amount_1;} public void setR19_amount_1(java.math.BigDecimal v){r19_amount_1=v;}
+		public java.math.BigDecimal getR19_amount_2(){return r19_amount_2;} public void setR19_amount_2(java.math.BigDecimal v){r19_amount_2=v;}
+		public String getR20_product(){return r20_product;} public void setR20_product(String v){r20_product=v;}
+		public java.math.BigDecimal getR20_amount_1(){return r20_amount_1;} public void setR20_amount_1(java.math.BigDecimal v){r20_amount_1=v;}
+		public java.math.BigDecimal getR20_amount_2(){return r20_amount_2;} public void setR20_amount_2(java.math.BigDecimal v){r20_amount_2=v;}
+		public String getR21_product(){return r21_product;} public void setR21_product(String v){r21_product=v;}
+		public java.math.BigDecimal getR21_amount_1(){return r21_amount_1;} public void setR21_amount_1(java.math.BigDecimal v){r21_amount_1=v;}
+		public java.math.BigDecimal getR21_amount_2(){return r21_amount_2;} public void setR21_amount_2(java.math.BigDecimal v){r21_amount_2=v;}
+		public String getR22_product(){return r22_product;} public void setR22_product(String v){r22_product=v;}
+		public java.math.BigDecimal getR22_amount_1(){return r22_amount_1;} public void setR22_amount_1(java.math.BigDecimal v){r22_amount_1=v;}
+		public java.math.BigDecimal getR22_amount_2(){return r22_amount_2;} public void setR22_amount_2(java.math.BigDecimal v){r22_amount_2=v;}
+		public String getR23_product(){return r23_product;} public void setR23_product(String v){r23_product=v;}
+		public java.math.BigDecimal getR23_amount_1(){return r23_amount_1;} public void setR23_amount_1(java.math.BigDecimal v){r23_amount_1=v;}
+		public java.math.BigDecimal getR23_amount_2(){return r23_amount_2;} public void setR23_amount_2(java.math.BigDecimal v){r23_amount_2=v;}
+		public String getR24_product(){return r24_product;} public void setR24_product(String v){r24_product=v;}
+		public java.math.BigDecimal getR24_amount_1(){return r24_amount_1;} public void setR24_amount_1(java.math.BigDecimal v){r24_amount_1=v;}
+		public java.math.BigDecimal getR24_amount_2(){return r24_amount_2;} public void setR24_amount_2(java.math.BigDecimal v){r24_amount_2=v;}
+		public String getR25_product(){return r25_product;} public void setR25_product(String v){r25_product=v;}
+		public java.math.BigDecimal getR25_amount_1(){return r25_amount_1;} public void setR25_amount_1(java.math.BigDecimal v){r25_amount_1=v;}
+		public java.math.BigDecimal getR25_amount_2(){return r25_amount_2;} public void setR25_amount_2(java.math.BigDecimal v){r25_amount_2=v;}
+		public String getR26_product(){return r26_product;} public void setR26_product(String v){r26_product=v;}
+		public java.math.BigDecimal getR26_amount_1(){return r26_amount_1;} public void setR26_amount_1(java.math.BigDecimal v){r26_amount_1=v;}
+		public java.math.BigDecimal getR26_amount_2(){return r26_amount_2;} public void setR26_amount_2(java.math.BigDecimal v){r26_amount_2=v;}
+		public String getR31_product(){return r31_product;} public void setR31_product(String v){r31_product=v;}
+		public java.math.BigDecimal getR31_amount_1(){return r31_amount_1;} public void setR31_amount_1(java.math.BigDecimal v){r31_amount_1=v;}
+		public java.math.BigDecimal getR31_amount_2(){return r31_amount_2;} public void setR31_amount_2(java.math.BigDecimal v){r31_amount_2=v;}
+		public String getR32_product(){return r32_product;} public void setR32_product(String v){r32_product=v;}
+		public java.math.BigDecimal getR32_amount_1(){return r32_amount_1;} public void setR32_amount_1(java.math.BigDecimal v){r32_amount_1=v;}
+		public java.math.BigDecimal getR32_amount_2(){return r32_amount_2;} public void setR32_amount_2(java.math.BigDecimal v){r32_amount_2=v;}
+		public String getR33_product(){return r33_product;} public void setR33_product(String v){r33_product=v;}
+		public java.math.BigDecimal getR33_amount_1(){return r33_amount_1;} public void setR33_amount_1(java.math.BigDecimal v){r33_amount_1=v;}
+		public java.math.BigDecimal getR33_amount_2(){return r33_amount_2;} public void setR33_amount_2(java.math.BigDecimal v){r33_amount_2=v;}
+		public String getR34_product(){return r34_product;} public void setR34_product(String v){r34_product=v;}
+		public java.math.BigDecimal getR34_amount_1(){return r34_amount_1;} public void setR34_amount_1(java.math.BigDecimal v){r34_amount_1=v;}
+		public java.math.BigDecimal getR34_amount_2(){return r34_amount_2;} public void setR34_amount_2(java.math.BigDecimal v){r34_amount_2=v;}
+		public String getR35_product(){return r35_product;} public void setR35_product(String v){r35_product=v;}
+		public java.math.BigDecimal getR35_amount_1(){return r35_amount_1;} public void setR35_amount_1(java.math.BigDecimal v){r35_amount_1=v;}
+		public java.math.BigDecimal getR35_amount_2(){return r35_amount_2;} public void setR35_amount_2(java.math.BigDecimal v){r35_amount_2=v;}
+		public String getR36_product(){return r36_product;} public void setR36_product(String v){r36_product=v;}
+		public java.math.BigDecimal getR36_amount_1(){return r36_amount_1;} public void setR36_amount_1(java.math.BigDecimal v){r36_amount_1=v;}
+		public java.math.BigDecimal getR36_amount_2(){return r36_amount_2;} public void setR36_amount_2(java.math.BigDecimal v){r36_amount_2=v;}
+		public String getR41_product(){return r41_product;} public void setR41_product(String v){r41_product=v;}
+		public java.math.BigDecimal getR41_amount_1(){return r41_amount_1;} public void setR41_amount_1(java.math.BigDecimal v){r41_amount_1=v;}
+		public java.math.BigDecimal getR41_amount_2(){return r41_amount_2;} public void setR41_amount_2(java.math.BigDecimal v){r41_amount_2=v;}
+		public String getR42_product(){return r42_product;} public void setR42_product(String v){r42_product=v;}
+		public java.math.BigDecimal getR42_amount_1(){return r42_amount_1;} public void setR42_amount_1(java.math.BigDecimal v){r42_amount_1=v;}
+		public java.math.BigDecimal getR42_amount_2(){return r42_amount_2;} public void setR42_amount_2(java.math.BigDecimal v){r42_amount_2=v;}
+		public String getR43_product(){return r43_product;} public void setR43_product(String v){r43_product=v;}
+		public java.math.BigDecimal getR43_amount_1(){return r43_amount_1;} public void setR43_amount_1(java.math.BigDecimal v){r43_amount_1=v;}
+		public java.math.BigDecimal getR43_amount_2(){return r43_amount_2;} public void setR43_amount_2(java.math.BigDecimal v){r43_amount_2=v;}
+		public String getR44_product(){return r44_product;} public void setR44_product(String v){r44_product=v;}
+		public java.math.BigDecimal getR44_amount_1(){return r44_amount_1;} public void setR44_amount_1(java.math.BigDecimal v){r44_amount_1=v;}
+		public java.math.BigDecimal getR44_amount_2(){return r44_amount_2;} public void setR44_amount_2(java.math.BigDecimal v){r44_amount_2=v;}
+		public String getR45_product(){return r45_product;} public void setR45_product(String v){r45_product=v;}
+		public java.math.BigDecimal getR45_amount_1(){return r45_amount_1;} public void setR45_amount_1(java.math.BigDecimal v){r45_amount_1=v;}
+		public java.math.BigDecimal getR45_amount_2(){return r45_amount_2;} public void setR45_amount_2(java.math.BigDecimal v){r45_amount_2=v;}
+		public String getR46_product(){return r46_product;} public void setR46_product(String v){r46_product=v;}
+		public java.math.BigDecimal getR46_amount_1(){return r46_amount_1;} public void setR46_amount_1(java.math.BigDecimal v){r46_amount_1=v;}
+		public java.math.BigDecimal getR46_amount_2(){return r46_amount_2;} public void setR46_amount_2(java.math.BigDecimal v){r46_amount_2=v;}
+		public String getR47_product(){return r47_product;} public void setR47_product(String v){r47_product=v;}
+		public java.math.BigDecimal getR47_amount_1(){return r47_amount_1;} public void setR47_amount_1(java.math.BigDecimal v){r47_amount_1=v;}
+		public java.math.BigDecimal getR47_amount_2(){return r47_amount_2;} public void setR47_amount_2(java.math.BigDecimal v){r47_amount_2=v;}
+		public String getR48_product(){return r48_product;} public void setR48_product(String v){r48_product=v;}
+		public java.math.BigDecimal getR48_amount_1(){return r48_amount_1;} public void setR48_amount_1(java.math.BigDecimal v){r48_amount_1=v;}
+		public java.math.BigDecimal getR48_amount_2(){return r48_amount_2;} public void setR48_amount_2(java.math.BigDecimal v){r48_amount_2=v;}
+		public String getR49_product(){return r49_product;} public void setR49_product(String v){r49_product=v;}
+		public java.math.BigDecimal getR49_amount_1(){return r49_amount_1;} public void setR49_amount_1(java.math.BigDecimal v){r49_amount_1=v;}
+		public java.math.BigDecimal getR49_amount_2(){return r49_amount_2;} public void setR49_amount_2(java.math.BigDecimal v){r49_amount_2=v;}
+		public java.util.Date getReport_date(){return report_date;} public void setReport_date(java.util.Date v){report_date=v;}
+		public java.math.BigDecimal getReport_version(){return report_version;} public void setReport_version(java.math.BigDecimal v){report_version=v;}
+		public java.util.Date getReportResubDate(){return reportResubDate;} public void setReportResubDate(java.util.Date v){reportResubDate=v;}
+		public String getReport_frequency(){return report_frequency;} public void setReport_frequency(String v){report_frequency=v;}
+		public String getReport_code(){return report_code;} public void setReport_code(String v){report_code=v;}
+		public String getReport_desc(){return report_desc;} public void setReport_desc(String v){report_desc=v;}
+		public String getEntity_flg(){return entity_flg;} public void setEntity_flg(String v){entity_flg=v;}
+		public String getModify_flg(){return modify_flg;} public void setModify_flg(String v){modify_flg=v;}
+		public String getDel_flg(){return del_flg;} public void setDel_flg(String v){del_flg=v;}
+	}
+
+	class M_CA2ResubSummaryRowMapper implements RowMapper<M_CA2_RESUB_Summary_Entity> {
+		@Override
+		public M_CA2_RESUB_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_RESUB_Summary_Entity obj = new M_CA2_RESUB_Summary_Entity();
+			obj.setR10_product(rs.getString("R10_PRODUCT")); obj.setR10_amount_1(rs.getBigDecimal("R10_AMOUNT_1")); obj.setR10_amount_2(rs.getBigDecimal("R10_AMOUNT_2"));
+			obj.setR11_product(rs.getString("R11_PRODUCT")); obj.setR11_amount_1(rs.getBigDecimal("R11_AMOUNT_1")); obj.setR11_amount_2(rs.getBigDecimal("R11_AMOUNT_2"));
+			obj.setR12_product(rs.getString("R12_PRODUCT")); obj.setR12_amount_1(rs.getBigDecimal("R12_AMOUNT_1")); obj.setR12_amount_2(rs.getBigDecimal("R12_AMOUNT_2"));
+			obj.setR13_product(rs.getString("R13_PRODUCT")); obj.setR13_amount_1(rs.getBigDecimal("R13_AMOUNT_1")); obj.setR13_amount_2(rs.getBigDecimal("R13_AMOUNT_2"));
+			obj.setR14_product(rs.getString("R14_PRODUCT")); obj.setR14_amount_1(rs.getBigDecimal("R14_AMOUNT_1")); obj.setR14_amount_2(rs.getBigDecimal("R14_AMOUNT_2"));
+			obj.setR15_product(rs.getString("R15_PRODUCT")); obj.setR15_amount_1(rs.getBigDecimal("R15_AMOUNT_1")); obj.setR15_amount_2(rs.getBigDecimal("R15_AMOUNT_2"));
+			obj.setR16_product(rs.getString("R16_PRODUCT")); obj.setR16_amount_1(rs.getBigDecimal("R16_AMOUNT_1")); obj.setR16_amount_2(rs.getBigDecimal("R16_AMOUNT_2"));
+			obj.setR17_product(rs.getString("R17_PRODUCT")); obj.setR17_amount_1(rs.getBigDecimal("R17_AMOUNT_1")); obj.setR17_amount_2(rs.getBigDecimal("R17_AMOUNT_2"));
+			obj.setR18_product(rs.getString("R18_PRODUCT")); obj.setR18_amount_1(rs.getBigDecimal("R18_AMOUNT_1")); obj.setR18_amount_2(rs.getBigDecimal("R18_AMOUNT_2"));
+			obj.setR19_product(rs.getString("R19_PRODUCT")); obj.setR19_amount_1(rs.getBigDecimal("R19_AMOUNT_1")); obj.setR19_amount_2(rs.getBigDecimal("R19_AMOUNT_2"));
+			obj.setR20_product(rs.getString("R20_PRODUCT")); obj.setR20_amount_1(rs.getBigDecimal("R20_AMOUNT_1")); obj.setR20_amount_2(rs.getBigDecimal("R20_AMOUNT_2"));
+			obj.setR21_product(rs.getString("R21_PRODUCT")); obj.setR21_amount_1(rs.getBigDecimal("R21_AMOUNT_1")); obj.setR21_amount_2(rs.getBigDecimal("R21_AMOUNT_2"));
+			obj.setR22_product(rs.getString("R22_PRODUCT")); obj.setR22_amount_1(rs.getBigDecimal("R22_AMOUNT_1")); obj.setR22_amount_2(rs.getBigDecimal("R22_AMOUNT_2"));
+			obj.setR23_product(rs.getString("R23_PRODUCT")); obj.setR23_amount_1(rs.getBigDecimal("R23_AMOUNT_1")); obj.setR23_amount_2(rs.getBigDecimal("R23_AMOUNT_2"));
+			obj.setR24_product(rs.getString("R24_PRODUCT")); obj.setR24_amount_1(rs.getBigDecimal("R24_AMOUNT_1")); obj.setR24_amount_2(rs.getBigDecimal("R24_AMOUNT_2"));
+			obj.setR25_product(rs.getString("R25_PRODUCT")); obj.setR25_amount_1(rs.getBigDecimal("R25_AMOUNT_1")); obj.setR25_amount_2(rs.getBigDecimal("R25_AMOUNT_2"));
+			obj.setR26_product(rs.getString("R26_PRODUCT")); obj.setR26_amount_1(rs.getBigDecimal("R26_AMOUNT_1")); obj.setR26_amount_2(rs.getBigDecimal("R26_AMOUNT_2"));
+			obj.setR31_product(rs.getString("R31_PRODUCT")); obj.setR31_amount_1(rs.getBigDecimal("R31_AMOUNT_1")); obj.setR31_amount_2(rs.getBigDecimal("R31_AMOUNT_2"));
+			obj.setR32_product(rs.getString("R32_PRODUCT")); obj.setR32_amount_1(rs.getBigDecimal("R32_AMOUNT_1")); obj.setR32_amount_2(rs.getBigDecimal("R32_AMOUNT_2"));
+			obj.setR33_product(rs.getString("R33_PRODUCT")); obj.setR33_amount_1(rs.getBigDecimal("R33_AMOUNT_1")); obj.setR33_amount_2(rs.getBigDecimal("R33_AMOUNT_2"));
+			obj.setR34_product(rs.getString("R34_PRODUCT")); obj.setR34_amount_1(rs.getBigDecimal("R34_AMOUNT_1")); obj.setR34_amount_2(rs.getBigDecimal("R34_AMOUNT_2"));
+			obj.setR35_product(rs.getString("R35_PRODUCT")); obj.setR35_amount_1(rs.getBigDecimal("R35_AMOUNT_1")); obj.setR35_amount_2(rs.getBigDecimal("R35_AMOUNT_2"));
+			obj.setR36_product(rs.getString("R36_PRODUCT")); obj.setR36_amount_1(rs.getBigDecimal("R36_AMOUNT_1")); obj.setR36_amount_2(rs.getBigDecimal("R36_AMOUNT_2"));
+			obj.setR41_product(rs.getString("R41_PRODUCT")); obj.setR41_amount_1(rs.getBigDecimal("R41_AMOUNT_1")); obj.setR41_amount_2(rs.getBigDecimal("R41_AMOUNT_2"));
+			obj.setR42_product(rs.getString("R42_PRODUCT")); obj.setR42_amount_1(rs.getBigDecimal("R42_AMOUNT_1")); obj.setR42_amount_2(rs.getBigDecimal("R42_AMOUNT_2"));
+			obj.setR43_product(rs.getString("R43_PRODUCT")); obj.setR43_amount_1(rs.getBigDecimal("R43_AMOUNT_1")); obj.setR43_amount_2(rs.getBigDecimal("R43_AMOUNT_2"));
+			obj.setR44_product(rs.getString("R44_PRODUCT")); obj.setR44_amount_1(rs.getBigDecimal("R44_AMOUNT_1")); obj.setR44_amount_2(rs.getBigDecimal("R44_AMOUNT_2"));
+			obj.setR45_product(rs.getString("R45_PRODUCT")); obj.setR45_amount_1(rs.getBigDecimal("R45_AMOUNT_1")); obj.setR45_amount_2(rs.getBigDecimal("R45_AMOUNT_2"));
+			obj.setR46_product(rs.getString("R46_PRODUCT")); obj.setR46_amount_1(rs.getBigDecimal("R46_AMOUNT_1")); obj.setR46_amount_2(rs.getBigDecimal("R46_AMOUNT_2"));
+			obj.setR47_product(rs.getString("R47_PRODUCT")); obj.setR47_amount_1(rs.getBigDecimal("R47_AMOUNT_1")); obj.setR47_amount_2(rs.getBigDecimal("R47_AMOUNT_2"));
+			obj.setR48_product(rs.getString("R48_PRODUCT")); obj.setR48_amount_1(rs.getBigDecimal("R48_AMOUNT_1")); obj.setR48_amount_2(rs.getBigDecimal("R48_AMOUNT_2"));
+			obj.setR49_product(rs.getString("R49_PRODUCT")); obj.setR49_amount_1(rs.getBigDecimal("R49_AMOUNT_1")); obj.setR49_amount_2(rs.getBigDecimal("R49_AMOUNT_2"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// Inner entity: M_CA2_Detail_Entity (camelCase, matches @Column names)
+	// =========================================================
+	public static class M_CA2_Detail_Entity {
+		private String custId; private String acctNumber; private String acctName; private String dataType;
+		private String reportLabel; private String reportAddlCriteria1; private String reportAddlCriteria2; private String reportAddlCriteria3;
+		private java.math.BigDecimal sanctionLimit; private String reportRemarks; private String modificationRemarks;
+		private String dataEntryVersion; private java.math.BigDecimal acctBalanceInPula; private java.util.Date reportDate;
+		private String reportName; private String createUser; private java.util.Date createTime;
+		private String modifyUser; private java.util.Date modifyTime; private String verifyUser; private java.util.Date verifyTime;
+		private String entityFlg; private String modifyFlg; private String delFlg; private String glCode; private String glSubCode;
+		public String getCustId(){return custId;} public void setCustId(String v){custId=v;}
+		public String getAcctNumber(){return acctNumber;} public void setAcctNumber(String v){acctNumber=v;}
+		public String getAcctName(){return acctName;} public void setAcctName(String v){acctName=v;}
+		public String getDataType(){return dataType;} public void setDataType(String v){dataType=v;}
+		public String getReportLabel(){return reportLabel;} public void setReportLabel(String v){reportLabel=v;}
+		public String getReportAddlCriteria1(){return reportAddlCriteria1;} public void setReportAddlCriteria1(String v){reportAddlCriteria1=v;}
+		public String getReportAddlCriteria2(){return reportAddlCriteria2;} public void setReportAddlCriteria2(String v){reportAddlCriteria2=v;}
+		public String getReportAddlCriteria3(){return reportAddlCriteria3;} public void setReportAddlCriteria3(String v){reportAddlCriteria3=v;}
+		public java.math.BigDecimal getSanctionLimit(){return sanctionLimit;} public void setSanctionLimit(java.math.BigDecimal v){sanctionLimit=v;}
+		public String getReportRemarks(){return reportRemarks;} public void setReportRemarks(String v){reportRemarks=v;}
+		public String getModificationRemarks(){return modificationRemarks;} public void setModificationRemarks(String v){modificationRemarks=v;}
+		public String getDataEntryVersion(){return dataEntryVersion;} public void setDataEntryVersion(String v){dataEntryVersion=v;}
+		public java.math.BigDecimal getAcctBalanceInPula(){return acctBalanceInPula;} public void setAcctBalanceInPula(java.math.BigDecimal v){acctBalanceInPula=v;}
+		public java.util.Date getReportDate(){return reportDate;} public void setReportDate(java.util.Date v){reportDate=v;}
+		public String getReportName(){return reportName;} public void setReportName(String v){reportName=v;}
+		public String getCreateUser(){return createUser;} public void setCreateUser(String v){createUser=v;}
+		public java.util.Date getCreateTime(){return createTime;} public void setCreateTime(java.util.Date v){createTime=v;}
+		public String getModifyUser(){return modifyUser;} public void setModifyUser(String v){modifyUser=v;}
+		public java.util.Date getModifyTime(){return modifyTime;} public void setModifyTime(java.util.Date v){modifyTime=v;}
+		public String getVerifyUser(){return verifyUser;} public void setVerifyUser(String v){verifyUser=v;}
+		public java.util.Date getVerifyTime(){return verifyTime;} public void setVerifyTime(java.util.Date v){verifyTime=v;}
+		public String getEntityFlg(){return entityFlg;} public void setEntityFlg(String v){entityFlg=v;}
+		public String getModifyFlg(){return modifyFlg;} public void setModifyFlg(String v){modifyFlg=v;}
+		public String getDelFlg(){return delFlg;} public void setDelFlg(String v){delFlg=v;}
+		public String getGlCode(){return glCode;} public void setGlCode(String v){glCode=v;}
+		public String getGlSubCode(){return glSubCode;} public void setGlSubCode(String v){glSubCode=v;}
+	}
+
+	class M_CA2DetailRowMapper implements RowMapper<M_CA2_Detail_Entity> {
+		@Override
+		public M_CA2_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_Detail_Entity obj = new M_CA2_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setGlCode(rs.getString("GL_CODE"));
+			obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// Inner entity: M_CA2_Archival_Detail_Entity
+	// =========================================================
+	public static class M_CA2_Archival_Detail_Entity {
+		private String custId; private String acctNumber; private String acctName; private String dataType;
+		private String reportLabel; private String reportAddlCriteria1; private String reportAddlCriteria2; private String reportAddlCriteria3;
+		private java.math.BigDecimal sanctionLimit; private String reportRemarks; private String modificationRemarks;
+		private String dataEntryVersion; private java.math.BigDecimal acctBalanceInPula; private java.util.Date reportDate;
+		private String reportName; private String createUser; private java.util.Date createTime;
+		private String modifyUser; private java.util.Date modifyTime; private String verifyUser; private java.util.Date verifyTime;
+		private String entityFlg; private String modifyFlg; private String delFlg; private String glCode; private String glSubCode;
+		public String getCustId(){return custId;} public void setCustId(String v){custId=v;}
+		public String getAcctNumber(){return acctNumber;} public void setAcctNumber(String v){acctNumber=v;}
+		public String getAcctName(){return acctName;} public void setAcctName(String v){acctName=v;}
+		public String getDataType(){return dataType;} public void setDataType(String v){dataType=v;}
+		public String getReportLabel(){return reportLabel;} public void setReportLabel(String v){reportLabel=v;}
+		public String getReportAddlCriteria1(){return reportAddlCriteria1;} public void setReportAddlCriteria1(String v){reportAddlCriteria1=v;}
+		public String getReportAddlCriteria2(){return reportAddlCriteria2;} public void setReportAddlCriteria2(String v){reportAddlCriteria2=v;}
+		public String getReportAddlCriteria3(){return reportAddlCriteria3;} public void setReportAddlCriteria3(String v){reportAddlCriteria3=v;}
+		public java.math.BigDecimal getSanctionLimit(){return sanctionLimit;} public void setSanctionLimit(java.math.BigDecimal v){sanctionLimit=v;}
+		public String getReportRemarks(){return reportRemarks;} public void setReportRemarks(String v){reportRemarks=v;}
+		public String getModificationRemarks(){return modificationRemarks;} public void setModificationRemarks(String v){modificationRemarks=v;}
+		public String getDataEntryVersion(){return dataEntryVersion;} public void setDataEntryVersion(String v){dataEntryVersion=v;}
+		public java.math.BigDecimal getAcctBalanceInPula(){return acctBalanceInPula;} public void setAcctBalanceInPula(java.math.BigDecimal v){acctBalanceInPula=v;}
+		public java.util.Date getReportDate(){return reportDate;} public void setReportDate(java.util.Date v){reportDate=v;}
+		public String getReportName(){return reportName;} public void setReportName(String v){reportName=v;}
+		public String getCreateUser(){return createUser;} public void setCreateUser(String v){createUser=v;}
+		public java.util.Date getCreateTime(){return createTime;} public void setCreateTime(java.util.Date v){createTime=v;}
+		public String getModifyUser(){return modifyUser;} public void setModifyUser(String v){modifyUser=v;}
+		public java.util.Date getModifyTime(){return modifyTime;} public void setModifyTime(java.util.Date v){modifyTime=v;}
+		public String getVerifyUser(){return verifyUser;} public void setVerifyUser(String v){verifyUser=v;}
+		public java.util.Date getVerifyTime(){return verifyTime;} public void setVerifyTime(java.util.Date v){verifyTime=v;}
+		public String getEntityFlg(){return entityFlg;} public void setEntityFlg(String v){entityFlg=v;}
+		public String getModifyFlg(){return modifyFlg;} public void setModifyFlg(String v){modifyFlg=v;}
+		public String getDelFlg(){return delFlg;} public void setDelFlg(String v){delFlg=v;}
+		public String getGlCode(){return glCode;} public void setGlCode(String v){glCode=v;}
+		public String getGlSubCode(){return glSubCode;} public void setGlSubCode(String v){glSubCode=v;}
+	}
+
+	class M_CA2ArchivalDetailRowMapper implements RowMapper<M_CA2_Archival_Detail_Entity> {
+		@Override
+		public M_CA2_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_Archival_Detail_Entity obj = new M_CA2_Archival_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setGlCode(rs.getString("GL_CODE"));
+			obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
+			return obj;
+		}
+	}
+
+	// =========================================================
+	// Inner entity: M_CA2_RESUB_Detail_Entity
+	// =========================================================
+	public static class M_CA2_RESUB_Detail_Entity {
+		private String custId; private String acctNumber; private String acctName; private String dataType;
+		private String reportLabel; private String reportAddlCriteria1; private String reportAddlCriteria2; private String reportAddlCriteria3;
+		private java.math.BigDecimal sanctionLimit; private String reportRemarks; private String modificationRemarks;
+		private String dataEntryVersion; private java.math.BigDecimal acctBalanceInPula; private java.util.Date reportDate;
+		private String reportName; private String createUser; private java.util.Date createTime;
+		private String modifyUser; private java.util.Date modifyTime; private String verifyUser; private java.util.Date verifyTime;
+		private String entityFlg; private String modifyFlg; private String delFlg; private String glCode; private String glSubCode;
+		public String getCustId(){return custId;} public void setCustId(String v){custId=v;}
+		public String getAcctNumber(){return acctNumber;} public void setAcctNumber(String v){acctNumber=v;}
+		public String getAcctName(){return acctName;} public void setAcctName(String v){acctName=v;}
+		public String getDataType(){return dataType;} public void setDataType(String v){dataType=v;}
+		public String getReportLabel(){return reportLabel;} public void setReportLabel(String v){reportLabel=v;}
+		public String getReportAddlCriteria1(){return reportAddlCriteria1;} public void setReportAddlCriteria1(String v){reportAddlCriteria1=v;}
+		public String getReportAddlCriteria2(){return reportAddlCriteria2;} public void setReportAddlCriteria2(String v){reportAddlCriteria2=v;}
+		public String getReportAddlCriteria3(){return reportAddlCriteria3;} public void setReportAddlCriteria3(String v){reportAddlCriteria3=v;}
+		public java.math.BigDecimal getSanctionLimit(){return sanctionLimit;} public void setSanctionLimit(java.math.BigDecimal v){sanctionLimit=v;}
+		public String getReportRemarks(){return reportRemarks;} public void setReportRemarks(String v){reportRemarks=v;}
+		public String getModificationRemarks(){return modificationRemarks;} public void setModificationRemarks(String v){modificationRemarks=v;}
+		public String getDataEntryVersion(){return dataEntryVersion;} public void setDataEntryVersion(String v){dataEntryVersion=v;}
+		public java.math.BigDecimal getAcctBalanceInPula(){return acctBalanceInPula;} public void setAcctBalanceInPula(java.math.BigDecimal v){acctBalanceInPula=v;}
+		public java.util.Date getReportDate(){return reportDate;} public void setReportDate(java.util.Date v){reportDate=v;}
+		public String getReportName(){return reportName;} public void setReportName(String v){reportName=v;}
+		public String getCreateUser(){return createUser;} public void setCreateUser(String v){createUser=v;}
+		public java.util.Date getCreateTime(){return createTime;} public void setCreateTime(java.util.Date v){createTime=v;}
+		public String getModifyUser(){return modifyUser;} public void setModifyUser(String v){modifyUser=v;}
+		public java.util.Date getModifyTime(){return modifyTime;} public void setModifyTime(java.util.Date v){modifyTime=v;}
+		public String getVerifyUser(){return verifyUser;} public void setVerifyUser(String v){verifyUser=v;}
+		public java.util.Date getVerifyTime(){return verifyTime;} public void setVerifyTime(java.util.Date v){verifyTime=v;}
+		public String getEntityFlg(){return entityFlg;} public void setEntityFlg(String v){entityFlg=v;}
+		public String getModifyFlg(){return modifyFlg;} public void setModifyFlg(String v){modifyFlg=v;}
+		public String getDelFlg(){return delFlg;} public void setDelFlg(String v){delFlg=v;}
+		public String getGlCode(){return glCode;} public void setGlCode(String v){glCode=v;}
+		public String getGlSubCode(){return glSubCode;} public void setGlSubCode(String v){glSubCode=v;}
+	}
+
+	class M_CA2ResubDetailRowMapper implements RowMapper<M_CA2_RESUB_Detail_Entity> {
+		@Override
+		public M_CA2_RESUB_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA2_RESUB_Detail_Entity obj = new M_CA2_RESUB_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportLabel(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			obj.setSanctionLimit(rs.getBigDecimal("SANCTION_LIMIT"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInPula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setGlCode(rs.getString("GL_CODE"));
+			obj.setGlSubCode(rs.getString("GL_SUB_CODE"));
+			return obj;
 		}
 	}
 

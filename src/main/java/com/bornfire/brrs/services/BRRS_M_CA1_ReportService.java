@@ -31,32 +31,28 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_CA1_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA1_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA1_Summary_Repo;
-import com.bornfire.brrs.entities.M_CA1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_CA1_Detail_Entity;
-import com.bornfire.brrs.entities.M_CA1_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
+@Transactional
 
 public class BRRS_M_CA1_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA1_ReportService.class);
@@ -65,27 +61,61 @@ public class BRRS_M_CA1_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-	
-	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_CA1_Summary_Repo BRRS_M_CA1_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA1_Detail_Repo M_CA1_Detail_Repo;
-
-	@Autowired
-	BRRS_M_CA1_Archival_Detail_Repo M_CA1_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_CA1_Archival_Summary_Repo M_CA1_Archival_Summary_Repo;
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	UserProfileRep userProfileRep;
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// =====================================================================
+	// JDBC QUERY METHODS
+	// =====================================================================
+
+	public List<M_CA1_Summary_Entity> getSummaryByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_CA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_CA1SummaryRowMapper());
+	}
+
+	public List<M_CA1_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_CA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_CA1ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA1_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_CA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		return jdbcTemplate.query(sql, new M_CA1ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA1_Detail_Entity> getDetailByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_CA1_DETAILTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate}, new M_CA1DetailRowMapper());
+	}
+
+	public int getDetailCount(Date reportDate) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_CA1_DETAILTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[]{reportDate}, Integer.class);
+	}
+
+	public List<M_CA1_Detail_Entity> getDetailByRowIdAndColumnId(String rowId, String columnId, Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_CA1_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{rowId, columnId, reportDate}, new M_CA1DetailRowMapper());
+	}
+
+	public List<M_CA1_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
+		String sql = "SELECT * FROM BRRS_M_CA1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_CA1ArchivalDetailRowMapper());
+	}
+
+	public List<M_CA1_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(
+			String rowId, String columnId, Date reportDate, String version) {
+		String sql = "SELECT * FROM BRRS_M_CA1_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{rowId, columnId, reportDate, version}, new M_CA1ArchivalDetailRowMapper());
+	}
 
 	public ModelAndView getM_CA1View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
@@ -99,21 +129,11 @@ public class BRRS_M_CA1_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 		
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
-
 		if (type.equals("ARCHIVAL") & version != null) {
 			List<M_CA1_Archival_Summary_Entity> T1Master = new ArrayList<M_CA1_Archival_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_CA1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -125,12 +145,7 @@ public class BRRS_M_CA1_ReportService {
 			List<M_CA1_Summary_Entity> T1Master = new ArrayList<M_CA1_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				T1Master = getSummaryByDate(dateformat.parse(todate));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -196,11 +211,11 @@ public class BRRS_M_CA1_ReportService {
 						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
 					logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
-					detailList = M_CA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+					detailList = getArchivalDetailByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 
 				} else {
 					logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
-					detailList = M_CA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
+					detailList = getArchivalDetailByDateAndVersion(parsedDate, version);
 					//totalRecords = M_CA1_Archival_Detail_Repo.getdatacount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
@@ -219,13 +234,13 @@ public class BRRS_M_CA1_ReportService {
 						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
 
 					logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
-					detailList = M_CA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+					detailList = getDetailByRowIdAndColumnId(rowId, columnId, parsedDate);
 							
 
 				} else {
 					logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
-					detailList = M_CA1_Detail_Repo.getdatabydateList(parsedDate);
-					totalRecords = M_CA1_Detail_Repo.getdatacount(parsedDate);
+					detailList = getDetailByDate(parsedDate);
+					totalRecords = getDetailCount(parsedDate);
 					mv.addObject("pagination", "YES");
 				}
 
@@ -271,7 +286,7 @@ public class BRRS_M_CA1_ReportService {
 	    }
 
 	    List<M_CA1_Summary_Entity> dataList =
-	            BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	            getSummaryByDate(dateformat.parse(todate));
 
 	    if (dataList.isEmpty()) {
 	        logger.warn("Service: No data found for LA1 report. Returning empty result.");
@@ -595,7 +610,7 @@ public class BRRS_M_CA1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_CA1_Detail_Entity> reportData = M_CA1_Detail_Repo.getdatabydateList(parsedToDate);
+			List<M_CA1_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -663,7 +678,7 @@ public class BRRS_M_CA1_ReportService {
 
 	        // Fetch data from Repository 1
 	        List<M_CA1_Archival_Summary_Entity> repoData1 =
-	                M_CA1_Archival_Summary_Repo.getdatabydateListWithVersion();
+	                getArchivalSummaryWithVersion();
 
 	        if (repoData1 != null && !repoData1.isEmpty()) {
 
@@ -703,8 +718,7 @@ public class BRRS_M_CA1_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<M_CA1_Archival_Summary_Entity> dataList = M_CA1_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA1_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA1 report. Returning empty result.");
@@ -1029,7 +1043,7 @@ public class BRRS_M_CA1_ReportService {
 
 	        // Fetch data
 	        List<M_CA1_Archival_Detail_Entity> reportData =
-	                M_CA1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+	                getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 	        if (reportData != null && !reportData.isEmpty()) {
 	            int rowIndex = 1;
@@ -1221,9 +1235,8 @@ public class BRRS_M_CA1_ReportService {
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
 		
-		List<M_CA1_Archival_Summary_Entity> dataList = M_CA1_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		
+		List<M_CA1_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+
 		if (dataList.isEmpty() ) {
 			logger.warn("Service: No data found for M_CA1 report. Returning empty result.");
 			return new byte[0];
@@ -1528,7 +1541,7 @@ public class BRRS_M_CA1_ReportService {
 		}
 
 		List<M_CA1_Summary_Entity> dataList =
-	    		BRRS_M_CA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	    		getSummaryByDate(dateformat.parse(todate));
 
 	    
 	    if (dataList.isEmpty()) {
@@ -1828,4 +1841,633 @@ public class BRRS_M_CA1_ReportService {
 	}
 
 
+	// =====================================================================
+	// ROW MAPPER — M_CA1_Summary_Entity
+	// =====================================================================
+	class M_CA1SummaryRowMapper implements RowMapper<M_CA1_Summary_Entity> {
+		@Override
+		public M_CA1_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA1_Summary_Entity obj = new M_CA1_Summary_Entity();
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setR9_REF_PARM(rs.getString("R9_REF_PARM"));
+			obj.setR9_PRODUCT(rs.getString("R9_PRODUCT"));
+			obj.setR9_AMOUNT(rs.getBigDecimal("R9_AMOUNT"));
+			obj.setR10_REF_PARM(rs.getString("R10_REF_PARM"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT"));
+			obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_REF_PARM(rs.getString("R11_REF_PARM"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT"));
+			obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_REF_PARM(rs.getString("R12_REF_PARM"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT"));
+			obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_REF_PARM(rs.getString("R13_REF_PARM"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT"));
+			obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_REF_PARM(rs.getString("R14_REF_PARM"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT"));
+			obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR17_REF_PARM(rs.getString("R17_REF_PARM"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT"));
+			obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR17_CAR(rs.getBigDecimal("R17_CAR"));
+			obj.setR18_REF_PARM(rs.getString("R18_REF_PARM"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT"));
+			obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR18_CAR(rs.getBigDecimal("R18_CAR"));
+			obj.setR19_REF_PARM(rs.getString("R19_REF_PARM"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT"));
+			obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR19_CAR(rs.getBigDecimal("R19_CAR"));
+			obj.setR20_REF_PARM(rs.getString("R20_REF_PARM"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT"));
+			obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR20_CAR(rs.getBigDecimal("R20_CAR"));
+			obj.setR21_REF_PARM(rs.getString("R21_REF_PARM"));
+			obj.setR21_PRODUCT(rs.getString("R21_PRODUCT"));
+			obj.setR21_AMOUNT(rs.getBigDecimal("R21_AMOUNT"));
+			obj.setR21_CAR(rs.getBigDecimal("R21_CAR"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =====================================================================
+	// ENTITY CLASS — M_CA1_Summary_Entity
+	// =====================================================================
+	public static class M_CA1_Summary_Entity {
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+		private String R9_REF_PARM;
+		private String R9_PRODUCT;
+		private BigDecimal R9_AMOUNT;
+		private String R10_REF_PARM;
+		private String R10_PRODUCT;
+		private BigDecimal R10_AMOUNT;
+		private String R11_REF_PARM;
+		private String R11_PRODUCT;
+		private BigDecimal R11_AMOUNT;
+		private String R12_REF_PARM;
+		private String R12_PRODUCT;
+		private BigDecimal R12_AMOUNT;
+		private String R13_REF_PARM;
+		private String R13_PRODUCT;
+		private BigDecimal R13_AMOUNT;
+		private String R14_REF_PARM;
+		private String R14_PRODUCT;
+		private BigDecimal R14_AMOUNT;
+		private String R17_REF_PARM;
+		private String R17_PRODUCT;
+		private BigDecimal R17_AMOUNT;
+		private BigDecimal R17_CAR;
+		private String R18_REF_PARM;
+		private String R18_PRODUCT;
+		private BigDecimal R18_AMOUNT;
+		private BigDecimal R18_CAR;
+		private String R19_REF_PARM;
+		private String R19_PRODUCT;
+		private BigDecimal R19_AMOUNT;
+		private BigDecimal R19_CAR;
+		private String R20_REF_PARM;
+		private String R20_PRODUCT;
+		private BigDecimal R20_AMOUNT;
+		private BigDecimal R20_CAR;
+		private String R21_REF_PARM;
+		private String R21_PRODUCT;
+		private BigDecimal R21_AMOUNT;
+		private BigDecimal R21_CAR;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+
+		public Date getREPORT_DATE() { return REPORT_DATE; }
+		public void setREPORT_DATE(Date v) { REPORT_DATE = v; }
+		public BigDecimal getREPORT_VERSION() { return REPORT_VERSION; }
+		public void setREPORT_VERSION(BigDecimal v) { REPORT_VERSION = v; }
+		public String getR9_REF_PARM() { return R9_REF_PARM; }
+		public void setR9_REF_PARM(String v) { R9_REF_PARM = v; }
+		public String getR9_PRODUCT() { return R9_PRODUCT; }
+		public void setR9_PRODUCT(String v) { R9_PRODUCT = v; }
+		public BigDecimal getR9_AMOUNT() { return R9_AMOUNT; }
+		public void setR9_AMOUNT(BigDecimal v) { R9_AMOUNT = v; }
+		public String getR10_REF_PARM() { return R10_REF_PARM; }
+		public void setR10_REF_PARM(String v) { R10_REF_PARM = v; }
+		public String getR10_PRODUCT() { return R10_PRODUCT; }
+		public void setR10_PRODUCT(String v) { R10_PRODUCT = v; }
+		public BigDecimal getR10_AMOUNT() { return R10_AMOUNT; }
+		public void setR10_AMOUNT(BigDecimal v) { R10_AMOUNT = v; }
+		public String getR11_REF_PARM() { return R11_REF_PARM; }
+		public void setR11_REF_PARM(String v) { R11_REF_PARM = v; }
+		public String getR11_PRODUCT() { return R11_PRODUCT; }
+		public void setR11_PRODUCT(String v) { R11_PRODUCT = v; }
+		public BigDecimal getR11_AMOUNT() { return R11_AMOUNT; }
+		public void setR11_AMOUNT(BigDecimal v) { R11_AMOUNT = v; }
+		public String getR12_REF_PARM() { return R12_REF_PARM; }
+		public void setR12_REF_PARM(String v) { R12_REF_PARM = v; }
+		public String getR12_PRODUCT() { return R12_PRODUCT; }
+		public void setR12_PRODUCT(String v) { R12_PRODUCT = v; }
+		public BigDecimal getR12_AMOUNT() { return R12_AMOUNT; }
+		public void setR12_AMOUNT(BigDecimal v) { R12_AMOUNT = v; }
+		public String getR13_REF_PARM() { return R13_REF_PARM; }
+		public void setR13_REF_PARM(String v) { R13_REF_PARM = v; }
+		public String getR13_PRODUCT() { return R13_PRODUCT; }
+		public void setR13_PRODUCT(String v) { R13_PRODUCT = v; }
+		public BigDecimal getR13_AMOUNT() { return R13_AMOUNT; }
+		public void setR13_AMOUNT(BigDecimal v) { R13_AMOUNT = v; }
+		public String getR14_REF_PARM() { return R14_REF_PARM; }
+		public void setR14_REF_PARM(String v) { R14_REF_PARM = v; }
+		public String getR14_PRODUCT() { return R14_PRODUCT; }
+		public void setR14_PRODUCT(String v) { R14_PRODUCT = v; }
+		public BigDecimal getR14_AMOUNT() { return R14_AMOUNT; }
+		public void setR14_AMOUNT(BigDecimal v) { R14_AMOUNT = v; }
+		public String getR17_REF_PARM() { return R17_REF_PARM; }
+		public void setR17_REF_PARM(String v) { R17_REF_PARM = v; }
+		public String getR17_PRODUCT() { return R17_PRODUCT; }
+		public void setR17_PRODUCT(String v) { R17_PRODUCT = v; }
+		public BigDecimal getR17_AMOUNT() { return R17_AMOUNT; }
+		public void setR17_AMOUNT(BigDecimal v) { R17_AMOUNT = v; }
+		public BigDecimal getR17_CAR() { return R17_CAR; }
+		public void setR17_CAR(BigDecimal v) { R17_CAR = v; }
+		public String getR18_REF_PARM() { return R18_REF_PARM; }
+		public void setR18_REF_PARM(String v) { R18_REF_PARM = v; }
+		public String getR18_PRODUCT() { return R18_PRODUCT; }
+		public void setR18_PRODUCT(String v) { R18_PRODUCT = v; }
+		public BigDecimal getR18_AMOUNT() { return R18_AMOUNT; }
+		public void setR18_AMOUNT(BigDecimal v) { R18_AMOUNT = v; }
+		public BigDecimal getR18_CAR() { return R18_CAR; }
+		public void setR18_CAR(BigDecimal v) { R18_CAR = v; }
+		public String getR19_REF_PARM() { return R19_REF_PARM; }
+		public void setR19_REF_PARM(String v) { R19_REF_PARM = v; }
+		public String getR19_PRODUCT() { return R19_PRODUCT; }
+		public void setR19_PRODUCT(String v) { R19_PRODUCT = v; }
+		public BigDecimal getR19_AMOUNT() { return R19_AMOUNT; }
+		public void setR19_AMOUNT(BigDecimal v) { R19_AMOUNT = v; }
+		public BigDecimal getR19_CAR() { return R19_CAR; }
+		public void setR19_CAR(BigDecimal v) { R19_CAR = v; }
+		public String getR20_REF_PARM() { return R20_REF_PARM; }
+		public void setR20_REF_PARM(String v) { R20_REF_PARM = v; }
+		public String getR20_PRODUCT() { return R20_PRODUCT; }
+		public void setR20_PRODUCT(String v) { R20_PRODUCT = v; }
+		public BigDecimal getR20_AMOUNT() { return R20_AMOUNT; }
+		public void setR20_AMOUNT(BigDecimal v) { R20_AMOUNT = v; }
+		public BigDecimal getR20_CAR() { return R20_CAR; }
+		public void setR20_CAR(BigDecimal v) { R20_CAR = v; }
+		public String getR21_REF_PARM() { return R21_REF_PARM; }
+		public void setR21_REF_PARM(String v) { R21_REF_PARM = v; }
+		public String getR21_PRODUCT() { return R21_PRODUCT; }
+		public void setR21_PRODUCT(String v) { R21_PRODUCT = v; }
+		public BigDecimal getR21_AMOUNT() { return R21_AMOUNT; }
+		public void setR21_AMOUNT(BigDecimal v) { R21_AMOUNT = v; }
+		public BigDecimal getR21_CAR() { return R21_CAR; }
+		public void setR21_CAR(BigDecimal v) { R21_CAR = v; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; }
+		public void setREPORT_FREQUENCY(String v) { REPORT_FREQUENCY = v; }
+		public String getREPORT_CODE() { return REPORT_CODE; }
+		public void setREPORT_CODE(String v) { REPORT_CODE = v; }
+		public String getREPORT_DESC() { return REPORT_DESC; }
+		public void setREPORT_DESC(String v) { REPORT_DESC = v; }
+		public String getENTITY_FLG() { return ENTITY_FLG; }
+		public void setENTITY_FLG(String v) { ENTITY_FLG = v; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; }
+		public void setMODIFY_FLG(String v) { MODIFY_FLG = v; }
+		public String getDEL_FLG() { return DEL_FLG; }
+		public void setDEL_FLG(String v) { DEL_FLG = v; }
+	}
+
+	// =====================================================================
+	// ROW MAPPER — M_CA1_Archival_Summary_Entity
+	// =====================================================================
+	class M_CA1ArchivalSummaryRowMapper implements RowMapper<M_CA1_Archival_Summary_Entity> {
+		@Override
+		public M_CA1_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA1_Archival_Summary_Entity obj = new M_CA1_Archival_Summary_Entity();
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setR9_REF_PARM(rs.getString("R9_REF_PARM"));
+			obj.setR9_PRODUCT(rs.getString("R9_PRODUCT"));
+			obj.setR9_AMOUNT(rs.getBigDecimal("R9_AMOUNT"));
+			obj.setR10_REF_PARM(rs.getString("R10_REF_PARM"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT"));
+			obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_REF_PARM(rs.getString("R11_REF_PARM"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT"));
+			obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_REF_PARM(rs.getString("R12_REF_PARM"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT"));
+			obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_REF_PARM(rs.getString("R13_REF_PARM"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT"));
+			obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_REF_PARM(rs.getString("R14_REF_PARM"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT"));
+			obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR17_REF_PARM(rs.getString("R17_REF_PARM"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT"));
+			obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR17_CAR(rs.getBigDecimal("R17_CAR"));
+			obj.setR18_REF_PARM(rs.getString("R18_REF_PARM"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT"));
+			obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR18_CAR(rs.getBigDecimal("R18_CAR"));
+			obj.setR19_REF_PARM(rs.getString("R19_REF_PARM"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT"));
+			obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR19_CAR(rs.getBigDecimal("R19_CAR"));
+			obj.setR20_REF_PARM(rs.getString("R20_REF_PARM"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT"));
+			obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR20_CAR(rs.getBigDecimal("R20_CAR"));
+			obj.setR21_REF_PARM(rs.getString("R21_REF_PARM"));
+			obj.setR21_PRODUCT(rs.getString("R21_PRODUCT"));
+			obj.setR21_AMOUNT(rs.getBigDecimal("R21_AMOUNT"));
+			obj.setR21_CAR(rs.getBigDecimal("R21_CAR"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+			return obj;
+		}
+	}
+
+	// =====================================================================
+	// ENTITY CLASS — M_CA1_Archival_Summary_Entity
+	// =====================================================================
+	public static class M_CA1_Archival_Summary_Entity {
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+		private Date reportResubDate;
+		private String R9_REF_PARM;
+		private String R9_PRODUCT;
+		private BigDecimal R9_AMOUNT;
+		private String R10_REF_PARM;
+		private String R10_PRODUCT;
+		private BigDecimal R10_AMOUNT;
+		private String R11_REF_PARM;
+		private String R11_PRODUCT;
+		private BigDecimal R11_AMOUNT;
+		private String R12_REF_PARM;
+		private String R12_PRODUCT;
+		private BigDecimal R12_AMOUNT;
+		private String R13_REF_PARM;
+		private String R13_PRODUCT;
+		private BigDecimal R13_AMOUNT;
+		private String R14_REF_PARM;
+		private String R14_PRODUCT;
+		private BigDecimal R14_AMOUNT;
+		private String R17_REF_PARM;
+		private String R17_PRODUCT;
+		private BigDecimal R17_AMOUNT;
+		private BigDecimal R17_CAR;
+		private String R18_REF_PARM;
+		private String R18_PRODUCT;
+		private BigDecimal R18_AMOUNT;
+		private BigDecimal R18_CAR;
+		private String R19_REF_PARM;
+		private String R19_PRODUCT;
+		private BigDecimal R19_AMOUNT;
+		private BigDecimal R19_CAR;
+		private String R20_REF_PARM;
+		private String R20_PRODUCT;
+		private BigDecimal R20_AMOUNT;
+		private BigDecimal R20_CAR;
+		private String R21_REF_PARM;
+		private String R21_PRODUCT;
+		private BigDecimal R21_AMOUNT;
+		private BigDecimal R21_CAR;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+
+		public Date getREPORT_DATE() { return REPORT_DATE; }
+		public void setREPORT_DATE(Date v) { REPORT_DATE = v; }
+		public BigDecimal getREPORT_VERSION() { return REPORT_VERSION; }
+		public void setREPORT_VERSION(BigDecimal v) { REPORT_VERSION = v; }
+		public Date getReportResubDate() { return reportResubDate; }
+		public void setReportResubDate(Date v) { reportResubDate = v; }
+		public String getR9_REF_PARM() { return R9_REF_PARM; }
+		public void setR9_REF_PARM(String v) { R9_REF_PARM = v; }
+		public String getR9_PRODUCT() { return R9_PRODUCT; }
+		public void setR9_PRODUCT(String v) { R9_PRODUCT = v; }
+		public BigDecimal getR9_AMOUNT() { return R9_AMOUNT; }
+		public void setR9_AMOUNT(BigDecimal v) { R9_AMOUNT = v; }
+		public String getR10_REF_PARM() { return R10_REF_PARM; }
+		public void setR10_REF_PARM(String v) { R10_REF_PARM = v; }
+		public String getR10_PRODUCT() { return R10_PRODUCT; }
+		public void setR10_PRODUCT(String v) { R10_PRODUCT = v; }
+		public BigDecimal getR10_AMOUNT() { return R10_AMOUNT; }
+		public void setR10_AMOUNT(BigDecimal v) { R10_AMOUNT = v; }
+		public String getR11_REF_PARM() { return R11_REF_PARM; }
+		public void setR11_REF_PARM(String v) { R11_REF_PARM = v; }
+		public String getR11_PRODUCT() { return R11_PRODUCT; }
+		public void setR11_PRODUCT(String v) { R11_PRODUCT = v; }
+		public BigDecimal getR11_AMOUNT() { return R11_AMOUNT; }
+		public void setR11_AMOUNT(BigDecimal v) { R11_AMOUNT = v; }
+		public String getR12_REF_PARM() { return R12_REF_PARM; }
+		public void setR12_REF_PARM(String v) { R12_REF_PARM = v; }
+		public String getR12_PRODUCT() { return R12_PRODUCT; }
+		public void setR12_PRODUCT(String v) { R12_PRODUCT = v; }
+		public BigDecimal getR12_AMOUNT() { return R12_AMOUNT; }
+		public void setR12_AMOUNT(BigDecimal v) { R12_AMOUNT = v; }
+		public String getR13_REF_PARM() { return R13_REF_PARM; }
+		public void setR13_REF_PARM(String v) { R13_REF_PARM = v; }
+		public String getR13_PRODUCT() { return R13_PRODUCT; }
+		public void setR13_PRODUCT(String v) { R13_PRODUCT = v; }
+		public BigDecimal getR13_AMOUNT() { return R13_AMOUNT; }
+		public void setR13_AMOUNT(BigDecimal v) { R13_AMOUNT = v; }
+		public String getR14_REF_PARM() { return R14_REF_PARM; }
+		public void setR14_REF_PARM(String v) { R14_REF_PARM = v; }
+		public String getR14_PRODUCT() { return R14_PRODUCT; }
+		public void setR14_PRODUCT(String v) { R14_PRODUCT = v; }
+		public BigDecimal getR14_AMOUNT() { return R14_AMOUNT; }
+		public void setR14_AMOUNT(BigDecimal v) { R14_AMOUNT = v; }
+		public String getR17_REF_PARM() { return R17_REF_PARM; }
+		public void setR17_REF_PARM(String v) { R17_REF_PARM = v; }
+		public String getR17_PRODUCT() { return R17_PRODUCT; }
+		public void setR17_PRODUCT(String v) { R17_PRODUCT = v; }
+		public BigDecimal getR17_AMOUNT() { return R17_AMOUNT; }
+		public void setR17_AMOUNT(BigDecimal v) { R17_AMOUNT = v; }
+		public BigDecimal getR17_CAR() { return R17_CAR; }
+		public void setR17_CAR(BigDecimal v) { R17_CAR = v; }
+		public String getR18_REF_PARM() { return R18_REF_PARM; }
+		public void setR18_REF_PARM(String v) { R18_REF_PARM = v; }
+		public String getR18_PRODUCT() { return R18_PRODUCT; }
+		public void setR18_PRODUCT(String v) { R18_PRODUCT = v; }
+		public BigDecimal getR18_AMOUNT() { return R18_AMOUNT; }
+		public void setR18_AMOUNT(BigDecimal v) { R18_AMOUNT = v; }
+		public BigDecimal getR18_CAR() { return R18_CAR; }
+		public void setR18_CAR(BigDecimal v) { R18_CAR = v; }
+		public String getR19_REF_PARM() { return R19_REF_PARM; }
+		public void setR19_REF_PARM(String v) { R19_REF_PARM = v; }
+		public String getR19_PRODUCT() { return R19_PRODUCT; }
+		public void setR19_PRODUCT(String v) { R19_PRODUCT = v; }
+		public BigDecimal getR19_AMOUNT() { return R19_AMOUNT; }
+		public void setR19_AMOUNT(BigDecimal v) { R19_AMOUNT = v; }
+		public BigDecimal getR19_CAR() { return R19_CAR; }
+		public void setR19_CAR(BigDecimal v) { R19_CAR = v; }
+		public String getR20_REF_PARM() { return R20_REF_PARM; }
+		public void setR20_REF_PARM(String v) { R20_REF_PARM = v; }
+		public String getR20_PRODUCT() { return R20_PRODUCT; }
+		public void setR20_PRODUCT(String v) { R20_PRODUCT = v; }
+		public BigDecimal getR20_AMOUNT() { return R20_AMOUNT; }
+		public void setR20_AMOUNT(BigDecimal v) { R20_AMOUNT = v; }
+		public BigDecimal getR20_CAR() { return R20_CAR; }
+		public void setR20_CAR(BigDecimal v) { R20_CAR = v; }
+		public String getR21_REF_PARM() { return R21_REF_PARM; }
+		public void setR21_REF_PARM(String v) { R21_REF_PARM = v; }
+		public String getR21_PRODUCT() { return R21_PRODUCT; }
+		public void setR21_PRODUCT(String v) { R21_PRODUCT = v; }
+		public BigDecimal getR21_AMOUNT() { return R21_AMOUNT; }
+		public void setR21_AMOUNT(BigDecimal v) { R21_AMOUNT = v; }
+		public BigDecimal getR21_CAR() { return R21_CAR; }
+		public void setR21_CAR(BigDecimal v) { R21_CAR = v; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; }
+		public void setREPORT_FREQUENCY(String v) { REPORT_FREQUENCY = v; }
+		public String getREPORT_CODE() { return REPORT_CODE; }
+		public void setREPORT_CODE(String v) { REPORT_CODE = v; }
+		public String getREPORT_DESC() { return REPORT_DESC; }
+		public void setREPORT_DESC(String v) { REPORT_DESC = v; }
+		public String getENTITY_FLG() { return ENTITY_FLG; }
+		public void setENTITY_FLG(String v) { ENTITY_FLG = v; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; }
+		public void setMODIFY_FLG(String v) { MODIFY_FLG = v; }
+		public String getDEL_FLG() { return DEL_FLG; }
+		public void setDEL_FLG(String v) { DEL_FLG = v; }
+	}
+
+	// =====================================================================
+	// ROW MAPPER — M_CA1_Detail_Entity
+	// =====================================================================
+	class M_CA1DetailRowMapper implements RowMapper<M_CA1_Detail_Entity> {
+		@Override
+		public M_CA1_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA1_Detail_Entity obj = new M_CA1_Detail_Entity();
+			obj.setCust_id(rs.getString("CUST_ID"));
+			obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+			obj.setAcct_name(rs.getString("ACCT_NAME"));
+			obj.setData_type(rs.getString("DATA_TYPE"));
+			obj.setReport_label(rs.getString("REPORT_LABEL"));
+			obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+			obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_name(rs.getString("REPORT_NAME"));
+			obj.setCreate_user(rs.getString("CREATE_USER"));
+			obj.setCreate_time(rs.getDate("CREATE_TIME"));
+			obj.setModify_user(rs.getString("MODIFY_USER"));
+			obj.setModify_time(rs.getDate("MODIFY_TIME"));
+			obj.setVerify_user(rs.getString("VERIFY_USER"));
+			obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			return obj;
+		}
+	}
+
+	// =====================================================================
+	// ENTITY CLASS — M_CA1_Detail_Entity
+	// =====================================================================
+	public static class M_CA1_Detail_Entity {
+		private String cust_id;
+		private String acct_number;
+		private String acct_name;
+		private String data_type;
+		private String report_label;
+		private String report_remarks;
+		private String modification_remarks;
+		private String data_entry_version;
+		private BigDecimal acct_balance_in_pula;
+		private Date report_date;
+		private String report_name;
+		private String create_user;
+		private Date create_time;
+		private String modify_user;
+		private Date modify_time;
+		private String verify_user;
+		private Date verify_time;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+		private String report_addl_criteria_1;
+		private String report_addl_criteria_2;
+		private String report_addl_criteria_3;
+
+		public String getCust_id() { return cust_id; }
+		public void setCust_id(String v) { cust_id = v; }
+		public String getAcct_number() { return acct_number; }
+		public void setAcct_number(String v) { acct_number = v; }
+		public String getAcct_name() { return acct_name; }
+		public void setAcct_name(String v) { acct_name = v; }
+		public String getData_type() { return data_type; }
+		public void setData_type(String v) { data_type = v; }
+		public String getReport_label() { return report_label; }
+		public void setReport_label(String v) { report_label = v; }
+		public String getReport_remarks() { return report_remarks; }
+		public void setReport_remarks(String v) { report_remarks = v; }
+		public String getModification_remarks() { return modification_remarks; }
+		public void setModification_remarks(String v) { modification_remarks = v; }
+		public String getData_entry_version() { return data_entry_version; }
+		public void setData_entry_version(String v) { data_entry_version = v; }
+		public BigDecimal getAcct_balance_in_pula() { return acct_balance_in_pula; }
+		public void setAcct_balance_in_pula(BigDecimal v) { acct_balance_in_pula = v; }
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date v) { report_date = v; }
+		public String getReport_name() { return report_name; }
+		public void setReport_name(String v) { report_name = v; }
+		public String getCreate_user() { return create_user; }
+		public void setCreate_user(String v) { create_user = v; }
+		public Date getCreate_time() { return create_time; }
+		public void setCreate_time(Date v) { create_time = v; }
+		public String getModify_user() { return modify_user; }
+		public void setModify_user(String v) { modify_user = v; }
+		public Date getModify_time() { return modify_time; }
+		public void setModify_time(Date v) { modify_time = v; }
+		public String getVerify_user() { return verify_user; }
+		public void setVerify_user(String v) { verify_user = v; }
+		public Date getVerify_time() { return verify_time; }
+		public void setVerify_time(Date v) { verify_time = v; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String v) { entity_flg = v; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String v) { modify_flg = v; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String v) { del_flg = v; }
+		public String getReport_addl_criteria_1() { return report_addl_criteria_1; }
+		public void setReport_addl_criteria_1(String v) { report_addl_criteria_1 = v; }
+		public String getReport_addl_criteria_2() { return report_addl_criteria_2; }
+		public void setReport_addl_criteria_2(String v) { report_addl_criteria_2 = v; }
+		public String getReport_addl_criteria_3() { return report_addl_criteria_3; }
+		public void setReport_addl_criteria_3(String v) { report_addl_criteria_3 = v; }
+	}
+
+	// =====================================================================
+	// ROW MAPPER — M_CA1_Archival_Detail_Entity
+	// =====================================================================
+	class M_CA1ArchivalDetailRowMapper implements RowMapper<M_CA1_Archival_Detail_Entity> {
+		@Override
+		public M_CA1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA1_Archival_Detail_Entity obj = new M_CA1_Archival_Detail_Entity();
+			obj.setCust_id(rs.getString("CUST_ID"));
+			obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+			obj.setAcct_name(rs.getString("ACCT_NAME"));
+			obj.setData_type(rs.getString("DATA_TYPE"));
+			obj.setReport_label(rs.getString("REPORT_LABEL"));
+			obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+			obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_name(rs.getString("REPORT_NAME"));
+			obj.setCreate_user(rs.getString("CREATE_USER"));
+			obj.setCreate_time(rs.getDate("CREATE_TIME"));
+			obj.setModify_user(rs.getString("MODIFY_USER"));
+			obj.setModify_time(rs.getDate("MODIFY_TIME"));
+			obj.setVerify_user(rs.getString("VERIFY_USER"));
+			obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			return obj;
+		}
+	}
+
+	// =====================================================================
+	// ENTITY CLASS — M_CA1_Archival_Detail_Entity
+	// =====================================================================
+	public static class M_CA1_Archival_Detail_Entity {
+		private String cust_id;
+		private String acct_number;
+		private String acct_name;
+		private String data_type;
+		private String report_label;
+		private String report_remarks;
+		private String modification_remarks;
+		private String data_entry_version;
+		private BigDecimal acct_balance_in_pula;
+		private Date report_date;
+		private String report_name;
+		private String create_user;
+		private Date create_time;
+		private String modify_user;
+		private Date modify_time;
+		private String verify_user;
+		private Date verify_time;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+		private String report_addl_criteria_1;
+		private String report_addl_criteria_2;
+		private String report_addl_criteria_3;
+
+		public String getCust_id() { return cust_id; }
+		public void setCust_id(String v) { cust_id = v; }
+		public String getAcct_number() { return acct_number; }
+		public void setAcct_number(String v) { acct_number = v; }
+		public String getAcct_name() { return acct_name; }
+		public void setAcct_name(String v) { acct_name = v; }
+		public String getData_type() { return data_type; }
+		public void setData_type(String v) { data_type = v; }
+		public String getReport_label() { return report_label; }
+		public void setReport_label(String v) { report_label = v; }
+		public String getReport_remarks() { return report_remarks; }
+		public void setReport_remarks(String v) { report_remarks = v; }
+		public String getModification_remarks() { return modification_remarks; }
+		public void setModification_remarks(String v) { modification_remarks = v; }
+		public String getData_entry_version() { return data_entry_version; }
+		public void setData_entry_version(String v) { data_entry_version = v; }
+		public BigDecimal getAcct_balance_in_pula() { return acct_balance_in_pula; }
+		public void setAcct_balance_in_pula(BigDecimal v) { acct_balance_in_pula = v; }
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date v) { report_date = v; }
+		public String getReport_name() { return report_name; }
+		public void setReport_name(String v) { report_name = v; }
+		public String getCreate_user() { return create_user; }
+		public void setCreate_user(String v) { create_user = v; }
+		public Date getCreate_time() { return create_time; }
+		public void setCreate_time(Date v) { create_time = v; }
+		public String getModify_user() { return modify_user; }
+		public void setModify_user(String v) { modify_user = v; }
+		public Date getModify_time() { return modify_time; }
+		public void setModify_time(Date v) { modify_time = v; }
+		public String getVerify_user() { return verify_user; }
+		public void setVerify_user(String v) { verify_user = v; }
+		public Date getVerify_time() { return verify_time; }
+		public void setVerify_time(Date v) { verify_time = v; }
+		public String getEntity_flg() { return entity_flg; }
+		public void setEntity_flg(String v) { entity_flg = v; }
+		public String getModify_flg() { return modify_flg; }
+		public void setModify_flg(String v) { modify_flg = v; }
+		public String getDel_flg() { return del_flg; }
+		public void setDel_flg(String v) { del_flg = v; }
+		public String getReport_addl_criteria_1() { return report_addl_criteria_1; }
+		public void setReport_addl_criteria_1(String v) { report_addl_criteria_1 = v; }
+		public String getReport_addl_criteria_2() { return report_addl_criteria_2; }
+		public void setReport_addl_criteria_2(String v) { report_addl_criteria_2 = v; }
+		public String getReport_addl_criteria_3() { return report_addl_criteria_3; }
+		public void setReport_addl_criteria_3(String v) { report_addl_criteria_3 = v; }
+	}
+
 }
+

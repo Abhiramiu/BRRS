@@ -1,13 +1,14 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -26,23 +29,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_Q_LARADV_Summary_Repo;
 import com.bornfire.brrs.entities.Q_LARADV_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Detail_Entity;
@@ -50,8 +46,8 @@ import com.bornfire.brrs.entities.Q_LARADV_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Summary_Entity;
 
-@Component
 @Service
+@Transactional
 
 public class BRRS_Q_LARADV_ReportService {
 
@@ -61,33 +57,170 @@ public class BRRS_Q_LARADV_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-
-	@Autowired
-	BRRS_Q_LARADV_Detail_Repo Q_LARADV_Detail_Repo;
-
-	@Autowired
-	BRRS_Q_LARADV_Summary_Repo Q_LARADV_Summary_Repo;
-
-	@Autowired
-	BRRS_Q_LARADV_Archival_Detail_Repo Q_LARADV_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_Q_LARADV_Archival_Summary_Repo Q_LARADV_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_Q_LARADV_Resub_Detail_Repo Q_LARADV_Resub_Detail_Repo;
-
-	@Autowired
-	BRRS_Q_LARADV_Resub_Summary_Repo Q_LARADV_Resub_Summary_Repo;
+	private JdbcTemplate jdbcTemplate;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// =========================================================
+	// JDBC QUERY METHODS
+	// =========================================================
+
+	public List<Q_LARADV_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_SUMMARYTABLE WHERE REPORT_DATE = ? ORDER BY SNO",
+			new Object[]{reportDate}, new Q_LARADVSummaryRowMapper());
+	}
+
+	public List<Q_LARADV_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_DETAILTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new Q_LARADVDetailRowMapper());
+	}
+
+	public List<Q_LARADV_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new Q_LARADVArchivalSummaryRowMapper());
+	}
+
+	public List<Q_LARADV_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_ARCHIVAL_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new Q_LARADVArchivalDetailRowMapper());
+	}
+
+	public List<Q_LARADV_Resub_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new Q_LARADVResubSummaryRowMapper());
+	}
+
+	public List<Q_LARADV_Resub_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new Q_LARADVResubDetailRowMapper());
+	}
+
+	private List<Object[]> getArchivalResubData() {
+		return jdbcTemplate.query(
+			"SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_Q_LARADV_ARCHIVAL_SUMMARYTABLE " +
+			"WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION",
+			(rs, rowNum) -> new Object[]{ rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
+	}
+
+	private List<Object[]> getResubResubData() {
+		return jdbcTemplate.query(
+			"SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_Q_LARADV_RESUB_SUMMARYTABLE " +
+			"WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION",
+			(rs, rowNum) -> new Object[]{ rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
+	}
+
+	private Q_LARADV_Summary_Entity findSummaryBySno(Long sno) {
+		List<Q_LARADV_Summary_Entity> list = jdbcTemplate.query(
+			"SELECT * FROM BRRS_Q_LARADV_SUMMARYTABLE WHERE SNO = ?",
+			new Object[]{sno}, new Q_LARADVSummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	private int countDetailBySno(Long sno) {
+		Integer count = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM BRRS_Q_LARADV_DETAILTABLE WHERE SNO = ?",
+			new Object[]{sno}, Integer.class);
+		return count != null ? count : 0;
+	}
+
+	// =========================================================
+	// JDBC WRITE METHODS
+	// =========================================================
+
+	private void insertSummary(Q_LARADV_Summary_Entity e) {
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_Q_LARADV_SUMMARYTABLE " +
+			"(SNO, GROUP_NAME, CUSTOMER_GROUP_NAME, SECTOR_TYPE, FACILITY_TYPE, ORIGINAL_AMOUNT, " +
+			"UTILISATION_OUTSTANDING_BALANCE, EFFECTIVE_DATE, REPAYMENT_PERIOD, PERFORMANCE_STATUS, " +
+			"SECURITY_DETAILS, BOARD_APPROVAL, INTEREST_RATE, OUTSTANDING_BALANCE_PERCENT, LIMIT_PERCENT, " +
+			"REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, " +
+			"ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " +
+			"VALUES (BRRS_Q_LARADV_SUMMARYTABLE_SNO_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			e.getGroupName(), e.getCustomerGroupName(), e.getSectorType(), e.getFacilityType(),
+			e.getOriginalAmount(), e.getUtilisationOutstandingBalance(), e.getEffectiveDate(),
+			e.getRepaymentPeriod(), e.getPerformanceStatus(), e.getSecurityDetails(), e.getBoardApproval(),
+			e.getInterestRate(), e.getOutstandingBalancePercent(), e.getLimitPercent(),
+			e.getReportDate(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
+			e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate());
+	}
+
+	private void insertDetail(Q_LARADV_Detail_Entity e) {
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_Q_LARADV_DETAILTABLE " +
+			"(SNO, GROUP_NAME, CUSTOMER_GROUP_NAME, SECTOR_TYPE, FACILITY_TYPE, ORIGINAL_AMOUNT, " +
+			"UTILISATION_OUTSTANDING_BALANCE, EFFECTIVE_DATE, REPAYMENT_PERIOD, PERFORMANCE_STATUS, " +
+			"SECURITY_DETAILS, BOARD_APPROVAL, INTEREST_RATE, OUTSTANDING_BALANCE_PERCENT, LIMIT_PERCENT, " +
+			"REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, " +
+			"ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " +
+			"VALUES (BRRS_Q_LARADV_DETAILTABLE_SNO_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			e.getGroupName(), e.getCustomerGroupName(), e.getSectorType(), e.getFacilityType(),
+			e.getOriginalAmount(), e.getUtilisationOutstandingBalance(), e.getEffectiveDate(),
+			e.getRepaymentPeriod(), e.getPerformanceStatus(), e.getSecurityDetails(), e.getBoardApproval(),
+			e.getInterestRate(), e.getOutstandingBalancePercent(), e.getLimitPercent(),
+			e.getReportDate(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
+			e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate());
+	}
+
+	private void updateSummaryBySno(Q_LARADV_Summary_Entity e) {
+		jdbcTemplate.update(
+			"UPDATE BRRS_Q_LARADV_SUMMARYTABLE SET " +
+			"GROUP_NAME=?, CUSTOMER_GROUP_NAME=?, SECTOR_TYPE=?, FACILITY_TYPE=?, " +
+			"ORIGINAL_AMOUNT=?, UTILISATION_OUTSTANDING_BALANCE=?, EFFECTIVE_DATE=?, " +
+			"REPAYMENT_PERIOD=?, PERFORMANCE_STATUS=?, SECURITY_DETAILS=?, BOARD_APPROVAL=?, " +
+			"INTEREST_RATE=?, OUTSTANDING_BALANCE_PERCENT=?, LIMIT_PERCENT=? WHERE SNO=?",
+			e.getGroupName(), e.getCustomerGroupName(), e.getSectorType(), e.getFacilityType(),
+			e.getOriginalAmount(), e.getUtilisationOutstandingBalance(), e.getEffectiveDate(),
+			e.getRepaymentPeriod(), e.getPerformanceStatus(), e.getSecurityDetails(), e.getBoardApproval(),
+			e.getInterestRate(), e.getOutstandingBalancePercent(), e.getLimitPercent(),
+			e.getSno());
+	}
+
+	private void upsertDetailBySno(Q_LARADV_Detail_Entity e) {
+		if (countDetailBySno(e.getSno()) > 0) {
+			jdbcTemplate.update(
+				"UPDATE BRRS_Q_LARADV_DETAILTABLE SET " +
+				"GROUP_NAME=?, CUSTOMER_GROUP_NAME=?, SECTOR_TYPE=?, FACILITY_TYPE=?, " +
+				"ORIGINAL_AMOUNT=?, UTILISATION_OUTSTANDING_BALANCE=?, EFFECTIVE_DATE=?, " +
+				"REPAYMENT_PERIOD=?, PERFORMANCE_STATUS=?, SECURITY_DETAILS=?, BOARD_APPROVAL=?, " +
+				"INTEREST_RATE=?, OUTSTANDING_BALANCE_PERCENT=?, LIMIT_PERCENT=?, MODIFY_FLG=? WHERE SNO=?",
+				e.getGroupName(), e.getCustomerGroupName(), e.getSectorType(), e.getFacilityType(),
+				e.getOriginalAmount(), e.getUtilisationOutstandingBalance(), e.getEffectiveDate(),
+				e.getRepaymentPeriod(), e.getPerformanceStatus(), e.getSecurityDetails(), e.getBoardApproval(),
+				e.getInterestRate(), e.getOutstandingBalancePercent(), e.getLimitPercent(),
+				e.getModifyFlg(), e.getSno());
+		} else {
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_Q_LARADV_DETAILTABLE " +
+				"(SNO, GROUP_NAME, CUSTOMER_GROUP_NAME, SECTOR_TYPE, FACILITY_TYPE, ORIGINAL_AMOUNT, " +
+				"UTILISATION_OUTSTANDING_BALANCE, EFFECTIVE_DATE, REPAYMENT_PERIOD, PERFORMANCE_STATUS, " +
+				"SECURITY_DETAILS, BOARD_APPROVAL, INTEREST_RATE, OUTSTANDING_BALANCE_PERCENT, LIMIT_PERCENT, " +
+				"REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, " +
+				"ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " +
+				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				e.getSno(),
+				e.getGroupName(), e.getCustomerGroupName(), e.getSectorType(), e.getFacilityType(),
+				e.getOriginalAmount(), e.getUtilisationOutstandingBalance(), e.getEffectiveDate(),
+				e.getRepaymentPeriod(), e.getPerformanceStatus(), e.getSecurityDetails(), e.getBoardApproval(),
+				e.getInterestRate(), e.getOutstandingBalancePercent(), e.getLimitPercent(),
+				e.getReportDate(), e.getReportVersion(), e.getReportFrequency(), e.getReportCode(), e.getReportDesc(),
+				e.getEntityFlg(), e.getModifyFlg(), e.getDelFlg(), e.getReportResubdate());
+		}
+	}
+
+	// =========================================================
+	// SERVICE METHODS
+	// =========================================================
 
 	public ModelAndView getBRRS_Q_LARADV_View(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version) {
 
 		ModelAndView mv = new ModelAndView();
-		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
@@ -113,8 +246,8 @@ public class BRRS_Q_LARADV_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<Q_LARADV_Archival_Summary_Entity> T1Master = Q_LARADV_Archival_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate), version);
+				List<Q_LARADV_Archival_Summary_Entity> T1Master = getArchivalSummaryByDateAndVersion(
+						dateformat.parse(todate), version);
 
 				mv.addObject("displaymode", "summary");
 
@@ -123,8 +256,8 @@ public class BRRS_Q_LARADV_ReportService {
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<Q_LARADV_Resub_Summary_Entity> T1Master = Q_LARADV_Resub_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate), version);
+				List<Q_LARADV_Resub_Summary_Entity> T1Master = getResubSummaryByDateAndVersion(
+						dateformat.parse(todate), version);
 
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
@@ -132,8 +265,7 @@ public class BRRS_Q_LARADV_ReportService {
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<Q_LARADV_Summary_Entity> T1Master = Q_LARADV_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<Q_LARADV_Summary_Entity> T1Master = getSummaryByDate(dateformat.parse(todate));
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
@@ -145,8 +277,8 @@ public class BRRS_Q_LARADV_ReportService {
 				// DETAIL + ARCHIVAL
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-					List<Q_LARADV_Archival_Detail_Entity> T1Master = Q_LARADV_Archival_Detail_Repo
-							.getdatabydateList(dateformat.parse(todate), version);
+					List<Q_LARADV_Archival_Detail_Entity> T1Master = getArchivalDetailByDateAndVersion(
+							dateformat.parse(todate), version);
 
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
@@ -154,8 +286,8 @@ public class BRRS_Q_LARADV_ReportService {
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-					List<Q_LARADV_Resub_Detail_Entity> T1Master = Q_LARADV_Resub_Detail_Repo
-							.getdatabydateList(dateformat.parse(todate), version);
+					List<Q_LARADV_Resub_Detail_Entity> T1Master = getResubDetailByDateAndVersion(
+							dateformat.parse(todate), version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -165,8 +297,7 @@ public class BRRS_Q_LARADV_ReportService {
 				// DETAIL + NORMAL
 				else {
 
-					List<Q_LARADV_Detail_Entity> T1Master = Q_LARADV_Detail_Repo
-							.getdatabydateList(dateformat.parse(todate));
+					List<Q_LARADV_Detail_Entity> T1Master = getDetailByDate(dateformat.parse(todate));
 
 					System.out.println("Details......T1Master Size " + T1Master.size());
 					mv.addObject("displaymode", "Details");
@@ -185,7 +316,7 @@ public class BRRS_Q_LARADV_ReportService {
 
 	public Q_LARADV_Summary_Entity findById(Long id) {
 
-		return Q_LARADV_Summary_Repo.findById(id).orElse(null);
+		return findSummaryBySno(id);
 
 	}
 
@@ -204,7 +335,7 @@ public class BRRS_Q_LARADV_ReportService {
 
 		Date reportDate = dateformat.parse(todate);
 
-		List<Q_LARADV_Summary_Entity> dataList = Q_LARADV_Summary_Repo.getdatabydateList(reportDate);
+		List<Q_LARADV_Summary_Entity> dataList = getSummaryByDate(reportDate);
 
 		if (dataList == null || dataList.isEmpty()) {
 			logger.warn("No data found for BRRS_Q_LARADV report.");
@@ -445,7 +576,7 @@ public class BRRS_Q_LARADV_ReportService {
 	public void saveQlaradv(Q_LARADV_Summary_Entity summary) {
 
 		// Save Summary Table
-		Q_LARADV_Summary_Repo.save(summary);
+		insertSummary(summary);
 
 		// Copy to Detail Entity
 		Q_LARADV_Detail_Entity detail = new Q_LARADV_Detail_Entity();
@@ -483,7 +614,7 @@ public class BRRS_Q_LARADV_ReportService {
 		detail.setReportResubdate(summary.getReportResubdate());
 
 		// Save Detail Table
-		Q_LARADV_Detail_Repo.save(detail);
+		insertDetail(detail);
 	}
 
 	public void updateQlaradv(Q_LARADV_Summary_Entity summary) {
@@ -492,42 +623,18 @@ public class BRRS_Q_LARADV_ReportService {
 		// UPDATE SUMMARY TABLE
 		// ==========================
 
-		Q_LARADV_Summary_Entity existingSummary = Q_LARADV_Summary_Repo.findById(summary.getSno())
-				.orElseThrow(() -> new RuntimeException("Summary Record Not Found"));
+		Q_LARADV_Summary_Entity existingSummary = findSummaryBySno(summary.getSno());
+		if (existingSummary == null) {
+			throw new RuntimeException("Summary Record Not Found");
+		}
 
-		existingSummary.setGroupName(summary.getGroupName());
-		existingSummary.setCustomerGroupName(summary.getCustomerGroupName());
-		existingSummary.setSectorType(summary.getSectorType());
-		existingSummary.setFacilityType(summary.getFacilityType());
-
-		existingSummary.setOriginalAmount(summary.getOriginalAmount());
-
-		existingSummary.setUtilisationOutstandingBalance(summary.getUtilisationOutstandingBalance());
-
-		existingSummary.setEffectiveDate(summary.getEffectiveDate());
-
-		existingSummary.setRepaymentPeriod(summary.getRepaymentPeriod());
-
-		existingSummary.setPerformanceStatus(summary.getPerformanceStatus());
-
-		existingSummary.setSecurityDetails(summary.getSecurityDetails());
-
-		existingSummary.setBoardApproval(summary.getBoardApproval());
-
-		existingSummary.setInterestRate(summary.getInterestRate());
-
-		existingSummary.setOutstandingBalancePercent(summary.getOutstandingBalancePercent());
-
-		existingSummary.setLimitPercent(summary.getLimitPercent());
-
-		Q_LARADV_Summary_Repo.save(existingSummary);
+		updateSummaryBySno(summary);
 
 		// ==========================
 		// UPDATE DETAIL TABLE
 		// ==========================
 
-		Q_LARADV_Detail_Entity detail = Q_LARADV_Detail_Repo.findById(summary.getSno())
-				.orElse(new Q_LARADV_Detail_Entity());
+		Q_LARADV_Detail_Entity detail = new Q_LARADV_Detail_Entity();
 
 		detail.setSno(summary.getSno());
 
@@ -560,7 +667,7 @@ public class BRRS_Q_LARADV_ReportService {
 
 		detail.setModifyFlg("Y");
 
-		Q_LARADV_Detail_Repo.save(detail);
+		upsertDetailBySno(detail);
 	}
 
 	public List<Object[]> getQ_LARADVResub() {
@@ -568,7 +675,7 @@ public class BRRS_Q_LARADV_ReportService {
 		List<Object[]> mergedList = new ArrayList<>();
 
 		try {
-			List<Object[]> list5 = Q_LARADV_Resub_Summary_Repo.getResubData();
+			List<Object[]> list5 = getResubResubData();
 
 			for (Object[] e : list5) {
 				Date reportDate = e[0] != null ? (Date) e[0] : null;
@@ -597,14 +704,14 @@ public class BRRS_Q_LARADV_ReportService {
 			return Collections.emptyList();
 		}
 	}
-	
+
 
 	public List<Object[]> getQ_LARADVArchival() {
 
 		List<Object[]> mergedList = new ArrayList<>();
 
 		try {
-			List<Object[]> list5 = Q_LARADV_Archival_Summary_Repo.getResubData();
+			List<Object[]> list5 = getArchivalResubData();
 
 			for (Object[] e : list5) {
 				Date reportDate = e[0] != null ? (Date) e[0] : null;
@@ -631,6 +738,202 @@ public class BRRS_Q_LARADV_ReportService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return Collections.emptyList();
+		}
+	}
+
+	// =========================================================
+	// ROW MAPPERS
+	// =========================================================
+
+	class Q_LARADVSummaryRowMapper implements RowMapper<Q_LARADV_Summary_Entity> {
+		@Override
+		public Q_LARADV_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Summary_Entity obj = new Q_LARADV_Summary_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
+		}
+	}
+
+	class Q_LARADVDetailRowMapper implements RowMapper<Q_LARADV_Detail_Entity> {
+		@Override
+		public Q_LARADV_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Detail_Entity obj = new Q_LARADV_Detail_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
+		}
+	}
+
+	class Q_LARADVArchivalSummaryRowMapper implements RowMapper<Q_LARADV_Archival_Summary_Entity> {
+		@Override
+		public Q_LARADV_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Archival_Summary_Entity obj = new Q_LARADV_Archival_Summary_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
+		}
+	}
+
+	class Q_LARADVArchivalDetailRowMapper implements RowMapper<Q_LARADV_Archival_Detail_Entity> {
+		@Override
+		public Q_LARADV_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Archival_Detail_Entity obj = new Q_LARADV_Archival_Detail_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
+		}
+	}
+
+	class Q_LARADVResubSummaryRowMapper implements RowMapper<Q_LARADV_Resub_Summary_Entity> {
+		@Override
+		public Q_LARADV_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Resub_Summary_Entity obj = new Q_LARADV_Resub_Summary_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
+		}
+	}
+
+	class Q_LARADVResubDetailRowMapper implements RowMapper<Q_LARADV_Resub_Detail_Entity> {
+		@Override
+		public Q_LARADV_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Q_LARADV_Resub_Detail_Entity obj = new Q_LARADV_Resub_Detail_Entity();
+			obj.setSno(rs.getLong("SNO"));
+			obj.setGroupName(rs.getString("GROUP_NAME"));
+			obj.setCustomerGroupName(rs.getString("CUSTOMER_GROUP_NAME"));
+			obj.setSectorType(rs.getString("SECTOR_TYPE"));
+			obj.setFacilityType(rs.getString("FACILITY_TYPE"));
+			obj.setOriginalAmount(rs.getBigDecimal("ORIGINAL_AMOUNT"));
+			obj.setUtilisationOutstandingBalance(rs.getBigDecimal("UTILISATION_OUTSTANDING_BALANCE"));
+			obj.setEffectiveDate(rs.getDate("EFFECTIVE_DATE"));
+			obj.setRepaymentPeriod(rs.getString("REPAYMENT_PERIOD"));
+			obj.setPerformanceStatus(rs.getString("PERFORMANCE_STATUS"));
+			obj.setSecurityDetails(rs.getString("SECURITY_DETAILS"));
+			obj.setBoardApproval(rs.getString("BOARD_APPROVAL"));
+			obj.setInterestRate(rs.getBigDecimal("INTEREST_RATE"));
+			obj.setOutstandingBalancePercent(rs.getBigDecimal("OUTSTANDING_BALANCE_PERCENT"));
+			obj.setLimitPercent(rs.getBigDecimal("LIMIT_PERCENT"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReportCode(rs.getString("REPORT_CODE"));
+			obj.setReportDesc(rs.getString("REPORT_DESC"));
+			obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+			obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+			obj.setDelFlg(rs.getString("DEL_FLG"));
+			obj.setReportResubdate(rs.getDate("REPORT_RESUBDATE"));
+			return obj;
 		}
 	}
 

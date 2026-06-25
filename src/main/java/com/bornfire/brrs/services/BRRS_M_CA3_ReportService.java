@@ -25,27 +25,23 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_CA3_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA3_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA3_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA3_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA3_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_CA3_Summary_Repo;
 import com.bornfire.brrs.entities.M_CA3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CA3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA3_Detail_Entity;
@@ -54,8 +50,8 @@ import com.bornfire.brrs.entities.M_CA3_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_CA3_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
+@Transactional
 
 public class BRRS_M_CA3_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CA3_ReportService.class);
@@ -64,33 +60,369 @@ public class BRRS_M_CA3_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-	
-	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_CA3_Summary_Repo brrs_M_CA3_summary_repo;
-
-	@Autowired
-	BRRS_M_CA3_Detail_Repo brrs_M_CA3_detail_repo;
-
-	@Autowired
-	BRRS_M_CA3_Archival_Summary_Repo M_CA3_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA3_Archival_Detail_Repo BRRS_M_CA3_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_CA3_Resub_Summary_Repo M_CA3_Resub_Summary_Repo;
-
-	@Autowired
-	BRRS_M_CA3_Resub_Detail_Repo M_CA3_Resub_Detail_Repo;
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	UserProfileRep userProfileRep;
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// =========================================================
+	// JDBC QUERY METHODS
+	// =========================================================
+
+	public List<M_CA3_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_SUMMARYTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new M_CA3SummaryRowMapper());
+	}
+
+	public List<M_CA3_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_DETAILTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new M_CA3DetailRowMapper());
+	}
+
+	public List<M_CA3_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA3ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA3_Archival_Summary_Entity> getArchivalSummaryWithVersionAll() {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
+			new M_CA3ArchivalSummaryRowMapper());
+	}
+
+	public List<M_CA3_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA3ArchivalDetailRowMapper());
+	}
+
+	public List<M_CA3_Resub_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA3ResubSummaryRowMapper());
+	}
+
+	public List<M_CA3_Resub_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_CA3_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_CA3ResubDetailRowMapper());
+	}
+
+	public BigDecimal findMaxResubVersion(Date reportDate) {
+		return jdbcTemplate.queryForObject(
+			"SELECT MAX(REPORT_VERSION) FROM BRRS_M_CA3_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, BigDecimal.class);
+	}
+
+	// =========================================================
+	// JDBC WRITE METHODS
+	// =========================================================
+
+	private static final String R_FIELDS_SET =
+		"R10_PRODUCT=?, R10_AMOUNT=?, R11_PRODUCT=?, R11_AMOUNT=?, R12_PRODUCT=?, R12_AMOUNT=?," +
+		"R13_PRODUCT=?, R13_AMOUNT=?, R14_PRODUCT=?, R14_AMOUNT=?, R15_PRODUCT=?, R15_AMOUNT=?," +
+		"R16_PRODUCT=?, R16_AMOUNT=?, R17_PRODUCT=?, R17_AMOUNT=?, R18_PRODUCT=?, R18_AMOUNT=?," +
+		"R19_PRODUCT=?, R19_AMOUNT=?, R20_PRODUCT=?, R20_AMOUNT=?," +
+		"R24_PRODUCT=?, R24_AMOUNT=?, R25_PRODUCT=?, R25_AMOUNT=?, R26_PRODUCT=?, R26_AMOUNT=?," +
+		"R27_PRODUCT=?, R27_AMOUNT=?, R28_PRODUCT=?, R28_AMOUNT=?, R29_PRODUCT=?, R29_AMOUNT=?," +
+		"R36_PRODUCT=?, R36_AMOUNT=?, R37_PRODUCT=?, R37_AMOUNT=?, R38_PRODUCT=?, R38_AMOUNT=?," +
+		"R39_PRODUCT=?, R39_AMOUNT=?, R40_PRODUCT=?, R40_AMOUNT=?, R41_PRODUCT=?, R41_AMOUNT=?," +
+		"R44_PRODUCT=?, R44_AMOUNT=?, R45_PRODUCT=?, R45_AMOUNT=?, R46_PRODUCT=?, R46_AMOUNT=?," +
+		"R50_PRODUCT=?, R50_AMOUNT=?, R51_PRODUCT=?, R51_AMOUNT=?, R52_PRODUCT=?, R52_AMOUNT=?," +
+		"R53_PRODUCT=?, R53_AMOUNT=?, R54_PRODUCT=?, R54_AMOUNT=?, R55_PRODUCT=?, R55_AMOUNT=?," +
+		"R58_PRODUCT=?, R58_AMOUNT=?, R59_PRODUCT=?, R59_AMOUNT=?, R60_PRODUCT=?, R60_AMOUNT=?";
+
+	private static final String R_COLS =
+		"R10_PRODUCT,R10_AMOUNT,R11_PRODUCT,R11_AMOUNT,R12_PRODUCT,R12_AMOUNT," +
+		"R13_PRODUCT,R13_AMOUNT,R14_PRODUCT,R14_AMOUNT,R15_PRODUCT,R15_AMOUNT," +
+		"R16_PRODUCT,R16_AMOUNT,R17_PRODUCT,R17_AMOUNT,R18_PRODUCT,R18_AMOUNT," +
+		"R19_PRODUCT,R19_AMOUNT,R20_PRODUCT,R20_AMOUNT," +
+		"R24_PRODUCT,R24_AMOUNT,R25_PRODUCT,R25_AMOUNT,R26_PRODUCT,R26_AMOUNT," +
+		"R27_PRODUCT,R27_AMOUNT,R28_PRODUCT,R28_AMOUNT,R29_PRODUCT,R29_AMOUNT," +
+		"R36_PRODUCT,R36_AMOUNT,R37_PRODUCT,R37_AMOUNT,R38_PRODUCT,R38_AMOUNT," +
+		"R39_PRODUCT,R39_AMOUNT,R40_PRODUCT,R40_AMOUNT,R41_PRODUCT,R41_AMOUNT," +
+		"R44_PRODUCT,R44_AMOUNT,R45_PRODUCT,R45_AMOUNT,R46_PRODUCT,R46_AMOUNT," +
+		"R50_PRODUCT,R50_AMOUNT,R51_PRODUCT,R51_AMOUNT,R52_PRODUCT,R52_AMOUNT," +
+		"R53_PRODUCT,R53_AMOUNT,R54_PRODUCT,R54_AMOUNT,R55_PRODUCT,R55_AMOUNT," +
+		"R58_PRODUCT,R58_AMOUNT,R59_PRODUCT,R59_AMOUNT,R60_PRODUCT,R60_AMOUNT";
+
+	private static final String R_PLACEHOLDERS =
+		"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+
+	private Object[] rFieldValues(M_CA3_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private Object[] rFieldValues(M_CA3_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private Object[] rFieldValues(M_CA3_Archival_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private Object[] rFieldValues(M_CA3_Archival_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private Object[] rFieldValues(M_CA3_Resub_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private Object[] rFieldValues(M_CA3_Resub_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_PRODUCT(), e.getR10_AMOUNT(), e.getR11_PRODUCT(), e.getR11_AMOUNT(),
+			e.getR12_PRODUCT(), e.getR12_AMOUNT(), e.getR13_PRODUCT(), e.getR13_AMOUNT(),
+			e.getR14_PRODUCT(), e.getR14_AMOUNT(), e.getR15_PRODUCT(), e.getR15_AMOUNT(),
+			e.getR16_PRODUCT(), e.getR16_AMOUNT(), e.getR17_PRODUCT(), e.getR17_AMOUNT(),
+			e.getR18_PRODUCT(), e.getR18_AMOUNT(), e.getR19_PRODUCT(), e.getR19_AMOUNT(),
+			e.getR20_PRODUCT(), e.getR20_AMOUNT(),
+			e.getR24_PRODUCT(), e.getR24_AMOUNT(), e.getR25_PRODUCT(), e.getR25_AMOUNT(),
+			e.getR26_PRODUCT(), e.getR26_AMOUNT(), e.getR27_PRODUCT(), e.getR27_AMOUNT(),
+			e.getR28_PRODUCT(), e.getR28_AMOUNT(), e.getR29_PRODUCT(), e.getR29_AMOUNT(),
+			e.getR36_PRODUCT(), e.getR36_AMOUNT(), e.getR37_PRODUCT(), e.getR37_AMOUNT(),
+			e.getR38_PRODUCT(), e.getR38_AMOUNT(), e.getR39_PRODUCT(), e.getR39_AMOUNT(),
+			e.getR40_PRODUCT(), e.getR40_AMOUNT(), e.getR41_PRODUCT(), e.getR41_AMOUNT(),
+			e.getR44_PRODUCT(), e.getR44_AMOUNT(), e.getR45_PRODUCT(), e.getR45_AMOUNT(),
+			e.getR46_PRODUCT(), e.getR46_AMOUNT(),
+			e.getR50_PRODUCT(), e.getR50_AMOUNT(), e.getR51_PRODUCT(), e.getR51_AMOUNT(),
+			e.getR52_PRODUCT(), e.getR52_AMOUNT(), e.getR53_PRODUCT(), e.getR53_AMOUNT(),
+			e.getR54_PRODUCT(), e.getR54_AMOUNT(), e.getR55_PRODUCT(), e.getR55_AMOUNT(),
+			e.getR58_PRODUCT(), e.getR58_AMOUNT(), e.getR59_PRODUCT(), e.getR59_AMOUNT(),
+			e.getR60_PRODUCT(), e.getR60_AMOUNT()
+		};
+	}
+
+	private void saveSummary(M_CA3_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getREPORT_VERSION();
+		params[rVals.length + 1] = e.getREPORT_FREQUENCY();
+		params[rVals.length + 2] = e.getREPORT_CODE();
+		params[rVals.length + 3] = e.getREPORT_DESC();
+		params[rVals.length + 4] = e.getENTITY_FLG();
+		params[rVals.length + 5] = e.getMODIFY_FLG();
+		params[rVals.length + 6] = e.getDEL_FLG();
+		params[rVals.length + 7] = e.getREPORT_DATE();
+		jdbcTemplate.update(
+			"UPDATE BRRS_M_CA3_SUMMARYTABLE SET " + R_FIELDS_SET +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE REPORT_DATE=?", params);
+	}
+
+	private void saveDetail(M_CA3_Detail_Entity e) {
+		int cnt = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM BRRS_M_CA3_DETAILTABLE WHERE REPORT_DATE=?",
+			new Object[]{e.getREPORT_DATE()}, Integer.class);
+		Object[] rVals = rFieldValues(e);
+		if (cnt > 0) {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length]     = e.getREPORT_VERSION();
+			params[rVals.length + 1] = e.getREPORT_FREQUENCY();
+			params[rVals.length + 2] = e.getREPORT_CODE();
+			params[rVals.length + 3] = e.getREPORT_DESC();
+			params[rVals.length + 4] = e.getENTITY_FLG();
+			params[rVals.length + 5] = e.getMODIFY_FLG();
+			params[rVals.length + 6] = e.getDEL_FLG();
+			params[rVals.length + 7] = e.getREPORT_DATE();
+			jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_DETAILTABLE SET " + R_FIELDS_SET +
+				",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+				" WHERE REPORT_DATE=?", params);
+		} else {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length]     = e.getREPORT_DATE();
+			params[rVals.length + 1] = e.getREPORT_VERSION();
+			params[rVals.length + 2] = e.getREPORT_FREQUENCY();
+			params[rVals.length + 3] = e.getREPORT_CODE();
+			params[rVals.length + 4] = e.getREPORT_DESC();
+			params[rVals.length + 5] = e.getENTITY_FLG();
+			params[rVals.length + 6] = e.getMODIFY_FLG();
+			params[rVals.length + 7] = e.getDEL_FLG();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_CA3_DETAILTABLE (REPORT_DATE," + R_COLS +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS + ",?,?,?,?,?,?,?)", params);
+		}
+	}
+
+	private void insertResubSummary(M_CA3_Resub_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 6];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_CA3_RESUB_SUMMARYTABLE (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?)", params);
+	}
+
+	private void insertResubDetail(M_CA3_Resub_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 6];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_CA3_RESUB_DETAILTABLE (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalSummary(M_CA3_Archival_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 6];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_CA3_ARCHIVALTABLE_SUMMARY (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalDetail(M_CA3_Archival_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 6];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_CA3_ARCHIVALTABLE_DETAIL (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?)", params);
+	}
 
 	public ModelAndView getBRRS_M_CA3View(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
@@ -104,8 +436,6 @@ public class BRRS_M_CA3_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 		
-		Session hs = sessionFactory.getCurrentSession();
-
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
@@ -130,8 +460,7 @@ public class BRRS_M_CA3_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_CA3_Archival_Summary_Entity> T1Master = M_CA3_Archival_Summary_Repo.getdatabydateListarchival(d1,
-						version);
+				List<M_CA3_Archival_Summary_Entity> T1Master = getArchivalSummaryByDateAndVersion(d1, version);
 				mv.addObject("displaymode", "summary");
 
 				mv.addObject("reportsummary", T1Master);
@@ -139,8 +468,7 @@ public class BRRS_M_CA3_ReportService {
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_CA3_Resub_Summary_Entity> T1Master = M_CA3_Resub_Summary_Repo.getdatabydateListarchival(d1,
-						version);
+				List<M_CA3_Resub_Summary_Entity> T1Master = getResubSummaryByDateAndVersion(d1, version);
 
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
@@ -148,8 +476,7 @@ public class BRRS_M_CA3_ReportService {
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<M_CA3_Summary_Entity> T1Master = brrs_M_CA3_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<M_CA3_Summary_Entity> T1Master = getSummaryByDate(dateformat.parse(todate));
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
@@ -161,16 +488,14 @@ public class BRRS_M_CA3_ReportService {
 				// DETAIL + ARCHIVAL
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-					List<M_CA3_Archival_Detail_Entity> T1Master = BRRS_M_CA3_Archival_Detail_Repo
-							.getdatabydateListarchival(d1, version);
+					List<M_CA3_Archival_Detail_Entity> T1Master = getArchivalDetailByDateAndVersion(d1, version);
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-					List<M_CA3_Resub_Detail_Entity> T1Master = M_CA3_Resub_Detail_Repo.getdatabydateListarchival(d1,
-							version);
+					List<M_CA3_Resub_Detail_Entity> T1Master = getResubDetailByDateAndVersion(d1, version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -180,8 +505,7 @@ public class BRRS_M_CA3_ReportService {
 				// DETAIL + NORMAL
 				else {
 
-					List<M_CA3_Detail_Entity> T1Master = brrs_M_CA3_detail_repo
-							.getdatabydateList(dateformat.parse(todate));
+					List<M_CA3_Detail_Entity> T1Master = getDetailByDate(dateformat.parse(todate));
 					System.out.println("Details......T1Master Size " + T1Master.size());
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
@@ -203,24 +527,23 @@ public class BRRS_M_CA3_ReportService {
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
 	    // Fetch existing SUMMARY
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: "
-	                            + updatedEntity.getREPORT_DATE()));
+	    List<M_CA3_Summary_Entity> summaryList1 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList1.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = summaryList1.get(0);
 
 	    // Audit old copy
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
 	    // Fetch existing DETAIL
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList1 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList1.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList1.get(0);
+	    }
 
 	    try {
 
@@ -271,8 +594,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -282,28 +605,27 @@ public class BRRS_M_CA3_ReportService {
 	                "BRRS_M_CA3_SUMMARY");
 	    }
 	}
-	
+
 	public void updateReport2(M_CA3_Summary_Entity updatedEntity) {
 
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: "
-	                            + updatedEntity.getREPORT_DATE()));
+	    List<M_CA3_Summary_Entity> summaryList2 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList2.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = summaryList2.get(0);
 
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList2 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList2.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList2.get(0);
+	    }
 
 	    try {
 
@@ -334,8 +656,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -351,22 +673,21 @@ public class BRRS_M_CA3_ReportService {
 	    System.out.println("Came to services");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException(
-	                    "Summary record not found for REPORT_DATE: "
-	                            + updatedEntity.getREPORT_DATE()));
+	    List<M_CA3_Summary_Entity> summaryList3 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList3.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
+	    M_CA3_Summary_Entity existingSummary = summaryList3.get(0);
 
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList3 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList3.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList3.get(0);
+	    }
 
 	    try {
 
@@ -397,8 +718,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -411,20 +732,21 @@ public class BRRS_M_CA3_ReportService {
 	
 	public void updateReport4(M_CA3_Summary_Entity updatedEntity) {
 
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException("Record not found"));
+	    List<M_CA3_Summary_Entity> summaryList4 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList4.isEmpty()) throw new RuntimeException("Record not found");
+	    M_CA3_Summary_Entity existingSummary = summaryList4.get(0);
 
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList4 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList4.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList4.get(0);
+	    }
 
 	    try {
 
@@ -457,8 +779,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -471,20 +793,21 @@ public class BRRS_M_CA3_ReportService {
 	
 	public void updateReport5(M_CA3_Summary_Entity updatedEntity) {
 
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException("Record not found"));
+	    List<M_CA3_Summary_Entity> summaryList5 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList5.isEmpty()) throw new RuntimeException("Record not found");
+	    M_CA3_Summary_Entity existingSummary = summaryList5.get(0);
 
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList5 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList5.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList5.get(0);
+	    }
 
 	    try {
 
@@ -515,8 +838,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -529,20 +852,21 @@ public class BRRS_M_CA3_ReportService {
 	
 	public void updateReport6(M_CA3_Summary_Entity updatedEntity) {
 
-	    M_CA3_Summary_Entity existingSummary = brrs_M_CA3_summary_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseThrow(() -> new RuntimeException("Record not found"));
+	    List<M_CA3_Summary_Entity> summaryList6 = getSummaryByDate(updatedEntity.getREPORT_DATE());
+	    if (summaryList6.isEmpty()) throw new RuntimeException("Record not found");
+	    M_CA3_Summary_Entity existingSummary = summaryList6.get(0);
 
 	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
-	    M_CA3_Detail_Entity existingDetail = brrs_M_CA3_detail_repo
-	            .findById(updatedEntity.getREPORT_DATE())
-	            .orElseGet(() -> {
-	                M_CA3_Detail_Entity d = new M_CA3_Detail_Entity();
-	                d.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	                return d;
-	            });
+	    List<M_CA3_Detail_Entity> detailList6 = getDetailByDate(updatedEntity.getREPORT_DATE());
+	    M_CA3_Detail_Entity existingDetail;
+	    if (detailList6.isEmpty()) {
+	        existingDetail = new M_CA3_Detail_Entity();
+	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
+	    } else {
+	        existingDetail = detailList6.get(0);
+	    }
 
 	    try {
 
@@ -573,8 +897,8 @@ public class BRRS_M_CA3_ReportService {
 
 	    if (!changes.isEmpty()) {
 
-	        brrs_M_CA3_summary_repo.save(existingSummary);
-	        brrs_M_CA3_detail_repo.save(existingDetail);
+	        saveSummary(existingSummary);
+	        saveDetail(existingDetail);
 
 	        auditService.compareEntitiesmanual(
 	                oldcopy,
@@ -590,7 +914,7 @@ public class BRRS_M_CA3_ReportService {
 		   System.out.println("Came toM_C Resub Service");
 		Date reportDate = updatedEntity.getReportDate();
 
-		BigDecimal maxResubVer = M_CA3_Resub_Summary_Repo.findMaxVersion(reportDate);
+		BigDecimal maxResubVer = findMaxResubVersion(reportDate);
 		if (maxResubVer == null) {
 			throw new RuntimeException("No record for report date: " + reportDate);
 		}
@@ -622,17 +946,16 @@ public class BRRS_M_CA3_ReportService {
 		archDetail.setReportVersion(newVersion);
 		archDetail.setReportResubDate(now);
 
-		M_CA3_Resub_Summary_Repo.save(resubSummary);
-		M_CA3_Resub_Detail_Repo.save(resubDetail);
-		M_CA3_Archival_Summary_Repo.save(archSummary);
-		BRRS_M_CA3_Archival_Detail_Repo.save(archDetail);
+		insertResubSummary(resubSummary);
+		insertResubDetail(resubDetail);
+		insertArchivalSummary(archSummary);
+		insertArchivalDetail(archDetail);
 	}
 
 	public List<Object[]> getM_CA3Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_CA3_Archival_Summary_Entity> latestArchivalList = M_CA3_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+			List<M_CA3_Archival_Summary_Entity> latestArchivalList = getArchivalSummaryWithVersionAll();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_CA3_Archival_Summary_Entity entity : latestArchivalList) {
@@ -655,8 +978,7 @@ public class BRRS_M_CA3_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_CA3_Archival_Summary_Entity> repoData = M_CA3_Archival_Summary_Repo
-					.getdatabydateListWithVersionAll();
+			List<M_CA3_Archival_Summary_Entity> repoData = getArchivalSummaryWithVersionAll();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_CA3_Archival_Summary_Entity entity : repoData) {
@@ -726,8 +1048,7 @@ public class BRRS_M_CA3_ReportService {
 
 				// Fetch data
 
-				List<M_CA3_Summary_Entity> dataList = brrs_M_CA3_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<M_CA3_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_CA3 report. Returning empty result.");
@@ -1353,7 +1674,7 @@ public class BRRS_M_CA3_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} else {
-			List<M_CA3_Summary_Entity> dataList = brrs_M_CA3_summary_repo.getdatabydateList(dateformat.parse(todate));
+			List<M_CA3_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for BRRS_M_CA3 report. Returning empty result.");
@@ -1961,8 +2282,7 @@ public class BRRS_M_CA3_ReportService {
 			}
 		}
 
-		List<M_CA3_Archival_Summary_Entity> dataList = M_CA3_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA3_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA3 report. Returning empty result.");
@@ -2564,8 +2884,7 @@ public class BRRS_M_CA3_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_CA3_Archival_Summary_Entity> dataList = M_CA3_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA3_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_CA3 report. Returning empty result.");
@@ -3176,8 +3495,7 @@ public class BRRS_M_CA3_ReportService {
 			}
 		}
 
-		List<M_CA3_Resub_Summary_Entity> dataList = M_CA3_Resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA3_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_CA3 report. Returning empty result.");
@@ -3781,8 +4099,7 @@ public class BRRS_M_CA3_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_CA3_Resub_Summary_Entity> dataList = M_CA3_Resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_CA3_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_CA3 report. Returning empty result.");
@@ -4370,6 +4687,316 @@ public class BRRS_M_CA3_ReportService {
 				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CA3 EMAIL RESUB SUMMARY", null, "BRRS_M_CA3_RESUB_SUMMARYTABLE");
 			}
 			return out.toByteArray();
+		}
+	}
+
+	class M_CA3SummaryRowMapper implements RowMapper<M_CA3_Summary_Entity> {
+		@Override
+		public M_CA3_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Summary_Entity obj = new M_CA3_Summary_Entity();
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
+		}
+	}
+
+	class M_CA3DetailRowMapper implements RowMapper<M_CA3_Detail_Entity> {
+		@Override
+		public M_CA3_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Detail_Entity obj = new M_CA3_Detail_Entity();
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
+		}
+	}
+
+	class M_CA3ArchivalSummaryRowMapper implements RowMapper<M_CA3_Archival_Summary_Entity> {
+		@Override
+		public M_CA3_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Archival_Summary_Entity obj = new M_CA3_Archival_Summary_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
+		}
+	}
+
+	class M_CA3ArchivalDetailRowMapper implements RowMapper<M_CA3_Archival_Detail_Entity> {
+		@Override
+		public M_CA3_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Archival_Detail_Entity obj = new M_CA3_Archival_Detail_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
+		}
+	}
+
+	class M_CA3ResubSummaryRowMapper implements RowMapper<M_CA3_Resub_Summary_Entity> {
+		@Override
+		public M_CA3_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Resub_Summary_Entity obj = new M_CA3_Resub_Summary_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
+		}
+	}
+
+	class M_CA3ResubDetailRowMapper implements RowMapper<M_CA3_Resub_Detail_Entity> {
+		@Override
+		public M_CA3_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_CA3_Resub_Detail_Entity obj = new M_CA3_Resub_Detail_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_PRODUCT(rs.getString("R10_PRODUCT")); obj.setR10_AMOUNT(rs.getBigDecimal("R10_AMOUNT"));
+			obj.setR11_PRODUCT(rs.getString("R11_PRODUCT")); obj.setR11_AMOUNT(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR12_PRODUCT(rs.getString("R12_PRODUCT")); obj.setR12_AMOUNT(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR13_PRODUCT(rs.getString("R13_PRODUCT")); obj.setR13_AMOUNT(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR14_PRODUCT(rs.getString("R14_PRODUCT")); obj.setR14_AMOUNT(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR15_PRODUCT(rs.getString("R15_PRODUCT")); obj.setR15_AMOUNT(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR16_PRODUCT(rs.getString("R16_PRODUCT")); obj.setR16_AMOUNT(rs.getBigDecimal("R16_AMOUNT"));
+			obj.setR17_PRODUCT(rs.getString("R17_PRODUCT")); obj.setR17_AMOUNT(rs.getBigDecimal("R17_AMOUNT"));
+			obj.setR18_PRODUCT(rs.getString("R18_PRODUCT")); obj.setR18_AMOUNT(rs.getBigDecimal("R18_AMOUNT"));
+			obj.setR19_PRODUCT(rs.getString("R19_PRODUCT")); obj.setR19_AMOUNT(rs.getBigDecimal("R19_AMOUNT"));
+			obj.setR20_PRODUCT(rs.getString("R20_PRODUCT")); obj.setR20_AMOUNT(rs.getBigDecimal("R20_AMOUNT"));
+			obj.setR24_PRODUCT(rs.getString("R24_PRODUCT")); obj.setR24_AMOUNT(rs.getBigDecimal("R24_AMOUNT"));
+			obj.setR25_PRODUCT(rs.getString("R25_PRODUCT")); obj.setR25_AMOUNT(rs.getBigDecimal("R25_AMOUNT"));
+			obj.setR26_PRODUCT(rs.getString("R26_PRODUCT")); obj.setR26_AMOUNT(rs.getBigDecimal("R26_AMOUNT"));
+			obj.setR27_PRODUCT(rs.getString("R27_PRODUCT")); obj.setR27_AMOUNT(rs.getBigDecimal("R27_AMOUNT"));
+			obj.setR28_PRODUCT(rs.getString("R28_PRODUCT")); obj.setR28_AMOUNT(rs.getBigDecimal("R28_AMOUNT"));
+			obj.setR29_PRODUCT(rs.getString("R29_PRODUCT")); obj.setR29_AMOUNT(rs.getBigDecimal("R29_AMOUNT"));
+			obj.setR36_PRODUCT(rs.getString("R36_PRODUCT")); obj.setR36_AMOUNT(rs.getBigDecimal("R36_AMOUNT"));
+			obj.setR37_PRODUCT(rs.getString("R37_PRODUCT")); obj.setR37_AMOUNT(rs.getBigDecimal("R37_AMOUNT"));
+			obj.setR38_PRODUCT(rs.getString("R38_PRODUCT")); obj.setR38_AMOUNT(rs.getBigDecimal("R38_AMOUNT"));
+			obj.setR39_PRODUCT(rs.getString("R39_PRODUCT")); obj.setR39_AMOUNT(rs.getBigDecimal("R39_AMOUNT"));
+			obj.setR40_PRODUCT(rs.getString("R40_PRODUCT")); obj.setR40_AMOUNT(rs.getBigDecimal("R40_AMOUNT"));
+			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT")); obj.setR41_AMOUNT(rs.getBigDecimal("R41_AMOUNT"));
+			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT")); obj.setR44_AMOUNT(rs.getBigDecimal("R44_AMOUNT"));
+			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT")); obj.setR45_AMOUNT(rs.getBigDecimal("R45_AMOUNT"));
+			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT")); obj.setR46_AMOUNT(rs.getBigDecimal("R46_AMOUNT"));
+			obj.setR50_PRODUCT(rs.getString("R50_PRODUCT")); obj.setR50_AMOUNT(rs.getBigDecimal("R50_AMOUNT"));
+			obj.setR51_PRODUCT(rs.getString("R51_PRODUCT")); obj.setR51_AMOUNT(rs.getBigDecimal("R51_AMOUNT"));
+			obj.setR52_PRODUCT(rs.getString("R52_PRODUCT")); obj.setR52_AMOUNT(rs.getBigDecimal("R52_AMOUNT"));
+			obj.setR53_PRODUCT(rs.getString("R53_PRODUCT")); obj.setR53_AMOUNT(rs.getBigDecimal("R53_AMOUNT"));
+			obj.setR54_PRODUCT(rs.getString("R54_PRODUCT")); obj.setR54_AMOUNT(rs.getBigDecimal("R54_AMOUNT"));
+			obj.setR55_PRODUCT(rs.getString("R55_PRODUCT")); obj.setR55_AMOUNT(rs.getBigDecimal("R55_AMOUNT"));
+			obj.setR58_PRODUCT(rs.getString("R58_PRODUCT")); obj.setR58_AMOUNT(rs.getBigDecimal("R58_AMOUNT"));
+			obj.setR59_PRODUCT(rs.getString("R59_PRODUCT")); obj.setR59_AMOUNT(rs.getBigDecimal("R59_AMOUNT"));
+			obj.setR60_PRODUCT(rs.getString("R60_PRODUCT")); obj.setR60_AMOUNT(rs.getBigDecimal("R60_AMOUNT"));
+			return obj;
 		}
 	}
 
