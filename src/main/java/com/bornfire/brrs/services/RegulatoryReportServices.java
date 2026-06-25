@@ -5064,11 +5064,10 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_AIDP":
-			try {
-				archivalData = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
-			} catch (Exception e) {
-			}
-			break;
+		        List<Object[]> aidpList = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
+		        archivalData.addAll(aidpList);
+		        System.out.println("Fetched M_AIDP archival data: " + aidpList.size());
+		    break;
 
 		/*
 		 * case "M_INT_RATES_FCA_NEW":

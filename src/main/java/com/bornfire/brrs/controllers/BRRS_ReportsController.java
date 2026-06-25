@@ -542,9 +542,10 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateLA4(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute BRRS_M_AIDP_Summary_Entity1 request1, @ModelAttribute BRRS_M_AIDP_Summary_Entity2 request2,
-			@ModelAttribute BRRS_M_AIDP_Summary_Entity3 request3,
-			@ModelAttribute BRRS_M_AIDP_Summary_Entity4 request4) {
+			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity1 request1, 
+			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity2 request2,
+			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity3 request3,
+			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity4 request4) {
 		try {
 
 			// set date into all 4 entities
@@ -844,9 +845,9 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) String type,
 
-			@ModelAttribute M_CA6_Summary_Entity1 summary1, @ModelAttribute M_CA6_Detail_Entity1 detail1,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity1 summary1, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity1 detail1,
 
-			@ModelAttribute M_CA6_Summary_Entity2 summary2, @ModelAttribute M_CA6_Detail_Entity2 detail2) {
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity2 summary2, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity2 detail2) {
 		try {
 			System.out.println("Came to CA6 UPDATE single controller");
 			System.out.println(type);
@@ -1351,7 +1352,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA5_Summary_Entity1 request1, @ModelAttribute M_CA5_Summary_Entity2 request2
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity1 request1, @ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity2 request2
 
 	) {
 		try {
@@ -1376,8 +1377,10 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateReportReSub(
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
-			@RequestParam(required = false) String type, @ModelAttribute M_CA5_RESUB_Summary_Entity1 request1,
-			@ModelAttribute M_CA5_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
+			@RequestParam(required = false) String type, 
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_RESUB_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_RESUB_Summary_Entity2 request2, 
+			HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_CA5 Resub Controller");
@@ -4376,8 +4379,8 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateReportReSub(
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate, // ✅ ISO format
-			@RequestParam(required = false) String type, @ModelAttribute M_CA6_RESUB_Summary_Entity1 request1,
-			@ModelAttribute M_CA6_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
+			@RequestParam(required = false) String type, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_RESUB_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_CA6 Resub Controller");
@@ -5367,10 +5370,10 @@ public class BRRS_ReportsController {
 
 			@RequestParam("reportType") String reportType,
 
-			@ModelAttribute M_AIDP_Resub_Summary_Entity1 request1,
-			@ModelAttribute M_AIDP_Resub_Summary_Entity2 request2,
-			@ModelAttribute M_AIDP_Resub_Summary_Entity3 request3,
-			@ModelAttribute M_AIDP_Resub_Summary_Entity4 request4) {
+			@ModelAttribute BRRS_M_AIDP_ReportService.M_AIDP_Resub_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_AIDP_ReportService.M_AIDP_Resub_Summary_Entity2 request2,
+			@ModelAttribute BRRS_M_AIDP_ReportService.M_AIDP_Resub_Summary_Entity3 request3,
+			@ModelAttribute BRRS_M_AIDP_ReportService.M_AIDP_Resub_Summary_Entity4 request4) {
 
 		try {
 
