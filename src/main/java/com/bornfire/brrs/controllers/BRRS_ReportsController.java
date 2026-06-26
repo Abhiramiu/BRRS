@@ -2032,7 +2032,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllCRReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CR_Summary_Entity request1) {
+			@ModelAttribute BRRS_M_CR_ReportService.M_CR_Summary_Entity request1) {
 		try {
 			System.out.println("Came to single controller");
 			// set date into all 4 entities
@@ -2849,7 +2849,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CR_Summary_Entity request) {
+			@ModelAttribute BRRS_M_CR_ReportService.M_CR_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
@@ -2872,7 +2872,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CR_Resub_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute BRRS_M_CR_ReportService.M_CR_Resub_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
