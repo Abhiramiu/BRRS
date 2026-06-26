@@ -7,13 +7,19 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import java.sql.CallableStatement;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -27,27 +33,36 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
+
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.BRRS_M_CALOC_Archival_Detail_Repo;
@@ -58,6 +73,7 @@ import com.bornfire.brrs.entities.BRRS_M_CALOC_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_CALOC_Summary_Repo1;
 import com.bornfire.brrs.entities.BRRS_M_CALOC_Summary_Repo2;
 import com.bornfire.brrs.entities.BRRS_M_CALOC_Summary_Repo3;
+
 import com.bornfire.brrs.entities.M_CALOC_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_CALOC_Archival_Summary_Entity1;
 import com.bornfire.brrs.entities.M_CALOC_Archival_Summary_Entity2;
@@ -72,14 +88,14 @@ import com.bornfire.brrs.entities.UserProfileRep;
 @Service
 public class BRRS_M_CALOC_ReportService {
 
-	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_OR2_ReportService.class);
+	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_CALOC_ReportService.class);
 
 	@Autowired
 	private Environment env;
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -106,49 +122,50 @@ public class BRRS_M_CALOC_ReportService {
 
 	@Autowired
 	BRRS_M_CALOC_Archival_Summary_Repo3 M_CALOC_Archival_Summary_Repo3;
-	
+
 	@Autowired
 	UserProfileRep userProfileRep;
-	
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// Method 1 - SUMMARY PAGE BUILDER
 	public ModelAndView getBRRS_M_CALOCview(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
+
 		ModelAndView mv = new ModelAndView();
-		
+
+		// Get logged-in user details
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
+
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
+
 		System.out.println("Role: " + role);
-		
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
 
 		System.out.println("testing");
 		System.out.println(version);
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			System.out.println(type);
-			List<M_CALOC_Archival_Summary_Entity1> T1Master1 = new ArrayList<M_CALOC_Archival_Summary_Entity1>();
-			List<M_CALOC_Archival_Summary_Entity2> T1Master2 = new ArrayList<M_CALOC_Archival_Summary_Entity2>();
-			List<M_CALOC_Archival_Summary_Entity3> T1Master3 = new ArrayList<M_CALOC_Archival_Summary_Entity3>();
-			System.out.println(version);
+		if ("ARCHIVAL".equals(type) && version != null) {
+
+			System.out.println("ARCHIVAL MODE");
+			System.out.println("version= " + version);
+
+			List<M_CALOC_Archival_Summary_Entity1> T1Master1 = new ArrayList<>();
+			List<M_CALOC_Archival_Summary_Entity2> T1Master2 = new ArrayList<>();
+			List<M_CALOC_Archival_Summary_Entity3> T1Master3 = new ArrayList<>();
+
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from brrs1_REPORT_ENTITY a where a.report_date =
-				// ?1
-				// ", brrs1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
 				System.out.println(todate + " ************* " + version);
 
-				T1Master1 = M_CALOC_Archival_Summary_Repo1.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master2 = M_CALOC_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T1Master3 = M_CALOC_Archival_Summary_Repo3.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master1 = M_CALOC_Archival_Summary_Repo1.getdatabydateListarchival(d1, version);
+				T1Master2 = M_CALOC_Archival_Summary_Repo2.getdatabydateListarchival(d1, version);
+				T1Master3 = M_CALOC_Archival_Summary_Repo3.getdatabydateListarchival(d1, version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -159,54 +176,65 @@ public class BRRS_M_CALOC_ReportService {
 			mv.addObject("reportsummary3", T1Master3);
 
 		} else {
-			List<M_CALOC_Summary_Entity1> T1Master1 = new ArrayList<M_CALOC_Summary_Entity1>();
-			List<M_CALOC_Summary_Entity2> T1Master2 = new ArrayList<M_CALOC_Summary_Entity2>();
-			List<M_CALOC_Summary_Entity3> T1Master3 = new ArrayList<M_CALOC_Summary_Entity3>();
+
+			List<M_CALOC_Summary_Entity1> T1Master1 = new ArrayList<>();
+			List<M_CALOC_Summary_Entity2> T1Master2 = new ArrayList<>();
+			List<M_CALOC_Summary_Entity3> T1Master3 = new ArrayList<>();
 
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				// T1Master = hs.createQuery("from brrs1_REPORT_ENTITY a where a.report_date =
-				// ?1
-				// ", brrs1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				System.out.println(dateformat.parse(todate));
-				T1Master1 = M_CALOC_Summary_Repo1.getdatabydateList(dateformat.parse(todate));
-				T1Master2 = M_CALOC_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-				T1Master3 = M_CALOC_Summary_Repo3.getdatabydateList(dateformat.parse(todate));
+				System.out.println(d1);
+
+				T1Master1 = M_CALOC_Summary_Repo1.getdatabydateList(d1);
+				T1Master2 = M_CALOC_Summary_Repo2.getdatabydateList(d1);
+				T1Master3 = M_CALOC_Summary_Repo3.getdatabydateList(d1);
+
+				mv.addObject("report_date", dateformat.format(d1));
+
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+
 			mv.addObject("reportsummary1", T1Master1);
 			mv.addObject("reportsummary2", T1Master2);
 			mv.addObject("reportsummary3", T1Master3);
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 		mv.setViewName("BRRS/M_CALOC");
 		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
+
+		System.out.println("scv " + mv.getViewName());
+
 		return mv;
 	}
 
+	// Method 2 - DETAIL PAGE BUILDER
+
 	public ModelAndView getM_CALOCcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String Filter, String type, String version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String Filter, String type, String version, HttpServletRequest req1,
+			Model md) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		
+
+		// User Role
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
+
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
+
 		System.out.println("Role: " + role);
-		
+
+		// Hibernate Session
 		Session hs = sessionFactory.getCurrentSession();
 
 		try {
+
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
 				parsedDate = dateformat.parse(todate);
@@ -215,7 +243,6 @@ public class BRRS_M_CALOC_ReportService {
 			String rowId = null;
 			String columnId = null;
 
-			// ✅ Split filter string into rowId & columnId
 			if (Filter != null && Filter.contains(",")) {
 				String[] parts = Filter.split(",");
 				if (parts.length >= 2) {
@@ -223,11 +250,13 @@ public class BRRS_M_CALOC_ReportService {
 					columnId = parts[1];
 				}
 			}
+
 			System.out.println(type);
+
 			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				// 🔹 Archival branch
+
 				List<M_CALOC_Archival_Detail_Entity> T1Dt1;
+
 				if (rowId != null && columnId != null) {
 					T1Dt1 = M_CALOC_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate,
 							version);
@@ -237,11 +266,11 @@ public class BRRS_M_CALOC_ReportService {
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {
-				// 🔹 Current branch
+
 				List<M_CALOC_Detail_Entity> T1Dt1;
+
 				if (rowId != null && columnId != null) {
 					T1Dt1 = M_CALOC_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
 				} else {
@@ -252,7 +281,6 @@ public class BRRS_M_CALOC_ReportService {
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			}
 
 		} catch (ParseException e) {
@@ -263,11 +291,9 @@ public class BRRS_M_CALOC_ReportService {
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// ✅ Common attributes
 		mv.setViewName("BRRS/M_CALOC");
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
-		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
 		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
@@ -275,37 +301,37 @@ public class BRRS_M_CALOC_ReportService {
 		return mv;
 	}
 
-	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
+	// Method - 3 - SUMMARY EXCEL EXPORT
 
+	public byte[] getBRRS_M_CALOCExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception
+
+	{
 		logger.info("Service: Starting Excel generation process in memory for type: {}", type);
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null)
+
+		{
 			try {
 				return getBRRSM_CALOCExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
 						format, version);
-			} catch (ParseException e) {
+			}
+
+			catch (ParseException e)
+
+			{
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		}
 
-		/*
-		 * // RESUB check else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-		 * logger.info("Service: Generating RESUB report for version {}", version);
-		 * 
-		 * try { return BRRS_M_CALOCResubExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, format, version);
-		 * 
-		 * } catch (ParseException e) { logger.error("Invalid report date format: {}",
-		 * fromdate, e); throw new
-		 * RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)"); } }
-		 */
-
 		// EMAIL FORMAT
-		if ("email".equalsIgnoreCase(format) && version == null) {
+		if ("email".equalsIgnoreCase(format) && version == null)
+
+		{
 			logger.info("Service: Generating Email report");
+
 			return BRRS_M_CALOCEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
@@ -340,12 +366,15 @@ public class BRRS_M_CALOC_ReportService {
 
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
-				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				ByteArrayOutputStream out = new ByteArrayOutputStream())
+
+		{
 
 			Sheet sheet = workbook.getSheetAt(0);
 			CreationHelper createHelper = workbook.getCreationHelper();
-			// Style Definitions
+
 			CellStyle textStyle = workbook.createCellStyle();
+
 			textStyle.setBorderBottom(BorderStyle.THIN);
 			textStyle.setBorderTop(BorderStyle.THIN);
 			textStyle.setBorderLeft(BorderStyle.THIN);
@@ -363,22 +392,12 @@ public class BRRS_M_CALOC_ReportService {
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.cloneStyleFrom(textStyle);
 
-			dateStyle.setDataFormat(
-			        createHelper.createDataFormat()
-			        .getFormat("dd-MM-yyyy")
-			);
-
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
 			dateStyle.setFont(font);
 
 			// Populate Data
 			if (!dataList1.isEmpty()) {
-			    populateEntity1Data(
-			            sheet,
-			            dataList1.get(0),
-			            textStyle,
-			            numberStyle,
-			            dateStyle
-			    );
+				populateEntity1Data(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
 			}
 
 			if (!dataList2.isEmpty()) {
@@ -393,41 +412,281 @@ public class BRRS_M_CALOC_ReportService {
 			workbook.write(out);
 
 			logger.info("Excel generated successfully. Size: {} bytes", out.size());
+
 			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
 				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC SUMMARY", null, "M_CALOC_SUMMARYTABLE");
 			}
+
 			return out.toByteArray();
 		}
 	}
 
+	// Method - 4 - NEW: SINGLE RECORD EDIT/ VIEW PAGE
+
+	public ModelAndView getViewOrEditPage(String acctNo, String asonDate, String formMode)
+
+	{
+		ModelAndView mv = new ModelAndView("BRRS/M_CALOC");
+
+		logger.info("Fetching edit page for acctNo: {}, asondate: {}", acctNo, asonDate);
+		System.out.println("acctNo is : " + acctNo);
+		System.out.println("asondate is : " + asonDate);
+
+		if (acctNo != null && asonDate != null) {
+
+			try {
+				// ── JDBC-based single record lookup ──────────────────────────
+				// Parses asondate from the HTML date-input format "dd/MM/yyyy"
+				// and queries BRRS_M_CALOC_DETAILTABLE directly via JdbcTemplate.
+				SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+				SimpleDateFormat oracleFormat = new SimpleDateFormat("dd-MM-yyyy");
+				Date parsedDate = inputFormat.parse(asonDate);
+				String oracleDateStr = oracleFormat.format(parsedDate);
+
+				String sql = "SELECT * FROM BRRS_M_CALOC_DETAILTABLE "
+						+ "WHERE ACCT_NUMBER = ? AND REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY') " + "AND ROWNUM = 1";
+
+				List<M_CALOC_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { acctNo, oracleDateStr },
+						(rs, rowNum) -> {
+							M_CALOC_Detail_Entity e = new M_CALOC_Detail_Entity();
+							e.setAcctNumber(rs.getString("ACCT_NUMBER"));
+							e.setAcctName(rs.getString("ACCT_NAME"));
+							e.setCustId(rs.getString("CUST_ID"));
+							e.setReportLabel(rs.getString("REPORT_LABEL"));
+							e.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+							e.setReportDate(rs.getDate("REPORT_DATE"));
+							e.setDataType(rs.getString("DATA_TYPE"));
+							// Add further field mappings as required by the edit form
+							return e;
+						});
+
+				if (!results.isEmpty()) {
+					M_CALOC_Detail_Entity entity = results.get(0);
+					mv.addObject("m_calocData", entity);
+
+					// Format date for asondate hidden field in the edit form
+					if (entity.getReportDate() != null) {
+						String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(entity.getReportDate());
+						mv.addObject("asondate", formattedDate);
+					}
+				} else {
+					logger.warn("No record found for acctNo: {}, date: {}", acctNo, oracleDateStr);
+					mv.addObject("m_calocData", null);
+				}
+
+			} catch (ParseException e) {
+				logger.error("Date parsing error for asondate: {}", asonDate, e);
+			}
+		}
+
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+
+	// Method - 5 - NEW: SINGLE RECORD UPDATE WITH POST-COMMIT PROCEDURE
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String acctNo = request.getParameter("acctNumber");
+			String reportDateStr = request.getParameter("reportDate");
+			String acctName = request.getParameter("acctName");
+			String reportLabel = request.getParameter("reportLabel");
+			String addlCriteria = request.getParameter("reportAddlCriteria1");
+
+			logger.info("Received M_CALOC update for ACCT_NO: {}", acctNo);
+
+			if (acctNo == null || acctNo.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Account number is required.");
+			}
+
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+
+			String checkSql = "SELECT COUNT(*) FROM BRRS_M_CALOC_DETAILTABLE " + "WHERE ACCT_NUMBER = ? "
+					+ "AND REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY') " + "AND REPORT_LABEL = ? "
+					+ "AND REPORT_ADDL_CRITERIA_1 = ?";
+
+			Integer count = jdbcTemplate.queryForObject(checkSql,
+					new Object[] { acctNo, formattedDate, reportLabel, addlCriteria }, Integer.class);
+
+			if (count == null || count == 0) {
+				logger.warn("No M_CALOC record found for acctNo: {}", acctNo);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			String updateSql = "UPDATE BRRS_M_CALOC_DETAILTABLE " + "SET ACCT_NAME = ?, MODIFY_FLG = 'Y' "
+					+ "WHERE ACCT_NUMBER = ? " + "AND REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY') " + "AND REPORT_LABEL = ? "
+					+ "AND REPORT_ADDL_CRITERIA_1 = ?";
+
+			int rows = jdbcTemplate.update(updateSql, acctName, acctNo, formattedDate, reportLabel, addlCriteria);
+
+			if (rows > 0) {
+				logger.info("M_CALOC record updated for acctNo: {}", acctNo);
+
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+
+					@Override
+					public void afterCommit() {
+						try {
+							logger.info("Transaction committed — calling BRRS_M_CALOC_SUMMARY_PROCEDURE({})",
+									formattedDate);
+
+							jdbcTemplate.update("BEGIN BRRS_M_CALOC_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+							logger.info("M_CALOC Summary procedure executed successfully after commit.");
+						} catch (Exception e) {
+							logger.error("Error executing M_CALOC summary procedure after commit", e);
+						}
+					}
+				});
+
+				return ResponseEntity.ok("Record updated successfully!");
+			}
+
+			logger.info("No changes were made for acctNo: {}", acctNo);
+			return ResponseEntity.ok("No changes were made.");
+
+		} catch (Exception e) {
+			logger.error("Error updating M_CALOC record", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	// Method - 6 - NEW: BULK SUMMARY GRID UPDATE
+
+	public void updateDetailFromForm(Date reportDate, Map<String, String> params) {
+
+		logger.info("Updating M_CALOC detail table");
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		String oracleDateStr = sdf.format(reportDate);
+
+		String updateSql = "UPDATE BRRS_M_CALOC_DETAILTABLE " + "SET ACCT_BALANCE_IN_PULA = ?, MODIFY_FLG = 'Y' "
+				+ "WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY') " + "AND REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+
+			String key = entry.getKey();
+			String value = entry.getValue();
+
+			if (!key.matches("R\\d+_C\\d+_.*")) {
+				continue;
+			}
+
+			String[] parts = key.split("_");
+
+			if (parts.length < 2) {
+				continue;
+			}
+
+			String reportLabel = parts[0];
+			String addlCriteria = parts[1];
+
+			BigDecimal amount;
+
+			try {
+				amount = (value == null || value.trim().isEmpty()) ? BigDecimal.ZERO
+						: new BigDecimal(value.replace(",", "").trim());
+			} catch (NumberFormatException ex) {
+				logger.warn("Invalid amount for key {}: {}", key, value);
+				amount = BigDecimal.ZERO;
+			}
+
+			int rows = jdbcTemplate.update(updateSql, amount, oracleDateStr, reportLabel, addlCriteria);
+
+			logger.info("Updated {} row(s) for label={}, col={}, date={}", rows, reportLabel, addlCriteria,
+					oracleDateStr);
+		}
+
+		callSummaryProcedure(reportDate);
+	}
+
+	// Method - 7 - NEW: PRIVATE SUMMARY PROCEDURE CALLER (JDBC)
+
+	private void callSummaryProcedure(Date reportDate) {
+
+		if (reportDate == null) {
+			throw new IllegalArgumentException("Report date cannot be null.");
+		}
+
+		String sql = "{ call BRRS_M_CALOC_SUMMARY_PROCEDURE(?) }";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		sdf.setLenient(false);
+
+		try {
+			jdbcTemplate.update(connection -> {
+				CallableStatement cs = connection.prepareCall(sql);
+				cs.setString(1, sdf.format(reportDate));
+				return cs;
+			});
+
+			System.out.println("✅ M_CALOC Summary procedure executed for date: " + sdf.format(reportDate));
+
+		} catch (Exception e) {
+			System.err.println("Error executing summary procedure: " + e.getMessage());
+			throw e;
+		}
+	}
+
+	// Method - 8 - NEW: ARCHIVAL VERSION DROPDOWN (JDBC)
+
+	public List<BigDecimal> getArchivalVersionDropdown(String todate) {
+
+		List<BigDecimal> versions = new ArrayList<>();
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			sdf.setLenient(false);
+
+			Date parsedDate = sdf.parse(todate);
+
+			String oracleDateStr = new SimpleDateFormat("dd-MM-yyyy").format(parsedDate);
+
+			String sql = "SELECT DISTINCT REPORT_VERSION " + "FROM BRRS_M_CALOC_ARCHIVALTABLE_SUMMARY1 "
+					+ "WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY') " + "ORDER BY REPORT_VERSION ASC";
+
+			versions = jdbcTemplate.queryForList(sql, new Object[] { oracleDateStr }, BigDecimal.class);
+
+			logger.info("Archival versions found for {}: {}", oracleDateStr, versions);
+
+		} catch (ParseException e) {
+			logger.error("Date parsing error in getArchivalVersionDropdown for todate: {}", todate, e);
+		}
+
+		return versions;
+	}
+
 	private void populateEntity1Data(Sheet sheet, M_CALOC_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle,CellStyle dateStyle) {
+			CellStyle numberStyle, CellStyle dateStyle) {
 		// ROW 11 (Index 9)
 		Row row = sheet.getRow(6);
 
-	    if (row == null) {
-	        row = sheet.createRow(6);
-	    }
+		if (row == null) {
+			row = sheet.createRow(6);
+		}
 
-	    Cell reportDateCell = row.createCell(1);
+		Cell reportDateCell = row.createCell(1);
 
-	    if (record.getReportDate() != null) {
+		if (record.getReportDate() != null) {
 
-	        reportDateCell.setCellValue(
-	                record.getReportDate()
-	        );
+			reportDateCell.setCellValue(record.getReportDate());
 
-	        reportDateCell.setCellStyle(dateStyle);
+			reportDateCell.setCellStyle(dateStyle);
 
-	    } else {
+		} else {
 
-	        reportDateCell.setCellValue("");
+			reportDateCell.setCellValue("");
 
-	        reportDateCell.setCellStyle(textStyle);
-	    }
+			reportDateCell.setCellStyle(textStyle);
+		}
 		row = sheet.getRow(10);
 		// row11
 		// Column B
@@ -7766,7 +8025,9 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	private void populateEntity2Data(Sheet sheet, M_CALOC_Summary_Entity2 record1, CellStyle textStyle,
-			CellStyle numberStyle) {
+			CellStyle numberStyle)
+
+	{
 		// ROW 52 (Index 51)
 		Row row = sheet.getRow(51) != null ? sheet.getRow(51) : sheet.createRow(51);
 
@@ -18649,7 +18910,7 @@ public class BRRS_M_CALOC_ReportService {
 		try {
 			logger.info("Generating Excel for BRRSM_CALOC Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (type.equals("ARCHIVAL") && version != null) {
 				byte[] ARCHIVALreport = getBRRSM_CALOCDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
 						type, version);
 				return ARCHIVALreport;
@@ -18768,21 +19029,9 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
-	public byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
+	private byte[] getBRRSM_CALOCExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
-
 		logger.info("Service: Starting Excel generation process in memory in Archival.");
-
-//		if ("email".equalsIgnoreCase(format) && version != null) {
-//			try {
-//				// Redirecting to Archival
-//				return BRRS_M_CALOCEmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-//						version);
-//			} catch (ParseException e) {
-//				logger.error("Invalid report date format: {}", fromdate, e);
-//				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-//			}
-//		}
 
 		List<M_CALOC_Archival_Summary_Entity1> dataList1 = M_CALOC_Archival_Summary_Repo1
 				.getdatabydateListarchival(dateformat.parse(todate), version);
@@ -18834,22 +19083,13 @@ public class BRRS_M_CALOC_ReportService {
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.cloneStyleFrom(textStyle);
 
-			dateStyle.setDataFormat(
-			        createHelper.createDataFormat()
-			        .getFormat("dd-MM-yyyy")
-			);
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
 
 			dateStyle.setFont(font);
 
 			// Populate Data
 			if (!dataList1.isEmpty()) {
-				populateArchivalEntity1Data1(
-			            sheet,
-			            dataList1.get(0),
-			            textStyle,
-			            numberStyle,
-			            dateStyle
-			    );
+				populateArchivalEntity1Data1(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
 			}
 			// --- End of Style Definitions ---
 
@@ -18872,7 +19112,8 @@ public class BRRS_M_CALOC_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC ARCHIVAL SUMMARY", null, "M_CALOC_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC ARCHIVAL SUMMARY", null,
+						"M_CALOC_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 
@@ -18881,22 +19122,22 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	private void populateArchivalEntity1Data1(Sheet sheet, M_CALOC_Archival_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle , CellStyle dateStyle) {
+			CellStyle numberStyle, CellStyle dateStyle) {
 		// ROW 11 (Index 9)
 		Row row = sheet.getRow(6) != null ? sheet.getRow(6) : sheet.createRow(6);
 		Cell reportDateCell = row.createCell(1);
 
 		if (record.getReportDate() != null) {
 
-		    reportDateCell.setCellValue(record.getReportDate());
+			reportDateCell.setCellValue(record.getReportDate());
 
-		    reportDateCell.setCellStyle(dateStyle);
+			reportDateCell.setCellStyle(dateStyle);
 
 		} else {
 
-		    reportDateCell.setCellValue("");
+			reportDateCell.setCellValue("");
 
-		    reportDateCell.setCellStyle(textStyle);
+			reportDateCell.setCellStyle(textStyle);
 		}
 		row = sheet.getRow(10);
 		// row11
@@ -37119,7 +37360,7 @@ public class BRRS_M_CALOC_ReportService {
 		try {
 			logger.info("Generating Excel for BRRS_M_CALOC ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (type.equals("ARCHIVAL") && version != null) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -37237,8 +37478,8 @@ public class BRRS_M_CALOC_ReportService {
 		}
 	}
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+//	@Autowired
+//	private JdbcTemplate jdbcTemplate;
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_CALOC");
@@ -37258,7 +37499,7 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 	@Transactional
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+	public ResponseEntity<?> updateDetailEdit1(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
 			String acctBalanceInpula = request.getParameter("balEquiToBwp");
@@ -37389,7 +37630,7 @@ public class BRRS_M_CALOC_ReportService {
 	}
 
 // Normal Email Excel
-	public byte[] BRRS_M_CALOCEmailExcel(String filename, String reportId, String fromdate, String todate,
+	private byte[] BRRS_M_CALOCEmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Email Excel generation process in memory.");
@@ -37404,17 +37645,6 @@ public class BRRS_M_CALOC_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		}
-
-		/*
-		 * // RESUB check else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-		 * logger.info("Service: Generating RESUB Email report for version {}",
-		 * version);
-		 * 
-		 * try { return BRRS_M_CALOCResubEmailExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (ParseException e) {
-		 * logger.error("Invalid report date format: {}", fromdate, e); throw new
-		 * RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)"); } }
-		 */
 
 		// -------------------------
 		// FETCH DATA
@@ -37472,29 +37702,20 @@ public class BRRS_M_CALOC_ReportService {
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.cloneStyleFrom(textStyle);
 
-			dateStyle.setDataFormat(
-			        createHelper.createDataFormat()
-			        .getFormat("dd-MM-yyyy")
-			);
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
 
 			dateStyle.setFont(font);
 
 			// Populate Data
 			if (!dataList1.isEmpty()) {
-				populateEntity1EmailData(
-			            sheet,
-			            dataList1.get(0),
-			            textStyle,
-			            numberStyle,
-			            dateStyle
-			    );
+				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
 			}
 
 			// -------------------------
 			// POPULATE DATA
 			// -------------------------
 			if (!dataList1.isEmpty()) {
-				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle,dateStyle);
+				populateEntity1EmailData(sheet, dataList1.get(0), textStyle, numberStyle, dateStyle);
 			}
 
 			if (!dataList2.isEmpty()) {
@@ -37513,29 +37734,30 @@ public class BRRS_M_CALOC_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL SUMMARY", null, "M_CALOC_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL SUMMARY", null,
+						"M_CALOC_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
 	}
 
 	private void populateEntity1EmailData(Sheet sheet, M_CALOC_Summary_Entity1 record, CellStyle textStyle,
-			CellStyle numberStyle,CellStyle dateStyle) {
+			CellStyle numberStyle, CellStyle dateStyle) {
 		// ROW 11 (Index 9)
 		Row row = sheet.getRow(6) != null ? sheet.getRow(6) : sheet.createRow(6);
 		Cell reportDateCell = row.createCell(1);
 
 		if (record.getReportDate() != null) {
 
-		    reportDateCell.setCellValue(record.getReportDate());
+			reportDateCell.setCellValue(record.getReportDate());
 
-		    reportDateCell.setCellStyle(dateStyle);
+			reportDateCell.setCellStyle(dateStyle);
 
 		} else {
 
-		    reportDateCell.setCellValue("");
+			reportDateCell.setCellValue("");
 
-		    reportDateCell.setCellStyle(textStyle);
+			reportDateCell.setCellStyle(textStyle);
 		}
 		row = sheet.getRow(10);
 		// row11
@@ -44943,7 +45165,6 @@ public class BRRS_M_CALOC_ReportService {
 			// ---------------------------------
 			// Style Definitions
 			// ---------------------------------
-			CreationHelper createHelper = workbook.getCreationHelper();
 
 			CellStyle baseStyle = workbook.createCellStyle();
 			baseStyle.setBorderBottom(BorderStyle.THIN);
@@ -44988,7 +45209,8 @@ public class BRRS_M_CALOC_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL ARCHIVAL SUMMARY", null, "M_CALOC_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_CALOC EMAIL ARCHIVAL SUMMARY", null,
+						"M_CALOC_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
