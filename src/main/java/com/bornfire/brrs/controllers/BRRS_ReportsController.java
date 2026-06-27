@@ -1,6 +1,7 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -2289,25 +2290,25 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/MCA7updateAll", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam String type, @ModelAttribute M_CA7_Summary_Entity summary,
-			@ModelAttribute M_CA7_Detail_Entity detail) {
+			@RequestParam String type, @ModelAttribute BRRS_M_CA7_ReportService.M_CA7_Summary_Entity summary,
+			@ModelAttribute BRRS_M_CA7_ReportService.M_CA7_Detail_Entity detail) {
 
 		try {
 			System.out.println("Came to single controller");
 			System.out.println("Type = " + type);
 
-			// ✅ set report date in both entities
+			// set report date in both entities
 			summary.setReportDate(asondate);
 			detail.setReportDate(asondate);
 
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
 
-				M_CA7_Archival_Summary_Entity archival = new M_CA7_Archival_Summary_Entity();
+				BRRS_M_CA7_ReportService.M_CA7_Archival_Summary_Entity archival = new BRRS_M_CA7_ReportService.M_CA7_Archival_Summary_Entity();
 				BeanUtils.copyProperties(summary, archival);
 				// call archival service if needed
 
 			} else {
-				// ✅ UPDATE BOTH TABLES
+				// UPDATE BOTH TABLES
 				M_CA7_ReportService.updateReport(summary);
 				M_CA7_ReportService.updateDetail(detail);
 			}
@@ -4179,7 +4180,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA7_RESUB_Summary_Entity request1, HttpServletRequest req) {
+			@ModelAttribute BRRS_M_CA7_ReportService.M_CA7_RESUB_Summary_Entity request1, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
