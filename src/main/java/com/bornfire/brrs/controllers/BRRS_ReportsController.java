@@ -4560,11 +4560,12 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/NOSVOSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAll(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute BrrsMNosvosP1 request1, @ModelAttribute BrrsMNosvosP2 request2,
-			@ModelAttribute BrrsMNosvosP3 request3, @ModelAttribute BrrsMNosvosP4 request4,
-			@ModelAttribute BrrsMNosvosP5 request5) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
 		try {
 
 			// set date into all 4 entities
@@ -4591,13 +4592,12 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/NOSVOSupdateAll_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAllResub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute BrrsMNosvosP1ResbuSummaryEntity request1,
-			@ModelAttribute BrrsMNosvosP2ResbuSummaryEntity request2,
-			@ModelAttribute BrrsMNosvosP3ResbuSummaryEntity request3,
-			@ModelAttribute BrrsMNosvosP4ResbuSummaryEntity request4,
-			@ModelAttribute BrrsMNosvosP5ResbuSummaryEntity request5) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1ResbuSummaryEntity request1,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2ResbuSummaryEntity request2,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3ResbuSummaryEntity request3,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4ResbuSummaryEntity request4,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5ResbuSummaryEntity request5) {
 		try {
 
 			// set date into all 4 entities
