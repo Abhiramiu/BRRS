@@ -38,128 +38,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Summary_Repo9;
-import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_CA6_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_CA7_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity1;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity2;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity3;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity4;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity5;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity6;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity7;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity8;
-import com.bornfire.brrs.entities.M_RPD_Detail_Entity9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Repo9;
-
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Repo9;
-
-
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Detail_Repo9;
-
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Entity9;
-
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Detail_Repo9;
-
-
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Resub_Summary_Entity9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity1;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity2;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity5;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity6;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity7;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity8;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Detail_Entity9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity1;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity1;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity2;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity4;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity5;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity6;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity7;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity8;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity9;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo4;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity2;
-import com.bornfire.brrs.entities.M_RPD_Summary_Entity3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Repo3;
-import com.bornfire.brrs.entities.BRRS_M_RPD_Archival_Summary_Entity3;
+import com.bornfire.brrs.entities.*;
 
 @Service
 @Component
@@ -295,14 +179,23 @@ public class BRRS_M_RPD_ReportService {
 	BRRS_M_RPD_Resub_Summary_Repo8 BRRS_M_RPD_Resub_Summary_Repo8;
 	@Autowired
 	BRRS_M_RPD_Resub_Summary_Repo9 BRRS_M_RPD_Resub_Summary_Repo9;
-	
+	@Autowired
+	UserProfileRep userProfileRep;
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_RPDView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable,String type, BigDecimal version) {
+			Pageable pageable,String type, BigDecimal version,HttpServletRequest req1,Model md) {
 		System.out.println("Entered service method M_RPD......................");
 		System.out.println(dtltype+" = Type");
 		ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+		
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();

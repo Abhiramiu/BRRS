@@ -1182,7 +1182,7 @@ PURPOSE		: BRFREPORT
 
 						<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${displaymode == 'summary' or displaymode == 'summaryResub' }"
+							th:if="${role == 'M' and displaymode == 'summary' or displaymode == 'summaryResub' }"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -1190,7 +1190,7 @@ PURPOSE		: BRFREPORT
 											onclick="cancelModify();" style="display: none;">Cancel</button>
 										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 											onclick="downloadfile(this)"
-											th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
+											th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
 											th:attr="data-reportid=${reportid},
 											                   data-asondate=${asondate},
 											                   data-fromdate=${fromdate},
@@ -1205,7 +1205,7 @@ PURPOSE		: BRFREPORT
 										</button>
 										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 											onclick="downloadfile(this)"
-											th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
+											th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}"
 											th:attr="data-reportid=${reportid},
 											            data-asondate=${asondate},
 											            data-fromdate=${fromdate},

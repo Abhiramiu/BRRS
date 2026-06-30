@@ -65,10 +65,12 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.UserProfileRep;
 //=== iText PDF ===
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -97,13 +99,23 @@ public class BRRS_M_AIDP_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
+
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_AIDPView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView("BRRS/M_AIDP");
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		try {
 			Date d1 = dateformat.parse(todate);

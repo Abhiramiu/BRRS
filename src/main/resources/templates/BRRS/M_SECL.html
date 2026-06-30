@@ -4251,7 +4251,7 @@ alert(version)
 						<!-- Modify button -->
 						 <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }"							
+							th:if="${role == 'M' and displaymode == 'summary' or displaymode == 'resubSummary' }"							
 							id="addRecord">
 							Modify
 						</button>
@@ -4261,7 +4261,7 @@ alert(version)
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or displaymode == 'details' }" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or (displaymode == 'details' and role != 'M') }" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -4365,7 +4365,7 @@ alert(version)
 						</button>
 						
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or displaymode == 'details'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or (displaymode == 'details' and role != 'M')}" th:attr="data-reportid=${reportid},
 								    data-asondate=${asondate},
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},

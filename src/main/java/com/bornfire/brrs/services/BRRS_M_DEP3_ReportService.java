@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -60,6 +61,7 @@ import com.bornfire.brrs.entities.M_DEP3_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Detail_Entity;
 import com.bornfire.brrs.entities.M_DEP3_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
 @Service
@@ -89,12 +91,21 @@ public class BRRS_M_DEP3_ReportService {
 
 	@Autowired
 	BRRS_M_DEP3_Manual_Archival_Summary_Repo BRRS_M_DEP3_Manual_Archival_Summary_Repo;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_DEP3View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		if (type.equals("ARCHIVAL") & version != null) {
 			List<M_DEP3_Archival_Summary_Entity> T1Master = new ArrayList<M_DEP3_Archival_Summary_Entity>();
@@ -131,13 +142,19 @@ public class BRRS_M_DEP3_ReportService {
 	}
 
 	public ModelAndView getM_DEP3currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version,HttpServletRequest req1,Model md) {
 
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		// Session hs = sessionFactory.getCurrentSession();
 

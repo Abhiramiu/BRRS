@@ -1396,7 +1396,7 @@ PURPOSE		: BWRBRREPORT
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn addedit" onclick="showmodify(this);"
-							title="Click to EDIT Records" id="addRecord" th:if="${displaymode == 'summary' 
+							title="Click to EDIT Records" id="addRecord" th:if="${role == 'M' and displaymode == 'summary' 
 						                and type != 'ARCHIVAL' 
 						                and session.PERMISSIONS == 'W'}">
 							Modify
@@ -1408,7 +1408,7 @@ PURPOSE		: BWRBRREPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
-							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -1421,7 +1421,7 @@ PURPOSE		: BWRBRREPORT
 						</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
-							th:if="${displaymode == 'summary' or displaymode == 'detail'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
 						                   				 data-asondate=${asondate},
 						                   				 data-fromdate=${fromdate},
 						                    				 data-todate=${todate},

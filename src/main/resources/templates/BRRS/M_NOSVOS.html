@@ -1442,6 +1442,7 @@ function calculateR101Totals() {
 							 	   th:attr=	"data-reportid=${reportid},
 											 data-fromdate=${fromdate},
 											 data-todate=${todate}"
+											 th:if="${role != 'M' and displaymode == 'Details'}"
 								   onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
@@ -1451,6 +1452,7 @@ function calculateR101Totals() {
 								   th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
 											data-todate=${todate}"
+											th:if="${role != 'M' and displaymode == 'Details'}"
 								   onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>

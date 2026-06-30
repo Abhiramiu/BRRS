@@ -59,10 +59,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService.BASEL_III_COM_EQUITY_DISC_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_BASEL_III_COM_EQUITY_DISC_ReportService.B_III_CETD_RowMapper;
 
@@ -88,6 +90,9 @@ public class BRRS_M_BOP_ReportService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    
+    @Autowired
+    UserProfileRep userProfileRep;
 	
 
 // =====================================================
@@ -10849,7 +10854,7 @@ public class M_BOP_RESUB_Detail_Entity {
  SimpleDateFormat dateformat =
          new SimpleDateFormat("dd-MMM-yyyy");
 		 
-		 
+
 public ModelAndView getM_BOPView(
         String reportId,
         String fromdate,
@@ -10858,9 +10863,16 @@ public ModelAndView getM_BOPView(
         String dtltype,
         Pageable pageable,
         String type,
-        BigDecimal version) {
+        BigDecimal version, HttpServletRequest req1,Model md) {
 
     ModelAndView mv = new ModelAndView();
+
+    String userid = (String) req1.getSession().getAttribute("USERID");
+    System.out.println("User Id Maker and Checker: " + userid);
+    String role = userProfileRep.getUserRole(userid);
+    md.addAttribute("role", role);
+    System.out.println("Role: " + role);
+
 
     System.out.println("M_BOP View Called");
     System.out.println("Type = " + type);

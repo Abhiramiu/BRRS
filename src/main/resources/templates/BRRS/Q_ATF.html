@@ -1777,7 +1777,7 @@ ranges.forEach(range => {
 						</div>
 
 						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnAdd" th:if="${displaymode == 'Details'}"
+							id="custom-tab-btnAdd" th:if="${role != 'M' and displaymode == 'Details'}"
 							th:attr="data-reportid=${reportid}, 
              data-asondate=${asondate}, 
              data-fromdate=${fromdate}, 
