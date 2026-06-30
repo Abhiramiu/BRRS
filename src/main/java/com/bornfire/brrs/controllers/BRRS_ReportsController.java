@@ -71,6 +71,7 @@ import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
+import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService.M_DEP3_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
