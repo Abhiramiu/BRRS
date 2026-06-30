@@ -398,13 +398,15 @@ PURPOSE		: BRRSREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 	</script>
 	<script>
 
-		function openQSMMELADetail(elem, mode) {
+		function openQSMMEDetail(elem, mode) {
 
 			var type = elem.getAttribute('data-type');
 
@@ -610,6 +612,10 @@ PURPOSE		: BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -617,24 +623,24 @@ PURPOSE		: BRRSREPORT
 				location.href = Callurl;
 			console.log(Callurl);
 			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-
-				 }
+			   type: 'get',
+			   url: Callurl,
+			   beforeSend: function () {
+				 $('#loader').modal('show'); // 🔄 Show loader
+			   },
+			   success: function (data) {
+				 $('.content').html(data);
+				 //$("#detailsbtn").addClass("active");
+				 //tablepagination();
+			   },
+			   complete: function () {
+				 $('#loader').modal('hide');
+			   },
+			   error: function () {
+					$('#loader').modal('hide');
+				 alert("Something went wrongss. Please try again.");
+			    
+			   }
 			 }); */
 		}
 
@@ -1078,6 +1084,25 @@ PURPOSE		: BRRSREPORT
 																	             data-version=${version != null ? version : ''}">
 							<i class="fa fa-download"></i> Email
 						</button>
+
+						<!--<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary'
+						                or (displaymode == 'detail' and role != 'M')
+						                or displaymode == 'resubSummary'
+						                or displaymode == 'resubDetail'
+						                or type == 'ARCHIVAL'
+						                or type == 'RESUB'}" th:attr="data-reportid=${reportid},
+						                 data-asondate=${asondate},
+						                 data-fromdate=${fromdate},
+						                 data-todate=${todate},
+						                 data-currency=${currency},
+						                 data-dtltype='email',
+						                 data-filename='EMAIL_Q_SMME.xlsx',
+						                 data-type=${type},
+						                 data-format='email',
+						                 data-version=${version != null ? version : ''}">
+							<i class="fa fa-download"></i> Email
+						</button>-->
+
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
 							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
@@ -1086,9 +1111,15 @@ PURPOSE		: BRRSREPORT
 							</button>
 							<div class="dropdown-menu">
 								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
-											 data-fromdate=${fromdate},
-											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
+																	 data-fromdate=${fromdate},
+																	 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+								</a>
+								<div class="dropdown-divider"></div>
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
+																	data-fromdate=${fromdate},
+																	data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
 						</div>
@@ -1468,7 +1499,7 @@ PURPOSE		: BRRSREPORT
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
 																															            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
-																															            data-type=${type}" onclick="openQSMMELADetail(this, 'edit')">
+																															            data-type=${type}" onclick="openQSMMEDetail(this, 'edit')">
 													</i>
 
 												</a>

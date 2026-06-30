@@ -181,8 +181,8 @@ public class RegulatoryReportServices {
 //	@Autowired
 //	BRRS_Q_SMME_Intrest_Income_New_ReportService BRRS_Q_SMME_Intrest_Income_New_ReportService;
 
-	@Autowired
-	BRRS_Q_SMME_Loans_Advances_New_ReportService BRRS_Q_SMME_Loans_Advances_New_ReportService;
+//	@Autowired
+//	BRRS_Q_SMME_Loans_Advances_New_ReportService BRRS_Q_SMME_Loans_Advances_New_ReportService;
 
 	@Autowired
 	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
@@ -1502,11 +1502,11 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
-		case "Q_SMME_LA_NEW":
-
-			repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
-			break;
+//		case "Q_SMME_LA_NEW":
+//
+//			repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
+//					currency, dtltype, pageable, type, version);
+//			break;
 
 		case "Q_SMME":
 
@@ -1519,8 +1519,8 @@ public class RegulatoryReportServices {
 //					currency, dtltype, pageable, type, version);
 //			break;
 		case "Q_SMME_LA":
-			repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
+			repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version,req,md);
 			break;
 
 		case "MDISB1":
@@ -1946,8 +1946,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "Q_SMME_LA":
-			repdetail = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate,
-					currency, dtltype, pageable, Filter, type, version);
+			repdetail = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		// case "M_SRWA_12H":
@@ -2051,10 +2051,10 @@ public class RegulatoryReportServices {
 //					todate, currency, dtltype, pageable, Filter, type, version);
 //			break;
 
-		case "Q_SMME_LA_NEW":
-			repdetail = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
-					todate, currency, dtltype, pageable, Filter, type, version);
-			break;
+//		case "Q_SMME_LA_NEW":
+//			repdetail = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
+//					todate, currency, dtltype, pageable, Filter, type, version);
+//			break;
 
 		case "M_IRB":
 			repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2551,7 +2551,7 @@ public class RegulatoryReportServices {
 		case "Q_SMME_LA":
 			try {
 				repfile = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type, version);
+						currency, dtltype, type,format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -2576,15 +2576,15 @@ public class RegulatoryReportServices {
 //				e.printStackTrace();
 //			}
 //			break;
-
-		case "Q_SMME_LA_NEW":
-			try {
-				repfile = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, format, version);
-			} catch (Exception e) { // TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//
+//		case "Q_SMME_LA_NEW":
+//			try {
+//				repfile = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
+//						todate, currency, dtltype, type, format, version);
+//			} catch (Exception e) { // TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "MDISB1":
 			try {
@@ -4672,9 +4672,9 @@ public class RegulatoryReportServices {
 //		} else if ("Q_SMMEDetail".equals(filename)) {
 //			return BRRS_Q_SMME_Intrest_Income_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 //					currency, dtltype, type, version);
-		} else if ("Q_SMME_LADetail".equals(filename)) {
-			return BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-					currency, dtltype, type, version);
+//		} else if ("Q_SMME_LADetail".equals(filename)) {
+//			return BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
+//					currency, dtltype, type, version);
 		} else if ("M_LCRDetail".equals(filename)) {
 			return BRRS_M_LCR_reportservice.getM_LCRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -5251,21 +5251,19 @@ public class RegulatoryReportServices {
 //			}
 //			break;
 
-		case "Q_SMME_LA_NEW":
-			try {
-				archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "Q_SMME_LA_NEW":
+//			try {
+//				archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 		case "Q_SMME_LA":
-			try {
-				archivalData = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			List<Object[]> Q_SMMELAList = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEArchival();
+			archivalData.addAll(Q_SMMELAList);
+			System.out.println("Fetched Q_SMMELAList archival data: " + Q_SMMELAList.size());
 			break;
 		/*
 		 * case "M_SIR": try { archivalData =
@@ -6142,9 +6140,9 @@ public class RegulatoryReportServices {
 //		} else if (filename.equals("Q_SMMEDetail")) {
 //			fileData = BRRS_Q_SMME_Intrest_Income_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 //					currency, dtltype, type, version);
-		} else if (filename.equals("Q_SMMEDetail")) {
-			fileData = BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-					currency, dtltype, type, version);
+//		} else if (filename.equals("Q_SMMEDetail")) {
+//			fileData = BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
+//					currency, dtltype, type, version);
 		} else if ("M_FASDetail".equals(filename)) {
 			fileData = BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -6608,7 +6606,8 @@ public class RegulatoryReportServices {
 
 			case "Q_SMME_LA":
 				modelAndView = BRRS_Q_SMME_loans_Advances_reportService
-						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
+						.getViewOrEditPage(request.getParameter("SNO"),
+								request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_CALOC":
@@ -6625,10 +6624,10 @@ public class RegulatoryReportServices {
 //				modelAndView = BRRS_Q_SMME_Intrest_Income_New_ReportService
 //						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
 //				break;
-			case "Q_SMME_LA_NEW":
-				modelAndView = BRRS_Q_SMME_Loans_Advances_New_ReportService
-						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
-				break;
+//			case "Q_SMME_LA_NEW":
+//				modelAndView = BRRS_Q_SMME_Loans_Advances_New_ReportService
+//						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
+//				break;
 			case "M_PD":
 				modelAndView = BRRS_M_PD_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6878,6 +6877,12 @@ public class RegulatoryReportServices {
 			case "ADISB1":
 				response = BRRS_ADISB1_ReportService.callregenprocedure(request);
 				break;
+			case "Q_SMME_LA":
+				response = BRRS_Q_SMME_loans_Advances_reportService.callregenprocedure(request);
+				break;
+			case "Q_SMME":
+				response = BRRS_Q_SMME_Intrest_Income_ReportService.callregenprocedure(request);
+				break;
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
 				response = ResponseEntity.badRequest()
@@ -7054,9 +7059,9 @@ public class RegulatoryReportServices {
 //			case "Q_SMME_NEW":
 //				response = BRRS_Q_SMME_Intrest_Income_New_ReportService.updateDetailEdit(request);
 //				break;
-			case "Q_SMME_LA_NEW":
-				response = BRRS_Q_SMME_Loans_Advances_New_ReportService.updateDetailEdit(request);
-				break;
+//			case "Q_SMME_LA_NEW":
+//				response = BRRS_Q_SMME_Loans_Advances_New_ReportService.updateDetailEdit(request);
+//				break;
 			case "ADISB1":
 				response = BRRS_ADISB1_ReportService.updateDetailEdit(request);
 				break;
@@ -8319,14 +8324,14 @@ public class RegulatoryReportServices {
 							fromdate, todate, currency, dtltype, type,format, version);
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, version);
+							fromdate, todate, currency, dtltype, type,format, version);
 
 //				case "Q_SMME_NEW":
 //					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx",
 //							reportName, fromdate, todate, currency, dtltype, type, format, version);
-				case "Q_SMME_LA_NEW":
-					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
-							reportName, fromdate, todate, currency, dtltype, type, format, version);
+//				case "Q_SMME_LA_NEW":
+//					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
+//							reportName, fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("EMAIL_Q_SMME_DEP.xlsx", reportName,
@@ -8577,15 +8582,15 @@ public class RegulatoryReportServices {
 
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, version);
+							fromdate, todate, currency, dtltype, type,format, version);
 
 //				case "Q_SMME_NEW":
 //					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx",
 //							reportName, fromdate, todate, currency, dtltype, type, format, version);
 
-				case "Q_SMME_LA_NEW":
-					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
-							reportName, fromdate, todate, currency, dtltype, type, format, version);
+//				case "Q_SMME_LA_NEW":
+//					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
+//							reportName, fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportName, fromdate,
@@ -10594,7 +10599,8 @@ public class RegulatoryReportServices {
                         currency,
                         dtltype,
                         null,   // type
-                        null    // version
+                        null  ,
+                        null// version
                 );
 
                 if (excelBytes == null || excelBytes.length == 0) {

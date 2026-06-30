@@ -86,23 +86,22 @@ public class BRRS_M_SRWA_12F_ReportService {
 
 	@Autowired
 	BRRS_M_SRWA_12F_Resub_Detail_Repo brrs_M_SRWA_12F_resub_detail_repo;
-	
+
 	@Autowired
 	UserProfileRep userProfileRep;
-	
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_SRWA12FView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-		
-		 String userid = (String) req1.getSession().getAttribute("USERID");
-			System.out.println("User Id Maker and Checker: " + userid);
-			String role = userProfileRep.getUserRole(userid);
-			md.addAttribute("role", role);
-			System.out.println("Role: " + role);
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
@@ -291,13 +290,18 @@ public class BRRS_M_SRWA_12F_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
+		// Save Summary & Detail
 		brrs_M_SRWA_12F_summary_repo.save(existingSummary);
 		brrs_M_SRWA_12F_detail_repo.save(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
-		if (changes != null && !changes.isEmpty()) {
+		// Audit
+		String changes1 = auditService.getChanges(oldcopy, existingSummary);
+		System.out.println("M_SRWA_12F Changes Length = " + changes1.length());
+
+		if (changes1 != null && !changes1.isEmpty() && changes1.length() < 1800) {
+
 			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
-					"M_SRWA_12F Summary Screen", "BRRS_M_SRWA_12F_SUMMARY");
+					"M_SRWA_12F Summary Screen", "BRRS_M_SRWA_12F_SUMMARYTABLE");
 		}
 
 		System.out.println("Update completed successfully");

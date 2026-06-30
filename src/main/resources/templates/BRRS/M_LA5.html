@@ -597,6 +597,8 @@ PURPOSE		: BRFREPORT
 	</script>
 
 	<script th:inline="javascript">
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';	
+		const type = /*[[${type}]]*/ '';	
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/

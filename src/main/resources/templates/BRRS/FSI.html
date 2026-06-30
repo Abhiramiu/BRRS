@@ -570,7 +570,15 @@ PURPOSE  : BRRSREPORT
 			$('#resultModal').modal('hide');
 
 		}
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -1099,7 +1107,20 @@ function cancelModify() {
 		function redirecttoarchlist() {
 			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
 		}
+		function showResultModalDU(title, message) {
+			document.getElementById('resultModalLabel1').innerText = title;
+			document.getElementById('resultModalBody1').innerText = message;
 
+			const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+			modal.show();
+		}
+		function redirectBack() {
+			if (previousUrl) {
+				window.location.href = previousUrl;
+			} else {
+				window.history.back();
+			}
+		}
 	</script>
 
 </head>
@@ -2550,8 +2571,6 @@ function cancelModify() {
 		</div>
 	</div>
 
-
-
 	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
@@ -2566,29 +2585,26 @@ function cancelModify() {
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">ok</button>
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- For Edit in Detail page -->
-	<div class="modal fade" id="resultModal1">
+	<div class="modal fade" id="resultModal1" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript-->
-					</div>
+					<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;"></div>
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody1"></p>
-
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
+
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">
@@ -2616,6 +2632,7 @@ function cancelModify() {
 			</div>
 		</div>
 	</div>
+
 	<div class="modal fade" id="confirmModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
