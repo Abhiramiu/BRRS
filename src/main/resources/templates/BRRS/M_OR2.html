@@ -286,8 +286,10 @@ PURPOSE		: BWRBRREPORT
 		}
 	</style>
 	<script th:inline="javascript">
+		
+		let isDetailsModal = false;
 		$(document).ready(function () {
-			let isDetailsModal = false;
+			
 			// hide loader on normal load
 			$('#loader').modal('hide');
 		});
@@ -1514,17 +1516,31 @@ function cancelModify() {
 
 
 	<script>
+		
+	
+		function closemodel() {
+		    $("#resultModal").modal("hide");
+		    $('#loader').modal('hide');
+
+		    if (!isDetailsModal) {
+		        setTimeout(function () {
+		            location.reload();
+		        }, 300);
+		    } else {
+		        isDetailsModal = false;
+		    }
+		}
 	
 	// This function is for closing the modal after an action is complete.
 	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
+/*	function closemodel() {
     $("#resultModal").modal("hide");
-	/*    $("#resultModal").modal("hide");
+	    $("#resultModal").modal("hide");
     $('#loader').modal('hide');
     setTimeout(function () {
         location.reload();
     }, 300);
-        }, 300);*/
+        }, 300);
         $("#resultModal").modal("hide");
         $('#loader').modal('hide');
 
@@ -1538,8 +1554,8 @@ function cancelModify() {
             isDetailsModal = false;
         }
 }
-
-function fileuploads(btn) {
+*/
+/*function fileuploads(btn) {
     var asondate = btn.getAttribute("data-todate");
     const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
     
@@ -1650,9 +1666,142 @@ function fileuploads(btn) {
 
 	    console.log("✅ AJAX executed successfully");
 	}
+*/
 
+function fileuploads(btn) {
 
+    try {
 
+        const asondate = btn.getAttribute("data-todate");
+
+        $('#loader').modal('show');
+
+       if (typeof calculateR24_Totals === "function") {
+    calculateR24_Totals();
+}
+
+if (typeof calculateD26_All === "function") {
+    calculateD26_All();
+}
+
+if (typeof calculateR27_Operational_Risk === "function") {
+    calculateR27_Operational_Risk();
+}
+
+if (typeof calculateR40_Totals === "function") {
+    calculateR40_Totals();
+}
+
+if (typeof calculateR42_All === "function") {
+    calculateR42_All();
+}
+
+if (typeof calculateR43_Total === "function") {
+    calculateR43_Total();
+}
+
+if (typeof calculateR56_Totals === "function") {
+    calculateR56_Totals();
+}
+
+if (typeof calculateR58_All === "function") {
+    calculateR58_All();
+}
+
+if (typeof calculateR59_Total === "function") {
+    calculateR59_Total();
+}
+
+if (typeof calculateR61_Total === "function") {
+    calculateR61_Total();
+}
+
+if (typeof calculateR63_Total === "function") {
+    calculateR63_Total();
+}
+
+if (typeof calculateR65_Total === "function") {
+    calculateR65_Total();
+}
+		
+	
+
+        // Remove commas
+        $("#fileupload input[type='text']").each(function () {
+            const val = $(this).val();
+            if (val && val.includes(",")) {
+                $(this).val(val.replace(/,/g, ''));
+            }
+        });
+
+        if (!$("#fileupload").valid()) {
+            $('#loader').modal('hide');
+            return;
+        }
+
+        // Get type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlType = urlParams.get("type");
+
+        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+        // ✅ Use SERIALIZE (NOT FormData)
+        const formData =
+            $('#fileupload').serialize()
+            + '&asondate=' + encodeURIComponent(asondate)
+            + '&type=' + encodeURIComponent(urlType || '');
+
+        console.log("✅ Form data prepared");
+
+        let apiUrl = './OR2updateAll';
+        if (isResub) {
+            apiUrl = './UpdateM_OR2_ReSub';
+        }
+
+        $.ajax({
+            url: apiUrl,
+            type: 'POST',
+            data: formData,
+            dataType: 'text',
+
+            success: function (response) {
+                $("#resultModalLabel").text("BRRS");
+                $("#resultModalBody").text(response);
+                $("#resultModal").modal("show");
+
+                $("#resultModal")
+                    .off("hidden.bs.modal")
+                    .on("hidden.bs.modal", function () {
+                        if (isResub) {
+                            window.location.href =
+                                window.previousUrl
+                                    ? window.previousUrl
+                                    : "/BRRS/Resubmission?rptcode=M_OR2";
+                        }
+                    });
+            },
+
+            error: function (jqXHR) {
+                console.log("Error response:", jqXHR.responseText);
+
+                $("#resultModalLabel").text("Error");
+                $("#resultModalBody").text(
+                    "Update failed: " +
+                    (jqXHR.responseText || "Unknown error")
+                );
+                $("#resultModal").modal("show");
+            },
+
+            complete: function () {
+                $('#loader').modal('hide');
+            }
+        });
+
+    } catch (error) {
+        $('#loader').modal('hide');
+        console.error("Error during file upload:", error);
+    }
+}
 
 	</script>
 	

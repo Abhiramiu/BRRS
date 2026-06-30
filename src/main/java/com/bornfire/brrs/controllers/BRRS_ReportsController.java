@@ -2110,13 +2110,13 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OR2_Summary_Entity request1
+			@ModelAttribute BRRS_M_OR2_ReportService.M_OR2_Summary_Entity request1
 
 	) {
 		try {
 			System.out.println("Came to single controller");
 			// set date into all 4 entities
-			request1.setReportDate(asondate);
+			request1.setReport_date(asondate);
 
 			// call services
 			OR2reportService.updateReport(request1);
@@ -2134,7 +2134,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_OR2_RESUB_Summary_Entity request,
+			@ModelAttribute BRRS_M_OR2_ReportService.M_OR2_RESUB_Summary_Entity request,
 
 			HttpServletRequest req) {
 

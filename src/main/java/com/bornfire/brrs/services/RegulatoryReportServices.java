@@ -6520,8 +6520,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_CA2":
-				modelAndView = BRRS_M_CA2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_CA2_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_OR1":
@@ -6883,6 +6883,11 @@ public class RegulatoryReportServices {
 			case "Q_SMME":
 				response = BRRS_Q_SMME_Intrest_Income_ReportService.callregenprocedure(request);
 				break;
+				
+			case "M_CA2":
+			response = BRRS_M_CA2_reportservice.callregenprocedure(request);
+			break;
+			
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
 				response = ResponseEntity.badRequest()
