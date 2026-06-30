@@ -2718,7 +2718,7 @@ function closemodels() {
         <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
-                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
@@ -2794,7 +2794,7 @@ function closemodels() {
 
         <!-- Download button - Details -->
         <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'Details'}"
+            th:if="${role != 'M' and displaymode == 'Details'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 

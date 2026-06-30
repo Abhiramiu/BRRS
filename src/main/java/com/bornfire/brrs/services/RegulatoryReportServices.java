@@ -454,12 +454,12 @@ public class RegulatoryReportServices {
 		case "M_SP":
 
 			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version,req,md);
 			break;
 
 		case "M_PLL":
 			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version,req,md);
 			break;
 
 		case "M_SRWA_12A_New":
@@ -918,7 +918,7 @@ public class RegulatoryReportServices {
 
 		case "M_NOSVOS":
 			repsummary = BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 			break;
 
 		case "M_DEP3":
@@ -1256,7 +1256,7 @@ public class RegulatoryReportServices {
 		case "M_I_S_CA":
 
 			repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 
 			break;
 
@@ -1270,7 +1270,7 @@ public class RegulatoryReportServices {
 		case "M_PD":
 
 			repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version,req,md);
 
 			break;
 
@@ -1406,7 +1406,7 @@ public class RegulatoryReportServices {
 		case "M_LIQGAP":
 
 			repsummary = brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 
 			break;
 
@@ -1427,7 +1427,7 @@ public class RegulatoryReportServices {
 		case "M_TBS":
 
 			repsummary = BRRS_M_TBS_ReportService.getBRRS_M_TBSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 
 			break;
 
@@ -1932,12 +1932,12 @@ public class RegulatoryReportServices {
 
 		case "M_LIQGAP":
 			repdetail = brrs_m_liqgap_reportservice.getM_LIQGAPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		case "M_SP":
 			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		case "M_FAS":
@@ -2008,7 +2008,7 @@ public class RegulatoryReportServices {
 
 		case "M_PLL":
 			repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		case "M_DEP3":
@@ -2087,7 +2087,7 @@ public class RegulatoryReportServices {
 		case "M_PD":
 
 			repdetail = BRRS_M_PD_ReportService.getM_PDcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		case "Q_ATF":
@@ -2105,7 +2105,7 @@ public class RegulatoryReportServices {
 		case "M_I_S_CA":
 
 			repdetail = brrs_m_i_s_ca_reportservice.getM_I_S_CAcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+					pageable, Filter, type, version,req1,md);
 			break;
 
 		case "CAP_RATIO_BUFFER":

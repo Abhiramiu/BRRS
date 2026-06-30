@@ -46,6 +46,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -67,6 +68,7 @@ import com.bornfire.brrs.entities.M_PD_Manual_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_Manual_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_PD_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 
 
@@ -114,6 +116,8 @@ public class BRRS_M_PD_ReportService {
 	@Autowired
 	BRRS_M_PD_Resub_Detail_Repo  BRRS_M_PD_Resub_Detail_Repo;
 	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 	
@@ -121,8 +125,15 @@ public class BRRS_M_PD_ReportService {
 	
 
 	public ModelAndView getM_PDview(String reportId, String fromdate, String todate, String currency,
-										String dtltype, Pageable pageable, String type, BigDecimal version) {
+										String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 		ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+
 //		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
@@ -190,9 +201,16 @@ public class BRRS_M_PD_ReportService {
 	}
 
 	public ModelAndView getM_PDcurrentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version) {
+			String dtltype, Pageable pageable, String filter, String type, String version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView("BRRS/M_PD");
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalRecords = 0;
