@@ -270,7 +270,8 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size,
-			@RequestParam(value = "reportingTime", required = false) String reportingTime,HttpServletRequest req, Model md) {
+			@RequestParam(value = "reportingTime", required = false) String reportingTime, HttpServletRequest req,
+			Model md) {
 
 		md.addAttribute("reportid", reportid);
 		md.addAttribute("asondate", asondate);
@@ -296,11 +297,11 @@ public class BRRS_ReportsController {
 
 		// logger.info("Getting ModelandView :" + reportid);
 		ModelAndView mv = regreportServices.getReportDetails(reportid, instancecode, asondate, fromdate, todate,
-				currency, reportingTime, dtltype, subreportid, secid, PageRequest.of(page, size), filter, type,
-				version,req,md);
+				currency, reportingTime, dtltype, subreportid, secid, PageRequest.of(page, size), filter, type, version,
+				req, md);
 
 		return mv;
-	}   
+	}
 
 	@RequestMapping(value = "downloadExcel", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -547,7 +548,7 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateLA4(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity1 request1, 
+			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity1 request1,
 			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity2 request2,
 			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity3 request3,
 			@ModelAttribute BRRS_M_AIDP_ReportService.BRRS_M_AIDP_Summary_Entity4 request4) {
@@ -850,9 +851,11 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) String type,
 
-			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity1 summary1, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity1 detail1,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity1 summary1,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity1 detail1,
 
-			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity2 summary2, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity2 detail2) {
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Summary_Entity2 summary2,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_Detail_Entity2 detail2) {
 		try {
 			System.out.println("Came to CA6 UPDATE single controller");
 			System.out.println(type);
@@ -1408,7 +1411,8 @@ try {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity1 request1, @ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity2 request2
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_Summary_Entity2 request2
 
 	) {
 		try {
@@ -1433,10 +1437,9 @@ try {
 	public ResponseEntity<String> updateReportReSub(
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
-			@RequestParam(required = false) String type, 
+			@RequestParam(required = false) String type,
 			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_RESUB_Summary_Entity1 request1,
-			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_RESUB_Summary_Entity2 request2, 
-			HttpServletRequest req) {
+			@ModelAttribute BRRS_M_CA5_ReportService.M_CA5_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_CA5 Resub Controller");
@@ -4099,14 +4102,14 @@ try {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_IS_Summary_Entity1 request1, @ModelAttribute M_IS_Summary_Entity2 request2) {
+			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity2 request2) {
 		try {
 			System.out.println("Came to single controller");
 
-			// set date into all 3 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
+			// set date into all entities
+			request1.setReport_date(asondate);
+			request2.setReport_date(asondate);
 
 			// call services
 			M_IS_Service.MISUpdate1(request1);
@@ -4123,15 +4126,15 @@ try {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_IS_Summary_Entity1 request1, @ModelAttribute M_IS_Summary_Entity2 request2,
-			HttpServletRequest req) {
+			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_IS Resub Controller");
 
 			if (asondate != null) {
-				request1.setReportDate(asondate);
-				request2.setReportDate(asondate);
+				request1.setReport_date(asondate);
+				request2.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			}
 
@@ -4435,7 +4438,8 @@ try {
 	public ResponseEntity<String> updateReportReSub(
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date asondate, // ✅ ISO format
-			@RequestParam(required = false) String type, @ModelAttribute BRRS_M_CA6_ReportService.M_CA6_RESUB_Summary_Entity1 request1,
+			@RequestParam(required = false) String type,
+			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_RESUB_Summary_Entity1 request1,
 			@ModelAttribute BRRS_M_CA6_ReportService.M_CA6_RESUB_Summary_Entity2 request2, HttpServletRequest req) {
 
 		try {
@@ -4615,12 +4619,12 @@ try {
 	@RequestMapping(value = "/NOSVOSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAll(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
 		try {
 
 			// set date into all 4 entities
@@ -4647,12 +4651,12 @@ try {
 	@RequestMapping(value = "/NOSVOSupdateAll_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAllResub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1ResbuSummaryEntity request1,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2ResbuSummaryEntity request2,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3ResbuSummaryEntity request3,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4ResbuSummaryEntity request4,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5ResbuSummaryEntity request5) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1ResbuSummaryEntity request1,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2ResbuSummaryEntity request2,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3ResbuSummaryEntity request3,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4ResbuSummaryEntity request4,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5ResbuSummaryEntity request5) {
 		try {
 
 			// set date into all 4 entities
