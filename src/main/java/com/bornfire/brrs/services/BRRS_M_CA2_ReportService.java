@@ -77,39 +77,46 @@ public class BRRS_M_CA2_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// ─── Current summary by date ───────────────────────────────────────────────
 	public List<M_CA2_Summary_Entity> getSummaryByDate(Date reportDate) {
 		return jdbcTemplate.query("SELECT * FROM BRRS_M_CA2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 				new Object[] { reportDate }, new M_CA2SummaryRowMapper());
 	}
 
+	// ─── Archival summary by date and version ──────────────────────────────────
 	public List<M_CA2_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		return jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
 				new Object[] { reportDate, version }, new M_CA2ArchivalSummaryRowMapper());
 	}
 
+	// ─── All archival summaries with version ───────────────────────────────────
 	public List<M_CA2_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
 		return jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
 				new M_CA2ArchivalSummaryRowMapper());
 	}
 
+	// ─── Resub summary by date and version ─────────────────────────────────────
 	public List<M_CA2_RESUB_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		return jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
 				new Object[] { reportDate, version }, new M_CA2ResubSummaryRowMapper());
 	}
 
+	// ─── Current detail by date ────────────────────────────────────────────────
 	public List<M_CA2_Detail_Entity> getDetailByDate(Date reportDate) {
 		return jdbcTemplate.query("SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE REPORT_DATE = ?",
 				new Object[] { reportDate }, new M_CA2DetailRowMapper());
 	}
 
+	// ─── Count current detail rows ─────────────────────────────────────────────
 	public int getDetailCount(Date reportDate) {
 		return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM BRRS_M_CA2_DETAILTABLE WHERE REPORT_DATE = ?",
 				new Object[] { reportDate }, Integer.class);
 	}
 
+	// ─── Current detail by label and criteria ──────────────────────────────────
 	public List<M_CA2_Detail_Entity> getDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
 			Date reportDate) {
 		return jdbcTemplate.query(
@@ -117,6 +124,7 @@ public class BRRS_M_CA2_ReportService {
 				new Object[] { reportLabel, reportAddlCriteria1, reportDate }, new M_CA2DetailRowMapper());
 	}
 
+	// ─── Current detail by account number ──────────────────────────────────────
 	public M_CA2_Detail_Entity getDetailByAcctNumber(String acctNumber) {
 		List<M_CA2_Detail_Entity> list = jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE ACCT_NUMBER = ?", new Object[] { acctNumber },
@@ -126,6 +134,7 @@ public class BRRS_M_CA2_ReportService {
 	
 	//=====================RESUB  
 	
+	// ─── Resub summary by date and version (archival table) ────────────────────
 	public List<M_CA2_Summary_Entity> get_ResubSummaryByDate(Date reportDate, String reportVersion) {
 
 	    return jdbcTemplate.query(
@@ -136,6 +145,7 @@ public class BRRS_M_CA2_ReportService {
 	        new M_CA2SummaryRowMapper());
 	}
 	
+	// ─── Find archival detail by SNO ───────────────────────────────────────────
 	public M_CA2_Detail_Entity findBySnoArch(String sno) {
 
 		String sql = "SELECT * FROM BRRS_M_CA2_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
@@ -143,6 +153,7 @@ public class BRRS_M_CA2_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_CA2DetailRowMapper());
 	}
 	
+	// ─── Find current detail by SNO ────────────────────────────────────────────
 	public M_CA2_Detail_Entity findBySno(String sno) {
 
 		String sql = "SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE SNO = ?";
@@ -150,6 +161,7 @@ public class BRRS_M_CA2_ReportService {
 		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_CA2DetailRowMapper());
 	}
 	
+	// ─── Check if version is the highest ───────────────────────────────────────
 	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
 		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
 				+ "FROM BRRS_M_CA2_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
@@ -157,6 +169,7 @@ public class BRRS_M_CA2_ReportService {
 
 	}
 //=====================
+	// ─── Archival detail by date ────────────────────────────────────────────────
 	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate) {
 
 	    return jdbcTemplate.query(
@@ -165,6 +178,7 @@ public class BRRS_M_CA2_ReportService {
 	            new M_CA2ArchivalDetailRowMapper());
 	}
 
+	// ─── Archival detail by label and criteria ─────────────────────────────────
 	public List<M_CA2_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
 			Date reportDate) {
 		return jdbcTemplate.query(
@@ -172,12 +186,14 @@ public class BRRS_M_CA2_ReportService {
 				new Object[] { reportLabel, reportAddlCriteria1, reportDate }, new M_CA2ArchivalDetailRowMapper());
 	}
 
+	// ─── Resub detail by date and version ──────────────────────────────────────
 	public List<M_CA2_RESUB_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate, String version) {
 		return jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_CA2_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
 				new Object[] { reportDate, version }, new M_CA2ResubDetailRowMapper());
 	}
 
+	// ─── Resub detail by label, criteria and version ───────────────────────────
 	public List<M_CA2_RESUB_Detail_Entity> getResubDetailByRowIdAndColumnId(String reportLabel, String criteria1,
 			Date reportDate, String version) {
 		return jdbcTemplate.query(
@@ -257,6 +273,7 @@ public class BRRS_M_CA2_ReportService {
 //		return mv;
 //	}
 	
+	// ─── Main report view ───────────────────────────────────────────────────────
 	public ModelAndView getM_CA2View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
@@ -326,6 +343,7 @@ public class BRRS_M_CA2_ReportService {
 		return mv;
 	}
 	
+	// ─── Current detail view ───────────────────────────────────────────────────
 	public ModelAndView getM_CA2currentDtl(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String filter, String type, String version, HttpServletRequest req1,
 			Model md) {
@@ -527,7 +545,7 @@ public class BRRS_M_CA2_ReportService {
 //		return mv;
 //	}
 
-	// Archival View
+	// ─── Archival report list ───────────────────────────────────────────────────
 	public List<Object[]> getM_CA2Archival() {
 		List<Object[]> archivalList = new ArrayList<>();
 
@@ -556,6 +574,7 @@ public class BRRS_M_CA2_ReportService {
 		return archivalList;
 	}
 
+	// ─── Resub report list ─────────────────────────────────────────────────────
 	public List<Object[]> getM_CA2Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
@@ -579,6 +598,7 @@ public class BRRS_M_CA2_ReportService {
 	}
 
 	@Transactional
+	// ─── Update summary report ──────────────────────────────────────────────────
 	public ResponseEntity<?> updateReport(M_CA2_Summary_Entity updatedEntity) {
 
 	    try {
@@ -1156,6 +1176,7 @@ public class BRRS_M_CA2_ReportService {
 //	    BRRS_M_CA2_Summary_Repo.saveAndFlush(existing);
 //	}
 
+	// ─── Detail Excel download ──────────────────────────────────────────────────
 	public byte[] getM_CA2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
 			String type, String version) {
 		try {
@@ -1408,6 +1429,7 @@ public class BRRS_M_CA2_ReportService {
 //	    }
 //	}
 
+	// ─── Archival detail Excel download ────────────────────────────────────────
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
@@ -1544,6 +1566,7 @@ public class BRRS_M_CA2_ReportService {
 		// FOR RESUB 
 		//==========================
 	
+	// ─── View or edit detail page ───────────────────────────────────────────────
 	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/M_CA2");
 
@@ -1590,6 +1613,7 @@ public class BRRS_M_CA2_ReportService {
 //		return mv;
 //	}
 
+	// ─── Detail edit page ───────────────────────────────────────────────────────
 	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_CA2"); // ✅ match the report name
 
@@ -1612,6 +1636,7 @@ public class BRRS_M_CA2_ReportService {
 	// FOR RESUB 
 	//==========================
 	
+	// ─── Save detail edit ───────────────────────────────────────────────────────
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 
@@ -1746,6 +1771,7 @@ public class BRRS_M_CA2_ReportService {
      	//========================
 		// FOR RESUB 
 		//==========================
+	// ─── Trigger report regeneration ───────────────────────────────────────────
 	@Transactional
 	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
 		try {
@@ -1765,6 +1791,7 @@ public class BRRS_M_CA2_ReportService {
 		// FOR RESUB 
 		//==========================
 	
+	// ─── Execute M_CA2 DB procedure ────────────────────────────────────────────
 	private void Run_M_CA2_Procedure(String reportDateStr, String type, String entry) {
 
 		String formattedDate;
@@ -1992,6 +2019,7 @@ public class BRRS_M_CA2_ReportService {
 
 //Normal format Excel
 
+	// ─── Summary Excel download ─────────────────────────────────────────────────
 	public byte[] getM_CA2Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -2452,7 +2480,7 @@ public class BRRS_M_CA2_ReportService {
 		}
 	}
 
-// Normal Email Excel
+	// ─── Summary email Excel ────────────────────────────────────────────────────
 	public byte[] BRRS_M_CA2EmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
@@ -2912,7 +2940,7 @@ public class BRRS_M_CA2_ReportService {
 		}
 	}
 
-// Archival format excel
+	// ─── Archival summary Excel download ───────────────────────────────────────
 	public byte[] getExcelM_CA2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
@@ -3344,7 +3372,7 @@ public class BRRS_M_CA2_ReportService {
 
 	}
 
-// Archival Email Excel
+	// ─── Archival summary email Excel ──────────────────────────────────────────
 	public byte[] BRRS_M_CA2ARCHIVALEmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
@@ -3782,7 +3810,7 @@ public class BRRS_M_CA2_ReportService {
 		}
 	}
 
-// Resub Format excel
+	// ─── Resub summary Excel download ──────────────────────────────────────────
 	public byte[] BRRS_M_CA2ResubExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
@@ -4217,7 +4245,7 @@ public class BRRS_M_CA2_ReportService {
 
 	}
 
-// Resub Email Excel
+	// ─── Resub summary email Excel ──────────────────────────────────────────────
 	public byte[] BRRS_M_CA2EmailResubExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
@@ -4774,103 +4802,103 @@ public class BRRS_M_CA2_ReportService {
 	// =========================================================
 	public static class M_CA2_Archival_Summary_Entity {
 		private String r10_product;
-		private java.math.BigDecimal r10_amount_1;
-		private java.math.BigDecimal r10_amount_2;
+		private BigDecimal r10_amount_1;
+		private BigDecimal r10_amount_2;
 		private String r11_product;
-		private java.math.BigDecimal r11_amount_1;
-		private java.math.BigDecimal r11_amount_2;
+		private BigDecimal r11_amount_1;
+		private BigDecimal r11_amount_2;
 		private String r12_product;
-		private java.math.BigDecimal r12_amount_1;
-		private java.math.BigDecimal r12_amount_2;
+		private BigDecimal r12_amount_1;
+		private BigDecimal r12_amount_2;
 		private String r13_product;
-		private java.math.BigDecimal r13_amount_1;
-		private java.math.BigDecimal r13_amount_2;
+		private BigDecimal r13_amount_1;
+		private BigDecimal r13_amount_2;
 		private String r14_product;
-		private java.math.BigDecimal r14_amount_1;
-		private java.math.BigDecimal r14_amount_2;
+		private BigDecimal r14_amount_1;
+		private BigDecimal r14_amount_2;
 		private String r15_product;
-		private java.math.BigDecimal r15_amount_1;
-		private java.math.BigDecimal r15_amount_2;
+		private BigDecimal r15_amount_1;
+		private BigDecimal r15_amount_2;
 		private String r16_product;
-		private java.math.BigDecimal r16_amount_1;
-		private java.math.BigDecimal r16_amount_2;
+		private BigDecimal r16_amount_1;
+		private BigDecimal r16_amount_2;
 		private String r17_product;
-		private java.math.BigDecimal r17_amount_1;
-		private java.math.BigDecimal r17_amount_2;
+		private BigDecimal r17_amount_1;
+		private BigDecimal r17_amount_2;
 		private String r18_product;
-		private java.math.BigDecimal r18_amount_1;
-		private java.math.BigDecimal r18_amount_2;
+		private BigDecimal r18_amount_1;
+		private BigDecimal r18_amount_2;
 		private String r19_product;
-		private java.math.BigDecimal r19_amount_1;
-		private java.math.BigDecimal r19_amount_2;
+		private BigDecimal r19_amount_1;
+		private BigDecimal r19_amount_2;
 		private String r20_product;
-		private java.math.BigDecimal r20_amount_1;
-		private java.math.BigDecimal r20_amount_2;
+		private BigDecimal r20_amount_1;
+		private BigDecimal r20_amount_2;
 		private String r21_product;
-		private java.math.BigDecimal r21_amount_1;
-		private java.math.BigDecimal r21_amount_2;
+		private BigDecimal r21_amount_1;
+		private BigDecimal r21_amount_2;
 		private String r22_product;
-		private java.math.BigDecimal r22_amount_1;
-		private java.math.BigDecimal r22_amount_2;
+		private BigDecimal r22_amount_1;
+		private BigDecimal r22_amount_2;
 		private String r23_product;
-		private java.math.BigDecimal r23_amount_1;
-		private java.math.BigDecimal r23_amount_2;
+		private BigDecimal r23_amount_1;
+		private BigDecimal r23_amount_2;
 		private String r24_product;
-		private java.math.BigDecimal r24_amount_1;
-		private java.math.BigDecimal r24_amount_2;
+		private BigDecimal r24_amount_1;
+		private BigDecimal r24_amount_2;
 		private String r25_product;
-		private java.math.BigDecimal r25_amount_1;
-		private java.math.BigDecimal r25_amount_2;
+		private BigDecimal r25_amount_1;
+		private BigDecimal r25_amount_2;
 		private String r26_product;
-		private java.math.BigDecimal r26_amount_1;
-		private java.math.BigDecimal r26_amount_2;
+		private BigDecimal r26_amount_1;
+		private BigDecimal r26_amount_2;
 		private String r31_product;
-		private java.math.BigDecimal r31_amount_1;
-		private java.math.BigDecimal r31_amount_2;
+		private BigDecimal r31_amount_1;
+		private BigDecimal r31_amount_2;
 		private String r32_product;
-		private java.math.BigDecimal r32_amount_1;
-		private java.math.BigDecimal r32_amount_2;
+		private BigDecimal r32_amount_1;
+		private BigDecimal r32_amount_2;
 		private String r33_product;
-		private java.math.BigDecimal r33_amount_1;
-		private java.math.BigDecimal r33_amount_2;
+		private BigDecimal r33_amount_1;
+		private BigDecimal r33_amount_2;
 		private String r34_product;
-		private java.math.BigDecimal r34_amount_1;
-		private java.math.BigDecimal r34_amount_2;
+		private BigDecimal r34_amount_1;
+		private BigDecimal r34_amount_2;
 		private String r35_product;
-		private java.math.BigDecimal r35_amount_1;
-		private java.math.BigDecimal r35_amount_2;
+		private BigDecimal r35_amount_1;
+		private BigDecimal r35_amount_2;
 		private String r36_product;
-		private java.math.BigDecimal r36_amount_1;
-		private java.math.BigDecimal r36_amount_2;
+		private BigDecimal r36_amount_1;
+		private BigDecimal r36_amount_2;
 		private String r41_product;
-		private java.math.BigDecimal r41_amount_1;
-		private java.math.BigDecimal r41_amount_2;
+		private BigDecimal r41_amount_1;
+		private BigDecimal r41_amount_2;
 		private String r42_product;
-		private java.math.BigDecimal r42_amount_1;
-		private java.math.BigDecimal r42_amount_2;
+		private BigDecimal r42_amount_1;
+		private BigDecimal r42_amount_2;
 		private String r43_product;
-		private java.math.BigDecimal r43_amount_1;
-		private java.math.BigDecimal r43_amount_2;
+		private BigDecimal r43_amount_1;
+		private BigDecimal r43_amount_2;
 		private String r44_product;
-		private java.math.BigDecimal r44_amount_1;
-		private java.math.BigDecimal r44_amount_2;
+		private BigDecimal r44_amount_1;
+		private BigDecimal r44_amount_2;
 		private String r45_product;
-		private java.math.BigDecimal r45_amount_1;
-		private java.math.BigDecimal r45_amount_2;
+		private BigDecimal r45_amount_1;
+		private BigDecimal r45_amount_2;
 		private String r46_product;
-		private java.math.BigDecimal r46_amount_1;
-		private java.math.BigDecimal r46_amount_2;
+		private BigDecimal r46_amount_1;
+		private BigDecimal r46_amount_2;
 		private String r47_product;
-		private java.math.BigDecimal r47_amount_1;
-		private java.math.BigDecimal r47_amount_2;
+		private BigDecimal r47_amount_1;
+		private BigDecimal r47_amount_2;
 		private String r48_product;
-		private java.math.BigDecimal r48_amount_1;
-		private java.math.BigDecimal r48_amount_2;
+		private BigDecimal r48_amount_1;
+		private BigDecimal r48_amount_2;
 		private String r49_product;
-		private java.math.BigDecimal r49_amount_1;
-		private java.math.BigDecimal r49_amount_2;
+		private BigDecimal r49_amount_1;
+		private BigDecimal r49_amount_2;
 		private java.util.Date report_date;
-		private java.math.BigDecimal report_version;
+		private BigDecimal report_version;
 		private java.util.Date reportResubDate;
 		private String report_frequency;
 		private String report_code;
@@ -4887,19 +4915,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r10_product = r10_product;
 		}
 
-		public java.math.BigDecimal getR10_amount_1() {
+		public BigDecimal getR10_amount_1() {
 			return r10_amount_1;
 		}
 
-		public void setR10_amount_1(java.math.BigDecimal r10_amount_1) {
+		public void setR10_amount_1(BigDecimal r10_amount_1) {
 			this.r10_amount_1 = r10_amount_1;
 		}
 
-		public java.math.BigDecimal getR10_amount_2() {
+		public BigDecimal getR10_amount_2() {
 			return r10_amount_2;
 		}
 
-		public void setR10_amount_2(java.math.BigDecimal r10_amount_2) {
+		public void setR10_amount_2(BigDecimal r10_amount_2) {
 			this.r10_amount_2 = r10_amount_2;
 		}
 
@@ -4911,19 +4939,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r11_product = r11_product;
 		}
 
-		public java.math.BigDecimal getR11_amount_1() {
+		public BigDecimal getR11_amount_1() {
 			return r11_amount_1;
 		}
 
-		public void setR11_amount_1(java.math.BigDecimal r11_amount_1) {
+		public void setR11_amount_1(BigDecimal r11_amount_1) {
 			this.r11_amount_1 = r11_amount_1;
 		}
 
-		public java.math.BigDecimal getR11_amount_2() {
+		public BigDecimal getR11_amount_2() {
 			return r11_amount_2;
 		}
 
-		public void setR11_amount_2(java.math.BigDecimal r11_amount_2) {
+		public void setR11_amount_2(BigDecimal r11_amount_2) {
 			this.r11_amount_2 = r11_amount_2;
 		}
 
@@ -4935,19 +4963,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r12_product = r12_product;
 		}
 
-		public java.math.BigDecimal getR12_amount_1() {
+		public BigDecimal getR12_amount_1() {
 			return r12_amount_1;
 		}
 
-		public void setR12_amount_1(java.math.BigDecimal r12_amount_1) {
+		public void setR12_amount_1(BigDecimal r12_amount_1) {
 			this.r12_amount_1 = r12_amount_1;
 		}
 
-		public java.math.BigDecimal getR12_amount_2() {
+		public BigDecimal getR12_amount_2() {
 			return r12_amount_2;
 		}
 
-		public void setR12_amount_2(java.math.BigDecimal r12_amount_2) {
+		public void setR12_amount_2(BigDecimal r12_amount_2) {
 			this.r12_amount_2 = r12_amount_2;
 		}
 
@@ -4959,19 +4987,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r13_product = r13_product;
 		}
 
-		public java.math.BigDecimal getR13_amount_1() {
+		public BigDecimal getR13_amount_1() {
 			return r13_amount_1;
 		}
 
-		public void setR13_amount_1(java.math.BigDecimal r13_amount_1) {
+		public void setR13_amount_1(BigDecimal r13_amount_1) {
 			this.r13_amount_1 = r13_amount_1;
 		}
 
-		public java.math.BigDecimal getR13_amount_2() {
+		public BigDecimal getR13_amount_2() {
 			return r13_amount_2;
 		}
 
-		public void setR13_amount_2(java.math.BigDecimal r13_amount_2) {
+		public void setR13_amount_2(BigDecimal r13_amount_2) {
 			this.r13_amount_2 = r13_amount_2;
 		}
 
@@ -4983,19 +5011,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r14_product = r14_product;
 		}
 
-		public java.math.BigDecimal getR14_amount_1() {
+		public BigDecimal getR14_amount_1() {
 			return r14_amount_1;
 		}
 
-		public void setR14_amount_1(java.math.BigDecimal r14_amount_1) {
+		public void setR14_amount_1(BigDecimal r14_amount_1) {
 			this.r14_amount_1 = r14_amount_1;
 		}
 
-		public java.math.BigDecimal getR14_amount_2() {
+		public BigDecimal getR14_amount_2() {
 			return r14_amount_2;
 		}
 
-		public void setR14_amount_2(java.math.BigDecimal r14_amount_2) {
+		public void setR14_amount_2(BigDecimal r14_amount_2) {
 			this.r14_amount_2 = r14_amount_2;
 		}
 
@@ -5007,19 +5035,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r15_product = r15_product;
 		}
 
-		public java.math.BigDecimal getR15_amount_1() {
+		public BigDecimal getR15_amount_1() {
 			return r15_amount_1;
 		}
 
-		public void setR15_amount_1(java.math.BigDecimal r15_amount_1) {
+		public void setR15_amount_1(BigDecimal r15_amount_1) {
 			this.r15_amount_1 = r15_amount_1;
 		}
 
-		public java.math.BigDecimal getR15_amount_2() {
+		public BigDecimal getR15_amount_2() {
 			return r15_amount_2;
 		}
 
-		public void setR15_amount_2(java.math.BigDecimal r15_amount_2) {
+		public void setR15_amount_2(BigDecimal r15_amount_2) {
 			this.r15_amount_2 = r15_amount_2;
 		}
 
@@ -5031,19 +5059,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r16_product = r16_product;
 		}
 
-		public java.math.BigDecimal getR16_amount_1() {
+		public BigDecimal getR16_amount_1() {
 			return r16_amount_1;
 		}
 
-		public void setR16_amount_1(java.math.BigDecimal r16_amount_1) {
+		public void setR16_amount_1(BigDecimal r16_amount_1) {
 			this.r16_amount_1 = r16_amount_1;
 		}
 
-		public java.math.BigDecimal getR16_amount_2() {
+		public BigDecimal getR16_amount_2() {
 			return r16_amount_2;
 		}
 
-		public void setR16_amount_2(java.math.BigDecimal r16_amount_2) {
+		public void setR16_amount_2(BigDecimal r16_amount_2) {
 			this.r16_amount_2 = r16_amount_2;
 		}
 
@@ -5055,19 +5083,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r17_product = r17_product;
 		}
 
-		public java.math.BigDecimal getR17_amount_1() {
+		public BigDecimal getR17_amount_1() {
 			return r17_amount_1;
 		}
 
-		public void setR17_amount_1(java.math.BigDecimal r17_amount_1) {
+		public void setR17_amount_1(BigDecimal r17_amount_1) {
 			this.r17_amount_1 = r17_amount_1;
 		}
 
-		public java.math.BigDecimal getR17_amount_2() {
+		public BigDecimal getR17_amount_2() {
 			return r17_amount_2;
 		}
 
-		public void setR17_amount_2(java.math.BigDecimal r17_amount_2) {
+		public void setR17_amount_2(BigDecimal r17_amount_2) {
 			this.r17_amount_2 = r17_amount_2;
 		}
 
@@ -5079,19 +5107,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r18_product = r18_product;
 		}
 
-		public java.math.BigDecimal getR18_amount_1() {
+		public BigDecimal getR18_amount_1() {
 			return r18_amount_1;
 		}
 
-		public void setR18_amount_1(java.math.BigDecimal r18_amount_1) {
+		public void setR18_amount_1(BigDecimal r18_amount_1) {
 			this.r18_amount_1 = r18_amount_1;
 		}
 
-		public java.math.BigDecimal getR18_amount_2() {
+		public BigDecimal getR18_amount_2() {
 			return r18_amount_2;
 		}
 
-		public void setR18_amount_2(java.math.BigDecimal r18_amount_2) {
+		public void setR18_amount_2(BigDecimal r18_amount_2) {
 			this.r18_amount_2 = r18_amount_2;
 		}
 
@@ -5103,19 +5131,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r19_product = r19_product;
 		}
 
-		public java.math.BigDecimal getR19_amount_1() {
+		public BigDecimal getR19_amount_1() {
 			return r19_amount_1;
 		}
 
-		public void setR19_amount_1(java.math.BigDecimal r19_amount_1) {
+		public void setR19_amount_1(BigDecimal r19_amount_1) {
 			this.r19_amount_1 = r19_amount_1;
 		}
 
-		public java.math.BigDecimal getR19_amount_2() {
+		public BigDecimal getR19_amount_2() {
 			return r19_amount_2;
 		}
 
-		public void setR19_amount_2(java.math.BigDecimal r19_amount_2) {
+		public void setR19_amount_2(BigDecimal r19_amount_2) {
 			this.r19_amount_2 = r19_amount_2;
 		}
 
@@ -5127,19 +5155,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r20_product = r20_product;
 		}
 
-		public java.math.BigDecimal getR20_amount_1() {
+		public BigDecimal getR20_amount_1() {
 			return r20_amount_1;
 		}
 
-		public void setR20_amount_1(java.math.BigDecimal r20_amount_1) {
+		public void setR20_amount_1(BigDecimal r20_amount_1) {
 			this.r20_amount_1 = r20_amount_1;
 		}
 
-		public java.math.BigDecimal getR20_amount_2() {
+		public BigDecimal getR20_amount_2() {
 			return r20_amount_2;
 		}
 
-		public void setR20_amount_2(java.math.BigDecimal r20_amount_2) {
+		public void setR20_amount_2(BigDecimal r20_amount_2) {
 			this.r20_amount_2 = r20_amount_2;
 		}
 
@@ -5151,19 +5179,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r21_product = r21_product;
 		}
 
-		public java.math.BigDecimal getR21_amount_1() {
+		public BigDecimal getR21_amount_1() {
 			return r21_amount_1;
 		}
 
-		public void setR21_amount_1(java.math.BigDecimal r21_amount_1) {
+		public void setR21_amount_1(BigDecimal r21_amount_1) {
 			this.r21_amount_1 = r21_amount_1;
 		}
 
-		public java.math.BigDecimal getR21_amount_2() {
+		public BigDecimal getR21_amount_2() {
 			return r21_amount_2;
 		}
 
-		public void setR21_amount_2(java.math.BigDecimal r21_amount_2) {
+		public void setR21_amount_2(BigDecimal r21_amount_2) {
 			this.r21_amount_2 = r21_amount_2;
 		}
 
@@ -5175,19 +5203,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r22_product = r22_product;
 		}
 
-		public java.math.BigDecimal getR22_amount_1() {
+		public BigDecimal getR22_amount_1() {
 			return r22_amount_1;
 		}
 
-		public void setR22_amount_1(java.math.BigDecimal r22_amount_1) {
+		public void setR22_amount_1(BigDecimal r22_amount_1) {
 			this.r22_amount_1 = r22_amount_1;
 		}
 
-		public java.math.BigDecimal getR22_amount_2() {
+		public BigDecimal getR22_amount_2() {
 			return r22_amount_2;
 		}
 
-		public void setR22_amount_2(java.math.BigDecimal r22_amount_2) {
+		public void setR22_amount_2(BigDecimal r22_amount_2) {
 			this.r22_amount_2 = r22_amount_2;
 		}
 
@@ -5199,19 +5227,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r23_product = r23_product;
 		}
 
-		public java.math.BigDecimal getR23_amount_1() {
+		public BigDecimal getR23_amount_1() {
 			return r23_amount_1;
 		}
 
-		public void setR23_amount_1(java.math.BigDecimal r23_amount_1) {
+		public void setR23_amount_1(BigDecimal r23_amount_1) {
 			this.r23_amount_1 = r23_amount_1;
 		}
 
-		public java.math.BigDecimal getR23_amount_2() {
+		public BigDecimal getR23_amount_2() {
 			return r23_amount_2;
 		}
 
-		public void setR23_amount_2(java.math.BigDecimal r23_amount_2) {
+		public void setR23_amount_2(BigDecimal r23_amount_2) {
 			this.r23_amount_2 = r23_amount_2;
 		}
 
@@ -5223,19 +5251,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r24_product = r24_product;
 		}
 
-		public java.math.BigDecimal getR24_amount_1() {
+		public BigDecimal getR24_amount_1() {
 			return r24_amount_1;
 		}
 
-		public void setR24_amount_1(java.math.BigDecimal r24_amount_1) {
+		public void setR24_amount_1(BigDecimal r24_amount_1) {
 			this.r24_amount_1 = r24_amount_1;
 		}
 
-		public java.math.BigDecimal getR24_amount_2() {
+		public BigDecimal getR24_amount_2() {
 			return r24_amount_2;
 		}
 
-		public void setR24_amount_2(java.math.BigDecimal r24_amount_2) {
+		public void setR24_amount_2(BigDecimal r24_amount_2) {
 			this.r24_amount_2 = r24_amount_2;
 		}
 
@@ -5247,19 +5275,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r25_product = r25_product;
 		}
 
-		public java.math.BigDecimal getR25_amount_1() {
+		public BigDecimal getR25_amount_1() {
 			return r25_amount_1;
 		}
 
-		public void setR25_amount_1(java.math.BigDecimal r25_amount_1) {
+		public void setR25_amount_1(BigDecimal r25_amount_1) {
 			this.r25_amount_1 = r25_amount_1;
 		}
 
-		public java.math.BigDecimal getR25_amount_2() {
+		public BigDecimal getR25_amount_2() {
 			return r25_amount_2;
 		}
 
-		public void setR25_amount_2(java.math.BigDecimal r25_amount_2) {
+		public void setR25_amount_2(BigDecimal r25_amount_2) {
 			this.r25_amount_2 = r25_amount_2;
 		}
 
@@ -5271,19 +5299,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r26_product = r26_product;
 		}
 
-		public java.math.BigDecimal getR26_amount_1() {
+		public BigDecimal getR26_amount_1() {
 			return r26_amount_1;
 		}
 
-		public void setR26_amount_1(java.math.BigDecimal r26_amount_1) {
+		public void setR26_amount_1(BigDecimal r26_amount_1) {
 			this.r26_amount_1 = r26_amount_1;
 		}
 
-		public java.math.BigDecimal getR26_amount_2() {
+		public BigDecimal getR26_amount_2() {
 			return r26_amount_2;
 		}
 
-		public void setR26_amount_2(java.math.BigDecimal r26_amount_2) {
+		public void setR26_amount_2(BigDecimal r26_amount_2) {
 			this.r26_amount_2 = r26_amount_2;
 		}
 
@@ -5295,19 +5323,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r31_product = r31_product;
 		}
 
-		public java.math.BigDecimal getR31_amount_1() {
+		public BigDecimal getR31_amount_1() {
 			return r31_amount_1;
 		}
 
-		public void setR31_amount_1(java.math.BigDecimal r31_amount_1) {
+		public void setR31_amount_1(BigDecimal r31_amount_1) {
 			this.r31_amount_1 = r31_amount_1;
 		}
 
-		public java.math.BigDecimal getR31_amount_2() {
+		public BigDecimal getR31_amount_2() {
 			return r31_amount_2;
 		}
 
-		public void setR31_amount_2(java.math.BigDecimal r31_amount_2) {
+		public void setR31_amount_2(BigDecimal r31_amount_2) {
 			this.r31_amount_2 = r31_amount_2;
 		}
 
@@ -5319,19 +5347,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r32_product = r32_product;
 		}
 
-		public java.math.BigDecimal getR32_amount_1() {
+		public BigDecimal getR32_amount_1() {
 			return r32_amount_1;
 		}
 
-		public void setR32_amount_1(java.math.BigDecimal r32_amount_1) {
+		public void setR32_amount_1(BigDecimal r32_amount_1) {
 			this.r32_amount_1 = r32_amount_1;
 		}
 
-		public java.math.BigDecimal getR32_amount_2() {
+		public BigDecimal getR32_amount_2() {
 			return r32_amount_2;
 		}
 
-		public void setR32_amount_2(java.math.BigDecimal r32_amount_2) {
+		public void setR32_amount_2(BigDecimal r32_amount_2) {
 			this.r32_amount_2 = r32_amount_2;
 		}
 
@@ -5343,19 +5371,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r33_product = r33_product;
 		}
 
-		public java.math.BigDecimal getR33_amount_1() {
+		public BigDecimal getR33_amount_1() {
 			return r33_amount_1;
 		}
 
-		public void setR33_amount_1(java.math.BigDecimal r33_amount_1) {
+		public void setR33_amount_1(BigDecimal r33_amount_1) {
 			this.r33_amount_1 = r33_amount_1;
 		}
 
-		public java.math.BigDecimal getR33_amount_2() {
+		public BigDecimal getR33_amount_2() {
 			return r33_amount_2;
 		}
 
-		public void setR33_amount_2(java.math.BigDecimal r33_amount_2) {
+		public void setR33_amount_2(BigDecimal r33_amount_2) {
 			this.r33_amount_2 = r33_amount_2;
 		}
 
@@ -5367,19 +5395,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r34_product = r34_product;
 		}
 
-		public java.math.BigDecimal getR34_amount_1() {
+		public BigDecimal getR34_amount_1() {
 			return r34_amount_1;
 		}
 
-		public void setR34_amount_1(java.math.BigDecimal r34_amount_1) {
+		public void setR34_amount_1(BigDecimal r34_amount_1) {
 			this.r34_amount_1 = r34_amount_1;
 		}
 
-		public java.math.BigDecimal getR34_amount_2() {
+		public BigDecimal getR34_amount_2() {
 			return r34_amount_2;
 		}
 
-		public void setR34_amount_2(java.math.BigDecimal r34_amount_2) {
+		public void setR34_amount_2(BigDecimal r34_amount_2) {
 			this.r34_amount_2 = r34_amount_2;
 		}
 
@@ -5391,19 +5419,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r35_product = r35_product;
 		}
 
-		public java.math.BigDecimal getR35_amount_1() {
+		public BigDecimal getR35_amount_1() {
 			return r35_amount_1;
 		}
 
-		public void setR35_amount_1(java.math.BigDecimal r35_amount_1) {
+		public void setR35_amount_1(BigDecimal r35_amount_1) {
 			this.r35_amount_1 = r35_amount_1;
 		}
 
-		public java.math.BigDecimal getR35_amount_2() {
+		public BigDecimal getR35_amount_2() {
 			return r35_amount_2;
 		}
 
-		public void setR35_amount_2(java.math.BigDecimal r35_amount_2) {
+		public void setR35_amount_2(BigDecimal r35_amount_2) {
 			this.r35_amount_2 = r35_amount_2;
 		}
 
@@ -5415,19 +5443,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r36_product = r36_product;
 		}
 
-		public java.math.BigDecimal getR36_amount_1() {
+		public BigDecimal getR36_amount_1() {
 			return r36_amount_1;
 		}
 
-		public void setR36_amount_1(java.math.BigDecimal r36_amount_1) {
+		public void setR36_amount_1(BigDecimal r36_amount_1) {
 			this.r36_amount_1 = r36_amount_1;
 		}
 
-		public java.math.BigDecimal getR36_amount_2() {
+		public BigDecimal getR36_amount_2() {
 			return r36_amount_2;
 		}
 
-		public void setR36_amount_2(java.math.BigDecimal r36_amount_2) {
+		public void setR36_amount_2(BigDecimal r36_amount_2) {
 			this.r36_amount_2 = r36_amount_2;
 		}
 
@@ -5439,19 +5467,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r41_product = r41_product;
 		}
 
-		public java.math.BigDecimal getR41_amount_1() {
+		public BigDecimal getR41_amount_1() {
 			return r41_amount_1;
 		}
 
-		public void setR41_amount_1(java.math.BigDecimal r41_amount_1) {
+		public void setR41_amount_1(BigDecimal r41_amount_1) {
 			this.r41_amount_1 = r41_amount_1;
 		}
 
-		public java.math.BigDecimal getR41_amount_2() {
+		public BigDecimal getR41_amount_2() {
 			return r41_amount_2;
 		}
 
-		public void setR41_amount_2(java.math.BigDecimal r41_amount_2) {
+		public void setR41_amount_2(BigDecimal r41_amount_2) {
 			this.r41_amount_2 = r41_amount_2;
 		}
 
@@ -5463,19 +5491,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r42_product = r42_product;
 		}
 
-		public java.math.BigDecimal getR42_amount_1() {
+		public BigDecimal getR42_amount_1() {
 			return r42_amount_1;
 		}
 
-		public void setR42_amount_1(java.math.BigDecimal r42_amount_1) {
+		public void setR42_amount_1(BigDecimal r42_amount_1) {
 			this.r42_amount_1 = r42_amount_1;
 		}
 
-		public java.math.BigDecimal getR42_amount_2() {
+		public BigDecimal getR42_amount_2() {
 			return r42_amount_2;
 		}
 
-		public void setR42_amount_2(java.math.BigDecimal r42_amount_2) {
+		public void setR42_amount_2(BigDecimal r42_amount_2) {
 			this.r42_amount_2 = r42_amount_2;
 		}
 
@@ -5487,19 +5515,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r43_product = r43_product;
 		}
 
-		public java.math.BigDecimal getR43_amount_1() {
+		public BigDecimal getR43_amount_1() {
 			return r43_amount_1;
 		}
 
-		public void setR43_amount_1(java.math.BigDecimal r43_amount_1) {
+		public void setR43_amount_1(BigDecimal r43_amount_1) {
 			this.r43_amount_1 = r43_amount_1;
 		}
 
-		public java.math.BigDecimal getR43_amount_2() {
+		public BigDecimal getR43_amount_2() {
 			return r43_amount_2;
 		}
 
-		public void setR43_amount_2(java.math.BigDecimal r43_amount_2) {
+		public void setR43_amount_2(BigDecimal r43_amount_2) {
 			this.r43_amount_2 = r43_amount_2;
 		}
 
@@ -5511,19 +5539,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r44_product = r44_product;
 		}
 
-		public java.math.BigDecimal getR44_amount_1() {
+		public BigDecimal getR44_amount_1() {
 			return r44_amount_1;
 		}
 
-		public void setR44_amount_1(java.math.BigDecimal r44_amount_1) {
+		public void setR44_amount_1(BigDecimal r44_amount_1) {
 			this.r44_amount_1 = r44_amount_1;
 		}
 
-		public java.math.BigDecimal getR44_amount_2() {
+		public BigDecimal getR44_amount_2() {
 			return r44_amount_2;
 		}
 
-		public void setR44_amount_2(java.math.BigDecimal r44_amount_2) {
+		public void setR44_amount_2(BigDecimal r44_amount_2) {
 			this.r44_amount_2 = r44_amount_2;
 		}
 
@@ -5535,19 +5563,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r45_product = r45_product;
 		}
 
-		public java.math.BigDecimal getR45_amount_1() {
+		public BigDecimal getR45_amount_1() {
 			return r45_amount_1;
 		}
 
-		public void setR45_amount_1(java.math.BigDecimal r45_amount_1) {
+		public void setR45_amount_1(BigDecimal r45_amount_1) {
 			this.r45_amount_1 = r45_amount_1;
 		}
 
-		public java.math.BigDecimal getR45_amount_2() {
+		public BigDecimal getR45_amount_2() {
 			return r45_amount_2;
 		}
 
-		public void setR45_amount_2(java.math.BigDecimal r45_amount_2) {
+		public void setR45_amount_2(BigDecimal r45_amount_2) {
 			this.r45_amount_2 = r45_amount_2;
 		}
 
@@ -5559,19 +5587,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r46_product = r46_product;
 		}
 
-		public java.math.BigDecimal getR46_amount_1() {
+		public BigDecimal getR46_amount_1() {
 			return r46_amount_1;
 		}
 
-		public void setR46_amount_1(java.math.BigDecimal r46_amount_1) {
+		public void setR46_amount_1(BigDecimal r46_amount_1) {
 			this.r46_amount_1 = r46_amount_1;
 		}
 
-		public java.math.BigDecimal getR46_amount_2() {
+		public BigDecimal getR46_amount_2() {
 			return r46_amount_2;
 		}
 
-		public void setR46_amount_2(java.math.BigDecimal r46_amount_2) {
+		public void setR46_amount_2(BigDecimal r46_amount_2) {
 			this.r46_amount_2 = r46_amount_2;
 		}
 
@@ -5583,19 +5611,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r47_product = r47_product;
 		}
 
-		public java.math.BigDecimal getR47_amount_1() {
+		public BigDecimal getR47_amount_1() {
 			return r47_amount_1;
 		}
 
-		public void setR47_amount_1(java.math.BigDecimal r47_amount_1) {
+		public void setR47_amount_1(BigDecimal r47_amount_1) {
 			this.r47_amount_1 = r47_amount_1;
 		}
 
-		public java.math.BigDecimal getR47_amount_2() {
+		public BigDecimal getR47_amount_2() {
 			return r47_amount_2;
 		}
 
-		public void setR47_amount_2(java.math.BigDecimal r47_amount_2) {
+		public void setR47_amount_2(BigDecimal r47_amount_2) {
 			this.r47_amount_2 = r47_amount_2;
 		}
 
@@ -5607,19 +5635,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r48_product = r48_product;
 		}
 
-		public java.math.BigDecimal getR48_amount_1() {
+		public BigDecimal getR48_amount_1() {
 			return r48_amount_1;
 		}
 
-		public void setR48_amount_1(java.math.BigDecimal r48_amount_1) {
+		public void setR48_amount_1(BigDecimal r48_amount_1) {
 			this.r48_amount_1 = r48_amount_1;
 		}
 
-		public java.math.BigDecimal getR48_amount_2() {
+		public BigDecimal getR48_amount_2() {
 			return r48_amount_2;
 		}
 
-		public void setR48_amount_2(java.math.BigDecimal r48_amount_2) {
+		public void setR48_amount_2(BigDecimal r48_amount_2) {
 			this.r48_amount_2 = r48_amount_2;
 		}
 
@@ -5631,19 +5659,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r49_product = r49_product;
 		}
 
-		public java.math.BigDecimal getR49_amount_1() {
+		public BigDecimal getR49_amount_1() {
 			return r49_amount_1;
 		}
 
-		public void setR49_amount_1(java.math.BigDecimal r49_amount_1) {
+		public void setR49_amount_1(BigDecimal r49_amount_1) {
 			this.r49_amount_1 = r49_amount_1;
 		}
 
-		public java.math.BigDecimal getR49_amount_2() {
+		public BigDecimal getR49_amount_2() {
 			return r49_amount_2;
 		}
 
-		public void setR49_amount_2(java.math.BigDecimal r49_amount_2) {
+		public void setR49_amount_2(BigDecimal r49_amount_2) {
 			this.r49_amount_2 = r49_amount_2;
 		}
 
@@ -5655,11 +5683,11 @@ public class BRRS_M_CA2_ReportService {
 			this.report_date = report_date;
 		}
 
-		public java.math.BigDecimal getReport_version() {
+		public BigDecimal getReport_version() {
 			return report_version;
 		}
 
-		public void setReport_version(java.math.BigDecimal report_version) {
+		public void setReport_version(BigDecimal report_version) {
 			this.report_version = report_version;
 		}
 
@@ -5838,103 +5866,103 @@ public class BRRS_M_CA2_ReportService {
 	// =========================================================
 	public static class M_CA2_RESUB_Summary_Entity {
 		private String r10_product;
-		private java.math.BigDecimal r10_amount_1;
-		private java.math.BigDecimal r10_amount_2;
+		private BigDecimal r10_amount_1;
+		private BigDecimal r10_amount_2;
 		private String r11_product;
-		private java.math.BigDecimal r11_amount_1;
-		private java.math.BigDecimal r11_amount_2;
+		private BigDecimal r11_amount_1;
+		private BigDecimal r11_amount_2;
 		private String r12_product;
-		private java.math.BigDecimal r12_amount_1;
-		private java.math.BigDecimal r12_amount_2;
+		private BigDecimal r12_amount_1;
+		private BigDecimal r12_amount_2;
 		private String r13_product;
-		private java.math.BigDecimal r13_amount_1;
-		private java.math.BigDecimal r13_amount_2;
+		private BigDecimal r13_amount_1;
+		private BigDecimal r13_amount_2;
 		private String r14_product;
-		private java.math.BigDecimal r14_amount_1;
-		private java.math.BigDecimal r14_amount_2;
+		private BigDecimal r14_amount_1;
+		private BigDecimal r14_amount_2;
 		private String r15_product;
-		private java.math.BigDecimal r15_amount_1;
-		private java.math.BigDecimal r15_amount_2;
+		private BigDecimal r15_amount_1;
+		private BigDecimal r15_amount_2;
 		private String r16_product;
-		private java.math.BigDecimal r16_amount_1;
-		private java.math.BigDecimal r16_amount_2;
+		private BigDecimal r16_amount_1;
+		private BigDecimal r16_amount_2;
 		private String r17_product;
-		private java.math.BigDecimal r17_amount_1;
-		private java.math.BigDecimal r17_amount_2;
+		private BigDecimal r17_amount_1;
+		private BigDecimal r17_amount_2;
 		private String r18_product;
-		private java.math.BigDecimal r18_amount_1;
-		private java.math.BigDecimal r18_amount_2;
+		private BigDecimal r18_amount_1;
+		private BigDecimal r18_amount_2;
 		private String r19_product;
-		private java.math.BigDecimal r19_amount_1;
-		private java.math.BigDecimal r19_amount_2;
+		private BigDecimal r19_amount_1;
+		private BigDecimal r19_amount_2;
 		private String r20_product;
-		private java.math.BigDecimal r20_amount_1;
-		private java.math.BigDecimal r20_amount_2;
+		private BigDecimal r20_amount_1;
+		private BigDecimal r20_amount_2;
 		private String r21_product;
-		private java.math.BigDecimal r21_amount_1;
-		private java.math.BigDecimal r21_amount_2;
+		private BigDecimal r21_amount_1;
+		private BigDecimal r21_amount_2;
 		private String r22_product;
-		private java.math.BigDecimal r22_amount_1;
-		private java.math.BigDecimal r22_amount_2;
+		private BigDecimal r22_amount_1;
+		private BigDecimal r22_amount_2;
 		private String r23_product;
-		private java.math.BigDecimal r23_amount_1;
-		private java.math.BigDecimal r23_amount_2;
+		private BigDecimal r23_amount_1;
+		private BigDecimal r23_amount_2;
 		private String r24_product;
-		private java.math.BigDecimal r24_amount_1;
-		private java.math.BigDecimal r24_amount_2;
+		private BigDecimal r24_amount_1;
+		private BigDecimal r24_amount_2;
 		private String r25_product;
-		private java.math.BigDecimal r25_amount_1;
-		private java.math.BigDecimal r25_amount_2;
+		private BigDecimal r25_amount_1;
+		private BigDecimal r25_amount_2;
 		private String r26_product;
-		private java.math.BigDecimal r26_amount_1;
-		private java.math.BigDecimal r26_amount_2;
+		private BigDecimal r26_amount_1;
+		private BigDecimal r26_amount_2;
 		private String r31_product;
-		private java.math.BigDecimal r31_amount_1;
-		private java.math.BigDecimal r31_amount_2;
+		private BigDecimal r31_amount_1;
+		private BigDecimal r31_amount_2;
 		private String r32_product;
-		private java.math.BigDecimal r32_amount_1;
-		private java.math.BigDecimal r32_amount_2;
+		private BigDecimal r32_amount_1;
+		private BigDecimal r32_amount_2;
 		private String r33_product;
-		private java.math.BigDecimal r33_amount_1;
-		private java.math.BigDecimal r33_amount_2;
+		private BigDecimal r33_amount_1;
+		private BigDecimal r33_amount_2;
 		private String r34_product;
-		private java.math.BigDecimal r34_amount_1;
-		private java.math.BigDecimal r34_amount_2;
+		private BigDecimal r34_amount_1;
+		private BigDecimal r34_amount_2;
 		private String r35_product;
-		private java.math.BigDecimal r35_amount_1;
-		private java.math.BigDecimal r35_amount_2;
+		private BigDecimal r35_amount_1;
+		private BigDecimal r35_amount_2;
 		private String r36_product;
-		private java.math.BigDecimal r36_amount_1;
-		private java.math.BigDecimal r36_amount_2;
+		private BigDecimal r36_amount_1;
+		private BigDecimal r36_amount_2;
 		private String r41_product;
-		private java.math.BigDecimal r41_amount_1;
-		private java.math.BigDecimal r41_amount_2;
+		private BigDecimal r41_amount_1;
+		private BigDecimal r41_amount_2;
 		private String r42_product;
-		private java.math.BigDecimal r42_amount_1;
-		private java.math.BigDecimal r42_amount_2;
+		private BigDecimal r42_amount_1;
+		private BigDecimal r42_amount_2;
 		private String r43_product;
-		private java.math.BigDecimal r43_amount_1;
-		private java.math.BigDecimal r43_amount_2;
+		private BigDecimal r43_amount_1;
+		private BigDecimal r43_amount_2;
 		private String r44_product;
-		private java.math.BigDecimal r44_amount_1;
-		private java.math.BigDecimal r44_amount_2;
+		private BigDecimal r44_amount_1;
+		private BigDecimal r44_amount_2;
 		private String r45_product;
-		private java.math.BigDecimal r45_amount_1;
-		private java.math.BigDecimal r45_amount_2;
+		private BigDecimal r45_amount_1;
+		private BigDecimal r45_amount_2;
 		private String r46_product;
-		private java.math.BigDecimal r46_amount_1;
-		private java.math.BigDecimal r46_amount_2;
+		private BigDecimal r46_amount_1;
+		private BigDecimal r46_amount_2;
 		private String r47_product;
-		private java.math.BigDecimal r47_amount_1;
-		private java.math.BigDecimal r47_amount_2;
+		private BigDecimal r47_amount_1;
+		private BigDecimal r47_amount_2;
 		private String r48_product;
-		private java.math.BigDecimal r48_amount_1;
-		private java.math.BigDecimal r48_amount_2;
+		private BigDecimal r48_amount_1;
+		private BigDecimal r48_amount_2;
 		private String r49_product;
-		private java.math.BigDecimal r49_amount_1;
-		private java.math.BigDecimal r49_amount_2;
+		private BigDecimal r49_amount_1;
+		private BigDecimal r49_amount_2;
 		private java.util.Date report_date;
-		private java.math.BigDecimal report_version;
+		private BigDecimal report_version;
 		private java.util.Date reportResubDate;
 		private String report_frequency;
 		private String report_code;
@@ -5951,19 +5979,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r10_product = r10_product;
 		}
 
-		public java.math.BigDecimal getR10_amount_1() {
+		public BigDecimal getR10_amount_1() {
 			return r10_amount_1;
 		}
 
-		public void setR10_amount_1(java.math.BigDecimal r10_amount_1) {
+		public void setR10_amount_1(BigDecimal r10_amount_1) {
 			this.r10_amount_1 = r10_amount_1;
 		}
 
-		public java.math.BigDecimal getR10_amount_2() {
+		public BigDecimal getR10_amount_2() {
 			return r10_amount_2;
 		}
 
-		public void setR10_amount_2(java.math.BigDecimal r10_amount_2) {
+		public void setR10_amount_2(BigDecimal r10_amount_2) {
 			this.r10_amount_2 = r10_amount_2;
 		}
 
@@ -5975,19 +6003,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r11_product = r11_product;
 		}
 
-		public java.math.BigDecimal getR11_amount_1() {
+		public BigDecimal getR11_amount_1() {
 			return r11_amount_1;
 		}
 
-		public void setR11_amount_1(java.math.BigDecimal r11_amount_1) {
+		public void setR11_amount_1(BigDecimal r11_amount_1) {
 			this.r11_amount_1 = r11_amount_1;
 		}
 
-		public java.math.BigDecimal getR11_amount_2() {
+		public BigDecimal getR11_amount_2() {
 			return r11_amount_2;
 		}
 
-		public void setR11_amount_2(java.math.BigDecimal r11_amount_2) {
+		public void setR11_amount_2(BigDecimal r11_amount_2) {
 			this.r11_amount_2 = r11_amount_2;
 		}
 
@@ -5999,19 +6027,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r12_product = r12_product;
 		}
 
-		public java.math.BigDecimal getR12_amount_1() {
+		public BigDecimal getR12_amount_1() {
 			return r12_amount_1;
 		}
 
-		public void setR12_amount_1(java.math.BigDecimal r12_amount_1) {
+		public void setR12_amount_1(BigDecimal r12_amount_1) {
 			this.r12_amount_1 = r12_amount_1;
 		}
 
-		public java.math.BigDecimal getR12_amount_2() {
+		public BigDecimal getR12_amount_2() {
 			return r12_amount_2;
 		}
 
-		public void setR12_amount_2(java.math.BigDecimal r12_amount_2) {
+		public void setR12_amount_2(BigDecimal r12_amount_2) {
 			this.r12_amount_2 = r12_amount_2;
 		}
 
@@ -6023,19 +6051,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r13_product = r13_product;
 		}
 
-		public java.math.BigDecimal getR13_amount_1() {
+		public BigDecimal getR13_amount_1() {
 			return r13_amount_1;
 		}
 
-		public void setR13_amount_1(java.math.BigDecimal r13_amount_1) {
+		public void setR13_amount_1(BigDecimal r13_amount_1) {
 			this.r13_amount_1 = r13_amount_1;
 		}
 
-		public java.math.BigDecimal getR13_amount_2() {
+		public BigDecimal getR13_amount_2() {
 			return r13_amount_2;
 		}
 
-		public void setR13_amount_2(java.math.BigDecimal r13_amount_2) {
+		public void setR13_amount_2(BigDecimal r13_amount_2) {
 			this.r13_amount_2 = r13_amount_2;
 		}
 
@@ -6047,19 +6075,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r14_product = r14_product;
 		}
 
-		public java.math.BigDecimal getR14_amount_1() {
+		public BigDecimal getR14_amount_1() {
 			return r14_amount_1;
 		}
 
-		public void setR14_amount_1(java.math.BigDecimal r14_amount_1) {
+		public void setR14_amount_1(BigDecimal r14_amount_1) {
 			this.r14_amount_1 = r14_amount_1;
 		}
 
-		public java.math.BigDecimal getR14_amount_2() {
+		public BigDecimal getR14_amount_2() {
 			return r14_amount_2;
 		}
 
-		public void setR14_amount_2(java.math.BigDecimal r14_amount_2) {
+		public void setR14_amount_2(BigDecimal r14_amount_2) {
 			this.r14_amount_2 = r14_amount_2;
 		}
 
@@ -6071,19 +6099,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r15_product = r15_product;
 		}
 
-		public java.math.BigDecimal getR15_amount_1() {
+		public BigDecimal getR15_amount_1() {
 			return r15_amount_1;
 		}
 
-		public void setR15_amount_1(java.math.BigDecimal r15_amount_1) {
+		public void setR15_amount_1(BigDecimal r15_amount_1) {
 			this.r15_amount_1 = r15_amount_1;
 		}
 
-		public java.math.BigDecimal getR15_amount_2() {
+		public BigDecimal getR15_amount_2() {
 			return r15_amount_2;
 		}
 
-		public void setR15_amount_2(java.math.BigDecimal r15_amount_2) {
+		public void setR15_amount_2(BigDecimal r15_amount_2) {
 			this.r15_amount_2 = r15_amount_2;
 		}
 
@@ -6095,19 +6123,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r16_product = r16_product;
 		}
 
-		public java.math.BigDecimal getR16_amount_1() {
+		public BigDecimal getR16_amount_1() {
 			return r16_amount_1;
 		}
 
-		public void setR16_amount_1(java.math.BigDecimal r16_amount_1) {
+		public void setR16_amount_1(BigDecimal r16_amount_1) {
 			this.r16_amount_1 = r16_amount_1;
 		}
 
-		public java.math.BigDecimal getR16_amount_2() {
+		public BigDecimal getR16_amount_2() {
 			return r16_amount_2;
 		}
 
-		public void setR16_amount_2(java.math.BigDecimal r16_amount_2) {
+		public void setR16_amount_2(BigDecimal r16_amount_2) {
 			this.r16_amount_2 = r16_amount_2;
 		}
 
@@ -6119,19 +6147,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r17_product = r17_product;
 		}
 
-		public java.math.BigDecimal getR17_amount_1() {
+		public BigDecimal getR17_amount_1() {
 			return r17_amount_1;
 		}
 
-		public void setR17_amount_1(java.math.BigDecimal r17_amount_1) {
+		public void setR17_amount_1(BigDecimal r17_amount_1) {
 			this.r17_amount_1 = r17_amount_1;
 		}
 
-		public java.math.BigDecimal getR17_amount_2() {
+		public BigDecimal getR17_amount_2() {
 			return r17_amount_2;
 		}
 
-		public void setR17_amount_2(java.math.BigDecimal r17_amount_2) {
+		public void setR17_amount_2(BigDecimal r17_amount_2) {
 			this.r17_amount_2 = r17_amount_2;
 		}
 
@@ -6143,19 +6171,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r18_product = r18_product;
 		}
 
-		public java.math.BigDecimal getR18_amount_1() {
+		public BigDecimal getR18_amount_1() {
 			return r18_amount_1;
 		}
 
-		public void setR18_amount_1(java.math.BigDecimal r18_amount_1) {
+		public void setR18_amount_1(BigDecimal r18_amount_1) {
 			this.r18_amount_1 = r18_amount_1;
 		}
 
-		public java.math.BigDecimal getR18_amount_2() {
+		public BigDecimal getR18_amount_2() {
 			return r18_amount_2;
 		}
 
-		public void setR18_amount_2(java.math.BigDecimal r18_amount_2) {
+		public void setR18_amount_2(BigDecimal r18_amount_2) {
 			this.r18_amount_2 = r18_amount_2;
 		}
 
@@ -6167,19 +6195,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r19_product = r19_product;
 		}
 
-		public java.math.BigDecimal getR19_amount_1() {
+		public BigDecimal getR19_amount_1() {
 			return r19_amount_1;
 		}
 
-		public void setR19_amount_1(java.math.BigDecimal r19_amount_1) {
+		public void setR19_amount_1(BigDecimal r19_amount_1) {
 			this.r19_amount_1 = r19_amount_1;
 		}
 
-		public java.math.BigDecimal getR19_amount_2() {
+		public BigDecimal getR19_amount_2() {
 			return r19_amount_2;
 		}
 
-		public void setR19_amount_2(java.math.BigDecimal r19_amount_2) {
+		public void setR19_amount_2(BigDecimal r19_amount_2) {
 			this.r19_amount_2 = r19_amount_2;
 		}
 
@@ -6191,19 +6219,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r20_product = r20_product;
 		}
 
-		public java.math.BigDecimal getR20_amount_1() {
+		public BigDecimal getR20_amount_1() {
 			return r20_amount_1;
 		}
 
-		public void setR20_amount_1(java.math.BigDecimal r20_amount_1) {
+		public void setR20_amount_1(BigDecimal r20_amount_1) {
 			this.r20_amount_1 = r20_amount_1;
 		}
 
-		public java.math.BigDecimal getR20_amount_2() {
+		public BigDecimal getR20_amount_2() {
 			return r20_amount_2;
 		}
 
-		public void setR20_amount_2(java.math.BigDecimal r20_amount_2) {
+		public void setR20_amount_2(BigDecimal r20_amount_2) {
 			this.r20_amount_2 = r20_amount_2;
 		}
 
@@ -6215,19 +6243,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r21_product = r21_product;
 		}
 
-		public java.math.BigDecimal getR21_amount_1() {
+		public BigDecimal getR21_amount_1() {
 			return r21_amount_1;
 		}
 
-		public void setR21_amount_1(java.math.BigDecimal r21_amount_1) {
+		public void setR21_amount_1(BigDecimal r21_amount_1) {
 			this.r21_amount_1 = r21_amount_1;
 		}
 
-		public java.math.BigDecimal getR21_amount_2() {
+		public BigDecimal getR21_amount_2() {
 			return r21_amount_2;
 		}
 
-		public void setR21_amount_2(java.math.BigDecimal r21_amount_2) {
+		public void setR21_amount_2(BigDecimal r21_amount_2) {
 			this.r21_amount_2 = r21_amount_2;
 		}
 
@@ -6239,19 +6267,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r22_product = r22_product;
 		}
 
-		public java.math.BigDecimal getR22_amount_1() {
+		public BigDecimal getR22_amount_1() {
 			return r22_amount_1;
 		}
 
-		public void setR22_amount_1(java.math.BigDecimal r22_amount_1) {
+		public void setR22_amount_1(BigDecimal r22_amount_1) {
 			this.r22_amount_1 = r22_amount_1;
 		}
 
-		public java.math.BigDecimal getR22_amount_2() {
+		public BigDecimal getR22_amount_2() {
 			return r22_amount_2;
 		}
 
-		public void setR22_amount_2(java.math.BigDecimal r22_amount_2) {
+		public void setR22_amount_2(BigDecimal r22_amount_2) {
 			this.r22_amount_2 = r22_amount_2;
 		}
 
@@ -6263,19 +6291,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r23_product = r23_product;
 		}
 
-		public java.math.BigDecimal getR23_amount_1() {
+		public BigDecimal getR23_amount_1() {
 			return r23_amount_1;
 		}
 
-		public void setR23_amount_1(java.math.BigDecimal r23_amount_1) {
+		public void setR23_amount_1(BigDecimal r23_amount_1) {
 			this.r23_amount_1 = r23_amount_1;
 		}
 
-		public java.math.BigDecimal getR23_amount_2() {
+		public BigDecimal getR23_amount_2() {
 			return r23_amount_2;
 		}
 
-		public void setR23_amount_2(java.math.BigDecimal r23_amount_2) {
+		public void setR23_amount_2(BigDecimal r23_amount_2) {
 			this.r23_amount_2 = r23_amount_2;
 		}
 
@@ -6287,19 +6315,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r24_product = r24_product;
 		}
 
-		public java.math.BigDecimal getR24_amount_1() {
+		public BigDecimal getR24_amount_1() {
 			return r24_amount_1;
 		}
 
-		public void setR24_amount_1(java.math.BigDecimal r24_amount_1) {
+		public void setR24_amount_1(BigDecimal r24_amount_1) {
 			this.r24_amount_1 = r24_amount_1;
 		}
 
-		public java.math.BigDecimal getR24_amount_2() {
+		public BigDecimal getR24_amount_2() {
 			return r24_amount_2;
 		}
 
-		public void setR24_amount_2(java.math.BigDecimal r24_amount_2) {
+		public void setR24_amount_2(BigDecimal r24_amount_2) {
 			this.r24_amount_2 = r24_amount_2;
 		}
 
@@ -6311,19 +6339,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r25_product = r25_product;
 		}
 
-		public java.math.BigDecimal getR25_amount_1() {
+		public BigDecimal getR25_amount_1() {
 			return r25_amount_1;
 		}
 
-		public void setR25_amount_1(java.math.BigDecimal r25_amount_1) {
+		public void setR25_amount_1(BigDecimal r25_amount_1) {
 			this.r25_amount_1 = r25_amount_1;
 		}
 
-		public java.math.BigDecimal getR25_amount_2() {
+		public BigDecimal getR25_amount_2() {
 			return r25_amount_2;
 		}
 
-		public void setR25_amount_2(java.math.BigDecimal r25_amount_2) {
+		public void setR25_amount_2(BigDecimal r25_amount_2) {
 			this.r25_amount_2 = r25_amount_2;
 		}
 
@@ -6335,19 +6363,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r26_product = r26_product;
 		}
 
-		public java.math.BigDecimal getR26_amount_1() {
+		public BigDecimal getR26_amount_1() {
 			return r26_amount_1;
 		}
 
-		public void setR26_amount_1(java.math.BigDecimal r26_amount_1) {
+		public void setR26_amount_1(BigDecimal r26_amount_1) {
 			this.r26_amount_1 = r26_amount_1;
 		}
 
-		public java.math.BigDecimal getR26_amount_2() {
+		public BigDecimal getR26_amount_2() {
 			return r26_amount_2;
 		}
 
-		public void setR26_amount_2(java.math.BigDecimal r26_amount_2) {
+		public void setR26_amount_2(BigDecimal r26_amount_2) {
 			this.r26_amount_2 = r26_amount_2;
 		}
 
@@ -6359,19 +6387,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r31_product = r31_product;
 		}
 
-		public java.math.BigDecimal getR31_amount_1() {
+		public BigDecimal getR31_amount_1() {
 			return r31_amount_1;
 		}
 
-		public void setR31_amount_1(java.math.BigDecimal r31_amount_1) {
+		public void setR31_amount_1(BigDecimal r31_amount_1) {
 			this.r31_amount_1 = r31_amount_1;
 		}
 
-		public java.math.BigDecimal getR31_amount_2() {
+		public BigDecimal getR31_amount_2() {
 			return r31_amount_2;
 		}
 
-		public void setR31_amount_2(java.math.BigDecimal r31_amount_2) {
+		public void setR31_amount_2(BigDecimal r31_amount_2) {
 			this.r31_amount_2 = r31_amount_2;
 		}
 
@@ -6383,19 +6411,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r32_product = r32_product;
 		}
 
-		public java.math.BigDecimal getR32_amount_1() {
+		public BigDecimal getR32_amount_1() {
 			return r32_amount_1;
 		}
 
-		public void setR32_amount_1(java.math.BigDecimal r32_amount_1) {
+		public void setR32_amount_1(BigDecimal r32_amount_1) {
 			this.r32_amount_1 = r32_amount_1;
 		}
 
-		public java.math.BigDecimal getR32_amount_2() {
+		public BigDecimal getR32_amount_2() {
 			return r32_amount_2;
 		}
 
-		public void setR32_amount_2(java.math.BigDecimal r32_amount_2) {
+		public void setR32_amount_2(BigDecimal r32_amount_2) {
 			this.r32_amount_2 = r32_amount_2;
 		}
 
@@ -6407,19 +6435,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r33_product = r33_product;
 		}
 
-		public java.math.BigDecimal getR33_amount_1() {
+		public BigDecimal getR33_amount_1() {
 			return r33_amount_1;
 		}
 
-		public void setR33_amount_1(java.math.BigDecimal r33_amount_1) {
+		public void setR33_amount_1(BigDecimal r33_amount_1) {
 			this.r33_amount_1 = r33_amount_1;
 		}
 
-		public java.math.BigDecimal getR33_amount_2() {
+		public BigDecimal getR33_amount_2() {
 			return r33_amount_2;
 		}
 
-		public void setR33_amount_2(java.math.BigDecimal r33_amount_2) {
+		public void setR33_amount_2(BigDecimal r33_amount_2) {
 			this.r33_amount_2 = r33_amount_2;
 		}
 
@@ -6431,19 +6459,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r34_product = r34_product;
 		}
 
-		public java.math.BigDecimal getR34_amount_1() {
+		public BigDecimal getR34_amount_1() {
 			return r34_amount_1;
 		}
 
-		public void setR34_amount_1(java.math.BigDecimal r34_amount_1) {
+		public void setR34_amount_1(BigDecimal r34_amount_1) {
 			this.r34_amount_1 = r34_amount_1;
 		}
 
-		public java.math.BigDecimal getR34_amount_2() {
+		public BigDecimal getR34_amount_2() {
 			return r34_amount_2;
 		}
 
-		public void setR34_amount_2(java.math.BigDecimal r34_amount_2) {
+		public void setR34_amount_2(BigDecimal r34_amount_2) {
 			this.r34_amount_2 = r34_amount_2;
 		}
 
@@ -6455,19 +6483,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r35_product = r35_product;
 		}
 
-		public java.math.BigDecimal getR35_amount_1() {
+		public BigDecimal getR35_amount_1() {
 			return r35_amount_1;
 		}
 
-		public void setR35_amount_1(java.math.BigDecimal r35_amount_1) {
+		public void setR35_amount_1(BigDecimal r35_amount_1) {
 			this.r35_amount_1 = r35_amount_1;
 		}
 
-		public java.math.BigDecimal getR35_amount_2() {
+		public BigDecimal getR35_amount_2() {
 			return r35_amount_2;
 		}
 
-		public void setR35_amount_2(java.math.BigDecimal r35_amount_2) {
+		public void setR35_amount_2(BigDecimal r35_amount_2) {
 			this.r35_amount_2 = r35_amount_2;
 		}
 
@@ -6479,19 +6507,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r36_product = r36_product;
 		}
 
-		public java.math.BigDecimal getR36_amount_1() {
+		public BigDecimal getR36_amount_1() {
 			return r36_amount_1;
 		}
 
-		public void setR36_amount_1(java.math.BigDecimal r36_amount_1) {
+		public void setR36_amount_1(BigDecimal r36_amount_1) {
 			this.r36_amount_1 = r36_amount_1;
 		}
 
-		public java.math.BigDecimal getR36_amount_2() {
+		public BigDecimal getR36_amount_2() {
 			return r36_amount_2;
 		}
 
-		public void setR36_amount_2(java.math.BigDecimal r36_amount_2) {
+		public void setR36_amount_2(BigDecimal r36_amount_2) {
 			this.r36_amount_2 = r36_amount_2;
 		}
 
@@ -6503,19 +6531,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r41_product = r41_product;
 		}
 
-		public java.math.BigDecimal getR41_amount_1() {
+		public BigDecimal getR41_amount_1() {
 			return r41_amount_1;
 		}
 
-		public void setR41_amount_1(java.math.BigDecimal r41_amount_1) {
+		public void setR41_amount_1(BigDecimal r41_amount_1) {
 			this.r41_amount_1 = r41_amount_1;
 		}
 
-		public java.math.BigDecimal getR41_amount_2() {
+		public BigDecimal getR41_amount_2() {
 			return r41_amount_2;
 		}
 
-		public void setR41_amount_2(java.math.BigDecimal r41_amount_2) {
+		public void setR41_amount_2(BigDecimal r41_amount_2) {
 			this.r41_amount_2 = r41_amount_2;
 		}
 
@@ -6527,19 +6555,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r42_product = r42_product;
 		}
 
-		public java.math.BigDecimal getR42_amount_1() {
+		public BigDecimal getR42_amount_1() {
 			return r42_amount_1;
 		}
 
-		public void setR42_amount_1(java.math.BigDecimal r42_amount_1) {
+		public void setR42_amount_1(BigDecimal r42_amount_1) {
 			this.r42_amount_1 = r42_amount_1;
 		}
 
-		public java.math.BigDecimal getR42_amount_2() {
+		public BigDecimal getR42_amount_2() {
 			return r42_amount_2;
 		}
 
-		public void setR42_amount_2(java.math.BigDecimal r42_amount_2) {
+		public void setR42_amount_2(BigDecimal r42_amount_2) {
 			this.r42_amount_2 = r42_amount_2;
 		}
 
@@ -6551,19 +6579,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r43_product = r43_product;
 		}
 
-		public java.math.BigDecimal getR43_amount_1() {
+		public BigDecimal getR43_amount_1() {
 			return r43_amount_1;
 		}
 
-		public void setR43_amount_1(java.math.BigDecimal r43_amount_1) {
+		public void setR43_amount_1(BigDecimal r43_amount_1) {
 			this.r43_amount_1 = r43_amount_1;
 		}
 
-		public java.math.BigDecimal getR43_amount_2() {
+		public BigDecimal getR43_amount_2() {
 			return r43_amount_2;
 		}
 
-		public void setR43_amount_2(java.math.BigDecimal r43_amount_2) {
+		public void setR43_amount_2(BigDecimal r43_amount_2) {
 			this.r43_amount_2 = r43_amount_2;
 		}
 
@@ -6575,19 +6603,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r44_product = r44_product;
 		}
 
-		public java.math.BigDecimal getR44_amount_1() {
+		public BigDecimal getR44_amount_1() {
 			return r44_amount_1;
 		}
 
-		public void setR44_amount_1(java.math.BigDecimal r44_amount_1) {
+		public void setR44_amount_1(BigDecimal r44_amount_1) {
 			this.r44_amount_1 = r44_amount_1;
 		}
 
-		public java.math.BigDecimal getR44_amount_2() {
+		public BigDecimal getR44_amount_2() {
 			return r44_amount_2;
 		}
 
-		public void setR44_amount_2(java.math.BigDecimal r44_amount_2) {
+		public void setR44_amount_2(BigDecimal r44_amount_2) {
 			this.r44_amount_2 = r44_amount_2;
 		}
 
@@ -6599,19 +6627,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r45_product = r45_product;
 		}
 
-		public java.math.BigDecimal getR45_amount_1() {
+		public BigDecimal getR45_amount_1() {
 			return r45_amount_1;
 		}
 
-		public void setR45_amount_1(java.math.BigDecimal r45_amount_1) {
+		public void setR45_amount_1(BigDecimal r45_amount_1) {
 			this.r45_amount_1 = r45_amount_1;
 		}
 
-		public java.math.BigDecimal getR45_amount_2() {
+		public BigDecimal getR45_amount_2() {
 			return r45_amount_2;
 		}
 
-		public void setR45_amount_2(java.math.BigDecimal r45_amount_2) {
+		public void setR45_amount_2(BigDecimal r45_amount_2) {
 			this.r45_amount_2 = r45_amount_2;
 		}
 
@@ -6623,19 +6651,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r46_product = r46_product;
 		}
 
-		public java.math.BigDecimal getR46_amount_1() {
+		public BigDecimal getR46_amount_1() {
 			return r46_amount_1;
 		}
 
-		public void setR46_amount_1(java.math.BigDecimal r46_amount_1) {
+		public void setR46_amount_1(BigDecimal r46_amount_1) {
 			this.r46_amount_1 = r46_amount_1;
 		}
 
-		public java.math.BigDecimal getR46_amount_2() {
+		public BigDecimal getR46_amount_2() {
 			return r46_amount_2;
 		}
 
-		public void setR46_amount_2(java.math.BigDecimal r46_amount_2) {
+		public void setR46_amount_2(BigDecimal r46_amount_2) {
 			this.r46_amount_2 = r46_amount_2;
 		}
 
@@ -6647,19 +6675,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r47_product = r47_product;
 		}
 
-		public java.math.BigDecimal getR47_amount_1() {
+		public BigDecimal getR47_amount_1() {
 			return r47_amount_1;
 		}
 
-		public void setR47_amount_1(java.math.BigDecimal r47_amount_1) {
+		public void setR47_amount_1(BigDecimal r47_amount_1) {
 			this.r47_amount_1 = r47_amount_1;
 		}
 
-		public java.math.BigDecimal getR47_amount_2() {
+		public BigDecimal getR47_amount_2() {
 			return r47_amount_2;
 		}
 
-		public void setR47_amount_2(java.math.BigDecimal r47_amount_2) {
+		public void setR47_amount_2(BigDecimal r47_amount_2) {
 			this.r47_amount_2 = r47_amount_2;
 		}
 
@@ -6671,19 +6699,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r48_product = r48_product;
 		}
 
-		public java.math.BigDecimal getR48_amount_1() {
+		public BigDecimal getR48_amount_1() {
 			return r48_amount_1;
 		}
 
-		public void setR48_amount_1(java.math.BigDecimal r48_amount_1) {
+		public void setR48_amount_1(BigDecimal r48_amount_1) {
 			this.r48_amount_1 = r48_amount_1;
 		}
 
-		public java.math.BigDecimal getR48_amount_2() {
+		public BigDecimal getR48_amount_2() {
 			return r48_amount_2;
 		}
 
-		public void setR48_amount_2(java.math.BigDecimal r48_amount_2) {
+		public void setR48_amount_2(BigDecimal r48_amount_2) {
 			this.r48_amount_2 = r48_amount_2;
 		}
 
@@ -6695,19 +6723,19 @@ public class BRRS_M_CA2_ReportService {
 			this.r49_product = r49_product;
 		}
 
-		public java.math.BigDecimal getR49_amount_1() {
+		public BigDecimal getR49_amount_1() {
 			return r49_amount_1;
 		}
 
-		public void setR49_amount_1(java.math.BigDecimal r49_amount_1) {
+		public void setR49_amount_1(BigDecimal r49_amount_1) {
 			this.r49_amount_1 = r49_amount_1;
 		}
 
-		public java.math.BigDecimal getR49_amount_2() {
+		public BigDecimal getR49_amount_2() {
 			return r49_amount_2;
 		}
 
-		public void setR49_amount_2(java.math.BigDecimal r49_amount_2) {
+		public void setR49_amount_2(BigDecimal r49_amount_2) {
 			this.r49_amount_2 = r49_amount_2;
 		}
 
@@ -6719,11 +6747,11 @@ public class BRRS_M_CA2_ReportService {
 			this.report_date = report_date;
 		}
 
-		public java.math.BigDecimal getReport_version() {
+		public BigDecimal getReport_version() {
 			return report_version;
 		}
 
-		public void setReport_version(java.math.BigDecimal report_version) {
+		public void setReport_version(BigDecimal report_version) {
 			this.report_version = report_version;
 		}
 
@@ -6911,11 +6939,11 @@ public class BRRS_M_CA2_ReportService {
 		private String reportAddlCriteria1;
 		private String reportAddlCriteria2;
 		private String reportAddlCriteria3;
-		private java.math.BigDecimal sanctionLimit;
+		private BigDecimal sanctionLimit;
 		private String reportRemarks;
 		private String modificationRemarks;
 		private String dataEntryVersion;
-		private java.math.BigDecimal acctBalanceInPula;
+		private BigDecimal acctBalanceInPula;
 		private java.util.Date reportDate;
 		private String reportName;
 		private String createUser;
@@ -7002,11 +7030,11 @@ public class BRRS_M_CA2_ReportService {
 			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
-		public java.math.BigDecimal getSanctionLimit() {
+		public BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+		public void setSanctionLimit(BigDecimal sanctionLimit) {
 			this.sanctionLimit = sanctionLimit;
 		}
 
@@ -7034,11 +7062,11 @@ public class BRRS_M_CA2_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public java.math.BigDecimal getAcctBalanceInPula() {
+		public BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
 			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
@@ -7196,11 +7224,11 @@ public class BRRS_M_CA2_ReportService {
 		private String reportAddlCriteria1;
 		private String reportAddlCriteria2;
 		private String reportAddlCriteria3;
-		private java.math.BigDecimal sanctionLimit;
+		private BigDecimal sanctionLimit;
 		private String reportRemarks;
 		private String modificationRemarks;
 		private String dataEntryVersion;
-		private java.math.BigDecimal acctBalanceInPula;
+		private BigDecimal acctBalanceInPula;
 		private java.util.Date reportDate;
 		private String reportName;
 		private String createUser;
@@ -7287,11 +7315,11 @@ public class BRRS_M_CA2_ReportService {
 			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
-		public java.math.BigDecimal getSanctionLimit() {
+		public BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+		public void setSanctionLimit(BigDecimal sanctionLimit) {
 			this.sanctionLimit = sanctionLimit;
 		}
 
@@ -7319,11 +7347,11 @@ public class BRRS_M_CA2_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public java.math.BigDecimal getAcctBalanceInPula() {
+		public BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
 			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
@@ -7479,11 +7507,11 @@ public class BRRS_M_CA2_ReportService {
 		private String reportAddlCriteria1;
 		private String reportAddlCriteria2;
 		private String reportAddlCriteria3;
-		private java.math.BigDecimal sanctionLimit;
+		private BigDecimal sanctionLimit;
 		private String reportRemarks;
 		private String modificationRemarks;
 		private String dataEntryVersion;
-		private java.math.BigDecimal acctBalanceInPula;
+		private BigDecimal acctBalanceInPula;
 		private java.util.Date reportDate;
 		private String reportName;
 		private String createUser;
@@ -7562,11 +7590,11 @@ public class BRRS_M_CA2_ReportService {
 			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
-		public java.math.BigDecimal getSanctionLimit() {
+		public BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+		public void setSanctionLimit(BigDecimal sanctionLimit) {
 			this.sanctionLimit = sanctionLimit;
 		}
 
@@ -7594,11 +7622,11 @@ public class BRRS_M_CA2_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public java.math.BigDecimal getAcctBalanceInPula() {
+		public BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
 			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
