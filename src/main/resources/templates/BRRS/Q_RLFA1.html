@@ -1279,7 +1279,7 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}" id="addRecord">Modify</button>
+							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1290,7 +1290,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${role != 'M'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
                      				 data-todate=${todate}, 
@@ -1302,7 +1302,7 @@ PURPOSE		: BRRS REPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${role != 'M'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
                      				 data-todate=${todate}, 

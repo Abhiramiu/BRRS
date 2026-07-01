@@ -820,7 +820,7 @@ function showdetails() {
 						
 						<button type="button" class="custom-tab-btn"
 							id="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != '') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},

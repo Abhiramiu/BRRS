@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -37,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.Q_LARADV_Archival_Detail_Entity;
@@ -45,6 +47,7 @@ import com.bornfire.brrs.entities.Q_LARADV_Detail_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.Q_LARADV_Summary_Entity;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -59,6 +62,9 @@ public class BRRS_Q_LARADV_ReportService {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	UserProfileRep userProfileRep;
+	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	// =========================================================
@@ -218,10 +224,16 @@ public class BRRS_Q_LARADV_ReportService {
 	// =========================================================
 
 	public ModelAndView getBRRS_Q_LARADV_View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
 		ModelAndView mv = new ModelAndView();
-
+		
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
+		
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;

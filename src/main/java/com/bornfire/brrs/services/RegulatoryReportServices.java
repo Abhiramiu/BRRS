@@ -471,7 +471,7 @@ public class RegulatoryReportServices {
 
 		case "Q_BRANCHNET":
 			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
+					dtltype, pageable, type, version,req,md);
 			break;
 
 		case "M_UNCONS_INVEST":
@@ -529,7 +529,7 @@ public class RegulatoryReportServices {
 
 		case "Q_LARADV":
 			repsummary = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_View(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
+					dtltype, pageable, type, version,req,md);
 			break;
 
 		case "M_OPTR":
@@ -543,7 +543,7 @@ public class RegulatoryReportServices {
 
 		case "Q_SMME_DEP":
 			repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 			break;
 
 		case "M_SRWA_12E":
@@ -907,7 +907,7 @@ public class RegulatoryReportServices {
 		case "Q_RLFA1":
 
 			repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 			break;
 
 		case "M_SRWA_12B":
@@ -1295,7 +1295,7 @@ public class RegulatoryReportServices {
 		case "Q_RLFA2":
 
 			repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 			break;
 
 		case "M_INT_RATES_FCA":
@@ -1582,7 +1582,7 @@ public class RegulatoryReportServices {
 
 		case "Q_STAFF":
 			repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+					pageable, type, version,req,md);
 			break;
 
 		case "FORMAT_III":
