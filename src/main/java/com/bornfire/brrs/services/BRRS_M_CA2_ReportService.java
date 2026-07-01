@@ -4883,840 +4883,840 @@ public class BRRS_M_CA2_ReportService {
 			return r10_product;
 		}
 
-		public void setR10_product(String v) {
-			r10_product = v;
+		public void setR10_product(String r10_product) {
+			this.r10_product = r10_product;
 		}
 
 		public java.math.BigDecimal getR10_amount_1() {
 			return r10_amount_1;
 		}
 
-		public void setR10_amount_1(java.math.BigDecimal v) {
-			r10_amount_1 = v;
+		public void setR10_amount_1(java.math.BigDecimal r10_amount_1) {
+			this.r10_amount_1 = r10_amount_1;
 		}
 
 		public java.math.BigDecimal getR10_amount_2() {
 			return r10_amount_2;
 		}
 
-		public void setR10_amount_2(java.math.BigDecimal v) {
-			r10_amount_2 = v;
+		public void setR10_amount_2(java.math.BigDecimal r10_amount_2) {
+			this.r10_amount_2 = r10_amount_2;
 		}
 
 		public String getR11_product() {
 			return r11_product;
 		}
 
-		public void setR11_product(String v) {
-			r11_product = v;
+		public void setR11_product(String r11_product) {
+			this.r11_product = r11_product;
 		}
 
 		public java.math.BigDecimal getR11_amount_1() {
 			return r11_amount_1;
 		}
 
-		public void setR11_amount_1(java.math.BigDecimal v) {
-			r11_amount_1 = v;
+		public void setR11_amount_1(java.math.BigDecimal r11_amount_1) {
+			this.r11_amount_1 = r11_amount_1;
 		}
 
 		public java.math.BigDecimal getR11_amount_2() {
 			return r11_amount_2;
 		}
 
-		public void setR11_amount_2(java.math.BigDecimal v) {
-			r11_amount_2 = v;
+		public void setR11_amount_2(java.math.BigDecimal r11_amount_2) {
+			this.r11_amount_2 = r11_amount_2;
 		}
 
 		public String getR12_product() {
 			return r12_product;
 		}
 
-		public void setR12_product(String v) {
-			r12_product = v;
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
 		}
 
 		public java.math.BigDecimal getR12_amount_1() {
 			return r12_amount_1;
 		}
 
-		public void setR12_amount_1(java.math.BigDecimal v) {
-			r12_amount_1 = v;
+		public void setR12_amount_1(java.math.BigDecimal r12_amount_1) {
+			this.r12_amount_1 = r12_amount_1;
 		}
 
 		public java.math.BigDecimal getR12_amount_2() {
 			return r12_amount_2;
 		}
 
-		public void setR12_amount_2(java.math.BigDecimal v) {
-			r12_amount_2 = v;
+		public void setR12_amount_2(java.math.BigDecimal r12_amount_2) {
+			this.r12_amount_2 = r12_amount_2;
 		}
 
 		public String getR13_product() {
 			return r13_product;
 		}
 
-		public void setR13_product(String v) {
-			r13_product = v;
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
 		}
 
 		public java.math.BigDecimal getR13_amount_1() {
 			return r13_amount_1;
 		}
 
-		public void setR13_amount_1(java.math.BigDecimal v) {
-			r13_amount_1 = v;
+		public void setR13_amount_1(java.math.BigDecimal r13_amount_1) {
+			this.r13_amount_1 = r13_amount_1;
 		}
 
 		public java.math.BigDecimal getR13_amount_2() {
 			return r13_amount_2;
 		}
 
-		public void setR13_amount_2(java.math.BigDecimal v) {
-			r13_amount_2 = v;
+		public void setR13_amount_2(java.math.BigDecimal r13_amount_2) {
+			this.r13_amount_2 = r13_amount_2;
 		}
 
 		public String getR14_product() {
 			return r14_product;
 		}
 
-		public void setR14_product(String v) {
-			r14_product = v;
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
 		}
 
 		public java.math.BigDecimal getR14_amount_1() {
 			return r14_amount_1;
 		}
 
-		public void setR14_amount_1(java.math.BigDecimal v) {
-			r14_amount_1 = v;
+		public void setR14_amount_1(java.math.BigDecimal r14_amount_1) {
+			this.r14_amount_1 = r14_amount_1;
 		}
 
 		public java.math.BigDecimal getR14_amount_2() {
 			return r14_amount_2;
 		}
 
-		public void setR14_amount_2(java.math.BigDecimal v) {
-			r14_amount_2 = v;
+		public void setR14_amount_2(java.math.BigDecimal r14_amount_2) {
+			this.r14_amount_2 = r14_amount_2;
 		}
 
 		public String getR15_product() {
 			return r15_product;
 		}
 
-		public void setR15_product(String v) {
-			r15_product = v;
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
 		}
 
 		public java.math.BigDecimal getR15_amount_1() {
 			return r15_amount_1;
 		}
 
-		public void setR15_amount_1(java.math.BigDecimal v) {
-			r15_amount_1 = v;
+		public void setR15_amount_1(java.math.BigDecimal r15_amount_1) {
+			this.r15_amount_1 = r15_amount_1;
 		}
 
 		public java.math.BigDecimal getR15_amount_2() {
 			return r15_amount_2;
 		}
 
-		public void setR15_amount_2(java.math.BigDecimal v) {
-			r15_amount_2 = v;
+		public void setR15_amount_2(java.math.BigDecimal r15_amount_2) {
+			this.r15_amount_2 = r15_amount_2;
 		}
 
 		public String getR16_product() {
 			return r16_product;
 		}
 
-		public void setR16_product(String v) {
-			r16_product = v;
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
 		}
 
 		public java.math.BigDecimal getR16_amount_1() {
 			return r16_amount_1;
 		}
 
-		public void setR16_amount_1(java.math.BigDecimal v) {
-			r16_amount_1 = v;
+		public void setR16_amount_1(java.math.BigDecimal r16_amount_1) {
+			this.r16_amount_1 = r16_amount_1;
 		}
 
 		public java.math.BigDecimal getR16_amount_2() {
 			return r16_amount_2;
 		}
 
-		public void setR16_amount_2(java.math.BigDecimal v) {
-			r16_amount_2 = v;
+		public void setR16_amount_2(java.math.BigDecimal r16_amount_2) {
+			this.r16_amount_2 = r16_amount_2;
 		}
 
 		public String getR17_product() {
 			return r17_product;
 		}
 
-		public void setR17_product(String v) {
-			r17_product = v;
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
 		}
 
 		public java.math.BigDecimal getR17_amount_1() {
 			return r17_amount_1;
 		}
 
-		public void setR17_amount_1(java.math.BigDecimal v) {
-			r17_amount_1 = v;
+		public void setR17_amount_1(java.math.BigDecimal r17_amount_1) {
+			this.r17_amount_1 = r17_amount_1;
 		}
 
 		public java.math.BigDecimal getR17_amount_2() {
 			return r17_amount_2;
 		}
 
-		public void setR17_amount_2(java.math.BigDecimal v) {
-			r17_amount_2 = v;
+		public void setR17_amount_2(java.math.BigDecimal r17_amount_2) {
+			this.r17_amount_2 = r17_amount_2;
 		}
 
 		public String getR18_product() {
 			return r18_product;
 		}
 
-		public void setR18_product(String v) {
-			r18_product = v;
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
 		}
 
 		public java.math.BigDecimal getR18_amount_1() {
 			return r18_amount_1;
 		}
 
-		public void setR18_amount_1(java.math.BigDecimal v) {
-			r18_amount_1 = v;
+		public void setR18_amount_1(java.math.BigDecimal r18_amount_1) {
+			this.r18_amount_1 = r18_amount_1;
 		}
 
 		public java.math.BigDecimal getR18_amount_2() {
 			return r18_amount_2;
 		}
 
-		public void setR18_amount_2(java.math.BigDecimal v) {
-			r18_amount_2 = v;
+		public void setR18_amount_2(java.math.BigDecimal r18_amount_2) {
+			this.r18_amount_2 = r18_amount_2;
 		}
 
 		public String getR19_product() {
 			return r19_product;
 		}
 
-		public void setR19_product(String v) {
-			r19_product = v;
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
 		}
 
 		public java.math.BigDecimal getR19_amount_1() {
 			return r19_amount_1;
 		}
 
-		public void setR19_amount_1(java.math.BigDecimal v) {
-			r19_amount_1 = v;
+		public void setR19_amount_1(java.math.BigDecimal r19_amount_1) {
+			this.r19_amount_1 = r19_amount_1;
 		}
 
 		public java.math.BigDecimal getR19_amount_2() {
 			return r19_amount_2;
 		}
 
-		public void setR19_amount_2(java.math.BigDecimal v) {
-			r19_amount_2 = v;
+		public void setR19_amount_2(java.math.BigDecimal r19_amount_2) {
+			this.r19_amount_2 = r19_amount_2;
 		}
 
 		public String getR20_product() {
 			return r20_product;
 		}
 
-		public void setR20_product(String v) {
-			r20_product = v;
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
 		}
 
 		public java.math.BigDecimal getR20_amount_1() {
 			return r20_amount_1;
 		}
 
-		public void setR20_amount_1(java.math.BigDecimal v) {
-			r20_amount_1 = v;
+		public void setR20_amount_1(java.math.BigDecimal r20_amount_1) {
+			this.r20_amount_1 = r20_amount_1;
 		}
 
 		public java.math.BigDecimal getR20_amount_2() {
 			return r20_amount_2;
 		}
 
-		public void setR20_amount_2(java.math.BigDecimal v) {
-			r20_amount_2 = v;
+		public void setR20_amount_2(java.math.BigDecimal r20_amount_2) {
+			this.r20_amount_2 = r20_amount_2;
 		}
 
 		public String getR21_product() {
 			return r21_product;
 		}
 
-		public void setR21_product(String v) {
-			r21_product = v;
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
 		}
 
 		public java.math.BigDecimal getR21_amount_1() {
 			return r21_amount_1;
 		}
 
-		public void setR21_amount_1(java.math.BigDecimal v) {
-			r21_amount_1 = v;
+		public void setR21_amount_1(java.math.BigDecimal r21_amount_1) {
+			this.r21_amount_1 = r21_amount_1;
 		}
 
 		public java.math.BigDecimal getR21_amount_2() {
 			return r21_amount_2;
 		}
 
-		public void setR21_amount_2(java.math.BigDecimal v) {
-			r21_amount_2 = v;
+		public void setR21_amount_2(java.math.BigDecimal r21_amount_2) {
+			this.r21_amount_2 = r21_amount_2;
 		}
 
 		public String getR22_product() {
 			return r22_product;
 		}
 
-		public void setR22_product(String v) {
-			r22_product = v;
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
 		}
 
 		public java.math.BigDecimal getR22_amount_1() {
 			return r22_amount_1;
 		}
 
-		public void setR22_amount_1(java.math.BigDecimal v) {
-			r22_amount_1 = v;
+		public void setR22_amount_1(java.math.BigDecimal r22_amount_1) {
+			this.r22_amount_1 = r22_amount_1;
 		}
 
 		public java.math.BigDecimal getR22_amount_2() {
 			return r22_amount_2;
 		}
 
-		public void setR22_amount_2(java.math.BigDecimal v) {
-			r22_amount_2 = v;
+		public void setR22_amount_2(java.math.BigDecimal r22_amount_2) {
+			this.r22_amount_2 = r22_amount_2;
 		}
 
 		public String getR23_product() {
 			return r23_product;
 		}
 
-		public void setR23_product(String v) {
-			r23_product = v;
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
 		}
 
 		public java.math.BigDecimal getR23_amount_1() {
 			return r23_amount_1;
 		}
 
-		public void setR23_amount_1(java.math.BigDecimal v) {
-			r23_amount_1 = v;
+		public void setR23_amount_1(java.math.BigDecimal r23_amount_1) {
+			this.r23_amount_1 = r23_amount_1;
 		}
 
 		public java.math.BigDecimal getR23_amount_2() {
 			return r23_amount_2;
 		}
 
-		public void setR23_amount_2(java.math.BigDecimal v) {
-			r23_amount_2 = v;
+		public void setR23_amount_2(java.math.BigDecimal r23_amount_2) {
+			this.r23_amount_2 = r23_amount_2;
 		}
 
 		public String getR24_product() {
 			return r24_product;
 		}
 
-		public void setR24_product(String v) {
-			r24_product = v;
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
 		}
 
 		public java.math.BigDecimal getR24_amount_1() {
 			return r24_amount_1;
 		}
 
-		public void setR24_amount_1(java.math.BigDecimal v) {
-			r24_amount_1 = v;
+		public void setR24_amount_1(java.math.BigDecimal r24_amount_1) {
+			this.r24_amount_1 = r24_amount_1;
 		}
 
 		public java.math.BigDecimal getR24_amount_2() {
 			return r24_amount_2;
 		}
 
-		public void setR24_amount_2(java.math.BigDecimal v) {
-			r24_amount_2 = v;
+		public void setR24_amount_2(java.math.BigDecimal r24_amount_2) {
+			this.r24_amount_2 = r24_amount_2;
 		}
 
 		public String getR25_product() {
 			return r25_product;
 		}
 
-		public void setR25_product(String v) {
-			r25_product = v;
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
 		}
 
 		public java.math.BigDecimal getR25_amount_1() {
 			return r25_amount_1;
 		}
 
-		public void setR25_amount_1(java.math.BigDecimal v) {
-			r25_amount_1 = v;
+		public void setR25_amount_1(java.math.BigDecimal r25_amount_1) {
+			this.r25_amount_1 = r25_amount_1;
 		}
 
 		public java.math.BigDecimal getR25_amount_2() {
 			return r25_amount_2;
 		}
 
-		public void setR25_amount_2(java.math.BigDecimal v) {
-			r25_amount_2 = v;
+		public void setR25_amount_2(java.math.BigDecimal r25_amount_2) {
+			this.r25_amount_2 = r25_amount_2;
 		}
 
 		public String getR26_product() {
 			return r26_product;
 		}
 
-		public void setR26_product(String v) {
-			r26_product = v;
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
 		}
 
 		public java.math.BigDecimal getR26_amount_1() {
 			return r26_amount_1;
 		}
 
-		public void setR26_amount_1(java.math.BigDecimal v) {
-			r26_amount_1 = v;
+		public void setR26_amount_1(java.math.BigDecimal r26_amount_1) {
+			this.r26_amount_1 = r26_amount_1;
 		}
 
 		public java.math.BigDecimal getR26_amount_2() {
 			return r26_amount_2;
 		}
 
-		public void setR26_amount_2(java.math.BigDecimal v) {
-			r26_amount_2 = v;
+		public void setR26_amount_2(java.math.BigDecimal r26_amount_2) {
+			this.r26_amount_2 = r26_amount_2;
 		}
 
 		public String getR31_product() {
 			return r31_product;
 		}
 
-		public void setR31_product(String v) {
-			r31_product = v;
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
 		}
 
 		public java.math.BigDecimal getR31_amount_1() {
 			return r31_amount_1;
 		}
 
-		public void setR31_amount_1(java.math.BigDecimal v) {
-			r31_amount_1 = v;
+		public void setR31_amount_1(java.math.BigDecimal r31_amount_1) {
+			this.r31_amount_1 = r31_amount_1;
 		}
 
 		public java.math.BigDecimal getR31_amount_2() {
 			return r31_amount_2;
 		}
 
-		public void setR31_amount_2(java.math.BigDecimal v) {
-			r31_amount_2 = v;
+		public void setR31_amount_2(java.math.BigDecimal r31_amount_2) {
+			this.r31_amount_2 = r31_amount_2;
 		}
 
 		public String getR32_product() {
 			return r32_product;
 		}
 
-		public void setR32_product(String v) {
-			r32_product = v;
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
 		}
 
 		public java.math.BigDecimal getR32_amount_1() {
 			return r32_amount_1;
 		}
 
-		public void setR32_amount_1(java.math.BigDecimal v) {
-			r32_amount_1 = v;
+		public void setR32_amount_1(java.math.BigDecimal r32_amount_1) {
+			this.r32_amount_1 = r32_amount_1;
 		}
 
 		public java.math.BigDecimal getR32_amount_2() {
 			return r32_amount_2;
 		}
 
-		public void setR32_amount_2(java.math.BigDecimal v) {
-			r32_amount_2 = v;
+		public void setR32_amount_2(java.math.BigDecimal r32_amount_2) {
+			this.r32_amount_2 = r32_amount_2;
 		}
 
 		public String getR33_product() {
 			return r33_product;
 		}
 
-		public void setR33_product(String v) {
-			r33_product = v;
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
 		}
 
 		public java.math.BigDecimal getR33_amount_1() {
 			return r33_amount_1;
 		}
 
-		public void setR33_amount_1(java.math.BigDecimal v) {
-			r33_amount_1 = v;
+		public void setR33_amount_1(java.math.BigDecimal r33_amount_1) {
+			this.r33_amount_1 = r33_amount_1;
 		}
 
 		public java.math.BigDecimal getR33_amount_2() {
 			return r33_amount_2;
 		}
 
-		public void setR33_amount_2(java.math.BigDecimal v) {
-			r33_amount_2 = v;
+		public void setR33_amount_2(java.math.BigDecimal r33_amount_2) {
+			this.r33_amount_2 = r33_amount_2;
 		}
 
 		public String getR34_product() {
 			return r34_product;
 		}
 
-		public void setR34_product(String v) {
-			r34_product = v;
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
 		}
 
 		public java.math.BigDecimal getR34_amount_1() {
 			return r34_amount_1;
 		}
 
-		public void setR34_amount_1(java.math.BigDecimal v) {
-			r34_amount_1 = v;
+		public void setR34_amount_1(java.math.BigDecimal r34_amount_1) {
+			this.r34_amount_1 = r34_amount_1;
 		}
 
 		public java.math.BigDecimal getR34_amount_2() {
 			return r34_amount_2;
 		}
 
-		public void setR34_amount_2(java.math.BigDecimal v) {
-			r34_amount_2 = v;
+		public void setR34_amount_2(java.math.BigDecimal r34_amount_2) {
+			this.r34_amount_2 = r34_amount_2;
 		}
 
 		public String getR35_product() {
 			return r35_product;
 		}
 
-		public void setR35_product(String v) {
-			r35_product = v;
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
 		}
 
 		public java.math.BigDecimal getR35_amount_1() {
 			return r35_amount_1;
 		}
 
-		public void setR35_amount_1(java.math.BigDecimal v) {
-			r35_amount_1 = v;
+		public void setR35_amount_1(java.math.BigDecimal r35_amount_1) {
+			this.r35_amount_1 = r35_amount_1;
 		}
 
 		public java.math.BigDecimal getR35_amount_2() {
 			return r35_amount_2;
 		}
 
-		public void setR35_amount_2(java.math.BigDecimal v) {
-			r35_amount_2 = v;
+		public void setR35_amount_2(java.math.BigDecimal r35_amount_2) {
+			this.r35_amount_2 = r35_amount_2;
 		}
 
 		public String getR36_product() {
 			return r36_product;
 		}
 
-		public void setR36_product(String v) {
-			r36_product = v;
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
 		}
 
 		public java.math.BigDecimal getR36_amount_1() {
 			return r36_amount_1;
 		}
 
-		public void setR36_amount_1(java.math.BigDecimal v) {
-			r36_amount_1 = v;
+		public void setR36_amount_1(java.math.BigDecimal r36_amount_1) {
+			this.r36_amount_1 = r36_amount_1;
 		}
 
 		public java.math.BigDecimal getR36_amount_2() {
 			return r36_amount_2;
 		}
 
-		public void setR36_amount_2(java.math.BigDecimal v) {
-			r36_amount_2 = v;
+		public void setR36_amount_2(java.math.BigDecimal r36_amount_2) {
+			this.r36_amount_2 = r36_amount_2;
 		}
 
 		public String getR41_product() {
 			return r41_product;
 		}
 
-		public void setR41_product(String v) {
-			r41_product = v;
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
 		}
 
 		public java.math.BigDecimal getR41_amount_1() {
 			return r41_amount_1;
 		}
 
-		public void setR41_amount_1(java.math.BigDecimal v) {
-			r41_amount_1 = v;
+		public void setR41_amount_1(java.math.BigDecimal r41_amount_1) {
+			this.r41_amount_1 = r41_amount_1;
 		}
 
 		public java.math.BigDecimal getR41_amount_2() {
 			return r41_amount_2;
 		}
 
-		public void setR41_amount_2(java.math.BigDecimal v) {
-			r41_amount_2 = v;
+		public void setR41_amount_2(java.math.BigDecimal r41_amount_2) {
+			this.r41_amount_2 = r41_amount_2;
 		}
 
 		public String getR42_product() {
 			return r42_product;
 		}
 
-		public void setR42_product(String v) {
-			r42_product = v;
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
 		}
 
 		public java.math.BigDecimal getR42_amount_1() {
 			return r42_amount_1;
 		}
 
-		public void setR42_amount_1(java.math.BigDecimal v) {
-			r42_amount_1 = v;
+		public void setR42_amount_1(java.math.BigDecimal r42_amount_1) {
+			this.r42_amount_1 = r42_amount_1;
 		}
 
 		public java.math.BigDecimal getR42_amount_2() {
 			return r42_amount_2;
 		}
 
-		public void setR42_amount_2(java.math.BigDecimal v) {
-			r42_amount_2 = v;
+		public void setR42_amount_2(java.math.BigDecimal r42_amount_2) {
+			this.r42_amount_2 = r42_amount_2;
 		}
 
 		public String getR43_product() {
 			return r43_product;
 		}
 
-		public void setR43_product(String v) {
-			r43_product = v;
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
 		}
 
 		public java.math.BigDecimal getR43_amount_1() {
 			return r43_amount_1;
 		}
 
-		public void setR43_amount_1(java.math.BigDecimal v) {
-			r43_amount_1 = v;
+		public void setR43_amount_1(java.math.BigDecimal r43_amount_1) {
+			this.r43_amount_1 = r43_amount_1;
 		}
 
 		public java.math.BigDecimal getR43_amount_2() {
 			return r43_amount_2;
 		}
 
-		public void setR43_amount_2(java.math.BigDecimal v) {
-			r43_amount_2 = v;
+		public void setR43_amount_2(java.math.BigDecimal r43_amount_2) {
+			this.r43_amount_2 = r43_amount_2;
 		}
 
 		public String getR44_product() {
 			return r44_product;
 		}
 
-		public void setR44_product(String v) {
-			r44_product = v;
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
 		}
 
 		public java.math.BigDecimal getR44_amount_1() {
 			return r44_amount_1;
 		}
 
-		public void setR44_amount_1(java.math.BigDecimal v) {
-			r44_amount_1 = v;
+		public void setR44_amount_1(java.math.BigDecimal r44_amount_1) {
+			this.r44_amount_1 = r44_amount_1;
 		}
 
 		public java.math.BigDecimal getR44_amount_2() {
 			return r44_amount_2;
 		}
 
-		public void setR44_amount_2(java.math.BigDecimal v) {
-			r44_amount_2 = v;
+		public void setR44_amount_2(java.math.BigDecimal r44_amount_2) {
+			this.r44_amount_2 = r44_amount_2;
 		}
 
 		public String getR45_product() {
 			return r45_product;
 		}
 
-		public void setR45_product(String v) {
-			r45_product = v;
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
 		}
 
 		public java.math.BigDecimal getR45_amount_1() {
 			return r45_amount_1;
 		}
 
-		public void setR45_amount_1(java.math.BigDecimal v) {
-			r45_amount_1 = v;
+		public void setR45_amount_1(java.math.BigDecimal r45_amount_1) {
+			this.r45_amount_1 = r45_amount_1;
 		}
 
 		public java.math.BigDecimal getR45_amount_2() {
 			return r45_amount_2;
 		}
 
-		public void setR45_amount_2(java.math.BigDecimal v) {
-			r45_amount_2 = v;
+		public void setR45_amount_2(java.math.BigDecimal r45_amount_2) {
+			this.r45_amount_2 = r45_amount_2;
 		}
 
 		public String getR46_product() {
 			return r46_product;
 		}
 
-		public void setR46_product(String v) {
-			r46_product = v;
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
 		}
 
 		public java.math.BigDecimal getR46_amount_1() {
 			return r46_amount_1;
 		}
 
-		public void setR46_amount_1(java.math.BigDecimal v) {
-			r46_amount_1 = v;
+		public void setR46_amount_1(java.math.BigDecimal r46_amount_1) {
+			this.r46_amount_1 = r46_amount_1;
 		}
 
 		public java.math.BigDecimal getR46_amount_2() {
 			return r46_amount_2;
 		}
 
-		public void setR46_amount_2(java.math.BigDecimal v) {
-			r46_amount_2 = v;
+		public void setR46_amount_2(java.math.BigDecimal r46_amount_2) {
+			this.r46_amount_2 = r46_amount_2;
 		}
 
 		public String getR47_product() {
 			return r47_product;
 		}
 
-		public void setR47_product(String v) {
-			r47_product = v;
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
 		}
 
 		public java.math.BigDecimal getR47_amount_1() {
 			return r47_amount_1;
 		}
 
-		public void setR47_amount_1(java.math.BigDecimal v) {
-			r47_amount_1 = v;
+		public void setR47_amount_1(java.math.BigDecimal r47_amount_1) {
+			this.r47_amount_1 = r47_amount_1;
 		}
 
 		public java.math.BigDecimal getR47_amount_2() {
 			return r47_amount_2;
 		}
 
-		public void setR47_amount_2(java.math.BigDecimal v) {
-			r47_amount_2 = v;
+		public void setR47_amount_2(java.math.BigDecimal r47_amount_2) {
+			this.r47_amount_2 = r47_amount_2;
 		}
 
 		public String getR48_product() {
 			return r48_product;
 		}
 
-		public void setR48_product(String v) {
-			r48_product = v;
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
 		}
 
 		public java.math.BigDecimal getR48_amount_1() {
 			return r48_amount_1;
 		}
 
-		public void setR48_amount_1(java.math.BigDecimal v) {
-			r48_amount_1 = v;
+		public void setR48_amount_1(java.math.BigDecimal r48_amount_1) {
+			this.r48_amount_1 = r48_amount_1;
 		}
 
 		public java.math.BigDecimal getR48_amount_2() {
 			return r48_amount_2;
 		}
 
-		public void setR48_amount_2(java.math.BigDecimal v) {
-			r48_amount_2 = v;
+		public void setR48_amount_2(java.math.BigDecimal r48_amount_2) {
+			this.r48_amount_2 = r48_amount_2;
 		}
 
 		public String getR49_product() {
 			return r49_product;
 		}
 
-		public void setR49_product(String v) {
-			r49_product = v;
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
 		}
 
 		public java.math.BigDecimal getR49_amount_1() {
 			return r49_amount_1;
 		}
 
-		public void setR49_amount_1(java.math.BigDecimal v) {
-			r49_amount_1 = v;
+		public void setR49_amount_1(java.math.BigDecimal r49_amount_1) {
+			this.r49_amount_1 = r49_amount_1;
 		}
 
 		public java.math.BigDecimal getR49_amount_2() {
 			return r49_amount_2;
 		}
 
-		public void setR49_amount_2(java.math.BigDecimal v) {
-			r49_amount_2 = v;
+		public void setR49_amount_2(java.math.BigDecimal r49_amount_2) {
+			this.r49_amount_2 = r49_amount_2;
 		}
 
 		public java.util.Date getReport_date() {
 			return report_date;
 		}
 
-		public void setReport_date(java.util.Date v) {
-			report_date = v;
+		public void setReport_date(java.util.Date report_date) {
+			this.report_date = report_date;
 		}
 
 		public java.math.BigDecimal getReport_version() {
 			return report_version;
 		}
 
-		public void setReport_version(java.math.BigDecimal v) {
-			report_version = v;
+		public void setReport_version(java.math.BigDecimal report_version) {
+			this.report_version = report_version;
 		}
 
 		public java.util.Date getReportResubDate() {
 			return reportResubDate;
 		}
 
-		public void setReportResubDate(java.util.Date v) {
-			reportResubDate = v;
+		public void setReportResubDate(java.util.Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
 		}
 
 		public String getReport_frequency() {
 			return report_frequency;
 		}
 
-		public void setReport_frequency(String v) {
-			report_frequency = v;
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
 		}
 
 		public String getReport_code() {
 			return report_code;
 		}
 
-		public void setReport_code(String v) {
-			report_code = v;
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
 		}
 
 		public String getReport_desc() {
 			return report_desc;
 		}
 
-		public void setReport_desc(String v) {
-			report_desc = v;
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
 		}
 
 		public String getEntity_flg() {
 			return entity_flg;
 		}
 
-		public void setEntity_flg(String v) {
-			entity_flg = v;
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
 		}
 
 		public String getModify_flg() {
 			return modify_flg;
 		}
 
-		public void setModify_flg(String v) {
-			modify_flg = v;
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
 		}
 
 		public String getDel_flg() {
 			return del_flg;
 		}
 
-		public void setDel_flg(String v) {
-			del_flg = v;
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
 		}
 	}
 
@@ -5947,840 +5947,840 @@ public class BRRS_M_CA2_ReportService {
 			return r10_product;
 		}
 
-		public void setR10_product(String v) {
-			r10_product = v;
+		public void setR10_product(String r10_product) {
+			this.r10_product = r10_product;
 		}
 
 		public java.math.BigDecimal getR10_amount_1() {
 			return r10_amount_1;
 		}
 
-		public void setR10_amount_1(java.math.BigDecimal v) {
-			r10_amount_1 = v;
+		public void setR10_amount_1(java.math.BigDecimal r10_amount_1) {
+			this.r10_amount_1 = r10_amount_1;
 		}
 
 		public java.math.BigDecimal getR10_amount_2() {
 			return r10_amount_2;
 		}
 
-		public void setR10_amount_2(java.math.BigDecimal v) {
-			r10_amount_2 = v;
+		public void setR10_amount_2(java.math.BigDecimal r10_amount_2) {
+			this.r10_amount_2 = r10_amount_2;
 		}
 
 		public String getR11_product() {
 			return r11_product;
 		}
 
-		public void setR11_product(String v) {
-			r11_product = v;
+		public void setR11_product(String r11_product) {
+			this.r11_product = r11_product;
 		}
 
 		public java.math.BigDecimal getR11_amount_1() {
 			return r11_amount_1;
 		}
 
-		public void setR11_amount_1(java.math.BigDecimal v) {
-			r11_amount_1 = v;
+		public void setR11_amount_1(java.math.BigDecimal r11_amount_1) {
+			this.r11_amount_1 = r11_amount_1;
 		}
 
 		public java.math.BigDecimal getR11_amount_2() {
 			return r11_amount_2;
 		}
 
-		public void setR11_amount_2(java.math.BigDecimal v) {
-			r11_amount_2 = v;
+		public void setR11_amount_2(java.math.BigDecimal r11_amount_2) {
+			this.r11_amount_2 = r11_amount_2;
 		}
 
 		public String getR12_product() {
 			return r12_product;
 		}
 
-		public void setR12_product(String v) {
-			r12_product = v;
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
 		}
 
 		public java.math.BigDecimal getR12_amount_1() {
 			return r12_amount_1;
 		}
 
-		public void setR12_amount_1(java.math.BigDecimal v) {
-			r12_amount_1 = v;
+		public void setR12_amount_1(java.math.BigDecimal r12_amount_1) {
+			this.r12_amount_1 = r12_amount_1;
 		}
 
 		public java.math.BigDecimal getR12_amount_2() {
 			return r12_amount_2;
 		}
 
-		public void setR12_amount_2(java.math.BigDecimal v) {
-			r12_amount_2 = v;
+		public void setR12_amount_2(java.math.BigDecimal r12_amount_2) {
+			this.r12_amount_2 = r12_amount_2;
 		}
 
 		public String getR13_product() {
 			return r13_product;
 		}
 
-		public void setR13_product(String v) {
-			r13_product = v;
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
 		}
 
 		public java.math.BigDecimal getR13_amount_1() {
 			return r13_amount_1;
 		}
 
-		public void setR13_amount_1(java.math.BigDecimal v) {
-			r13_amount_1 = v;
+		public void setR13_amount_1(java.math.BigDecimal r13_amount_1) {
+			this.r13_amount_1 = r13_amount_1;
 		}
 
 		public java.math.BigDecimal getR13_amount_2() {
 			return r13_amount_2;
 		}
 
-		public void setR13_amount_2(java.math.BigDecimal v) {
-			r13_amount_2 = v;
+		public void setR13_amount_2(java.math.BigDecimal r13_amount_2) {
+			this.r13_amount_2 = r13_amount_2;
 		}
 
 		public String getR14_product() {
 			return r14_product;
 		}
 
-		public void setR14_product(String v) {
-			r14_product = v;
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
 		}
 
 		public java.math.BigDecimal getR14_amount_1() {
 			return r14_amount_1;
 		}
 
-		public void setR14_amount_1(java.math.BigDecimal v) {
-			r14_amount_1 = v;
+		public void setR14_amount_1(java.math.BigDecimal r14_amount_1) {
+			this.r14_amount_1 = r14_amount_1;
 		}
 
 		public java.math.BigDecimal getR14_amount_2() {
 			return r14_amount_2;
 		}
 
-		public void setR14_amount_2(java.math.BigDecimal v) {
-			r14_amount_2 = v;
+		public void setR14_amount_2(java.math.BigDecimal r14_amount_2) {
+			this.r14_amount_2 = r14_amount_2;
 		}
 
 		public String getR15_product() {
 			return r15_product;
 		}
 
-		public void setR15_product(String v) {
-			r15_product = v;
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
 		}
 
 		public java.math.BigDecimal getR15_amount_1() {
 			return r15_amount_1;
 		}
 
-		public void setR15_amount_1(java.math.BigDecimal v) {
-			r15_amount_1 = v;
+		public void setR15_amount_1(java.math.BigDecimal r15_amount_1) {
+			this.r15_amount_1 = r15_amount_1;
 		}
 
 		public java.math.BigDecimal getR15_amount_2() {
 			return r15_amount_2;
 		}
 
-		public void setR15_amount_2(java.math.BigDecimal v) {
-			r15_amount_2 = v;
+		public void setR15_amount_2(java.math.BigDecimal r15_amount_2) {
+			this.r15_amount_2 = r15_amount_2;
 		}
 
 		public String getR16_product() {
 			return r16_product;
 		}
 
-		public void setR16_product(String v) {
-			r16_product = v;
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
 		}
 
 		public java.math.BigDecimal getR16_amount_1() {
 			return r16_amount_1;
 		}
 
-		public void setR16_amount_1(java.math.BigDecimal v) {
-			r16_amount_1 = v;
+		public void setR16_amount_1(java.math.BigDecimal r16_amount_1) {
+			this.r16_amount_1 = r16_amount_1;
 		}
 
 		public java.math.BigDecimal getR16_amount_2() {
 			return r16_amount_2;
 		}
 
-		public void setR16_amount_2(java.math.BigDecimal v) {
-			r16_amount_2 = v;
+		public void setR16_amount_2(java.math.BigDecimal r16_amount_2) {
+			this.r16_amount_2 = r16_amount_2;
 		}
 
 		public String getR17_product() {
 			return r17_product;
 		}
 
-		public void setR17_product(String v) {
-			r17_product = v;
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
 		}
 
 		public java.math.BigDecimal getR17_amount_1() {
 			return r17_amount_1;
 		}
 
-		public void setR17_amount_1(java.math.BigDecimal v) {
-			r17_amount_1 = v;
+		public void setR17_amount_1(java.math.BigDecimal r17_amount_1) {
+			this.r17_amount_1 = r17_amount_1;
 		}
 
 		public java.math.BigDecimal getR17_amount_2() {
 			return r17_amount_2;
 		}
 
-		public void setR17_amount_2(java.math.BigDecimal v) {
-			r17_amount_2 = v;
+		public void setR17_amount_2(java.math.BigDecimal r17_amount_2) {
+			this.r17_amount_2 = r17_amount_2;
 		}
 
 		public String getR18_product() {
 			return r18_product;
 		}
 
-		public void setR18_product(String v) {
-			r18_product = v;
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
 		}
 
 		public java.math.BigDecimal getR18_amount_1() {
 			return r18_amount_1;
 		}
 
-		public void setR18_amount_1(java.math.BigDecimal v) {
-			r18_amount_1 = v;
+		public void setR18_amount_1(java.math.BigDecimal r18_amount_1) {
+			this.r18_amount_1 = r18_amount_1;
 		}
 
 		public java.math.BigDecimal getR18_amount_2() {
 			return r18_amount_2;
 		}
 
-		public void setR18_amount_2(java.math.BigDecimal v) {
-			r18_amount_2 = v;
+		public void setR18_amount_2(java.math.BigDecimal r18_amount_2) {
+			this.r18_amount_2 = r18_amount_2;
 		}
 
 		public String getR19_product() {
 			return r19_product;
 		}
 
-		public void setR19_product(String v) {
-			r19_product = v;
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
 		}
 
 		public java.math.BigDecimal getR19_amount_1() {
 			return r19_amount_1;
 		}
 
-		public void setR19_amount_1(java.math.BigDecimal v) {
-			r19_amount_1 = v;
+		public void setR19_amount_1(java.math.BigDecimal r19_amount_1) {
+			this.r19_amount_1 = r19_amount_1;
 		}
 
 		public java.math.BigDecimal getR19_amount_2() {
 			return r19_amount_2;
 		}
 
-		public void setR19_amount_2(java.math.BigDecimal v) {
-			r19_amount_2 = v;
+		public void setR19_amount_2(java.math.BigDecimal r19_amount_2) {
+			this.r19_amount_2 = r19_amount_2;
 		}
 
 		public String getR20_product() {
 			return r20_product;
 		}
 
-		public void setR20_product(String v) {
-			r20_product = v;
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
 		}
 
 		public java.math.BigDecimal getR20_amount_1() {
 			return r20_amount_1;
 		}
 
-		public void setR20_amount_1(java.math.BigDecimal v) {
-			r20_amount_1 = v;
+		public void setR20_amount_1(java.math.BigDecimal r20_amount_1) {
+			this.r20_amount_1 = r20_amount_1;
 		}
 
 		public java.math.BigDecimal getR20_amount_2() {
 			return r20_amount_2;
 		}
 
-		public void setR20_amount_2(java.math.BigDecimal v) {
-			r20_amount_2 = v;
+		public void setR20_amount_2(java.math.BigDecimal r20_amount_2) {
+			this.r20_amount_2 = r20_amount_2;
 		}
 
 		public String getR21_product() {
 			return r21_product;
 		}
 
-		public void setR21_product(String v) {
-			r21_product = v;
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
 		}
 
 		public java.math.BigDecimal getR21_amount_1() {
 			return r21_amount_1;
 		}
 
-		public void setR21_amount_1(java.math.BigDecimal v) {
-			r21_amount_1 = v;
+		public void setR21_amount_1(java.math.BigDecimal r21_amount_1) {
+			this.r21_amount_1 = r21_amount_1;
 		}
 
 		public java.math.BigDecimal getR21_amount_2() {
 			return r21_amount_2;
 		}
 
-		public void setR21_amount_2(java.math.BigDecimal v) {
-			r21_amount_2 = v;
+		public void setR21_amount_2(java.math.BigDecimal r21_amount_2) {
+			this.r21_amount_2 = r21_amount_2;
 		}
 
 		public String getR22_product() {
 			return r22_product;
 		}
 
-		public void setR22_product(String v) {
-			r22_product = v;
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
 		}
 
 		public java.math.BigDecimal getR22_amount_1() {
 			return r22_amount_1;
 		}
 
-		public void setR22_amount_1(java.math.BigDecimal v) {
-			r22_amount_1 = v;
+		public void setR22_amount_1(java.math.BigDecimal r22_amount_1) {
+			this.r22_amount_1 = r22_amount_1;
 		}
 
 		public java.math.BigDecimal getR22_amount_2() {
 			return r22_amount_2;
 		}
 
-		public void setR22_amount_2(java.math.BigDecimal v) {
-			r22_amount_2 = v;
+		public void setR22_amount_2(java.math.BigDecimal r22_amount_2) {
+			this.r22_amount_2 = r22_amount_2;
 		}
 
 		public String getR23_product() {
 			return r23_product;
 		}
 
-		public void setR23_product(String v) {
-			r23_product = v;
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
 		}
 
 		public java.math.BigDecimal getR23_amount_1() {
 			return r23_amount_1;
 		}
 
-		public void setR23_amount_1(java.math.BigDecimal v) {
-			r23_amount_1 = v;
+		public void setR23_amount_1(java.math.BigDecimal r23_amount_1) {
+			this.r23_amount_1 = r23_amount_1;
 		}
 
 		public java.math.BigDecimal getR23_amount_2() {
 			return r23_amount_2;
 		}
 
-		public void setR23_amount_2(java.math.BigDecimal v) {
-			r23_amount_2 = v;
+		public void setR23_amount_2(java.math.BigDecimal r23_amount_2) {
+			this.r23_amount_2 = r23_amount_2;
 		}
 
 		public String getR24_product() {
 			return r24_product;
 		}
 
-		public void setR24_product(String v) {
-			r24_product = v;
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
 		}
 
 		public java.math.BigDecimal getR24_amount_1() {
 			return r24_amount_1;
 		}
 
-		public void setR24_amount_1(java.math.BigDecimal v) {
-			r24_amount_1 = v;
+		public void setR24_amount_1(java.math.BigDecimal r24_amount_1) {
+			this.r24_amount_1 = r24_amount_1;
 		}
 
 		public java.math.BigDecimal getR24_amount_2() {
 			return r24_amount_2;
 		}
 
-		public void setR24_amount_2(java.math.BigDecimal v) {
-			r24_amount_2 = v;
+		public void setR24_amount_2(java.math.BigDecimal r24_amount_2) {
+			this.r24_amount_2 = r24_amount_2;
 		}
 
 		public String getR25_product() {
 			return r25_product;
 		}
 
-		public void setR25_product(String v) {
-			r25_product = v;
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
 		}
 
 		public java.math.BigDecimal getR25_amount_1() {
 			return r25_amount_1;
 		}
 
-		public void setR25_amount_1(java.math.BigDecimal v) {
-			r25_amount_1 = v;
+		public void setR25_amount_1(java.math.BigDecimal r25_amount_1) {
+			this.r25_amount_1 = r25_amount_1;
 		}
 
 		public java.math.BigDecimal getR25_amount_2() {
 			return r25_amount_2;
 		}
 
-		public void setR25_amount_2(java.math.BigDecimal v) {
-			r25_amount_2 = v;
+		public void setR25_amount_2(java.math.BigDecimal r25_amount_2) {
+			this.r25_amount_2 = r25_amount_2;
 		}
 
 		public String getR26_product() {
 			return r26_product;
 		}
 
-		public void setR26_product(String v) {
-			r26_product = v;
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
 		}
 
 		public java.math.BigDecimal getR26_amount_1() {
 			return r26_amount_1;
 		}
 
-		public void setR26_amount_1(java.math.BigDecimal v) {
-			r26_amount_1 = v;
+		public void setR26_amount_1(java.math.BigDecimal r26_amount_1) {
+			this.r26_amount_1 = r26_amount_1;
 		}
 
 		public java.math.BigDecimal getR26_amount_2() {
 			return r26_amount_2;
 		}
 
-		public void setR26_amount_2(java.math.BigDecimal v) {
-			r26_amount_2 = v;
+		public void setR26_amount_2(java.math.BigDecimal r26_amount_2) {
+			this.r26_amount_2 = r26_amount_2;
 		}
 
 		public String getR31_product() {
 			return r31_product;
 		}
 
-		public void setR31_product(String v) {
-			r31_product = v;
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
 		}
 
 		public java.math.BigDecimal getR31_amount_1() {
 			return r31_amount_1;
 		}
 
-		public void setR31_amount_1(java.math.BigDecimal v) {
-			r31_amount_1 = v;
+		public void setR31_amount_1(java.math.BigDecimal r31_amount_1) {
+			this.r31_amount_1 = r31_amount_1;
 		}
 
 		public java.math.BigDecimal getR31_amount_2() {
 			return r31_amount_2;
 		}
 
-		public void setR31_amount_2(java.math.BigDecimal v) {
-			r31_amount_2 = v;
+		public void setR31_amount_2(java.math.BigDecimal r31_amount_2) {
+			this.r31_amount_2 = r31_amount_2;
 		}
 
 		public String getR32_product() {
 			return r32_product;
 		}
 
-		public void setR32_product(String v) {
-			r32_product = v;
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
 		}
 
 		public java.math.BigDecimal getR32_amount_1() {
 			return r32_amount_1;
 		}
 
-		public void setR32_amount_1(java.math.BigDecimal v) {
-			r32_amount_1 = v;
+		public void setR32_amount_1(java.math.BigDecimal r32_amount_1) {
+			this.r32_amount_1 = r32_amount_1;
 		}
 
 		public java.math.BigDecimal getR32_amount_2() {
 			return r32_amount_2;
 		}
 
-		public void setR32_amount_2(java.math.BigDecimal v) {
-			r32_amount_2 = v;
+		public void setR32_amount_2(java.math.BigDecimal r32_amount_2) {
+			this.r32_amount_2 = r32_amount_2;
 		}
 
 		public String getR33_product() {
 			return r33_product;
 		}
 
-		public void setR33_product(String v) {
-			r33_product = v;
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
 		}
 
 		public java.math.BigDecimal getR33_amount_1() {
 			return r33_amount_1;
 		}
 
-		public void setR33_amount_1(java.math.BigDecimal v) {
-			r33_amount_1 = v;
+		public void setR33_amount_1(java.math.BigDecimal r33_amount_1) {
+			this.r33_amount_1 = r33_amount_1;
 		}
 
 		public java.math.BigDecimal getR33_amount_2() {
 			return r33_amount_2;
 		}
 
-		public void setR33_amount_2(java.math.BigDecimal v) {
-			r33_amount_2 = v;
+		public void setR33_amount_2(java.math.BigDecimal r33_amount_2) {
+			this.r33_amount_2 = r33_amount_2;
 		}
 
 		public String getR34_product() {
 			return r34_product;
 		}
 
-		public void setR34_product(String v) {
-			r34_product = v;
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
 		}
 
 		public java.math.BigDecimal getR34_amount_1() {
 			return r34_amount_1;
 		}
 
-		public void setR34_amount_1(java.math.BigDecimal v) {
-			r34_amount_1 = v;
+		public void setR34_amount_1(java.math.BigDecimal r34_amount_1) {
+			this.r34_amount_1 = r34_amount_1;
 		}
 
 		public java.math.BigDecimal getR34_amount_2() {
 			return r34_amount_2;
 		}
 
-		public void setR34_amount_2(java.math.BigDecimal v) {
-			r34_amount_2 = v;
+		public void setR34_amount_2(java.math.BigDecimal r34_amount_2) {
+			this.r34_amount_2 = r34_amount_2;
 		}
 
 		public String getR35_product() {
 			return r35_product;
 		}
 
-		public void setR35_product(String v) {
-			r35_product = v;
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
 		}
 
 		public java.math.BigDecimal getR35_amount_1() {
 			return r35_amount_1;
 		}
 
-		public void setR35_amount_1(java.math.BigDecimal v) {
-			r35_amount_1 = v;
+		public void setR35_amount_1(java.math.BigDecimal r35_amount_1) {
+			this.r35_amount_1 = r35_amount_1;
 		}
 
 		public java.math.BigDecimal getR35_amount_2() {
 			return r35_amount_2;
 		}
 
-		public void setR35_amount_2(java.math.BigDecimal v) {
-			r35_amount_2 = v;
+		public void setR35_amount_2(java.math.BigDecimal r35_amount_2) {
+			this.r35_amount_2 = r35_amount_2;
 		}
 
 		public String getR36_product() {
 			return r36_product;
 		}
 
-		public void setR36_product(String v) {
-			r36_product = v;
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
 		}
 
 		public java.math.BigDecimal getR36_amount_1() {
 			return r36_amount_1;
 		}
 
-		public void setR36_amount_1(java.math.BigDecimal v) {
-			r36_amount_1 = v;
+		public void setR36_amount_1(java.math.BigDecimal r36_amount_1) {
+			this.r36_amount_1 = r36_amount_1;
 		}
 
 		public java.math.BigDecimal getR36_amount_2() {
 			return r36_amount_2;
 		}
 
-		public void setR36_amount_2(java.math.BigDecimal v) {
-			r36_amount_2 = v;
+		public void setR36_amount_2(java.math.BigDecimal r36_amount_2) {
+			this.r36_amount_2 = r36_amount_2;
 		}
 
 		public String getR41_product() {
 			return r41_product;
 		}
 
-		public void setR41_product(String v) {
-			r41_product = v;
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
 		}
 
 		public java.math.BigDecimal getR41_amount_1() {
 			return r41_amount_1;
 		}
 
-		public void setR41_amount_1(java.math.BigDecimal v) {
-			r41_amount_1 = v;
+		public void setR41_amount_1(java.math.BigDecimal r41_amount_1) {
+			this.r41_amount_1 = r41_amount_1;
 		}
 
 		public java.math.BigDecimal getR41_amount_2() {
 			return r41_amount_2;
 		}
 
-		public void setR41_amount_2(java.math.BigDecimal v) {
-			r41_amount_2 = v;
+		public void setR41_amount_2(java.math.BigDecimal r41_amount_2) {
+			this.r41_amount_2 = r41_amount_2;
 		}
 
 		public String getR42_product() {
 			return r42_product;
 		}
 
-		public void setR42_product(String v) {
-			r42_product = v;
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
 		}
 
 		public java.math.BigDecimal getR42_amount_1() {
 			return r42_amount_1;
 		}
 
-		public void setR42_amount_1(java.math.BigDecimal v) {
-			r42_amount_1 = v;
+		public void setR42_amount_1(java.math.BigDecimal r42_amount_1) {
+			this.r42_amount_1 = r42_amount_1;
 		}
 
 		public java.math.BigDecimal getR42_amount_2() {
 			return r42_amount_2;
 		}
 
-		public void setR42_amount_2(java.math.BigDecimal v) {
-			r42_amount_2 = v;
+		public void setR42_amount_2(java.math.BigDecimal r42_amount_2) {
+			this.r42_amount_2 = r42_amount_2;
 		}
 
 		public String getR43_product() {
 			return r43_product;
 		}
 
-		public void setR43_product(String v) {
-			r43_product = v;
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
 		}
 
 		public java.math.BigDecimal getR43_amount_1() {
 			return r43_amount_1;
 		}
 
-		public void setR43_amount_1(java.math.BigDecimal v) {
-			r43_amount_1 = v;
+		public void setR43_amount_1(java.math.BigDecimal r43_amount_1) {
+			this.r43_amount_1 = r43_amount_1;
 		}
 
 		public java.math.BigDecimal getR43_amount_2() {
 			return r43_amount_2;
 		}
 
-		public void setR43_amount_2(java.math.BigDecimal v) {
-			r43_amount_2 = v;
+		public void setR43_amount_2(java.math.BigDecimal r43_amount_2) {
+			this.r43_amount_2 = r43_amount_2;
 		}
 
 		public String getR44_product() {
 			return r44_product;
 		}
 
-		public void setR44_product(String v) {
-			r44_product = v;
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
 		}
 
 		public java.math.BigDecimal getR44_amount_1() {
 			return r44_amount_1;
 		}
 
-		public void setR44_amount_1(java.math.BigDecimal v) {
-			r44_amount_1 = v;
+		public void setR44_amount_1(java.math.BigDecimal r44_amount_1) {
+			this.r44_amount_1 = r44_amount_1;
 		}
 
 		public java.math.BigDecimal getR44_amount_2() {
 			return r44_amount_2;
 		}
 
-		public void setR44_amount_2(java.math.BigDecimal v) {
-			r44_amount_2 = v;
+		public void setR44_amount_2(java.math.BigDecimal r44_amount_2) {
+			this.r44_amount_2 = r44_amount_2;
 		}
 
 		public String getR45_product() {
 			return r45_product;
 		}
 
-		public void setR45_product(String v) {
-			r45_product = v;
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
 		}
 
 		public java.math.BigDecimal getR45_amount_1() {
 			return r45_amount_1;
 		}
 
-		public void setR45_amount_1(java.math.BigDecimal v) {
-			r45_amount_1 = v;
+		public void setR45_amount_1(java.math.BigDecimal r45_amount_1) {
+			this.r45_amount_1 = r45_amount_1;
 		}
 
 		public java.math.BigDecimal getR45_amount_2() {
 			return r45_amount_2;
 		}
 
-		public void setR45_amount_2(java.math.BigDecimal v) {
-			r45_amount_2 = v;
+		public void setR45_amount_2(java.math.BigDecimal r45_amount_2) {
+			this.r45_amount_2 = r45_amount_2;
 		}
 
 		public String getR46_product() {
 			return r46_product;
 		}
 
-		public void setR46_product(String v) {
-			r46_product = v;
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
 		}
 
 		public java.math.BigDecimal getR46_amount_1() {
 			return r46_amount_1;
 		}
 
-		public void setR46_amount_1(java.math.BigDecimal v) {
-			r46_amount_1 = v;
+		public void setR46_amount_1(java.math.BigDecimal r46_amount_1) {
+			this.r46_amount_1 = r46_amount_1;
 		}
 
 		public java.math.BigDecimal getR46_amount_2() {
 			return r46_amount_2;
 		}
 
-		public void setR46_amount_2(java.math.BigDecimal v) {
-			r46_amount_2 = v;
+		public void setR46_amount_2(java.math.BigDecimal r46_amount_2) {
+			this.r46_amount_2 = r46_amount_2;
 		}
 
 		public String getR47_product() {
 			return r47_product;
 		}
 
-		public void setR47_product(String v) {
-			r47_product = v;
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
 		}
 
 		public java.math.BigDecimal getR47_amount_1() {
 			return r47_amount_1;
 		}
 
-		public void setR47_amount_1(java.math.BigDecimal v) {
-			r47_amount_1 = v;
+		public void setR47_amount_1(java.math.BigDecimal r47_amount_1) {
+			this.r47_amount_1 = r47_amount_1;
 		}
 
 		public java.math.BigDecimal getR47_amount_2() {
 			return r47_amount_2;
 		}
 
-		public void setR47_amount_2(java.math.BigDecimal v) {
-			r47_amount_2 = v;
+		public void setR47_amount_2(java.math.BigDecimal r47_amount_2) {
+			this.r47_amount_2 = r47_amount_2;
 		}
 
 		public String getR48_product() {
 			return r48_product;
 		}
 
-		public void setR48_product(String v) {
-			r48_product = v;
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
 		}
 
 		public java.math.BigDecimal getR48_amount_1() {
 			return r48_amount_1;
 		}
 
-		public void setR48_amount_1(java.math.BigDecimal v) {
-			r48_amount_1 = v;
+		public void setR48_amount_1(java.math.BigDecimal r48_amount_1) {
+			this.r48_amount_1 = r48_amount_1;
 		}
 
 		public java.math.BigDecimal getR48_amount_2() {
 			return r48_amount_2;
 		}
 
-		public void setR48_amount_2(java.math.BigDecimal v) {
-			r48_amount_2 = v;
+		public void setR48_amount_2(java.math.BigDecimal r48_amount_2) {
+			this.r48_amount_2 = r48_amount_2;
 		}
 
 		public String getR49_product() {
 			return r49_product;
 		}
 
-		public void setR49_product(String v) {
-			r49_product = v;
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
 		}
 
 		public java.math.BigDecimal getR49_amount_1() {
 			return r49_amount_1;
 		}
 
-		public void setR49_amount_1(java.math.BigDecimal v) {
-			r49_amount_1 = v;
+		public void setR49_amount_1(java.math.BigDecimal r49_amount_1) {
+			this.r49_amount_1 = r49_amount_1;
 		}
 
 		public java.math.BigDecimal getR49_amount_2() {
 			return r49_amount_2;
 		}
 
-		public void setR49_amount_2(java.math.BigDecimal v) {
-			r49_amount_2 = v;
+		public void setR49_amount_2(java.math.BigDecimal r49_amount_2) {
+			this.r49_amount_2 = r49_amount_2;
 		}
 
 		public java.util.Date getReport_date() {
 			return report_date;
 		}
 
-		public void setReport_date(java.util.Date v) {
-			report_date = v;
+		public void setReport_date(java.util.Date report_date) {
+			this.report_date = report_date;
 		}
 
 		public java.math.BigDecimal getReport_version() {
 			return report_version;
 		}
 
-		public void setReport_version(java.math.BigDecimal v) {
-			report_version = v;
+		public void setReport_version(java.math.BigDecimal report_version) {
+			this.report_version = report_version;
 		}
 
 		public java.util.Date getReportResubDate() {
 			return reportResubDate;
 		}
 
-		public void setReportResubDate(java.util.Date v) {
-			reportResubDate = v;
+		public void setReportResubDate(java.util.Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
 		}
 
 		public String getReport_frequency() {
 			return report_frequency;
 		}
 
-		public void setReport_frequency(String v) {
-			report_frequency = v;
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
 		}
 
 		public String getReport_code() {
 			return report_code;
 		}
 
-		public void setReport_code(String v) {
-			report_code = v;
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
 		}
 
 		public String getReport_desc() {
 			return report_desc;
 		}
 
-		public void setReport_desc(String v) {
-			report_desc = v;
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
 		}
 
 		public String getEntity_flg() {
 			return entity_flg;
 		}
 
-		public void setEntity_flg(String v) {
-			entity_flg = v;
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
 		}
 
 		public String getModify_flg() {
 			return modify_flg;
 		}
 
-		public void setModify_flg(String v) {
-			modify_flg = v;
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
 		}
 
 		public String getDel_flg() {
 			return del_flg;
 		}
 
-		public void setDel_flg(String v) {
-			del_flg = v;
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
 		}
 	}
 
@@ -6942,208 +6942,208 @@ public class BRRS_M_CA2_ReportService {
 			return custId;
 		}
 
-		public void setCustId(String v) {
-			custId = v;
+		public void setCustId(String custId) {
+			this.custId = custId;
 		}
 
 		public String getAcctNumber() {
 			return acctNumber;
 		}
 
-		public void setAcctNumber(String v) {
-			acctNumber = v;
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
 		}
 
 		public String getAcctName() {
 			return acctName;
 		}
 
-		public void setAcctName(String v) {
-			acctName = v;
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
 		}
 
 		public String getDataType() {
 			return dataType;
 		}
 
-		public void setDataType(String v) {
-			dataType = v;
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
 		}
 
 		public String getReportLabel() {
 			return reportLabel;
 		}
 
-		public void setReportLabel(String v) {
-			reportLabel = v;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportAddlCriteria1() {
 			return reportAddlCriteria1;
 		}
 
-		public void setReportAddlCriteria1(String v) {
-			reportAddlCriteria1 = v;
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
 		}
 
 		public String getReportAddlCriteria2() {
 			return reportAddlCriteria2;
 		}
 
-		public void setReportAddlCriteria2(String v) {
-			reportAddlCriteria2 = v;
+		public void setReportAddlCriteria2(String reportAddlCriteria2) {
+			this.reportAddlCriteria2 = reportAddlCriteria2;
 		}
 
 		public String getReportAddlCriteria3() {
 			return reportAddlCriteria3;
 		}
 
-		public void setReportAddlCriteria3(String v) {
-			reportAddlCriteria3 = v;
+		public void setReportAddlCriteria3(String reportAddlCriteria3) {
+			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
 		public java.math.BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal v) {
-			sanctionLimit = v;
+		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+			this.sanctionLimit = sanctionLimit;
 		}
 
 		public String getReportRemarks() {
 			return reportRemarks;
 		}
 
-		public void setReportRemarks(String v) {
-			reportRemarks = v;
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
 		}
 
 		public String getModificationRemarks() {
 			return modificationRemarks;
 		}
 
-		public void setModificationRemarks(String v) {
-			modificationRemarks = v;
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
 		}
 
 		public String getDataEntryVersion() {
 			return dataEntryVersion;
 		}
 
-		public void setDataEntryVersion(String v) {
-			dataEntryVersion = v;
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
 		}
 
 		public java.math.BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal v) {
-			acctBalanceInPula = v;
+		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public java.util.Date getReportDate() {
 			return reportDate;
 		}
 
-		public void setReportDate(java.util.Date v) {
-			reportDate = v;
+		public void setReportDate(java.util.Date reportDate) {
+			this.reportDate = reportDate;
 		}
 
 		public String getReportName() {
 			return reportName;
 		}
 
-		public void setReportName(String v) {
-			reportName = v;
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
 		}
 
 		public String getCreateUser() {
 			return createUser;
 		}
 
-		public void setCreateUser(String v) {
-			createUser = v;
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
 		}
 
 		public java.util.Date getCreateTime() {
 			return createTime;
 		}
 
-		public void setCreateTime(java.util.Date v) {
-			createTime = v;
+		public void setCreateTime(java.util.Date createTime) {
+			this.createTime = createTime;
 		}
 
 		public String getModifyUser() {
 			return modifyUser;
 		}
 
-		public void setModifyUser(String v) {
-			modifyUser = v;
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
 		}
 
 		public java.util.Date getModifyTime() {
 			return modifyTime;
 		}
 
-		public void setModifyTime(java.util.Date v) {
-			modifyTime = v;
+		public void setModifyTime(java.util.Date modifyTime) {
+			this.modifyTime = modifyTime;
 		}
 
 		public String getVerifyUser() {
 			return verifyUser;
 		}
 
-		public void setVerifyUser(String v) {
-			verifyUser = v;
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
 		}
 
 		public java.util.Date getVerifyTime() {
 			return verifyTime;
 		}
 
-		public void setVerifyTime(java.util.Date v) {
-			verifyTime = v;
+		public void setVerifyTime(java.util.Date verifyTime) {
+			this.verifyTime = verifyTime;
 		}
 
 		public String getEntityFlg() {
 			return entityFlg;
 		}
 
-		public void setEntityFlg(String v) {
-			entityFlg = v;
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
 		}
 
 		public String getModifyFlg() {
 			return modifyFlg;
 		}
 
-		public void setModifyFlg(String v) {
-			modifyFlg = v;
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
 		}
 
 		public String getDelFlg() {
 			return delFlg;
 		}
 
-		public void setDelFlg(String v) {
-			delFlg = v;
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
 		}
 
 		public String getGlCode() {
 			return glCode;
 		}
 
-		public void setGlCode(String v) {
-			glCode = v;
+		public void setGlCode(String glCode) {
+			this.glCode = glCode;
 		}
 
 		public String getGlSubCode() {
 			return glSubCode;
 		}
 
-		public void setGlSubCode(String v) {
-			glSubCode = v;
+		public void setGlSubCode(String glSubCode) {
+			this.glSubCode = glSubCode;
 		}
 	}
 
@@ -7227,208 +7227,208 @@ public class BRRS_M_CA2_ReportService {
 			return custId;
 		}
 
-		public void setCustId(String v) {
-			custId = v;
+		public void setCustId(String custId) {
+			this.custId = custId;
 		}
 
 		public String getAcctNumber() {
 			return acctNumber;
 		}
 
-		public void setAcctNumber(String v) {
-			acctNumber = v;
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
 		}
 
 		public String getAcctName() {
 			return acctName;
 		}
 
-		public void setAcctName(String v) {
-			acctName = v;
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
 		}
 
 		public String getDataType() {
 			return dataType;
 		}
 
-		public void setDataType(String v) {
-			dataType = v;
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
 		}
 
 		public String getReportLabel() {
 			return reportLabel;
 		}
 
-		public void setReportLabel(String v) {
-			reportLabel = v;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportAddlCriteria1() {
 			return reportAddlCriteria1;
 		}
 
-		public void setReportAddlCriteria1(String v) {
-			reportAddlCriteria1 = v;
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
 		}
 
 		public String getReportAddlCriteria2() {
 			return reportAddlCriteria2;
 		}
 
-		public void setReportAddlCriteria2(String v) {
-			reportAddlCriteria2 = v;
+		public void setReportAddlCriteria2(String reportAddlCriteria2) {
+			this.reportAddlCriteria2 = reportAddlCriteria2;
 		}
 
 		public String getReportAddlCriteria3() {
 			return reportAddlCriteria3;
 		}
 
-		public void setReportAddlCriteria3(String v) {
-			reportAddlCriteria3 = v;
+		public void setReportAddlCriteria3(String reportAddlCriteria3) {
+			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
 		public java.math.BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal v) {
-			sanctionLimit = v;
+		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+			this.sanctionLimit = sanctionLimit;
 		}
 
 		public String getReportRemarks() {
 			return reportRemarks;
 		}
 
-		public void setReportRemarks(String v) {
-			reportRemarks = v;
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
 		}
 
 		public String getModificationRemarks() {
 			return modificationRemarks;
 		}
 
-		public void setModificationRemarks(String v) {
-			modificationRemarks = v;
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
 		}
 
 		public String getDataEntryVersion() {
 			return dataEntryVersion;
 		}
 
-		public void setDataEntryVersion(String v) {
-			dataEntryVersion = v;
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
 		}
 
 		public java.math.BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal v) {
-			acctBalanceInPula = v;
+		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public java.util.Date getReportDate() {
 			return reportDate;
 		}
 
-		public void setReportDate(java.util.Date v) {
-			reportDate = v;
+		public void setReportDate(java.util.Date reportDate) {
+			this.reportDate = reportDate;
 		}
 
 		public String getReportName() {
 			return reportName;
 		}
 
-		public void setReportName(String v) {
-			reportName = v;
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
 		}
 
 		public String getCreateUser() {
 			return createUser;
 		}
 
-		public void setCreateUser(String v) {
-			createUser = v;
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
 		}
 
 		public java.util.Date getCreateTime() {
 			return createTime;
 		}
 
-		public void setCreateTime(java.util.Date v) {
-			createTime = v;
+		public void setCreateTime(java.util.Date createTime) {
+			this.createTime = createTime;
 		}
 
 		public String getModifyUser() {
 			return modifyUser;
 		}
 
-		public void setModifyUser(String v) {
-			modifyUser = v;
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
 		}
 
 		public java.util.Date getModifyTime() {
 			return modifyTime;
 		}
 
-		public void setModifyTime(java.util.Date v) {
-			modifyTime = v;
+		public void setModifyTime(java.util.Date modifyTime) {
+			this.modifyTime = modifyTime;
 		}
 
 		public String getVerifyUser() {
 			return verifyUser;
 		}
 
-		public void setVerifyUser(String v) {
-			verifyUser = v;
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
 		}
 
 		public java.util.Date getVerifyTime() {
 			return verifyTime;
 		}
 
-		public void setVerifyTime(java.util.Date v) {
-			verifyTime = v;
+		public void setVerifyTime(java.util.Date verifyTime) {
+			this.verifyTime = verifyTime;
 		}
 
 		public String getEntityFlg() {
 			return entityFlg;
 		}
 
-		public void setEntityFlg(String v) {
-			entityFlg = v;
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
 		}
 
 		public String getModifyFlg() {
 			return modifyFlg;
 		}
 
-		public void setModifyFlg(String v) {
-			modifyFlg = v;
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
 		}
 
 		public String getDelFlg() {
 			return delFlg;
 		}
 
-		public void setDelFlg(String v) {
-			delFlg = v;
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
 		}
 
 		public String getGlCode() {
 			return glCode;
 		}
 
-		public void setGlCode(String v) {
-			glCode = v;
+		public void setGlCode(String glCode) {
+			this.glCode = glCode;
 		}
 
 		public String getGlSubCode() {
 			return glSubCode;
 		}
 
-		public void setGlSubCode(String v) {
-			glSubCode = v;
+		public void setGlSubCode(String glSubCode) {
+			this.glSubCode = glSubCode;
 		}
 	}
 
@@ -7502,208 +7502,208 @@ public class BRRS_M_CA2_ReportService {
 			return custId;
 		}
 
-		public void setCustId(String v) {
-			custId = v;
+		public void setCustId(String custId) {
+			this.custId = custId;
 		}
 
 		public String getAcctNumber() {
 			return acctNumber;
 		}
 
-		public void setAcctNumber(String v) {
-			acctNumber = v;
+		public void setAcctNumber(String acctNumber) {
+			this.acctNumber = acctNumber;
 		}
 
 		public String getAcctName() {
 			return acctName;
 		}
 
-		public void setAcctName(String v) {
-			acctName = v;
+		public void setAcctName(String acctName) {
+			this.acctName = acctName;
 		}
 
 		public String getDataType() {
 			return dataType;
 		}
 
-		public void setDataType(String v) {
-			dataType = v;
+		public void setDataType(String dataType) {
+			this.dataType = dataType;
 		}
 
 		public String getReportLabel() {
 			return reportLabel;
 		}
 
-		public void setReportLabel(String v) {
-			reportLabel = v;
+		public void setReportLabel(String reportLabel) {
+			this.reportLabel = reportLabel;
 		}
 
 		public String getReportAddlCriteria1() {
 			return reportAddlCriteria1;
 		}
 
-		public void setReportAddlCriteria1(String v) {
-			reportAddlCriteria1 = v;
+		public void setReportAddlCriteria1(String reportAddlCriteria1) {
+			this.reportAddlCriteria1 = reportAddlCriteria1;
 		}
 
 		public String getReportAddlCriteria2() {
 			return reportAddlCriteria2;
 		}
 
-		public void setReportAddlCriteria2(String v) {
-			reportAddlCriteria2 = v;
+		public void setReportAddlCriteria2(String reportAddlCriteria2) {
+			this.reportAddlCriteria2 = reportAddlCriteria2;
 		}
 
 		public String getReportAddlCriteria3() {
 			return reportAddlCriteria3;
 		}
 
-		public void setReportAddlCriteria3(String v) {
-			reportAddlCriteria3 = v;
+		public void setReportAddlCriteria3(String reportAddlCriteria3) {
+			this.reportAddlCriteria3 = reportAddlCriteria3;
 		}
 
 		public java.math.BigDecimal getSanctionLimit() {
 			return sanctionLimit;
 		}
 
-		public void setSanctionLimit(java.math.BigDecimal v) {
-			sanctionLimit = v;
+		public void setSanctionLimit(java.math.BigDecimal sanctionLimit) {
+			this.sanctionLimit = sanctionLimit;
 		}
 
 		public String getReportRemarks() {
 			return reportRemarks;
 		}
 
-		public void setReportRemarks(String v) {
-			reportRemarks = v;
+		public void setReportRemarks(String reportRemarks) {
+			this.reportRemarks = reportRemarks;
 		}
 
 		public String getModificationRemarks() {
 			return modificationRemarks;
 		}
 
-		public void setModificationRemarks(String v) {
-			modificationRemarks = v;
+		public void setModificationRemarks(String modificationRemarks) {
+			this.modificationRemarks = modificationRemarks;
 		}
 
 		public String getDataEntryVersion() {
 			return dataEntryVersion;
 		}
 
-		public void setDataEntryVersion(String v) {
-			dataEntryVersion = v;
+		public void setDataEntryVersion(String dataEntryVersion) {
+			this.dataEntryVersion = dataEntryVersion;
 		}
 
 		public java.math.BigDecimal getAcctBalanceInPula() {
 			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInPula(java.math.BigDecimal v) {
-			acctBalanceInPula = v;
+		public void setAcctBalanceInPula(java.math.BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public java.util.Date getReportDate() {
 			return reportDate;
 		}
 
-		public void setReportDate(java.util.Date v) {
-			reportDate = v;
+		public void setReportDate(java.util.Date reportDate) {
+			this.reportDate = reportDate;
 		}
 
 		public String getReportName() {
 			return reportName;
 		}
 
-		public void setReportName(String v) {
-			reportName = v;
+		public void setReportName(String reportName) {
+			this.reportName = reportName;
 		}
 
 		public String getCreateUser() {
 			return createUser;
 		}
 
-		public void setCreateUser(String v) {
-			createUser = v;
+		public void setCreateUser(String createUser) {
+			this.createUser = createUser;
 		}
 
 		public java.util.Date getCreateTime() {
 			return createTime;
 		}
 
-		public void setCreateTime(java.util.Date v) {
-			createTime = v;
+		public void setCreateTime(java.util.Date createTime) {
+			this.createTime = createTime;
 		}
 
 		public String getModifyUser() {
 			return modifyUser;
 		}
 
-		public void setModifyUser(String v) {
-			modifyUser = v;
+		public void setModifyUser(String modifyUser) {
+			this.modifyUser = modifyUser;
 		}
 
 		public java.util.Date getModifyTime() {
 			return modifyTime;
 		}
 
-		public void setModifyTime(java.util.Date v) {
-			modifyTime = v;
+		public void setModifyTime(java.util.Date modifyTime) {
+			this.modifyTime = modifyTime;
 		}
 
 		public String getVerifyUser() {
 			return verifyUser;
 		}
 
-		public void setVerifyUser(String v) {
-			verifyUser = v;
+		public void setVerifyUser(String verifyUser) {
+			this.verifyUser = verifyUser;
 		}
 
 		public java.util.Date getVerifyTime() {
 			return verifyTime;
 		}
 
-		public void setVerifyTime(java.util.Date v) {
-			verifyTime = v;
+		public void setVerifyTime(java.util.Date verifyTime) {
+			this.verifyTime = verifyTime;
 		}
 
 		public String getEntityFlg() {
 			return entityFlg;
 		}
 
-		public void setEntityFlg(String v) {
-			entityFlg = v;
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
 		}
 
 		public String getModifyFlg() {
 			return modifyFlg;
 		}
 
-		public void setModifyFlg(String v) {
-			modifyFlg = v;
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
 		}
 
 		public String getDelFlg() {
 			return delFlg;
 		}
 
-		public void setDelFlg(String v) {
-			delFlg = v;
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
 		}
 
 		public String getGlCode() {
 			return glCode;
 		}
 
-		public void setGlCode(String v) {
-			glCode = v;
+		public void setGlCode(String glCode) {
+			this.glCode = glCode;
 		}
 
 		public String getGlSubCode() {
 			return glSubCode;
 		}
 
-		public void setGlSubCode(String v) {
-			glSubCode = v;
+		public void setGlSubCode(String glSubCode) {
+			this.glSubCode = glSubCode;
 		}
 	}
 

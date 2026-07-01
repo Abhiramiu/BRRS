@@ -1,4 +1,4 @@
-package com.bornfire.brrs.services;
+﻿package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +37,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -53,24 +54,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_PI_Summary_Repo;
-import com.bornfire.brrs.entities.M_PI_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_PI_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_PI_Detail_Entity;
-import com.bornfire.brrs.entities.M_PI_Manual_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_PI_Manual_Summary_Entity;
-import com.bornfire.brrs.entities.M_PI_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
-
+@Transactional
 public class BRRS_M_PI_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_PI_ReportService.class);
 
@@ -78,34 +66,88 @@ public class BRRS_M_PI_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-
-	@Autowired
 	AuditService auditService;
-	
-	@Autowired
-	BRRS_M_PI_Summary_Repo BRRS_M_PI_Summary_Repo;
-	
-	@Autowired
-	BRRS_M_PI_Manual_Summary_Repo BRRS_M_PI_Manual_Summary_Repo;
 
-	@Autowired
-	BRRS_M_PI_Detail_Repo M_PI_Detail_Repo;
-
-	@Autowired
-	BRRS_M_PI_Archival_Detail_Repo M_PI_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_PI_Archival_Summary_Repo M_PI_Archival_Summary_Repo;
-	
-	@Autowired
-	BRRS_M_PI_Manual_Archival_Summary_Repo M_PI_Manual_Archival_Summary_Repo;
-	
 	@Autowired
 	UserProfileRep userProfileRep;
 
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// ─── JDBC query methods ────────────────────────────────────────────────────
+
+	private List<M_PI_Summary_Entity> getSummaryAll() {
+		return jdbcTemplate.query("select * from BRRS_M_PI_SUMMARYTABLE", new M_PISummaryRowMapper());
+	}
+
+	private List<M_PI_Manual_Summary_Entity> getManualSummaryAll() {
+		return jdbcTemplate.query("select * from BRRS_M_PI_MANUAL_SUMMARYTABLE", new M_PIManualSummaryRowMapper());
+	}
+
+	private M_PI_Manual_Summary_Entity getManualSummaryByDate(Date reportDate) {
+		String sql = "select * from BRRS_M_PI_MANUAL_SUMMARYTABLE where REPORT_DATE = ?";
+		List<M_PI_Manual_Summary_Entity> list = jdbcTemplate.query(sql, new Object[]{reportDate}, new M_PIManualSummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	private List<M_PI_Detail_Entity> getDetailAll() {
+		return jdbcTemplate.query("select * from BRRS_M_PI_DETAILTABLE", new M_PIDetailRowMapper());
+	}
+
+	private int getDetailCount(Date reportDate) {
+		return jdbcTemplate.queryForObject("select count(*) from BRRS_M_PI_DETAILTABLE where REPORT_DATE = ?",
+				new Object[]{reportDate}, Integer.class);
+	}
+
+	private List<M_PI_Detail_Entity> getDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1, Date reportDate) {
+		String sql = "select * from BRRS_M_PI_DETAILTABLE where REPORT_LABLE = ? and REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportLabel, reportAddlCriteria1, reportDate}, new M_PIDetailRowMapper());
+	}
+
+	private M_PI_Detail_Entity getDetailByAcctNumber(String acctNumber) {
+		String sql = "SELECT * FROM BRRS_M_PI_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		List<M_PI_Detail_Entity> list = jdbcTemplate.query(sql, new Object[]{acctNumber}, new M_PIDetailRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	private List<M_PI_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "select * from BRRS_M_PI_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ? and REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_PIArchivalSummaryRowMapper());
+	}
+
+	private List<M_PI_Manual_Archival_Summary_Entity> getManualArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		String sql = "select * from BRRS_M_PI_MANUAL_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ? and REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_PIManualArchivalSummaryRowMapper());
+	}
+
+	private List<Object> getManualArchivalVersionList() {
+		String sql = "select REPORT_DATE, REPORT_VERSION from BRRS_M_PI_MANUAL_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> (Object) new Object[]{rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION")});
+	}
+
+	private List<M_PI_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
+		String sql = "select * from BRRS_M_PI_ARCHIVALTABLE_DETAIL where REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportDate, version}, new M_PIArchivalDetailRowMapper());
+	}
+
+	private List<M_PI_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1, Date reportDate, String version) {
+		String sql = "select * from BRRS_M_PI_ARCHIVALTABLE_DETAIL where REPORT_LABLE = ? and REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{reportLabel, reportAddlCriteria1, reportDate, version}, new M_PIArchivalDetailRowMapper());
+	}
+
+	private void updateManualSummary(M_PI_Manual_Summary_Entity entity) {
+		String sql = "UPDATE BRRS_M_PI_MANUAL_SUMMARYTABLE SET R14_VALUE=?, R18_VALUE=?, R19_VALUE=?, R25_VALUE=? WHERE REPORT_DATE=?";
+		jdbcTemplate.update(sql, entity.getR14_VALUE(), entity.getR18_VALUE(), entity.getR19_VALUE(), entity.getR25_VALUE(), entity.getREPORT_DATE());
+	}
+
+	private void updateDetailRecord(M_PI_Detail_Entity entity) {
+		String sql = "UPDATE BRRS_M_PI_DETAILTABLE SET ACCT_NAME=?, ACCT_BALANCE_IN_PULA=? WHERE ACCT_NUMBER=?";
+		jdbcTemplate.update(sql, entity.getAcctName(), entity.getAcctBalanceInpula(), entity.getAcctNumber());
+	}
+
+	// ──────────────────────────────────────────────────────────────────────────
 
 	public ModelAndView getM_PIView(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
@@ -136,8 +178,8 @@ public class BRRS_M_PI_ReportService {
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_PI_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
-				T2Master = M_PI_Manual_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+				T2Master = getManualArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 				
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -156,8 +198,8 @@ public class BRRS_M_PI_ReportService {
 				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
 				// ", BRF1_REPORT_ENTITY.class)
 				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
-				T2Master = BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				T1Master = getSummaryAll();
+				T2Master = getManualSummaryAll();
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -218,9 +260,9 @@ public class BRRS_M_PI_ReportService {
 			// 🔹 Archival branch
 			List<M_PI_Archival_Detail_Entity> T1Dt1;
 			if (rowId != null && columnId != null) {
-				T1Dt1 = M_PI_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+				T1Dt1 = getArchivalDetailByRowIdAndColumnId(rowId, columnId, parsedDate, version);
 			} else {
-				T1Dt1 = M_PI_Archival_Detail_Repo.getdatabydateList(parsedDate, version);					
+				T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 			}
 
 			mv.addObject("reportdetails", T1Dt1);
@@ -231,10 +273,10 @@ public class BRRS_M_PI_ReportService {
 			// 🔹 Current branch
 			List<M_PI_Detail_Entity> T1Dt1;
 			if (rowId != null && columnId != null) {
-				T1Dt1 = M_PI_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+				T1Dt1 = getDetailByRowIdAndColumnId(rowId, columnId, parsedDate);
 			} else {
-				T1Dt1 = M_PI_Detail_Repo.getdatabydateList(parsedDate);
-				totalPages = M_PI_Detail_Repo.getdatacount(parsedDate);
+				T1Dt1 = getDetailAll();
+				totalPages = getDetailCount(parsedDate);
 				mv.addObject("pagination", "YES");
 			}
 
@@ -268,7 +310,7 @@ public class BRRS_M_PI_ReportService {
 	    System.out.println("Came to services1");
 	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    M_PI_Manual_Summary_Entity existing = BRRS_M_PI_Manual_Summary_Repo.findById(updatedEntity.getREPORT_DATE())
+	    M_PI_Manual_Summary_Entity existing = Optional.ofNullable(getManualSummaryByDate(updatedEntity.getREPORT_DATE()))
 	            .orElseThrow(() -> new RuntimeException(
 	                    "Record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE()));
 
@@ -298,7 +340,7 @@ public class BRRS_M_PI_ReportService {
 	        }
 
 	        // ✅ Save after all updates
-	        BRRS_M_PI_Manual_Summary_Repo.save(existing);
+	        updateManualSummary(existing);
 
 	    } catch (Exception e) {
 	        throw new RuntimeException("Error while updating report fields", e);
@@ -318,11 +360,9 @@ public class BRRS_M_PI_ReportService {
 	        return getExcelM_PIARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
 	    }
 
-	    List<M_PI_Summary_Entity> dataList =
-	            BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	    List<M_PI_Summary_Entity> dataList = getSummaryAll();
 
-	    List<M_PI_Manual_Summary_Entity> dataList1 =
-	            BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+	    List<M_PI_Manual_Summary_Entity> dataList1 = getManualSummaryAll();
 
 	    if (dataList.isEmpty()) {
 	        logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
@@ -1057,13 +1097,7 @@ sheet.setColumnWidth(i, 5000);
 // ================= FETCH DATA =================
 Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 
-if (M_PI_Detail_Repo == null) {
-logger.error("M_PI_Detail_Repo is NULL!");
-return new byte[0];
-}
-
-List<M_PI_Detail_Entity> reportData =
-M_PI_Detail_Repo.getdatabydateList(parsedToDate);
+List<M_PI_Detail_Entity> reportData = getDetailAll();
 
 logger.info("Fetched {} records",
 reportData != null ? reportData.size() : 0);
@@ -1139,8 +1173,8 @@ return new byte[0];
 	public List<Object> getM_PIArchival() {
 		List<Object> M_PIArchivallist = new ArrayList<>();
 		try {
-			M_PIArchivallist = M_PI_Archival_Summary_Repo.getM_PIarchival();
-			M_PIArchivallist = M_PI_Manual_Archival_Summary_Repo.getM_PIarchival();
+			M_PIArchivallist = getManualArchivalVersionList();
+			M_PIArchivallist = getManualArchivalVersionList();
 			System.out.println("countser" + M_PIArchivallist.size());
 		} catch (Exception e) {
 			// Log the exception
@@ -1167,10 +1201,8 @@ return new byte[0];
 			}
 		} 
 		
-		List<M_PI_Archival_Summary_Entity> dataList = M_PI_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
-		List<M_PI_Manual_Archival_Summary_Entity> dataList1 = M_PI_Manual_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_PI_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+		List<M_PI_Manual_Archival_Summary_Entity> dataList1 = getManualArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty() || dataList1.isEmpty()) {
 			logger.warn("Service: No data found for M_PI report. Returning empty result.");
@@ -1914,7 +1946,7 @@ sheet.setColumnWidth(i, 5000);
 
 //Get data
 Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-List<M_PI_Archival_Detail_Entity> reportData = M_PI_Archival_Detail_Repo.getdatabydateList(parsedToDate,version);
+List<M_PI_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 if (reportData != null && !reportData.isEmpty()) {
 int rowIndex = 1;
@@ -1976,14 +2008,11 @@ return new byte[0];
 }
 }
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 	    ModelAndView mv = new ModelAndView("BRRS/M_PI"); // ✅ match the report name
 	    System.out.println("Hello");
 	    if (acctNo != null) {
-	    	M_PI_Detail_Entity dep3Entity = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	    	M_PI_Detail_Entity dep3Entity = getDetailByAcctNumber(acctNo);
 	        if (dep3Entity != null && dep3Entity.getReportDate() != null) {
 	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(dep3Entity.getReportDate());
 	            mv.addObject("asondate", formattedDate);
@@ -2004,7 +2033,7 @@ return new byte[0];
 	    ModelAndView mv = new ModelAndView("BRRS/M_PI"); // ✅ match the report name
 
 	    if (acctNo != null) {
-	        M_PI_Detail_Entity la1Entity = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	        M_PI_Detail_Entity la1Entity = getDetailByAcctNumber(acctNo);
 	        if (la1Entity != null && la1Entity.getReportDate() != null) {
 	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
 	            mv.addObject("asondate", formattedDate);
@@ -2028,7 +2057,7 @@ return new byte[0];
 
 	        logger.info("Received update for ACCT_NO: {}", acctNo);
 
-	        M_PI_Detail_Entity existing = M_PI_Detail_Repo.findByAcctnumber(acctNo);
+	        M_PI_Detail_Entity existing = getDetailByAcctNumber(acctNo);
 	        if (existing == null) {
 	            logger.warn("No record found for ACCT_NO: {}", acctNo);
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -2057,7 +2086,7 @@ return new byte[0];
 	        
 
 	        if (isChanged) {
-	        	M_PI_Detail_Repo.save(existing);
+	        	updateDetailRecord(existing);
 	            logger.info("Record updated successfully for account {}", acctNo);
 
 	            // Format date for procedure
@@ -2099,10 +2128,8 @@ return new byte[0];
 				logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
 				
-				List<M_PI_Archival_Summary_Entity> dataList = M_PI_Archival_Summary_Repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
-				List<M_PI_Manual_Archival_Summary_Entity> dataList1 = M_PI_Manual_Archival_Summary_Repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
+				List<M_PI_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+				List<M_PI_Manual_Archival_Summary_Entity> dataList1 = getManualArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 				if (dataList.isEmpty() || dataList1.isEmpty()) {
 					logger.warn("Service: No data found for M_PI report. Returning empty result.");
@@ -2768,9 +2795,9 @@ return new byte[0];
 					return BRRS_M_PIArchivalEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 				}
 
-				List<M_PI_Summary_Entity> dataList = BRRS_M_PI_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				List<M_PI_Summary_Entity> dataList = getSummaryAll();
 
-				List<M_PI_Manual_Summary_Entity> dataList1 = BRRS_M_PI_Manual_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				List<M_PI_Manual_Summary_Entity> dataList1 = getManualSummaryAll();
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
 					return new byte[0];
@@ -3425,5 +3452,586 @@ return new byte[0];
 					return out.toByteArray();
 				}
 			}
-	
+
+	// ─── Inner entity classes ──────────────────────────────────────────────────
+
+	public static class M_PI_Summary_Entity {
+		private Date REPORT_DATE;
+		private String REPORT_VERSION;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+		private String R8_PRODUCT; private String R8_CROSS_REFERENCE; private BigDecimal R8_VALUE; private BigDecimal R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R9_PRODUCT; private String R9_CROSS_REFERENCE; private BigDecimal R9_VALUE; private BigDecimal R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R10_PRODUCT; private String R10_CROSS_REFERENCE; private BigDecimal R10_VALUE; private BigDecimal R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R11_PRODUCT; private String R11_CROSS_REFERENCE; private BigDecimal R11_VALUE; private BigDecimal R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R12_PRODUCT; private String R12_CROSS_REFERENCE; private BigDecimal R12_VALUE; private BigDecimal R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R13_PRODUCT; private String R13_CROSS_REFERENCE; private BigDecimal R13_VALUE; private BigDecimal R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R14_PRODUCT; private String R14_CROSS_REFERENCE; private BigDecimal R14_VALUE; private BigDecimal R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R15_PRODUCT; private String R15_CROSS_REFERENCE; private BigDecimal R15_VALUE; private BigDecimal R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R16_PRODUCT; private String R16_CROSS_REFERENCE; private BigDecimal R16_VALUE; private BigDecimal R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R17_PRODUCT; private String R17_CROSS_REFERENCE; private BigDecimal R17_VALUE; private BigDecimal R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R18_PRODUCT; private String R18_CROSS_REFERENCE; private BigDecimal R18_VALUE; private BigDecimal R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R19_PRODUCT; private String R19_CROSS_REFERENCE; private BigDecimal R19_VALUE; private BigDecimal R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R20_PRODUCT; private String R20_CROSS_REFERENCE; private BigDecimal R20_VALUE; private BigDecimal R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R21_PRODUCT; private String R21_CROSS_REFERENCE; private BigDecimal R21_VALUE; private BigDecimal R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R22_PRODUCT; private String R22_CROSS_REFERENCE; private BigDecimal R22_VALUE; private BigDecimal R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R23_PRODUCT; private String R23_CROSS_REFERENCE; private BigDecimal R23_VALUE; private BigDecimal R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R24_PRODUCT; private String R24_CROSS_REFERENCE; private BigDecimal R24_VALUE; private BigDecimal R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R25_PRODUCT; private String R25_CROSS_REFERENCE; private BigDecimal R25_VALUE; private BigDecimal R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R26_PRODUCT; private String R26_CROSS_REFERENCE; private BigDecimal R26_VALUE; private BigDecimal R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R27_PRODUCT; private String R27_CROSS_REFERENCE; private BigDecimal R27_VALUE; private BigDecimal R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		public Date getREPORT_DATE() { return REPORT_DATE; } public void setREPORT_DATE(Date rEPORT_DATE) { REPORT_DATE = rEPORT_DATE; }
+		public String getREPORT_VERSION() { return REPORT_VERSION; } public void setREPORT_VERSION(String rEPORT_VERSION) { REPORT_VERSION = rEPORT_VERSION; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; } public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) { REPORT_FREQUENCY = rEPORT_FREQUENCY; }
+		public String getREPORT_CODE() { return REPORT_CODE; } public void setREPORT_CODE(String rEPORT_CODE) { REPORT_CODE = rEPORT_CODE; }
+		public String getREPORT_DESC() { return REPORT_DESC; } public void setREPORT_DESC(String rEPORT_DESC) { REPORT_DESC = rEPORT_DESC; }
+		public String getENTITY_FLG() { return ENTITY_FLG; } public void setENTITY_FLG(String eNTITY_FLG) { ENTITY_FLG = eNTITY_FLG; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; } public void setMODIFY_FLG(String mODIFY_FLG) { MODIFY_FLG = mODIFY_FLG; }
+		public String getDEL_FLG() { return DEL_FLG; } public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+		public String getR8_PRODUCT() { return R8_PRODUCT; } public void setR8_PRODUCT(String r8_PRODUCT) { R8_PRODUCT = r8_PRODUCT; }
+		public String getR8_CROSS_REFERENCE() { return R8_CROSS_REFERENCE; } public void setR8_CROSS_REFERENCE(String r8_CROSS_REFERENCE) { R8_CROSS_REFERENCE = r8_CROSS_REFERENCE; }
+		public BigDecimal getR8_VALUE() { return R8_VALUE; } public void setR8_VALUE(BigDecimal r8_VALUE) { R8_VALUE = r8_VALUE; }
+		public BigDecimal getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR9_PRODUCT() { return R9_PRODUCT; } public void setR9_PRODUCT(String r9_PRODUCT) { R9_PRODUCT = r9_PRODUCT; }
+		public String getR9_CROSS_REFERENCE() { return R9_CROSS_REFERENCE; } public void setR9_CROSS_REFERENCE(String r9_CROSS_REFERENCE) { R9_CROSS_REFERENCE = r9_CROSS_REFERENCE; }
+		public BigDecimal getR9_VALUE() { return R9_VALUE; } public void setR9_VALUE(BigDecimal r9_VALUE) { R9_VALUE = r9_VALUE; }
+		public BigDecimal getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR10_PRODUCT() { return R10_PRODUCT; } public void setR10_PRODUCT(String r10_PRODUCT) { R10_PRODUCT = r10_PRODUCT; }
+		public String getR10_CROSS_REFERENCE() { return R10_CROSS_REFERENCE; } public void setR10_CROSS_REFERENCE(String r10_CROSS_REFERENCE) { R10_CROSS_REFERENCE = r10_CROSS_REFERENCE; }
+		public BigDecimal getR10_VALUE() { return R10_VALUE; } public void setR10_VALUE(BigDecimal r10_VALUE) { R10_VALUE = r10_VALUE; }
+		public BigDecimal getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR11_PRODUCT() { return R11_PRODUCT; } public void setR11_PRODUCT(String r11_PRODUCT) { R11_PRODUCT = r11_PRODUCT; }
+		public String getR11_CROSS_REFERENCE() { return R11_CROSS_REFERENCE; } public void setR11_CROSS_REFERENCE(String r11_CROSS_REFERENCE) { R11_CROSS_REFERENCE = r11_CROSS_REFERENCE; }
+		public BigDecimal getR11_VALUE() { return R11_VALUE; } public void setR11_VALUE(BigDecimal r11_VALUE) { R11_VALUE = r11_VALUE; }
+		public BigDecimal getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR12_PRODUCT() { return R12_PRODUCT; } public void setR12_PRODUCT(String r12_PRODUCT) { R12_PRODUCT = r12_PRODUCT; }
+		public String getR12_CROSS_REFERENCE() { return R12_CROSS_REFERENCE; } public void setR12_CROSS_REFERENCE(String r12_CROSS_REFERENCE) { R12_CROSS_REFERENCE = r12_CROSS_REFERENCE; }
+		public BigDecimal getR12_VALUE() { return R12_VALUE; } public void setR12_VALUE(BigDecimal r12_VALUE) { R12_VALUE = r12_VALUE; }
+		public BigDecimal getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR13_PRODUCT() { return R13_PRODUCT; } public void setR13_PRODUCT(String r13_PRODUCT) { R13_PRODUCT = r13_PRODUCT; }
+		public String getR13_CROSS_REFERENCE() { return R13_CROSS_REFERENCE; } public void setR13_CROSS_REFERENCE(String r13_CROSS_REFERENCE) { R13_CROSS_REFERENCE = r13_CROSS_REFERENCE; }
+		public BigDecimal getR13_VALUE() { return R13_VALUE; } public void setR13_VALUE(BigDecimal r13_VALUE) { R13_VALUE = r13_VALUE; }
+		public BigDecimal getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR14_PRODUCT() { return R14_PRODUCT; } public void setR14_PRODUCT(String r14_PRODUCT) { R14_PRODUCT = r14_PRODUCT; }
+		public String getR14_CROSS_REFERENCE() { return R14_CROSS_REFERENCE; } public void setR14_CROSS_REFERENCE(String r14_CROSS_REFERENCE) { R14_CROSS_REFERENCE = r14_CROSS_REFERENCE; }
+		public BigDecimal getR14_VALUE() { return R14_VALUE; } public void setR14_VALUE(BigDecimal r14_VALUE) { R14_VALUE = r14_VALUE; }
+		public BigDecimal getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR15_PRODUCT() { return R15_PRODUCT; } public void setR15_PRODUCT(String r15_PRODUCT) { R15_PRODUCT = r15_PRODUCT; }
+		public String getR15_CROSS_REFERENCE() { return R15_CROSS_REFERENCE; } public void setR15_CROSS_REFERENCE(String r15_CROSS_REFERENCE) { R15_CROSS_REFERENCE = r15_CROSS_REFERENCE; }
+		public BigDecimal getR15_VALUE() { return R15_VALUE; } public void setR15_VALUE(BigDecimal r15_VALUE) { R15_VALUE = r15_VALUE; }
+		public BigDecimal getR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR16_PRODUCT() { return R16_PRODUCT; } public void setR16_PRODUCT(String r16_PRODUCT) { R16_PRODUCT = r16_PRODUCT; }
+		public String getR16_CROSS_REFERENCE() { return R16_CROSS_REFERENCE; } public void setR16_CROSS_REFERENCE(String r16_CROSS_REFERENCE) { R16_CROSS_REFERENCE = r16_CROSS_REFERENCE; }
+		public BigDecimal getR16_VALUE() { return R16_VALUE; } public void setR16_VALUE(BigDecimal r16_VALUE) { R16_VALUE = r16_VALUE; }
+		public BigDecimal getR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR17_PRODUCT() { return R17_PRODUCT; } public void setR17_PRODUCT(String r17_PRODUCT) { R17_PRODUCT = r17_PRODUCT; }
+		public String getR17_CROSS_REFERENCE() { return R17_CROSS_REFERENCE; } public void setR17_CROSS_REFERENCE(String r17_CROSS_REFERENCE) { R17_CROSS_REFERENCE = r17_CROSS_REFERENCE; }
+		public BigDecimal getR17_VALUE() { return R17_VALUE; } public void setR17_VALUE(BigDecimal r17_VALUE) { R17_VALUE = r17_VALUE; }
+		public BigDecimal getR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR18_PRODUCT() { return R18_PRODUCT; } public void setR18_PRODUCT(String r18_PRODUCT) { R18_PRODUCT = r18_PRODUCT; }
+		public String getR18_CROSS_REFERENCE() { return R18_CROSS_REFERENCE; } public void setR18_CROSS_REFERENCE(String r18_CROSS_REFERENCE) { R18_CROSS_REFERENCE = r18_CROSS_REFERENCE; }
+		public BigDecimal getR18_VALUE() { return R18_VALUE; } public void setR18_VALUE(BigDecimal r18_VALUE) { R18_VALUE = r18_VALUE; }
+		public BigDecimal getR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR19_PRODUCT() { return R19_PRODUCT; } public void setR19_PRODUCT(String r19_PRODUCT) { R19_PRODUCT = r19_PRODUCT; }
+		public String getR19_CROSS_REFERENCE() { return R19_CROSS_REFERENCE; } public void setR19_CROSS_REFERENCE(String r19_CROSS_REFERENCE) { R19_CROSS_REFERENCE = r19_CROSS_REFERENCE; }
+		public BigDecimal getR19_VALUE() { return R19_VALUE; } public void setR19_VALUE(BigDecimal r19_VALUE) { R19_VALUE = r19_VALUE; }
+		public BigDecimal getR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR20_PRODUCT() { return R20_PRODUCT; } public void setR20_PRODUCT(String r20_PRODUCT) { R20_PRODUCT = r20_PRODUCT; }
+		public String getR20_CROSS_REFERENCE() { return R20_CROSS_REFERENCE; } public void setR20_CROSS_REFERENCE(String r20_CROSS_REFERENCE) { R20_CROSS_REFERENCE = r20_CROSS_REFERENCE; }
+		public BigDecimal getR20_VALUE() { return R20_VALUE; } public void setR20_VALUE(BigDecimal r20_VALUE) { R20_VALUE = r20_VALUE; }
+		public BigDecimal getR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR21_PRODUCT() { return R21_PRODUCT; } public void setR21_PRODUCT(String r21_PRODUCT) { R21_PRODUCT = r21_PRODUCT; }
+		public String getR21_CROSS_REFERENCE() { return R21_CROSS_REFERENCE; } public void setR21_CROSS_REFERENCE(String r21_CROSS_REFERENCE) { R21_CROSS_REFERENCE = r21_CROSS_REFERENCE; }
+		public BigDecimal getR21_VALUE() { return R21_VALUE; } public void setR21_VALUE(BigDecimal r21_VALUE) { R21_VALUE = r21_VALUE; }
+		public BigDecimal getR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR22_PRODUCT() { return R22_PRODUCT; } public void setR22_PRODUCT(String r22_PRODUCT) { R22_PRODUCT = r22_PRODUCT; }
+		public String getR22_CROSS_REFERENCE() { return R22_CROSS_REFERENCE; } public void setR22_CROSS_REFERENCE(String r22_CROSS_REFERENCE) { R22_CROSS_REFERENCE = r22_CROSS_REFERENCE; }
+		public BigDecimal getR22_VALUE() { return R22_VALUE; } public void setR22_VALUE(BigDecimal r22_VALUE) { R22_VALUE = r22_VALUE; }
+		public BigDecimal getR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR23_PRODUCT() { return R23_PRODUCT; } public void setR23_PRODUCT(String r23_PRODUCT) { R23_PRODUCT = r23_PRODUCT; }
+		public String getR23_CROSS_REFERENCE() { return R23_CROSS_REFERENCE; } public void setR23_CROSS_REFERENCE(String r23_CROSS_REFERENCE) { R23_CROSS_REFERENCE = r23_CROSS_REFERENCE; }
+		public BigDecimal getR23_VALUE() { return R23_VALUE; } public void setR23_VALUE(BigDecimal r23_VALUE) { R23_VALUE = r23_VALUE; }
+		public BigDecimal getR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR24_PRODUCT() { return R24_PRODUCT; } public void setR24_PRODUCT(String r24_PRODUCT) { R24_PRODUCT = r24_PRODUCT; }
+		public String getR24_CROSS_REFERENCE() { return R24_CROSS_REFERENCE; } public void setR24_CROSS_REFERENCE(String r24_CROSS_REFERENCE) { R24_CROSS_REFERENCE = r24_CROSS_REFERENCE; }
+		public BigDecimal getR24_VALUE() { return R24_VALUE; } public void setR24_VALUE(BigDecimal r24_VALUE) { R24_VALUE = r24_VALUE; }
+		public BigDecimal getR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR25_PRODUCT() { return R25_PRODUCT; } public void setR25_PRODUCT(String r25_PRODUCT) { R25_PRODUCT = r25_PRODUCT; }
+		public String getR25_CROSS_REFERENCE() { return R25_CROSS_REFERENCE; } public void setR25_CROSS_REFERENCE(String r25_CROSS_REFERENCE) { R25_CROSS_REFERENCE = r25_CROSS_REFERENCE; }
+		public BigDecimal getR25_VALUE() { return R25_VALUE; } public void setR25_VALUE(BigDecimal r25_VALUE) { R25_VALUE = r25_VALUE; }
+		public BigDecimal getR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR26_PRODUCT() { return R26_PRODUCT; } public void setR26_PRODUCT(String r26_PRODUCT) { R26_PRODUCT = r26_PRODUCT; }
+		public String getR26_CROSS_REFERENCE() { return R26_CROSS_REFERENCE; } public void setR26_CROSS_REFERENCE(String r26_CROSS_REFERENCE) { R26_CROSS_REFERENCE = r26_CROSS_REFERENCE; }
+		public BigDecimal getR26_VALUE() { return R26_VALUE; } public void setR26_VALUE(BigDecimal r26_VALUE) { R26_VALUE = r26_VALUE; }
+		public BigDecimal getR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR27_PRODUCT() { return R27_PRODUCT; } public void setR27_PRODUCT(String r27_PRODUCT) { R27_PRODUCT = r27_PRODUCT; }
+		public String getR27_CROSS_REFERENCE() { return R27_CROSS_REFERENCE; } public void setR27_CROSS_REFERENCE(String r27_CROSS_REFERENCE) { R27_CROSS_REFERENCE = r27_CROSS_REFERENCE; }
+		public BigDecimal getR27_VALUE() { return R27_VALUE; } public void setR27_VALUE(BigDecimal r27_VALUE) { R27_VALUE = r27_VALUE; }
+		public BigDecimal getR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+	}
+
+	public static class M_PI_Manual_Summary_Entity {
+		private Date REPORT_DATE;
+		private String REPORT_VERSION;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+		private BigDecimal R14_VALUE;
+		private BigDecimal R18_VALUE;
+		private BigDecimal R19_VALUE;
+		private BigDecimal R25_VALUE;
+		public Date getREPORT_DATE() { return REPORT_DATE; } public void setREPORT_DATE(Date rEPORT_DATE) { REPORT_DATE = rEPORT_DATE; }
+		public String getREPORT_VERSION() { return REPORT_VERSION; } public void setREPORT_VERSION(String rEPORT_VERSION) { REPORT_VERSION = rEPORT_VERSION; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; } public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) { REPORT_FREQUENCY = rEPORT_FREQUENCY; }
+		public String getREPORT_CODE() { return REPORT_CODE; } public void setREPORT_CODE(String rEPORT_CODE) { REPORT_CODE = rEPORT_CODE; }
+		public String getREPORT_DESC() { return REPORT_DESC; } public void setREPORT_DESC(String rEPORT_DESC) { REPORT_DESC = rEPORT_DESC; }
+		public String getENTITY_FLG() { return ENTITY_FLG; } public void setENTITY_FLG(String eNTITY_FLG) { ENTITY_FLG = eNTITY_FLG; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; } public void setMODIFY_FLG(String mODIFY_FLG) { MODIFY_FLG = mODIFY_FLG; }
+		public String getDEL_FLG() { return DEL_FLG; } public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+		public BigDecimal getR14_VALUE() { return R14_VALUE; } public void setR14_VALUE(BigDecimal r14_VALUE) { R14_VALUE = r14_VALUE; }
+		public BigDecimal getR18_VALUE() { return R18_VALUE; } public void setR18_VALUE(BigDecimal r18_VALUE) { R18_VALUE = r18_VALUE; }
+		public BigDecimal getR19_VALUE() { return R19_VALUE; } public void setR19_VALUE(BigDecimal r19_VALUE) { R19_VALUE = r19_VALUE; }
+		public BigDecimal getR25_VALUE() { return R25_VALUE; } public void setR25_VALUE(BigDecimal r25_VALUE) { R25_VALUE = r25_VALUE; }
+	}
+
+	public static class M_PI_Detail_Entity {
+		private String custId;
+		private String acctNumber;
+		private String acctName;
+		private String dataType;
+		private String reportAddlCriteria1;
+		private String reportAddlCriteria2;
+		private String reportAddlCriteria3;
+		private String reportLabel;
+		private String reportRemarks;
+		private String modificationRemarks;
+		private String dataEntryVersion;
+		private BigDecimal acctBalanceInpula;
+		private Date reportDate;
+		private String reportName;
+		private String createUser;
+		private Date createTime;
+		private String modifyUser;
+		private Date modifyTime;
+		private String verifyUser;
+		private Date verifyTime;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		public String getCustId() { return custId; } public void setCustId(String custId) { this.custId = custId; }
+		public String getAcctNumber() { return acctNumber; } public void setAcctNumber(String acctNumber) { this.acctNumber = acctNumber; }
+		public String getAcctName() { return acctName; } public void setAcctName(String acctName) { this.acctName = acctName; }
+		public String getDataType() { return dataType; } public void setDataType(String dataType) { this.dataType = dataType; }
+		public String getReportAddlCriteria1() { return reportAddlCriteria1; } public void setReportAddlCriteria1(String reportAddlCriteria1) { this.reportAddlCriteria1 = reportAddlCriteria1; }
+		public String getReportAddlCriteria2() { return reportAddlCriteria2; } public void setReportAddlCriteria2(String reportAddlCriteria2) { this.reportAddlCriteria2 = reportAddlCriteria2; }
+		public String getReportAddlCriteria3() { return reportAddlCriteria3; } public void setReportAddlCriteria3(String reportAddlCriteria3) { this.reportAddlCriteria3 = reportAddlCriteria3; }
+		public String getReportLabel() { return reportLabel; } public void setReportLabel(String reportLabel) { this.reportLabel = reportLabel; }
+		public String getReportRemarks() { return reportRemarks; } public void setReportRemarks(String reportRemarks) { this.reportRemarks = reportRemarks; }
+		public String getModificationRemarks() { return modificationRemarks; } public void setModificationRemarks(String modificationRemarks) { this.modificationRemarks = modificationRemarks; }
+		public String getDataEntryVersion() { return dataEntryVersion; } public void setDataEntryVersion(String dataEntryVersion) { this.dataEntryVersion = dataEntryVersion; }
+		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; } public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) { this.acctBalanceInpula = acctBalanceInpula; }
+		public Date getReportDate() { return reportDate; } public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public String getReportName() { return reportName; } public void setReportName(String reportName) { this.reportName = reportName; }
+		public String getCreateUser() { return createUser; } public void setCreateUser(String createUser) { this.createUser = createUser; }
+		public Date getCreateTime() { return createTime; } public void setCreateTime(Date createTime) { this.createTime = createTime; }
+		public String getModifyUser() { return modifyUser; } public void setModifyUser(String modifyUser) { this.modifyUser = modifyUser; }
+		public Date getModifyTime() { return modifyTime; } public void setModifyTime(Date modifyTime) { this.modifyTime = modifyTime; }
+		public String getVerifyUser() { return verifyUser; } public void setVerifyUser(String verifyUser) { this.verifyUser = verifyUser; }
+		public Date getVerifyTime() { return verifyTime; } public void setVerifyTime(Date verifyTime) { this.verifyTime = verifyTime; }
+		public String getEntityFlg() { return entityFlg; } public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; } public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; } public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+	}
+
+	public static class M_PI_Archival_Summary_Entity {
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+		private String R8_PRODUCT; private String R8_CROSS_REFERENCE; private BigDecimal R8_VALUE; private BigDecimal R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R9_PRODUCT; private String R9_CROSS_REFERENCE; private BigDecimal R9_VALUE; private BigDecimal R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R10_PRODUCT; private String R10_CROSS_REFERENCE; private BigDecimal R10_VALUE; private BigDecimal R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R11_PRODUCT; private String R11_CROSS_REFERENCE; private BigDecimal R11_VALUE; private BigDecimal R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R12_PRODUCT; private String R12_CROSS_REFERENCE; private BigDecimal R12_VALUE; private BigDecimal R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R13_PRODUCT; private String R13_CROSS_REFERENCE; private BigDecimal R13_VALUE; private BigDecimal R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R14_PRODUCT; private String R14_CROSS_REFERENCE; private BigDecimal R14_VALUE; private BigDecimal R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; private BigDecimal R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2;
+		private String R15_PRODUCT; private String R15_CROSS_REFERENCE; private BigDecimal R15_VALUE; private BigDecimal R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R16_PRODUCT; private String R16_CROSS_REFERENCE; private BigDecimal R16_VALUE; private BigDecimal R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R17_PRODUCT; private String R17_CROSS_REFERENCE; private BigDecimal R17_VALUE; private BigDecimal R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R18_PRODUCT; private String R18_CROSS_REFERENCE; private BigDecimal R18_VALUE; private BigDecimal R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R19_PRODUCT; private String R19_CROSS_REFERENCE; private BigDecimal R19_VALUE; private BigDecimal R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R20_PRODUCT; private String R20_CROSS_REFERENCE; private BigDecimal R20_VALUE; private BigDecimal R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R21_PRODUCT; private String R21_CROSS_REFERENCE; private BigDecimal R21_VALUE; private BigDecimal R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R22_PRODUCT; private String R22_CROSS_REFERENCE; private BigDecimal R22_VALUE; private BigDecimal R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R23_PRODUCT; private String R23_CROSS_REFERENCE; private BigDecimal R23_VALUE; private BigDecimal R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R24_PRODUCT; private String R24_CROSS_REFERENCE; private BigDecimal R24_VALUE; private BigDecimal R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R25_PRODUCT; private String R25_CROSS_REFERENCE; private BigDecimal R25_VALUE; private BigDecimal R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R26_PRODUCT; private String R26_CROSS_REFERENCE; private BigDecimal R26_VALUE; private BigDecimal R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		private String R27_PRODUCT; private String R27_CROSS_REFERENCE; private BigDecimal R27_VALUE; private BigDecimal R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS;
+		public Date getREPORT_DATE() { return REPORT_DATE; } public void setREPORT_DATE(Date rEPORT_DATE) { REPORT_DATE = rEPORT_DATE; }
+		public BigDecimal getREPORT_VERSION() { return REPORT_VERSION; } public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) { REPORT_VERSION = rEPORT_VERSION; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; } public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) { REPORT_FREQUENCY = rEPORT_FREQUENCY; }
+		public String getREPORT_CODE() { return REPORT_CODE; } public void setREPORT_CODE(String rEPORT_CODE) { REPORT_CODE = rEPORT_CODE; }
+		public String getREPORT_DESC() { return REPORT_DESC; } public void setREPORT_DESC(String rEPORT_DESC) { REPORT_DESC = rEPORT_DESC; }
+		public String getENTITY_FLG() { return ENTITY_FLG; } public void setENTITY_FLG(String eNTITY_FLG) { ENTITY_FLG = eNTITY_FLG; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; } public void setMODIFY_FLG(String mODIFY_FLG) { MODIFY_FLG = mODIFY_FLG; }
+		public String getDEL_FLG() { return DEL_FLG; } public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+		public String getR8_PRODUCT() { return R8_PRODUCT; } public void setR8_PRODUCT(String r8_PRODUCT) { R8_PRODUCT = r8_PRODUCT; }
+		public String getR8_CROSS_REFERENCE() { return R8_CROSS_REFERENCE; } public void setR8_CROSS_REFERENCE(String r8_CROSS_REFERENCE) { R8_CROSS_REFERENCE = r8_CROSS_REFERENCE; }
+		public BigDecimal getR8_VALUE() { return R8_VALUE; } public void setR8_VALUE(BigDecimal r8_VALUE) { R8_VALUE = r8_VALUE; }
+		public BigDecimal getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR9_PRODUCT() { return R9_PRODUCT; } public void setR9_PRODUCT(String r9_PRODUCT) { R9_PRODUCT = r9_PRODUCT; }
+		public String getR9_CROSS_REFERENCE() { return R9_CROSS_REFERENCE; } public void setR9_CROSS_REFERENCE(String r9_CROSS_REFERENCE) { R9_CROSS_REFERENCE = r9_CROSS_REFERENCE; }
+		public BigDecimal getR9_VALUE() { return R9_VALUE; } public void setR9_VALUE(BigDecimal r9_VALUE) { R9_VALUE = r9_VALUE; }
+		public BigDecimal getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR10_PRODUCT() { return R10_PRODUCT; } public void setR10_PRODUCT(String r10_PRODUCT) { R10_PRODUCT = r10_PRODUCT; }
+		public String getR10_CROSS_REFERENCE() { return R10_CROSS_REFERENCE; } public void setR10_CROSS_REFERENCE(String r10_CROSS_REFERENCE) { R10_CROSS_REFERENCE = r10_CROSS_REFERENCE; }
+		public BigDecimal getR10_VALUE() { return R10_VALUE; } public void setR10_VALUE(BigDecimal r10_VALUE) { R10_VALUE = r10_VALUE; }
+		public BigDecimal getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR11_PRODUCT() { return R11_PRODUCT; } public void setR11_PRODUCT(String r11_PRODUCT) { R11_PRODUCT = r11_PRODUCT; }
+		public String getR11_CROSS_REFERENCE() { return R11_CROSS_REFERENCE; } public void setR11_CROSS_REFERENCE(String r11_CROSS_REFERENCE) { R11_CROSS_REFERENCE = r11_CROSS_REFERENCE; }
+		public BigDecimal getR11_VALUE() { return R11_VALUE; } public void setR11_VALUE(BigDecimal r11_VALUE) { R11_VALUE = r11_VALUE; }
+		public BigDecimal getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR12_PRODUCT() { return R12_PRODUCT; } public void setR12_PRODUCT(String r12_PRODUCT) { R12_PRODUCT = r12_PRODUCT; }
+		public String getR12_CROSS_REFERENCE() { return R12_CROSS_REFERENCE; } public void setR12_CROSS_REFERENCE(String r12_CROSS_REFERENCE) { R12_CROSS_REFERENCE = r12_CROSS_REFERENCE; }
+		public BigDecimal getR12_VALUE() { return R12_VALUE; } public void setR12_VALUE(BigDecimal r12_VALUE) { R12_VALUE = r12_VALUE; }
+		public BigDecimal getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR13_PRODUCT() { return R13_PRODUCT; } public void setR13_PRODUCT(String r13_PRODUCT) { R13_PRODUCT = r13_PRODUCT; }
+		public String getR13_CROSS_REFERENCE() { return R13_CROSS_REFERENCE; } public void setR13_CROSS_REFERENCE(String r13_CROSS_REFERENCE) { R13_CROSS_REFERENCE = r13_CROSS_REFERENCE; }
+		public BigDecimal getR13_VALUE() { return R13_VALUE; } public void setR13_VALUE(BigDecimal r13_VALUE) { R13_VALUE = r13_VALUE; }
+		public BigDecimal getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR14_PRODUCT() { return R14_PRODUCT; } public void setR14_PRODUCT(String r14_PRODUCT) { R14_PRODUCT = r14_PRODUCT; }
+		public String getR14_CROSS_REFERENCE() { return R14_CROSS_REFERENCE; } public void setR14_CROSS_REFERENCE(String r14_CROSS_REFERENCE) { R14_CROSS_REFERENCE = r14_CROSS_REFERENCE; }
+		public BigDecimal getR14_VALUE() { return R14_VALUE; } public void setR14_VALUE(BigDecimal r14_VALUE) { R14_VALUE = r14_VALUE; }
+		public BigDecimal getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public BigDecimal getR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2() { return R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; } public void setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(BigDecimal r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2) { R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2 = r14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2; }
+		public String getR15_PRODUCT() { return R15_PRODUCT; } public void setR15_PRODUCT(String r15_PRODUCT) { R15_PRODUCT = r15_PRODUCT; }
+		public String getR15_CROSS_REFERENCE() { return R15_CROSS_REFERENCE; } public void setR15_CROSS_REFERENCE(String r15_CROSS_REFERENCE) { R15_CROSS_REFERENCE = r15_CROSS_REFERENCE; }
+		public BigDecimal getR15_VALUE() { return R15_VALUE; } public void setR15_VALUE(BigDecimal r15_VALUE) { R15_VALUE = r15_VALUE; }
+		public BigDecimal getR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR16_PRODUCT() { return R16_PRODUCT; } public void setR16_PRODUCT(String r16_PRODUCT) { R16_PRODUCT = r16_PRODUCT; }
+		public String getR16_CROSS_REFERENCE() { return R16_CROSS_REFERENCE; } public void setR16_CROSS_REFERENCE(String r16_CROSS_REFERENCE) { R16_CROSS_REFERENCE = r16_CROSS_REFERENCE; }
+		public BigDecimal getR16_VALUE() { return R16_VALUE; } public void setR16_VALUE(BigDecimal r16_VALUE) { R16_VALUE = r16_VALUE; }
+		public BigDecimal getR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR17_PRODUCT() { return R17_PRODUCT; } public void setR17_PRODUCT(String r17_PRODUCT) { R17_PRODUCT = r17_PRODUCT; }
+		public String getR17_CROSS_REFERENCE() { return R17_CROSS_REFERENCE; } public void setR17_CROSS_REFERENCE(String r17_CROSS_REFERENCE) { R17_CROSS_REFERENCE = r17_CROSS_REFERENCE; }
+		public BigDecimal getR17_VALUE() { return R17_VALUE; } public void setR17_VALUE(BigDecimal r17_VALUE) { R17_VALUE = r17_VALUE; }
+		public BigDecimal getR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR18_PRODUCT() { return R18_PRODUCT; } public void setR18_PRODUCT(String r18_PRODUCT) { R18_PRODUCT = r18_PRODUCT; }
+		public String getR18_CROSS_REFERENCE() { return R18_CROSS_REFERENCE; } public void setR18_CROSS_REFERENCE(String r18_CROSS_REFERENCE) { R18_CROSS_REFERENCE = r18_CROSS_REFERENCE; }
+		public BigDecimal getR18_VALUE() { return R18_VALUE; } public void setR18_VALUE(BigDecimal r18_VALUE) { R18_VALUE = r18_VALUE; }
+		public BigDecimal getR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR19_PRODUCT() { return R19_PRODUCT; } public void setR19_PRODUCT(String r19_PRODUCT) { R19_PRODUCT = r19_PRODUCT; }
+		public String getR19_CROSS_REFERENCE() { return R19_CROSS_REFERENCE; } public void setR19_CROSS_REFERENCE(String r19_CROSS_REFERENCE) { R19_CROSS_REFERENCE = r19_CROSS_REFERENCE; }
+		public BigDecimal getR19_VALUE() { return R19_VALUE; } public void setR19_VALUE(BigDecimal r19_VALUE) { R19_VALUE = r19_VALUE; }
+		public BigDecimal getR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR20_PRODUCT() { return R20_PRODUCT; } public void setR20_PRODUCT(String r20_PRODUCT) { R20_PRODUCT = r20_PRODUCT; }
+		public String getR20_CROSS_REFERENCE() { return R20_CROSS_REFERENCE; } public void setR20_CROSS_REFERENCE(String r20_CROSS_REFERENCE) { R20_CROSS_REFERENCE = r20_CROSS_REFERENCE; }
+		public BigDecimal getR20_VALUE() { return R20_VALUE; } public void setR20_VALUE(BigDecimal r20_VALUE) { R20_VALUE = r20_VALUE; }
+		public BigDecimal getR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR21_PRODUCT() { return R21_PRODUCT; } public void setR21_PRODUCT(String r21_PRODUCT) { R21_PRODUCT = r21_PRODUCT; }
+		public String getR21_CROSS_REFERENCE() { return R21_CROSS_REFERENCE; } public void setR21_CROSS_REFERENCE(String r21_CROSS_REFERENCE) { R21_CROSS_REFERENCE = r21_CROSS_REFERENCE; }
+		public BigDecimal getR21_VALUE() { return R21_VALUE; } public void setR21_VALUE(BigDecimal r21_VALUE) { R21_VALUE = r21_VALUE; }
+		public BigDecimal getR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR22_PRODUCT() { return R22_PRODUCT; } public void setR22_PRODUCT(String r22_PRODUCT) { R22_PRODUCT = r22_PRODUCT; }
+		public String getR22_CROSS_REFERENCE() { return R22_CROSS_REFERENCE; } public void setR22_CROSS_REFERENCE(String r22_CROSS_REFERENCE) { R22_CROSS_REFERENCE = r22_CROSS_REFERENCE; }
+		public BigDecimal getR22_VALUE() { return R22_VALUE; } public void setR22_VALUE(BigDecimal r22_VALUE) { R22_VALUE = r22_VALUE; }
+		public BigDecimal getR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR23_PRODUCT() { return R23_PRODUCT; } public void setR23_PRODUCT(String r23_PRODUCT) { R23_PRODUCT = r23_PRODUCT; }
+		public String getR23_CROSS_REFERENCE() { return R23_CROSS_REFERENCE; } public void setR23_CROSS_REFERENCE(String r23_CROSS_REFERENCE) { R23_CROSS_REFERENCE = r23_CROSS_REFERENCE; }
+		public BigDecimal getR23_VALUE() { return R23_VALUE; } public void setR23_VALUE(BigDecimal r23_VALUE) { R23_VALUE = r23_VALUE; }
+		public BigDecimal getR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR24_PRODUCT() { return R24_PRODUCT; } public void setR24_PRODUCT(String r24_PRODUCT) { R24_PRODUCT = r24_PRODUCT; }
+		public String getR24_CROSS_REFERENCE() { return R24_CROSS_REFERENCE; } public void setR24_CROSS_REFERENCE(String r24_CROSS_REFERENCE) { R24_CROSS_REFERENCE = r24_CROSS_REFERENCE; }
+		public BigDecimal getR24_VALUE() { return R24_VALUE; } public void setR24_VALUE(BigDecimal r24_VALUE) { R24_VALUE = r24_VALUE; }
+		public BigDecimal getR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR25_PRODUCT() { return R25_PRODUCT; } public void setR25_PRODUCT(String r25_PRODUCT) { R25_PRODUCT = r25_PRODUCT; }
+		public String getR25_CROSS_REFERENCE() { return R25_CROSS_REFERENCE; } public void setR25_CROSS_REFERENCE(String r25_CROSS_REFERENCE) { R25_CROSS_REFERENCE = r25_CROSS_REFERENCE; }
+		public BigDecimal getR25_VALUE() { return R25_VALUE; } public void setR25_VALUE(BigDecimal r25_VALUE) { R25_VALUE = r25_VALUE; }
+		public BigDecimal getR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR26_PRODUCT() { return R26_PRODUCT; } public void setR26_PRODUCT(String r26_PRODUCT) { R26_PRODUCT = r26_PRODUCT; }
+		public String getR26_CROSS_REFERENCE() { return R26_CROSS_REFERENCE; } public void setR26_CROSS_REFERENCE(String r26_CROSS_REFERENCE) { R26_CROSS_REFERENCE = r26_CROSS_REFERENCE; }
+		public BigDecimal getR26_VALUE() { return R26_VALUE; } public void setR26_VALUE(BigDecimal r26_VALUE) { R26_VALUE = r26_VALUE; }
+		public BigDecimal getR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+		public String getR27_PRODUCT() { return R27_PRODUCT; } public void setR27_PRODUCT(String r27_PRODUCT) { R27_PRODUCT = r27_PRODUCT; }
+		public String getR27_CROSS_REFERENCE() { return R27_CROSS_REFERENCE; } public void setR27_CROSS_REFERENCE(String r27_CROSS_REFERENCE) { R27_CROSS_REFERENCE = r27_CROSS_REFERENCE; }
+		public BigDecimal getR27_VALUE() { return R27_VALUE; } public void setR27_VALUE(BigDecimal r27_VALUE) { R27_VALUE = r27_VALUE; }
+		public BigDecimal getR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS() { return R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; } public void setR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(BigDecimal r27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS) { R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS = r27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS; }
+	}
+
+	public static class M_PI_Manual_Archival_Summary_Entity {
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+		private String REPORT_FREQUENCY;
+		private String REPORT_CODE;
+		private String REPORT_DESC;
+		private String ENTITY_FLG;
+		private String MODIFY_FLG;
+		private String DEL_FLG;
+		private BigDecimal R14_VALUE;
+		private BigDecimal R18_VALUE;
+		private BigDecimal R19_VALUE;
+		private BigDecimal R25_VALUE;
+		public Date getREPORT_DATE() { return REPORT_DATE; } public void setREPORT_DATE(Date rEPORT_DATE) { REPORT_DATE = rEPORT_DATE; }
+		public BigDecimal getREPORT_VERSION() { return REPORT_VERSION; } public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) { REPORT_VERSION = rEPORT_VERSION; }
+		public String getREPORT_FREQUENCY() { return REPORT_FREQUENCY; } public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) { REPORT_FREQUENCY = rEPORT_FREQUENCY; }
+		public String getREPORT_CODE() { return REPORT_CODE; } public void setREPORT_CODE(String rEPORT_CODE) { REPORT_CODE = rEPORT_CODE; }
+		public String getREPORT_DESC() { return REPORT_DESC; } public void setREPORT_DESC(String rEPORT_DESC) { REPORT_DESC = rEPORT_DESC; }
+		public String getENTITY_FLG() { return ENTITY_FLG; } public void setENTITY_FLG(String eNTITY_FLG) { ENTITY_FLG = eNTITY_FLG; }
+		public String getMODIFY_FLG() { return MODIFY_FLG; } public void setMODIFY_FLG(String mODIFY_FLG) { MODIFY_FLG = mODIFY_FLG; }
+		public String getDEL_FLG() { return DEL_FLG; } public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+		public BigDecimal getR14_VALUE() { return R14_VALUE; } public void setR14_VALUE(BigDecimal r14_VALUE) { R14_VALUE = r14_VALUE; }
+		public BigDecimal getR18_VALUE() { return R18_VALUE; } public void setR18_VALUE(BigDecimal r18_VALUE) { R18_VALUE = r18_VALUE; }
+		public BigDecimal getR19_VALUE() { return R19_VALUE; } public void setR19_VALUE(BigDecimal r19_VALUE) { R19_VALUE = r19_VALUE; }
+		public BigDecimal getR25_VALUE() { return R25_VALUE; } public void setR25_VALUE(BigDecimal r25_VALUE) { R25_VALUE = r25_VALUE; }
+	}
+
+	public static class M_PI_Archival_Detail_Entity {
+		private String custId;
+		private String acctNumber;
+		private String acctName;
+		private String dataType;
+		private String reportAddlCriteria1;
+		private String reportAddlCriteria2;
+		private String reportAddlCriteria3;
+		private String reportLabel;
+		private String reportRemarks;
+		private String modificationRemarks;
+		private String dataEntryVersion;
+		private BigDecimal acctBalanceInpula;
+		private Date reportDate;
+		private String reportName;
+		private String createUser;
+		private Date createTime;
+		private String modifyUser;
+		private Date modifyTime;
+		private String verifyUser;
+		private Date verifyTime;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		public String getCustId() { return custId; } public void setCustId(String custId) { this.custId = custId; }
+		public String getAcctNumber() { return acctNumber; } public void setAcctNumber(String acctNumber) { this.acctNumber = acctNumber; }
+		public String getAcctName() { return acctName; } public void setAcctName(String acctName) { this.acctName = acctName; }
+		public String getDataType() { return dataType; } public void setDataType(String dataType) { this.dataType = dataType; }
+		public String getReportAddlCriteria1() { return reportAddlCriteria1; } public void setReportAddlCriteria1(String reportAddlCriteria1) { this.reportAddlCriteria1 = reportAddlCriteria1; }
+		public String getReportAddlCriteria2() { return reportAddlCriteria2; } public void setReportAddlCriteria2(String reportAddlCriteria2) { this.reportAddlCriteria2 = reportAddlCriteria2; }
+		public String getReportAddlCriteria3() { return reportAddlCriteria3; } public void setReportAddlCriteria3(String reportAddlCriteria3) { this.reportAddlCriteria3 = reportAddlCriteria3; }
+		public String getReportLabel() { return reportLabel; } public void setReportLabel(String reportLabel) { this.reportLabel = reportLabel; }
+		public String getReportRemarks() { return reportRemarks; } public void setReportRemarks(String reportRemarks) { this.reportRemarks = reportRemarks; }
+		public String getModificationRemarks() { return modificationRemarks; } public void setModificationRemarks(String modificationRemarks) { this.modificationRemarks = modificationRemarks; }
+		public String getDataEntryVersion() { return dataEntryVersion; } public void setDataEntryVersion(String dataEntryVersion) { this.dataEntryVersion = dataEntryVersion; }
+		public BigDecimal getAcctBalanceInpula() { return acctBalanceInpula; } public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) { this.acctBalanceInpula = acctBalanceInpula; }
+		public Date getReportDate() { return reportDate; } public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public String getReportName() { return reportName; } public void setReportName(String reportName) { this.reportName = reportName; }
+		public String getCreateUser() { return createUser; } public void setCreateUser(String createUser) { this.createUser = createUser; }
+		public Date getCreateTime() { return createTime; } public void setCreateTime(Date createTime) { this.createTime = createTime; }
+		public String getModifyUser() { return modifyUser; } public void setModifyUser(String modifyUser) { this.modifyUser = modifyUser; }
+		public Date getModifyTime() { return modifyTime; } public void setModifyTime(Date modifyTime) { this.modifyTime = modifyTime; }
+		public String getVerifyUser() { return verifyUser; } public void setVerifyUser(String verifyUser) { this.verifyUser = verifyUser; }
+		public Date getVerifyTime() { return verifyTime; } public void setVerifyTime(Date verifyTime) { this.verifyTime = verifyTime; }
+		public String getEntityFlg() { return entityFlg; } public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; } public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; } public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+	}
+
+	// ─── RowMapper inner classes ───────────────────────────────────────────────
+
+	class M_PISummaryRowMapper implements RowMapper<M_PI_Summary_Entity> {
+		@Override
+		public M_PI_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Summary_Entity o = new M_PI_Summary_Entity();
+			o.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			o.setREPORT_VERSION(rs.getString("REPORT_VERSION"));
+			o.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			o.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			o.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			o.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			o.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			o.setDEL_FLG(rs.getString("DEL_FLG"));
+			o.setR8_PRODUCT(rs.getString("R8_PRODUCT")); o.setR8_CROSS_REFERENCE(rs.getString("R8_CROSS_REFERENCE")); o.setR8_VALUE(rs.getBigDecimal("R8_VALUE")); o.setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR9_PRODUCT(rs.getString("R9_PRODUCT")); o.setR9_CROSS_REFERENCE(rs.getString("R9_CROSS_REFERENCE")); o.setR9_VALUE(rs.getBigDecimal("R9_VALUE")); o.setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR10_PRODUCT(rs.getString("R10_PRODUCT")); o.setR10_CROSS_REFERENCE(rs.getString("R10_CROSS_REFERENCE")); o.setR10_VALUE(rs.getBigDecimal("R10_VALUE")); o.setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR11_PRODUCT(rs.getString("R11_PRODUCT")); o.setR11_CROSS_REFERENCE(rs.getString("R11_CROSS_REFERENCE")); o.setR11_VALUE(rs.getBigDecimal("R11_VALUE")); o.setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR12_PRODUCT(rs.getString("R12_PRODUCT")); o.setR12_CROSS_REFERENCE(rs.getString("R12_CROSS_REFERENCE")); o.setR12_VALUE(rs.getBigDecimal("R12_VALUE")); o.setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR13_PRODUCT(rs.getString("R13_PRODUCT")); o.setR13_CROSS_REFERENCE(rs.getString("R13_CROSS_REFERENCE")); o.setR13_VALUE(rs.getBigDecimal("R13_VALUE")); o.setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR14_PRODUCT(rs.getString("R14_PRODUCT")); o.setR14_CROSS_REFERENCE(rs.getString("R14_CROSS_REFERENCE")); o.setR14_VALUE(rs.getBigDecimal("R14_VALUE")); o.setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR15_PRODUCT(rs.getString("R15_PRODUCT")); o.setR15_CROSS_REFERENCE(rs.getString("R15_CROSS_REFERENCE")); o.setR15_VALUE(rs.getBigDecimal("R15_VALUE")); o.setR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR16_PRODUCT(rs.getString("R16_PRODUCT")); o.setR16_CROSS_REFERENCE(rs.getString("R16_CROSS_REFERENCE")); o.setR16_VALUE(rs.getBigDecimal("R16_VALUE")); o.setR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR17_PRODUCT(rs.getString("R17_PRODUCT")); o.setR17_CROSS_REFERENCE(rs.getString("R17_CROSS_REFERENCE")); o.setR17_VALUE(rs.getBigDecimal("R17_VALUE")); o.setR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR18_PRODUCT(rs.getString("R18_PRODUCT")); o.setR18_CROSS_REFERENCE(rs.getString("R18_CROSS_REFERENCE")); o.setR18_VALUE(rs.getBigDecimal("R18_VALUE")); o.setR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR19_PRODUCT(rs.getString("R19_PRODUCT")); o.setR19_CROSS_REFERENCE(rs.getString("R19_CROSS_REFERENCE")); o.setR19_VALUE(rs.getBigDecimal("R19_VALUE")); o.setR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR20_PRODUCT(rs.getString("R20_PRODUCT")); o.setR20_CROSS_REFERENCE(rs.getString("R20_CROSS_REFERENCE")); o.setR20_VALUE(rs.getBigDecimal("R20_VALUE")); o.setR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR21_PRODUCT(rs.getString("R21_PRODUCT")); o.setR21_CROSS_REFERENCE(rs.getString("R21_CROSS_REFERENCE")); o.setR21_VALUE(rs.getBigDecimal("R21_VALUE")); o.setR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR22_PRODUCT(rs.getString("R22_PRODUCT")); o.setR22_CROSS_REFERENCE(rs.getString("R22_CROSS_REFERENCE")); o.setR22_VALUE(rs.getBigDecimal("R22_VALUE")); o.setR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR23_PRODUCT(rs.getString("R23_PRODUCT")); o.setR23_CROSS_REFERENCE(rs.getString("R23_CROSS_REFERENCE")); o.setR23_VALUE(rs.getBigDecimal("R23_VALUE")); o.setR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR24_PRODUCT(rs.getString("R24_PRODUCT")); o.setR24_CROSS_REFERENCE(rs.getString("R24_CROSS_REFERENCE")); o.setR24_VALUE(rs.getBigDecimal("R24_VALUE")); o.setR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR25_PRODUCT(rs.getString("R25_PRODUCT")); o.setR25_CROSS_REFERENCE(rs.getString("R25_CROSS_REFERENCE")); o.setR25_VALUE(rs.getBigDecimal("R25_VALUE")); o.setR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR26_PRODUCT(rs.getString("R26_PRODUCT")); o.setR26_CROSS_REFERENCE(rs.getString("R26_CROSS_REFERENCE")); o.setR26_VALUE(rs.getBigDecimal("R26_VALUE")); o.setR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR27_PRODUCT(rs.getString("R27_PRODUCT")); o.setR27_CROSS_REFERENCE(rs.getString("R27_CROSS_REFERENCE")); o.setR27_VALUE(rs.getBigDecimal("R27_VALUE")); o.setR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			return o;
+		}
+	}
+
+	class M_PIManualSummaryRowMapper implements RowMapper<M_PI_Manual_Summary_Entity> {
+		@Override
+		public M_PI_Manual_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Manual_Summary_Entity o = new M_PI_Manual_Summary_Entity();
+			o.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			o.setREPORT_VERSION(rs.getString("REPORT_VERSION"));
+			o.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			o.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			o.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			o.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			o.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			o.setDEL_FLG(rs.getString("DEL_FLG"));
+			o.setR14_VALUE(rs.getBigDecimal("R14_VALUE"));
+			o.setR18_VALUE(rs.getBigDecimal("R18_VALUE"));
+			o.setR19_VALUE(rs.getBigDecimal("R19_VALUE"));
+			o.setR25_VALUE(rs.getBigDecimal("R25_VALUE"));
+			return o;
+		}
+	}
+
+	class M_PIDetailRowMapper implements RowMapper<M_PI_Detail_Entity> {
+		@Override
+		public M_PI_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Detail_Entity o = new M_PI_Detail_Entity();
+			o.setCustId(rs.getString("CUST_ID"));
+			o.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			o.setAcctName(rs.getString("ACCT_NAME"));
+			o.setDataType(rs.getString("DATA_TYPE"));
+			o.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			o.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			o.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			o.setReportLabel(rs.getString("REPORT_LABEL"));
+			o.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			o.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			o.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			o.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			o.setReportDate(rs.getDate("REPORT_DATE"));
+			o.setReportName(rs.getString("REPORT_NAME"));
+			o.setCreateUser(rs.getString("CREATE_USER"));
+			o.setCreateTime(rs.getDate("CREATE_TIME"));
+			o.setModifyUser(rs.getString("MODIFY_USER"));
+			o.setModifyTime(rs.getDate("MODIFY_TIME"));
+			o.setVerifyUser(rs.getString("VERIFY_USER"));
+			o.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			o.setEntityFlg(rs.getString("ENTITY_FLG"));
+			o.setModifyFlg(rs.getString("MODIFY_FLG"));
+			o.setDelFlg(rs.getString("DEL_FLG"));
+			return o;
+		}
+	}
+
+	class M_PIArchivalSummaryRowMapper implements RowMapper<M_PI_Archival_Summary_Entity> {
+		@Override
+		public M_PI_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Archival_Summary_Entity o = new M_PI_Archival_Summary_Entity();
+			o.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			o.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			o.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			o.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			o.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			o.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			o.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			o.setDEL_FLG(rs.getString("DEL_FLG"));
+			o.setR8_PRODUCT(rs.getString("R8_PRODUCT")); o.setR8_CROSS_REFERENCE(rs.getString("R8_CROSS_REFERENCE")); o.setR8_VALUE(rs.getBigDecimal("R8_VALUE")); o.setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R8_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR9_PRODUCT(rs.getString("R9_PRODUCT")); o.setR9_CROSS_REFERENCE(rs.getString("R9_CROSS_REFERENCE")); o.setR9_VALUE(rs.getBigDecimal("R9_VALUE")); o.setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R9_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR10_PRODUCT(rs.getString("R10_PRODUCT")); o.setR10_CROSS_REFERENCE(rs.getString("R10_CROSS_REFERENCE")); o.setR10_VALUE(rs.getBigDecimal("R10_VALUE")); o.setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R10_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR11_PRODUCT(rs.getString("R11_PRODUCT")); o.setR11_CROSS_REFERENCE(rs.getString("R11_CROSS_REFERENCE")); o.setR11_VALUE(rs.getBigDecimal("R11_VALUE")); o.setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R11_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR12_PRODUCT(rs.getString("R12_PRODUCT")); o.setR12_CROSS_REFERENCE(rs.getString("R12_CROSS_REFERENCE")); o.setR12_VALUE(rs.getBigDecimal("R12_VALUE")); o.setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R12_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR13_PRODUCT(rs.getString("R13_PRODUCT")); o.setR13_CROSS_REFERENCE(rs.getString("R13_CROSS_REFERENCE")); o.setR13_VALUE(rs.getBigDecimal("R13_VALUE")); o.setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R13_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR14_PRODUCT(rs.getString("R14_PRODUCT")); o.setR14_CROSS_REFERENCE(rs.getString("R14_CROSS_REFERENCE")); o.setR14_VALUE(rs.getBigDecimal("R14_VALUE")); o.setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS")); o.setR14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2(rs.getBigDecimal("R14_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS2"));
+			o.setR15_PRODUCT(rs.getString("R15_PRODUCT")); o.setR15_CROSS_REFERENCE(rs.getString("R15_CROSS_REFERENCE")); o.setR15_VALUE(rs.getBigDecimal("R15_VALUE")); o.setR15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R15_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR16_PRODUCT(rs.getString("R16_PRODUCT")); o.setR16_CROSS_REFERENCE(rs.getString("R16_CROSS_REFERENCE")); o.setR16_VALUE(rs.getBigDecimal("R16_VALUE")); o.setR16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R16_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR17_PRODUCT(rs.getString("R17_PRODUCT")); o.setR17_CROSS_REFERENCE(rs.getString("R17_CROSS_REFERENCE")); o.setR17_VALUE(rs.getBigDecimal("R17_VALUE")); o.setR17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R17_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR18_PRODUCT(rs.getString("R18_PRODUCT")); o.setR18_CROSS_REFERENCE(rs.getString("R18_CROSS_REFERENCE")); o.setR18_VALUE(rs.getBigDecimal("R18_VALUE")); o.setR18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R18_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR19_PRODUCT(rs.getString("R19_PRODUCT")); o.setR19_CROSS_REFERENCE(rs.getString("R19_CROSS_REFERENCE")); o.setR19_VALUE(rs.getBigDecimal("R19_VALUE")); o.setR19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R19_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR20_PRODUCT(rs.getString("R20_PRODUCT")); o.setR20_CROSS_REFERENCE(rs.getString("R20_CROSS_REFERENCE")); o.setR20_VALUE(rs.getBigDecimal("R20_VALUE")); o.setR20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R20_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR21_PRODUCT(rs.getString("R21_PRODUCT")); o.setR21_CROSS_REFERENCE(rs.getString("R21_CROSS_REFERENCE")); o.setR21_VALUE(rs.getBigDecimal("R21_VALUE")); o.setR21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R21_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR22_PRODUCT(rs.getString("R22_PRODUCT")); o.setR22_CROSS_REFERENCE(rs.getString("R22_CROSS_REFERENCE")); o.setR22_VALUE(rs.getBigDecimal("R22_VALUE")); o.setR22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R22_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR23_PRODUCT(rs.getString("R23_PRODUCT")); o.setR23_CROSS_REFERENCE(rs.getString("R23_CROSS_REFERENCE")); o.setR23_VALUE(rs.getBigDecimal("R23_VALUE")); o.setR23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R23_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR24_PRODUCT(rs.getString("R24_PRODUCT")); o.setR24_CROSS_REFERENCE(rs.getString("R24_CROSS_REFERENCE")); o.setR24_VALUE(rs.getBigDecimal("R24_VALUE")); o.setR24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R24_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR25_PRODUCT(rs.getString("R25_PRODUCT")); o.setR25_CROSS_REFERENCE(rs.getString("R25_CROSS_REFERENCE")); o.setR25_VALUE(rs.getBigDecimal("R25_VALUE")); o.setR25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R25_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR26_PRODUCT(rs.getString("R26_PRODUCT")); o.setR26_CROSS_REFERENCE(rs.getString("R26_CROSS_REFERENCE")); o.setR26_VALUE(rs.getBigDecimal("R26_VALUE")); o.setR26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R26_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			o.setR27_PRODUCT(rs.getString("R27_PRODUCT")); o.setR27_CROSS_REFERENCE(rs.getString("R27_CROSS_REFERENCE")); o.setR27_VALUE(rs.getBigDecimal("R27_VALUE")); o.setR27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS(rs.getBigDecimal("R27_PRUDENTIAL_MINIMUM_AND_LIMIT_BENCHMARKS"));
+			return o;
+		}
+	}
+
+	class M_PIManualArchivalSummaryRowMapper implements RowMapper<M_PI_Manual_Archival_Summary_Entity> {
+		@Override
+		public M_PI_Manual_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Manual_Archival_Summary_Entity o = new M_PI_Manual_Archival_Summary_Entity();
+			o.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			o.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			o.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			o.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			o.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			o.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			o.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			o.setDEL_FLG(rs.getString("DEL_FLG"));
+			o.setR14_VALUE(rs.getBigDecimal("R14_VALUE"));
+			o.setR18_VALUE(rs.getBigDecimal("R18_VALUE"));
+			o.setR19_VALUE(rs.getBigDecimal("R19_VALUE"));
+			o.setR25_VALUE(rs.getBigDecimal("R25_VALUE"));
+			return o;
+		}
+	}
+
+	class M_PIArchivalDetailRowMapper implements RowMapper<M_PI_Archival_Detail_Entity> {
+		@Override
+		public M_PI_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_PI_Archival_Detail_Entity o = new M_PI_Archival_Detail_Entity();
+			o.setCustId(rs.getString("CUST_ID"));
+			o.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			o.setAcctName(rs.getString("ACCT_NAME"));
+			o.setDataType(rs.getString("DATA_TYPE"));
+			o.setReportAddlCriteria1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			o.setReportAddlCriteria2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+			o.setReportAddlCriteria3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+			o.setReportLabel(rs.getString("REPORT_LABEL"));
+			o.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			o.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			o.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			o.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			o.setReportDate(rs.getDate("REPORT_DATE"));
+			o.setReportName(rs.getString("REPORT_NAME"));
+			o.setCreateUser(rs.getString("CREATE_USER"));
+			o.setCreateTime(rs.getDate("CREATE_TIME"));
+			o.setModifyUser(rs.getString("MODIFY_USER"));
+			o.setModifyTime(rs.getDate("MODIFY_TIME"));
+			o.setVerifyUser(rs.getString("VERIFY_USER"));
+			o.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			o.setEntityFlg(rs.getString("ENTITY_FLG"));
+			o.setModifyFlg(rs.getString("MODIFY_FLG"));
+			o.setDelFlg(rs.getString("DEL_FLG"));
+			return o;
+		}
+	}
 }

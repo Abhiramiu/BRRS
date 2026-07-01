@@ -1,4 +1,4 @@
-package com.bornfire.brrs.services;
+﻿package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +35,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.SessionFactory;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -54,28 +55,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Manual_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Manual_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SCI_E_Summary_Repo;
 import com.bornfire.brrs.entities.M_SCI_E_Archival_Detail_Entity;
-
 import com.bornfire.brrs.entities.M_SCI_E_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Detail_Entity;
-
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Detail_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_SCI_E_Summary_Entity;
-import com.bornfire.brrs.entities.M_SFINP2_Detail_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
-
+@Transactional
 public class BRRS_M_SCI_E_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SCI_E_ReportService.class);
 
@@ -85,48 +74,89 @@ public class BRRS_M_SCI_E_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-	
-	@Autowired
 	AuditService auditService;
 
-	
-	  @Autowired BRRS_M_SCI_E_Detail_Repo brrs_m_sci_e_detail_repo;
-	 
-	@Autowired
-	BRRS_M_SCI_E_Manual_Summary_Repo brrs_m_sci_e_manual_summary_repo;
-	
-	@Autowired
-	BRRS_M_SCI_E_Summary_Repo brrs_m_sci_e_summary_repo;
-	
-	
-	
-	
-	
-	  @Autowired BRRS_M_SCI_E_Archival_Detail_Repo m_sci_e_Archival_Detail_Repo;
-	 
-
-	@Autowired
-	BRRS_M_SCI_E_Manual_Archival_Summary_Repo m_sci_e_manual_Archival_Summary_Repo;
-	
-	@Autowired
-	BRRS_M_SCI_E_Archival_Summary_Repo brrs_m_sci_e_Archival_summary_repo;
-	
-	
-
-@Autowired
-	BRRS_M_SCI_E_Resub_Summary_Repo  M_SCI_E_resub_summary_repo;
-	
-	
-	@Autowired
-	BRRS_M_SCI_E_Resub_Detail_Repo M_SCI_E_resub_detail_repo;
-	
 	@Autowired
 	UserProfileRep userProfileRep;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	
+	// ── JDBC query methods ──────────────────────────────────────────────────
+
+	private List<M_SCI_E_Summary_Entity> getSummaryByDate(Date date) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[]{date}, new M_SCI_E_SummaryRowMapper());
+	}
+
+	private List<M_SCI_E_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date date, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{date, version}, new M_SCI_E_Archival_SummaryRowMapper());
+	}
+
+	private List<M_SCI_E_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+		return jdbcTemplate.query(sql, new M_SCI_E_Archival_SummaryRowMapper());
+	}
+
+	private List<M_SCI_E_RESUB_Summary_Entity> getResubSummaryByDateAndVersion(Date date, BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_RESUB_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{date, version}, new M_SCI_E_RESUB_SummaryRowMapper());
+	}
+
+	private List<M_SCI_E_Detail_Entity> getDetailByDate(Date date) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[]{date}, new M_SCI_E_DetailRowMapper());
+	}
+
+	private int getDetailCount(Date date) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_SCI_E_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		Integer count = jdbcTemplate.queryForObject(sql, new Object[]{date}, Integer.class);
+		return count != null ? count : 0;
+	}
+
+	private List<M_SCI_E_Detail_Entity> getDetailByLabelAndCriteria(String label, String criteria, Date date) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[]{label, criteria, date}, new M_SCI_E_DetailRowMapper());
+	}
+
+	private List<M_SCI_E_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date date, String version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{date, version}, new M_SCI_E_Archival_DetailRowMapper());
+	}
+
+	private List<M_SCI_E_Archival_Detail_Entity> getArchivalDetailByLabelAndCriteria(String label, String criteria, Date date, String version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{label, criteria, date, version}, new M_SCI_E_Archival_DetailRowMapper());
+	}
+
+	private List<M_SCI_E_RESUB_Detail_Entity> getResubDetailByDateAndVersion(Date date, String version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_RESUB_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{date, version}, new M_SCI_E_RESUB_DetailRowMapper());
+	}
+
+	private List<M_SCI_E_RESUB_Detail_Entity> getResubDetailByLabelAndCriteria(String label, String criteria, Date date, String version) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_RESUB_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[]{label, criteria, date, version}, new M_SCI_E_RESUB_DetailRowMapper());
+	}
+
+	private M_SCI_E_Summary_Entity findSummaryByDate(Date date) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_SCI_E_Summary_Entity> list = jdbcTemplate.query(sql, new Object[]{date}, new M_SCI_E_SummaryRowMapper());
+		if (list.isEmpty()) throw new RuntimeException("Record not found for REPORT_DATE: " + date);
+		return list.get(0);
+	}
+
+	private M_SCI_E_Detail_Entity findDetailByAcctNumber(String acctNo) {
+		String sql = "SELECT * FROM BRRS_M_SCI_E_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		List<M_SCI_E_Detail_Entity> list = jdbcTemplate.query(sql, new Object[]{acctNo}, new M_SCI_E_DetailRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// ── End of JDBC query methods ───────────────────────────────────────────
+
 	public ModelAndView getM_SCI_EView(
 	        String reportId,
 	        String fromdate,
@@ -164,8 +194,7 @@ public class BRRS_M_SCI_E_ReportService {
 	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
 	            List<M_SCI_E_Archival_Summary_Entity> summaryList =
-	                    brrs_m_sci_e_Archival_summary_repo
-	                            .getdatabydateListarchival(d1, version);
+                    getArchivalSummaryByDateAndVersion(d1, version);
 
 	            System.out.println("Archival Summary Size : " + summaryList.size());
 
@@ -177,8 +206,7 @@ public class BRRS_M_SCI_E_ReportService {
 	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
 	            List<M_SCI_E_RESUB_Summary_Entity> summaryList =
-	                    M_SCI_E_resub_summary_repo
-	                            .getdatabydateListarchival(d1, version);
+                    getResubSummaryByDateAndVersion(d1, version);
 
 	            System.out.println("Resub Summary Size : " + summaryList.size());
 
@@ -190,8 +218,7 @@ public class BRRS_M_SCI_E_ReportService {
 	        else {
 
 	            List<M_SCI_E_Summary_Entity> summaryList =
-	                    brrs_m_sci_e_summary_repo
-	                            .getdatabydateList(d1);
+                    getSummaryByDate(d1);
 
 	            System.out.println("Normal Summary Size : " + summaryList.size());
 
@@ -262,11 +289,9 @@ public class BRRS_M_SCI_E_ReportService {
 	            List<M_SCI_E_Archival_Detail_Entity> T1Dt1;
 
 	            if (rowId != null && columnId != null) {
-	                T1Dt1 = m_sci_e_Archival_Detail_Repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	                T1Dt1 = getArchivalDetailByLabelAndCriteria(rowId, columnId, parsedDate, version);
 	            } else {
-	                T1Dt1 = m_sci_e_Archival_Detail_Repo
-	                        .getdatabydateList(parsedDate, version);
+	                T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);
@@ -281,11 +306,9 @@ public class BRRS_M_SCI_E_ReportService {
 	            List<M_SCI_E_RESUB_Detail_Entity> T1Dt1;
 
 	            if (rowId != null && columnId != null) {
-	                T1Dt1 = M_SCI_E_resub_detail_repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate, version);
+	                T1Dt1 = getResubDetailByLabelAndCriteria(rowId, columnId, parsedDate, version);
 	            } else {
-	                T1Dt1 = M_SCI_E_resub_detail_repo
-	                        .getdatabydateList(parsedDate, version);
+	                T1Dt1 = getResubDetailByDateAndVersion(parsedDate, version);
 	            }
 
 	            mv.addObject("reportdetails", T1Dt1);
@@ -300,14 +323,11 @@ public class BRRS_M_SCI_E_ReportService {
 	            List<M_SCI_E_Detail_Entity> T1Dt1;
 
 	            if (rowId != null && columnId != null) {
-	                T1Dt1 = brrs_m_sci_e_detail_repo
-	                        .GetDataByRowIdAndColumnId(rowId, columnId, parsedDate);
+	                T1Dt1 = getDetailByLabelAndCriteria(rowId, columnId, parsedDate);
 	            } else {
-	                T1Dt1 = brrs_m_sci_e_detail_repo
-	                        .getdatabydateList(parsedDate);
+	                T1Dt1 = getDetailByDate(parsedDate);
 
-	                totalPages = brrs_m_sci_e_detail_repo
-	                        .getdatacount(parsedDate);
+	                totalPages = getDetailCount(parsedDate);
 
 	                mv.addObject("pagination", "YES");
 	            }
@@ -341,8 +361,7 @@ public class BRRS_M_SCI_E_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_SCI_E_Archival_Summary_Entity> repoData = brrs_m_sci_e_Archival_summary_repo
-					.getdatabydateListWithVersion();
+			List<M_SCI_E_Archival_Summary_Entity> repoData = getArchivalSummaryWithVersion();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_SCI_E_Archival_Summary_Entity entity : repoData) {
@@ -374,7 +393,7 @@ public class BRRS_M_SCI_E_ReportService {
 	    List<Object[]> resubList = new ArrayList<>();
 	    try {
 	        List<M_SCI_E_Archival_Summary_Entity> latestArchivalList =
-	        		brrs_m_sci_e_Archival_summary_repo.getdatabydateListWithVersion();
+	        		getArchivalSummaryWithVersion();
 
 	        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 	            for (M_SCI_E_Archival_Summary_Entity entity : latestArchivalList) {
@@ -471,7 +490,7 @@ public class BRRS_M_SCI_E_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_SCI_E_Detail_Entity> reportData = brrs_m_sci_e_detail_repo.getdatabydateList(parsedToDate);
+			List<M_SCI_E_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -616,8 +635,7 @@ public class BRRS_M_SCI_E_ReportService {
 
 // Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_SCI_E_Archival_Detail_Entity> reportData = m_sci_e_Archival_Detail_Repo.getdatabydateList(parsedToDate,
-					version);
+			List<M_SCI_E_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -692,57 +710,6 @@ public class BRRS_M_SCI_E_ReportService {
 	
 	
 	
-//	public void updateReport(M_SCI_E_Summary_Entity updatedEntity) {
-//
-//	    System.out.println("Came to services");
-//	    System.out.println("Report Date: " + updatedEntity.getReport_date());
-//
-//	    M_SCI_E_Summary_Entity existing =
-//	            brrs_m_sci_e_summary_repo.findById(updatedEntity.getReport_date())
-//	            .orElseThrow(() ->
-//	                    new RuntimeException("Record not found for REPORT_DATE: "
-//	                            + updatedEntity.getReport_date()));
-//	    
-//	    
-//
-//	    // ✅ Only allowed R-numbers
-//	     int[] allowedIndexes = {45, 46, 54, 58, 59, 60, 66, 67, 68, 74, 85};
-//
-//	    try {
-//	        for (int i : allowedIndexes) {
-//
-//	            String field = "month";
-//
-//	            String getterName = "getR" + i + "_" + field;
-//	            String setterName = "setR" + i + "_" + field;
-//
-//	            try {
-//	                Method getter =
-//	                        M_SCI_E_Summary_Entity.class.getMethod(getterName);
-//
-//	                Method setter =
-//	                        M_SCI_E_Summary_Entity.class.getMethod(
-//	                                setterName,
-//	                                getter.getReturnType()
-//	                        );
-//
-//	                Object newValue = getter.invoke(updatedEntity);
-//	                setter.invoke(existing, newValue);
-//
-//	            } catch (NoSuchMethodException e) {
-//	                // Safely skip if field doesn't exist
-//	                continue;
-//	            }
-//	        }
-//
-//	    } catch (Exception e) {
-//	        throw new RuntimeException("Error while updating report fields", e);
-//	    }
-//
-//	    // ✅ Save only intended updates
-//	    brrs_m_sci_e_summary_repo.save(existing);
-//	}
-	
 	@Transactional
 	public void updateReport(M_SCI_E_Summary_Entity updatedEntity) {
 
@@ -750,10 +717,7 @@ public class BRRS_M_SCI_E_ReportService {
 	    System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 	    M_SCI_E_Summary_Entity existing =
-	            brrs_m_sci_e_summary_repo.findById(updatedEntity.getReport_date())
-	            .orElseThrow(() ->
-	                    new RuntimeException("Record not found for REPORT_DATE: "
-	                            + updatedEntity.getReport_date()));
+	            findSummaryByDate(updatedEntity.getReport_date());
 
 	    // Audit old copy
 	    M_SCI_E_Summary_Entity oldcopy = new M_SCI_E_Summary_Entity();
@@ -803,7 +767,13 @@ public class BRRS_M_SCI_E_ReportService {
 	    String changes = auditService.getChanges(oldcopy, existing);
 
 	    // Save entity
-	    brrs_m_sci_e_summary_repo.save(existing);
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_SCI_E_SUMMARYTABLE SET R45_MONTH=?, R46_MONTH=?, R54_MONTH=?, R58_MONTH=?, R59_MONTH=?, R60_MONTH=?, R66_MONTH=?, R67_MONTH=?, R68_MONTH=?, R74_MONTH=?, R85_MONTH=? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            existing.getR45_month(), existing.getR46_month(), existing.getR54_month(),
+	            existing.getR58_month(), existing.getR59_month(), existing.getR60_month(),
+	            existing.getR66_month(), existing.getR67_month(), existing.getR68_month(),
+	            existing.getR74_month(), existing.getR85_month(),
+	            existing.getReport_date());
 
 	    // Audit only if changes found
 	    if (!changes.isEmpty()) {
@@ -818,17 +788,11 @@ public class BRRS_M_SCI_E_ReportService {
 	    }
 	}
 		
-	 @Autowired BRRS_M_SCI_E_Detail_Repo m_sci_e_detail_repo;
-	
-	
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_SCI_E"); 
 
 		if (acctNo != null) {
-			M_SCI_E_Detail_Entity msciEntity = m_sci_e_detail_repo.findByAcctnumber(acctNo);
+			M_SCI_E_Detail_Entity msciEntity = findDetailByAcctNumber(acctNo);
 			if (msciEntity != null && msciEntity.getReportDate() != null) {
 				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(msciEntity.getReportDate());
 				mv.addObject("asondate", formattedDate);
@@ -853,7 +817,7 @@ public class BRRS_M_SCI_E_ReportService {
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
 
-			M_SCI_E_Detail_Entity existing = m_sci_e_detail_repo.findByAcctnumber(acctNo);
+			M_SCI_E_Detail_Entity existing = findDetailByAcctNumber(acctNo);
 			if (existing == null) {
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
@@ -905,7 +869,11 @@ public class BRRS_M_SCI_E_ReportService {
 		        }
 			 
 			if (isChanged) {
-				m_sci_e_detail_repo.save(existing);
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_SCI_E_DETAILTABLE SET ACCT_NAME=?, MONTHLY_INT=?, CREDIT_EQUIVALENT=?, DEBIT_EQUIVALENT=? WHERE ACCT_NUMBER=?",
+						existing.getAcctName(), existing.getMonthlyInt(),
+						existing.getCreditEquivalent(), existing.getDebitEquivalent(),
+						existing.getAcctNumber());
 				
 				  // Audit comparison
 	            auditService.compareEntitiesmanual(
@@ -1013,8 +981,7 @@ return BRRS_M_SCI_EEmailExcel(filename, reportId, fromdate, todate, currency, dt
 
 // Fetch data
 
-List<M_SCI_E_Summary_Entity> dataList = brrs_m_sci_e_summary_repo
-.getdatabydateList(dateformat.parse(todate));
+List<M_SCI_E_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
@@ -2617,7 +2584,7 @@ throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)")
 }
 } 
 else {
-List<M_SCI_E_Summary_Entity> dataList = brrs_m_sci_e_summary_repo.getdatabydateList(dateformat.parse(todate));
+List<M_SCI_E_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
@@ -4483,8 +4450,7 @@ throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)")
 }
 } 
 
-List<M_SCI_E_Archival_Summary_Entity> dataList = brrs_m_sci_e_Archival_summary_repo
-.getdatabydateListarchival(dateformat.parse(todate), version);
+List<M_SCI_E_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
@@ -6060,8 +6026,7 @@ String currency, String dtltype, String type, BigDecimal version) throws Excepti
 
 logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-List<M_SCI_E_Archival_Summary_Entity> dataList = brrs_m_sci_e_Archival_summary_repo
-.getdatabydateListarchival(dateformat.parse(todate), version);
+List<M_SCI_E_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
@@ -7929,8 +7894,7 @@ throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)")
 }
 }
 
-List<M_SCI_E_RESUB_Summary_Entity> dataList = M_SCI_E_resub_summary_repo
-.getdatabydateListarchival(dateformat.parse(todate), version);
+List<M_SCI_E_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for M_SCI_E report. Returning empty result.");
@@ -9508,8 +9472,7 @@ String currency, String dtltype, String type, BigDecimal version) throws Excepti
 
 logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-List<M_SCI_E_RESUB_Summary_Entity> dataList = M_SCI_E_resub_summary_repo
-.getdatabydateListarchival(dateformat.parse(todate), version);
+List<M_SCI_E_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 if (dataList.isEmpty()) {
 logger.warn("Service: No data found for BRRS_M_SCI_E report. Returning empty result.");
@@ -11361,5 +11324,1088 @@ return out.toByteArray();
 	
 	
 	
+
+
+
+	// ── RowMapper inner classes ────────────────────────────────────────────
+
+	class M_SCI_E_SummaryRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_Summary_Entity> {
+		@Override
+		public M_SCI_E_Summary_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_Summary_Entity obj = new M_SCI_E_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_product_name(rs.getString("R10_PRODUCT_NAME"));
+			obj.setR10_cross_reference(rs.getString("R10_CROSS_REFERENCE"));
+			obj.setR10_month(rs.getBigDecimal("R10_MONTH"));
+			obj.setR10_ytd(rs.getBigDecimal("R10_YTD"));
+			obj.setR11_product_name(rs.getString("R11_PRODUCT_NAME"));
+			obj.setR11_cross_reference(rs.getString("R11_CROSS_REFERENCE"));
+			obj.setR11_month(rs.getBigDecimal("R11_MONTH"));
+			obj.setR11_ytd(rs.getBigDecimal("R11_YTD"));
+			obj.setR12_product_name(rs.getString("R12_PRODUCT_NAME"));
+			obj.setR12_cross_reference(rs.getString("R12_CROSS_REFERENCE"));
+			obj.setR12_month(rs.getBigDecimal("R12_MONTH"));
+			obj.setR12_ytd(rs.getBigDecimal("R12_YTD"));
+			obj.setR13_product_name(rs.getString("R13_PRODUCT_NAME"));
+			obj.setR13_cross_reference(rs.getString("R13_CROSS_REFERENCE"));
+			obj.setR13_month(rs.getBigDecimal("R13_MONTH"));
+			obj.setR13_ytd(rs.getBigDecimal("R13_YTD"));
+			obj.setR14_product_name(rs.getString("R14_PRODUCT_NAME"));
+			obj.setR14_cross_reference(rs.getString("R14_CROSS_REFERENCE"));
+			obj.setR14_month(rs.getBigDecimal("R14_MONTH"));
+			obj.setR14_ytd(rs.getBigDecimal("R14_YTD"));
+			obj.setR15_product_name(rs.getString("R15_PRODUCT_NAME"));
+			obj.setR15_cross_reference(rs.getString("R15_CROSS_REFERENCE"));
+			obj.setR15_month(rs.getBigDecimal("R15_MONTH"));
+			obj.setR15_ytd(rs.getBigDecimal("R15_YTD"));
+			obj.setR16_product_name(rs.getString("R16_PRODUCT_NAME"));
+			obj.setR16_cross_reference(rs.getString("R16_CROSS_REFERENCE"));
+			obj.setR16_month(rs.getBigDecimal("R16_MONTH"));
+			obj.setR16_ytd(rs.getBigDecimal("R16_YTD"));
+			obj.setR17_product_name(rs.getString("R17_PRODUCT_NAME"));
+			obj.setR17_cross_reference(rs.getString("R17_CROSS_REFERENCE"));
+			obj.setR17_month(rs.getBigDecimal("R17_MONTH"));
+			obj.setR17_ytd(rs.getBigDecimal("R17_YTD"));
+			obj.setR18_product_name(rs.getString("R18_PRODUCT_NAME"));
+			obj.setR18_cross_reference(rs.getString("R18_CROSS_REFERENCE"));
+			obj.setR18_month(rs.getBigDecimal("R18_MONTH"));
+			obj.setR18_ytd(rs.getBigDecimal("R18_YTD"));
+			obj.setR19_product_name(rs.getString("R19_PRODUCT_NAME"));
+			obj.setR19_cross_reference(rs.getString("R19_CROSS_REFERENCE"));
+			obj.setR19_month(rs.getBigDecimal("R19_MONTH"));
+			obj.setR19_ytd(rs.getBigDecimal("R19_YTD"));
+			obj.setR20_product_name(rs.getString("R20_PRODUCT_NAME"));
+			obj.setR20_cross_reference(rs.getString("R20_CROSS_REFERENCE"));
+			obj.setR20_month(rs.getBigDecimal("R20_MONTH"));
+			obj.setR20_ytd(rs.getBigDecimal("R20_YTD"));
+			obj.setR21_product_name(rs.getString("R21_PRODUCT_NAME"));
+			obj.setR21_cross_reference(rs.getString("R21_CROSS_REFERENCE"));
+			obj.setR21_month(rs.getBigDecimal("R21_MONTH"));
+			obj.setR21_ytd(rs.getBigDecimal("R21_YTD"));
+			obj.setR22_product_name(rs.getString("R22_PRODUCT_NAME"));
+			obj.setR22_cross_reference(rs.getString("R22_CROSS_REFERENCE"));
+			obj.setR22_month(rs.getBigDecimal("R22_MONTH"));
+			obj.setR22_ytd(rs.getBigDecimal("R22_YTD"));
+			obj.setR23_product_name(rs.getString("R23_PRODUCT_NAME"));
+			obj.setR23_cross_reference(rs.getString("R23_CROSS_REFERENCE"));
+			obj.setR23_month(rs.getBigDecimal("R23_MONTH"));
+			obj.setR23_ytd(rs.getBigDecimal("R23_YTD"));
+			obj.setR24_product_name(rs.getString("R24_PRODUCT_NAME"));
+			obj.setR24_cross_reference(rs.getString("R24_CROSS_REFERENCE"));
+			obj.setR24_month(rs.getBigDecimal("R24_MONTH"));
+			obj.setR24_ytd(rs.getBigDecimal("R24_YTD"));
+			obj.setR25_product_name(rs.getString("R25_PRODUCT_NAME"));
+			obj.setR25_cross_reference(rs.getString("R25_CROSS_REFERENCE"));
+			obj.setR25_month(rs.getBigDecimal("R25_MONTH"));
+			obj.setR25_ytd(rs.getBigDecimal("R25_YTD"));
+			obj.setR26_product_name(rs.getString("R26_PRODUCT_NAME"));
+			obj.setR26_cross_reference(rs.getString("R26_CROSS_REFERENCE"));
+			obj.setR26_month(rs.getBigDecimal("R26_MONTH"));
+			obj.setR26_ytd(rs.getBigDecimal("R26_YTD"));
+			obj.setR27_product_name(rs.getString("R27_PRODUCT_NAME"));
+			obj.setR27_cross_reference(rs.getString("R27_CROSS_REFERENCE"));
+			obj.setR27_month(rs.getBigDecimal("R27_MONTH"));
+			obj.setR27_ytd(rs.getBigDecimal("R27_YTD"));
+			obj.setR28_product_name(rs.getString("R28_PRODUCT_NAME"));
+			obj.setR28_cross_reference(rs.getString("R28_CROSS_REFERENCE"));
+			obj.setR28_month(rs.getBigDecimal("R28_MONTH"));
+			obj.setR28_ytd(rs.getBigDecimal("R28_YTD"));
+			obj.setR29_product_name(rs.getString("R29_PRODUCT_NAME"));
+			obj.setR29_cross_reference(rs.getString("R29_CROSS_REFERENCE"));
+			obj.setR29_month(rs.getBigDecimal("R29_MONTH"));
+			obj.setR29_ytd(rs.getBigDecimal("R29_YTD"));
+			obj.setR30_product_name(rs.getString("R30_PRODUCT_NAME"));
+			obj.setR30_cross_reference(rs.getString("R30_CROSS_REFERENCE"));
+			obj.setR30_month(rs.getBigDecimal("R30_MONTH"));
+			obj.setR30_ytd(rs.getBigDecimal("R30_YTD"));
+			obj.setR31_product_name(rs.getString("R31_PRODUCT_NAME"));
+			obj.setR31_cross_reference(rs.getString("R31_CROSS_REFERENCE"));
+			obj.setR31_month(rs.getBigDecimal("R31_MONTH"));
+			obj.setR31_ytd(rs.getBigDecimal("R31_YTD"));
+			obj.setR32_product_name(rs.getString("R32_PRODUCT_NAME"));
+			obj.setR32_cross_reference(rs.getString("R32_CROSS_REFERENCE"));
+			obj.setR32_month(rs.getBigDecimal("R32_MONTH"));
+			obj.setR32_ytd(rs.getBigDecimal("R32_YTD"));
+			obj.setR33_product_name(rs.getString("R33_PRODUCT_NAME"));
+			obj.setR33_cross_reference(rs.getString("R33_CROSS_REFERENCE"));
+			obj.setR33_month(rs.getBigDecimal("R33_MONTH"));
+			obj.setR33_ytd(rs.getBigDecimal("R33_YTD"));
+			obj.setR34_product_name(rs.getString("R34_PRODUCT_NAME"));
+			obj.setR34_cross_reference(rs.getString("R34_CROSS_REFERENCE"));
+			obj.setR34_month(rs.getBigDecimal("R34_MONTH"));
+			obj.setR34_ytd(rs.getBigDecimal("R34_YTD"));
+			obj.setR35_product_name(rs.getString("R35_PRODUCT_NAME"));
+			obj.setR35_cross_reference(rs.getString("R35_CROSS_REFERENCE"));
+			obj.setR35_month(rs.getBigDecimal("R35_MONTH"));
+			obj.setR35_ytd(rs.getBigDecimal("R35_YTD"));
+			obj.setR36_product_name(rs.getString("R36_PRODUCT_NAME"));
+			obj.setR36_cross_reference(rs.getString("R36_CROSS_REFERENCE"));
+			obj.setR36_month(rs.getBigDecimal("R36_MONTH"));
+			obj.setR36_ytd(rs.getBigDecimal("R36_YTD"));
+			obj.setR37_product_name(rs.getString("R37_PRODUCT_NAME"));
+			obj.setR37_cross_reference(rs.getString("R37_CROSS_REFERENCE"));
+			obj.setR37_month(rs.getBigDecimal("R37_MONTH"));
+			obj.setR37_ytd(rs.getBigDecimal("R37_YTD"));
+			obj.setR38_product_name(rs.getString("R38_PRODUCT_NAME"));
+			obj.setR38_cross_reference(rs.getString("R38_CROSS_REFERENCE"));
+			obj.setR38_month(rs.getBigDecimal("R38_MONTH"));
+			obj.setR38_ytd(rs.getBigDecimal("R38_YTD"));
+			obj.setR39_product_name(rs.getString("R39_PRODUCT_NAME"));
+			obj.setR39_cross_reference(rs.getString("R39_CROSS_REFERENCE"));
+			obj.setR39_month(rs.getBigDecimal("R39_MONTH"));
+			obj.setR39_ytd(rs.getBigDecimal("R39_YTD"));
+			obj.setR40_product_name(rs.getString("R40_PRODUCT_NAME"));
+			obj.setR40_cross_reference(rs.getString("R40_CROSS_REFERENCE"));
+			obj.setR40_month(rs.getBigDecimal("R40_MONTH"));
+			obj.setR40_ytd(rs.getBigDecimal("R40_YTD"));
+			obj.setR41_product_name(rs.getString("R41_PRODUCT_NAME"));
+			obj.setR41_cross_reference(rs.getString("R41_CROSS_REFERENCE"));
+			obj.setR41_month(rs.getBigDecimal("R41_MONTH"));
+			obj.setR41_ytd(rs.getBigDecimal("R41_YTD"));
+			obj.setR42_product_name(rs.getString("R42_PRODUCT_NAME"));
+			obj.setR42_cross_reference(rs.getString("R42_CROSS_REFERENCE"));
+			obj.setR42_month(rs.getBigDecimal("R42_MONTH"));
+			obj.setR42_ytd(rs.getBigDecimal("R42_YTD"));
+			obj.setR43_product_name(rs.getString("R43_PRODUCT_NAME"));
+			obj.setR43_cross_reference(rs.getString("R43_CROSS_REFERENCE"));
+			obj.setR43_month(rs.getBigDecimal("R43_MONTH"));
+			obj.setR43_ytd(rs.getBigDecimal("R43_YTD"));
+			obj.setR44_product_name(rs.getString("R44_PRODUCT_NAME"));
+			obj.setR44_cross_reference(rs.getString("R44_CROSS_REFERENCE"));
+			obj.setR44_month(rs.getBigDecimal("R44_MONTH"));
+			obj.setR44_ytd(rs.getBigDecimal("R44_YTD"));
+			obj.setR45_product_name(rs.getString("R45_PRODUCT_NAME"));
+			obj.setR45_cross_reference(rs.getString("R45_CROSS_REFERENCE"));
+			obj.setR45_month(rs.getBigDecimal("R45_MONTH"));
+			obj.setR45_ytd(rs.getBigDecimal("R45_YTD"));
+			obj.setR46_product_name(rs.getString("R46_PRODUCT_NAME"));
+			obj.setR46_cross_reference(rs.getString("R46_CROSS_REFERENCE"));
+			obj.setR46_month(rs.getBigDecimal("R46_MONTH"));
+			obj.setR46_ytd(rs.getBigDecimal("R46_YTD"));
+			obj.setR47_product_name(rs.getString("R47_PRODUCT_NAME"));
+			obj.setR47_cross_reference(rs.getString("R47_CROSS_REFERENCE"));
+			obj.setR47_month(rs.getBigDecimal("R47_MONTH"));
+			obj.setR47_ytd(rs.getBigDecimal("R47_YTD"));
+			obj.setR48_product_name(rs.getString("R48_PRODUCT_NAME"));
+			obj.setR48_cross_reference(rs.getString("R48_CROSS_REFERENCE"));
+			obj.setR48_month(rs.getBigDecimal("R48_MONTH"));
+			obj.setR48_ytd(rs.getBigDecimal("R48_YTD"));
+			obj.setR49_product_name(rs.getString("R49_PRODUCT_NAME"));
+			obj.setR49_cross_reference(rs.getString("R49_CROSS_REFERENCE"));
+			obj.setR49_month(rs.getBigDecimal("R49_MONTH"));
+			obj.setR49_ytd(rs.getBigDecimal("R49_YTD"));
+			obj.setR50_product_name(rs.getString("R50_PRODUCT_NAME"));
+			obj.setR50_cross_reference(rs.getString("R50_CROSS_REFERENCE"));
+			obj.setR50_month(rs.getBigDecimal("R50_MONTH"));
+			obj.setR50_ytd(rs.getBigDecimal("R50_YTD"));
+			obj.setR51_product_name(rs.getString("R51_PRODUCT_NAME"));
+			obj.setR51_cross_reference(rs.getString("R51_CROSS_REFERENCE"));
+			obj.setR51_month(rs.getBigDecimal("R51_MONTH"));
+			obj.setR51_ytd(rs.getBigDecimal("R51_YTD"));
+			obj.setR52_product_name(rs.getString("R52_PRODUCT_NAME"));
+			obj.setR52_cross_reference(rs.getString("R52_CROSS_REFERENCE"));
+			obj.setR52_month(rs.getBigDecimal("R52_MONTH"));
+			obj.setR52_ytd(rs.getBigDecimal("R52_YTD"));
+			obj.setR53_product_name(rs.getString("R53_PRODUCT_NAME"));
+			obj.setR53_cross_reference(rs.getString("R53_CROSS_REFERENCE"));
+			obj.setR53_month(rs.getBigDecimal("R53_MONTH"));
+			obj.setR53_ytd(rs.getBigDecimal("R53_YTD"));
+			obj.setR54_product_name(rs.getString("R54_PRODUCT_NAME"));
+			obj.setR54_cross_reference(rs.getString("R54_CROSS_REFERENCE"));
+			obj.setR54_month(rs.getBigDecimal("R54_MONTH"));
+			obj.setR54_ytd(rs.getBigDecimal("R54_YTD"));
+			obj.setR55_product_name(rs.getString("R55_PRODUCT_NAME"));
+			obj.setR55_cross_reference(rs.getString("R55_CROSS_REFERENCE"));
+			obj.setR55_month(rs.getBigDecimal("R55_MONTH"));
+			obj.setR55_ytd(rs.getBigDecimal("R55_YTD"));
+			obj.setR56_product_name(rs.getString("R56_PRODUCT_NAME"));
+			obj.setR56_cross_reference(rs.getString("R56_CROSS_REFERENCE"));
+			obj.setR56_month(rs.getBigDecimal("R56_MONTH"));
+			obj.setR56_ytd(rs.getBigDecimal("R56_YTD"));
+			obj.setR57_product_name(rs.getString("R57_PRODUCT_NAME"));
+			obj.setR57_cross_reference(rs.getString("R57_CROSS_REFERENCE"));
+			obj.setR57_month(rs.getBigDecimal("R57_MONTH"));
+			obj.setR57_ytd(rs.getBigDecimal("R57_YTD"));
+			obj.setR58_product_name(rs.getString("R58_PRODUCT_NAME"));
+			obj.setR58_cross_reference(rs.getString("R58_CROSS_REFERENCE"));
+			obj.setR58_month(rs.getBigDecimal("R58_MONTH"));
+			obj.setR58_ytd(rs.getBigDecimal("R58_YTD"));
+			obj.setR59_product_name(rs.getString("R59_PRODUCT_NAME"));
+			obj.setR59_cross_reference(rs.getString("R59_CROSS_REFERENCE"));
+			obj.setR59_month(rs.getBigDecimal("R59_MONTH"));
+			obj.setR59_ytd(rs.getBigDecimal("R59_YTD"));
+			obj.setR60_product_name(rs.getString("R60_PRODUCT_NAME"));
+			obj.setR60_cross_reference(rs.getString("R60_CROSS_REFERENCE"));
+			obj.setR60_month(rs.getBigDecimal("R60_MONTH"));
+			obj.setR60_ytd(rs.getBigDecimal("R60_YTD"));
+			obj.setR61_product_name(rs.getString("R61_PRODUCT_NAME"));
+			obj.setR61_cross_reference(rs.getString("R61_CROSS_REFERENCE"));
+			obj.setR61_month(rs.getBigDecimal("R61_MONTH"));
+			obj.setR61_ytd(rs.getBigDecimal("R61_YTD"));
+			obj.setR62_product_name(rs.getString("R62_PRODUCT_NAME"));
+			obj.setR62_cross_reference(rs.getString("R62_CROSS_REFERENCE"));
+			obj.setR62_month(rs.getBigDecimal("R62_MONTH"));
+			obj.setR62_ytd(rs.getBigDecimal("R62_YTD"));
+			obj.setR63_product_name(rs.getString("R63_PRODUCT_NAME"));
+			obj.setR63_cross_reference(rs.getString("R63_CROSS_REFERENCE"));
+			obj.setR63_month(rs.getBigDecimal("R63_MONTH"));
+			obj.setR63_ytd(rs.getBigDecimal("R63_YTD"));
+			obj.setR64_product_name(rs.getString("R64_PRODUCT_NAME"));
+			obj.setR64_cross_reference(rs.getString("R64_CROSS_REFERENCE"));
+			obj.setR64_month(rs.getBigDecimal("R64_MONTH"));
+			obj.setR64_ytd(rs.getBigDecimal("R64_YTD"));
+			obj.setR65_product_name(rs.getString("R65_PRODUCT_NAME"));
+			obj.setR65_cross_reference(rs.getString("R65_CROSS_REFERENCE"));
+			obj.setR65_month(rs.getBigDecimal("R65_MONTH"));
+			obj.setR65_ytd(rs.getBigDecimal("R65_YTD"));
+			obj.setR66_product_name(rs.getString("R66_PRODUCT_NAME"));
+			obj.setR66_cross_reference(rs.getString("R66_CROSS_REFERENCE"));
+			obj.setR66_month(rs.getBigDecimal("R66_MONTH"));
+			obj.setR66_ytd(rs.getBigDecimal("R66_YTD"));
+			obj.setR67_product_name(rs.getString("R67_PRODUCT_NAME"));
+			obj.setR67_cross_reference(rs.getString("R67_CROSS_REFERENCE"));
+			obj.setR67_month(rs.getBigDecimal("R67_MONTH"));
+			obj.setR67_ytd(rs.getBigDecimal("R67_YTD"));
+			obj.setR68_product_name(rs.getString("R68_PRODUCT_NAME"));
+			obj.setR68_cross_reference(rs.getString("R68_CROSS_REFERENCE"));
+			obj.setR68_month(rs.getBigDecimal("R68_MONTH"));
+			obj.setR68_ytd(rs.getBigDecimal("R68_YTD"));
+			obj.setR69_product_name(rs.getString("R69_PRODUCT_NAME"));
+			obj.setR69_cross_reference(rs.getString("R69_CROSS_REFERENCE"));
+			obj.setR69_month(rs.getBigDecimal("R69_MONTH"));
+			obj.setR69_ytd(rs.getBigDecimal("R69_YTD"));
+			obj.setR70_product_name(rs.getString("R70_PRODUCT_NAME"));
+			obj.setR70_cross_reference(rs.getString("R70_CROSS_REFERENCE"));
+			obj.setR70_month(rs.getBigDecimal("R70_MONTH"));
+			obj.setR70_ytd(rs.getBigDecimal("R70_YTD"));
+			obj.setR71_product_name(rs.getString("R71_PRODUCT_NAME"));
+			obj.setR71_cross_reference(rs.getString("R71_CROSS_REFERENCE"));
+			obj.setR71_month(rs.getBigDecimal("R71_MONTH"));
+			obj.setR71_ytd(rs.getBigDecimal("R71_YTD"));
+			obj.setR72_product_name(rs.getString("R72_PRODUCT_NAME"));
+			obj.setR72_cross_reference(rs.getString("R72_CROSS_REFERENCE"));
+			obj.setR72_month(rs.getBigDecimal("R72_MONTH"));
+			obj.setR72_ytd(rs.getBigDecimal("R72_YTD"));
+			obj.setR73_product_name(rs.getString("R73_PRODUCT_NAME"));
+			obj.setR73_cross_reference(rs.getString("R73_CROSS_REFERENCE"));
+			obj.setR73_month(rs.getBigDecimal("R73_MONTH"));
+			obj.setR73_ytd(rs.getBigDecimal("R73_YTD"));
+			obj.setR74_product_name(rs.getString("R74_PRODUCT_NAME"));
+			obj.setR74_cross_reference(rs.getString("R74_CROSS_REFERENCE"));
+			obj.setR74_month(rs.getBigDecimal("R74_MONTH"));
+			obj.setR74_ytd(rs.getBigDecimal("R74_YTD"));
+			obj.setR75_product_name(rs.getString("R75_PRODUCT_NAME"));
+			obj.setR75_cross_reference(rs.getString("R75_CROSS_REFERENCE"));
+			obj.setR75_month(rs.getBigDecimal("R75_MONTH"));
+			obj.setR75_ytd(rs.getBigDecimal("R75_YTD"));
+			obj.setR76_product_name(rs.getString("R76_PRODUCT_NAME"));
+			obj.setR76_cross_reference(rs.getString("R76_CROSS_REFERENCE"));
+			obj.setR76_month(rs.getBigDecimal("R76_MONTH"));
+			obj.setR76_ytd(rs.getBigDecimal("R76_YTD"));
+			obj.setR77_product_name(rs.getString("R77_PRODUCT_NAME"));
+			obj.setR77_cross_reference(rs.getString("R77_CROSS_REFERENCE"));
+			obj.setR77_month(rs.getBigDecimal("R77_MONTH"));
+			obj.setR77_ytd(rs.getBigDecimal("R77_YTD"));
+			obj.setR78_product_name(rs.getString("R78_PRODUCT_NAME"));
+			obj.setR78_cross_reference(rs.getString("R78_CROSS_REFERENCE"));
+			obj.setR78_month(rs.getBigDecimal("R78_MONTH"));
+			obj.setR78_ytd(rs.getBigDecimal("R78_YTD"));
+			obj.setR79_product_name(rs.getString("R79_PRODUCT_NAME"));
+			obj.setR79_cross_reference(rs.getString("R79_CROSS_REFERENCE"));
+			obj.setR79_month(rs.getBigDecimal("R79_MONTH"));
+			obj.setR79_ytd(rs.getBigDecimal("R79_YTD"));
+			obj.setR80_product_name(rs.getString("R80_PRODUCT_NAME"));
+			obj.setR80_cross_reference(rs.getString("R80_CROSS_REFERENCE"));
+			obj.setR80_month(rs.getBigDecimal("R80_MONTH"));
+			obj.setR80_ytd(rs.getBigDecimal("R80_YTD"));
+			obj.setR81_product_name(rs.getString("R81_PRODUCT_NAME"));
+			obj.setR81_cross_reference(rs.getString("R81_CROSS_REFERENCE"));
+			obj.setR81_month(rs.getBigDecimal("R81_MONTH"));
+			obj.setR81_ytd(rs.getBigDecimal("R81_YTD"));
+			obj.setR82_product_name(rs.getString("R82_PRODUCT_NAME"));
+			obj.setR82_cross_reference(rs.getString("R82_CROSS_REFERENCE"));
+			obj.setR82_month(rs.getBigDecimal("R82_MONTH"));
+			obj.setR82_ytd(rs.getBigDecimal("R82_YTD"));
+			obj.setR83_product_name(rs.getString("R83_PRODUCT_NAME"));
+			obj.setR83_cross_reference(rs.getString("R83_CROSS_REFERENCE"));
+			obj.setR83_month(rs.getBigDecimal("R83_MONTH"));
+			obj.setR83_ytd(rs.getBigDecimal("R83_YTD"));
+			obj.setR84_product_name(rs.getString("R84_PRODUCT_NAME"));
+			obj.setR84_cross_reference(rs.getString("R84_CROSS_REFERENCE"));
+			obj.setR84_month(rs.getBigDecimal("R84_MONTH"));
+			obj.setR84_ytd(rs.getBigDecimal("R84_YTD"));
+			obj.setR85_product_name(rs.getString("R85_PRODUCT_NAME"));
+			obj.setR85_cross_reference(rs.getString("R85_CROSS_REFERENCE"));
+			obj.setR85_month(rs.getBigDecimal("R85_MONTH"));
+			obj.setR85_ytd(rs.getBigDecimal("R85_YTD"));
+			obj.setR86_product_name(rs.getString("R86_PRODUCT_NAME"));
+			obj.setR86_cross_reference(rs.getString("R86_CROSS_REFERENCE"));
+			obj.setR86_month(rs.getBigDecimal("R86_MONTH"));
+			obj.setR86_ytd(rs.getBigDecimal("R86_YTD"));
+			return obj;
+		}
+	}
+
+	class M_SCI_E_Archival_SummaryRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_Archival_Summary_Entity> {
+		@Override
+		public M_SCI_E_Archival_Summary_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_Archival_Summary_Entity obj = new M_SCI_E_Archival_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_product_name(rs.getString("R10_PRODUCT_NAME"));
+			obj.setR10_cross_reference(rs.getString("R10_CROSS_REFERENCE"));
+			obj.setR10_month(rs.getBigDecimal("R10_MONTH"));
+			obj.setR10_ytd(rs.getBigDecimal("R10_YTD"));
+			obj.setR11_product_name(rs.getString("R11_PRODUCT_NAME"));
+			obj.setR11_cross_reference(rs.getString("R11_CROSS_REFERENCE"));
+			obj.setR11_month(rs.getBigDecimal("R11_MONTH"));
+			obj.setR11_ytd(rs.getBigDecimal("R11_YTD"));
+			obj.setR12_product_name(rs.getString("R12_PRODUCT_NAME"));
+			obj.setR12_cross_reference(rs.getString("R12_CROSS_REFERENCE"));
+			obj.setR12_month(rs.getBigDecimal("R12_MONTH"));
+			obj.setR12_ytd(rs.getBigDecimal("R12_YTD"));
+			obj.setR13_product_name(rs.getString("R13_PRODUCT_NAME"));
+			obj.setR13_cross_reference(rs.getString("R13_CROSS_REFERENCE"));
+			obj.setR13_month(rs.getBigDecimal("R13_MONTH"));
+			obj.setR13_ytd(rs.getBigDecimal("R13_YTD"));
+			obj.setR14_product_name(rs.getString("R14_PRODUCT_NAME"));
+			obj.setR14_cross_reference(rs.getString("R14_CROSS_REFERENCE"));
+			obj.setR14_month(rs.getBigDecimal("R14_MONTH"));
+			obj.setR14_ytd(rs.getBigDecimal("R14_YTD"));
+			obj.setR15_product_name(rs.getString("R15_PRODUCT_NAME"));
+			obj.setR15_cross_reference(rs.getString("R15_CROSS_REFERENCE"));
+			obj.setR15_month(rs.getBigDecimal("R15_MONTH"));
+			obj.setR15_ytd(rs.getBigDecimal("R15_YTD"));
+			obj.setR16_product_name(rs.getString("R16_PRODUCT_NAME"));
+			obj.setR16_cross_reference(rs.getString("R16_CROSS_REFERENCE"));
+			obj.setR16_month(rs.getBigDecimal("R16_MONTH"));
+			obj.setR16_ytd(rs.getBigDecimal("R16_YTD"));
+			obj.setR17_product_name(rs.getString("R17_PRODUCT_NAME"));
+			obj.setR17_cross_reference(rs.getString("R17_CROSS_REFERENCE"));
+			obj.setR17_month(rs.getBigDecimal("R17_MONTH"));
+			obj.setR17_ytd(rs.getBigDecimal("R17_YTD"));
+			obj.setR18_product_name(rs.getString("R18_PRODUCT_NAME"));
+			obj.setR18_cross_reference(rs.getString("R18_CROSS_REFERENCE"));
+			obj.setR18_month(rs.getBigDecimal("R18_MONTH"));
+			obj.setR18_ytd(rs.getBigDecimal("R18_YTD"));
+			obj.setR19_product_name(rs.getString("R19_PRODUCT_NAME"));
+			obj.setR19_cross_reference(rs.getString("R19_CROSS_REFERENCE"));
+			obj.setR19_month(rs.getBigDecimal("R19_MONTH"));
+			obj.setR19_ytd(rs.getBigDecimal("R19_YTD"));
+			obj.setR20_product_name(rs.getString("R20_PRODUCT_NAME"));
+			obj.setR20_cross_reference(rs.getString("R20_CROSS_REFERENCE"));
+			obj.setR20_month(rs.getBigDecimal("R20_MONTH"));
+			obj.setR20_ytd(rs.getBigDecimal("R20_YTD"));
+			obj.setR21_product_name(rs.getString("R21_PRODUCT_NAME"));
+			obj.setR21_cross_reference(rs.getString("R21_CROSS_REFERENCE"));
+			obj.setR21_month(rs.getBigDecimal("R21_MONTH"));
+			obj.setR21_ytd(rs.getBigDecimal("R21_YTD"));
+			obj.setR22_product_name(rs.getString("R22_PRODUCT_NAME"));
+			obj.setR22_cross_reference(rs.getString("R22_CROSS_REFERENCE"));
+			obj.setR22_month(rs.getBigDecimal("R22_MONTH"));
+			obj.setR22_ytd(rs.getBigDecimal("R22_YTD"));
+			obj.setR23_product_name(rs.getString("R23_PRODUCT_NAME"));
+			obj.setR23_cross_reference(rs.getString("R23_CROSS_REFERENCE"));
+			obj.setR23_month(rs.getBigDecimal("R23_MONTH"));
+			obj.setR23_ytd(rs.getBigDecimal("R23_YTD"));
+			obj.setR24_product_name(rs.getString("R24_PRODUCT_NAME"));
+			obj.setR24_cross_reference(rs.getString("R24_CROSS_REFERENCE"));
+			obj.setR24_month(rs.getBigDecimal("R24_MONTH"));
+			obj.setR24_ytd(rs.getBigDecimal("R24_YTD"));
+			obj.setR25_product_name(rs.getString("R25_PRODUCT_NAME"));
+			obj.setR25_cross_reference(rs.getString("R25_CROSS_REFERENCE"));
+			obj.setR25_month(rs.getBigDecimal("R25_MONTH"));
+			obj.setR25_ytd(rs.getBigDecimal("R25_YTD"));
+			obj.setR26_product_name(rs.getString("R26_PRODUCT_NAME"));
+			obj.setR26_cross_reference(rs.getString("R26_CROSS_REFERENCE"));
+			obj.setR26_month(rs.getBigDecimal("R26_MONTH"));
+			obj.setR26_ytd(rs.getBigDecimal("R26_YTD"));
+			obj.setR27_product_name(rs.getString("R27_PRODUCT_NAME"));
+			obj.setR27_cross_reference(rs.getString("R27_CROSS_REFERENCE"));
+			obj.setR27_month(rs.getBigDecimal("R27_MONTH"));
+			obj.setR27_ytd(rs.getBigDecimal("R27_YTD"));
+			obj.setR28_product_name(rs.getString("R28_PRODUCT_NAME"));
+			obj.setR28_cross_reference(rs.getString("R28_CROSS_REFERENCE"));
+			obj.setR28_month(rs.getBigDecimal("R28_MONTH"));
+			obj.setR28_ytd(rs.getBigDecimal("R28_YTD"));
+			obj.setR29_product_name(rs.getString("R29_PRODUCT_NAME"));
+			obj.setR29_cross_reference(rs.getString("R29_CROSS_REFERENCE"));
+			obj.setR29_month(rs.getBigDecimal("R29_MONTH"));
+			obj.setR29_ytd(rs.getBigDecimal("R29_YTD"));
+			obj.setR30_product_name(rs.getString("R30_PRODUCT_NAME"));
+			obj.setR30_cross_reference(rs.getString("R30_CROSS_REFERENCE"));
+			obj.setR30_month(rs.getBigDecimal("R30_MONTH"));
+			obj.setR30_ytd(rs.getBigDecimal("R30_YTD"));
+			obj.setR31_product_name(rs.getString("R31_PRODUCT_NAME"));
+			obj.setR31_cross_reference(rs.getString("R31_CROSS_REFERENCE"));
+			obj.setR31_month(rs.getBigDecimal("R31_MONTH"));
+			obj.setR31_ytd(rs.getBigDecimal("R31_YTD"));
+			obj.setR32_product_name(rs.getString("R32_PRODUCT_NAME"));
+			obj.setR32_cross_reference(rs.getString("R32_CROSS_REFERENCE"));
+			obj.setR32_month(rs.getBigDecimal("R32_MONTH"));
+			obj.setR32_ytd(rs.getBigDecimal("R32_YTD"));
+			obj.setR33_product_name(rs.getString("R33_PRODUCT_NAME"));
+			obj.setR33_cross_reference(rs.getString("R33_CROSS_REFERENCE"));
+			obj.setR33_month(rs.getBigDecimal("R33_MONTH"));
+			obj.setR33_ytd(rs.getBigDecimal("R33_YTD"));
+			obj.setR34_product_name(rs.getString("R34_PRODUCT_NAME"));
+			obj.setR34_cross_reference(rs.getString("R34_CROSS_REFERENCE"));
+			obj.setR34_month(rs.getBigDecimal("R34_MONTH"));
+			obj.setR34_ytd(rs.getBigDecimal("R34_YTD"));
+			obj.setR35_product_name(rs.getString("R35_PRODUCT_NAME"));
+			obj.setR35_cross_reference(rs.getString("R35_CROSS_REFERENCE"));
+			obj.setR35_month(rs.getBigDecimal("R35_MONTH"));
+			obj.setR35_ytd(rs.getBigDecimal("R35_YTD"));
+			obj.setR36_product_name(rs.getString("R36_PRODUCT_NAME"));
+			obj.setR36_cross_reference(rs.getString("R36_CROSS_REFERENCE"));
+			obj.setR36_month(rs.getBigDecimal("R36_MONTH"));
+			obj.setR36_ytd(rs.getBigDecimal("R36_YTD"));
+			obj.setR37_product_name(rs.getString("R37_PRODUCT_NAME"));
+			obj.setR37_cross_reference(rs.getString("R37_CROSS_REFERENCE"));
+			obj.setR37_month(rs.getBigDecimal("R37_MONTH"));
+			obj.setR37_ytd(rs.getBigDecimal("R37_YTD"));
+			obj.setR38_product_name(rs.getString("R38_PRODUCT_NAME"));
+			obj.setR38_cross_reference(rs.getString("R38_CROSS_REFERENCE"));
+			obj.setR38_month(rs.getBigDecimal("R38_MONTH"));
+			obj.setR38_ytd(rs.getBigDecimal("R38_YTD"));
+			obj.setR39_product_name(rs.getString("R39_PRODUCT_NAME"));
+			obj.setR39_cross_reference(rs.getString("R39_CROSS_REFERENCE"));
+			obj.setR39_month(rs.getBigDecimal("R39_MONTH"));
+			obj.setR39_ytd(rs.getBigDecimal("R39_YTD"));
+			obj.setR40_product_name(rs.getString("R40_PRODUCT_NAME"));
+			obj.setR40_cross_reference(rs.getString("R40_CROSS_REFERENCE"));
+			obj.setR40_month(rs.getBigDecimal("R40_MONTH"));
+			obj.setR40_ytd(rs.getBigDecimal("R40_YTD"));
+			obj.setR41_product_name(rs.getString("R41_PRODUCT_NAME"));
+			obj.setR41_cross_reference(rs.getString("R41_CROSS_REFERENCE"));
+			obj.setR41_month(rs.getBigDecimal("R41_MONTH"));
+			obj.setR41_ytd(rs.getBigDecimal("R41_YTD"));
+			obj.setR42_product_name(rs.getString("R42_PRODUCT_NAME"));
+			obj.setR42_cross_reference(rs.getString("R42_CROSS_REFERENCE"));
+			obj.setR42_month(rs.getBigDecimal("R42_MONTH"));
+			obj.setR42_ytd(rs.getBigDecimal("R42_YTD"));
+			obj.setR43_product_name(rs.getString("R43_PRODUCT_NAME"));
+			obj.setR43_cross_reference(rs.getString("R43_CROSS_REFERENCE"));
+			obj.setR43_month(rs.getBigDecimal("R43_MONTH"));
+			obj.setR43_ytd(rs.getBigDecimal("R43_YTD"));
+			obj.setR44_product_name(rs.getString("R44_PRODUCT_NAME"));
+			obj.setR44_cross_reference(rs.getString("R44_CROSS_REFERENCE"));
+			obj.setR44_month(rs.getBigDecimal("R44_MONTH"));
+			obj.setR44_ytd(rs.getBigDecimal("R44_YTD"));
+			obj.setR45_product_name(rs.getString("R45_PRODUCT_NAME"));
+			obj.setR45_cross_reference(rs.getString("R45_CROSS_REFERENCE"));
+			obj.setR45_month(rs.getBigDecimal("R45_MONTH"));
+			obj.setR45_ytd(rs.getBigDecimal("R45_YTD"));
+			obj.setR46_product_name(rs.getString("R46_PRODUCT_NAME"));
+			obj.setR46_cross_reference(rs.getString("R46_CROSS_REFERENCE"));
+			obj.setR46_month(rs.getBigDecimal("R46_MONTH"));
+			obj.setR46_ytd(rs.getBigDecimal("R46_YTD"));
+			obj.setR47_product_name(rs.getString("R47_PRODUCT_NAME"));
+			obj.setR47_cross_reference(rs.getString("R47_CROSS_REFERENCE"));
+			obj.setR47_month(rs.getBigDecimal("R47_MONTH"));
+			obj.setR47_ytd(rs.getBigDecimal("R47_YTD"));
+			obj.setR48_product_name(rs.getString("R48_PRODUCT_NAME"));
+			obj.setR48_cross_reference(rs.getString("R48_CROSS_REFERENCE"));
+			obj.setR48_month(rs.getBigDecimal("R48_MONTH"));
+			obj.setR48_ytd(rs.getBigDecimal("R48_YTD"));
+			obj.setR49_product_name(rs.getString("R49_PRODUCT_NAME"));
+			obj.setR49_cross_reference(rs.getString("R49_CROSS_REFERENCE"));
+			obj.setR49_month(rs.getBigDecimal("R49_MONTH"));
+			obj.setR49_ytd(rs.getBigDecimal("R49_YTD"));
+			obj.setR50_product_name(rs.getString("R50_PRODUCT_NAME"));
+			obj.setR50_cross_reference(rs.getString("R50_CROSS_REFERENCE"));
+			obj.setR50_month(rs.getBigDecimal("R50_MONTH"));
+			obj.setR50_ytd(rs.getBigDecimal("R50_YTD"));
+			obj.setR51_product_name(rs.getString("R51_PRODUCT_NAME"));
+			obj.setR51_cross_reference(rs.getString("R51_CROSS_REFERENCE"));
+			obj.setR51_month(rs.getBigDecimal("R51_MONTH"));
+			obj.setR51_ytd(rs.getBigDecimal("R51_YTD"));
+			obj.setR52_product_name(rs.getString("R52_PRODUCT_NAME"));
+			obj.setR52_cross_reference(rs.getString("R52_CROSS_REFERENCE"));
+			obj.setR52_month(rs.getBigDecimal("R52_MONTH"));
+			obj.setR52_ytd(rs.getBigDecimal("R52_YTD"));
+			obj.setR53_product_name(rs.getString("R53_PRODUCT_NAME"));
+			obj.setR53_cross_reference(rs.getString("R53_CROSS_REFERENCE"));
+			obj.setR53_month(rs.getBigDecimal("R53_MONTH"));
+			obj.setR53_ytd(rs.getBigDecimal("R53_YTD"));
+			obj.setR54_product_name(rs.getString("R54_PRODUCT_NAME"));
+			obj.setR54_cross_reference(rs.getString("R54_CROSS_REFERENCE"));
+			obj.setR54_month(rs.getBigDecimal("R54_MONTH"));
+			obj.setR54_ytd(rs.getBigDecimal("R54_YTD"));
+			obj.setR55_product_name(rs.getString("R55_PRODUCT_NAME"));
+			obj.setR55_cross_reference(rs.getString("R55_CROSS_REFERENCE"));
+			obj.setR55_month(rs.getBigDecimal("R55_MONTH"));
+			obj.setR55_ytd(rs.getBigDecimal("R55_YTD"));
+			obj.setR56_product_name(rs.getString("R56_PRODUCT_NAME"));
+			obj.setR56_cross_reference(rs.getString("R56_CROSS_REFERENCE"));
+			obj.setR56_month(rs.getBigDecimal("R56_MONTH"));
+			obj.setR56_ytd(rs.getBigDecimal("R56_YTD"));
+			obj.setR57_product_name(rs.getString("R57_PRODUCT_NAME"));
+			obj.setR57_cross_reference(rs.getString("R57_CROSS_REFERENCE"));
+			obj.setR57_month(rs.getBigDecimal("R57_MONTH"));
+			obj.setR57_ytd(rs.getBigDecimal("R57_YTD"));
+			obj.setR58_product_name(rs.getString("R58_PRODUCT_NAME"));
+			obj.setR58_cross_reference(rs.getString("R58_CROSS_REFERENCE"));
+			obj.setR58_month(rs.getBigDecimal("R58_MONTH"));
+			obj.setR58_ytd(rs.getBigDecimal("R58_YTD"));
+			obj.setR59_product_name(rs.getString("R59_PRODUCT_NAME"));
+			obj.setR59_cross_reference(rs.getString("R59_CROSS_REFERENCE"));
+			obj.setR59_month(rs.getBigDecimal("R59_MONTH"));
+			obj.setR59_ytd(rs.getBigDecimal("R59_YTD"));
+			obj.setR60_product_name(rs.getString("R60_PRODUCT_NAME"));
+			obj.setR60_cross_reference(rs.getString("R60_CROSS_REFERENCE"));
+			obj.setR60_month(rs.getBigDecimal("R60_MONTH"));
+			obj.setR60_ytd(rs.getBigDecimal("R60_YTD"));
+			obj.setR61_product_name(rs.getString("R61_PRODUCT_NAME"));
+			obj.setR61_cross_reference(rs.getString("R61_CROSS_REFERENCE"));
+			obj.setR61_month(rs.getBigDecimal("R61_MONTH"));
+			obj.setR61_ytd(rs.getBigDecimal("R61_YTD"));
+			obj.setR62_product_name(rs.getString("R62_PRODUCT_NAME"));
+			obj.setR62_cross_reference(rs.getString("R62_CROSS_REFERENCE"));
+			obj.setR62_month(rs.getBigDecimal("R62_MONTH"));
+			obj.setR62_ytd(rs.getBigDecimal("R62_YTD"));
+			obj.setR63_product_name(rs.getString("R63_PRODUCT_NAME"));
+			obj.setR63_cross_reference(rs.getString("R63_CROSS_REFERENCE"));
+			obj.setR63_month(rs.getBigDecimal("R63_MONTH"));
+			obj.setR63_ytd(rs.getBigDecimal("R63_YTD"));
+			obj.setR64_product_name(rs.getString("R64_PRODUCT_NAME"));
+			obj.setR64_cross_reference(rs.getString("R64_CROSS_REFERENCE"));
+			obj.setR64_month(rs.getBigDecimal("R64_MONTH"));
+			obj.setR64_ytd(rs.getBigDecimal("R64_YTD"));
+			obj.setR65_product_name(rs.getString("R65_PRODUCT_NAME"));
+			obj.setR65_cross_reference(rs.getString("R65_CROSS_REFERENCE"));
+			obj.setR65_month(rs.getBigDecimal("R65_MONTH"));
+			obj.setR65_ytd(rs.getBigDecimal("R65_YTD"));
+			obj.setR66_product_name(rs.getString("R66_PRODUCT_NAME"));
+			obj.setR66_cross_reference(rs.getString("R66_CROSS_REFERENCE"));
+			obj.setR66_month(rs.getBigDecimal("R66_MONTH"));
+			obj.setR66_ytd(rs.getBigDecimal("R66_YTD"));
+			obj.setR67_product_name(rs.getString("R67_PRODUCT_NAME"));
+			obj.setR67_cross_reference(rs.getString("R67_CROSS_REFERENCE"));
+			obj.setR67_month(rs.getBigDecimal("R67_MONTH"));
+			obj.setR67_ytd(rs.getBigDecimal("R67_YTD"));
+			obj.setR68_product_name(rs.getString("R68_PRODUCT_NAME"));
+			obj.setR68_cross_reference(rs.getString("R68_CROSS_REFERENCE"));
+			obj.setR68_month(rs.getBigDecimal("R68_MONTH"));
+			obj.setR68_ytd(rs.getBigDecimal("R68_YTD"));
+			obj.setR69_product_name(rs.getString("R69_PRODUCT_NAME"));
+			obj.setR69_cross_reference(rs.getString("R69_CROSS_REFERENCE"));
+			obj.setR69_month(rs.getBigDecimal("R69_MONTH"));
+			obj.setR69_ytd(rs.getBigDecimal("R69_YTD"));
+			obj.setR70_product_name(rs.getString("R70_PRODUCT_NAME"));
+			obj.setR70_cross_reference(rs.getString("R70_CROSS_REFERENCE"));
+			obj.setR70_month(rs.getBigDecimal("R70_MONTH"));
+			obj.setR70_ytd(rs.getBigDecimal("R70_YTD"));
+			obj.setR71_product_name(rs.getString("R71_PRODUCT_NAME"));
+			obj.setR71_cross_reference(rs.getString("R71_CROSS_REFERENCE"));
+			obj.setR71_month(rs.getBigDecimal("R71_MONTH"));
+			obj.setR71_ytd(rs.getBigDecimal("R71_YTD"));
+			obj.setR72_product_name(rs.getString("R72_PRODUCT_NAME"));
+			obj.setR72_cross_reference(rs.getString("R72_CROSS_REFERENCE"));
+			obj.setR72_month(rs.getBigDecimal("R72_MONTH"));
+			obj.setR72_ytd(rs.getBigDecimal("R72_YTD"));
+			obj.setR73_product_name(rs.getString("R73_PRODUCT_NAME"));
+			obj.setR73_cross_reference(rs.getString("R73_CROSS_REFERENCE"));
+			obj.setR73_month(rs.getBigDecimal("R73_MONTH"));
+			obj.setR73_ytd(rs.getBigDecimal("R73_YTD"));
+			obj.setR74_product_name(rs.getString("R74_PRODUCT_NAME"));
+			obj.setR74_cross_reference(rs.getString("R74_CROSS_REFERENCE"));
+			obj.setR74_month(rs.getBigDecimal("R74_MONTH"));
+			obj.setR74_ytd(rs.getBigDecimal("R74_YTD"));
+			obj.setR75_product_name(rs.getString("R75_PRODUCT_NAME"));
+			obj.setR75_cross_reference(rs.getString("R75_CROSS_REFERENCE"));
+			obj.setR75_month(rs.getBigDecimal("R75_MONTH"));
+			obj.setR75_ytd(rs.getBigDecimal("R75_YTD"));
+			obj.setR76_product_name(rs.getString("R76_PRODUCT_NAME"));
+			obj.setR76_cross_reference(rs.getString("R76_CROSS_REFERENCE"));
+			obj.setR76_month(rs.getBigDecimal("R76_MONTH"));
+			obj.setR76_ytd(rs.getBigDecimal("R76_YTD"));
+			obj.setR77_product_name(rs.getString("R77_PRODUCT_NAME"));
+			obj.setR77_cross_reference(rs.getString("R77_CROSS_REFERENCE"));
+			obj.setR77_month(rs.getBigDecimal("R77_MONTH"));
+			obj.setR77_ytd(rs.getBigDecimal("R77_YTD"));
+			obj.setR78_product_name(rs.getString("R78_PRODUCT_NAME"));
+			obj.setR78_cross_reference(rs.getString("R78_CROSS_REFERENCE"));
+			obj.setR78_month(rs.getBigDecimal("R78_MONTH"));
+			obj.setR78_ytd(rs.getBigDecimal("R78_YTD"));
+			obj.setR79_product_name(rs.getString("R79_PRODUCT_NAME"));
+			obj.setR79_cross_reference(rs.getString("R79_CROSS_REFERENCE"));
+			obj.setR79_month(rs.getBigDecimal("R79_MONTH"));
+			obj.setR79_ytd(rs.getBigDecimal("R79_YTD"));
+			obj.setR80_product_name(rs.getString("R80_PRODUCT_NAME"));
+			obj.setR80_cross_reference(rs.getString("R80_CROSS_REFERENCE"));
+			obj.setR80_month(rs.getBigDecimal("R80_MONTH"));
+			obj.setR80_ytd(rs.getBigDecimal("R80_YTD"));
+			obj.setR81_product_name(rs.getString("R81_PRODUCT_NAME"));
+			obj.setR81_cross_reference(rs.getString("R81_CROSS_REFERENCE"));
+			obj.setR81_month(rs.getBigDecimal("R81_MONTH"));
+			obj.setR81_ytd(rs.getBigDecimal("R81_YTD"));
+			obj.setR82_product_name(rs.getString("R82_PRODUCT_NAME"));
+			obj.setR82_cross_reference(rs.getString("R82_CROSS_REFERENCE"));
+			obj.setR82_month(rs.getBigDecimal("R82_MONTH"));
+			obj.setR82_ytd(rs.getBigDecimal("R82_YTD"));
+			obj.setR83_product_name(rs.getString("R83_PRODUCT_NAME"));
+			obj.setR83_cross_reference(rs.getString("R83_CROSS_REFERENCE"));
+			obj.setR83_month(rs.getBigDecimal("R83_MONTH"));
+			obj.setR83_ytd(rs.getBigDecimal("R83_YTD"));
+			obj.setR84_product_name(rs.getString("R84_PRODUCT_NAME"));
+			obj.setR84_cross_reference(rs.getString("R84_CROSS_REFERENCE"));
+			obj.setR84_month(rs.getBigDecimal("R84_MONTH"));
+			obj.setR84_ytd(rs.getBigDecimal("R84_YTD"));
+			obj.setR85_product_name(rs.getString("R85_PRODUCT_NAME"));
+			obj.setR85_cross_reference(rs.getString("R85_CROSS_REFERENCE"));
+			obj.setR85_month(rs.getBigDecimal("R85_MONTH"));
+			obj.setR85_ytd(rs.getBigDecimal("R85_YTD"));
+			obj.setR86_product_name(rs.getString("R86_PRODUCT_NAME"));
+			obj.setR86_cross_reference(rs.getString("R86_CROSS_REFERENCE"));
+			obj.setR86_month(rs.getBigDecimal("R86_MONTH"));
+			obj.setR86_ytd(rs.getBigDecimal("R86_YTD"));
+			return obj;
+		}
+	}
+
+	class M_SCI_E_RESUB_SummaryRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_RESUB_Summary_Entity> {
+		@Override
+		public M_SCI_E_RESUB_Summary_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_RESUB_Summary_Entity obj = new M_SCI_E_RESUB_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR10_product_name(rs.getString("R10_PRODUCT_NAME"));
+			obj.setR10_cross_reference(rs.getString("R10_CROSS_REFERENCE"));
+			obj.setR10_month(rs.getBigDecimal("R10_MONTH"));
+			obj.setR10_ytd(rs.getBigDecimal("R10_YTD"));
+			obj.setR11_product_name(rs.getString("R11_PRODUCT_NAME"));
+			obj.setR11_cross_reference(rs.getString("R11_CROSS_REFERENCE"));
+			obj.setR11_month(rs.getBigDecimal("R11_MONTH"));
+			obj.setR11_ytd(rs.getBigDecimal("R11_YTD"));
+			obj.setR12_product_name(rs.getString("R12_PRODUCT_NAME"));
+			obj.setR12_cross_reference(rs.getString("R12_CROSS_REFERENCE"));
+			obj.setR12_month(rs.getBigDecimal("R12_MONTH"));
+			obj.setR12_ytd(rs.getBigDecimal("R12_YTD"));
+			obj.setR13_product_name(rs.getString("R13_PRODUCT_NAME"));
+			obj.setR13_cross_reference(rs.getString("R13_CROSS_REFERENCE"));
+			obj.setR13_month(rs.getBigDecimal("R13_MONTH"));
+			obj.setR13_ytd(rs.getBigDecimal("R13_YTD"));
+			obj.setR14_product_name(rs.getString("R14_PRODUCT_NAME"));
+			obj.setR14_cross_reference(rs.getString("R14_CROSS_REFERENCE"));
+			obj.setR14_month(rs.getBigDecimal("R14_MONTH"));
+			obj.setR14_ytd(rs.getBigDecimal("R14_YTD"));
+			obj.setR15_product_name(rs.getString("R15_PRODUCT_NAME"));
+			obj.setR15_cross_reference(rs.getString("R15_CROSS_REFERENCE"));
+			obj.setR15_month(rs.getBigDecimal("R15_MONTH"));
+			obj.setR15_ytd(rs.getBigDecimal("R15_YTD"));
+			obj.setR16_product_name(rs.getString("R16_PRODUCT_NAME"));
+			obj.setR16_cross_reference(rs.getString("R16_CROSS_REFERENCE"));
+			obj.setR16_month(rs.getBigDecimal("R16_MONTH"));
+			obj.setR16_ytd(rs.getBigDecimal("R16_YTD"));
+			obj.setR17_product_name(rs.getString("R17_PRODUCT_NAME"));
+			obj.setR17_cross_reference(rs.getString("R17_CROSS_REFERENCE"));
+			obj.setR17_month(rs.getBigDecimal("R17_MONTH"));
+			obj.setR17_ytd(rs.getBigDecimal("R17_YTD"));
+			obj.setR18_product_name(rs.getString("R18_PRODUCT_NAME"));
+			obj.setR18_cross_reference(rs.getString("R18_CROSS_REFERENCE"));
+			obj.setR18_month(rs.getBigDecimal("R18_MONTH"));
+			obj.setR18_ytd(rs.getBigDecimal("R18_YTD"));
+			obj.setR19_product_name(rs.getString("R19_PRODUCT_NAME"));
+			obj.setR19_cross_reference(rs.getString("R19_CROSS_REFERENCE"));
+			obj.setR19_month(rs.getBigDecimal("R19_MONTH"));
+			obj.setR19_ytd(rs.getBigDecimal("R19_YTD"));
+			obj.setR20_product_name(rs.getString("R20_PRODUCT_NAME"));
+			obj.setR20_cross_reference(rs.getString("R20_CROSS_REFERENCE"));
+			obj.setR20_month(rs.getBigDecimal("R20_MONTH"));
+			obj.setR20_ytd(rs.getBigDecimal("R20_YTD"));
+			obj.setR21_product_name(rs.getString("R21_PRODUCT_NAME"));
+			obj.setR21_cross_reference(rs.getString("R21_CROSS_REFERENCE"));
+			obj.setR21_month(rs.getBigDecimal("R21_MONTH"));
+			obj.setR21_ytd(rs.getBigDecimal("R21_YTD"));
+			obj.setR22_product_name(rs.getString("R22_PRODUCT_NAME"));
+			obj.setR22_cross_reference(rs.getString("R22_CROSS_REFERENCE"));
+			obj.setR22_month(rs.getBigDecimal("R22_MONTH"));
+			obj.setR22_ytd(rs.getBigDecimal("R22_YTD"));
+			obj.setR23_product_name(rs.getString("R23_PRODUCT_NAME"));
+			obj.setR23_cross_reference(rs.getString("R23_CROSS_REFERENCE"));
+			obj.setR23_month(rs.getBigDecimal("R23_MONTH"));
+			obj.setR23_ytd(rs.getBigDecimal("R23_YTD"));
+			obj.setR24_product_name(rs.getString("R24_PRODUCT_NAME"));
+			obj.setR24_cross_reference(rs.getString("R24_CROSS_REFERENCE"));
+			obj.setR24_month(rs.getBigDecimal("R24_MONTH"));
+			obj.setR24_ytd(rs.getBigDecimal("R24_YTD"));
+			obj.setR25_product_name(rs.getString("R25_PRODUCT_NAME"));
+			obj.setR25_cross_reference(rs.getString("R25_CROSS_REFERENCE"));
+			obj.setR25_month(rs.getBigDecimal("R25_MONTH"));
+			obj.setR25_ytd(rs.getBigDecimal("R25_YTD"));
+			obj.setR26_product_name(rs.getString("R26_PRODUCT_NAME"));
+			obj.setR26_cross_reference(rs.getString("R26_CROSS_REFERENCE"));
+			obj.setR26_month(rs.getBigDecimal("R26_MONTH"));
+			obj.setR26_ytd(rs.getBigDecimal("R26_YTD"));
+			obj.setR27_product_name(rs.getString("R27_PRODUCT_NAME"));
+			obj.setR27_cross_reference(rs.getString("R27_CROSS_REFERENCE"));
+			obj.setR27_month(rs.getBigDecimal("R27_MONTH"));
+			obj.setR27_ytd(rs.getBigDecimal("R27_YTD"));
+			obj.setR28_product_name(rs.getString("R28_PRODUCT_NAME"));
+			obj.setR28_cross_reference(rs.getString("R28_CROSS_REFERENCE"));
+			obj.setR28_month(rs.getBigDecimal("R28_MONTH"));
+			obj.setR28_ytd(rs.getBigDecimal("R28_YTD"));
+			obj.setR29_product_name(rs.getString("R29_PRODUCT_NAME"));
+			obj.setR29_cross_reference(rs.getString("R29_CROSS_REFERENCE"));
+			obj.setR29_month(rs.getBigDecimal("R29_MONTH"));
+			obj.setR29_ytd(rs.getBigDecimal("R29_YTD"));
+			obj.setR30_product_name(rs.getString("R30_PRODUCT_NAME"));
+			obj.setR30_cross_reference(rs.getString("R30_CROSS_REFERENCE"));
+			obj.setR30_month(rs.getBigDecimal("R30_MONTH"));
+			obj.setR30_ytd(rs.getBigDecimal("R30_YTD"));
+			obj.setR31_product_name(rs.getString("R31_PRODUCT_NAME"));
+			obj.setR31_cross_reference(rs.getString("R31_CROSS_REFERENCE"));
+			obj.setR31_month(rs.getBigDecimal("R31_MONTH"));
+			obj.setR31_ytd(rs.getBigDecimal("R31_YTD"));
+			obj.setR32_product_name(rs.getString("R32_PRODUCT_NAME"));
+			obj.setR32_cross_reference(rs.getString("R32_CROSS_REFERENCE"));
+			obj.setR32_month(rs.getBigDecimal("R32_MONTH"));
+			obj.setR32_ytd(rs.getBigDecimal("R32_YTD"));
+			obj.setR33_product_name(rs.getString("R33_PRODUCT_NAME"));
+			obj.setR33_cross_reference(rs.getString("R33_CROSS_REFERENCE"));
+			obj.setR33_month(rs.getBigDecimal("R33_MONTH"));
+			obj.setR33_ytd(rs.getBigDecimal("R33_YTD"));
+			obj.setR34_product_name(rs.getString("R34_PRODUCT_NAME"));
+			obj.setR34_cross_reference(rs.getString("R34_CROSS_REFERENCE"));
+			obj.setR34_month(rs.getBigDecimal("R34_MONTH"));
+			obj.setR34_ytd(rs.getBigDecimal("R34_YTD"));
+			obj.setR35_product_name(rs.getString("R35_PRODUCT_NAME"));
+			obj.setR35_cross_reference(rs.getString("R35_CROSS_REFERENCE"));
+			obj.setR35_month(rs.getBigDecimal("R35_MONTH"));
+			obj.setR35_ytd(rs.getBigDecimal("R35_YTD"));
+			obj.setR36_product_name(rs.getString("R36_PRODUCT_NAME"));
+			obj.setR36_cross_reference(rs.getString("R36_CROSS_REFERENCE"));
+			obj.setR36_month(rs.getBigDecimal("R36_MONTH"));
+			obj.setR36_ytd(rs.getBigDecimal("R36_YTD"));
+			obj.setR37_product_name(rs.getString("R37_PRODUCT_NAME"));
+			obj.setR37_cross_reference(rs.getString("R37_CROSS_REFERENCE"));
+			obj.setR37_month(rs.getBigDecimal("R37_MONTH"));
+			obj.setR37_ytd(rs.getBigDecimal("R37_YTD"));
+			obj.setR38_product_name(rs.getString("R38_PRODUCT_NAME"));
+			obj.setR38_cross_reference(rs.getString("R38_CROSS_REFERENCE"));
+			obj.setR38_month(rs.getBigDecimal("R38_MONTH"));
+			obj.setR38_ytd(rs.getBigDecimal("R38_YTD"));
+			obj.setR39_product_name(rs.getString("R39_PRODUCT_NAME"));
+			obj.setR39_cross_reference(rs.getString("R39_CROSS_REFERENCE"));
+			obj.setR39_month(rs.getBigDecimal("R39_MONTH"));
+			obj.setR39_ytd(rs.getBigDecimal("R39_YTD"));
+			obj.setR40_product_name(rs.getString("R40_PRODUCT_NAME"));
+			obj.setR40_cross_reference(rs.getString("R40_CROSS_REFERENCE"));
+			obj.setR40_month(rs.getBigDecimal("R40_MONTH"));
+			obj.setR40_ytd(rs.getBigDecimal("R40_YTD"));
+			obj.setR41_product_name(rs.getString("R41_PRODUCT_NAME"));
+			obj.setR41_cross_reference(rs.getString("R41_CROSS_REFERENCE"));
+			obj.setR41_month(rs.getBigDecimal("R41_MONTH"));
+			obj.setR41_ytd(rs.getBigDecimal("R41_YTD"));
+			obj.setR42_product_name(rs.getString("R42_PRODUCT_NAME"));
+			obj.setR42_cross_reference(rs.getString("R42_CROSS_REFERENCE"));
+			obj.setR42_month(rs.getBigDecimal("R42_MONTH"));
+			obj.setR42_ytd(rs.getBigDecimal("R42_YTD"));
+			obj.setR43_product_name(rs.getString("R43_PRODUCT_NAME"));
+			obj.setR43_cross_reference(rs.getString("R43_CROSS_REFERENCE"));
+			obj.setR43_month(rs.getBigDecimal("R43_MONTH"));
+			obj.setR43_ytd(rs.getBigDecimal("R43_YTD"));
+			obj.setR44_product_name(rs.getString("R44_PRODUCT_NAME"));
+			obj.setR44_cross_reference(rs.getString("R44_CROSS_REFERENCE"));
+			obj.setR44_month(rs.getBigDecimal("R44_MONTH"));
+			obj.setR44_ytd(rs.getBigDecimal("R44_YTD"));
+			obj.setR45_product_name(rs.getString("R45_PRODUCT_NAME"));
+			obj.setR45_cross_reference(rs.getString("R45_CROSS_REFERENCE"));
+			obj.setR45_month(rs.getBigDecimal("R45_MONTH"));
+			obj.setR45_ytd(rs.getBigDecimal("R45_YTD"));
+			obj.setR46_product_name(rs.getString("R46_PRODUCT_NAME"));
+			obj.setR46_cross_reference(rs.getString("R46_CROSS_REFERENCE"));
+			obj.setR46_month(rs.getBigDecimal("R46_MONTH"));
+			obj.setR46_ytd(rs.getBigDecimal("R46_YTD"));
+			obj.setR47_product_name(rs.getString("R47_PRODUCT_NAME"));
+			obj.setR47_cross_reference(rs.getString("R47_CROSS_REFERENCE"));
+			obj.setR47_month(rs.getBigDecimal("R47_MONTH"));
+			obj.setR47_ytd(rs.getBigDecimal("R47_YTD"));
+			obj.setR48_product_name(rs.getString("R48_PRODUCT_NAME"));
+			obj.setR48_cross_reference(rs.getString("R48_CROSS_REFERENCE"));
+			obj.setR48_month(rs.getBigDecimal("R48_MONTH"));
+			obj.setR48_ytd(rs.getBigDecimal("R48_YTD"));
+			obj.setR49_product_name(rs.getString("R49_PRODUCT_NAME"));
+			obj.setR49_cross_reference(rs.getString("R49_CROSS_REFERENCE"));
+			obj.setR49_month(rs.getBigDecimal("R49_MONTH"));
+			obj.setR49_ytd(rs.getBigDecimal("R49_YTD"));
+			obj.setR50_product_name(rs.getString("R50_PRODUCT_NAME"));
+			obj.setR50_cross_reference(rs.getString("R50_CROSS_REFERENCE"));
+			obj.setR50_month(rs.getBigDecimal("R50_MONTH"));
+			obj.setR50_ytd(rs.getBigDecimal("R50_YTD"));
+			obj.setR51_product_name(rs.getString("R51_PRODUCT_NAME"));
+			obj.setR51_cross_reference(rs.getString("R51_CROSS_REFERENCE"));
+			obj.setR51_month(rs.getBigDecimal("R51_MONTH"));
+			obj.setR51_ytd(rs.getBigDecimal("R51_YTD"));
+			obj.setR52_product_name(rs.getString("R52_PRODUCT_NAME"));
+			obj.setR52_cross_reference(rs.getString("R52_CROSS_REFERENCE"));
+			obj.setR52_month(rs.getBigDecimal("R52_MONTH"));
+			obj.setR52_ytd(rs.getBigDecimal("R52_YTD"));
+			obj.setR53_product_name(rs.getString("R53_PRODUCT_NAME"));
+			obj.setR53_cross_reference(rs.getString("R53_CROSS_REFERENCE"));
+			obj.setR53_month(rs.getBigDecimal("R53_MONTH"));
+			obj.setR53_ytd(rs.getBigDecimal("R53_YTD"));
+			obj.setR54_product_name(rs.getString("R54_PRODUCT_NAME"));
+			obj.setR54_cross_reference(rs.getString("R54_CROSS_REFERENCE"));
+			obj.setR54_month(rs.getBigDecimal("R54_MONTH"));
+			obj.setR54_ytd(rs.getBigDecimal("R54_YTD"));
+			obj.setR55_product_name(rs.getString("R55_PRODUCT_NAME"));
+			obj.setR55_cross_reference(rs.getString("R55_CROSS_REFERENCE"));
+			obj.setR55_month(rs.getBigDecimal("R55_MONTH"));
+			obj.setR55_ytd(rs.getBigDecimal("R55_YTD"));
+			obj.setR56_product_name(rs.getString("R56_PRODUCT_NAME"));
+			obj.setR56_cross_reference(rs.getString("R56_CROSS_REFERENCE"));
+			obj.setR56_month(rs.getBigDecimal("R56_MONTH"));
+			obj.setR56_ytd(rs.getBigDecimal("R56_YTD"));
+			obj.setR57_product_name(rs.getString("R57_PRODUCT_NAME"));
+			obj.setR57_cross_reference(rs.getString("R57_CROSS_REFERENCE"));
+			obj.setR57_month(rs.getBigDecimal("R57_MONTH"));
+			obj.setR57_ytd(rs.getBigDecimal("R57_YTD"));
+			obj.setR58_product_name(rs.getString("R58_PRODUCT_NAME"));
+			obj.setR58_cross_reference(rs.getString("R58_CROSS_REFERENCE"));
+			obj.setR58_month(rs.getBigDecimal("R58_MONTH"));
+			obj.setR58_ytd(rs.getBigDecimal("R58_YTD"));
+			obj.setR59_product_name(rs.getString("R59_PRODUCT_NAME"));
+			obj.setR59_cross_reference(rs.getString("R59_CROSS_REFERENCE"));
+			obj.setR59_month(rs.getBigDecimal("R59_MONTH"));
+			obj.setR59_ytd(rs.getBigDecimal("R59_YTD"));
+			obj.setR60_product_name(rs.getString("R60_PRODUCT_NAME"));
+			obj.setR60_cross_reference(rs.getString("R60_CROSS_REFERENCE"));
+			obj.setR60_month(rs.getBigDecimal("R60_MONTH"));
+			obj.setR60_ytd(rs.getBigDecimal("R60_YTD"));
+			obj.setR61_product_name(rs.getString("R61_PRODUCT_NAME"));
+			obj.setR61_cross_reference(rs.getString("R61_CROSS_REFERENCE"));
+			obj.setR61_month(rs.getBigDecimal("R61_MONTH"));
+			obj.setR61_ytd(rs.getBigDecimal("R61_YTD"));
+			obj.setR62_product_name(rs.getString("R62_PRODUCT_NAME"));
+			obj.setR62_cross_reference(rs.getString("R62_CROSS_REFERENCE"));
+			obj.setR62_month(rs.getBigDecimal("R62_MONTH"));
+			obj.setR62_ytd(rs.getBigDecimal("R62_YTD"));
+			obj.setR63_product_name(rs.getString("R63_PRODUCT_NAME"));
+			obj.setR63_cross_reference(rs.getString("R63_CROSS_REFERENCE"));
+			obj.setR63_month(rs.getBigDecimal("R63_MONTH"));
+			obj.setR63_ytd(rs.getBigDecimal("R63_YTD"));
+			obj.setR64_product_name(rs.getString("R64_PRODUCT_NAME"));
+			obj.setR64_cross_reference(rs.getString("R64_CROSS_REFERENCE"));
+			obj.setR64_month(rs.getBigDecimal("R64_MONTH"));
+			obj.setR64_ytd(rs.getBigDecimal("R64_YTD"));
+			obj.setR65_product_name(rs.getString("R65_PRODUCT_NAME"));
+			obj.setR65_cross_reference(rs.getString("R65_CROSS_REFERENCE"));
+			obj.setR65_month(rs.getBigDecimal("R65_MONTH"));
+			obj.setR65_ytd(rs.getBigDecimal("R65_YTD"));
+			obj.setR66_product_name(rs.getString("R66_PRODUCT_NAME"));
+			obj.setR66_cross_reference(rs.getString("R66_CROSS_REFERENCE"));
+			obj.setR66_month(rs.getBigDecimal("R66_MONTH"));
+			obj.setR66_ytd(rs.getBigDecimal("R66_YTD"));
+			obj.setR67_product_name(rs.getString("R67_PRODUCT_NAME"));
+			obj.setR67_cross_reference(rs.getString("R67_CROSS_REFERENCE"));
+			obj.setR67_month(rs.getBigDecimal("R67_MONTH"));
+			obj.setR67_ytd(rs.getBigDecimal("R67_YTD"));
+			obj.setR68_product_name(rs.getString("R68_PRODUCT_NAME"));
+			obj.setR68_cross_reference(rs.getString("R68_CROSS_REFERENCE"));
+			obj.setR68_month(rs.getBigDecimal("R68_MONTH"));
+			obj.setR68_ytd(rs.getBigDecimal("R68_YTD"));
+			obj.setR69_product_name(rs.getString("R69_PRODUCT_NAME"));
+			obj.setR69_cross_reference(rs.getString("R69_CROSS_REFERENCE"));
+			obj.setR69_month(rs.getBigDecimal("R69_MONTH"));
+			obj.setR69_ytd(rs.getBigDecimal("R69_YTD"));
+			obj.setR70_product_name(rs.getString("R70_PRODUCT_NAME"));
+			obj.setR70_cross_reference(rs.getString("R70_CROSS_REFERENCE"));
+			obj.setR70_month(rs.getBigDecimal("R70_MONTH"));
+			obj.setR70_ytd(rs.getBigDecimal("R70_YTD"));
+			obj.setR71_product_name(rs.getString("R71_PRODUCT_NAME"));
+			obj.setR71_cross_reference(rs.getString("R71_CROSS_REFERENCE"));
+			obj.setR71_month(rs.getBigDecimal("R71_MONTH"));
+			obj.setR71_ytd(rs.getBigDecimal("R71_YTD"));
+			obj.setR72_product_name(rs.getString("R72_PRODUCT_NAME"));
+			obj.setR72_cross_reference(rs.getString("R72_CROSS_REFERENCE"));
+			obj.setR72_month(rs.getBigDecimal("R72_MONTH"));
+			obj.setR72_ytd(rs.getBigDecimal("R72_YTD"));
+			obj.setR73_product_name(rs.getString("R73_PRODUCT_NAME"));
+			obj.setR73_cross_reference(rs.getString("R73_CROSS_REFERENCE"));
+			obj.setR73_month(rs.getBigDecimal("R73_MONTH"));
+			obj.setR73_ytd(rs.getBigDecimal("R73_YTD"));
+			obj.setR74_product_name(rs.getString("R74_PRODUCT_NAME"));
+			obj.setR74_cross_reference(rs.getString("R74_CROSS_REFERENCE"));
+			obj.setR74_month(rs.getBigDecimal("R74_MONTH"));
+			obj.setR74_ytd(rs.getBigDecimal("R74_YTD"));
+			obj.setR75_product_name(rs.getString("R75_PRODUCT_NAME"));
+			obj.setR75_cross_reference(rs.getString("R75_CROSS_REFERENCE"));
+			obj.setR75_month(rs.getBigDecimal("R75_MONTH"));
+			obj.setR75_ytd(rs.getBigDecimal("R75_YTD"));
+			obj.setR76_product_name(rs.getString("R76_PRODUCT_NAME"));
+			obj.setR76_cross_reference(rs.getString("R76_CROSS_REFERENCE"));
+			obj.setR76_month(rs.getBigDecimal("R76_MONTH"));
+			obj.setR76_ytd(rs.getBigDecimal("R76_YTD"));
+			obj.setR77_product_name(rs.getString("R77_PRODUCT_NAME"));
+			obj.setR77_cross_reference(rs.getString("R77_CROSS_REFERENCE"));
+			obj.setR77_month(rs.getBigDecimal("R77_MONTH"));
+			obj.setR77_ytd(rs.getBigDecimal("R77_YTD"));
+			obj.setR78_product_name(rs.getString("R78_PRODUCT_NAME"));
+			obj.setR78_cross_reference(rs.getString("R78_CROSS_REFERENCE"));
+			obj.setR78_month(rs.getBigDecimal("R78_MONTH"));
+			obj.setR78_ytd(rs.getBigDecimal("R78_YTD"));
+			obj.setR79_product_name(rs.getString("R79_PRODUCT_NAME"));
+			obj.setR79_cross_reference(rs.getString("R79_CROSS_REFERENCE"));
+			obj.setR79_month(rs.getBigDecimal("R79_MONTH"));
+			obj.setR79_ytd(rs.getBigDecimal("R79_YTD"));
+			obj.setR80_product_name(rs.getString("R80_PRODUCT_NAME"));
+			obj.setR80_cross_reference(rs.getString("R80_CROSS_REFERENCE"));
+			obj.setR80_month(rs.getBigDecimal("R80_MONTH"));
+			obj.setR80_ytd(rs.getBigDecimal("R80_YTD"));
+			obj.setR81_product_name(rs.getString("R81_PRODUCT_NAME"));
+			obj.setR81_cross_reference(rs.getString("R81_CROSS_REFERENCE"));
+			obj.setR81_month(rs.getBigDecimal("R81_MONTH"));
+			obj.setR81_ytd(rs.getBigDecimal("R81_YTD"));
+			obj.setR82_product_name(rs.getString("R82_PRODUCT_NAME"));
+			obj.setR82_cross_reference(rs.getString("R82_CROSS_REFERENCE"));
+			obj.setR82_month(rs.getBigDecimal("R82_MONTH"));
+			obj.setR82_ytd(rs.getBigDecimal("R82_YTD"));
+			obj.setR83_product_name(rs.getString("R83_PRODUCT_NAME"));
+			obj.setR83_cross_reference(rs.getString("R83_CROSS_REFERENCE"));
+			obj.setR83_month(rs.getBigDecimal("R83_MONTH"));
+			obj.setR83_ytd(rs.getBigDecimal("R83_YTD"));
+			obj.setR84_product_name(rs.getString("R84_PRODUCT_NAME"));
+			obj.setR84_cross_reference(rs.getString("R84_CROSS_REFERENCE"));
+			obj.setR84_month(rs.getBigDecimal("R84_MONTH"));
+			obj.setR84_ytd(rs.getBigDecimal("R84_YTD"));
+			obj.setR85_product_name(rs.getString("R85_PRODUCT_NAME"));
+			obj.setR85_cross_reference(rs.getString("R85_CROSS_REFERENCE"));
+			obj.setR85_month(rs.getBigDecimal("R85_MONTH"));
+			obj.setR85_ytd(rs.getBigDecimal("R85_YTD"));
+			obj.setR86_product_name(rs.getString("R86_PRODUCT_NAME"));
+			obj.setR86_cross_reference(rs.getString("R86_CROSS_REFERENCE"));
+			obj.setR86_month(rs.getBigDecimal("R86_MONTH"));
+			obj.setR86_ytd(rs.getBigDecimal("R86_YTD"));
+			return obj;
+		}
+	}
+
+	class M_SCI_E_DetailRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_Detail_Entity> {
+		@Override
+		public M_SCI_E_Detail_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_Detail_Entity obj = new M_SCI_E_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLable(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			String entityFlgStr = rs.getString("ENTITY_FLG"); if (entityFlgStr != null && entityFlgStr.length() > 0) obj.setEntityFlg(entityFlgStr.charAt(0));
+			String modifyFlgStr = rs.getString("MODIFY_FLG"); if (modifyFlgStr != null && modifyFlgStr.length() > 0) obj.setModifyFlg(modifyFlgStr.charAt(0));
+			String delFlgStr = rs.getString("DEL_FLG"); if (delFlgStr != null && delFlgStr.length() > 0) obj.setDelFlg(delFlgStr.charAt(0));
+			obj.setDebitEquivalent(rs.getBigDecimal("DEBIT_EQUIVALENT"));
+			obj.setCreditEquivalent(rs.getBigDecimal("CREDIT_EQUIVALENT"));
+			obj.setBalanceAmt(rs.getBigDecimal("BALANCE_AMT"));
+			obj.setGlshCode(rs.getString("GLSH_CODE"));
+			obj.setAcctCrncyCode(rs.getString("ACCT_CRNCY_CODE"));
+			obj.setMonthlyInt(rs.getBigDecimal("MONTHLY_INT"));
+			return obj;
+		}
+	}
+
+	class M_SCI_E_Archival_DetailRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_Archival_Detail_Entity> {
+		@Override
+		public M_SCI_E_Archival_Detail_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_Archival_Detail_Entity obj = new M_SCI_E_Archival_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLable(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			String entityFlgStr = rs.getString("ENTITY_FLG"); if (entityFlgStr != null && entityFlgStr.length() > 0) obj.setEntityFlg(entityFlgStr.charAt(0));
+			String modifyFlgStr = rs.getString("MODIFY_FLG"); if (modifyFlgStr != null && modifyFlgStr.length() > 0) obj.setModifyFlg(modifyFlgStr.charAt(0));
+			String delFlgStr = rs.getString("DEL_FLG"); if (delFlgStr != null && delFlgStr.length() > 0) obj.setDelFlg(delFlgStr.charAt(0));
+			obj.setDebitEquivalent(rs.getBigDecimal("DEBIT_EQUIVALENT"));
+			obj.setCreditEquivalent(rs.getBigDecimal("CREDIT_EQUIVALENT"));
+			obj.setBalanceAmt(rs.getBigDecimal("BALANCE_AMT"));
+			obj.setGlshCode(rs.getString("GLSH_CODE"));
+			obj.setAcctCrncyCode(rs.getString("ACCT_CRNCY_CODE"));
+			obj.setMonthlyInt(rs.getBigDecimal("MONTHLY_INT"));
+			return obj;
+		}
+	}
+
+	class M_SCI_E_RESUB_DetailRowMapper implements org.springframework.jdbc.core.RowMapper<M_SCI_E_RESUB_Detail_Entity> {
+		@Override
+		public M_SCI_E_RESUB_Detail_Entity mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+			M_SCI_E_RESUB_Detail_Entity obj = new M_SCI_E_RESUB_Detail_Entity();
+			obj.setCustId(rs.getString("CUST_ID"));
+			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
+			obj.setAcctName(rs.getString("ACCT_NAME"));
+			obj.setDataType(rs.getString("DATA_TYPE"));
+			obj.setReportName(rs.getString("REPORT_NAME"));
+			obj.setReportLable(rs.getString("REPORT_LABEL"));
+			obj.setReportAddlCriteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+			obj.setReportRemarks(rs.getString("REPORT_REMARKS"));
+			obj.setModificationRemarks(rs.getString("MODIFICATION_REMARKS"));
+			obj.setDataEntryVersion(rs.getString("DATA_ENTRY_VERSION"));
+			obj.setAcctBalanceInpula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setCreateUser(rs.getString("CREATE_USER"));
+			obj.setCreateTime(rs.getDate("CREATE_TIME"));
+			obj.setModifyUser(rs.getString("MODIFY_USER"));
+			obj.setModifyTime(rs.getDate("MODIFY_TIME"));
+			obj.setVerifyUser(rs.getString("VERIFY_USER"));
+			obj.setVerifyTime(rs.getDate("VERIFY_TIME"));
+			String entityFlgStr = rs.getString("ENTITY_FLG"); if (entityFlgStr != null && entityFlgStr.length() > 0) obj.setEntityFlg(entityFlgStr.charAt(0));
+			String modifyFlgStr = rs.getString("MODIFY_FLG"); if (modifyFlgStr != null && modifyFlgStr.length() > 0) obj.setModifyFlg(modifyFlgStr.charAt(0));
+			String delFlgStr = rs.getString("DEL_FLG"); if (delFlgStr != null && delFlgStr.length() > 0) obj.setDelFlg(delFlgStr.charAt(0));
+			obj.setDebitEquivalent(rs.getBigDecimal("DEBIT_EQUIVALENT"));
+			obj.setCreditEquivalent(rs.getBigDecimal("CREDIT_EQUIVALENT"));
+			obj.setBalanceAmt(rs.getBigDecimal("BALANCE_AMT"));
+			obj.setGlshCode(rs.getString("GLSH_CODE"));
+			obj.setAcctCrncyCode(rs.getString("ACCT_CRNCY_CODE"));
+			obj.setMonthlyInt(rs.getBigDecimal("MONTHLY_INT"));
+			return obj;
+		}
+	}
 
 }
