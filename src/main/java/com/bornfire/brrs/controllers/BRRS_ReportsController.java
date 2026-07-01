@@ -88,6 +88,7 @@ import com.bornfire.brrs.services.BRRS_M_I_S_CA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
+import com.bornfire.brrs.services.BRRS_M_LA3_ReportService.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LIQGAP_ReportService;
