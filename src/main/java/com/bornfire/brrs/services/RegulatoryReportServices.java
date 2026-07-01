@@ -425,7 +425,6 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
-	
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -439,27 +438,26 @@ public class RegulatoryReportServices {
 		logger.info("Getting View for the Report :" + reportId);
 		switch (reportId) {
 
-
 		case "M_IS":
 			repsummary = BRRS_M_IS_reportservice.getM_ISView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_LIQ":
 
 			repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_SP":
 
 			repsummary = BRRS_M_SP_reportservice.getM_SPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_PLL":
 			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_SRWA_12A_New":
@@ -471,12 +469,12 @@ public class RegulatoryReportServices {
 
 		case "Q_BRANCHNET":
 			repsummary = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_UNCONS_INVEST":
 			repsummary = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_TOP_100_BORROWER":
@@ -485,403 +483,103 @@ public class RegulatoryReportServices {
 			break;
 		case "M_SIR":
 			repsummary = BRRS_M_SIR_ReportService.getBRRS_M_SIRView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_CA4":
 			repsummary = BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_CA6":
 			repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_CA7":
 			repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_SRWA_12C":
 			repsummary = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_GMIRT":
 			repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 		case "M_FXR":
 			repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_AIDP":
 			repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_SRWA_12D":
 			repsummary = brrs_m_srwa_12d_reportservice.getM_SRWA_12DView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "Q_LARADV":
 			repsummary = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_View(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_OPTR":
 			repsummary = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 		case "M_SECL":
 			repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "Q_SMME_DEP":
 			repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_SRWA_12E":
 			repsummary = BRRS_M_SRWA_12E_reportservice.getBRRS_M_SRWA_12E_LTVView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_RPD":
 			repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 		case "M_FAS":
 			repsummary = BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_OR1":
 			repsummary = brrs_m_or1_reportservice.getM_OR1View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 		case "M_CALOC":
 			repsummary = BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 		case "M_MRC":
 			repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_SECA":
 			repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "ADISB1":
 			repsummary = BRRS_ADISB1_ReportService.getADISB1View(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
-
-		/*
-		 * 
-		 * 
-		 * 
-		 * case "M_SFINP2": repsummary =
-		 * BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SFINP1": repsummary =
-		 * BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA4": repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_CA4": repsummary =
-		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA2": repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_FAS": repsummary =
-		 * BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_LA": repsummary =
-		 * BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OR1": repsummary = brrs_m_or1_reportservice.getM_OR1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA6": repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "M_CALOC": repsummary =
-		 * BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA5": repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CR": repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12F": repsummary =
-		 * BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12D": repsummary =
-		 * brrs_m_srwa_12d_reportservice.getM_SRWA_12DView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_SRWA_12C": repsummary =
-		 * BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12G": repsummary =
-		 * BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12H": repsummary =
-		 * BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_MRC": repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA1": repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA3": repsummary = BRRS_M_CA3_reportservice.getM_CA3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA7": repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OR2": repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LIQGAP": repsummary =
-		 * brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_PI": repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_AIDP": repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_UNCONS_INVEST": repsummary =
-		 * BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA2": repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA3": repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA5": repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_DEP2": repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_DEP3": repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_IRB": repsummary = brrs_m_irb_reportService.getM_IRBView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LIQ": repsummary = BRRS_M_LIQ_reportservice.getM_LIQView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "SLS": System.out.println("Enter into Service"); repsummary =
-		 * BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable);
-		 * 
-		 * System.out.println("Enter into Method"); break;
-		 * 
-		 * 
-		 * case "DBS10_FINCON_II_1A": repsummary =
-		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "MDISB4": repsummary = BRRS_MDISB4_ReportService.getMDISB4View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_BRANCHNET": repsummary =
-		 * BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_FXR": repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_LARADV": repsummary =
-		 * brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "Q_SMME_NEW":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Intrest_Income_New_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_LA_NEW":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "M_SIR":
-		 * 
-		 * repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_EPR":
-		 * 
-		 * repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_OB": repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_RLFA1":
-		 * 
-		 * repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_RLFA2":
-		 * 
-		 * repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OPTR": repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_SEC": repsummary = brrs_m_sec_reportservice.getM_SECView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_DEP":
-		 * 
-		 * repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_BOP":
-		 * 
-		 * repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SECA": repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GP": repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_TBS": repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_NOSVOS": repsummary =
-		 * BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GMIRT":
-		 * 
-		 * repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GALOR":
-		 * 
-		 * repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12E": repsummary =
-		 * BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_PD": repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break; case "M_DEP4": repsummary =
-		 * BRRS_M_DEP4_ReportService.getM_DEP4View(reportId, fromdate, todate, currency,
-		 * dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_SCI_E":
-		 * 
-		 * repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_ATF":
-		 * 
-		 * repsummary = brrs_q_atf_reportservice.getQ_ATFView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_I_S_CA":
-		 * 
-		 * repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "CAP_RATIO_BUFFER":
-		 * 
-		 * repsummary =
-		 * brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "ADISB1": repsummary = BRRS_ADISB1_ReportService.getADISB1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "ADISB2": repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "Recon_Of_FS":
-		 * 
-		 * repsummary =
-		 * BRRS_RECON_OF_FS_ReportService.getBRRS_Recon_Of_FS_View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 */
 
 		case "ADISB2":
 			repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId, fromdate, todate, currency, dtltype,
@@ -891,7 +589,7 @@ public class RegulatoryReportServices {
 
 		case "M_LA1":
 			repsummary = BRRS_M_LA1_reportservice.getM_LA1View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_LA1_NEW":
@@ -901,34 +599,34 @@ public class RegulatoryReportServices {
 
 		case "M_LA5":
 			repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "Q_RLFA1":
 
 			repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_SRWA_12B":
 
 			repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_NOSVOS":
 			repsummary = BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_DEP3":
 			repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_LA4":
 			repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "TIER_1_2_CFS":
@@ -936,376 +634,70 @@ public class RegulatoryReportServices {
 					dtltype, pageable, type, version);
 			break;
 
-		/*
-		 * 
-		 * 
-		 * 
-		 * case "M_SFINP2": repsummary =
-		 * BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SFINP1": repsummary =
-		 * BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA4": repsummary = BRRS_M_LA4_reportservice.getM_LA4View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_CA4": repsummary =
-		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4View(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA2": repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_FAS": repsummary =
-		 * BRRS_M_FAS_reportservice.getBRRS_M_FASView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_LA": repsummary =
-		 * BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OR1": repsummary = brrs_m_or1_reportservice.getM_OR1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA6": repsummary = BRRS_M_CA6_reportservice.getM_CA6View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "M_CALOC": repsummary =
-		 * BRRS_M_CALOC_reportService.getBRRS_M_CALOCview(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA5": repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CR": repsummary = BRRS_M_CR_reportservice.getM_CRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12F": repsummary =
-		 * BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12D": repsummary =
-		 * brrs_m_srwa_12d_reportservice.getM_SRWA_12DView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_SRWA_12C": repsummary =
-		 * BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12G": repsummary =
-		 * BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12H": repsummary =
-		 * BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_MRC": repsummary = BRRS_M_MRC_reportservice.getM_MRCview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA1": repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA3": repsummary = BRRS_M_CA3_reportservice.getM_CA3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_CA7": repsummary = BRRS_M_CA7_reportservice.getM_CA7View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OR2": repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LIQGAP": repsummary =
-		 * brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_PI": repsummary = BRRS_M_PI_reportservice.getM_PIView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_AIDP": repsummary = BRRS_M_AIDP_ReportService.getM_AIDPView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_UNCONS_INVEST": repsummary =
-		 * BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA2": repsummary = BRRS_M_LA2_reportservice.getM_LA2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA3": repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_LA5": repsummary = BRRS_M_LA5_reportservice.getM_LA5View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_DEP2": repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * case "M_DEP3": repsummary = BRRS_M_DEP3_reportservice.getM_DEP3View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_IRB": repsummary = brrs_m_irb_reportService.getM_IRBView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 *
-		 * 
-		 * case "SLS": System.out.println("Enter into Service"); repsummary =
-		 * BRRS_SLS_INPUT_SHT_reportservice.getRT_SLSView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable);
-		 * 
-		 * System.out.println("Enter into Method"); break;
-		 * 
-		 * case "M_TOP_100_BORROWER": repsummary =
-		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "DBS10_FINCON_II_1A": repsummary =
-		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "MDISB4": repsummary = BRRS_MDISB4_ReportService.getMDISB4View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_BRANCHNET": repsummary =
-		 * BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_FXR": repsummary = BRRS_M_FXR_reportservice.getM_FXRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12B":
-		 * 
-		 * repsummary = brrs_m_srwa_12b_reportservice.getM_SRWA_12BView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SECL": repsummary = brrs_m_secl_reportservice.getM_SECLView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_LARADV": repsummary =
-		 * brrs_m_laradv_reportservice.getM_LARADVView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "Q_SMME_NEW":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Intrest_Income_New_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_LA_NEW":
-		 * 
-		 * repsummary =
-		 * BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break; case
-		 * "M_SIR":
-		 * 
-		 * repsummary = BRRS_M_SIR_ReportService.getM_SIRView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_EPR":
-		 * 
-		 * repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_OB": repsummary = BRRS_M_OB_ReportService.getM_OBview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_RLFA1":
-		 * 
-		 * repsummary = brrs_q_rlfa1_reportservice.getQ_RLFA1View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_RLFA2":
-		 * 
-		 * repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break; case "M_RPD":
-		 * repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_OPTR": repsummary = BRRS_M_OPTR_ReportService.getMOPTRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * 
-		 * 
-		 * case "M_SEC": repsummary = brrs_m_sec_reportservice.getM_SECView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_SMME_DEP":
-		 * 
-		 * repsummary = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_BOP":
-		 * 
-		 * repsummary = BRRS_M_BOP_ReportService.getBRRS_M_BOPview(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SECA": repsummary = BRRS_M_SECA_ReportService.getM_SECAview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GP": repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_TBS": repsummary = BRRS_M_TBS_ReportService.getM_TBSView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_NOSVOS": repsummary =
-		 * BRRS_M_NOSVOS_reportservice.getM_NOSVOSView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GMIRT":
-		 * 
-		 * repsummary = brrs_m_gmirt_reportservice.getM_GMIRTView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_GALOR":
-		 * 
-		 * repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "M_SRWA_12E": repsummary =
-		 * BRRS_M_SRWA_12E_ReportService.getM_SRWA_12EView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_PD": repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break; case "M_DEP4": repsummary =
-		 * BRRS_M_DEP4_ReportService.getM_DEP4View(reportId, fromdate, todate, currency,
-		 * dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_SCI_E":
-		 * 
-		 * repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version); break;
-		 * 
-		 * case "Q_ATF":
-		 * 
-		 * repsummary = brrs_q_atf_reportservice.getQ_ATFView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_I_S_CA":
-		 * 
-		 * repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "CAP_RATIO_BUFFER":
-		 * 
-		 * repsummary =
-		 * brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "ADISB1": repsummary = BRRS_ADISB1_ReportService.getADISB1View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "ADISB2": repsummary = BRRS_ADISB2_ReportService.getADISB2View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 *
-		 */
-		/*
-		 * case "M_RPD": repsummary = BRRS_M_RPD_ReportService.getM_RPDView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version); break;
-		 */
 		case "M_SFINP1":
 			repsummary = BRRS_M_SFINP1_reportservice.getM_SFINP1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_SCI_E":
 
 			repsummary = brrs_m_sci_e_reportservice.getM_SCI_EView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_I_S_CA":
 
 			repsummary = brrs_m_i_s_ca_reportservice.getM_I_S_CAView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "Q_ATF":
 
 			repsummary = brrs_q_atf_reportservice.getQ_ATFView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_PD":
 
 			repsummary = BRRS_M_PD_ReportService.getM_PDview(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_CA2":
 
 			repsummary = BRRS_M_CA2_reportservice.getM_CA2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_SFINP2":
 			repsummary = BRRS_M_SFINP2_reportservice.getM_SFINP2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_BOP":
 
-			repsummary = BRRS_M_BOP_ReportService.getM_BOPView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+			repsummary = BRRS_M_BOP_ReportService.getM_BOPView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version, req, md);
 			break;
 
 		case "Q_RLFA2":
 
 			repsummary = brrs_q_rlfa2_reportservice.getQ_RLFA2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_INT_RATES_FCA":
 			repsummary = BRRS_M_INT_RATES_FCA_ReportService.getINT_RATES_FCAView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "M_INT_RATES":
 			repsummary = brrs_m_int_rates_reportservice.getM_INTRATESView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "M_INT_RATES_NEW":
@@ -1340,38 +732,38 @@ public class RegulatoryReportServices {
 		case "M_EPR":
 
 			repsummary = brrs_m_epr_reportservice.getM_EPRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_SEC":
 			repsummary = brrs_m_sec_reportservice.getM_SECView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_OR2":
 			repsummary = brrs_m_or2_reportservice.getM_OR2View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "M_GP":
 
 			repsummary = BRRS_M_GP_ReportService.getM_GPView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_LA2":
 
 			repsummary = BRRS_M_LA2_reportservice.getBRRS_M_LA2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_LA3":
 
 			repsummary = BRRS_M_LA3_reportservice.getM_LA3View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
@@ -1385,14 +777,14 @@ public class RegulatoryReportServices {
 		case "M_DEP4":
 
 			repsummary = BRRS_M_DEP4_ReportService.getM_DEP4View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_GALOR":
 
 			repsummary = BRRS_m_galor_ReportService.getM_GALORView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1406,70 +798,70 @@ public class RegulatoryReportServices {
 		case "M_LIQGAP":
 
 			repsummary = brrs_m_liqgap_reportservice.getM_LIQGAPView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_CA1":
 
 			repsummary = BRRS_M_CA1_reportservice.getM_CA1View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_SRWA_12G":
 
 			repsummary = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version,req,md);
+					dtltype, pageable, type, version, req, md);
 
 			break;
 
 		case "M_TBS":
 
 			repsummary = BRRS_M_TBS_ReportService.getBRRS_M_TBSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_OB":
 
 			repsummary = BRRS_M_OB_ReportService.getBRRS_M_OBView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_CR":
 
 			repsummary = BRRS_M_CR_reportservice.getBRRS_M_CRView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_CA3":
 
 			repsummary = BRRS_M_CA3_reportservice.getBRRS_M_CA3View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_CA5":
 
 			repsummary = BRRS_M_CA5_reportservice.getM_CA5View(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 
 			break;
 
 		case "M_SRWA_12A":
 
 			repsummary = brrs_m_srwa_12a_reportservice.getM_SRWA_12AView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
 		case "M_DEP1":
 
 			repsummary = BRRS_M_DEP1_reportservice.getM_DEP1View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1502,25 +894,15 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 
-//		case "Q_SMME_LA_NEW":
-//
-//			repsummary = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
-//					currency, dtltype, pageable, type, version);
-//			break;
-
 		case "Q_SMME":
 
-			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+			repsummary = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version, req, md);
 			break;
-//		case "Q_SMME_NEW":
-//
-//			repsummary = BRRS_Q_SMME_Intrest_Income_New_ReportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
-//					currency, dtltype, pageable, type, version);
-//			break;
+
 		case "Q_SMME_LA":
-			repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+			repsummary = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version, req, md);
 			break;
 
 		case "MDISB1":
@@ -1571,7 +953,7 @@ public class RegulatoryReportServices {
 
 		case "M_DEP2":
 			repsummary = BRRS_M_DEP2_reportservice.getM_DEP2View(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1582,7 +964,7 @@ public class RegulatoryReportServices {
 
 		case "Q_STAFF":
 			repsummary = BRRS_Q_STAFF_report_service.getQ_STAFFView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 
 		case "FORMAT_III":
@@ -1607,7 +989,7 @@ public class RegulatoryReportServices {
 
 		case "M_IRB":
 			repsummary = brrs_m_irb_reportService.getM_IRBView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version,req,md);
+					type, version, req, md);
 			break;
 
 		case "GL_SCH":
@@ -1695,190 +1077,17 @@ public class RegulatoryReportServices {
 
 			break;
 
-		/*
-		 * case "AML":
-		 * 
-		 * repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "FSI": repsummary = BRRS_FSI_ReportService.getFSIView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "CPR_STRUCT_LIQ": repsummary =
-		 * BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "EXPOSURES": repsummary =
-		 * BRRS_EXPOSURES_ReportService.getEXPOSURESView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "FORMAT_NEW_CPR": repsummary =
-		 * BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "EXPANDED_REGU_BS":
-		 * 
-		 * repsummary =
-		 * BRRS_Expanded_Regu_BS_ReportService.getBRRS_Expanded_Regu_BS_View(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * break; case "Market_Risk":
-		 * 
-		 * repsummary = BRRS_Market_Risk_Reportservice.getMarket_RiskView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break; case "Main_Features":
-		 * 
-		 * repsummary = BRRS_Main_Features_Reportservice.getMain_FeaturesView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break; case "PL_SCHS":
-		 * 
-		 * repsummary = BRRS_PL_SCHS_Reportservice.getPL_SCHSView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "CAP_ADEQ":
-		 * 
-		 * repsummary = brrs_cap_adeq_reportservice.getCAP_ADEQView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "OPER_RISK_DIS":
-		 * 
-		 * repsummary = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "B_III_CETD":
-		 * 
-		 * repsummary = b_III_cetd_ReportService.getB_III_CETDView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "CREDIT_RISK":
-		 * 
-		 * repsummary = brrs_credit_risk_reportservice.getCREDIT_RISKView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "SCH_17":
-		 * 
-		 * repsummary = brrs_sch_17_reportservice.getSCH_17View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "FORMAT_II":
-		 * 
-		 * repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "MDISB2":
-		 * 
-		 * repsummary = brrs_mdisb2_reportservice.getMDISB2View(reportId, fromdate,
-		 * todate, currency, dtltype,
-		 * 
-		 * pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "MDISB3":
-		 * 
-		 * repsummary = brrs_mdisb3_reportservice.getMDISB3View(reportId, fromdate,
-		 * todate, currency, dtltype,
-		 * 
-		 * pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "MASTER":
-		 * 
-		 * repsummary = brrs_master_reportservice.getMASTERView(reportId, fromdate,
-		 * todate, currency, dtltype,
-		 * 
-		 * pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "NSFR": repsummary = BRRS_NSFR_ReportService.getNSFRView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "SCOPE_OF_APP":
-		 * 
-		 * repsummary = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "GL_SCH":
-		 * 
-		 * repsummary = brrs_gl_sch_reportservice.getGL_SCHView(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break; case "AS_11":
-		 * 
-		 * repsummary = BRRS_AS_11_Reportservice.getAS_11View(reportId, fromdate,
-		 * todate, currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "BORR_UFCE": repsummary =
-		 * BRRS_BORR_UFCE_ReportService.getBORR_UFCEView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version);
-		 * 
-		 * break;
-		 * 
-		 * case "M_OPTR_NEW": repsummary =
-		 * BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWView(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, type, version); break;
-		 */
-		/*
-		 * 
-		 */
-
 		case "M_SRWA_12F":
 			repsummary = BRRS_M_SRWA_12F_reportservice.getM_SRWA12FView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 		case "M_SRWA_12H":
 			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version,req,md);
+					pageable, type, version, req, md);
 			break;
 		case "FSI":
-			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency,
-					dtltype, pageable, type, version);
+			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
 
 			break;
 		}
@@ -1888,7 +1097,7 @@ public class RegulatoryReportServices {
 
 	public ModelAndView getReportDetails(String reportId, String instanceCode, String asondate, String fromdate,
 			String todate, String currency, String reportingTime, String dtltype, String subreportid, String secid,
-			Pageable pageable, String Filter, String type, String version,  HttpServletRequest req1,Model md) {
+			Pageable pageable, String Filter, String type, String version, HttpServletRequest req1, Model md) {
 
 		ModelAndView repdetail = new ModelAndView();
 		logger.info("Getting Details for the Report :" + reportId);
@@ -1897,88 +1106,82 @@ public class RegulatoryReportServices {
 
 		case "M_SFINP2":
 			repdetail = BRRS_M_SFINP2_reportservice.getM_SFINP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_SFINP1":
 			repdetail = BRRS_M_SFINP1_reportservice.getM_SFINP1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LA4":
 			repdetail = BRRS_M_LA4_reportservice.getM_LA4currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 		case "M_CALOC":
 
 			repdetail = BRRS_M_CALOC_reportService.getM_CALOCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_IS":
 			repdetail = BRRS_M_IS_reportservice.getM_IScurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_CA2":
 			repdetail = BRRS_M_CA2_reportservice.getM_CA2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_OR1":
 			repdetail = brrs_m_or1_reportservice.getM_OR1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LIQGAP":
 			repdetail = brrs_m_liqgap_reportservice.getM_LIQGAPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_SP":
 			repdetail = BRRS_M_SP_reportservice.getM_SPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_FAS":
 			repdetail = BRRS_M_FAS_reportservice.getBRRS_M_FAScurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "Q_SMME_LA":
-			repdetail = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+			repdetail = BRRS_Q_SMME_loans_Advances_reportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version, req1, md);
 			break;
-
-		// case "M_SRWA_12H":
-		// repdetail = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HcurrentDtl(reportId,
-		// fromdate, todate, currency,
-		// dtltype, pageable, Filter, type, version);
-		// break;
 
 		case "M_MRC":
 			repdetail = BRRS_M_MRC_reportservice.getM_MRCcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_CA1":
 			repdetail = BRRS_M_CA1_reportservice.getM_CA1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_PI":
 			repdetail = BRRS_M_PI_reportservice.getM_PIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LA1":
 			repdetail = BRRS_M_LA1_reportservice.getM_LA1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LA5":
 			repdetail = BRRS_M_LA5_reportservice.getM_LA5currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LA1_NEW":
@@ -1988,37 +1191,37 @@ public class RegulatoryReportServices {
 
 		case "M_DEP1":
 			repdetail = BRRS_M_DEP1_reportservice.getM_DEP1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LA3":
 			repdetail = BRRS_M_LA3_reportservice.getM_LA3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_DEP4":
 			repdetail = BRRS_M_DEP4_ReportService.getM_DEP4currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_DEP2":
 			repdetail = BRRS_M_DEP2_reportservice.getM_DEP2currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_PLL":
 			repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LIQ":
 			repdetail = BRRS_M_LIQ_reportservice.getM_LIQcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_LCR":
@@ -2042,29 +1245,19 @@ public class RegulatoryReportServices {
 			break;
 
 		case "Q_SMME":
-			repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+			repdetail = BRRS_Q_SMME_Intrest_Income_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version, req1, md);
 			break;
-
-//		case "Q_SMME_NEW":
-//			repdetail = BRRS_Q_SMME_Intrest_Income_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
-//					todate, currency, dtltype, pageable, Filter, type, version);
-//			break;
-
-//		case "Q_SMME_LA_NEW":
-//			repdetail = BRRS_Q_SMME_Loans_Advances_New_ReportService.getBRRS_Q_SMMEcurrentDtl(reportId, fromdate,
-//					todate, currency, dtltype, pageable, Filter, type, version);
-//			break;
 
 		case "M_IRB":
 			repdetail = brrs_m_irb_reportService.getM_IRBcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_SRWA_12A":
 
 			repdetail = brrs_m_srwa_12a_reportservice.getM_SRWA_12AcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version,req1,md);
+					dtltype, pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_SRWA_12A_New":
@@ -2072,40 +1265,35 @@ public class RegulatoryReportServices {
 			repdetail = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewcurrentDtl(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
 			break;
-		/*
-		 * case "M_GMIRT":
-		 * 
-		 * repdetail = brrs_m_gmirt_reportservice.getM_GMIRTcurrentDtl(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
-		 */
+
 		case "M_GALOR":
 
 			repdetail = BRRS_m_galor_ReportService.getM_GALORcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_PD":
 
 			repdetail = BRRS_M_PD_ReportService.getM_PDcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "Q_ATF":
 
 			repdetail = brrs_q_atf_reportservice.getQ_ATFcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_SCI_E":
 
 			repdetail = brrs_m_sci_e_reportservice.getM_SCI_EcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "M_I_S_CA":
 
 			repdetail = brrs_m_i_s_ca_reportservice.getM_I_S_CAcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version,req1,md);
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "CAP_RATIO_BUFFER":
@@ -2186,21 +1374,6 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_RWA_ReportService.getRWAcurrentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
 					Filter, type, version);
 			break;
-
-		/*
-		 * case "M_INT_RATES_FCA":
-		 * 
-		 * repdetail =
-		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAcurrentDtl(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
-		 */
-
-		/*
-		 * case "M_INT_RATES":
-		 * 
-		 * repdetail = brrs_m_int_rates_reportservice.getM_INT_RATEScurrentDtl(reportId,
-		 * fromdate, todate, currency, dtltype, pageable, Filter, type, version); break;
-		 */
 
 		case "M_INT_RATES_NEW":
 
@@ -2450,44 +1623,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		/*
-		 * case "M_SFINP2": try { repfile =
-		 * BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SFINP1": try { repfile =
-		 * BRRS_M_SFINP1_reportservice.getM_SFINP1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA4": try { repfile =
-		 * BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_CA2": try { repfile =
-		 * BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_OR1": try { repfile =
-		 * brrs_m_or1_reportservice.BRRS_M_OR1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LIQGAP": try { repfile =
-		 * brrs_m_liqgap_reportservice.getM_LIQGAPExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
-
 		case "M_CA2":
 			try {
 				repfile = BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate, currency,
@@ -2551,7 +1686,7 @@ public class RegulatoryReportServices {
 		case "Q_SMME_LA":
 			try {
 				repfile = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type,format, version);
+						currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -2561,30 +1696,12 @@ public class RegulatoryReportServices {
 		case "Q_SMME":
 			try {
 				repfile = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId, fromdate, todate,
-						currency, dtltype, type,format, version);
+						currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-
-//		case "Q_SMME_NEW":
-//			try {
-//				repfile = BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
-//						todate, currency, dtltype, type, format, version);
-//			} catch (Exception e) { // TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-//
-//		case "Q_SMME_LA_NEW":
-//			try {
-//				repfile = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename, reportId, fromdate,
-//						todate, currency, dtltype, type, format, version);
-//			} catch (Exception e) { // TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "MDISB1":
 			try {
@@ -2770,15 +1887,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		/*
-		 * case "MDISB5": try {
-		 * 
-		 * repfile = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, format, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 */
 
 		case "B_III_CETD":
 			try {
@@ -3029,8 +2137,8 @@ public class RegulatoryReportServices {
 			break;
 		case "FSI":
 			try {
-				repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_FSI_ReportService.getFSIExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
 
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -3176,526 +2284,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-		/*
-		 * case "M_CA4": try { repfile =
-		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CR": try { repfile = BRRS_M_CR_reportservice.BRRS_M_CRExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_SEC": try { repfile =
-		 * brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA12D": try { repfile =
-		 * brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_FAS": try { repfile =
-		 * BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate,
-		 * currency, version, type, dtltype); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_LA": try { repfile =
-		 * BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "M_CA5": try { repfile = BRRS_M_CA5_reportservice.getM_CA5Excel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_CA6": try { repfile =
-		 * BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA7": try { repfile =
-		 * BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_SRWA_12F": try { repfile =
-		 * BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12B": try { repfile =
-		 * brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CALOC": try { repfile =
-		 * BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12C": try { repfile =
-		 * BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12G": try { repfile =
-		 * BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12H": try { repfile =
-		 * BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_MRC": try { repfile =
-		 * BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA1": try { repfile =
-		 * BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA3": try { repfile =
-		 * BRRS_M_CA3_reportservice.BRRS_M_CA3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_PI": try { repfile = BRRS_M_PI_reportservice.BRRS_M_PIExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * case "M_LA3": try { repfile =
-		 * BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA5": try { repfile =
-		 * BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_UNCONS_INVEST": try { repfile =
-		 * BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_DEP2": try { repfile =
-		 * BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * case "M_DEP3": try { repfile =
-		 * BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_AIDP": try { repfile =
-		 * BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_IRB": try { repfile =
-		 * brrs_m_irb_reportService.BRRS_M_PIExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LIQ": try { repfile =
-		 * BRRS_M_LIQ_reportservice.getM_LIQExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "DBS10_FINCON_II_1A": try { repfile =
-		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "MDISB4": try { repfile =
-		 * BRRS_MDISB4_ReportService.getMDISB4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_TOP_100_BORROWER": try { repfile =
-		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_BRANCHNET": try { repfile =
-		 * BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_LARADV": try { repfile =
-		 * brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_OR2": try { repfile =
-		 * brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_FXR": try { repfile =
-		 * BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME": try { repfile =
-		 * BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_NEW": try { repfile =
-		 * BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_SMME_LA_NEW": try { repfile =
-		 * BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break; case "M_SIR": try { repfile =
-		 * BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_EPR": try {
-		 * 
-		 * repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_OB": try { repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_RLFA1": try {
-		 * 
-		 * repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_RLFA2": try {
-		 * 
-		 * repfile = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_RPD": try { repfile =
-		 * BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_OPTR": try { repfile =
-		 * BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_DEP": try {
-		 * 
-		 * repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_BOP": try {
-		 * 
-		 * repfile = BRRS_M_BOP_ReportService.getBRRS_M_BOPExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break; case "M_GP": try {
-		 * 
-		 * repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_TBS": try {
-		 * 
-		 * repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_GMIRT": try {
-		 * 
-		 * repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_GALOR": try {
-		 * 
-		 * repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_NOSVOS": try { repfile =
-		 * BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12E": try { repfile =
-		 * BRRS_M_SRWA_12E_ReportService.BRRS_M_SRWA_12EExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_PD": try { repfile = BRRS_M_PD_ReportService.BRRS_M_PDExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break; case "M_DEP4": try { repfile =
-		 * BRRS_M_DEP4_ReportService.getM_dep4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "Q_ATF": try {
-		 * 
-		 * repfile = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SCI_E": try {
-		 * 
-		 * repfile = brrs_m_sci_e_reportservice.getM_SCI_EExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_I_S_CA": try {
-		 * 
-		 * repfile = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "CAP_RATIO_BUFFER": try {
-		 * 
-		 * repfile =
-		 * brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 *
-		 * 
-		 * case "ADISB1": try { repfile =
-		 * BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "ADISB2": try { repfile =
-		 * BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "AML": try {
-		 * 
-		 * repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "FSI": try { repfile = BRRS_FSI_ReportService.getFSIExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "RWA": try { repfile = BRRS_RWA_ReportService.getRWAExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "CPR_STRUCT_LIQ": try { repfile =
-		 * BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "EXPOSURES": try { repfile =
-		 * BRRS_EXPOSURES_ReportService.getEXPOSURESExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "FORMAT_NEW_CPR": try { repfile =
-		 * BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "EXPANDED_REGU_BS": try { repfile =
-		 * BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "Market_Risk": try { repfile =
-		 * BRRS_Market_Risk_Reportservice.getMarket_RiskExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Main_Features": try { repfile =
-		 * BRRS_Main_Features_Reportservice.getMain_FeaturesExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "PL_SCHS": try { repfile =
-		 * BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break; case "CAP_ADEQ": try
-		 * {
-		 * 
-		 * repfile = brrs_cap_adeq_reportservice.getCAP_ADEQExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "CREDIT_RISK": try {
-		 * 
-		 * repfile = brrs_credit_risk_reportservice.getCREDIT_RISKExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "SCH_17": try {
-		 * 
-		 * repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "FORMAT_II": try {
-		 * 
-		 * repfile = brrs_format_II_reportservice.getFORMAT_IIExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "B_III_CETD": try {
-		 * 
-		 * repfile = b_III_cetd_ReportService.getB_III_CETDExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "OPER_RISK_DIS": try {
-		 * 
-		 * repfile = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * case "MDISB3": try { repfile =
-		 * brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "MASTER": try { repfile =
-		 * brrs_master_reportservice.getMASTERExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "NSFR": try { repfile = BRRS_NSFR_ReportService.getNSFRExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "SCOPE_OF_APP": try {
-		 * 
-		 * repfile = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "M_P_L": try { repfile =
-		 * BRRS_M_P_L_ReportService.getM_P_LExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		/*
-		 * case "GL_SCH": try {
-		 * 
-		 * repfile = brrs_gl_sch_reportservice.getGL_SCHExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "AS_11": try {
-		 * 
-		 * repfile = BRRS_AS_11_Reportservice.getAS_11Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "BORR_UFCE": try { repfile =
-		 * BRRS_BORR_UFCE_ReportService.getBORR_UFCEExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_OPTR_NEW": try { repfile =
-		 * BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
 
 		case "FORMAT_NEW_CPR":
 			try {
@@ -3850,535 +2438,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		/*
-		 * case "M_CA4": try { repfile =
-		 * BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CR": try { repfile = BRRS_M_CR_reportservice.BRRS_M_CRExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_SEC": try { repfile =
-		 * brrs_m_sec_reportservice.getM_SECExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA12D": try { repfile =
-		 * brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_FAS": try { repfile =
-		 * BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate,
-		 * currency, version, type, dtltype); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_LA": try { repfile =
-		 * BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "M_CA5": try { repfile = BRRS_M_CA5_reportservice.getM_CA5Excel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_CA6": try { repfile =
-		 * BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA7": try { repfile =
-		 * BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_SRWA_12F": try { repfile =
-		 * BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12B": try { repfile =
-		 * brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CALOC": try { repfile =
-		 * BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12C": try { repfile =
-		 * BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12G": try { repfile =
-		 * BRRS_M_SRWA_12G_reportservice.getM_SRWA_12GExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12H": try { repfile =
-		 * BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_MRC": try { repfile =
-		 * BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA1": try { repfile =
-		 * BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_CA3": try { repfile =
-		 * BRRS_M_CA3_reportservice.BRRS_M_CA3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_PI": try { repfile = BRRS_M_PI_reportservice.BRRS_M_PIExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "M_LA2": try { repfile =
-		 * BRRS_M_LA2_reportservice.BRRS_M_LA2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA3": try { repfile =
-		 * BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA5": try { repfile =
-		 * BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_UNCONS_INVEST": try { repfile =
-		 * BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_DEP2": try { repfile =
-		 * BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * case "M_DEP3": try { repfile =
-		 * BRRS_M_DEP3_reportservice.BRRS_M_DEP3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_AIDP": try { repfile =
-		 * BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_IRB": try { repfile =
-		 * brrs_m_irb_reportService.BRRS_M_PIExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LIQ": try { repfile =
-		 * BRRS_M_LIQ_reportservice.getM_LIQExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "DBS10_FINCON_II_1A": try { repfile =
-		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "MDISB4": try { repfile =
-		 * BRRS_MDISB4_ReportService.getMDISB4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_TOP_100_BORROWER": try { repfile =
-		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_BRANCHNET": try { repfile =
-		 * BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SECL": try { repfile =
-		 * brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "M_LARADV": try { repfile =
-		 * brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_OR2": try { repfile =
-		 * brrs_m_or2_reportservice.getM_OR2Excel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_FXR": try { repfile =
-		 * BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME": try { repfile =
-		 * BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_NEW": try { repfile =
-		 * BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_SMME_LA_NEW": try { repfile =
-		 * BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break; case "M_SIR": try { repfile =
-		 * BRRS_M_SIR_ReportService.getM_SIRExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_EPR": try {
-		 * 
-		 * repfile = brrs_m_epr_reportservice.getM_EPRExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_OB": try { repfile = BRRS_M_OB_ReportService.getM_OBExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "Q_RLFA1": try {
-		 * 
-		 * repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_RLFA2": try {
-		 * 
-		 * repfile = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_RPD": try { repfile =
-		 * BRRS_M_RPD_ReportService.getM_RPDExcel(filename, reportId, fromdate, todate,
-		 * currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_OPTR": try { repfile =
-		 * BRRS_M_OPTR_ReportService.getM_OPTRExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Q_SMME_DEP": try {
-		 * 
-		 * repfile = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_BOP": try {
-		 * 
-		 * repfile = BRRS_M_BOP_ReportService.getBRRS_M_BOPExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_GP": try {
-		 * 
-		 * repfile = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_TBS": try {
-		 * 
-		 * repfile = BRRS_M_TBS_ReportService.getM_TBSExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_GMIRT": try {
-		 * 
-		 * repfile = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_GALOR": try {
-		 * 
-		 * repfile = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_NOSVOS": try { repfile =
-		 * BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SRWA_12E": try { repfile =
-		 * BRRS_M_SRWA_12E_ReportService.BRRS_M_SRWA_12EExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_PD": try { repfile = BRRS_M_PD_ReportService.BRRS_M_PDExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break; case "M_DEP4": try { repfile =
-		 * BRRS_M_DEP4_ReportService.getM_dep4Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "Q_ATF": try {
-		 * 
-		 * repfile = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_SCI_E": try {
-		 * 
-		 * repfile = brrs_m_sci_e_reportservice.getM_SCI_EExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_I_S_CA": try {
-		 * 
-		 * repfile = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "CAP_RATIO_BUFFER": try {
-		 * 
-		 * repfile =
-		 * brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 *
-		 * 
-		 * case "ADISB1": try { repfile =
-		 * BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "ADISB2": try { repfile =
-		 * BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "Recon_Of_FS": try { repfile =
-		 * BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "AML": try {
-		 * 
-		 * repfile = brrs_aml_reportservice.getAMLExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "FSI": try { repfile = BRRS_FSI_ReportService.getFSIExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * case "CPR_STRUCT_LIQ": try { repfile =
-		 * BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "EXPOSURES": try { repfile =
-		 * BRRS_EXPOSURES_ReportService.getEXPOSURESExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "FORMAT_NEW_CPR": try { repfile =
-		 * BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "EXPANDED_REGU_BS": try { repfile =
-		 * BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * 
-		 * case "Market_Risk": try { repfile =
-		 * BRRS_Market_Risk_Reportservice.getMarket_RiskExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "Main_Features": try { repfile =
-		 * BRRS_Main_Features_Reportservice.getMain_FeaturesExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "PL_SCHS": try { repfile =
-		 * BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break; case "CAP_ADEQ": try
-		 * {
-		 * 
-		 * repfile = brrs_cap_adeq_reportservice.getCAP_ADEQExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "CREDIT_RISK": try {
-		 * 
-		 * repfile = brrs_credit_risk_reportservice.getCREDIT_RISKExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "SCH_17": try {
-		 * 
-		 * repfile = brrs_sch_17_reportservice.getSCH_17Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "FORMAT_II": try {
-		 * 
-		 * repfile = brrs_format_II_reportservice.getFORMAT_IIExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "B_III_CETD": try {
-		 * 
-		 * repfile = b_III_cetd_ReportService.getB_III_CETDExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "OPER_RISK_DIS": try {
-		 * 
-		 * repfile = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * 
-		 * case "MDISB3": try { repfile =
-		 * brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "MASTER": try { repfile =
-		 * brrs_master_reportservice.getMASTERExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "NSFR": try { repfile = BRRS_NSFR_ReportService.getNSFRExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "SCOPE_OF_APP": try {
-		 * 
-		 * repfile = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPExcel(filename,
-		 * reportId, fromdate, todate, currency, dtltype, type, version); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "TIER_1_2_CFS": try { repfile =
-		 * BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * 
-		 * /* case "GL_SCH": try {
-		 * 
-		 * repfile = brrs_gl_sch_reportservice.getGL_SCHExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "AS_11": try {
-		 * 
-		 * repfile = BRRS_AS_11_Reportservice.getAS_11Excel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break; case
-		 * "BORR_UFCE": try { repfile =
-		 * BRRS_BORR_UFCE_ReportService.getBORR_UFCEExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version);
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_OPTR_NEW": try { repfile =
-		 * BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWExcel(filename, reportId,
-		 * fromdate, todate, currency, dtltype, type, version); } catch (Exception e) {
-		 * // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-		/*
-		 * case "Q_STAFF": try { repfile =
-		 * BRRS_Q_STAFF_report_service.BRRS_Q_STAFFExcel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, version); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
 		case "M_SCI_E":
 			try {
 				repfile = brrs_m_sci_e_reportservice.getM_SCI_EExcel(filename, reportId, fromdate, todate, currency,
@@ -4669,12 +2728,6 @@ public class RegulatoryReportServices {
 		} else if ("Q_SMMEDetail".equals(filename)) {
 			return BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
-//		} else if ("Q_SMMEDetail".equals(filename)) {
-//			return BRRS_Q_SMME_Intrest_Income_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-//					currency, dtltype, type, version);
-//		} else if ("Q_SMME_LADetail".equals(filename)) {
-//			return BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-//					currency, dtltype, type, version);
 		} else if ("M_LCRDetail".equals(filename)) {
 			return BRRS_M_LCR_reportservice.getM_LCRDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -4777,12 +2830,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_OR1 archival data: " + MOR1List.size());
 			break;
 
-		/*
-		 * case "M_SFINP2": try { archivalData =
-		 * BRRS_M_SFINP2_reportservice.getM_SFINP2Archival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
 		case "M_SFINP1":
 			List<Object[]> M_SFINP1List = BRRS_M_SFINP1_reportservice.getM_SFINP1Archival();
 			archivalData.addAll(M_SFINP1List);
@@ -4825,14 +2872,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched LA4List archival data: " + LA4List.size());
 			break;
 
-//		case "M_CA2":
-//			try {
-//				archivalData = BRRS_M_CA2_reportservice.getM_CA2Archival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 		case "M_CA2":
 
 			List<Object[]> ca2List = BRRS_M_CA2_reportservice.getM_CA2Archival();
@@ -4857,15 +2896,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_mrcList archival data: " + M_mrcList.size());
 			break;
 
-//		case "":
-//			try {
-//				archivalData = BRRS_M_MRC_reportservice.getM_MRCArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
 		case "M_SP":
 			try {
 				archivalData = BRRS_M_SP_reportservice.getM_SPArchival();
@@ -4874,21 +2904,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		/*
-		 * case "M_SRWA_12C": try { archivalData =
-		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		// case "M_SRWA_12H":
-		// try {
-		// archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
 
 		case "M_PI":
 			try {
@@ -4916,12 +2931,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		/*
-		 * case "M_LA2": try { archivalData =
-		 * BRRS_M_LA2_reportservice.getM_LA2Archival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
 
 		case "M_CALOC":
 			List<Object[]> CALOCList = BRRS_M_CALOC_reportService.getM_CALOCArchival();
@@ -4963,18 +2972,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		/*
-		 * case "M_CA3": try { archivalData =
-		 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		/*
-		 * case "M_AIDP": try { archivalData =
-		 * BRRS_M_AIDP_ReportService.getM_AIDPArchival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
 
 		case "M_PLL":
 			try {
@@ -5030,33 +3027,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		// case "M_LARADV":
-		// try {
-		// archivalData = brrs_m_laradv_reportservice.getM_LARADVArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
-//		case "M_INT_RATES_FCA":
-//			try {
-//				archivalData = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-//
-//		case "M_INT_RATES":
-//			try {
-//				archivalData = brrs_m_int_rates_reportservice.getM_INT_RATESArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
 		case "M_INT_RATES_FCA":
 			List<Object[]> intratesfcaList = BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival();
 			archivalData.addAll(intratesfcaList);
@@ -5064,150 +3034,16 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_AIDP":
-		        List<Object[]> aidpList = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
-		        archivalData.addAll(aidpList);
-		        System.out.println("Fetched M_AIDP archival data: " + aidpList.size());
-		    break;
+			List<Object[]> aidpList = BRRS_M_AIDP_ReportService.getM_AIDPArchival();
+			archivalData.addAll(aidpList);
+			System.out.println("Fetched M_AIDP archival data: " + aidpList.size());
+			break;
 
-		/*
-		 * case "M_INT_RATES_FCA_NEW":
-		 * 
-		 * List<Object[]> intratesfcanewList =
-		 * BRRS_M_INT_RATES_FCA_NEW_ReportService.getM_INT_RATES_FCA_NEWArchival();
-		 */
-
-		/*
-		 * case "M_SRWA_12C": try { archivalData =
-		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		// case "M_SRWA_12H":
-		// try {
-		// archivalData = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
-		/*
-		 * case "M_FXR": List<Object[]> fxrList =
-		 * BRRS_M_FXR_reportservice.getM_FXRArchival(); archivalData.addAll(fxrList);
-		 * System.out.println("Fetched M_SRWA_12H archival data: " + fxrList.size());
-		 * break;
-		 * 
-		 * case "M_UNCONS_INVEST": try { archivalData =
-		 * BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival(); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 * 
-		 * case "M_LA2": try { archivalData =
-		 * BRRS_M_LA2_reportservice.getM_LA2Archival();
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA3": try { archivalData =
-		 * BRRS_M_LA3_reportservice.getM_LA3Archival();
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_LA5": try { archivalData =
-		 * BRRS_M_LA5_reportservice.getM_LA5Archival();
-		 * 
-		 * } catch (Exception e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } break;
-		 * 
-		 * case "M_DEP2": try { archivalData =
-		 * BRRS_M_DEP2_reportservice.getM_DEP2Archival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * case "M_CA3": try { archivalData =
-		 * BRRS_M_CA3_reportservice.getM_CA3Archival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * 
-		 * case "M_AIDP": try { archivalData =
-		 * BRRS_M_AIDP_ReportService.getM_AIDPArchival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_PLL": try { archivalData =
-		 * BRRS_M_PLL_reportservice.getM_PLLArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_DEP3": try { archivalData =
-		 * BRRS_M_DEP3_reportservice.getM_DEP3Archival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_IRB": try { archivalData =
-		 * brrs_m_irb_reportService.getM_IRBArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LIQ": try { archivalData =
-		 * BRRS_M_LIQ_reportservice.getM_LIQArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_LCR": try { archivalData =
-		 * BRRS_M_LCR_reportservice.getM_LCRArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_TOP_100_BORROWER": try { archivalData =
-		 * BRRS_M_TOP_100_BORROWER_reportservice.getM_TOP_100_BORROWERArchival(); }
-		 * catch (Exception e) { // TODO Auto-generated catch block e.printStackTrace();
-		 * } break;
-		 * 
-		 * case "DBS10_FINCON_II_1A": try { archivalData =
-		 * BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival(); }
-		 * catch (Exception e) { // TODO Auto-generated catch block e.printStackTrace();
-		 * } break;
-		 * 
-		 * case "MDISB4": try { archivalData =
-		 * BRRS_MDISB4_ReportService.getMDISB4Archival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * // case "M_LARADV": // try { // archivalData =
-		 * brrs_m_laradv_reportservice.getM_LARADVArchival(); // } catch (Exception e) {
-		 * // // TODO Auto-generated catch block // e.printStackTrace(); // } // break;
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * case "M_INT_RATES_FCA_NEW":
-		 * 
-		 * List<Object[]> intratesfcanewList = BRRS_M_INT_RATES_FCA_NEW_ReportService
-		 * .getM_INT_RATES_FCA_NEWArchival();
-		 * 
-		 * 
-		 * List<Object[]> intratesfcanewList = brrs_m_int_rates_fca_new_reportservice
-		 * .getM_INT_RATES_FCACArchival();
-		 * 
-		 * 
-		 * archivalData.addAll(intratesfcanewList);
-		 * System.out.println("Fetched M_INT_RATES_FCA archival data: " +
-		 * intratesfcanewList.size()); break;
-		 */
 		case "M_SRWA_12B":
 			List<Object[]> srwabList = brrs_m_srwa_12b_reportservice.getM_SRWA_12BArchival();
 			archivalData.addAll(srwabList);
 			System.out.println("Fetched M_SRWA_12B archival data: " + srwabList.size());
 			break;
-
-		/*
-		 * case "M_INT_RATES_FCA": try { archivalData =
-		 * BRRS_M_INT_RATES_FCA_ReportService.getM_INT_RATES_FCAArchival(); } catch
-		 * (Exception e) { // TODO Auto-generated catch block e.printStackTrace(); }
-		 * break;
-		 */
-
-		/*
-		 * case "M_INT_RATES": try { archivalData =
-		 * brrs_m_int_rates_reportservice.getM_INT_RATESArchival(); } catch (Exception
-		 * e) { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
 
 		case "M_INT_RATES_NEW":
 			try {
@@ -5218,73 +3054,19 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		// case "Q_BRANCHNET":
-		// try {
-		// archivalData = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
-//		case "Q_SMME":
-//			try {
-//				archivalData = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-			
 		case "Q_SMME":
 
 			List<Object[]> Q_SMMEList = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEArchival();
 			archivalData.addAll(Q_SMMEList);
 			System.out.println("Fetched Q_SMMEList archival data: " + Q_SMMEList.size());
 			break;
-//		case "Q_SMME_NEW":
-//			try {
-//				archivalData = BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
-//		case "Q_SMME_LA_NEW":
-//			try {
-//				archivalData = BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 		case "Q_SMME_LA":
 
 			List<Object[]> Q_SMMELAList = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEArchival();
 			archivalData.addAll(Q_SMMELAList);
 			System.out.println("Fetched Q_SMMELAList archival data: " + Q_SMMELAList.size());
 			break;
-		/*
-		 * case "M_SIR": try { archivalData =
-		 * BRRS_M_SIR_ReportService.getM_SIRArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		/*
-		 * case "M_EPR": try { archivalData =
-		 * brrs_m_epr_reportservice.getM_EPRArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-//		case "M_SRWA_12A":
-//			try {
-//				archivalData = brrs_m_srwa_12a_reportservice.getM_SRWA_12AArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "M_SRWA_12A":
 
@@ -5302,51 +3084,11 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		/*
-		 * case "M_SRWA_12C": try { archivalData =
-		 * BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		// case "M_OB":
-		// try {
-		// archivalData = BRRS_M_OB_ReportService.getM_OBArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
-		/*
-		 * case "Q_RLFA1": try { archivalData =
-		 * brrs_q_rlfa1_reportservice.getQ_RLFA1Archival(); } catch (Exception e) { //
-		 * TODO Auto-generated catch block e.printStackTrace(); } break;
-		 */
-
-		// case "M_OPTR":
-		// try {
-		// archivalData = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
 		case "M_OPTR":
 			List<Object[]> optrList = BRRS_M_OPTR_ReportService.getM_OPTRArchival();
 			archivalData.addAll(optrList);
 			System.out.println("Fetched M_OPTR archival data: " + optrList.size());
 			break;
-
-		/*
-		 * case "Q_SMME_DEP": try { archivalData =
-		 * BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival(); } catch (Exception e)
-		 * { // TODO Auto-generated catch block e.printStackTrace(); } break;
-		 * 
-		 * case "M_BOP": try { archivalData =
-		 * BRRS_M_BOP_ReportService.getM_BOPArchival(); } catch (Exception e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); } break;
-		 */
 
 		case "M_SECA":
 			try {
@@ -5415,60 +3157,6 @@ public class RegulatoryReportServices {
 			archivalData.addAll(oprList);
 			System.out.println("Fetched SCOPE_OF_APP archival data: " + oprList.size());
 			break;
-//
-//		case "M_SCI_E":
-//			try {
-//				archivalData = brrs_m_sci_e_reportservice.getM_SCI_EArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "M_I_S_CA":
-//			try {
-//				archivalData = brrs_m_i_s_ca_reportservice.getM_I_S_CAArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "CAP_RATIO_BUFFER":
-//			try {
-//				archivalData = brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-//
-//		case "B_III_CETD":
-//			try {
-//				archivalData = b_III_cetd_ReportService.getB_III_CETDArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "OPER_RISK_DIS":
-//			try {
-//				archivalData = brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "SCOPE_OF_APP":
-//			try {
-//				archivalData = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "AML":
 			List<Object[]> amlList = brrs_aml_reportservice.getAMLArchival();
@@ -5476,14 +3164,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched SCOPE_OF_APP archival data: " + amlList.size());
 			break;
 
-//		case "AML":
-//			try {
-//				archivalData = brrs_aml_reportservice.getAMLArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 		case "EXPANDED_REGU_BS":
 			List<Object[]> EXPANDED_REGU_BSList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSArchival();
 			archivalData.addAll(EXPANDED_REGU_BSList);
@@ -5526,15 +3206,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched CREDIT_RISK archival data: " + creditriskList.size());
 			break;
 
-//		case "CREDIT_RISK":
-//			try {
-//				archivalData = brrs_credit_risk_reportservice.getCREDIT_RISKArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
 		case "SCH_17":
 			try {
 				archivalData = brrs_sch_17_reportservice.getSCH_17Archival();
@@ -5555,15 +3226,6 @@ public class RegulatoryReportServices {
 			archivalData.addAll(nsfrList);
 			System.out.println("Fetched NSFR_New archival data: " + nsfrList.size());
 			break;
-
-//		case "FORMAT_II":
-//			try {
-//				archivalData = brrs_format_II_reportservice.getFORMAT_IIArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "FORMAT_II":
 			List<Object[]> format2List = brrs_format_II_reportservice.getFORMAT_IIArchival();
@@ -5630,12 +3292,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(LAList);
 			System.out.println("Fetched M_LARADV archival data: " + LAList.size());
 			break;
-		/*
-		 * case "M_GP": List<Object[]> GPList =
-		 * BRRS_M_GP_ReportService.getM_GPArchival(); archivalData.addAll(GPList);
-		 * System.out.println("Fetched M_SRWA_12H archival data: " + GPList.size());
-		 * break;
-		 */
+
 		case "M_IS":
 			List<Object[]> MISList = BRRS_M_IS_reportservice.getM_ISArchival();
 			archivalData.addAll(MISList);
@@ -5712,12 +3369,6 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_SECL archival data: " + seclList.size());
 			break;
 
-//		case "M_OR2":
-//			List<Object[]> or2List = brrs_m_or2_reportservice.getM_OR2Archival();
-//			archivalData.addAll(or2List);
-//			System.out.println("Fetched M_OR2 archival data: " + or2List.size());
-//			break;
-
 		case "M_SEC":
 			List<Object[]> secList = brrs_m_sec_reportservice.getM_SECArchival();
 			archivalData.addAll(secList);
@@ -5790,49 +3441,11 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_I_S_CA archival data: " + m_i_s_caList.size());
 			break;
 
-//		case "M_BOP":
-//			try {
-//				archivalData = BRRS_M_BOP_ReportService.getM_BOPArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-		/*
-		 * case "M_BOP": List<Object[]> BOPList =
-		 * BRRS_M_BOP_ReportService.getM_BOPArchival(); archivalData.addAll(BOPList);
-		 * System.out.println("Fetched M_BOP archival data: " + BOPList.size()); break;
-		 */
-
 		case "M_SRWA_12C":
 			List<Object[]> MSRWA12CList = BRRS_M_SRWA_12C_reportservice.getM_SRWA_12CArchival();
 			archivalData.addAll(MSRWA12CList);
 			System.out.println("Fetched Q_SMME_DEP archival data: " + MSRWA12CList.size());
 			break;
-
-//		case "M_SIR":
-//			List<Object[]> SIRList = BRRS_M_SIR_ReportService.getM_SIRArchival();
-//			archivalData.addAll(SIRList);
-//			System.out.println("Fetched M_SIR archival data: " + SIRList.size());
-//			break;
-
-		// case "M_GP":
-		// try {
-		// archivalData = BRRS_M_GP_ReportService.getM_GPArchival();
-		// } catch (Exception e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// break;
-
-		/*
-		 * case "M_INT_RATES": List<Object[]> intratesList =
-		 * brrs_m_int_rates_reportservice.getM_INTRATESArchival();
-		 * archivalData.addAll(intratesList);
-		 * System.out.println("Fetched M_INT_RATES archival data: " +
-		 * intratesList.size()); break;
-		 */
 
 		case "M_RPD":
 			List<Object[]> RPDList = BRRS_M_RPD_ReportService.getM_RPDArchival();
@@ -5873,33 +3486,6 @@ public class RegulatoryReportServices {
 			archivalData.addAll(FSIList);
 			System.out.println("Fetched FSI archival data: " + FSIList.size());
 			break;
-
-//		case "RWA":
-//			try {
-//				archivalData = BRRS_RWA_ReportService.getRWAArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "EXPOSURES":
-//			try {
-//				archivalData = BRRS_EXPOSURES_ReportService.getEXPOSURESArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-//
-//		case "FORMAT_NEW_CPR":
-//			try {
-//				archivalData = BRRS_FORMAT_NEW_CPR_ReportService.getFNCArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "FORMAT_NEW_CPR":
 			List<Object[]> fnaList = BRRS_FORMAT_NEW_CPR_ReportService.getFORMAT_NEW_CPRArchival();
@@ -5942,24 +3528,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-//		case "TIER_1_2_CFS":
-//			try {
-//				archivalData = BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
-
-//		case "CPR_STRUCT_LIQ":
-//			try {
-//				archivalData = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
 
 		case "CPR_STRUCT_LIQ":
 			List<Object[]> cslList = BRRS_CPR_STRUCT_LIQ_ReportService.getCPR_STRUCT_LIQArchival();
@@ -6137,12 +3705,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("Q_SMMEDetail")) {
 			fileData = BRRS_Q_SMME_Intrest_Income_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
-//		} else if (filename.equals("Q_SMMEDetail")) {
-//			fileData = BRRS_Q_SMME_Intrest_Income_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-//					currency, dtltype, type, version);
-//		} else if (filename.equals("Q_SMMEDetail")) {
-//			fileData = BRRS_Q_SMME_Loans_Advances_New_ReportService.BRRS_Q_SMMEDetailExcel(filename, fromdate, todate,
-//					currency, dtltype, type, version);
+
 		} else if ("M_FASDetail".equals(filename)) {
 			fileData = BRRS_M_FAS_reportservice.BRRS_M_FASDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -6158,12 +3721,7 @@ public class RegulatoryReportServices {
 			fileData = brrs_M_SRWA_12A_New_reportservice.getM_SRWA_12A_NewDetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
 		}
-		/*
-		 * else if ("M_GMIRT_Detail".equals(filename)) {
-		 * 
-		 * fileData = brrs_m_gmirt_reportservice.getM_GMIRTDetailExcel(filename,
-		 * fromdate, todate, currency, dtltype, type, version); }
-		 */
+
 		else if ("M_GALOR_Detail".equals(filename)) {
 
 			fileData = BRRS_m_galor_ReportService.getM_GALORDetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -6187,13 +3745,6 @@ public class RegulatoryReportServices {
 			fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		}
-
-		// else if ("Q_ATF_Detail".equals(filename)) {
-		// logger.info("Getting Inside Q_ATF_Detail");
-		// fileData = brrs_q_atf_reportservice.getQ_ATFDetailExcel(filename, fromdate,
-		// todate, currency,
-		// dtltype, type, version);
-		// }
 
 		else if ("M_SCI_E".equals(filename)) {
 
@@ -6450,12 +4001,6 @@ public class RegulatoryReportServices {
 			reportData = BRRS_M_LA1_reportservice_new.getReportData(specificFilePath);
 			break;
 
-		/*
-		 * case "M_LA2": specificFilePath = baseExportPath + "M_LA2.xlsx";
-		 * System.out.println("Fetching M_LA2 data from: " + specificFilePath);
-		 * reportData = BRRS_M_LA2_reportservice.getReportData(specificFilePath); break;
-		 */
-
 		case "M_SFINP2":
 			System.out.println(reportCode);
 			specificFilePath = baseExportPath + "M_SFINP2.xlsx";
@@ -6500,8 +4045,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LA3":
-				modelAndView = BRRS_M_LA3_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_LA3_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_LA4":
@@ -6515,8 +4060,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LA5":
-					modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-					request.getParameter("formmode"), request.getParameter("type"));
+				modelAndView = BRRS_M_LA5_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_CA2":
@@ -6605,9 +4150,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "Q_SMME_LA":
-				modelAndView = BRRS_Q_SMME_loans_Advances_reportService
-						.getViewOrEditPage(request.getParameter("SNO"),
-								request.getParameter("formmode"), request.getParameter("type"));
+				modelAndView = BRRS_Q_SMME_loans_Advances_reportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_CALOC":
@@ -6616,18 +4160,10 @@ public class RegulatoryReportServices {
 				break;
 
 			case "Q_SMME":
-				modelAndView = BRRS_Q_SMME_Intrest_Income_ReportService
-						.getViewOrEditPage(request.getParameter("SNO"),
-								request.getParameter("formmode"), request.getParameter("type"));
+				modelAndView = BRRS_Q_SMME_Intrest_Income_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
-//			case "Q_SMME_NEW":
-//				modelAndView = BRRS_Q_SMME_Intrest_Income_New_ReportService
-//						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
-//				break;
-//			case "Q_SMME_LA_NEW":
-//				modelAndView = BRRS_Q_SMME_Loans_Advances_New_ReportService
-//						.getViewOrEditPage(request.getParameter("acctNo"), request.getParameter("formmode"));
-//				break;
+
 			case "M_PD":
 				modelAndView = BRRS_M_PD_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -6883,15 +4419,15 @@ public class RegulatoryReportServices {
 			case "Q_SMME":
 				response = BRRS_Q_SMME_Intrest_Income_ReportService.callregenprocedure(request);
 				break;
-				
+
 			case "M_CA2":
-			response = BRRS_M_CA2_reportservice.callregenprocedure(request);
-			break;
-			
+				response = BRRS_M_CA2_reportservice.callregenprocedure(request);
+				break;
+
 			case "M_LIQ":
 				response = BRRS_M_LIQ_reportservice.callregenprocedure(request);
 				break;
-			
+
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
 				response = ResponseEntity.badRequest()
@@ -6947,10 +4483,6 @@ public class RegulatoryReportServices {
 				response = BRRS_M_IS_reportservice.updateDetailEdit(request);
 				break;
 
-			/*
-			 * case "M_LA2": response = BRRS_M_LA2_reportservice.updateDetailEdit(request);
-			 * break;
-			 */
 			case "M_LA3":
 				response = BRRS_M_LA3_reportservice.updateDetailEdit(request);
 				break;
@@ -7065,12 +4597,6 @@ public class RegulatoryReportServices {
 			case "Q_SMME":
 				response = BRRS_Q_SMME_Intrest_Income_ReportService.updateDetailEdit(request);
 				break;
-//			case "Q_SMME_NEW":
-//				response = BRRS_Q_SMME_Intrest_Income_New_ReportService.updateDetailEdit(request);
-//				break;
-//			case "Q_SMME_LA_NEW":
-//				response = BRRS_Q_SMME_Loans_Advances_New_ReportService.updateDetailEdit(request);
-//				break;
 			case "ADISB1":
 				response = BRRS_ADISB1_ReportService.updateDetailEdit(request);
 				break;
@@ -7222,7 +4748,7 @@ public class RegulatoryReportServices {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
-		
+
 		case "M_SRWA_12H":
 			try {
 				List<Object[]> resubList = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HResub();
@@ -7290,20 +4816,6 @@ public class RegulatoryReportServices {
 
 			break;
 
-		// case "M_SRWA_12F":
-		// try {
-		// List<Object[]> resubList =
-		// BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FResub();
-		// resubmissionData.addAll(resubList);
-		// System.out.println("Resubmission data fetched for M_SRWA_12F: " +
-		// resubList.size());
-		// } catch (Exception e) {
-		// System.err.println("Error fetching resubmission data for M_SRWA_12F: " +
-		// e.getMessage());
-		// e.printStackTrace();
-		// }
-		// break;
-
 		case "M_SECL":
 			try {
 				List<Object[]> resubList = brrs_m_secl_reportservice.getM_SECLResub();
@@ -7347,16 +4859,6 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
-		/*
-		 * case "MDISB5": try { List<Object[]> resubList =
-		 * BRRS_MDISB5_ReportService.getMDISB5Resub();
-		 * resubmissionData.addAll(resubList);
-		 * System.out.println("Resubmission data fetched for MDISB5: " +
-		 * resubList.size()); } catch (Exception e) {
-		 * System.err.println("Error fetching resubmission data for MDISB5: " +
-		 * e.getMessage()); e.printStackTrace(); } break;
-		 */
 
 		case "M_IS":
 			try {
@@ -7950,16 +5452,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-//		 case "Q_SMME":
-//				try {
-//					List<Object[]> resubList = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMME_Intrest_IncomeResub();
-//					resubmissionData.addAll(resubList);
-//					System.out.println("Resubmission data fetched for Q_SMME: " + resubList.size());
-//				} catch (Exception e) {
-//					System.err.println("Error fetching resubmission data for Q_SMME: " + e.getMessage());
-//					e.printStackTrace();
-//				}
-//				break;
+
 		case "ADISB2":
 			try {
 				List<Object[]> resubList = BRRS_ADISB2_ReportService.getADISB2Resub();
@@ -7980,16 +5473,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-		 case "Q_SMME":
-				try {
-					List<Object[]> resubList = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMME_Intrest_IncomeResub();
-					resubmissionData.addAll(resubList);
-					System.out.println("Resubmission data fetched for Q_SMME: " + resubList.size());
-				} catch (Exception e) {
-					System.err.println("Error fetching resubmission data for Q_SMME: " + e.getMessage());
-					e.printStackTrace();
-				}
-				break;
+		case "Q_SMME":
+			try {
+				List<Object[]> resubList = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMME_Intrest_IncomeResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Q_SMME: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Q_SMME: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}
@@ -8048,11 +5541,7 @@ public class RegulatoryReportServices {
 
 						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
 							Sheet srcSheet = reportWorkbook.getSheetAt(i);
-							/*
-							 * if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() ==
-							 * 0) { System.out.println("Skipping empty sheet: " + srcSheet.getSheetName());
-							 * continue; }
-							 */
+
 							Sheet newSheet;
 							if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
 								newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
@@ -8340,17 +5829,10 @@ public class RegulatoryReportServices {
 
 				case "Q_SMME":
 					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type,format, version);
+							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type,format, version);
-
-//				case "Q_SMME_NEW":
-//					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx",
-//							reportName, fromdate, todate, currency, dtltype, type, format, version);
-//				case "Q_SMME_LA_NEW":
-//					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
-//							reportName, fromdate, todate, currency, dtltype, type, format, version);
+							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("EMAIL_Q_SMME_DEP.xlsx", reportName,
@@ -8422,8 +5904,8 @@ public class RegulatoryReportServices {
 					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("M_SRWA_12B.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12C":
-					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("M_SRWA_12C.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, format, version);
+					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("M_SRWA_12C.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA_12D.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
@@ -8597,20 +6079,11 @@ public class RegulatoryReportServices {
 
 				case "Q_SMME":
 					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type,format, version);
+							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type,format, version);
-
-//				case "Q_SMME_NEW":
-//					return BRRS_Q_SMME_Intrest_Income_New_ReportService.getQ_SMMEExcel("Q_SMME_INT_NEW.xlsx",
-//							reportName, fromdate, todate, currency, dtltype, type, format, version);
-
-//				case "Q_SMME_LA_NEW":
-//					return BRRS_Q_SMME_Loans_Advances_New_ReportService.getQ_SMMEExcel("Q_SMME_LOANS_NEW.xlsx",
-//							reportName, fromdate, todate, currency, dtltype, type, format, version);
-
+							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
@@ -8700,10 +6173,6 @@ public class RegulatoryReportServices {
 					destCell.setCellValue(srcCell.getBooleanCellValue());
 					break;
 
-//				case Cell.CELL_TYPE_FORMULA:
-//					destCell.setCellFormula(srcCell.getCellFormula());
-//					break;
-
 				case Cell.CELL_TYPE_FORMULA:
 
 					try {
@@ -8753,14 +6222,6 @@ public class RegulatoryReportServices {
 				CellStyle srcStyle = srcCell.getCellStyle();
 				if (srcStyle != null) {
 					CellStyle newStyle = styleMap.get(srcStyle);
-
-//					if (newStyle == null) {
-//						// Only create a NEW style if we haven't seen this one before
-//						newStyle = destWB.createCellStyle();
-//						newStyle.cloneStyleFrom(srcStyle);
-//						newStyle.setShrinkToFit(true);
-//						styleMap.put(srcStyle, newStyle);
-//					}
 
 					if (newStyle == null) {
 
@@ -8834,9 +6295,9 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 		case "M_PI":
-			try {				
-					excelBytes = BRRS_M_PI_reportservice.getBRRS_M_PIExcel("M_PI.xlsx", reportId, fromdate, todate,
-							currency, dtltype, null, "excel", null);				
+			try {
+				excelBytes = BRRS_M_PI_reportservice.getBRRS_M_PIExcel("M_PI.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_PI: No Excel data found for PDF generation → todate={}", todate);
@@ -8858,11 +6319,11 @@ public class RegulatoryReportServices {
 				logger.error("M_PI: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_IS":
-			try {				
-					excelBytes = BRRS_M_IS_reportservice.BRRS_M_ISExcel("M_IS.xlsx", reportId, fromdate, todate,
-							currency, dtltype, null, "excel", null);				
+			try {
+				excelBytes = BRRS_M_IS_reportservice.BRRS_M_ISExcel("M_IS.xlsx", reportId, fromdate, todate, currency,
+						dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_IS: No Excel data found for PDF generation → todate={}", todate);
@@ -9006,7 +6467,7 @@ public class RegulatoryReportServices {
 				logger.error("M_EPR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_FAS":
 			try {
 				excelBytes = BRRS_M_FAS_reportservice.getM_FASExcel(filename, reportId, fromdate, todate, currency,
@@ -9034,7 +6495,7 @@ public class RegulatoryReportServices {
 				logger.error("M_FAS: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_FXR":
 			try {
 				excelBytes = BRRS_M_FXR_reportservice.getM_FXRExcel(filename, reportId, fromdate, todate, currency,
@@ -9063,7 +6524,7 @@ public class RegulatoryReportServices {
 				logger.error("M_FXR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_GMIRT":
 			try {
 				excelBytes = brrs_m_gmirt_reportservice.getM_GMIRTExcel(filename, reportId, fromdate, todate, currency,
@@ -9091,7 +6552,7 @@ public class RegulatoryReportServices {
 				logger.error("M_GMIRT: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_GP":
 			try {
 				excelBytes = BRRS_M_GP_ReportService.getM_GPExcel(filename, reportId, fromdate, todate, currency,
@@ -9119,7 +6580,7 @@ public class RegulatoryReportServices {
 				logger.error("M_GP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_I_S_CA":
 			try {
 				excelBytes = brrs_m_i_s_ca_reportservice.getM_I_S_CAExcel(filename, reportId, fromdate, todate,
@@ -9147,11 +6608,11 @@ public class RegulatoryReportServices {
 				logger.error("M_I_S_CA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_INT_RATES":
 			try {
-				excelBytes = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = brrs_m_int_rates_reportservice.getM_INTRATESExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_INTRATES: No Excel data found for PDF generation → todate={}", todate);
@@ -9175,7 +6636,7 @@ public class RegulatoryReportServices {
 				logger.error("M_INTRATES: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_INT_RATES_FCA":
 			try {
 				excelBytes = BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel(filename, reportId, fromdate,
@@ -9203,8 +6664,7 @@ public class RegulatoryReportServices {
 				logger.error("M_INTRATESFCA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-			
+
 		case "M_CA1":
 			try {
 				excelBytes = BRRS_M_CA1_reportservice.BRRS_M_CA1Excel(filename, reportId, fromdate, todate, currency,
@@ -9234,7 +6694,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA2":
 			try {
 				excelBytes = BRRS_M_CA2_reportservice.getM_CA2Excel(filename, reportId, fromdate, todate, currency,
@@ -9263,7 +6723,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA3":
 			try {
 				excelBytes = BRRS_M_CA3_reportservice.getBRRS_M_CA3Excel(filename, reportId, fromdate, todate, currency,
@@ -9292,7 +6752,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA4":
 			try {
 				excelBytes = BRRS_M_CA4_reportservice.getBRRS_M_CA4Excel(filename, reportId, fromdate, todate, currency,
@@ -9320,7 +6780,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA4: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA5":
 			try {
 				excelBytes = BRRS_M_CA5_reportservice.getM_CA5Excel(filename, reportId, fromdate, todate, currency,
@@ -9348,7 +6808,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA5: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA6":
 			try {
 				excelBytes = BRRS_M_CA6_reportservice.getM_CA6Excel(filename, reportId, fromdate, todate, currency,
@@ -9377,7 +6837,7 @@ public class RegulatoryReportServices {
 				logger.error("M_CA6: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA7":
 			try {
 				excelBytes = BRRS_M_CA7_reportservice.getM_CA7Excel(filename, reportId, fromdate, todate, currency,
@@ -9405,11 +6865,11 @@ public class RegulatoryReportServices {
 				logger.error("M_CA7: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_AIDP":
 			try {
-				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, null);
+				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_AIDP: No Excel data found for PDF generation → todate={}", todate);
@@ -9418,7 +6878,8 @@ public class RegulatoryReportServices {
 
 				logger.info("M_AIDP: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 50 }, new int[] { 53, 95 }, new int[] { 98, 141 }, new int[] { 144, 193 });
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 50 }, new int[] { 53, 95 },
+						new int[] { 98, 141 }, new int[] { 144, 193 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9433,11 +6894,11 @@ public class RegulatoryReportServices {
 				logger.error("M_AIDP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_LIQGAP": 
+
+		case "M_LIQGAP":
 			try {
-				excelBytes = brrs_m_liqgap_reportservice.getBRRS_M_LIQGAPExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = brrs_m_liqgap_reportservice.getBRRS_M_LIQGAPExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_LIQGAP: No Excel data found for PDF generation → todate={}", todate);
@@ -9461,11 +6922,11 @@ public class RegulatoryReportServices {
 				logger.error("M_LIQGAP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_PD": 
+
+		case "M_PD":
 			try {
-				excelBytes = BRRS_M_PD_ReportService.getM_PDExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = BRRS_M_PD_ReportService.getM_PDExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_PD: No Excel data found for PDF generation → todate={}", todate);
@@ -9489,11 +6950,11 @@ public class RegulatoryReportServices {
 				logger.error("M_PD: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_SECA": 
+
+		case "M_SECA":
 			try {
-				excelBytes = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = BRRS_M_SECA_ReportService.BRRS_M_SECAExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SECA: No Excel data found for PDF generation → todate={}", todate);
@@ -9517,11 +6978,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SECA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_OPTR": 
+
+		case "M_OPTR":
 			try {
-				excelBytes = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = BRRS_M_OPTR_ReportService.getBRRS_M_OPTRExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_OPTR: No Excel data found for PDF generation → todate={}", todate);
@@ -9545,11 +7006,11 @@ public class RegulatoryReportServices {
 				logger.error("M_OPTR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP1":
 			try {
-				excelBytes = BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, "RBS",  null);
+				excelBytes = BRRS_M_DEP1_reportservice.BRRS_M_DEP1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, "RBS", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_DEP1: No Excel data found for PDF generation → todate={}", todate);
@@ -9573,11 +7034,11 @@ public class RegulatoryReportServices {
 				logger.error("M_DEP1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP2":
 			try {
-				excelBytes = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, "RBS",  null);
+				excelBytes = BRRS_M_DEP2_reportservice.BRRS_M_DEP2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, "RBS", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_DEP2: No Excel data found for PDF generation → todate={}", todate);
@@ -9601,11 +7062,11 @@ public class RegulatoryReportServices {
 				logger.error("M_DEP2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP4":
 			try {
-				excelBytes = BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_DEP4: No Excel data found for PDF generation → todate={}", todate);
@@ -9627,13 +7088,13 @@ public class RegulatoryReportServices {
 
 			} catch (Exception e) {
 				logger.error("M_DEP4: PDF generation failed", e);
-				return new byte[0]; 
+				return new byte[0];
 			}
-			
+
 		case "M_SP":
 			try {
 				excelBytes = BRRS_M_SP_reportservice.getM_SPExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,  null);
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SP: No Excel data found for PDF generation → todate={}", todate);
@@ -9642,7 +7103,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SP: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 61});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 61 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9657,11 +7118,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SIR":
 			try {
-				excelBytes = 	BRRS_M_SIR_ReportService.BRRS_M_SIRExcel(filename, reportId, fromdate, todate, currency,
-						dtltype,"excel", null,  null);
+				excelBytes = BRRS_M_SIR_ReportService.BRRS_M_SIRExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, "excel", null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SIR: No Excel data found for PDF generation → todate={}", todate);
@@ -9670,7 +7131,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SIR: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 40});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 40 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9685,11 +7146,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SIR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12F":
 			try {
-				excelBytes = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,"excel",  null);
+				excelBytes = BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12F: No Excel data found for PDF generation → todate={}", todate);
@@ -9713,11 +7174,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12F: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12G":
 			try {
-				excelBytes = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,"excel",  null);
+				excelBytes = BRRS_M_SRWA_12G_reportservice.getBRRS_M_SRWA_12GExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12G: No Excel data found for PDF generation → todate={}", todate);
@@ -9741,11 +7202,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12G: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12H":
 			try {
-				excelBytes = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,"excel",  null);
+				excelBytes = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12H: No Excel data found for PDF generation → todate={}", todate);
@@ -9769,11 +7230,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12H: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12A":
 			try {
-				excelBytes = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, "excel", null);
+				excelBytes = brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12A: No Excel data found for PDF generation → todate={}", todate);
@@ -9782,7 +7243,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SRWA_12A: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9797,11 +7258,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12A: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12B":
 			try {
-				excelBytes = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,"excel",  null);
+				excelBytes = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12B: No Excel data found for PDF generation → todate={}", todate);
@@ -9810,7 +7271,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SRWA_12B: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 130 }, new int[] { 132, 247});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 130 }, new int[] { 132, 247 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9825,11 +7286,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12B: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12C":
 			try {
-				excelBytes = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, "excel", null);
+				excelBytes = BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12C: No Excel data found for PDF generation → todate={}", todate);
@@ -9853,17 +7314,18 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12C: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12D":
 			try {
-		        // Get the type parameter from the original request - it should be "RBS" as shown in your logs
-		        String safeType = "RBS";  // Your logs show Type: RBS
-		        String safeDtlType = (dtltype == null || dtltype.isEmpty()) ? "report" : dtltype;
-		        
-		        logger.info("M_SRWA_12D: Calling Excel generation with dtltype={}, type={}", safeDtlType, safeType);
-		        
-		        excelBytes = brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId, fromdate, todate, currency,
-		                safeDtlType, safeType,"excel", null);
+				// Get the type parameter from the original request - it should be "RBS" as
+				// shown in your logs
+				String safeType = "RBS"; // Your logs show Type: RBS
+				String safeDtlType = (dtltype == null || dtltype.isEmpty()) ? "report" : dtltype;
+
+				logger.info("M_SRWA_12D: Calling Excel generation with dtltype={}, type={}", safeDtlType, safeType);
+
+				excelBytes = brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel(filename, reportId, fromdate, todate,
+						currency, safeDtlType, safeType, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12D: No Excel data found for PDF generation → todate={}", todate);
@@ -9872,7 +7334,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SRWA_12D: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9887,11 +7349,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12D: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12E":
 			try {
-				excelBytes = BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, "excel", null);
+				excelBytes = BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12E: No Excel data found for PDF generation → todate={}", todate);
@@ -9900,7 +7362,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SRWA_12E: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 26});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 26 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9915,7 +7377,7 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12E: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_IRB":
 			try {
 				excelBytes = brrs_m_irb_reportService.BRRS_M_IRBExcel(filename, reportId, fromdate, todate, currency,
@@ -9928,7 +7390,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_IRB: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9943,7 +7405,7 @@ public class RegulatoryReportServices {
 				logger.error("M_IRB: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_GALOR":
 			try {
 				excelBytes = BRRS_m_galor_ReportService.getM_GALORExcel(filename, reportId, fromdate, todate, currency,
@@ -9956,7 +7418,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_GALOR: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9971,11 +7433,11 @@ public class RegulatoryReportServices {
 				logger.error("M_GALOR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_NOSVOS":
 			try {
-				excelBytes = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,"excel", null);
+				excelBytes = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_NOSVOS: No Excel data found for PDF generation → todate={}", todate);
@@ -9984,7 +7446,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_NOSVOS: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -9999,1248 +7461,979 @@ public class RegulatoryReportServices {
 				logger.error("M_NOSVOS: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CALOC":
-            try {
-                if ("EMAIL_M_CALOC.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(
-                            filename, reportId, fromdate, todate,
-                            currency, dtltype, null, "email", null);
-                } else {
-                    excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(
-                            filename, reportId, fromdate, todate,
-                            currency, dtltype, null, "excel", null);
-                }
-                if (excelBytes != null && excelBytes.length > 0) {
-                    List<int[]> tableRanges = Arrays.asList(new int[]{0, 120});
-                    pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-                    return pdfBytes;
-                }
-                return new byte[0];
-            } catch (Exception e) {
-                logger.error("getPdfDownloadFile: M_CALOC PDF generation failed", e);
-                return new byte[0];
-            }
-            
+			try {
+				if ("EMAIL_M_CALOC.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, null, "email", null);
+				} else {
+					excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(filename, reportId, fromdate, todate,
+							currency, dtltype, null, "excel", null);
+				}
+				if (excelBytes != null && excelBytes.length > 0) {
+					List<int[]> tableRanges = Arrays.asList(new int[] { 0, 120 });
+					pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+					return pdfBytes;
+				}
+				return new byte[0];
+			} catch (Exception e) {
+				logger.error("getPdfDownloadFile: M_CALOC PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_LA2":
-            try {
-                if ("EMAIL_M_LA2.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel(
-                            "EMAIL_M_LA2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,      // type
-                            "email",   // format → triggers email path in service
-                            null       // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel(
-                            "M_LA2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,      // type = null → normal live-data path
-                            "excel",   // format
-                            null       // version
-                    );
-                }
+			try {
+				if ("EMAIL_M_LA2.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel("EMAIL_M_LA2.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							"email", // format → triggers email path in service
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel("M_LA2.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type = null → normal live-data path
+							"excel", // format
+							null // version
+					);
+				}
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_LA2: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LA2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                logger.info("M_LA2: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA2: Excel generated → {} bytes", excelBytes.length);
 
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 30}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 30 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_LA2: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LA2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-                logger.info("M_LA2: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				logger.info("M_LA2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-            } catch (Exception e) {
-                logger.error("M_LA2: PDF generation failed", e);
-                return new byte[0];
-            }
-			
+			} catch (Exception e) {
+				logger.error("M_LA2: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_LA3":
-            try {
-                if ("EMAIL_M_LA3.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3EmailExcel(
-                            "EMAIL_M_LA3.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel(
-                            "M_LA3.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
+			try {
+				if ("EMAIL_M_LA3.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3EmailExcel("EMAIL_M_LA3.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("M_LA3.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_LA3: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LA3: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                logger.info("M_LA3: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA3: Excel generated → {} bytes", excelBytes.length);
 
-                List<int[]> tableRanges = Arrays.asList(
-                		new int[]{0, 15}, new int[]{19, 31}, new int[]{33, 42} 
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 15 }, new int[] { 19, 31 },
+						new int[] { 33, 42 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_LA3: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LA3: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-                logger.info("M_LA3: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				logger.info("M_LA3: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-            } catch (Exception e) {
-                logger.error("M_LA3: PDF generation failed", e);
-                return new byte[0];
-            }
-            
+			} catch (Exception e) {
+				logger.error("M_LA3: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_LA4":
-            try {
-                if ("EMAIL_M_LA4.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel(
-                            "EMAIL_M_LA4.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4Excel(
-                            "M_LA4.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
+			try {
+				if ("EMAIL_M_LA4.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4Excel("M_LA4.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_LA4: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LA4: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                logger.info("M_LA4: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA4: Excel generated → {} bytes", excelBytes.length);
 
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_LA4: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LA4: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-                logger.info("M_LA4: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				logger.info("M_LA4: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-            } catch (Exception e) {
-                logger.error("M_LA4: PDF generation failed", e);
-                return new byte[0];
-            }
-            
+			} catch (Exception e) {
+				logger.error("M_LA4: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_LA5":
-            try {               
-                    excelBytes = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel(
-                            "M_LA5.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
+			try {
+				excelBytes = BRRS_M_LA5_reportservice.BRRS_M_LA5Excel("M_LA5.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, // type
+						"excel", // format
+						null // version
+				);
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_LA5: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LA5: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                logger.info("M_LA5: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA5: Excel generated → {} bytes", excelBytes.length);
 
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_LA5: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LA5: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-                logger.info("M_LA5: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				logger.info("M_LA5: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-            } catch (Exception e) {
-                logger.error("M_LA5: PDF generation failed", e);
-                return new byte[0];
-            }
-            
+			} catch (Exception e) {
+				logger.error("M_LA5: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_PLL":
-		    try {
-		        excelBytes = BRRS_M_PLL_reportservice.getM_PLLExcel(
-		                "M_PLL.xlsx", reportId, fromdate, todate,
-		                currency, dtltype, null, null);
+			try {
+				excelBytes = BRRS_M_PLL_reportservice.getM_PLLExcel("M_PLL.xlsx", reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
-		        if (excelBytes == null || excelBytes.length == 0) {
-		            logger.warn("M_PLL: No Excel data found for PDF generation → todate={}", todate);
-		            return new byte[0];
-		        }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_PLL: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-		        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        if (pdfBytes == null || pdfBytes.length == 0) {
-		            logger.error("M_PLL: PDF conversion returned empty bytes");
-		            return new byte[0];
-		        }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_PLL: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-		        logger.info("M_PLL: PDF conversion successful → {} bytes", pdfBytes.length);
-		        return pdfBytes;
+				logger.info("M_PLL: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
 
-		    } catch (Exception e) {
-		        logger.error("M_PLL: PDF generation failed", e);
-		        return new byte[0];
-		    }
-		    
+			} catch (Exception e) {
+				logger.error("M_PLL: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_SEC":
-            try {               
-                    excelBytes = brrs_m_sec_reportservice.getM_SECExcel(
-                            "M_SEC.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );                
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_SEC: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_SEC: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                		new int[] { 0, 18 }, new int[] { 23, 30 }, new int[] { 33, 42 }
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_SEC: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_SEC: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_SEC: PDF generation failed", e);
-                return new byte[0];
-            }
-
-
-        case "M_TBS":
-            try {
-                if ("EMAIL_M_TBS.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_TBS_ReportService.BRRS_M_TBSEmailExcel(
-                            "EMAIL_M_TBS.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_TBS_ReportService.getBRRS_M_TBSExcel(
-                            "M_TBS.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_TBS: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_TBS: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_TBS: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_TBS: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_TBS: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-        case "Q_ATF":
-                        try {
-                            if ("EMAIL_Q_ATF.xlsx".equals(filename)) {
-                                excelBytes = brrs_q_atf_reportservice.BRRS_Q_ATFEmailExcel(
-                                        "EMAIL_Q_ATF.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,   // type
-                                        null    // version
-                                );
-                            } else {
-                                excelBytes = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel(
-                                        "Q_ATF.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,     // type
-                                        "excel",  // format
-                                        null      // version
-                                );
-                            }
-
-                            if (excelBytes == null || excelBytes.length == 0) {
-                                logger.warn("Q_ATF: No Excel data found for PDF generation → todate={}", todate);
-                                return new byte[0];
-                            }
-
-                            logger.info("Q_ATF: Excel generated → {} bytes", excelBytes.length);
-
-                            List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                            pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                            if (pdfBytes == null || pdfBytes.length == 0) {
-                                logger.error("Q_ATF: PDF conversion returned empty bytes");
-                                return new byte[0];
-                            }
-
-                            logger.info("Q_ATF: PDF conversion successful → {} bytes", pdfBytes.length);
-                            return pdfBytes;
-
-                        } catch (Exception e) {
-                            logger.error("Q_ATF: PDF generation failed", e);
-                            return new byte[0];
-                        }
-                        
-
-        case "Q_BRANCHNET":
-                        try {
-                            if ("EMAIL_Q_BRANCHNET.xlsx".equals(filename)) {
-                                excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETEmailExcel(
-                                        "EMAIL_Q_BRANCHNET.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,   // type
-                                        null    // version
-                                );
-                            } else {
-                                excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel(
-                                        "Q_BRANCHNET.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,     // type
-                                        "excel",  // format
-                                        null      // version
-                                );
-                            }
-
-                            if (excelBytes == null || excelBytes.length == 0) {
-                                logger.warn("Q_BRANCHNET: No Excel data found for PDF generation → todate={}", todate);
-                                return new byte[0];
-                            }
-
-                            logger.info("Q_BRANCHNET: Excel generated → {} bytes", excelBytes.length);
-
-                            List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                            pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                            if (pdfBytes == null || pdfBytes.length == 0) {
-                                logger.error("Q_BRANCHNET: PDF conversion returned empty bytes");
-                                return new byte[0];
-                            }
-
-                            logger.info("Q_BRANCHNET: PDF conversion successful → {} bytes", pdfBytes.length);
-                            return pdfBytes;
-
-                        } catch (Exception e) {
-                            logger.error("Q_BRANCHNET: PDF generation failed", e);
-                            return new byte[0];
-                        }                       
-
-        case "Q_SMME_DEP":
-            try {
-                if ("EMAIL_Q_SMME_DEP.xlsx".equals(filename)) {
-                    excelBytes = BRRS_Q_SMME_DEP_ReportService.BRRS_Q_SMME_DEPEmailExcel(
-                            "EMAIL_Q_SMME_DEP.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel(
-                            "Q_SMME_DEP.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("Q_SMME_DEP: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("Q_SMME_DEP: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("Q_SMME_DEP: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("Q_SMME_DEP: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("Q_SMME_DEP: PDF generation failed", e);
-                return new byte[0];
-            }
-
-
-        case "Q_STAFF":
-                       try {
-                           if ("EMAIL_Q_STAFF.xlsx".equals(filename)) {
-                               excelBytes = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFEmailExcel(
-                                       "EMAIL_Q_STAFF.xlsx",
-                                       reportId,
-                                       fromdate,
-                                       todate,
-                                       currency,
-                                       dtltype,
-                                       null,   // type
-                                       null    // version
-                               );
-                           } else {
-                               excelBytes = BRRS_Q_STAFF_report_service.getBRRS_Q_STAFFExcel(
-                                       "Q_STAFF.xlsx",
-                                       reportId,
-                                       fromdate,
-                                       todate,
-                                       currency,
-                                       dtltype,
-                                       null,     // type
-                                       "excel",  // format
-                                       null      // version
-                               );
-                           }
-
-                           if (excelBytes == null || excelBytes.length == 0) {
-                               logger.warn("Q_STAFF: No Excel data found for PDF generation → todate={}", todate);
-                               return new byte[0];
-                           }
-
-                           logger.info("Q_STAFF: Excel generated → {} bytes", excelBytes.length);
-
-                           List<int[]> tableRanges = Arrays.asList(new int[]{0, 39});
-                           pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                           if (pdfBytes == null || pdfBytes.length == 0) {
-                               logger.error("Q_STAFF: PDF conversion returned empty bytes");
-                               return new byte[0];
-                           }
-
-                           logger.info("Q_STAFF: PDF conversion successful → {} bytes", pdfBytes.length);
-                           return pdfBytes;
-
-                       } catch (Exception e) {
-                           logger.error("Q_STAFF: PDF generation failed", e);
-                           return new byte[0];
-                       }
-                       
-        case "Q_RLFA1":
-            try {
-                excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(
-                        filename,
-                        reportId,
-                        fromdate,
-                        todate,
-                        currency,
-                        dtltype,
-                        null,   // type
-                        null    // version
-                );
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 65});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("Q_RLFA1: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("Q_RLFA1: PDF generation failed", e);
-                return new byte[0];
-            }    
-            
-            	 
-        case "Q_SMME":
-            try {
-                if ("EMAIL_Q_SMME.xlsx".equals(filename)) {
-                    excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(
-                            "EMAIL_Q_SMME.xlsx", reportId, fromdate, todate,
-                            currency, dtltype, null, "email", null);
-                } else {
-                    excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel(
-                            "Q_SMME_INT.xlsx", reportId, fromdate, todate,
-                            currency, dtltype, null, "excel", null);
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("Q_SMME_INT: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("Q_SMME_INT: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("Q_SMME_INT: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("Q_SMME_INT: PDF generation failed", e);
-                return new byte[0];
-            }
-                    
-
-        case "Q_SMME_LA":
-            try {
-                excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(
-                        filename,
-                        reportId,
-                        fromdate,
-                        todate,
-                        currency,
-                        dtltype,
-                        null,   // type
-                        null  ,
-                        null// version
-                );
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("Q_SMME_LOANS: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("Q_SMME_LOANS: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("Q_SMME_LOANS: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("Q_SMME_LOANS: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("Q_SMME_LOANS: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-
-        case "M_LIQ":
-           		    try {
-           		        if ("EMAIL_M_LIQ.xlsx".equals(filename)) {
-           		            excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
-           		                    "EMAIL_M_LIQ.xlsx", reportId, fromdate, todate,
-           		                    currency, dtltype, null, "email", null);
-           		        } else {
-           		            excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
-           		                    "M_LIQ.xlsx", reportId, fromdate, todate,
-           		                    currency, dtltype, null, "excel", null);
-           		        }
-
-           		        if (excelBytes == null || excelBytes.length == 0) {
-           		            logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
-           		            return new byte[0];
-           		        }
-
-           		        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-           		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-           		        if (pdfBytes == null || pdfBytes.length == 0) {
-           		            logger.error("M_LIQ: PDF conversion returned empty bytes");
-           		            return new byte[0];
-           		        }
-
-           		        logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
-           		        return pdfBytes;
-
-           		    } catch (Exception e) {
-           		        logger.error("M_LIQ: PDF generation failed", e);
-           		        return new byte[0];
-           		    }
-           		    
-
-        case "M_OB":
-                        try {
-                            if ("EMAIL_M_OB.xlsx".equals(filename)) {
-                                excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel(
-                                        "EMAIL_M_OB.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,   // type
-                                        null    // version
-                                );
-                            } else {
-                                excelBytes = BRRS_M_OB_ReportService.getBRRS_M_OBExcel(
-                                        "M_OB.xlsx",
-                                        reportId,
-                                        fromdate,
-                                        todate,
-                                        currency,
-                                        dtltype,
-                                        null,     // type
-                                        "excel",  // format
-                                        null      // version
-                                );
-                            }
-
-                            if (excelBytes == null || excelBytes.length == 0) {
-                                logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
-                                return new byte[0];
-                            }
-
-                            logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
-
-                            List<int[]> tableRanges = Arrays.asList(
-                                    new int[]{0, 80}
-                            );
-                            pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                            if (pdfBytes == null || pdfBytes.length == 0) {
-                                logger.error("M_OB: PDF conversion returned empty bytes");
-                                return new byte[0];
-                            }
-
-                            logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
-                            return pdfBytes;
-
-                        } catch (Exception e) {
-                            logger.error("M_OB: PDF generation failed", e);
-                            return new byte[0];
-                        }
-                        
-        case "M_OR1":
-            try {
-                if ("EMAIL_M_OR1.xlsx".equals(filename)) {
-                    excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1EmailExcel(
-                            "EMAIL_M_OR1.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1Excel(
-                            "M_OR1.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            "report",     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_OR1: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_OR1: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_OR1: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_OR1: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_OR1: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-        case "M_OR2":
-            try {
-                if ("EMAIL_M_OR2.xlsx".equals(filename)) {
-                    excelBytes = brrs_m_or2_reportservice.BRRS_M_OR2EmailExcel(
-                            "EMAIL_M_OR2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = brrs_m_or2_reportservice.getM_OR2Excel(
-                            "M_OR2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_OR2: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_OR2: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_OR2: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_OR2: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_OR2: PDF generation failed", e);
-                return new byte[0];
-            }
-
-        case "M_RPD":
-            try {
-                excelBytes = BRRS_M_RPD_ReportService.getM_RPDExcel(
-                        "M_RPD.xlsx",
-                        reportId,
-                        fromdate,
-                        todate,
-                        currency,
-                        dtltype,
-                        "report", // type — must NOT be null (line 1110 does type.equals() — NPE if null)
-                        "excel",  // format — "excel" routes to normal report, not email branch
-                        null      // version
-                );
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_RPD: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_RPD: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 452});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_RPD: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_RPD: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_RPD: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-        case "M_SFINP2":
-            try {
-                if ("EMAIL_M_SFINP2.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2EmailExcel(
-                            "EMAIL_M_SFINP2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel(
-                            "M_SFINP2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_SFINP2: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_SFINP2: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_SFINP2: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_SFINP2: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_SFINP2: PDF generation failed", e);
-                return new byte[0];
-            }
-
-        case "M_BOP":
-		    try {
-		        if ("EMAIL_M_BOP.xlsx".equals(filename)) {
-		            excelBytes = BRRS_M_BOP_ReportService.BRRS_M_BOPEmailExcel(
-		                    "EMAIL_M_BOP.xlsx", reportId, fromdate, todate,
-		                    currency, dtltype, null, null);
-		        } else {
-		            excelBytes = BRRS_M_BOP_ReportService.getM_BOPExcel(
-		                    "M_BOP.xlsx", reportId, fromdate, todate,
-		                    currency, dtltype, null, "excel", null);
-		        }
-
-		        if (excelBytes == null || excelBytes.length == 0) {
-		            logger.warn("M_BOP: No Excel data found for PDF generation → todate={}", todate);
-		            return new byte[0];
-		        }
-
-		        List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-		        if (pdfBytes == null || pdfBytes.length == 0) {
-		            logger.error("M_BOP: PDF conversion returned empty bytes");
-		            return new byte[0];
-		        }
-
-		        logger.info("M_BOP: PDF conversion successful → {} bytes", pdfBytes.length);
-		        return pdfBytes;
-
-		    } catch (Exception e) {
-		        logger.error("M_BOP: PDF generation failed", e);
-		        return new byte[0];
-		    }
-		    
-        case "M_UNCONS_INVEST":
-            try {
-                if ("EMAIL_M_UNCONS_INVEST.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTEmailExcel(
-                            "EMAIL_M_UNCONS_INVEST.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel(
-                            "M_UNCONS_INVEST.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_UNCONS_INVEST: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_UNCONS_INVEST: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                		new int[] { 0, 14 }, new int[] { 18, 25 }, new int[] { 27, 28 },  new int[] { 31, 39 }
-                		);
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_UNCONS_INVEST: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_UNCONS_INVEST: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_UNCONS_INVEST: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-        case "M_MRC":
-            try {
-                if ("EMAIL_M_MRC.xlsx".equals(filename)) {
-                    excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCEmailExcel(
-                            "EMAIL_M_MRC.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(
-                            "M_MRC.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_MRC: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_MRC: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_MRC: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_MRC: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_MRC: PDF generation failed", e);
-                return new byte[0];
-            }
-            
-        case "Q_RLFA2":
-            try {
-                if ("EMAIL_Q_RLFA2.xlsx".equals(filename)) {
-                    excelBytes = brrs_q_rlfa2_reportservice.BRRS_Q_RLFA2EmailExcel(
-                            "EMAIL_Q_RLFA2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel(
-                            "Q_RLFA2.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("Q_RLFA2: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("Q_RLFA2: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("Q_RLFA2: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("Q_RLFA2: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("Q_RLFA2: PDF generation failed", e);
-                return new byte[0];
-            }
-
-        case "M_LA1":
-            try {
-                excelBytes = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(
-                        filename,   // M_LA1.xlsx or EMAIL_M_LA1.xlsx — same method handles both
-                        reportId,
-                        fromdate,
-                        todate,
-                        currency,
-                        dtltype,
-                        null,       // type
-                        null        // version
-                );
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_LA1: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_LA1: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_LA1: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_LA1: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_LA1: PDF generation failed", e);
-                return new byte[0];
-            }
-
-        case "M_SCI_E":
-            try {
-                if ("EMAIL_M_SCI_E.xlsx".equals(filename)) {
-                    excelBytes = brrs_m_sci_e_reportservice.BRRS_M_SCI_EEmailExcel(
-                            "EMAIL_M_SCI_E.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                } else {
-                    excelBytes = brrs_m_sci_e_reportservice.getM_SCI_EExcel(
-                            "M_SCI_E.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,     // type
-                            "excel",  // format
-                            null      // version
-                    );
-                }
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_SCI_E: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_SCI_E: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_SCI_E: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_SCI_E: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_SCI_E: PDF generation failed", e);
-                return new byte[0];
-            }
-
-        case "M_SECL":
-            try {
-                excelBytes = brrs_m_secl_reportservice.getM_SECLExcel(
-                        filename,   // M_SECL.xlsx or EMAIL_M_SECL.xlsx — same method handles both via format param
-                        reportId,
-                        fromdate,
-                        todate,
-                        currency,
-                        dtltype,
-                        null,     // type
-                        "excel",  // format — service checks format internally for email routing
-                        null      // version
-                );
-
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("M_SECL: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
-
-                logger.info("M_SECL: Excel generated → {} bytes", excelBytes.length);
-
-                List<int[]> tableRanges = Arrays.asList(new int[]{0, 80});
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
-
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("M_SECL: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
-
-                logger.info("M_SECL: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
-
-            } catch (Exception e) {
-                logger.error("M_SECL: PDF generation failed", e);
-                return new byte[0];
-            }  
-            
+			try {
+				excelBytes = brrs_m_sec_reportservice.getM_SECExcel("M_SEC.xlsx", reportId, fromdate, todate, currency,
+						dtltype, null, // type
+						"excel", // format
+						null // version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SEC: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SEC: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 18 }, new int[] { 23, 30 },
+						new int[] { 33, 42 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SEC: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SEC: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SEC: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_TBS":
+			try {
+				if ("EMAIL_M_TBS.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_TBS_ReportService.BRRS_M_TBSEmailExcel("EMAIL_M_TBS.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_TBS_ReportService.getBRRS_M_TBSExcel("M_TBS.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_TBS: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_TBS: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_TBS: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_TBS: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_TBS: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_ATF":
+			try {
+				if ("EMAIL_Q_ATF.xlsx".equals(filename)) {
+					excelBytes = brrs_q_atf_reportservice.BRRS_Q_ATFEmailExcel("EMAIL_Q_ATF.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = brrs_q_atf_reportservice.getBRRS_Q_ATFExcel("Q_ATF.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_ATF: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_ATF: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_ATF: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_ATF: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_ATF: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_BRANCHNET":
+			try {
+				if ("EMAIL_Q_BRANCHNET.xlsx".equals(filename)) {
+					excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETEmailExcel("EMAIL_Q_BRANCHNET.xlsx",
+							reportId, fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETExcel("Q_BRANCHNET.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_BRANCHNET: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_BRANCHNET: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_BRANCHNET: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_BRANCHNET: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_BRANCHNET: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_SMME_DEP":
+			try {
+				if ("EMAIL_Q_SMME_DEP.xlsx".equals(filename)) {
+					excelBytes = BRRS_Q_SMME_DEP_ReportService.BRRS_Q_SMME_DEPEmailExcel("EMAIL_Q_SMME_DEP.xlsx",
+							reportId, fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_SMME_DEP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME_DEP: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_SMME_DEP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME_DEP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_SMME_DEP: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_STAFF":
+			try {
+				if ("EMAIL_Q_STAFF.xlsx".equals(filename)) {
+					excelBytes = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFEmailExcel("EMAIL_Q_STAFF.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_Q_STAFF_report_service.getBRRS_Q_STAFFExcel("Q_STAFF.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_STAFF: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_STAFF: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 39 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_STAFF: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_STAFF: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_STAFF: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_RLFA1":
+			try {
+				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, // type
+						null // version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 65 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_RLFA1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_RLFA1: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_SMME":
+			try {
+				if ("EMAIL_Q_SMME.xlsx".equals(filename)) {
+					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, "email", null);
+				} else {
+					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_SMME_INT: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_SMME_INT: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME_INT: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_SMME_INT: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_SMME_LA":
+			try {
+				excelBytes = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, // type
+						null, null// version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_SMME_LOANS: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME_LOANS: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_SMME_LOANS: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_SMME_LOANS: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_SMME_LOANS: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_LIQ":
+			try {
+				if ("EMAIL_M_LIQ.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel("EMAIL_M_LIQ.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, "email", null);
+				} else {
+					excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel("M_LIQ.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LIQ: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_LIQ: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_OB":
+			try {
+				if ("EMAIL_M_OB.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel("EMAIL_M_OB.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_OB_ReportService.getBRRS_M_OBExcel("M_OB.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_OB: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_OB: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_OR1":
+			try {
+				if ("EMAIL_M_OR1.xlsx".equals(filename)) {
+					excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1EmailExcel("EMAIL_M_OR1.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1Excel("M_OR1.xlsx", reportId, fromdate, todate,
+							currency, dtltype, "report", // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_OR1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_OR1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_OR1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_OR1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_OR1: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_OR2":
+			try {
+				if ("EMAIL_M_OR2.xlsx".equals(filename)) {
+					excelBytes = brrs_m_or2_reportservice.BRRS_M_OR2EmailExcel("EMAIL_M_OR2.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = brrs_m_or2_reportservice.getM_OR2Excel("M_OR2.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_OR2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_OR2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_OR2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_OR2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_OR2: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_RPD":
+			try {
+				excelBytes = BRRS_M_RPD_ReportService.getM_RPDExcel("M_RPD.xlsx", reportId, fromdate, todate, currency,
+						dtltype, "report", // type — must NOT be null (line 1110 does type.equals() — NPE if null)
+						"excel", // format — "excel" routes to normal report, not email branch
+						null // version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_RPD: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_RPD: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 452 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_RPD: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_RPD: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_RPD: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_SFINP2":
+			try {
+				if ("EMAIL_M_SFINP2.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2EmailExcel("EMAIL_M_SFINP2.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2Excel("M_SFINP2.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SFINP2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SFINP2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SFINP2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SFINP2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SFINP2: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_BOP":
+			try {
+				if ("EMAIL_M_BOP.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_BOP_ReportService.BRRS_M_BOPEmailExcel("EMAIL_M_BOP.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, null);
+				} else {
+					excelBytes = BRRS_M_BOP_ReportService.getM_BOPExcel("M_BOP.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_BOP: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_BOP: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_BOP: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_BOP: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_UNCONS_INVEST":
+			try {
+				if ("EMAIL_M_UNCONS_INVEST.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTEmailExcel(
+							"EMAIL_M_UNCONS_INVEST.xlsx", reportId, fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTExcel("M_UNCONS_INVEST.xlsx",
+							reportId, fromdate, todate, currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_UNCONS_INVEST: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_UNCONS_INVEST: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 14 }, new int[] { 18, 25 }, new int[] { 27, 28 },
+						new int[] { 31, 39 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_UNCONS_INVEST: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_UNCONS_INVEST: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_UNCONS_INVEST: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_MRC":
+			try {
+				if ("EMAIL_M_MRC.xlsx".equals(filename)) {
+					excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCEmailExcel("EMAIL_M_MRC.xlsx", reportId, fromdate,
+							todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel("M_MRC.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_MRC: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_MRC: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_MRC: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_MRC: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_MRC: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "Q_RLFA2":
+			try {
+				if ("EMAIL_Q_RLFA2.xlsx".equals(filename)) {
+					excelBytes = brrs_q_rlfa2_reportservice.BRRS_Q_RLFA2EmailExcel("EMAIL_Q_RLFA2.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("Q_RLFA2.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("Q_RLFA2: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("Q_RLFA2: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("Q_RLFA2: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("Q_RLFA2: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("Q_RLFA2: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_LA1":
+			try {
+				excelBytes = BRRS_M_LA1_reportservice.BRRS_M_LA1Excel(filename, // M_LA1.xlsx or EMAIL_M_LA1.xlsx — same
+																				// method handles both
+						reportId, fromdate, todate, currency, dtltype, null, // type
+						null // version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_LA1: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_LA1: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_LA1: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_LA1: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_LA1: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_SCI_E":
+			try {
+				if ("EMAIL_M_SCI_E.xlsx".equals(filename)) {
+					excelBytes = brrs_m_sci_e_reportservice.BRRS_M_SCI_EEmailExcel("EMAIL_M_SCI_E.xlsx", reportId,
+							fromdate, todate, currency, dtltype, null, // type
+							null // version
+					);
+				} else {
+					excelBytes = brrs_m_sci_e_reportservice.getM_SCI_EExcel("M_SCI_E.xlsx", reportId, fromdate, todate,
+							currency, dtltype, null, // type
+							"excel", // format
+							null // version
+					);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SCI_E: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SCI_E: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SCI_E: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SCI_E: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SCI_E: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "M_SECL":
+			try {
+				excelBytes = brrs_m_secl_reportservice.getM_SECLExcel(filename, // M_SECL.xlsx or EMAIL_M_SECL.xlsx —
+																				// same method handles both via format
+																				// param
+						reportId, fromdate, todate, currency, dtltype, null, // type
+						"excel", // format — service checks format internally for email routing
+						null // version
+				);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_SECL: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				logger.info("M_SECL: Excel generated → {} bytes", excelBytes.length);
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_SECL: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("M_SECL: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("M_SECL: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "ADISB1":
 			try {
-				excelBytes = BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null,  null);
+				excelBytes = BRRS_ADISB1_ReportService.BRRS_ADISB1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("ADISB1: No Excel data found for PDF generation → todate={}", todate);
@@ -11264,11 +8457,11 @@ public class RegulatoryReportServices {
 				logger.error("ADISB1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "ADISB2":
 			try {
-				excelBytes = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null,  null);
+				excelBytes = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("ADISB2: No Excel data found for PDF generation → todate={}", todate);
@@ -11292,11 +8485,11 @@ public class RegulatoryReportServices {
 				logger.error("ADISB2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "BDISB1":
 			try {
-				excelBytes = brrs_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null,  null);
+				excelBytes = brrs_bdisb1_reportservice.getBDISB1Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("BDISB1: No Excel data found for PDF generation → todate={}", todate);
@@ -11320,11 +8513,11 @@ public class RegulatoryReportServices {
 				logger.error("BDISB1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "BDISB2":
 			try {
-				excelBytes = BRRS_BDISB2_ReportService.getBDISB2Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null,  null);
+				excelBytes = BRRS_BDISB2_ReportService.getBDISB2Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("BDISB2: No Excel data found for PDF generation → todate={}", todate);
@@ -11348,11 +8541,11 @@ public class RegulatoryReportServices {
 				logger.error("BDISB2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "BDISB3":
 			try {
-				excelBytes = brrs_bdisb3_reportservice.getBDISB3Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, null,  null);
+				excelBytes = brrs_bdisb3_reportservice.getBDISB3Excel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("BDISB3: No Excel data found for PDF generation → todate={}", todate);
@@ -11376,7 +8569,7 @@ public class RegulatoryReportServices {
 				logger.error("BDISB3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "MDISB1":
 			try {
 				excelBytes = brrs_mdisb1_reportservice.getMDISB1Excel(filename, reportId, fromdate, todate, currency,
@@ -11404,7 +8597,7 @@ public class RegulatoryReportServices {
 				logger.error("MDISB1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "MDISB2":
 			try {
 				excelBytes = brrs_mdisb2_reportservice.getMDISB2Excel(filename, reportId, fromdate, todate, currency,
@@ -11432,7 +8625,7 @@ public class RegulatoryReportServices {
 				logger.error("MDISB2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "MDISB3":
 			try {
 				excelBytes = brrs_mdisb3_reportservice.getMDISB3Excel(filename, reportId, fromdate, todate, currency,
@@ -11445,7 +8638,7 @@ public class RegulatoryReportServices {
 
 				logger.info("MDISB3: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 111 } );
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 111 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -11460,7 +8653,7 @@ public class RegulatoryReportServices {
 				logger.error("MDISB3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "MDISB4":
 			try {
 				excelBytes = BRRS_MDISB4_ReportService.getMDISB4Excel(filename, reportId, fromdate, todate, currency,
@@ -11488,20 +8681,23 @@ public class RegulatoryReportServices {
 				logger.error("MDISB4: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "MDISB5":
 			try {
 				excelBytes = BRRS_MDISB5_ReportService.getMDISB5Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
-					logger.warn("MDISB5: No Excel data found for PDF generation → todate={}: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn(
+							"MDISB5: No Excel data found for PDF generation → todate={}: No Excel data found for PDF generation → todate={}",
+							todate);
 					return new byte[0];
 				}
 
 				logger.info("MDISB5: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 14 }, new int[] { 16, 34}, new int[] { 34, 44});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 14 }, new int[] { 16, 34 },
+						new int[] { 34, 44 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, true);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -11517,7 +8713,6 @@ public class RegulatoryReportServices {
 				return new byte[0];
 			}
 
-                        
 		}
 		return pdfBytes;
 	}
@@ -11532,11 +8727,11 @@ public class RegulatoryReportServices {
 		logger.info("PDF request → reportId={} fromdate={} todate={}", reportId, fromdate, todate);
 
 		switch (reportId) {
-		
+
 		case "M_PI":
-			try {				
-					excelBytes = BRRS_M_PI_reportservice.BRRS_M_PIEmailExcel("EMAIL_M_PI.xlsx", reportId, fromdate,
-							todate, currency, dtltype, null, null);
+			try {
+				excelBytes = BRRS_M_PI_reportservice.BRRS_M_PIEmailExcel("EMAIL_M_PI.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_PI: No Excel data found for PDF generation → todate={}", todate);
@@ -11558,11 +8753,11 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_PI: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_IS":
-			try {				
-					excelBytes = BRRS_M_IS_reportservice.BRRS_M_ISExcel("EMAIL_M_IS.xlsx", reportId, fromdate,
-							todate, currency, dtltype, null,"excel", null);
+			try {
+				excelBytes = BRRS_M_IS_reportservice.BRRS_M_ISExcel("EMAIL_M_IS.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_IS: No Excel data found for PDF generation → todate={}", todate);
@@ -11680,7 +8875,7 @@ public class RegulatoryReportServices {
 				logger.error("M_DEP3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_DEP4":
 			try {
 				excelBytes = BRRS_M_DEP4_ReportService.getEmail_M_DEP4Excel(filename, reportId, fromdate, todate,
@@ -11736,12 +8931,11 @@ public class RegulatoryReportServices {
 				logger.error("M_EPR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-			
+
 		case "M_FAS":
 			try {
-				excelBytes = BRRS_M_FAS_reportservice.BRRS_M_FASEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null,  null);
+				excelBytes = BRRS_M_FAS_reportservice.BRRS_M_FASEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_FAS: No Excel data found for PDF generation → todate={}", todate);
@@ -11765,11 +8959,11 @@ public class RegulatoryReportServices {
 				logger.error("M_FAS: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_FXR":
 			try {
-				excelBytes = BRRS_M_FXR_reportservice.BRRS_M_FXREmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_FXR_reportservice.BRRS_M_FXREmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_FXR: No Excel data found for PDF generation → todate={}", todate);
@@ -11794,7 +8988,7 @@ public class RegulatoryReportServices {
 				logger.error("M_FXR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_GMIRT":
 			try {
 				excelBytes = brrs_m_gmirt_reportservice.BRRS_M_GMIRTEmailExcel(filename, reportId, fromdate, todate,
@@ -11822,7 +9016,7 @@ public class RegulatoryReportServices {
 				logger.error("M_GMIRT: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_GP":
 			try {
 				excelBytes = BRRS_M_GP_ReportService.BRRS_M_GPEmailExcel(filename, reportId, fromdate, todate, currency,
@@ -11850,7 +9044,7 @@ public class RegulatoryReportServices {
 				logger.error("M_GP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_I_S_CA":
 			try {
 				excelBytes = brrs_m_i_s_ca_reportservice.BRRS_M_I_S_CAEmailExcel(filename, reportId, fromdate, todate,
@@ -11878,7 +9072,7 @@ public class RegulatoryReportServices {
 				logger.error("M_I_S_CA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_INT_RATES":
 			try {
 				excelBytes = brrs_m_int_rates_reportservice.BRRS_M_INT_RATESEmailExcel(filename, reportId, fromdate,
@@ -11906,8 +9100,7 @@ public class RegulatoryReportServices {
 				logger.error("M_INTRATES: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-			
+
 		case "M_INT_RATES_FCA":
 			try {
 				excelBytes = BRRS_M_INT_RATES_FCA_ReportService.BRRS_M_INT_RATES_FCAEmailExcel(filename, reportId,
@@ -11935,8 +9128,7 @@ public class RegulatoryReportServices {
 				logger.error("M_INTRATESFCA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-			
+
 		case "M_CA1":
 			try {
 				excelBytes = BRRS_M_CA1_reportservice.BRRS_M_CA1EmailExcel(filename, reportId, fromdate, todate,
@@ -11964,7 +9156,7 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA1: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA2":
 			try {
 				excelBytes = BRRS_M_CA2_reportservice.BRRS_M_CA2EmailExcel(filename, reportId, fromdate, todate,
@@ -11993,7 +9185,7 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA2: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA3":
 			try {
 				excelBytes = BRRS_M_CA3_reportservice.BRRS_M_CA3EmailExcel(filename, reportId, fromdate, todate,
@@ -12022,7 +9214,7 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA3: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA4":
 			try {
 				excelBytes = BRRS_M_CA4_reportservice.BRRS_M_CA4EmailExcel(filename, reportId, fromdate, todate,
@@ -12050,7 +9242,7 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA4: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA5":
 			try {
 				excelBytes = BRRS_M_CA5_reportservice.getEmail_M_CA5Excel(filename, reportId, fromdate, todate,
@@ -12078,7 +9270,7 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA5: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_CA6":
 			try {
 				excelBytes = BRRS_M_CA6_reportservice.getEmail_M_CA6Excel(filename, reportId, fromdate, todate,
@@ -12106,8 +9298,8 @@ public class RegulatoryReportServices {
 			} catch (Exception e) {
 				logger.error("EMAIL_M_CA6: PDF generation failed", e);
 				return new byte[0];
-			}	
-			
+			}
+
 		case "M_CA7":
 			try {
 				excelBytes = BRRS_M_CA7_reportservice.getEmail_M_CA7Excel(filename, reportId, fromdate, todate,
@@ -12135,11 +9327,11 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_CA7: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_AIDP":
 			try {
-				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, null);
+				excelBytes = BRRS_M_AIDP_ReportService.getM_AIDPExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_AIDP: No Excel data found for PDF generation → todate={}", todate);
@@ -12148,7 +9340,8 @@ public class RegulatoryReportServices {
 
 				logger.info("M_AIDP: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 20 }, new int[] { 23, 31 }, new int[] { 34, 43 }, new int[] { 46, 55 });
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 20 }, new int[] { 23, 31 }, new int[] { 34, 43 },
+						new int[] { 46, 55 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -12163,11 +9356,11 @@ public class RegulatoryReportServices {
 				logger.error("M_AIDP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_LIQGAP": 
+
+		case "M_LIQGAP":
 			try {
-				excelBytes = brrs_m_liqgap_reportservice.BRRS_M_LIQGAPEmailExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, null);
+				excelBytes = brrs_m_liqgap_reportservice.BRRS_M_LIQGAPEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_LIQGAP: No Excel data found for PDF generation → todate={}", todate);
@@ -12191,11 +9384,11 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_LIQGAP: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_PD": 
+
+		case "M_PD":
 			try {
-				excelBytes = BRRS_M_PD_ReportService.BRRS_M_PDEmailExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, null);
+				excelBytes = BRRS_M_PD_ReportService.BRRS_M_PDEmailExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_PD: No Excel data found for PDF generation → todate={}", todate);
@@ -12219,11 +9412,11 @@ public class RegulatoryReportServices {
 				logger.error("M_PD: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_SECA": 
+
+		case "M_SECA":
 			try {
-				excelBytes = BRRS_M_SECA_ReportService.getExcelM_SECA_EMAIL(filename, reportId, fromdate,
-						todate, currency, dtltype, null, "excel", null);
+				excelBytes = BRRS_M_SECA_ReportService.getExcelM_SECA_EMAIL(filename, reportId, fromdate, todate,
+						currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SECA: No Excel data found for PDF generation → todate={}", todate);
@@ -12247,11 +9440,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SECA: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-		case "M_OPTR": 
+
+		case "M_OPTR":
 			try {
-				excelBytes = BRRS_M_OPTR_ReportService.BRRS_M_OPTREmailExcel(filename, reportId, fromdate,
-						todate, currency, dtltype, null, null);
+				excelBytes = BRRS_M_OPTR_ReportService.BRRS_M_OPTREmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_OPTR: No Excel data found for PDF generation → todate={}", todate);
@@ -12275,11 +9468,11 @@ public class RegulatoryReportServices {
 				logger.error("M_OPTR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SIR":
 			try {
-				excelBytes = BRRS_M_SIR_ReportService.BRRS_M_SIREmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SIR_ReportService.BRRS_M_SIREmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SIR: No Excel data found for PDF generation → todate={}", todate);
@@ -12302,12 +9495,12 @@ public class RegulatoryReportServices {
 			} catch (Exception e) {
 				logger.error("M_SIR: PDF generation failed", e);
 				return new byte[0];
-			}	
-			
+			}
+
 		case "M_SRWA_12F":
 			try {
-				excelBytes = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SRWA_12F_reportservice.BRRS_M_SRWA_12FEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12F: No Excel data found for PDF generation → todate={}", todate);
@@ -12331,11 +9524,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12F: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12G":
 			try {
-				excelBytes = BRRS_M_SRWA_12G_reportservice.BRRS_M_SRWA_12GEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SRWA_12G_reportservice.BRRS_M_SRWA_12GEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12G: No Excel data found for PDF generation → todate={}", todate);
@@ -12344,7 +9537,7 @@ public class RegulatoryReportServices {
 
 				logger.info("M_SRWA_12G: Excel generated → {} bytes", excelBytes.length);
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 60});
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 60 });
 				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
@@ -12359,11 +9552,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12G: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12H":
 			try {
-				excelBytes = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12H: No Excel data found for PDF generation → todate={}", todate);
@@ -12387,11 +9580,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12H: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12A":
 			try {
-				excelBytes = brrs_m_srwa_12a_reportservice.BRRS_M_SRWA_12AEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, "excel", null);
+				excelBytes = brrs_m_srwa_12a_reportservice.BRRS_M_SRWA_12AEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12A: No Excel data found for PDF generation → todate={}", todate);
@@ -12415,11 +9608,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12A: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12B":
 			try {
-				excelBytes = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, "RBS", "excel", null);
+				excelBytes = brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, "RBS", "excel", null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_SRWA_12B: No Excel data found for PDF generation → todate={}", todate);
@@ -12443,11 +9636,11 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_SRWA_12B: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12C":
 			try {
-				excelBytes = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SRWA_12C_reportservice.BRRS_M_SRWA_12CEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("EMAIL_M_SRWA_12C: No Excel data found for PDF generation → todate={}", todate);
@@ -12471,11 +9664,11 @@ public class RegulatoryReportServices {
 				logger.error("EMAIL_M_SRWA_12C: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12D":
 			try {
-				excelBytes = brrs_m_srwa_12d_reportservice.BRRS_M_SRWA_12DEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = brrs_m_srwa_12d_reportservice.BRRS_M_SRWA_12DEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12D: No Excel data found for PDF generation → todate={}", todate);
@@ -12499,11 +9692,11 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12D: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_SRWA_12E":
 			try {
-				excelBytes = BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVEmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_SRWA_12E: No Excel data found for PDF generation → todate={}", todate);
@@ -12527,57 +9720,44 @@ public class RegulatoryReportServices {
 				logger.error("M_SRWA_12Ad: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_IRB":
-		    try {
+			try {
 
-		    	excelBytes = brrs_m_irb_reportService.BRRS_M_IRBExcel(
-		    	        filename,
-		    	        reportId,
-		    	        fromdate,
-		    	        todate,
-		    	        currency,
-		    	        dtltype,
-		    	        "BRRS",
-		    	        null,
-		    	        null
-		    	);
-		    	
-		        if (excelBytes == null || excelBytes.length == 0) {
-		            logger.warn("M_IRB: No Excel data found for PDF generation → todate={}", todate);
-		            return new byte[0];
-		        }
+				excelBytes = brrs_m_irb_reportService.BRRS_M_IRBExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, "BRRS", null, null);
 
-		        logger.info("M_IRB: Excel generated → {} bytes", excelBytes.length);
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_IRB: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-		        List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253});
+				logger.info("M_IRB: Excel generated → {} bytes", excelBytes.length);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 
-		        if (pdfBytes == null || pdfBytes.length == 0) {
-		            logger.error("M_IRB: PDF conversion returned empty bytes");
-		            return new byte[0];
-		        }
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        logger.info("M_IRB: PDF conversion successful → {} bytes", pdfBytes.length);
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_IRB: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-		        return pdfBytes;
+				logger.info("M_IRB: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		    } catch (Exception e) {
+				return pdfBytes;
 
-		        logger.error("M_IRB: PDF generation failed", e);
+			} catch (Exception e) {
 
-		        return new byte[0];
-		    }
-		    
+				logger.error("M_IRB: PDF generation failed", e);
+
+				return new byte[0];
+			}
+
 		case "M_GALOR":
 			try {
-				excelBytes = BRRS_m_galor_ReportService.getEmail_M_GALORExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_m_galor_ReportService.getEmail_M_GALORExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("M_GALOR: No Excel data found for PDF generation → todate={}", todate);
@@ -12601,1384 +9781,1058 @@ public class RegulatoryReportServices {
 				logger.error("M_GALOR: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "M_NOSVOS":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                "BRRS",
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_NOSVOS_reportservice.getM_NOSVOSExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, "BRRS", null, null);
 
-		        if (excelBytes == null || excelBytes.length == 0) {
-		            logger.warn("M_NOSVOS: No Excel data found for PDF generation → todate={}", todate);
-		            return new byte[0];
-		        }
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("M_NOSVOS: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-		        logger.info("M_NOSVOS: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_NOSVOS: Excel generated → {} bytes", excelBytes.length);
 
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 134 },
-		                new int[] { 136, 253 }
-		        );
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 134 }, new int[] { 136, 253 });
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        if (pdfBytes == null || pdfBytes.length == 0) {
-		            logger.error("M_NOSVOS: PDF conversion returned empty bytes");
-		            return new byte[0];
-		        }
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("M_NOSVOS: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-		        logger.info("M_NOSVOS: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_NOSVOS: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_NOSVOS: PDF generation failed", e);
+				logger.error("M_NOSVOS: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_CALOC":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel(
-		                "EMAIL_M_CALOC.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                "email",
-		                null
-		        );
+				excelBytes = BRRS_M_CALOC_reportService.getBRRS_M_CALOCExcel("EMAIL_M_CALOC.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, "email", null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_CALOC: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_CALOC: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_CALOC: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_CALOC: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 });
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_CALOC: PDF conversion returned empty bytes");
+					logger.error("M_CALOC: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_CALOC: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_CALOC: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_CALOC: PDF generation failed", e);
+				logger.error("M_CALOC: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_LA2":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel(
-		                "EMAIL_M_LA2.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                "email",
-		                null
-		        );
+				excelBytes = BRRS_M_LA2_reportservice.getBRRS_M_LA2Excel("EMAIL_M_LA2.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, "email", null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_LA2: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_LA2: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LA2: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA2: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 });
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_LA2: PDF conversion returned empty bytes");
+					logger.error("M_LA2: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LA2: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_LA2: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_LA2: PDF generation failed", e);
+				logger.error("M_LA2: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_LA3":
-            try {
-                
-                    excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3EmailExcel(
-                            "EMAIL_M_LA3.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            null,   // type
-                            null    // version
-                    );
-                
+			try {
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("EMAIL_M_LA3: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+				excelBytes = BRRS_M_LA3_reportservice.BRRS_M_LA3EmailExcel("EMAIL_M_LA3.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, // type
+						null // version
+				);
 
-                logger.info("EMAIL_M_LA3: Excel generated → {} bytes", excelBytes.length);
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("EMAIL_M_LA3: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 15}, new int[]{19, 31}, new int[]{34, 42} 
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				logger.info("EMAIL_M_LA3: Excel generated → {} bytes", excelBytes.length);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("EMAIL_M_LA3: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 15 }, new int[] { 19, 31 },
+						new int[] { 34, 42 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                logger.info("EMAIL_M_LA3: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("EMAIL_M_LA3: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-            } catch (Exception e) {
-                logger.error("EMAIL_M_LA3: PDF generation failed", e);
-                return new byte[0];
-            }
-		    
+				logger.info("EMAIL_M_LA3: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("EMAIL_M_LA3: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_LA4":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel(
-		                "EMAIL_M_LA4.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_LA4: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_LA4: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LA4: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LA4: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 });
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_LA4: PDF conversion returned empty bytes");
+					logger.error("M_LA4: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LA4: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_LA4: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_LA4: PDF generation failed", e);
+				logger.error("M_LA4: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_LA5":
-            try {
-                    excelBytes = BRRS_M_LA5_reportservice.BRRS_M_LA5EmailExcel(
-                            "EMAIL_M_LA5.xlsx",
-                            reportId,
-                            fromdate,
-                            todate,
-                            currency,
-                            dtltype,
-                            
-                            null,   // type
-                            null    // version
-, null
-                    );              
+			try {
+				excelBytes = BRRS_M_LA5_reportservice.BRRS_M_LA5EmailExcel("EMAIL_M_LA5.xlsx", reportId, fromdate,
+						todate, currency, dtltype,
 
-                if (excelBytes == null || excelBytes.length == 0) {
-                    logger.warn("EMAIL_M_LA5: No Excel data found for PDF generation → todate={}", todate);
-                    return new byte[0];
-                }
+						null, // type
+						null // version
+						, null);
 
-                logger.info("EMAIL_M_LA5: Excel generated → {} bytes", excelBytes.length);
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("EMAIL_M_LA5: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
 
-                List<int[]> tableRanges = Arrays.asList(
-                        new int[]{0, 80}
-                );
-                pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				logger.info("EMAIL_M_LA5: Excel generated → {} bytes", excelBytes.length);
 
-                if (pdfBytes == null || pdfBytes.length == 0) {
-                    logger.error("EMAIL_M_LA5: PDF conversion returned empty bytes");
-                    return new byte[0];
-                }
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-                logger.info("EMAIL_M_LA5: PDF conversion successful → {} bytes", pdfBytes.length);
-                return pdfBytes;
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("EMAIL_M_LA5: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
 
-            } catch (Exception e) {
-                logger.error("EMAIL_M_LA5: PDF generation failed", e);
-                return new byte[0];
-            }
-		    
+				logger.info("EMAIL_M_LA5: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("EMAIL_M_LA5: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_SEC":
-		    try {
+			try {
 
-		        excelBytes = brrs_m_sec_reportservice.BRRS_M_SECEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_m_sec_reportservice.BRRS_M_SECEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("EMAIL_M_SEC: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("EMAIL_M_SEC: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("EMAIL_M_SEC: Excel generated → {} bytes", excelBytes.length);
+				logger.info("EMAIL_M_SEC: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 17 }, new int[] { 22, 29 }, new int[] { 32, 41 } // Adjust range if M_SEC requires a different value
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 17 }, new int[] { 22, 29 }, new int[] { 32, 41 } // Adjust
+																														// range
+																														// if
+																														// M_SEC
+																														// requires
+																														// a
+																														// different
+																														// value
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("EMAIL_M_SEC: PDF conversion returned empty bytes");
+					logger.error("EMAIL_M_SEC: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("EMAIL_M_SEC: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("EMAIL_M_SEC: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("EMAIL_M_SEC: PDF generation failed", e);
+				logger.error("EMAIL_M_SEC: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_TBS":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_TBS_ReportService.BRRS_M_TBSEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_TBS_ReportService.BRRS_M_TBSEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_TBS: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_TBS: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_TBS: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_TBS: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 } // Modify if M_TBS uses a different column range
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // Modify if M_TBS uses a different column
+																				// range
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_TBS: PDF conversion returned empty bytes");
+					logger.error("M_TBS: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_TBS: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_TBS: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_TBS: PDF generation failed", e);
+				logger.error("M_TBS: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_ATF":
-		    try {
+			try {
 
-		        excelBytes = brrs_q_atf_reportservice.BRRS_Q_ATFEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_q_atf_reportservice.BRRS_Q_ATFEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_ATF: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_ATF: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_ATF: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_ATF: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 } // Adjust range if Q_ATF requires a different value
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // Adjust range if Q_ATF requires a
+																				// different value
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_ATF: PDF conversion returned empty bytes");
+					logger.error("Q_ATF: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_ATF: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_ATF: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_ATF: PDF generation failed", e);
+				logger.error("Q_ATF: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_BRANCHNET":
-		    try {
+			try {
 
-		        excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_Q_BRANCHNET_reportservice.BRRS_Q_BRANCHNETEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_BRANCHNET: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_BRANCHNET: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_BRANCHNET: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_BRANCHNET: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 } // Adjust range if Q_BRANCHNET requires a different value
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // Adjust range if Q_BRANCHNET requires a
+																				// different value
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_BRANCHNET: PDF conversion returned empty bytes");
+					logger.error("Q_BRANCHNET: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_BRANCHNET: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_BRANCHNET: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_BRANCHNET: PDF generation failed", e);
+				logger.error("Q_BRANCHNET: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_SMME_DEP":
-		    try {
+			try {
 
-		        excelBytes = BRRS_Q_SMME_DEP_ReportService.BRRS_Q_SMME_DEPEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_Q_SMME_DEP_ReportService.BRRS_Q_SMME_DEPEmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_SMME_DEP: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_SMME_DEP: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_SMME_DEP: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_SMME_DEP: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required for this report
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required for this report
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_SMME_DEP: PDF conversion returned empty bytes");
+					logger.error("Q_SMME_DEP: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_SMME_DEP: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_SMME_DEP: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_SMME_DEP: PDF generation failed", e);
+				logger.error("Q_SMME_DEP: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_STAFF":
-		    try {
+			try {
 
-		        excelBytes = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_Q_STAFF_report_service.BRRS_Q_STAFFEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_STAFF: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_STAFF: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_STAFF: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_STAFF: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_STAFF: PDF conversion returned empty bytes");
+					logger.error("Q_STAFF: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_STAFF: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_STAFF: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_STAFF: PDF generation failed", e);
+				logger.error("Q_STAFF: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_RLFA1":
-		    try {
+			try {
 
-		        excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(
-		                "EMAIL_Q_RLFA1.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("EMAIL_Q_RLFA1.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_RLFA1: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_RLFA1: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_RLFA1: PDF conversion returned empty bytes");
+					logger.error("Q_RLFA1: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_RLFA1: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_RLFA1: PDF generation failed", e);
+				logger.error("Q_RLFA1: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_LIQ":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel(
-		                "EMAIL_M_LIQ.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                "email",
-		                null
-		        );
+				excelBytes = BRRS_M_LIQ_reportservice.getM_LIQExcel("EMAIL_M_LIQ.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, "email", null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_LIQ: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LIQ: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_LIQ: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_LIQ: PDF conversion returned empty bytes");
+					logger.error("M_LIQ: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_LIQ: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_LIQ: PDF generation failed", e);
+				logger.error("M_LIQ: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_OB":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel(
-		                "EMAIL_M_OB.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_OB_ReportService.BRRS_M_OBEmailExcel("EMAIL_M_OB.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_OB: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_OB: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_OB: PDF conversion returned empty bytes");
+					logger.error("M_OB: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_OB: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_OB: PDF generation failed", e);
+				logger.error("M_OB: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_OR1":
-		    try {
+			try {
 
-		        excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1EmailExcel(
-		                "EMAIL_M_OR1.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_m_or1_reportservice.BRRS_M_OR1EmailExcel("EMAIL_M_OR1.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_OR1: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_OR1: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OR1: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_OR1: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_OR1: PDF conversion returned empty bytes");
+					logger.error("M_OR1: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OR1: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_OR1: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_OR1: PDF generation failed", e);
+				logger.error("M_OR1: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_OR2":
-		    try {
+			try {
 
-		        excelBytes = brrs_m_or2_reportservice.BRRS_M_OR2EmailExcel(
-		                "EMAIL_M_OR2.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_m_or2_reportservice.BRRS_M_OR2EmailExcel("EMAIL_M_OR2.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_OR2: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_OR2: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OR2: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_OR2: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_OR2: PDF conversion returned empty bytes");
+					logger.error("M_OR2: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_OR2: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_OR2: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_OR2: PDF generation failed", e);
+				logger.error("M_OR2: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_RPD":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_RPD_ReportService.getExcel_Email_M_RPDExcelNormal(
-		                "EMAIL_M_RPD.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                "report", // type
-		                "email",  // format
-		                null      // version
-		        );
+				excelBytes = BRRS_M_RPD_ReportService.getExcel_Email_M_RPDExcelNormal("EMAIL_M_RPD.xlsx", reportId,
+						fromdate, todate, currency, dtltype, "report", // type
+						"email", // format
+						null // version
+				);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_RPD: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_RPD: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_RPD: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_RPD: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_RPD: PDF conversion returned empty bytes");
+					logger.error("M_RPD: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_RPD: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_RPD: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_RPD: PDF generation failed", e);
+				logger.error("M_RPD: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_SFINP2":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2EmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_SFINP2_reportservice.BRRS_M_SFINP2EmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_SFINP2: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_SFINP2: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SFINP2: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_SFINP2: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_SFINP2: PDF conversion returned empty bytes");
+					logger.error("M_SFINP2: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SFINP2: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_SFINP2: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_SFINP2: PDF generation failed", e);
+				logger.error("M_SFINP2: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_BOP":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_BOP_ReportService.BRRS_M_BOPEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_BOP_ReportService.BRRS_M_BOPEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_BOP: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_BOP: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_BOP: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_BOP: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_BOP: PDF conversion returned empty bytes");
+					logger.error("M_BOP: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_BOP: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_BOP: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_BOP: PDF generation failed", e);
+				logger.error("M_BOP: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_UNCONS_INVEST":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_UNCONS_INVEST_reportservice.BRRS_M_UNCONS_INVESTEmailExcel(filename, reportId,
+						fromdate, todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_UNCONS_INVEST: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_UNCONS_INVEST: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_UNCONS_INVEST: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_UNCONS_INVEST: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 13 }, new int[] { 17, 24 }, new int[] { 26, 27 },  new int[] { 30, 38 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 13 }, new int[] { 17, 24 }, new int[] { 26, 27 },
+						new int[] { 30, 38 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_UNCONS_INVEST: PDF conversion returned empty bytes");
+					logger.error("M_UNCONS_INVEST: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_UNCONS_INVEST: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_UNCONS_INVEST: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_UNCONS_INVEST: PDF generation failed", e);
+				logger.error("M_UNCONS_INVEST: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_MRC":
-		    try {
+			try {
 
-		        excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCEmailExcel(
-		                "EMAIL_M_MRC.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_M_MRC_reportservice.BRRS_M_MRCEmailExcel("EMAIL_M_MRC.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_MRC: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_MRC: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_MRC: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_MRC: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_MRC: PDF conversion returned empty bytes");
+					logger.error("M_MRC: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_MRC: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_MRC: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_MRC: PDF generation failed", e);
+				logger.error("M_MRC: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_RLFA2":
-		    try {
+			try {
 
-		        excelBytes = brrs_q_rlfa2_reportservice.BRRS_Q_RLFA2EmailExcel(
-		                "EMAIL_Q_RLFA2.xlsx",
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_q_rlfa2_reportservice.BRRS_Q_RLFA2EmailExcel("EMAIL_Q_RLFA2.xlsx", reportId, fromdate,
+						todate, currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_RLFA2: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_RLFA2: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_RLFA2: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_RLFA2: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_RLFA2: PDF conversion returned empty bytes");
+					logger.error("Q_RLFA2: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_RLFA2: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_RLFA2: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_RLFA2: PDF generation failed", e);
+				logger.error("Q_RLFA2: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_SCI_E":
-		    try {
+			try {
 
-		        excelBytes = brrs_m_sci_e_reportservice.BRRS_M_SCI_EEmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null
-		        );
+				excelBytes = brrs_m_sci_e_reportservice.BRRS_M_SCI_EEmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_SCI_E: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_SCI_E: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SCI_E: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_SCI_E: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_SCI_E: PDF conversion returned empty bytes");
+					logger.error("M_SCI_E: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SCI_E: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_SCI_E: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_SCI_E: PDF generation failed", e);
+				logger.error("M_SCI_E: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "M_SECL":
-		    try {
+			try {
 
-		        excelBytes = brrs_m_secl_reportservice.getM_SECLExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                "email",
-		                null
-		        );
+				excelBytes = brrs_m_secl_reportservice.getM_SECLExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, null, "email", null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("M_SECL: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("M_SECL: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SECL: Excel generated → {} bytes", excelBytes.length);
+				logger.info("M_SECL: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("M_SECL: PDF conversion returned empty bytes");
+					logger.error("M_SECL: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("M_SECL: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("M_SECL: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("M_SECL: PDF generation failed", e);
+				logger.error("M_SECL: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		case "Q_LARADV":
-		    try {
+			try {
 
-		        excelBytes = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel(
-		                filename,
-		                reportId,
-		                fromdate,
-		                todate,
-		                currency,
-		                dtltype,
-		                null,
-		                null,
-		                null
-		        );
+				excelBytes = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, null, null, null);
 
-		        // Excel validation
-		        if (excelBytes == null || excelBytes.length == 0) {
+				// Excel validation
+				if (excelBytes == null || excelBytes.length == 0) {
 
-		            logger.warn("Q_LARADV: No Excel data found for PDF generation → todate={}", todate);
+					logger.warn("Q_LARADV: No Excel data found for PDF generation → todate={}", todate);
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_LARADV: Excel generated → {} bytes", excelBytes.length);
+				logger.info("Q_LARADV: Excel generated → {} bytes", excelBytes.length);
 
-		        // PDF Conversion
-		        List<int[]> tableRanges = Arrays.asList(
-		                new int[] { 0, 135 }   // adjust range if required
-		        );
+				// PDF Conversion
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 135 } // adjust range if required
+				);
 
-		        pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(
-		                excelBytes,
-		                tableRanges,
-		                false
-		        );
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
 
-		        // PDF validation
-		        if (pdfBytes == null || pdfBytes.length == 0) {
+				// PDF validation
+				if (pdfBytes == null || pdfBytes.length == 0) {
 
-		            logger.error("Q_LARADV: PDF conversion returned empty bytes");
+					logger.error("Q_LARADV: PDF conversion returned empty bytes");
 
-		            return new byte[0];
-		        }
+					return new byte[0];
+				}
 
-		        logger.info("Q_LARADV: PDF conversion successful → {} bytes", pdfBytes.length);
+				logger.info("Q_LARADV: PDF conversion successful → {} bytes", pdfBytes.length);
 
-		        return pdfBytes;
+				return pdfBytes;
 
-		    } catch (Exception e) {
+			} catch (Exception e) {
 
-		        logger.error("Q_LARADV: PDF generation failed", e);
+				logger.error("Q_LARADV: PDF generation failed", e);
 
-		        return new byte[0];
-		    }
-		    
+				return new byte[0];
+			}
+
 		}
 
 		return pdfBytes;
