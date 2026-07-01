@@ -372,40 +372,26 @@ PURPOSE		: BRRS REPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+				if ((type === "RESUB" || type === "ARCHIVAL" )&& allowdetail === "NO") { 
+					showResultModal("Information", "Detail page is only available for highest report version only");
+										return;
+				}
 
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide'); 
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				   
-				 }
-			 }); */
-		}
+				var Callurl;
+				$('#loader').modal('show');
+				Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+					location.href = Callurl;
+				console.log(Callurl);
+				
+			}
 
-		function showsummary() {
-			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
-				location.href = Callurl;
+			function showsummary() {
+				var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
+				loader.show();
+				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+					location.href = Callurl;
 
-		}
+			}
 	</script>
 
 	<script>
@@ -709,13 +695,28 @@ PURPOSE		: BRRS REPORT
 		}
 
 		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
+				document.getElementById('resultModalLabel').innerText = title;
+				document.getElementById('resultModalBody').innerText = message;
 
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
+				const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+				modal.show();
+			}
+
+			/* this result model is only used for detail edit*/
+			function showResultModal1(title, message) {
+				document.getElementById('resultModalLabel1').innerText = title;
+				document.getElementById('resultModalBody1').innerText = message;
+
+				const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+				modal.show();
+			}
+
+			function redirectBack() {
+				if (previousUrl) {
+					window.location.href = previousUrl;
+				} else {
+					window.history.back();
+				}
 
 	</script>
 
@@ -946,18 +947,23 @@ PURPOSE		: BRRS REPORT
 
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
+		function closemodels() {
+				$("#resultModal").modal("hide");
+				$('#loader').modal('hide');
 
-			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+				// Reload the page after a short delay to ensure the modal animation completes smoothly.
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			}
 
-		}
 
 
+
+		
 		function fileuploads(btn) {
 
-		    var asondate = btn.getAttribute("data-todate");
+		    const asondate = btn.getAttribute("data-todate");
 		    const type = btn.getAttribute("data-type"); // MAIN / RESUB / ARCHIVAL
 
 		    // Mark RESUB once
@@ -978,10 +984,7 @@ PURPOSE		: BRRS REPORT
 
 		        // Step 2: Remove commas from numeric inputs
 		        $("#fileupload input[type='text']").each(function () {
-		            var val = $(this).val();
-		            if (val && val.includes(",")) {
-		                $(this).val(val.replace(/,/g, ''));
-		            }
+		            $(this).val($(this).val().replace(/,/g, ''));
 		        });
 
 		        // Step 3: Validate form
@@ -990,25 +993,27 @@ PURPOSE		: BRRS REPORT
 		            return;
 		        }
 
-		        // ✅ Step 4: SERIALIZE FORM DATA (NO MULTIPART)
-		        const formData =
-		            $('#fileupload').serialize()
-		            + '&asondate=' + encodeURIComponent(asondate)
-		            + '&type=' + encodeURIComponent(type);
+		        // Step 4: Build FormData (Same as ADISB1)
+		        const formData = new FormData();
+		        formData.append("asondate", asondate);
+		        formData.append("type", type);
+
+		        $('#fileupload').find(':input').each(function () {
+		            const name = $(this).attr('id');   // or use .attr('name') if preferred
+		            if (name) {
+		                formData.append(name, $(this).val());
+		            }
+		        });
 
 		        console.log("✅ Form data prepared");
 
-		        // Step 5: Select API dynamically (if needed)
-		        let apiUrl = './M_LIQupdateAll';
-		        if (type && type.toUpperCase() === 'RESUB') {
-		            apiUrl = './UpdateM_LIQ_ReSub';   // change if required
-		        }
-
-		        // ✅ Step 6: AJAX CALL (Normal POST – Not Multipart)
+		        // Step 5: AJAX submission
 		        $.ajax({
-		            url: apiUrl,
+		            url: './M_LIQupdateAll',
 		            type: 'POST',
 		            data: formData,
+		            processData: false,
+		            contentType: false,
 		            dataType: 'text',
 
 		            success: function (response) {
@@ -1017,7 +1022,7 @@ PURPOSE		: BRRS REPORT
 		                $("#resultModalBody").text(response || "Updated Successfully.");
 		                $("#resultModal").modal("show");
 
-		                // Redirect only after modal close (RESUB only)
+		                // Redirect only for RESUB
 		                $("#resultModal")
 		                    .off("hidden.bs.modal")
 		                    .on("hidden.bs.modal", function () {
@@ -1053,76 +1058,158 @@ PURPOSE		: BRRS REPORT
 		        $("#resultModal").modal("show");
 		    }
 		}
-
 	</script>
 
 
 	<script>
 		function openDetail(elem, mode) {
-			
-			var type = elem.getAttribute('data-type');   
 
-										        if (type === "ARCHIVAL") {
-										            showResultModal('BRRS',"Archived Data cannot be modified");
-										            return;
-										        }
-			const acctNo = elem.getAttribute("data-acctNo");
-			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-		}
+						var type = elem.getAttribute('data-type');
+
+						if (type === "ARCHIVAL") {
+							showResultModal('BRRS', "Archived Data cannot be modified");
+							return;
+						}
+
+						const acctNo = elem.getAttribute("data-acctNo");
+						const SNO = elem.getAttribute("data-SNo");
+						const asondate = elem.getAttribute("data-asondate");
+
+						location.href =
+							`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+							
+							
+					}
 	</script>
 
 	<script>
-		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+		let previousUrl = document.referrer;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+					function submitUpdate() {
+					    let formData = $('#DetailForm').serialize();
+					    let userAnswer = null;
 
-			// Show loader while processing
-			$('#loader').modal('show');
+					    if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+					        $('#confirmModal').modal('show');
+					        
+					        $('#btnConfirmYes').off('click').on('click', function() { 
+					            $('#confirmModal').modal('hide');
+					            $('#confirmModal').data('answered', 'YES');
+					            submitUpdate(); 
+					        });
+					        
+					        $('#btnConfirmNo').off('click').on('click', function() { 
+					            $('#confirmModal').modal('hide');
+					            $('#confirmModal').data('answered', 'NO');
+					            submitUpdate(); 
+					        });
+					        
+					        return; 
+					    }
 
-			$.ajax({
-				url: `/BRRS/Reports/${reportId}/update`,
-				type: 'POST',
-				data: formData,
-				success: function (response) {
-					$('#loader').modal('hide');
+					    userAnswer = $('#confirmModal').data('answered');
+					    if (userAnswer === 'NO') {
+					        formData += '&entry=NO';
+					    }
 
-					// Show message via modal
-					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
-					} else {
-						showResultModal('Information', response || 'No data updated.');
+					    $('#confirmModal').data('answered', null);
+					    
+					    $('#loader').modal('show');
+
+					    $.ajax({
+					        url: '/BRRS/Reports/' + reportId + '/update',
+					        type: 'POST',
+					        data: formData,
+
+					        success: function (response) {
+					            $('#loader').modal('hide');
+
+					            if (response && response.toLowerCase().includes('success')) {
+					                
+					                if (userAnswer === 'NO') {
+					                	let title = 'Success'; 
+					                    let message = response;
+					                    document.getElementById('resultModalLabel2').innerText = title;
+					                    document.getElementById('resultModalBody2').innerText = message;
+					                    
+					                    const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+					                    modal.show();
+					                } else {
+					                    showResultModalDU('Success', response);
+					                }
+
+					            } else {
+					                showResultModalDU('Information', response || 'No data updated.');
+					            }
+					        },
+
+					        error: function () {
+					            $('#loader').modal('hide');
+					            showResultModalDU('Error', 'Failed to update record. Please try again.');
+					        }
+					    });
+					}
+					function regenerateProcedure() {
+						let rawDate = /*[[${todate}]]*/ 'fallback-string';
+
+					    let cleanDate = rawDate.replace(/['"]/g, ''); 
+
+					    let formattedDate = cleanDate;
+					    let dateParts = cleanDate.split(/[\/\-]/);
+					    
+					    if (dateParts.length === 3) {
+					        formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+					    }
+					    let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+					    $('#loader').modal('show');
+
+					    $.ajax({
+					        url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+					        type: 'POST',
+					        data: formData,
+
+					        success: function (response) {
+					            $('#loader').modal('hide');
+					            if (response && response.toLowerCase().includes('success')) {
+					            	let title = 'Success'; 
+					                let message = response;
+					            	 document.getElementById('resultModalLabel2').innerText = title;
+					                    document.getElementById('resultModalBody2').innerText = message;
+					                    
+					                    const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+					                    modal.show();
+					            } else {
+					                showResultModalDU('Information', response || 'No data updated.');            
+					            }
+					        },
+
+					        error: function () {
+					            $('#loader').modal('hide');
+					            showResultModalDU('Error', 'Failed to process request. Please try again.');
+					        }
+					    });
 					}
 
-					// ✅ Redirect back to the previous page after short delay
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							// fallback: just go back if referrer not found
-							window.history.back();
-						}
-					}, 1500);
-				},
-				error: function (xhr, status, error) {
-					$('#loader').modal('hide');
-					console.error("Update error:", error);
+					function redirecttoarchlist(){
+						window.location.href = '/BRRS/Resubmission?rptcode='+ reportId; 
+					}
+					
+					function showResultModalDU(title, message) {
+						document.getElementById('resultModalLabel1').innerText = title;
+						document.getElementById('resultModalBody1').innerText = message;
 
-					showResultModal('Error', 'Failed to update record. Please try again.');
+						const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+						modal.show();
+					}
 
-					// ✅ On error also return to previous page after delay
-					setTimeout(() => {
+					function redirectBack() {
 						if (previousUrl) {
 							window.location.href = previousUrl;
 						} else {
 							window.history.back();
 						}
-					}, 1500);
-				}
-			});
-		}
+					}		
 
 	</script>
 
@@ -1266,6 +1353,9 @@ PURPOSE		: BRRS REPORT
 				</script>
 
 	<script th:inline="javascript">
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+				const type = /*[[${type}]]*/ '';
+	
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
@@ -2008,12 +2098,12 @@ PURPOSE		: BRRS REPORT
 
 									</table>
 								</div>
-								<div style="text-align: center; margin-top: 10px;">
+								<div style="text-align: center;  background-color: white;  padding:15px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
-								</div>
+														<button id="submitButton" type="button" class="custom-tab-btn Show_input" form="fileupload"
+														        th:attr="data-todate=${asondate}, data-type=${type}" onclick="fileuploads(this);"
+														        style="display: none;">Submit</button>
+													</div>
 							</form>
 
 
@@ -2056,17 +2146,15 @@ PURPOSE		: BRRS REPORT
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
-											<td style="min-width: 50px; text-align: center;"><a
-												data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"
-												th:if="${report.report_remarks != 'MAN'}"> <i
-													class="fas fa-edit" style="color: black; cursor: pointer;"
-													th:attr="data-acctNo=${report.acct_number},
-													data-SNo=${report.sno},
-                                    data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
-                                    data-type=${type}"
-													onclick="openDetail(this, 'edit')"></i>
-											</a></td>
+											<td>
+																														<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+																															<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
+																															            data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
+																															            data-type=${type}" onclick="openDetail(this, 'edit')">
+																															</i>
+
+																														</a>
+																													</td>
 
 
 											<td th:text="${srlno.index + 1}"></td>
@@ -2166,6 +2254,14 @@ PURPOSE		: BRRS REPORT
 										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly/>
 								</div>
 							</div>
+							<div class="col-sm-1"></div>
+
+															<div class="col-sm-3">
+																<input type="hidden" th:field="*{sno}"
+																	class="form-control form-control-sm" readonly /> <input
+																	type="hidden" th:value="${type}" name="type"
+																	class="form-control form-control-sm" readonly />
+															</div>
 							<!-- Update Button -->
 							<div style="text-align:center; margin-top:20px;">
 								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
@@ -2183,11 +2279,6 @@ PURPOSE		: BRRS REPORT
 
 		</div>
 
-
-
-
-
-
 		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 				<div class="modal-content" style="background: transparent;">
@@ -2204,7 +2295,7 @@ PURPOSE		: BRRS REPORT
 
 
 
-		<!-- Custom Alert/Result Modal (Matches your existing style) -->
+		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 		<div class="modal fade" id="resultModal">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
@@ -2217,7 +2308,26 @@ PURPOSE		: BRRS REPORT
 					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 						<p id="resultModalBody"></p>
 						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						<button type="button" class="custom-tab-btn" onclick="closemodels()"
+							data-dismiss="modal">ok</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- For Edit in Detail page -->
+		<div class="modal fade" id="resultModal1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Your custom styled header -->
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+							<!-- Title will be set by JavaScript-->
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+
+						<button type="button" class="custom-tab-btn" onclick="redirectBack()"
 							data-dismiss="modal">OK</button>
 					</div>
 				</div>
@@ -2250,6 +2360,113 @@ PURPOSE		: BRRS REPORT
 				</div>
 			</div>
 		</div>
+			<div class="modal fade" id="confirmModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="menu-title-header">
+							<div class="modal-title" id="confirmModalLabel"
+								style="text-align: center; color: white;">Confirmation</div>
+						</div>
+						<div class="modal-body"
+							style="text-align: center; font-size: 1.1rem;">
+							<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+							<div
+								style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+								<div
+									style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+									<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+										data-dismiss="modal">Modify</button>
+									<button type="button" id="btnConfirmNo" class="custom-tab-btn"
+										data-dismiss="modal" >
+										Regenerate</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<div class="modal fade" id="resultModal2" tabindex="-1">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="menu-title-header">
+							<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;"></div>
+						</div>
+						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+							<p id="resultModalBody2"></p>
+							<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+<!--
+
+		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+		 Custom Alert/Result Modal (Matches your existing style) 
+		<div class="modal fade" id="resultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					 Your custom styled header 
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+							 Title will be set by JavaScript 
+						</div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody"></p>
+						 Your custom styled button 
+						<button type="button" class="custom-tab-btn" onclick="closemodel()"
+							data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		 Custom Cellresult Modal 
+		<div class="modal fade" id="cellresultModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+
+					 Custom header 
+					<div class="menu-title-header"
+						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+							Do you want to open the report?
+						</div>
+					</div>
+
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+							Cancel
+						</button>
+						<button type="button" class="custom-tab-btn yes-btn"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+							Yes
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>-->
 
 </body>
 

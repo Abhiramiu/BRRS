@@ -1320,34 +1320,85 @@ public class BRRS_ReportsController {
 			System.out.println("Controller finished processing request for report code: " + reportCode);
 		}
 	}
-
+	
 	@Autowired
-	BRRS_M_LIQ_ReportService brrs_m_liq_reportservice;
+BRRS_M_LIQ_ReportService brrs_m_liq_reportservice;
 
-	@RequestMapping(value = "/M_LIQupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+@PostMapping("/M_LIQupdateAll")
+public ResponseEntity<String> updateReport1(
+    @RequestParam("asondate")
+    @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+    @RequestParam("type") String type,
+    HttpServletRequest request) {
 
-			@ModelAttribute M_LIQ_Manual_Summary_Entity request2
+try {
 
-	) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 3 entities
+    System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
 
-			request2.setReport_date(asondate);
+    boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-			// call services
-			/* brrs_m_liq_reportservice.updateReport(request1); */
-			brrs_m_liq_reportservice.updateReport1(request2);
+    Object entityInstance = isResub
+            ? new BRRS_M_LIQ_ReportService.M_LIQ_Archival_Manual_Summary_Entity()
+            : new BRRS_M_LIQ_ReportService.M_LIQ_Manual_Summary_Entity();
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+    ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+
+    binder.bind(request);
+
+    // Set Report Date
+    Method setDateMethod = entityInstance.getClass()
+            .getMethod("setReport_date", Date.class);
+
+    setDateMethod.invoke(entityInstance, asondate);
+
+    System.out.println("Entity Created : "
+            + entityInstance.getClass().getSimpleName());
+
+    brrs_m_liq_reportservice.updateReport(entityInstance, type);
+
+    return ResponseEntity.ok("Modified Successfully.");
+
+} catch (Exception e) {
+
+    e.printStackTrace();
+
+    Throwable root = e;
+    while (root.getCause() != null) {
+        root = root.getCause();
+    }
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Update Failed : " + root.getMessage());
+}
+}
+
+//	@Autowired
+//	BRRS_M_LIQ_ReportService brrs_m_liq_reportservice;
+//
+//	@RequestMapping(value = "/M_LIQupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateAllReports(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//
+//			@ModelAttribute M_LIQ_Manual_Summary_Entity request2
+//
+//	) {
+//		try {
+//			System.out.println("Came to single controller");
+//			// set date into all 3 entities
+//
+//			request2.setReport_date(asondate);
+//
+//			// call services
+//			/* brrs_m_liq_reportservice.updateReport(request1); */
+//			brrs_m_liq_reportservice.updateReport1(request2);
+//
+//			return ResponseEntity.ok("Modified Successfully.");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+//		}
+//	}
 
 	@Autowired
 	private BRRS_M_CA5_ReportService CA5reportService;

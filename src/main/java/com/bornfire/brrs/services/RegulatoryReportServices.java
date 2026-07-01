@@ -6540,8 +6540,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LIQ":
-				modelAndView = BRRS_M_LIQ_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_LIQ_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_LCR":
@@ -6887,6 +6887,10 @@ public class RegulatoryReportServices {
 			case "M_CA2":
 			response = BRRS_M_CA2_reportservice.callregenprocedure(request);
 			break;
+			
+			case "M_LIQ":
+				response = BRRS_M_LIQ_reportservice.callregenprocedure(request);
+				break;
 			
 			default:
 				logger.warn("Unsupported report ID: {}", reportId);
@@ -7963,6 +7967,16 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for ADISB2: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for ADISB2: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "M_LIQ":
+			try {
+				List<Object[]> resubList = BRRS_M_LIQ_reportservice.getM_LIQResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for LIQ: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for LIQ: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
