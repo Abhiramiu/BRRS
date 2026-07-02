@@ -3227,7 +3227,7 @@ try {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_RLFA2_Summary_Entity request) {
+			@ModelAttribute BRRS_Q_RLFA2_ReportService.Q_RLFA2_Summary_Entity request) {
 		try {
 			System.out.println("came to single controller");
 
@@ -3250,7 +3250,7 @@ try {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute Q_RLFA2_RESUB_Summary_Entity request,
+			@ModelAttribute BRRS_Q_RLFA2_ReportService.Q_RLFA2_RESUB_Summary_Entity request,
 
 			HttpServletRequest req) {
 

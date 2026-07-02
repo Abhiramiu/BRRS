@@ -3166,17 +3166,74 @@ private void Run_LIQ_Procudure(String reportDateStr, String type, String entry) 
 					int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
 					String finalsql = "INSERT INTO BRRS_M_LIQ_ARCHIVALTABLE_SUMMARY ("
-							+ "R12_TOTAL,"
-							+ "R13_TOTAL,"
-							+ "R15_TOTAL,"
-							+ "R17_TOTAL,"
-							+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
-							+ ") " + "SELECT "+ "R12_TOTAL,"
-							+ "R13_TOTAL,"
-							+ "R15_TOTAL,"
-							+ "R17_TOTAL,"
-							+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
-							+ "FROM BRRS_M_LIQ_SUMMARYTABLE WHERE REPORT_DATE = ?";
+					        + "R10_PRODUCT, R10_TOTAL, "
+					        + "R11_PRODUCT, R11_TOTAL, "
+					        + "R12_PRODUCT, R12_TOTAL, "
+					        + "R13_PRODUCT, R13_TOTAL, "
+					        + "R14_PRODUCT, R14_TOTAL, "
+					        + "R15_PRODUCT, R15_TOTAL, "
+//					        + "R16_PRODUCT, R16_TOTAL, "
+					        + "R17_PRODUCT, R17_TOTAL, "
+					        + "R18_PRODUCT, R18_TOTAL, "
+//					        + "R19_PRODUCT, R19_TOTAL, "
+//					        + "R20_PRODUCT, R20_TOTAL, "
+					        + "R21_PRODUCT, R21_TOTAL, "
+//					        + "R22_PRODUCT, R22_TOTAL, "
+//					        + "R23_PRODUCT, R23_TOTAL, "
+					        + "R24_PRODUCT, R24_TOTAL, "
+					        + "R25_PRODUCT, R25_TOTAL, "
+//					        + "R26_PRODUCT, R26_TOTAL, "
+					        + "R27_PRODUCT, R27_TOTAL, "
+					        + "R30_PRODUCT, R30_TOTAL, "
+					        + "R31_PRODUCT, R31_TOTAL, "
+					        + "R32_PRODUCT, R32_TOTAL, "
+					        + "R34_PRODUCT, R34_TOTAL, "
+					        + "R35_PRODUCT, R35_TOTAL, "
+					        + "REPORT_DATE, "
+					        + "REPORT_VERSION, "
+					        + "REPORT_FREQUENCY, "
+					        + "REPORT_CODE, "
+					        + "REPORT_DESC, "
+					        + "ENTITY_FLG, "
+					        + "MODIFY_FLG, "
+					        + "DEL_FLG, "
+					        + "REPORT_RESUBDATE"
+					        + ") "
+					        + "SELECT "
+					        + "R10_PRODUCT, R10_TOTAL, "
+					        + "R11_PRODUCT, R11_TOTAL, "
+					        + "R12_PRODUCT, R12_TOTAL, "
+					        + "R13_PRODUCT, R13_TOTAL, "
+					        + "R14_PRODUCT, R14_TOTAL, "
+					        + "R15_PRODUCT, R15_TOTAL, "
+//					        + "R16_PRODUCT, R16_TOTAL, "
+					        + "R17_PRODUCT, R17_TOTAL, "
+					        + "R18_PRODUCT, R18_TOTAL, "
+//					        + "R19_PRODUCT, R19_TOTAL, "
+//					        + "R20_PRODUCT, R20_TOTAL, "
+					        + "R21_PRODUCT, R21_TOTAL, "
+//					        + "R22_PRODUCT, R22_TOTAL, "
+//					        + "R23_PRODUCT, R23_TOTAL, "
+					        + "R24_PRODUCT, R24_TOTAL, "
+					        + "R25_PRODUCT, R25_TOTAL, "
+//					        + "R26_PRODUCT, R26_TOTAL, "
+					        + "R27_PRODUCT, R27_TOTAL, "
+					        + "R30_PRODUCT, R30_TOTAL, "
+					        + "R31_PRODUCT, R31_TOTAL, "
+					        + "R32_PRODUCT, R32_TOTAL, "
+					        + "R34_PRODUCT, R34_TOTAL, "
+					        + "R35_PRODUCT, R35_TOTAL, "
+					        + "REPORT_DATE, "
+					        + "?, "
+					        + "REPORT_FREQUENCY, "
+					        + "REPORT_CODE, "
+					        + "REPORT_DESC, "
+					        + "ENTITY_FLG, "
+					        + "MODIFY_FLG, "
+					        + "DEL_FLG, "
+					        + "SYSDATE "
+					        + "FROM BRRS_M_LIQ_SUMMARYTABLE "
+					        + "WHERE REPORT_DATE = ?";
 
 					int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
 					System.out.println("Successfully transferred system summary " + rowsInsertedSum + " rows.");
@@ -3195,23 +3252,38 @@ private void Run_LIQ_Procudure(String reportDateStr, String type, String entry) 
 						// Fetch from PREVIOUS VERSION of the ARCHIVAL table itself to capture the
 						// updates made screen-side
 						String manualFinalSql = "INSERT INTO BRRS_M_LIQ_MANUAL_ARCHIVALTABLE_SUMMARY ("
-								+ "R16_TOTAL,"
-								+ "R19_TOTAL,"
-								+ "R20_TOTAL,"
-								+ "R22_TOTAL, "
-								+ "R23_TOTAL,"
-								+ "R26_TOTAL, "
-								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
-								+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
-								+ ") " + "SELECT " 	+ "R16_TOTAL,"
-								+ "R19_TOTAL,"
-								+ "R20_TOTAL,"
-								+ "R22_TOTAL, "
-								+ "R23_TOTAL,"
-								+ "R26_TOTAL, " + "REPORT_DATE, ?, REPORT_FREQUENCY, "
-								+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
-								+ "FROM BRRS_M_LIQ_MANUAL_ARCHIVALTABLE_SUMMARY "
-								+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+						        + "R16_PRODUCT, "
+						        + "R16_TOTAL, "
+						        + "R19_PRODUCT, "
+						        + "R19_TOTAL, "
+						        + "R20_PRODUCT, "
+						        + "R20_TOTAL, "
+						        + "R22_PRODUCT, "
+						        + "R22_TOTAL, "
+						        + "R23_PRODUCT, "
+						        + "R23_TOTAL, "
+						        + "R26_PRODUCT, "
+						        + "R26_TOTAL, "
+						        + "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+						        + "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+						        + ") "
+						        + "SELECT "
+						        + "R16_PRODUCT, "
+						        + "R16_TOTAL, "
+						        + "R19_PRODUCT, "
+						        + "R19_TOTAL, "
+						        + "R20_PRODUCT, "
+						        + "R20_TOTAL, "
+						        + "R22_PRODUCT, "
+						        + "R22_TOTAL, "
+						        + "R23_PRODUCT, "
+						        + "R23_TOTAL, "
+						        + "R26_PRODUCT, "
+						        + "R26_TOTAL, "
+						        + "REPORT_DATE, ?, REPORT_FREQUENCY, "
+						        + "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+						        + "FROM BRRS_M_LIQ_MANUAL_ARCHIVALTABLE_SUMMARY "
+						        + "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
 						manualRowsInserted = jdbcTemplate.update(manualFinalSql, manualVersion, formattedDate,
 								maxManualVersion);
@@ -3308,10 +3380,17 @@ public List<Object[]> getM_LIQResub() {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_LIQARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
-		}
+		
+		// ARCHIVAL check
+				if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+						&& version.compareTo(BigDecimal.ZERO) >= 0) {
+					logger.info("Service: Generating ARCHIVAL report for version {}", version);
+					return getExcelM_LIQARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,version);
+				}
+//		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+//			logger.info("Service: Generating ARCHIVAL report for version {}", version);
+//			return getExcelM_LIQARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
+//		}
 
 		// Fetch data
 
@@ -3739,7 +3818,7 @@ public List<Object[]> getM_LIQResub() {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 
@@ -4171,12 +4250,18 @@ public byte[] getM_LIQDetailExcel(String filename, String fromdate, String todat
 		try {
 			logger.info("Generating Excel for M_LIQ Details...");
 			System.out.println("came to Detail download service");
-
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getM_LIQDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
-						version);
+			
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
+				byte[] ARCHIVALreport = getM_LIQDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
+						type, version);
 				return ARCHIVALreport;
 			}
+
+//			if (type.equals("ARCHIVAL") & version != null) {
+//				byte[] ARCHIVALreport = getM_LIQDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
+//						version);
+//				return ARCHIVALreport;
+//			}
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("M_LIQDetails");
@@ -4305,7 +4390,7 @@ public byte[] getM_LIQDetailExcel(String filename, String fromdate, String todat
 		try {
 			logger.info("Generating Excel for M_LIQ ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
