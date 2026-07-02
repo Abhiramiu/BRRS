@@ -5,17 +5,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -43,11 +52,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -57,19 +68,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
-import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LA1_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LA1_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_LA1_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA1_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_LA1_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_LA1_Detail_Entity;
-import com.bornfire.brrs.entities.M_LA1_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
-@Service
 
+
+@Service
+@Transactional
 public class BRRS_M_LA1_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LA1_ReportService.class);
 
@@ -78,95 +82,5681 @@ public class BRRS_M_LA1_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_LA1_Summary_Repo BRRS_M_LA1_Summary_Repo;
+	private JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	BRRS_M_LA1_Detail_Repo M_LA1_Detail_Repo;
+	// ENTITY MANAGER (Acts like Repository)
+	@PersistenceContext
+	private EntityManager entityManager;
 
-	@Autowired
-	BRRS_M_LA1_Archival_Detail_Repo M_LA1_Archival_Detail_Repo;
+	// Fetch data by report date
+	public List<M_LA1_Summary_Entity> getDataByDate(Date reportDate) {
 
-	@Autowired
-	BRRS_M_LA1_Archival_Summary_Repo M_LA1_Archival_Summary_Repo;
-	
-	@Autowired
-	UserProfileRep userProfileRep;
+		String sql = "SELECT * FROM BRRS_M_LA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-	
-	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_LA1RowMapper());
+	}
 
-	public ModelAndView getM_LA1View(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+	// GET REPORT_DATE + REPORT_VERSION
 
-		ModelAndView mv = new ModelAndView();
+	public List<Object[]> getM_LA1Archival1() {
 
-		String userid = (String) req1.getSession().getAttribute("USERID");
-		System.out.println("User Id Maker and Checker: " + userid);
-		String role = userProfileRep.getUserRole(userid);
-		md.addAttribute("role", role);
-		System.out.println("Role: " + role);
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY "
+				+ "ORDER BY REPORT_VERSION";
 
-		
-		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_LA1_Archival_Summary_Entity> T1Master = new ArrayList<M_LA1_Archival_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+	// GET ARCHIVAL FULL DATA BY DATE + VERSION
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = M_LA1_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+	public List<M_LA1_Archival_Summary_Entity> getdatabydateListarchival(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
+		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
 
-		} else {
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new M_LA1ArchivalRowMapper());
+	}
+	// GET ALL WITH VERSION
 
-			List<M_LA1_Summary_Entity> T1Master = new ArrayList<M_LA1_Summary_Entity>();
-			try {
-				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+	public List<M_LA1_Archival_Summary_Entity> getdatabydateListWithVersion() {
 
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_VERSION ASC";
 
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			mv.addObject("reportsummary", T1Master);
-		}
+		return jdbcTemplate.query(sql, new M_LA1ArchivalRowMapper());
+	}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
+	// GET MAX VERSION BY DATE
 
-		mv.setViewName("BRRS/M_LA1");
+	public BigDecimal findMaxVersion(Date REPORT_DATE) {
 
-		// mv.addObject("reportmaster", T1Master);
-		mv.addObject("displaymode", "summary");
-		// mv.addObject("reportsflag", "reportsflag");
-		// mv.addObject("menu", reportId);
-		System.out.println("scv" + mv.getViewName());
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
 
-		return mv;
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_DATE }, BigDecimal.class);
+	}
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
 
 	}
 
+	// 1. BY DATE + LABEL + CRITERIA
+
+	public List<M_LA1_Detail_Entity> findByDetailReportDateAndLabelAndCriteria(Date reportDate, String reportLabel,
+			String reportAddlCriteria1) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? AND REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportLabel, reportAddlCriteria1 },
+				new M_LA1DetaillRowMapper());
+	}
+
+	// 2. GET ALL (BY DATE - simple)
+
+	public List<M_LA1_Detail_Entity> getDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new M_LA1DetaillRowMapper());
+	}
+
+	// 3. PAGINATION
+
+	public List<M_LA1_Detail_Entity> getDetaildatabydateList(Date reportdate, int offset, int limit) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE "
+				+ "WHERE REPORT_DATE = ? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, offset, limit }, new M_LA1DetaillRowMapper());
+	}
+
+	// 4. COUNT
+
+	public int getDetaildatacount(Date reportdate) {
+
+		String sql = "SELECT COUNT(*) FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { reportdate }, Integer.class);
+	}
+
+	// 5. BY LABEL + CRITERIA
+
+	public List<M_LA1_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+			Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new M_LA1DetaillRowMapper());
+	}
+	// 6. BY ACCOUNT NUMBER
+
+	public M_LA1_Detail_Entity findByAcctnumber(String acctNumber) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE WHERE ACCT_NUMBER = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { acctNumber }, new M_LA1DetaillRowMapper());
+	}
+
+	// 1. GET BY DATE + VERSION
+
+	public List<M_LA1_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
+			String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
+				new M_LA1ArchivalDetaillRowMapper());
+	}
+
+	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
+	public List<M_LA1_Detail_Entity> GetDetailDataByRowIdAndColumnId(String reportLabel, String reportAddlCriteria1,
+			String reportAddlCriteria2, String reportAddlCriteria3, Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE "
+				+ "WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_ADDL_CRITERIA_2 = ? AND REPORT_ADDL_CRITERIA_3 = ? AND REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql,
+				new Object[] { reportLabel, reportAddlCriteria1, reportAddlCriteria2, reportAddlCriteria3, reportdate },
+				new M_LA1DetaillRowMapper());
+	}
+	
+	
+	public List<M_LA1_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String report_label,
+			String report_addl_criteria_1, String report_addl_criteria_2, String report_addl_criteria_3,
+			Date reportdate, String dataEntryVersion) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_ADDL_CRITERIA_2= ? "
+				+ "AND REPORT_ADDL_CRITERIA_3 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+
+		return jdbcTemplate
+				.query(sql,
+						new Object[] { report_label, report_addl_criteria_1, report_addl_criteria_2,
+								report_addl_criteria_3, reportdate, dataEntryVersion },
+						new M_LA1ArchivalDetaillRowMapper());
+	}
+
+	
+	public M_LA1_Detail_Entity findBySno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_LA1DetaillRowMapper());
+	}
+
+	public M_LA1_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_LA1DetaillRowMapper());
+	}
+
+	// ROW MAPPER
+
+	class M_LA1RowMapper implements RowMapper<M_LA1_Summary_Entity> {
+
+		@Override
+		public M_LA1_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			M_LA1_Summary_Entity obj = new M_LA1_Summary_Entity();
+
+			obj.setR11_product(rs.getString("r11_product"));
+			obj.setR11_approved_limit(rs.getBigDecimal("r11_approved_limit"));
+			obj.setR11_balance_outstanding(rs.getBigDecimal("r11_balance_outstanding"));
+			obj.setR11_no_of_acct(rs.getBigDecimal("r11_no_of_acct"));
+
+			obj.setR12_product(rs.getString("r12_product"));
+			obj.setR12_approved_limit(rs.getBigDecimal("r12_approved_limit"));
+			obj.setR12_balance_outstanding(rs.getBigDecimal("r12_balance_outstanding"));
+			obj.setR12_no_of_acct(rs.getBigDecimal("r12_no_of_acct"));
+
+			obj.setR13_product(rs.getString("r13_product"));
+			obj.setR13_approved_limit(rs.getBigDecimal("r13_approved_limit"));
+			obj.setR13_balance_outstanding(rs.getBigDecimal("r13_balance_outstanding"));
+			obj.setR13_no_of_acct(rs.getBigDecimal("r13_no_of_acct"));
+
+			obj.setR14_product(rs.getString("r14_product"));
+			obj.setR14_approved_limit(rs.getBigDecimal("r14_approved_limit"));
+			obj.setR14_balance_outstanding(rs.getBigDecimal("r14_balance_outstanding"));
+			obj.setR14_no_of_acct(rs.getBigDecimal("r14_no_of_acct"));
+
+			obj.setR15_product(rs.getString("r15_product"));
+			obj.setR15_approved_limit(rs.getBigDecimal("r15_approved_limit"));
+			obj.setR15_balance_outstanding(rs.getBigDecimal("r15_balance_outstanding"));
+			obj.setR15_no_of_acct(rs.getBigDecimal("r15_no_of_acct"));
+
+			obj.setR16_product(rs.getString("r16_product"));
+			obj.setR16_approved_limit(rs.getBigDecimal("r16_approved_limit"));
+			obj.setR16_balance_outstanding(rs.getBigDecimal("r16_balance_outstanding"));
+			obj.setR16_no_of_acct(rs.getBigDecimal("r16_no_of_acct"));
+
+			obj.setR17_product(rs.getString("r17_product"));
+			obj.setR17_approved_limit(rs.getBigDecimal("r17_approved_limit"));
+			obj.setR17_balance_outstanding(rs.getBigDecimal("r17_balance_outstanding"));
+			obj.setR17_no_of_acct(rs.getBigDecimal("r17_no_of_acct"));
+
+			obj.setR18_product(rs.getString("r18_product"));
+			obj.setR18_approved_limit(rs.getBigDecimal("r18_approved_limit"));
+			obj.setR18_balance_outstanding(rs.getBigDecimal("r18_balance_outstanding"));
+			obj.setR18_no_of_acct(rs.getBigDecimal("r18_no_of_acct"));
+
+			obj.setR19_product(rs.getString("r19_product"));
+			obj.setR19_approved_limit(rs.getBigDecimal("r19_approved_limit"));
+			obj.setR19_balance_outstanding(rs.getBigDecimal("r19_balance_outstanding"));
+			obj.setR19_no_of_acct(rs.getBigDecimal("r19_no_of_acct"));
+
+			obj.setR20_product(rs.getString("r20_product"));
+			obj.setR20_approved_limit(rs.getBigDecimal("r20_approved_limit"));
+			obj.setR20_balance_outstanding(rs.getBigDecimal("r20_balance_outstanding"));
+			obj.setR20_no_of_acct(rs.getBigDecimal("r20_no_of_acct"));
+
+			obj.setR21_product(rs.getString("r21_product"));
+			obj.setR21_approved_limit(rs.getBigDecimal("r21_approved_limit"));
+			obj.setR21_balance_outstanding(rs.getBigDecimal("r21_balance_outstanding"));
+			obj.setR21_no_of_acct(rs.getBigDecimal("r21_no_of_acct"));
+
+			obj.setR22_product(rs.getString("r22_product"));
+			obj.setR22_approved_limit(rs.getBigDecimal("r22_approved_limit"));
+			obj.setR22_balance_outstanding(rs.getBigDecimal("r22_balance_outstanding"));
+			obj.setR22_no_of_acct(rs.getBigDecimal("r22_no_of_acct"));
+
+			obj.setR23_product(rs.getString("r23_product"));
+			obj.setR23_approved_limit(rs.getBigDecimal("r23_approved_limit"));
+			obj.setR23_balance_outstanding(rs.getBigDecimal("r23_balance_outstanding"));
+			obj.setR23_no_of_acct(rs.getBigDecimal("r23_no_of_acct"));
+
+			obj.setR24_product(rs.getString("r24_product"));
+			obj.setR24_approved_limit(rs.getBigDecimal("r24_approved_limit"));
+			obj.setR24_balance_outstanding(rs.getBigDecimal("r24_balance_outstanding"));
+			obj.setR24_no_of_acct(rs.getBigDecimal("r24_no_of_acct"));
+
+			obj.setR25_product(rs.getString("r25_product"));
+			obj.setR25_approved_limit(rs.getBigDecimal("r25_approved_limit"));
+			obj.setR25_balance_outstanding(rs.getBigDecimal("r25_balance_outstanding"));
+			obj.setR25_no_of_acct(rs.getBigDecimal("r25_no_of_acct"));
+
+			obj.setR26_product(rs.getString("r26_product"));
+			obj.setR26_approved_limit(rs.getBigDecimal("r26_approved_limit"));
+			obj.setR26_balance_outstanding(rs.getBigDecimal("r26_balance_outstanding"));
+			obj.setR26_no_of_acct(rs.getBigDecimal("r26_no_of_acct"));
+
+			obj.setR27_product(rs.getString("r27_product"));
+			obj.setR27_approved_limit(rs.getBigDecimal("r27_approved_limit"));
+			obj.setR27_balance_outstanding(rs.getBigDecimal("r27_balance_outstanding"));
+			obj.setR27_no_of_acct(rs.getBigDecimal("r27_no_of_acct"));
+
+			obj.setR28_product(rs.getString("r28_product"));
+			obj.setR28_approved_limit(rs.getBigDecimal("r28_approved_limit"));
+			obj.setR28_balance_outstanding(rs.getBigDecimal("r28_balance_outstanding"));
+			obj.setR28_no_of_acct(rs.getBigDecimal("r28_no_of_acct"));
+
+			obj.setR29_product(rs.getString("r29_product"));
+			obj.setR29_approved_limit(rs.getBigDecimal("r29_approved_limit"));
+			obj.setR29_balance_outstanding(rs.getBigDecimal("r29_balance_outstanding"));
+			obj.setR29_no_of_acct(rs.getBigDecimal("r29_no_of_acct"));
+
+			obj.setR30_product(rs.getString("r30_product"));
+			obj.setR30_approved_limit(rs.getBigDecimal("r30_approved_limit"));
+			obj.setR30_balance_outstanding(rs.getBigDecimal("r30_balance_outstanding"));
+			obj.setR30_no_of_acct(rs.getBigDecimal("r30_no_of_acct"));
+
+			obj.setR31_product(rs.getString("r31_product"));
+			obj.setR31_approved_limit(rs.getBigDecimal("r31_approved_limit"));
+			obj.setR31_balance_outstanding(rs.getBigDecimal("r31_balance_outstanding"));
+			obj.setR31_no_of_acct(rs.getBigDecimal("r31_no_of_acct"));
+
+			obj.setR32_product(rs.getString("r32_product"));
+			obj.setR32_approved_limit(rs.getBigDecimal("r32_approved_limit"));
+			obj.setR32_balance_outstanding(rs.getBigDecimal("r32_balance_outstanding"));
+			obj.setR32_no_of_acct(rs.getBigDecimal("r32_no_of_acct"));
+
+			obj.setR33_product(rs.getString("r33_product"));
+			obj.setR33_approved_limit(rs.getBigDecimal("r33_approved_limit"));
+			obj.setR33_balance_outstanding(rs.getBigDecimal("r33_balance_outstanding"));
+			obj.setR33_no_of_acct(rs.getBigDecimal("r33_no_of_acct"));
+
+			obj.setR34_product(rs.getString("r34_product"));
+			obj.setR34_approved_limit(rs.getBigDecimal("r34_approved_limit"));
+			obj.setR34_balance_outstanding(rs.getBigDecimal("r34_balance_outstanding"));
+			obj.setR34_no_of_acct(rs.getBigDecimal("r34_no_of_acct"));
+
+			obj.setR35_product(rs.getString("r35_product"));
+			obj.setR35_approved_limit(rs.getBigDecimal("r35_approved_limit"));
+			obj.setR35_balance_outstanding(rs.getBigDecimal("r35_balance_outstanding"));
+			obj.setR35_no_of_acct(rs.getBigDecimal("r35_no_of_acct"));
+
+			obj.setR36_product(rs.getString("r36_product"));
+			obj.setR36_approved_limit(rs.getBigDecimal("r36_approved_limit"));
+			obj.setR36_balance_outstanding(rs.getBigDecimal("r36_balance_outstanding"));
+			obj.setR36_no_of_acct(rs.getBigDecimal("r36_no_of_acct"));
+
+			obj.setR37_product(rs.getString("r37_product"));
+			obj.setR37_approved_limit(rs.getBigDecimal("r37_approved_limit"));
+			obj.setR37_balance_outstanding(rs.getBigDecimal("r37_balance_outstanding"));
+			obj.setR37_no_of_acct(rs.getBigDecimal("r37_no_of_acct"));
+
+			obj.setR38_product(rs.getString("r38_product"));
+			obj.setR38_approved_limit(rs.getBigDecimal("r38_approved_limit"));
+			obj.setR38_balance_outstanding(rs.getBigDecimal("r38_balance_outstanding"));
+			obj.setR38_no_of_acct(rs.getBigDecimal("r38_no_of_acct"));
+
+			obj.setR39_product(rs.getString("r39_product"));
+			obj.setR39_approved_limit(rs.getBigDecimal("r39_approved_limit"));
+			obj.setR39_balance_outstanding(rs.getBigDecimal("r39_balance_outstanding"));
+			obj.setR39_no_of_acct(rs.getBigDecimal("r39_no_of_acct"));
+
+			obj.setR40_product(rs.getString("r40_product"));
+			obj.setR40_approved_limit(rs.getBigDecimal("r40_approved_limit"));
+			obj.setR40_balance_outstanding(rs.getBigDecimal("r40_balance_outstanding"));
+			obj.setR40_no_of_acct(rs.getBigDecimal("r40_no_of_acct"));
+
+			obj.setR41_product(rs.getString("r41_product"));
+			obj.setR41_approved_limit(rs.getBigDecimal("r41_approved_limit"));
+			obj.setR41_balance_outstanding(rs.getBigDecimal("r41_balance_outstanding"));
+			obj.setR41_no_of_acct(rs.getBigDecimal("r41_no_of_acct"));
+
+			obj.setR42_product(rs.getString("r42_product"));
+			obj.setR42_approved_limit(rs.getBigDecimal("r42_approved_limit"));
+			obj.setR42_balance_outstanding(rs.getBigDecimal("r42_balance_outstanding"));
+			obj.setR42_no_of_acct(rs.getBigDecimal("r42_no_of_acct"));
+
+			obj.setR43_product(rs.getString("r43_product"));
+			obj.setR43_approved_limit(rs.getBigDecimal("r43_approved_limit"));
+			obj.setR43_balance_outstanding(rs.getBigDecimal("r43_balance_outstanding"));
+			obj.setR43_no_of_acct(rs.getBigDecimal("r43_no_of_acct"));
+
+			obj.setR44_product(rs.getString("r44_product"));
+			obj.setR44_approved_limit(rs.getBigDecimal("r44_approved_limit"));
+			obj.setR44_balance_outstanding(rs.getBigDecimal("r44_balance_outstanding"));
+			obj.setR44_no_of_acct(rs.getBigDecimal("r44_no_of_acct"));
+
+			obj.setR45_product(rs.getString("r45_product"));
+			obj.setR45_approved_limit(rs.getBigDecimal("r45_approved_limit"));
+			obj.setR45_balance_outstanding(rs.getBigDecimal("r45_balance_outstanding"));
+			obj.setR45_no_of_acct(rs.getBigDecimal("r45_no_of_acct"));
+
+			obj.setR46_product(rs.getString("r46_product"));
+			obj.setR46_approved_limit(rs.getBigDecimal("r46_approved_limit"));
+			obj.setR46_balance_outstanding(rs.getBigDecimal("r46_balance_outstanding"));
+			obj.setR46_no_of_acct(rs.getBigDecimal("r46_no_of_acct"));
+
+			obj.setR47_product(rs.getString("r47_product"));
+			obj.setR47_approved_limit(rs.getBigDecimal("r47_approved_limit"));
+			obj.setR47_balance_outstanding(rs.getBigDecimal("r47_balance_outstanding"));
+			obj.setR47_no_of_acct(rs.getBigDecimal("r47_no_of_acct"));
+
+			obj.setR48_product(rs.getString("r48_product"));
+			obj.setR48_approved_limit(rs.getBigDecimal("r48_approved_limit"));
+			obj.setR48_balance_outstanding(rs.getBigDecimal("r48_balance_outstanding"));
+			obj.setR48_no_of_acct(rs.getBigDecimal("r48_no_of_acct"));
+
+			obj.setR49_product(rs.getString("r49_product"));
+			obj.setR49_approved_limit(rs.getBigDecimal("r49_approved_limit"));
+			obj.setR49_balance_outstanding(rs.getBigDecimal("r49_balance_outstanding"));
+			obj.setR49_no_of_acct(rs.getBigDecimal("r49_no_of_acct"));
+
+			obj.setR50_product(rs.getString("r50_product"));
+			obj.setR50_approved_limit(rs.getBigDecimal("r50_approved_limit"));
+			obj.setR50_balance_outstanding(rs.getBigDecimal("r50_balance_outstanding"));
+			obj.setR50_no_of_acct(rs.getBigDecimal("r50_no_of_acct"));
+
+			obj.setR51_product(rs.getString("r51_product"));
+			obj.setR51_approved_limit(rs.getBigDecimal("r51_approved_limit"));
+			obj.setR51_balance_outstanding(rs.getBigDecimal("r51_balance_outstanding"));
+			obj.setR51_no_of_acct(rs.getBigDecimal("r51_no_of_acct"));
+
+			obj.setR52_product(rs.getString("r52_product"));
+			obj.setR52_approved_limit(rs.getBigDecimal("r52_approved_limit"));
+			obj.setR52_balance_outstanding(rs.getBigDecimal("r52_balance_outstanding"));
+			obj.setR52_no_of_acct(rs.getBigDecimal("r52_no_of_acct"));
+
+			obj.setR53_product(rs.getString("r53_product"));
+			obj.setR53_approved_limit(rs.getBigDecimal("r53_approved_limit"));
+			obj.setR53_balance_outstanding(rs.getBigDecimal("r53_balance_outstanding"));
+			obj.setR53_no_of_acct(rs.getBigDecimal("r53_no_of_acct"));
+
+			obj.setR54_product(rs.getString("r54_product"));
+			obj.setR54_approved_limit(rs.getBigDecimal("r54_approved_limit"));
+			obj.setR54_balance_outstanding(rs.getBigDecimal("r54_balance_outstanding"));
+			obj.setR54_no_of_acct(rs.getBigDecimal("r54_no_of_acct"));
+
+			obj.setR55_product(rs.getString("r55_product"));
+			obj.setR55_approved_limit(rs.getBigDecimal("r55_approved_limit"));
+			obj.setR55_balance_outstanding(rs.getBigDecimal("r55_balance_outstanding"));
+			obj.setR55_no_of_acct(rs.getBigDecimal("r55_no_of_acct"));
+
+			obj.setR56_product(rs.getString("r56_product"));
+			obj.setR56_approved_limit(rs.getBigDecimal("r56_approved_limit"));
+			obj.setR56_balance_outstanding(rs.getBigDecimal("r56_balance_outstanding"));
+			obj.setR56_no_of_acct(rs.getBigDecimal("r56_no_of_acct"));
+
+			obj.setR57_product(rs.getString("r57_product"));
+			obj.setR57_approved_limit(rs.getBigDecimal("r57_approved_limit"));
+			obj.setR57_balance_outstanding(rs.getBigDecimal("r57_balance_outstanding"));
+			obj.setR57_no_of_acct(rs.getBigDecimal("r57_no_of_acct"));
+
+			obj.setR58_product(rs.getString("r58_product"));
+			obj.setR58_approved_limit(rs.getBigDecimal("r58_approved_limit"));
+			obj.setR58_balance_outstanding(rs.getBigDecimal("r58_balance_outstanding"));
+			obj.setR58_no_of_acct(rs.getBigDecimal("r58_no_of_acct"));
+
+			obj.setR59_product(rs.getString("r59_product"));
+			obj.setR59_approved_limit(rs.getBigDecimal("r59_approved_limit"));
+			obj.setR59_balance_outstanding(rs.getBigDecimal("r59_balance_outstanding"));
+			obj.setR59_no_of_acct(rs.getBigDecimal("r59_no_of_acct"));
+
+			obj.setR60_product(rs.getString("r60_product"));
+			obj.setR60_approved_limit(rs.getBigDecimal("r60_approved_limit"));
+			obj.setR60_balance_outstanding(rs.getBigDecimal("r60_balance_outstanding"));
+			obj.setR60_no_of_acct(rs.getBigDecimal("r60_no_of_acct"));
+
+			obj.setR61_product(rs.getString("r61_product"));
+			obj.setR61_approved_limit(rs.getBigDecimal("r61_approved_limit"));
+			obj.setR61_balance_outstanding(rs.getBigDecimal("r61_balance_outstanding"));
+			obj.setR61_no_of_acct(rs.getBigDecimal("r61_no_of_acct"));
+
+			obj.setR62_product(rs.getString("r62_product"));
+			obj.setR62_approved_limit(rs.getBigDecimal("r62_approved_limit"));
+			obj.setR62_balance_outstanding(rs.getBigDecimal("r62_balance_outstanding"));
+			obj.setR62_no_of_acct(rs.getBigDecimal("r62_no_of_acct"));
+
+			obj.setR63_product(rs.getString("r63_product"));
+			obj.setR63_approved_limit(rs.getBigDecimal("r63_approved_limit"));
+			obj.setR63_balance_outstanding(rs.getBigDecimal("r63_balance_outstanding"));
+			obj.setR63_no_of_acct(rs.getBigDecimal("r63_no_of_acct"));
+
+			obj.setR64_product(rs.getString("r64_product"));
+			obj.setR64_approved_limit(rs.getBigDecimal("r64_approved_limit"));
+			obj.setR64_balance_outstanding(rs.getBigDecimal("r64_balance_outstanding"));
+			obj.setR64_no_of_acct(rs.getBigDecimal("r64_no_of_acct"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	public static class M_LA1_Summary_Entity {
+
+		private String r11_product;
+		private BigDecimal r11_approved_limit;
+		private BigDecimal r11_balance_outstanding;
+		private BigDecimal r11_no_of_acct;
+
+		private String r12_product;
+		private BigDecimal r12_approved_limit;
+		private BigDecimal r12_balance_outstanding;
+		private BigDecimal r12_no_of_acct;
+
+		private String r13_product;
+		private BigDecimal r13_approved_limit;
+		private BigDecimal r13_balance_outstanding;
+		private BigDecimal r13_no_of_acct;
+
+		private String r14_product;
+		private BigDecimal r14_approved_limit;
+		private BigDecimal r14_balance_outstanding;
+		private BigDecimal r14_no_of_acct;
+
+		private String r15_product;
+		private BigDecimal r15_approved_limit;
+		private BigDecimal r15_balance_outstanding;
+		private BigDecimal r15_no_of_acct;
+
+		private String r16_product;
+		private BigDecimal r16_approved_limit;
+		private BigDecimal r16_balance_outstanding;
+		private BigDecimal r16_no_of_acct;
+
+		private String r17_product;
+		private BigDecimal r17_approved_limit;
+		private BigDecimal r17_balance_outstanding;
+		private BigDecimal r17_no_of_acct;
+
+		private String r18_product;
+		private BigDecimal r18_approved_limit;
+		private BigDecimal r18_balance_outstanding;
+		private BigDecimal r18_no_of_acct;
+
+		private String r19_product;
+		private BigDecimal r19_approved_limit;
+		private BigDecimal r19_balance_outstanding;
+		private BigDecimal r19_no_of_acct;
+
+		private String r20_product;
+		private BigDecimal r20_approved_limit;
+		private BigDecimal r20_balance_outstanding;
+		private BigDecimal r20_no_of_acct;
+
+		private String r21_product;
+		private BigDecimal r21_approved_limit;
+		private BigDecimal r21_balance_outstanding;
+		private BigDecimal r21_no_of_acct;
+
+		private String r22_product;
+		private BigDecimal r22_approved_limit;
+		private BigDecimal r22_balance_outstanding;
+		private BigDecimal r22_no_of_acct;
+
+		private String r23_product;
+		private BigDecimal r23_approved_limit;
+		private BigDecimal r23_balance_outstanding;
+		private BigDecimal r23_no_of_acct;
+
+		private String r24_product;
+		private BigDecimal r24_approved_limit;
+		private BigDecimal r24_balance_outstanding;
+		private BigDecimal r24_no_of_acct;
+
+		private String r25_product;
+		private BigDecimal r25_approved_limit;
+		private BigDecimal r25_balance_outstanding;
+		private BigDecimal r25_no_of_acct;
+
+		private String r26_product;
+		private BigDecimal r26_approved_limit;
+		private BigDecimal r26_balance_outstanding;
+		private BigDecimal r26_no_of_acct;
+
+		private String r27_product;
+		private BigDecimal r27_approved_limit;
+		private BigDecimal r27_balance_outstanding;
+		private BigDecimal r27_no_of_acct;
+
+		private String r28_product;
+		private BigDecimal r28_approved_limit;
+		private BigDecimal r28_balance_outstanding;
+		private BigDecimal r28_no_of_acct;
+
+		private String r29_product;
+		private BigDecimal r29_approved_limit;
+		private BigDecimal r29_balance_outstanding;
+		private BigDecimal r29_no_of_acct;
+
+		private String r30_product;
+		private BigDecimal r30_approved_limit;
+		private BigDecimal r30_balance_outstanding;
+		private BigDecimal r30_no_of_acct;
+
+		private String r31_product;
+		private BigDecimal r31_approved_limit;
+		private BigDecimal r31_balance_outstanding;
+		private BigDecimal r31_no_of_acct;
+
+		private String r32_product;
+		private BigDecimal r32_approved_limit;
+		private BigDecimal r32_balance_outstanding;
+		private BigDecimal r32_no_of_acct;
+
+		private String r33_product;
+		private BigDecimal r33_approved_limit;
+		private BigDecimal r33_balance_outstanding;
+		private BigDecimal r33_no_of_acct;
+
+		private String r34_product;
+		private BigDecimal r34_approved_limit;
+		private BigDecimal r34_balance_outstanding;
+		private BigDecimal r34_no_of_acct;
+
+		private String r35_product;
+		private BigDecimal r35_approved_limit;
+		private BigDecimal r35_balance_outstanding;
+		private BigDecimal r35_no_of_acct;
+
+		private String r36_product;
+		private BigDecimal r36_approved_limit;
+		private BigDecimal r36_balance_outstanding;
+		private BigDecimal r36_no_of_acct;
+
+		private String r37_product;
+		private BigDecimal r37_approved_limit;
+		private BigDecimal r37_balance_outstanding;
+		private BigDecimal r37_no_of_acct;
+
+		private String r38_product;
+		private BigDecimal r38_approved_limit;
+		private BigDecimal r38_balance_outstanding;
+		private BigDecimal r38_no_of_acct;
+
+		private String r39_product;
+		private BigDecimal r39_approved_limit;
+		private BigDecimal r39_balance_outstanding;
+		private BigDecimal r39_no_of_acct;
+
+		private String r40_product;
+		private BigDecimal r40_approved_limit;
+		private BigDecimal r40_balance_outstanding;
+		private BigDecimal r40_no_of_acct;
+
+		private String r41_product;
+		private BigDecimal r41_approved_limit;
+		private BigDecimal r41_balance_outstanding;
+		private BigDecimal r41_no_of_acct;
+
+		private String r42_product;
+		private BigDecimal r42_approved_limit;
+		private BigDecimal r42_balance_outstanding;
+		private BigDecimal r42_no_of_acct;
+
+		private String r43_product;
+		private BigDecimal r43_approved_limit;
+		private BigDecimal r43_balance_outstanding;
+		private BigDecimal r43_no_of_acct;
+
+		private String r44_product;
+		private BigDecimal r44_approved_limit;
+		private BigDecimal r44_balance_outstanding;
+		private BigDecimal r44_no_of_acct;
+
+		private String r45_product;
+		private BigDecimal r45_approved_limit;
+		private BigDecimal r45_balance_outstanding;
+		private BigDecimal r45_no_of_acct;
+
+		private String r46_product;
+		private BigDecimal r46_approved_limit;
+		private BigDecimal r46_balance_outstanding;
+		private BigDecimal r46_no_of_acct;
+
+		private String r47_product;
+		private BigDecimal r47_approved_limit;
+		private BigDecimal r47_balance_outstanding;
+		private BigDecimal r47_no_of_acct;
+
+		private String r48_product;
+		private BigDecimal r48_approved_limit;
+		private BigDecimal r48_balance_outstanding;
+		private BigDecimal r48_no_of_acct;
+
+		private String r49_product;
+		private BigDecimal r49_approved_limit;
+		private BigDecimal r49_balance_outstanding;
+		private BigDecimal r49_no_of_acct;
+
+		private String r50_product;
+		private BigDecimal r50_approved_limit;
+		private BigDecimal r50_balance_outstanding;
+		private BigDecimal r50_no_of_acct;
+
+		private String r51_product;
+		private BigDecimal r51_approved_limit;
+		private BigDecimal r51_balance_outstanding;
+		private BigDecimal r51_no_of_acct;
+
+		private String r52_product;
+		private BigDecimal r52_approved_limit;
+		private BigDecimal r52_balance_outstanding;
+		private BigDecimal r52_no_of_acct;
+
+		private String r53_product;
+		private BigDecimal r53_approved_limit;
+		private BigDecimal r53_balance_outstanding;
+		private BigDecimal r53_no_of_acct;
+
+		private String r54_product;
+		private BigDecimal r54_approved_limit;
+		private BigDecimal r54_balance_outstanding;
+		private BigDecimal r54_no_of_acct;
+
+		private String r55_product;
+		private BigDecimal r55_approved_limit;
+		private BigDecimal r55_balance_outstanding;
+		private BigDecimal r55_no_of_acct;
+
+		private String r56_product;
+		private BigDecimal r56_approved_limit;
+		private BigDecimal r56_balance_outstanding;
+		private BigDecimal r56_no_of_acct;
+
+		private String r57_product;
+		private BigDecimal r57_approved_limit;
+		private BigDecimal r57_balance_outstanding;
+		private BigDecimal r57_no_of_acct;
+
+		private String r58_product;
+		private BigDecimal r58_approved_limit;
+		private BigDecimal r58_balance_outstanding;
+		private BigDecimal r58_no_of_acct;
+
+		private String r59_product;
+		private BigDecimal r59_approved_limit;
+		private BigDecimal r59_balance_outstanding;
+		private BigDecimal r59_no_of_acct;
+
+		private String r60_product;
+		private BigDecimal r60_approved_limit;
+		private BigDecimal r60_balance_outstanding;
+		private BigDecimal r60_no_of_acct;
+
+		private String r61_product;
+		private BigDecimal r61_approved_limit;
+		private BigDecimal r61_balance_outstanding;
+		private BigDecimal r61_no_of_acct;
+
+		private String r62_product;
+		private BigDecimal r62_approved_limit;
+		private BigDecimal r62_balance_outstanding;
+		private BigDecimal r62_no_of_acct;
+
+		private String r63_product;
+		private BigDecimal r63_approved_limit;
+		private BigDecimal r63_balance_outstanding;
+		private BigDecimal r63_no_of_acct;
+
+		private String r64_product;
+		private BigDecimal r64_approved_limit;
+		private BigDecimal r64_balance_outstanding;
+		private BigDecimal r64_no_of_acct;
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public String getR11_product() {
+			return r11_product;
+		}
+
+		public void setR11_product(String r11_product) {
+			this.r11_product = r11_product;
+		}
+
+		public BigDecimal getR11_approved_limit() {
+			return r11_approved_limit;
+		}
+
+		public void setR11_approved_limit(BigDecimal r11_approved_limit) {
+			this.r11_approved_limit = r11_approved_limit;
+		}
+
+		public BigDecimal getR11_balance_outstanding() {
+			return r11_balance_outstanding;
+		}
+
+		public void setR11_balance_outstanding(BigDecimal r11_balance_outstanding) {
+			this.r11_balance_outstanding = r11_balance_outstanding;
+		}
+
+		public BigDecimal getR11_no_of_acct() {
+			return r11_no_of_acct;
+		}
+
+		public void setR11_no_of_acct(BigDecimal r11_no_of_acct) {
+			this.r11_no_of_acct = r11_no_of_acct;
+		}
+
+		public String getR12_product() {
+			return r12_product;
+		}
+
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
+		}
+
+		public BigDecimal getR12_approved_limit() {
+			return r12_approved_limit;
+		}
+
+		public void setR12_approved_limit(BigDecimal r12_approved_limit) {
+			this.r12_approved_limit = r12_approved_limit;
+		}
+
+		public BigDecimal getR12_balance_outstanding() {
+			return r12_balance_outstanding;
+		}
+
+		public void setR12_balance_outstanding(BigDecimal r12_balance_outstanding) {
+			this.r12_balance_outstanding = r12_balance_outstanding;
+		}
+
+		public BigDecimal getR12_no_of_acct() {
+			return r12_no_of_acct;
+		}
+
+		public void setR12_no_of_acct(BigDecimal r12_no_of_acct) {
+			this.r12_no_of_acct = r12_no_of_acct;
+		}
+
+		public String getR13_product() {
+			return r13_product;
+		}
+
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
+		}
+
+		public BigDecimal getR13_approved_limit() {
+			return r13_approved_limit;
+		}
+
+		public void setR13_approved_limit(BigDecimal r13_approved_limit) {
+			this.r13_approved_limit = r13_approved_limit;
+		}
+
+		public BigDecimal getR13_balance_outstanding() {
+			return r13_balance_outstanding;
+		}
+
+		public void setR13_balance_outstanding(BigDecimal r13_balance_outstanding) {
+			this.r13_balance_outstanding = r13_balance_outstanding;
+		}
+
+		public BigDecimal getR13_no_of_acct() {
+			return r13_no_of_acct;
+		}
+
+		public void setR13_no_of_acct(BigDecimal r13_no_of_acct) {
+			this.r13_no_of_acct = r13_no_of_acct;
+		}
+
+		public String getR14_product() {
+			return r14_product;
+		}
+
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
+		}
+
+		public BigDecimal getR14_approved_limit() {
+			return r14_approved_limit;
+		}
+
+		public void setR14_approved_limit(BigDecimal r14_approved_limit) {
+			this.r14_approved_limit = r14_approved_limit;
+		}
+
+		public BigDecimal getR14_balance_outstanding() {
+			return r14_balance_outstanding;
+		}
+
+		public void setR14_balance_outstanding(BigDecimal r14_balance_outstanding) {
+			this.r14_balance_outstanding = r14_balance_outstanding;
+		}
+
+		public BigDecimal getR14_no_of_acct() {
+			return r14_no_of_acct;
+		}
+
+		public void setR14_no_of_acct(BigDecimal r14_no_of_acct) {
+			this.r14_no_of_acct = r14_no_of_acct;
+		}
+
+		public String getR15_product() {
+			return r15_product;
+		}
+
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
+		}
+
+		public BigDecimal getR15_approved_limit() {
+			return r15_approved_limit;
+		}
+
+		public void setR15_approved_limit(BigDecimal r15_approved_limit) {
+			this.r15_approved_limit = r15_approved_limit;
+		}
+
+		public BigDecimal getR15_balance_outstanding() {
+			return r15_balance_outstanding;
+		}
+
+		public void setR15_balance_outstanding(BigDecimal r15_balance_outstanding) {
+			this.r15_balance_outstanding = r15_balance_outstanding;
+		}
+
+		public BigDecimal getR15_no_of_acct() {
+			return r15_no_of_acct;
+		}
+
+		public void setR15_no_of_acct(BigDecimal r15_no_of_acct) {
+			this.r15_no_of_acct = r15_no_of_acct;
+		}
+
+		public String getR16_product() {
+			return r16_product;
+		}
+
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
+		}
+
+		public BigDecimal getR16_approved_limit() {
+			return r16_approved_limit;
+		}
+
+		public void setR16_approved_limit(BigDecimal r16_approved_limit) {
+			this.r16_approved_limit = r16_approved_limit;
+		}
+
+		public BigDecimal getR16_balance_outstanding() {
+			return r16_balance_outstanding;
+		}
+
+		public void setR16_balance_outstanding(BigDecimal r16_balance_outstanding) {
+			this.r16_balance_outstanding = r16_balance_outstanding;
+		}
+
+		public BigDecimal getR16_no_of_acct() {
+			return r16_no_of_acct;
+		}
+
+		public void setR16_no_of_acct(BigDecimal r16_no_of_acct) {
+			this.r16_no_of_acct = r16_no_of_acct;
+		}
+
+		public String getR17_product() {
+			return r17_product;
+		}
+
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
+		}
+
+		public BigDecimal getR17_approved_limit() {
+			return r17_approved_limit;
+		}
+
+		public void setR17_approved_limit(BigDecimal r17_approved_limit) {
+			this.r17_approved_limit = r17_approved_limit;
+		}
+
+		public BigDecimal getR17_balance_outstanding() {
+			return r17_balance_outstanding;
+		}
+
+		public void setR17_balance_outstanding(BigDecimal r17_balance_outstanding) {
+			this.r17_balance_outstanding = r17_balance_outstanding;
+		}
+
+		public BigDecimal getR17_no_of_acct() {
+			return r17_no_of_acct;
+		}
+
+		public void setR17_no_of_acct(BigDecimal r17_no_of_acct) {
+			this.r17_no_of_acct = r17_no_of_acct;
+		}
+
+		public String getR18_product() {
+			return r18_product;
+		}
+
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+
+		public BigDecimal getR18_approved_limit() {
+			return r18_approved_limit;
+		}
+
+		public void setR18_approved_limit(BigDecimal r18_approved_limit) {
+			this.r18_approved_limit = r18_approved_limit;
+		}
+
+		public BigDecimal getR18_balance_outstanding() {
+			return r18_balance_outstanding;
+		}
+
+		public void setR18_balance_outstanding(BigDecimal r18_balance_outstanding) {
+			this.r18_balance_outstanding = r18_balance_outstanding;
+		}
+
+		public BigDecimal getR18_no_of_acct() {
+			return r18_no_of_acct;
+		}
+
+		public void setR18_no_of_acct(BigDecimal r18_no_of_acct) {
+			this.r18_no_of_acct = r18_no_of_acct;
+		}
+
+		public String getR19_product() {
+			return r19_product;
+		}
+
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+
+		public BigDecimal getR19_approved_limit() {
+			return r19_approved_limit;
+		}
+
+		public void setR19_approved_limit(BigDecimal r19_approved_limit) {
+			this.r19_approved_limit = r19_approved_limit;
+		}
+
+		public BigDecimal getR19_balance_outstanding() {
+			return r19_balance_outstanding;
+		}
+
+		public void setR19_balance_outstanding(BigDecimal r19_balance_outstanding) {
+			this.r19_balance_outstanding = r19_balance_outstanding;
+		}
+
+		public BigDecimal getR19_no_of_acct() {
+			return r19_no_of_acct;
+		}
+
+		public void setR19_no_of_acct(BigDecimal r19_no_of_acct) {
+			this.r19_no_of_acct = r19_no_of_acct;
+		}
+
+		public String getR20_product() {
+			return r20_product;
+		}
+
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+
+		public BigDecimal getR20_approved_limit() {
+			return r20_approved_limit;
+		}
+
+		public void setR20_approved_limit(BigDecimal r20_approved_limit) {
+			this.r20_approved_limit = r20_approved_limit;
+		}
+
+		public BigDecimal getR20_balance_outstanding() {
+			return r20_balance_outstanding;
+		}
+
+		public void setR20_balance_outstanding(BigDecimal r20_balance_outstanding) {
+			this.r20_balance_outstanding = r20_balance_outstanding;
+		}
+
+		public BigDecimal getR20_no_of_acct() {
+			return r20_no_of_acct;
+		}
+
+		public void setR20_no_of_acct(BigDecimal r20_no_of_acct) {
+			this.r20_no_of_acct = r20_no_of_acct;
+		}
+
+		public String getR21_product() {
+			return r21_product;
+		}
+
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+
+		public BigDecimal getR21_approved_limit() {
+			return r21_approved_limit;
+		}
+
+		public void setR21_approved_limit(BigDecimal r21_approved_limit) {
+			this.r21_approved_limit = r21_approved_limit;
+		}
+
+		public BigDecimal getR21_balance_outstanding() {
+			return r21_balance_outstanding;
+		}
+
+		public void setR21_balance_outstanding(BigDecimal r21_balance_outstanding) {
+			this.r21_balance_outstanding = r21_balance_outstanding;
+		}
+
+		public BigDecimal getR21_no_of_acct() {
+			return r21_no_of_acct;
+		}
+
+		public void setR21_no_of_acct(BigDecimal r21_no_of_acct) {
+			this.r21_no_of_acct = r21_no_of_acct;
+		}
+
+		public String getR22_product() {
+			return r22_product;
+		}
+
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+
+		public BigDecimal getR22_approved_limit() {
+			return r22_approved_limit;
+		}
+
+		public void setR22_approved_limit(BigDecimal r22_approved_limit) {
+			this.r22_approved_limit = r22_approved_limit;
+		}
+
+		public BigDecimal getR22_balance_outstanding() {
+			return r22_balance_outstanding;
+		}
+
+		public void setR22_balance_outstanding(BigDecimal r22_balance_outstanding) {
+			this.r22_balance_outstanding = r22_balance_outstanding;
+		}
+
+		public BigDecimal getR22_no_of_acct() {
+			return r22_no_of_acct;
+		}
+
+		public void setR22_no_of_acct(BigDecimal r22_no_of_acct) {
+			this.r22_no_of_acct = r22_no_of_acct;
+		}
+
+		public String getR23_product() {
+			return r23_product;
+		}
+
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+
+		public BigDecimal getR23_approved_limit() {
+			return r23_approved_limit;
+		}
+
+		public void setR23_approved_limit(BigDecimal r23_approved_limit) {
+			this.r23_approved_limit = r23_approved_limit;
+		}
+
+		public BigDecimal getR23_balance_outstanding() {
+			return r23_balance_outstanding;
+		}
+
+		public void setR23_balance_outstanding(BigDecimal r23_balance_outstanding) {
+			this.r23_balance_outstanding = r23_balance_outstanding;
+		}
+
+		public BigDecimal getR23_no_of_acct() {
+			return r23_no_of_acct;
+		}
+
+		public void setR23_no_of_acct(BigDecimal r23_no_of_acct) {
+			this.r23_no_of_acct = r23_no_of_acct;
+		}
+
+		public String getR24_product() {
+			return r24_product;
+		}
+
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+
+		public BigDecimal getR24_approved_limit() {
+			return r24_approved_limit;
+		}
+
+		public void setR24_approved_limit(BigDecimal r24_approved_limit) {
+			this.r24_approved_limit = r24_approved_limit;
+		}
+
+		public BigDecimal getR24_balance_outstanding() {
+			return r24_balance_outstanding;
+		}
+
+		public void setR24_balance_outstanding(BigDecimal r24_balance_outstanding) {
+			this.r24_balance_outstanding = r24_balance_outstanding;
+		}
+
+		public BigDecimal getR24_no_of_acct() {
+			return r24_no_of_acct;
+		}
+
+		public void setR24_no_of_acct(BigDecimal r24_no_of_acct) {
+			this.r24_no_of_acct = r24_no_of_acct;
+		}
+
+		public String getR25_product() {
+			return r25_product;
+		}
+
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+
+		public BigDecimal getR25_approved_limit() {
+			return r25_approved_limit;
+		}
+
+		public void setR25_approved_limit(BigDecimal r25_approved_limit) {
+			this.r25_approved_limit = r25_approved_limit;
+		}
+
+		public BigDecimal getR25_balance_outstanding() {
+			return r25_balance_outstanding;
+		}
+
+		public void setR25_balance_outstanding(BigDecimal r25_balance_outstanding) {
+			this.r25_balance_outstanding = r25_balance_outstanding;
+		}
+
+		public BigDecimal getR25_no_of_acct() {
+			return r25_no_of_acct;
+		}
+
+		public void setR25_no_of_acct(BigDecimal r25_no_of_acct) {
+			this.r25_no_of_acct = r25_no_of_acct;
+		}
+
+		public String getR26_product() {
+			return r26_product;
+		}
+
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+
+		public BigDecimal getR26_approved_limit() {
+			return r26_approved_limit;
+		}
+
+		public void setR26_approved_limit(BigDecimal r26_approved_limit) {
+			this.r26_approved_limit = r26_approved_limit;
+		}
+
+		public BigDecimal getR26_balance_outstanding() {
+			return r26_balance_outstanding;
+		}
+
+		public void setR26_balance_outstanding(BigDecimal r26_balance_outstanding) {
+			this.r26_balance_outstanding = r26_balance_outstanding;
+		}
+
+		public BigDecimal getR26_no_of_acct() {
+			return r26_no_of_acct;
+		}
+
+		public void setR26_no_of_acct(BigDecimal r26_no_of_acct) {
+			this.r26_no_of_acct = r26_no_of_acct;
+		}
+
+		public String getR27_product() {
+			return r27_product;
+		}
+
+		public void setR27_product(String r27_product) {
+			this.r27_product = r27_product;
+		}
+
+		public BigDecimal getR27_approved_limit() {
+			return r27_approved_limit;
+		}
+
+		public void setR27_approved_limit(BigDecimal r27_approved_limit) {
+			this.r27_approved_limit = r27_approved_limit;
+		}
+
+		public BigDecimal getR27_balance_outstanding() {
+			return r27_balance_outstanding;
+		}
+
+		public void setR27_balance_outstanding(BigDecimal r27_balance_outstanding) {
+			this.r27_balance_outstanding = r27_balance_outstanding;
+		}
+
+		public BigDecimal getR27_no_of_acct() {
+			return r27_no_of_acct;
+		}
+
+		public void setR27_no_of_acct(BigDecimal r27_no_of_acct) {
+			this.r27_no_of_acct = r27_no_of_acct;
+		}
+
+		public String getR28_product() {
+			return r28_product;
+		}
+
+		public void setR28_product(String r28_product) {
+			this.r28_product = r28_product;
+		}
+
+		public BigDecimal getR28_approved_limit() {
+			return r28_approved_limit;
+		}
+
+		public void setR28_approved_limit(BigDecimal r28_approved_limit) {
+			this.r28_approved_limit = r28_approved_limit;
+		}
+
+		public BigDecimal getR28_balance_outstanding() {
+			return r28_balance_outstanding;
+		}
+
+		public void setR28_balance_outstanding(BigDecimal r28_balance_outstanding) {
+			this.r28_balance_outstanding = r28_balance_outstanding;
+		}
+
+		public BigDecimal getR28_no_of_acct() {
+			return r28_no_of_acct;
+		}
+
+		public void setR28_no_of_acct(BigDecimal r28_no_of_acct) {
+			this.r28_no_of_acct = r28_no_of_acct;
+		}
+
+		public String getR29_product() {
+			return r29_product;
+		}
+
+		public void setR29_product(String r29_product) {
+			this.r29_product = r29_product;
+		}
+
+		public BigDecimal getR29_approved_limit() {
+			return r29_approved_limit;
+		}
+
+		public void setR29_approved_limit(BigDecimal r29_approved_limit) {
+			this.r29_approved_limit = r29_approved_limit;
+		}
+
+		public BigDecimal getR29_balance_outstanding() {
+			return r29_balance_outstanding;
+		}
+
+		public void setR29_balance_outstanding(BigDecimal r29_balance_outstanding) {
+			this.r29_balance_outstanding = r29_balance_outstanding;
+		}
+
+		public BigDecimal getR29_no_of_acct() {
+			return r29_no_of_acct;
+		}
+
+		public void setR29_no_of_acct(BigDecimal r29_no_of_acct) {
+			this.r29_no_of_acct = r29_no_of_acct;
+		}
+
+		public String getR30_product() {
+			return r30_product;
+		}
+
+		public void setR30_product(String r30_product) {
+			this.r30_product = r30_product;
+		}
+
+		public BigDecimal getR30_approved_limit() {
+			return r30_approved_limit;
+		}
+
+		public void setR30_approved_limit(BigDecimal r30_approved_limit) {
+			this.r30_approved_limit = r30_approved_limit;
+		}
+
+		public BigDecimal getR30_balance_outstanding() {
+			return r30_balance_outstanding;
+		}
+
+		public void setR30_balance_outstanding(BigDecimal r30_balance_outstanding) {
+			this.r30_balance_outstanding = r30_balance_outstanding;
+		}
+
+		public BigDecimal getR30_no_of_acct() {
+			return r30_no_of_acct;
+		}
+
+		public void setR30_no_of_acct(BigDecimal r30_no_of_acct) {
+			this.r30_no_of_acct = r30_no_of_acct;
+		}
+
+		public String getR31_product() {
+			return r31_product;
+		}
+
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+
+		public BigDecimal getR31_approved_limit() {
+			return r31_approved_limit;
+		}
+
+		public void setR31_approved_limit(BigDecimal r31_approved_limit) {
+			this.r31_approved_limit = r31_approved_limit;
+		}
+
+		public BigDecimal getR31_balance_outstanding() {
+			return r31_balance_outstanding;
+		}
+
+		public void setR31_balance_outstanding(BigDecimal r31_balance_outstanding) {
+			this.r31_balance_outstanding = r31_balance_outstanding;
+		}
+
+		public BigDecimal getR31_no_of_acct() {
+			return r31_no_of_acct;
+		}
+
+		public void setR31_no_of_acct(BigDecimal r31_no_of_acct) {
+			this.r31_no_of_acct = r31_no_of_acct;
+		}
+
+		public String getR32_product() {
+			return r32_product;
+		}
+
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+
+		public BigDecimal getR32_approved_limit() {
+			return r32_approved_limit;
+		}
+
+		public void setR32_approved_limit(BigDecimal r32_approved_limit) {
+			this.r32_approved_limit = r32_approved_limit;
+		}
+
+		public BigDecimal getR32_balance_outstanding() {
+			return r32_balance_outstanding;
+		}
+
+		public void setR32_balance_outstanding(BigDecimal r32_balance_outstanding) {
+			this.r32_balance_outstanding = r32_balance_outstanding;
+		}
+
+		public BigDecimal getR32_no_of_acct() {
+			return r32_no_of_acct;
+		}
+
+		public void setR32_no_of_acct(BigDecimal r32_no_of_acct) {
+			this.r32_no_of_acct = r32_no_of_acct;
+		}
+
+		public String getR33_product() {
+			return r33_product;
+		}
+
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+
+		public BigDecimal getR33_approved_limit() {
+			return r33_approved_limit;
+		}
+
+		public void setR33_approved_limit(BigDecimal r33_approved_limit) {
+			this.r33_approved_limit = r33_approved_limit;
+		}
+
+		public BigDecimal getR33_balance_outstanding() {
+			return r33_balance_outstanding;
+		}
+
+		public void setR33_balance_outstanding(BigDecimal r33_balance_outstanding) {
+			this.r33_balance_outstanding = r33_balance_outstanding;
+		}
+
+		public BigDecimal getR33_no_of_acct() {
+			return r33_no_of_acct;
+		}
+
+		public void setR33_no_of_acct(BigDecimal r33_no_of_acct) {
+			this.r33_no_of_acct = r33_no_of_acct;
+		}
+
+		public String getR34_product() {
+			return r34_product;
+		}
+
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+
+		public BigDecimal getR34_approved_limit() {
+			return r34_approved_limit;
+		}
+
+		public void setR34_approved_limit(BigDecimal r34_approved_limit) {
+			this.r34_approved_limit = r34_approved_limit;
+		}
+
+		public BigDecimal getR34_balance_outstanding() {
+			return r34_balance_outstanding;
+		}
+
+		public void setR34_balance_outstanding(BigDecimal r34_balance_outstanding) {
+			this.r34_balance_outstanding = r34_balance_outstanding;
+		}
+
+		public BigDecimal getR34_no_of_acct() {
+			return r34_no_of_acct;
+		}
+
+		public void setR34_no_of_acct(BigDecimal r34_no_of_acct) {
+			this.r34_no_of_acct = r34_no_of_acct;
+		}
+
+		public String getR35_product() {
+			return r35_product;
+		}
+
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+
+		public BigDecimal getR35_approved_limit() {
+			return r35_approved_limit;
+		}
+
+		public void setR35_approved_limit(BigDecimal r35_approved_limit) {
+			this.r35_approved_limit = r35_approved_limit;
+		}
+
+		public BigDecimal getR35_balance_outstanding() {
+			return r35_balance_outstanding;
+		}
+
+		public void setR35_balance_outstanding(BigDecimal r35_balance_outstanding) {
+			this.r35_balance_outstanding = r35_balance_outstanding;
+		}
+
+		public BigDecimal getR35_no_of_acct() {
+			return r35_no_of_acct;
+		}
+
+		public void setR35_no_of_acct(BigDecimal r35_no_of_acct) {
+			this.r35_no_of_acct = r35_no_of_acct;
+		}
+
+		public String getR36_product() {
+			return r36_product;
+		}
+
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+
+		public BigDecimal getR36_approved_limit() {
+			return r36_approved_limit;
+		}
+
+		public void setR36_approved_limit(BigDecimal r36_approved_limit) {
+			this.r36_approved_limit = r36_approved_limit;
+		}
+
+		public BigDecimal getR36_balance_outstanding() {
+			return r36_balance_outstanding;
+		}
+
+		public void setR36_balance_outstanding(BigDecimal r36_balance_outstanding) {
+			this.r36_balance_outstanding = r36_balance_outstanding;
+		}
+
+		public BigDecimal getR36_no_of_acct() {
+			return r36_no_of_acct;
+		}
+
+		public void setR36_no_of_acct(BigDecimal r36_no_of_acct) {
+			this.r36_no_of_acct = r36_no_of_acct;
+		}
+
+		public String getR37_product() {
+			return r37_product;
+		}
+
+		public void setR37_product(String r37_product) {
+			this.r37_product = r37_product;
+		}
+
+		public BigDecimal getR37_approved_limit() {
+			return r37_approved_limit;
+		}
+
+		public void setR37_approved_limit(BigDecimal r37_approved_limit) {
+			this.r37_approved_limit = r37_approved_limit;
+		}
+
+		public BigDecimal getR37_balance_outstanding() {
+			return r37_balance_outstanding;
+		}
+
+		public void setR37_balance_outstanding(BigDecimal r37_balance_outstanding) {
+			this.r37_balance_outstanding = r37_balance_outstanding;
+		}
+
+		public BigDecimal getR37_no_of_acct() {
+			return r37_no_of_acct;
+		}
+
+		public void setR37_no_of_acct(BigDecimal r37_no_of_acct) {
+			this.r37_no_of_acct = r37_no_of_acct;
+		}
+
+		public String getR38_product() {
+			return r38_product;
+		}
+
+		public void setR38_product(String r38_product) {
+			this.r38_product = r38_product;
+		}
+
+		public BigDecimal getR38_approved_limit() {
+			return r38_approved_limit;
+		}
+
+		public void setR38_approved_limit(BigDecimal r38_approved_limit) {
+			this.r38_approved_limit = r38_approved_limit;
+		}
+
+		public BigDecimal getR38_balance_outstanding() {
+			return r38_balance_outstanding;
+		}
+
+		public void setR38_balance_outstanding(BigDecimal r38_balance_outstanding) {
+			this.r38_balance_outstanding = r38_balance_outstanding;
+		}
+
+		public BigDecimal getR38_no_of_acct() {
+			return r38_no_of_acct;
+		}
+
+		public void setR38_no_of_acct(BigDecimal r38_no_of_acct) {
+			this.r38_no_of_acct = r38_no_of_acct;
+		}
+
+		public String getR39_product() {
+			return r39_product;
+		}
+
+		public void setR39_product(String r39_product) {
+			this.r39_product = r39_product;
+		}
+
+		public BigDecimal getR39_approved_limit() {
+			return r39_approved_limit;
+		}
+
+		public void setR39_approved_limit(BigDecimal r39_approved_limit) {
+			this.r39_approved_limit = r39_approved_limit;
+		}
+
+		public BigDecimal getR39_balance_outstanding() {
+			return r39_balance_outstanding;
+		}
+
+		public void setR39_balance_outstanding(BigDecimal r39_balance_outstanding) {
+			this.r39_balance_outstanding = r39_balance_outstanding;
+		}
+
+		public BigDecimal getR39_no_of_acct() {
+			return r39_no_of_acct;
+		}
+
+		public void setR39_no_of_acct(BigDecimal r39_no_of_acct) {
+			this.r39_no_of_acct = r39_no_of_acct;
+		}
+
+		public String getR40_product() {
+			return r40_product;
+		}
+
+		public void setR40_product(String r40_product) {
+			this.r40_product = r40_product;
+		}
+
+		public BigDecimal getR40_approved_limit() {
+			return r40_approved_limit;
+		}
+
+		public void setR40_approved_limit(BigDecimal r40_approved_limit) {
+			this.r40_approved_limit = r40_approved_limit;
+		}
+
+		public BigDecimal getR40_balance_outstanding() {
+			return r40_balance_outstanding;
+		}
+
+		public void setR40_balance_outstanding(BigDecimal r40_balance_outstanding) {
+			this.r40_balance_outstanding = r40_balance_outstanding;
+		}
+
+		public BigDecimal getR40_no_of_acct() {
+			return r40_no_of_acct;
+		}
+
+		public void setR40_no_of_acct(BigDecimal r40_no_of_acct) {
+			this.r40_no_of_acct = r40_no_of_acct;
+		}
+
+		public String getR41_product() {
+			return r41_product;
+		}
+
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+
+		public BigDecimal getR41_approved_limit() {
+			return r41_approved_limit;
+		}
+
+		public void setR41_approved_limit(BigDecimal r41_approved_limit) {
+			this.r41_approved_limit = r41_approved_limit;
+		}
+
+		public BigDecimal getR41_balance_outstanding() {
+			return r41_balance_outstanding;
+		}
+
+		public void setR41_balance_outstanding(BigDecimal r41_balance_outstanding) {
+			this.r41_balance_outstanding = r41_balance_outstanding;
+		}
+
+		public BigDecimal getR41_no_of_acct() {
+			return r41_no_of_acct;
+		}
+
+		public void setR41_no_of_acct(BigDecimal r41_no_of_acct) {
+			this.r41_no_of_acct = r41_no_of_acct;
+		}
+
+		public String getR42_product() {
+			return r42_product;
+		}
+
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+
+		public BigDecimal getR42_approved_limit() {
+			return r42_approved_limit;
+		}
+
+		public void setR42_approved_limit(BigDecimal r42_approved_limit) {
+			this.r42_approved_limit = r42_approved_limit;
+		}
+
+		public BigDecimal getR42_balance_outstanding() {
+			return r42_balance_outstanding;
+		}
+
+		public void setR42_balance_outstanding(BigDecimal r42_balance_outstanding) {
+			this.r42_balance_outstanding = r42_balance_outstanding;
+		}
+
+		public BigDecimal getR42_no_of_acct() {
+			return r42_no_of_acct;
+		}
+
+		public void setR42_no_of_acct(BigDecimal r42_no_of_acct) {
+			this.r42_no_of_acct = r42_no_of_acct;
+		}
+
+		public String getR43_product() {
+			return r43_product;
+		}
+
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+
+		public BigDecimal getR43_approved_limit() {
+			return r43_approved_limit;
+		}
+
+		public void setR43_approved_limit(BigDecimal r43_approved_limit) {
+			this.r43_approved_limit = r43_approved_limit;
+		}
+
+		public BigDecimal getR43_balance_outstanding() {
+			return r43_balance_outstanding;
+		}
+
+		public void setR43_balance_outstanding(BigDecimal r43_balance_outstanding) {
+			this.r43_balance_outstanding = r43_balance_outstanding;
+		}
+
+		public BigDecimal getR43_no_of_acct() {
+			return r43_no_of_acct;
+		}
+
+		public void setR43_no_of_acct(BigDecimal r43_no_of_acct) {
+			this.r43_no_of_acct = r43_no_of_acct;
+		}
+
+		public String getR44_product() {
+			return r44_product;
+		}
+
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+
+		public BigDecimal getR44_approved_limit() {
+			return r44_approved_limit;
+		}
+
+		public void setR44_approved_limit(BigDecimal r44_approved_limit) {
+			this.r44_approved_limit = r44_approved_limit;
+		}
+
+		public BigDecimal getR44_balance_outstanding() {
+			return r44_balance_outstanding;
+		}
+
+		public void setR44_balance_outstanding(BigDecimal r44_balance_outstanding) {
+			this.r44_balance_outstanding = r44_balance_outstanding;
+		}
+
+		public BigDecimal getR44_no_of_acct() {
+			return r44_no_of_acct;
+		}
+
+		public void setR44_no_of_acct(BigDecimal r44_no_of_acct) {
+			this.r44_no_of_acct = r44_no_of_acct;
+		}
+
+		public String getR45_product() {
+			return r45_product;
+		}
+
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+
+		public BigDecimal getR45_approved_limit() {
+			return r45_approved_limit;
+		}
+
+		public void setR45_approved_limit(BigDecimal r45_approved_limit) {
+			this.r45_approved_limit = r45_approved_limit;
+		}
+
+		public BigDecimal getR45_balance_outstanding() {
+			return r45_balance_outstanding;
+		}
+
+		public void setR45_balance_outstanding(BigDecimal r45_balance_outstanding) {
+			this.r45_balance_outstanding = r45_balance_outstanding;
+		}
+
+		public BigDecimal getR45_no_of_acct() {
+			return r45_no_of_acct;
+		}
+
+		public void setR45_no_of_acct(BigDecimal r45_no_of_acct) {
+			this.r45_no_of_acct = r45_no_of_acct;
+		}
+
+		public String getR46_product() {
+			return r46_product;
+		}
+
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+
+		public BigDecimal getR46_approved_limit() {
+			return r46_approved_limit;
+		}
+
+		public void setR46_approved_limit(BigDecimal r46_approved_limit) {
+			this.r46_approved_limit = r46_approved_limit;
+		}
+
+		public BigDecimal getR46_balance_outstanding() {
+			return r46_balance_outstanding;
+		}
+
+		public void setR46_balance_outstanding(BigDecimal r46_balance_outstanding) {
+			this.r46_balance_outstanding = r46_balance_outstanding;
+		}
+
+		public BigDecimal getR46_no_of_acct() {
+			return r46_no_of_acct;
+		}
+
+		public void setR46_no_of_acct(BigDecimal r46_no_of_acct) {
+			this.r46_no_of_acct = r46_no_of_acct;
+		}
+
+		public String getR47_product() {
+			return r47_product;
+		}
+
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
+		}
+
+		public BigDecimal getR47_approved_limit() {
+			return r47_approved_limit;
+		}
+
+		public void setR47_approved_limit(BigDecimal r47_approved_limit) {
+			this.r47_approved_limit = r47_approved_limit;
+		}
+
+		public BigDecimal getR47_balance_outstanding() {
+			return r47_balance_outstanding;
+		}
+
+		public void setR47_balance_outstanding(BigDecimal r47_balance_outstanding) {
+			this.r47_balance_outstanding = r47_balance_outstanding;
+		}
+
+		public BigDecimal getR47_no_of_acct() {
+			return r47_no_of_acct;
+		}
+
+		public void setR47_no_of_acct(BigDecimal r47_no_of_acct) {
+			this.r47_no_of_acct = r47_no_of_acct;
+		}
+
+		public String getR48_product() {
+			return r48_product;
+		}
+
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
+		}
+
+		public BigDecimal getR48_approved_limit() {
+			return r48_approved_limit;
+		}
+
+		public void setR48_approved_limit(BigDecimal r48_approved_limit) {
+			this.r48_approved_limit = r48_approved_limit;
+		}
+
+		public BigDecimal getR48_balance_outstanding() {
+			return r48_balance_outstanding;
+		}
+
+		public void setR48_balance_outstanding(BigDecimal r48_balance_outstanding) {
+			this.r48_balance_outstanding = r48_balance_outstanding;
+		}
+
+		public BigDecimal getR48_no_of_acct() {
+			return r48_no_of_acct;
+		}
+
+		public void setR48_no_of_acct(BigDecimal r48_no_of_acct) {
+			this.r48_no_of_acct = r48_no_of_acct;
+		}
+
+		public String getR49_product() {
+			return r49_product;
+		}
+
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
+		}
+
+		public BigDecimal getR49_approved_limit() {
+			return r49_approved_limit;
+		}
+
+		public void setR49_approved_limit(BigDecimal r49_approved_limit) {
+			this.r49_approved_limit = r49_approved_limit;
+		}
+
+		public BigDecimal getR49_balance_outstanding() {
+			return r49_balance_outstanding;
+		}
+
+		public void setR49_balance_outstanding(BigDecimal r49_balance_outstanding) {
+			this.r49_balance_outstanding = r49_balance_outstanding;
+		}
+
+		public BigDecimal getR49_no_of_acct() {
+			return r49_no_of_acct;
+		}
+
+		public void setR49_no_of_acct(BigDecimal r49_no_of_acct) {
+			this.r49_no_of_acct = r49_no_of_acct;
+		}
+
+		public String getR50_product() {
+			return r50_product;
+		}
+
+		public void setR50_product(String r50_product) {
+			this.r50_product = r50_product;
+		}
+
+		public BigDecimal getR50_approved_limit() {
+			return r50_approved_limit;
+		}
+
+		public void setR50_approved_limit(BigDecimal r50_approved_limit) {
+			this.r50_approved_limit = r50_approved_limit;
+		}
+
+		public BigDecimal getR50_balance_outstanding() {
+			return r50_balance_outstanding;
+		}
+
+		public void setR50_balance_outstanding(BigDecimal r50_balance_outstanding) {
+			this.r50_balance_outstanding = r50_balance_outstanding;
+		}
+
+		public BigDecimal getR50_no_of_acct() {
+			return r50_no_of_acct;
+		}
+
+		public void setR50_no_of_acct(BigDecimal r50_no_of_acct) {
+			this.r50_no_of_acct = r50_no_of_acct;
+		}
+
+		public String getR51_product() {
+			return r51_product;
+		}
+
+		public void setR51_product(String r51_product) {
+			this.r51_product = r51_product;
+		}
+
+		public BigDecimal getR51_approved_limit() {
+			return r51_approved_limit;
+		}
+
+		public void setR51_approved_limit(BigDecimal r51_approved_limit) {
+			this.r51_approved_limit = r51_approved_limit;
+		}
+
+		public BigDecimal getR51_balance_outstanding() {
+			return r51_balance_outstanding;
+		}
+
+		public void setR51_balance_outstanding(BigDecimal r51_balance_outstanding) {
+			this.r51_balance_outstanding = r51_balance_outstanding;
+		}
+
+		public BigDecimal getR51_no_of_acct() {
+			return r51_no_of_acct;
+		}
+
+		public void setR51_no_of_acct(BigDecimal r51_no_of_acct) {
+			this.r51_no_of_acct = r51_no_of_acct;
+		}
+
+		public String getR52_product() {
+			return r52_product;
+		}
+
+		public void setR52_product(String r52_product) {
+			this.r52_product = r52_product;
+		}
+
+		public BigDecimal getR52_approved_limit() {
+			return r52_approved_limit;
+		}
+
+		public void setR52_approved_limit(BigDecimal r52_approved_limit) {
+			this.r52_approved_limit = r52_approved_limit;
+		}
+
+		public BigDecimal getR52_balance_outstanding() {
+			return r52_balance_outstanding;
+		}
+
+		public void setR52_balance_outstanding(BigDecimal r52_balance_outstanding) {
+			this.r52_balance_outstanding = r52_balance_outstanding;
+		}
+
+		public BigDecimal getR52_no_of_acct() {
+			return r52_no_of_acct;
+		}
+
+		public void setR52_no_of_acct(BigDecimal r52_no_of_acct) {
+			this.r52_no_of_acct = r52_no_of_acct;
+		}
+
+		public String getR53_product() {
+			return r53_product;
+		}
+
+		public void setR53_product(String r53_product) {
+			this.r53_product = r53_product;
+		}
+
+		public BigDecimal getR53_approved_limit() {
+			return r53_approved_limit;
+		}
+
+		public void setR53_approved_limit(BigDecimal r53_approved_limit) {
+			this.r53_approved_limit = r53_approved_limit;
+		}
+
+		public BigDecimal getR53_balance_outstanding() {
+			return r53_balance_outstanding;
+		}
+
+		public void setR53_balance_outstanding(BigDecimal r53_balance_outstanding) {
+			this.r53_balance_outstanding = r53_balance_outstanding;
+		}
+
+		public BigDecimal getR53_no_of_acct() {
+			return r53_no_of_acct;
+		}
+
+		public void setR53_no_of_acct(BigDecimal r53_no_of_acct) {
+			this.r53_no_of_acct = r53_no_of_acct;
+		}
+
+		public String getR54_product() {
+			return r54_product;
+		}
+
+		public void setR54_product(String r54_product) {
+			this.r54_product = r54_product;
+		}
+
+		public BigDecimal getR54_approved_limit() {
+			return r54_approved_limit;
+		}
+
+		public void setR54_approved_limit(BigDecimal r54_approved_limit) {
+			this.r54_approved_limit = r54_approved_limit;
+		}
+
+		public BigDecimal getR54_balance_outstanding() {
+			return r54_balance_outstanding;
+		}
+
+		public void setR54_balance_outstanding(BigDecimal r54_balance_outstanding) {
+			this.r54_balance_outstanding = r54_balance_outstanding;
+		}
+
+		public BigDecimal getR54_no_of_acct() {
+			return r54_no_of_acct;
+		}
+
+		public void setR54_no_of_acct(BigDecimal r54_no_of_acct) {
+			this.r54_no_of_acct = r54_no_of_acct;
+		}
+
+		public String getR55_product() {
+			return r55_product;
+		}
+
+		public void setR55_product(String r55_product) {
+			this.r55_product = r55_product;
+		}
+
+		public BigDecimal getR55_approved_limit() {
+			return r55_approved_limit;
+		}
+
+		public void setR55_approved_limit(BigDecimal r55_approved_limit) {
+			this.r55_approved_limit = r55_approved_limit;
+		}
+
+		public BigDecimal getR55_balance_outstanding() {
+			return r55_balance_outstanding;
+		}
+
+		public void setR55_balance_outstanding(BigDecimal r55_balance_outstanding) {
+			this.r55_balance_outstanding = r55_balance_outstanding;
+		}
+
+		public BigDecimal getR55_no_of_acct() {
+			return r55_no_of_acct;
+		}
+
+		public void setR55_no_of_acct(BigDecimal r55_no_of_acct) {
+			this.r55_no_of_acct = r55_no_of_acct;
+		}
+
+		public String getR56_product() {
+			return r56_product;
+		}
+
+		public void setR56_product(String r56_product) {
+			this.r56_product = r56_product;
+		}
+
+		public BigDecimal getR56_approved_limit() {
+			return r56_approved_limit;
+		}
+
+		public void setR56_approved_limit(BigDecimal r56_approved_limit) {
+			this.r56_approved_limit = r56_approved_limit;
+		}
+
+		public BigDecimal getR56_balance_outstanding() {
+			return r56_balance_outstanding;
+		}
+
+		public void setR56_balance_outstanding(BigDecimal r56_balance_outstanding) {
+			this.r56_balance_outstanding = r56_balance_outstanding;
+		}
+
+		public BigDecimal getR56_no_of_acct() {
+			return r56_no_of_acct;
+		}
+
+		public void setR56_no_of_acct(BigDecimal r56_no_of_acct) {
+			this.r56_no_of_acct = r56_no_of_acct;
+		}
+
+		public String getR57_product() {
+			return r57_product;
+		}
+
+		public void setR57_product(String r57_product) {
+			this.r57_product = r57_product;
+		}
+
+		public BigDecimal getR57_approved_limit() {
+			return r57_approved_limit;
+		}
+
+		public void setR57_approved_limit(BigDecimal r57_approved_limit) {
+			this.r57_approved_limit = r57_approved_limit;
+		}
+
+		public BigDecimal getR57_balance_outstanding() {
+			return r57_balance_outstanding;
+		}
+
+		public void setR57_balance_outstanding(BigDecimal r57_balance_outstanding) {
+			this.r57_balance_outstanding = r57_balance_outstanding;
+		}
+
+		public BigDecimal getR57_no_of_acct() {
+			return r57_no_of_acct;
+		}
+
+		public void setR57_no_of_acct(BigDecimal r57_no_of_acct) {
+			this.r57_no_of_acct = r57_no_of_acct;
+		}
+
+		public String getR58_product() {
+			return r58_product;
+		}
+
+		public void setR58_product(String r58_product) {
+			this.r58_product = r58_product;
+		}
+
+		public BigDecimal getR58_approved_limit() {
+			return r58_approved_limit;
+		}
+
+		public void setR58_approved_limit(BigDecimal r58_approved_limit) {
+			this.r58_approved_limit = r58_approved_limit;
+		}
+
+		public BigDecimal getR58_balance_outstanding() {
+			return r58_balance_outstanding;
+		}
+
+		public void setR58_balance_outstanding(BigDecimal r58_balance_outstanding) {
+			this.r58_balance_outstanding = r58_balance_outstanding;
+		}
+
+		public BigDecimal getR58_no_of_acct() {
+			return r58_no_of_acct;
+		}
+
+		public void setR58_no_of_acct(BigDecimal r58_no_of_acct) {
+			this.r58_no_of_acct = r58_no_of_acct;
+		}
+
+		public String getR59_product() {
+			return r59_product;
+		}
+
+		public void setR59_product(String r59_product) {
+			this.r59_product = r59_product;
+		}
+
+		public BigDecimal getR59_approved_limit() {
+			return r59_approved_limit;
+		}
+
+		public void setR59_approved_limit(BigDecimal r59_approved_limit) {
+			this.r59_approved_limit = r59_approved_limit;
+		}
+
+		public BigDecimal getR59_balance_outstanding() {
+			return r59_balance_outstanding;
+		}
+
+		public void setR59_balance_outstanding(BigDecimal r59_balance_outstanding) {
+			this.r59_balance_outstanding = r59_balance_outstanding;
+		}
+
+		public BigDecimal getR59_no_of_acct() {
+			return r59_no_of_acct;
+		}
+
+		public void setR59_no_of_acct(BigDecimal r59_no_of_acct) {
+			this.r59_no_of_acct = r59_no_of_acct;
+		}
+
+		public String getR60_product() {
+			return r60_product;
+		}
+
+		public void setR60_product(String r60_product) {
+			this.r60_product = r60_product;
+		}
+
+		public BigDecimal getR60_approved_limit() {
+			return r60_approved_limit;
+		}
+
+		public void setR60_approved_limit(BigDecimal r60_approved_limit) {
+			this.r60_approved_limit = r60_approved_limit;
+		}
+
+		public BigDecimal getR60_balance_outstanding() {
+			return r60_balance_outstanding;
+		}
+
+		public void setR60_balance_outstanding(BigDecimal r60_balance_outstanding) {
+			this.r60_balance_outstanding = r60_balance_outstanding;
+		}
+
+		public BigDecimal getR60_no_of_acct() {
+			return r60_no_of_acct;
+		}
+
+		public void setR60_no_of_acct(BigDecimal r60_no_of_acct) {
+			this.r60_no_of_acct = r60_no_of_acct;
+		}
+
+		public String getR61_product() {
+			return r61_product;
+		}
+
+		public void setR61_product(String r61_product) {
+			this.r61_product = r61_product;
+		}
+
+		public BigDecimal getR61_approved_limit() {
+			return r61_approved_limit;
+		}
+
+		public void setR61_approved_limit(BigDecimal r61_approved_limit) {
+			this.r61_approved_limit = r61_approved_limit;
+		}
+
+		public BigDecimal getR61_balance_outstanding() {
+			return r61_balance_outstanding;
+		}
+
+		public void setR61_balance_outstanding(BigDecimal r61_balance_outstanding) {
+			this.r61_balance_outstanding = r61_balance_outstanding;
+		}
+
+		public BigDecimal getR61_no_of_acct() {
+			return r61_no_of_acct;
+		}
+
+		public void setR61_no_of_acct(BigDecimal r61_no_of_acct) {
+			this.r61_no_of_acct = r61_no_of_acct;
+		}
+
+		public String getR62_product() {
+			return r62_product;
+		}
+
+		public void setR62_product(String r62_product) {
+			this.r62_product = r62_product;
+		}
+
+		public BigDecimal getR62_approved_limit() {
+			return r62_approved_limit;
+		}
+
+		public void setR62_approved_limit(BigDecimal r62_approved_limit) {
+			this.r62_approved_limit = r62_approved_limit;
+		}
+
+		public BigDecimal getR62_balance_outstanding() {
+			return r62_balance_outstanding;
+		}
+
+		public void setR62_balance_outstanding(BigDecimal r62_balance_outstanding) {
+			this.r62_balance_outstanding = r62_balance_outstanding;
+		}
+
+		public BigDecimal getR62_no_of_acct() {
+			return r62_no_of_acct;
+		}
+
+		public void setR62_no_of_acct(BigDecimal r62_no_of_acct) {
+			this.r62_no_of_acct = r62_no_of_acct;
+		}
+
+		public String getR63_product() {
+			return r63_product;
+		}
+
+		public void setR63_product(String r63_product) {
+			this.r63_product = r63_product;
+		}
+
+		public BigDecimal getR63_approved_limit() {
+			return r63_approved_limit;
+		}
+
+		public void setR63_approved_limit(BigDecimal r63_approved_limit) {
+			this.r63_approved_limit = r63_approved_limit;
+		}
+
+		public BigDecimal getR63_balance_outstanding() {
+			return r63_balance_outstanding;
+		}
+
+		public void setR63_balance_outstanding(BigDecimal r63_balance_outstanding) {
+			this.r63_balance_outstanding = r63_balance_outstanding;
+		}
+
+		public BigDecimal getR63_no_of_acct() {
+			return r63_no_of_acct;
+		}
+
+		public void setR63_no_of_acct(BigDecimal r63_no_of_acct) {
+			this.r63_no_of_acct = r63_no_of_acct;
+		}
+
+		public String getR64_product() {
+			return r64_product;
+		}
+
+		public void setR64_product(String r64_product) {
+			this.r64_product = r64_product;
+		}
+
+		public BigDecimal getR64_approved_limit() {
+			return r64_approved_limit;
+		}
+
+		public void setR64_approved_limit(BigDecimal r64_approved_limit) {
+			this.r64_approved_limit = r64_approved_limit;
+		}
+
+		public BigDecimal getR64_balance_outstanding() {
+			return r64_balance_outstanding;
+		}
+
+		public void setR64_balance_outstanding(BigDecimal r64_balance_outstanding) {
+			this.r64_balance_outstanding = r64_balance_outstanding;
+		}
+
+		public BigDecimal getR64_no_of_acct() {
+			return r64_no_of_acct;
+		}
+
+		public void setR64_no_of_acct(BigDecimal r64_no_of_acct) {
+			this.r64_no_of_acct = r64_no_of_acct;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
+	// COMPOSITE KEY CLASS INSIDE SERVICE
+
+	public static class M_LA1_PK implements Serializable {
+
+		private Date REPORT_DATE;
+		private BigDecimal REPORT_VERSION;
+
+		public M_LA1_PK() {
+		}
+
+		public M_LA1_PK(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+			this.REPORT_DATE = REPORT_DATE;
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (!(o instanceof M_LA1_PK))
+				return false;
+			M_LA1_PK that = (M_LA1_PK) o;
+			return Objects.equals(REPORT_DATE, that.REPORT_DATE) && Objects.equals(REPORT_VERSION, that.REPORT_VERSION);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(REPORT_DATE, REPORT_VERSION);
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+	}
+
+	// ARCHIVAL SUMMARY ROW MAPPER
+
+	class M_LA1ArchivalRowMapper implements RowMapper<M_LA1_Archival_Summary_Entity> {
+
+		@Override
+		public M_LA1_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			M_LA1_Archival_Summary_Entity obj = new M_LA1_Archival_Summary_Entity();
+
+			obj.setR11_product(rs.getString("r11_product"));
+			obj.setR11_approved_limit(rs.getBigDecimal("r11_approved_limit"));
+			obj.setR11_balance_outstanding(rs.getBigDecimal("r11_balance_outstanding"));
+			obj.setR11_no_of_acct(rs.getBigDecimal("r11_no_of_acct"));
+
+			obj.setR12_product(rs.getString("r12_product"));
+			obj.setR12_approved_limit(rs.getBigDecimal("r12_approved_limit"));
+			obj.setR12_balance_outstanding(rs.getBigDecimal("r12_balance_outstanding"));
+			obj.setR12_no_of_acct(rs.getBigDecimal("r12_no_of_acct"));
+
+			obj.setR13_product(rs.getString("r13_product"));
+			obj.setR13_approved_limit(rs.getBigDecimal("r13_approved_limit"));
+			obj.setR13_balance_outstanding(rs.getBigDecimal("r13_balance_outstanding"));
+			obj.setR13_no_of_acct(rs.getBigDecimal("r13_no_of_acct"));
+
+			obj.setR14_product(rs.getString("r14_product"));
+			obj.setR14_approved_limit(rs.getBigDecimal("r14_approved_limit"));
+			obj.setR14_balance_outstanding(rs.getBigDecimal("r14_balance_outstanding"));
+			obj.setR14_no_of_acct(rs.getBigDecimal("r14_no_of_acct"));
+
+			obj.setR15_product(rs.getString("r15_product"));
+			obj.setR15_approved_limit(rs.getBigDecimal("r15_approved_limit"));
+			obj.setR15_balance_outstanding(rs.getBigDecimal("r15_balance_outstanding"));
+			obj.setR15_no_of_acct(rs.getBigDecimal("r15_no_of_acct"));
+
+			obj.setR16_product(rs.getString("r16_product"));
+			obj.setR16_approved_limit(rs.getBigDecimal("r16_approved_limit"));
+			obj.setR16_balance_outstanding(rs.getBigDecimal("r16_balance_outstanding"));
+			obj.setR16_no_of_acct(rs.getBigDecimal("r16_no_of_acct"));
+
+			obj.setR17_product(rs.getString("r17_product"));
+			obj.setR17_approved_limit(rs.getBigDecimal("r17_approved_limit"));
+			obj.setR17_balance_outstanding(rs.getBigDecimal("r17_balance_outstanding"));
+			obj.setR17_no_of_acct(rs.getBigDecimal("r17_no_of_acct"));
+
+			obj.setR18_product(rs.getString("r18_product"));
+			obj.setR18_approved_limit(rs.getBigDecimal("r18_approved_limit"));
+			obj.setR18_balance_outstanding(rs.getBigDecimal("r18_balance_outstanding"));
+			obj.setR18_no_of_acct(rs.getBigDecimal("r18_no_of_acct"));
+
+			obj.setR19_product(rs.getString("r19_product"));
+			obj.setR19_approved_limit(rs.getBigDecimal("r19_approved_limit"));
+			obj.setR19_balance_outstanding(rs.getBigDecimal("r19_balance_outstanding"));
+			obj.setR19_no_of_acct(rs.getBigDecimal("r19_no_of_acct"));
+
+			obj.setR20_product(rs.getString("r20_product"));
+			obj.setR20_approved_limit(rs.getBigDecimal("r20_approved_limit"));
+			obj.setR20_balance_outstanding(rs.getBigDecimal("r20_balance_outstanding"));
+			obj.setR20_no_of_acct(rs.getBigDecimal("r20_no_of_acct"));
+
+			obj.setR21_product(rs.getString("r21_product"));
+			obj.setR21_approved_limit(rs.getBigDecimal("r21_approved_limit"));
+			obj.setR21_balance_outstanding(rs.getBigDecimal("r21_balance_outstanding"));
+			obj.setR21_no_of_acct(rs.getBigDecimal("r21_no_of_acct"));
+
+			obj.setR22_product(rs.getString("r22_product"));
+			obj.setR22_approved_limit(rs.getBigDecimal("r22_approved_limit"));
+			obj.setR22_balance_outstanding(rs.getBigDecimal("r22_balance_outstanding"));
+			obj.setR22_no_of_acct(rs.getBigDecimal("r22_no_of_acct"));
+
+			obj.setR23_product(rs.getString("r23_product"));
+			obj.setR23_approved_limit(rs.getBigDecimal("r23_approved_limit"));
+			obj.setR23_balance_outstanding(rs.getBigDecimal("r23_balance_outstanding"));
+			obj.setR23_no_of_acct(rs.getBigDecimal("r23_no_of_acct"));
+
+			obj.setR24_product(rs.getString("r24_product"));
+			obj.setR24_approved_limit(rs.getBigDecimal("r24_approved_limit"));
+			obj.setR24_balance_outstanding(rs.getBigDecimal("r24_balance_outstanding"));
+			obj.setR24_no_of_acct(rs.getBigDecimal("r24_no_of_acct"));
+
+			obj.setR25_product(rs.getString("r25_product"));
+			obj.setR25_approved_limit(rs.getBigDecimal("r25_approved_limit"));
+			obj.setR25_balance_outstanding(rs.getBigDecimal("r25_balance_outstanding"));
+			obj.setR25_no_of_acct(rs.getBigDecimal("r25_no_of_acct"));
+
+			obj.setR26_product(rs.getString("r26_product"));
+			obj.setR26_approved_limit(rs.getBigDecimal("r26_approved_limit"));
+			obj.setR26_balance_outstanding(rs.getBigDecimal("r26_balance_outstanding"));
+			obj.setR26_no_of_acct(rs.getBigDecimal("r26_no_of_acct"));
+
+			obj.setR27_product(rs.getString("r27_product"));
+			obj.setR27_approved_limit(rs.getBigDecimal("r27_approved_limit"));
+			obj.setR27_balance_outstanding(rs.getBigDecimal("r27_balance_outstanding"));
+			obj.setR27_no_of_acct(rs.getBigDecimal("r27_no_of_acct"));
+
+			obj.setR28_product(rs.getString("r28_product"));
+			obj.setR28_approved_limit(rs.getBigDecimal("r28_approved_limit"));
+			obj.setR28_balance_outstanding(rs.getBigDecimal("r28_balance_outstanding"));
+			obj.setR28_no_of_acct(rs.getBigDecimal("r28_no_of_acct"));
+
+			obj.setR29_product(rs.getString("r29_product"));
+			obj.setR29_approved_limit(rs.getBigDecimal("r29_approved_limit"));
+			obj.setR29_balance_outstanding(rs.getBigDecimal("r29_balance_outstanding"));
+			obj.setR29_no_of_acct(rs.getBigDecimal("r29_no_of_acct"));
+
+			obj.setR30_product(rs.getString("r30_product"));
+			obj.setR30_approved_limit(rs.getBigDecimal("r30_approved_limit"));
+			obj.setR30_balance_outstanding(rs.getBigDecimal("r30_balance_outstanding"));
+			obj.setR30_no_of_acct(rs.getBigDecimal("r30_no_of_acct"));
+
+			obj.setR31_product(rs.getString("r31_product"));
+			obj.setR31_approved_limit(rs.getBigDecimal("r31_approved_limit"));
+			obj.setR31_balance_outstanding(rs.getBigDecimal("r31_balance_outstanding"));
+			obj.setR31_no_of_acct(rs.getBigDecimal("r31_no_of_acct"));
+
+			obj.setR32_product(rs.getString("r32_product"));
+			obj.setR32_approved_limit(rs.getBigDecimal("r32_approved_limit"));
+			obj.setR32_balance_outstanding(rs.getBigDecimal("r32_balance_outstanding"));
+			obj.setR32_no_of_acct(rs.getBigDecimal("r32_no_of_acct"));
+
+			obj.setR33_product(rs.getString("r33_product"));
+			obj.setR33_approved_limit(rs.getBigDecimal("r33_approved_limit"));
+			obj.setR33_balance_outstanding(rs.getBigDecimal("r33_balance_outstanding"));
+			obj.setR33_no_of_acct(rs.getBigDecimal("r33_no_of_acct"));
+
+			obj.setR34_product(rs.getString("r34_product"));
+			obj.setR34_approved_limit(rs.getBigDecimal("r34_approved_limit"));
+			obj.setR34_balance_outstanding(rs.getBigDecimal("r34_balance_outstanding"));
+			obj.setR34_no_of_acct(rs.getBigDecimal("r34_no_of_acct"));
+
+			obj.setR35_product(rs.getString("r35_product"));
+			obj.setR35_approved_limit(rs.getBigDecimal("r35_approved_limit"));
+			obj.setR35_balance_outstanding(rs.getBigDecimal("r35_balance_outstanding"));
+			obj.setR35_no_of_acct(rs.getBigDecimal("r35_no_of_acct"));
+
+			obj.setR36_product(rs.getString("r36_product"));
+			obj.setR36_approved_limit(rs.getBigDecimal("r36_approved_limit"));
+			obj.setR36_balance_outstanding(rs.getBigDecimal("r36_balance_outstanding"));
+			obj.setR36_no_of_acct(rs.getBigDecimal("r36_no_of_acct"));
+
+			obj.setR37_product(rs.getString("r37_product"));
+			obj.setR37_approved_limit(rs.getBigDecimal("r37_approved_limit"));
+			obj.setR37_balance_outstanding(rs.getBigDecimal("r37_balance_outstanding"));
+			obj.setR37_no_of_acct(rs.getBigDecimal("r37_no_of_acct"));
+
+			obj.setR38_product(rs.getString("r38_product"));
+			obj.setR38_approved_limit(rs.getBigDecimal("r38_approved_limit"));
+			obj.setR38_balance_outstanding(rs.getBigDecimal("r38_balance_outstanding"));
+			obj.setR38_no_of_acct(rs.getBigDecimal("r38_no_of_acct"));
+
+			obj.setR39_product(rs.getString("r39_product"));
+			obj.setR39_approved_limit(rs.getBigDecimal("r39_approved_limit"));
+			obj.setR39_balance_outstanding(rs.getBigDecimal("r39_balance_outstanding"));
+			obj.setR39_no_of_acct(rs.getBigDecimal("r39_no_of_acct"));
+
+			obj.setR40_product(rs.getString("r40_product"));
+			obj.setR40_approved_limit(rs.getBigDecimal("r40_approved_limit"));
+			obj.setR40_balance_outstanding(rs.getBigDecimal("r40_balance_outstanding"));
+			obj.setR40_no_of_acct(rs.getBigDecimal("r40_no_of_acct"));
+
+			obj.setR41_product(rs.getString("r41_product"));
+			obj.setR41_approved_limit(rs.getBigDecimal("r41_approved_limit"));
+			obj.setR41_balance_outstanding(rs.getBigDecimal("r41_balance_outstanding"));
+			obj.setR41_no_of_acct(rs.getBigDecimal("r41_no_of_acct"));
+
+			obj.setR42_product(rs.getString("r42_product"));
+			obj.setR42_approved_limit(rs.getBigDecimal("r42_approved_limit"));
+			obj.setR42_balance_outstanding(rs.getBigDecimal("r42_balance_outstanding"));
+			obj.setR42_no_of_acct(rs.getBigDecimal("r42_no_of_acct"));
+
+			obj.setR43_product(rs.getString("r43_product"));
+			obj.setR43_approved_limit(rs.getBigDecimal("r43_approved_limit"));
+			obj.setR43_balance_outstanding(rs.getBigDecimal("r43_balance_outstanding"));
+			obj.setR43_no_of_acct(rs.getBigDecimal("r43_no_of_acct"));
+
+			obj.setR44_product(rs.getString("r44_product"));
+			obj.setR44_approved_limit(rs.getBigDecimal("r44_approved_limit"));
+			obj.setR44_balance_outstanding(rs.getBigDecimal("r44_balance_outstanding"));
+			obj.setR44_no_of_acct(rs.getBigDecimal("r44_no_of_acct"));
+
+			obj.setR45_product(rs.getString("r45_product"));
+			obj.setR45_approved_limit(rs.getBigDecimal("r45_approved_limit"));
+			obj.setR45_balance_outstanding(rs.getBigDecimal("r45_balance_outstanding"));
+			obj.setR45_no_of_acct(rs.getBigDecimal("r45_no_of_acct"));
+
+			obj.setR46_product(rs.getString("r46_product"));
+			obj.setR46_approved_limit(rs.getBigDecimal("r46_approved_limit"));
+			obj.setR46_balance_outstanding(rs.getBigDecimal("r46_balance_outstanding"));
+			obj.setR46_no_of_acct(rs.getBigDecimal("r46_no_of_acct"));
+
+			obj.setR47_product(rs.getString("r47_product"));
+			obj.setR47_approved_limit(rs.getBigDecimal("r47_approved_limit"));
+			obj.setR47_balance_outstanding(rs.getBigDecimal("r47_balance_outstanding"));
+			obj.setR47_no_of_acct(rs.getBigDecimal("r47_no_of_acct"));
+
+			obj.setR48_product(rs.getString("r48_product"));
+			obj.setR48_approved_limit(rs.getBigDecimal("r48_approved_limit"));
+			obj.setR48_balance_outstanding(rs.getBigDecimal("r48_balance_outstanding"));
+			obj.setR48_no_of_acct(rs.getBigDecimal("r48_no_of_acct"));
+
+			obj.setR49_product(rs.getString("r49_product"));
+			obj.setR49_approved_limit(rs.getBigDecimal("r49_approved_limit"));
+			obj.setR49_balance_outstanding(rs.getBigDecimal("r49_balance_outstanding"));
+			obj.setR49_no_of_acct(rs.getBigDecimal("r49_no_of_acct"));
+
+			obj.setR50_product(rs.getString("r50_product"));
+			obj.setR50_approved_limit(rs.getBigDecimal("r50_approved_limit"));
+			obj.setR50_balance_outstanding(rs.getBigDecimal("r50_balance_outstanding"));
+			obj.setR50_no_of_acct(rs.getBigDecimal("r50_no_of_acct"));
+
+			obj.setR51_product(rs.getString("r51_product"));
+			obj.setR51_approved_limit(rs.getBigDecimal("r51_approved_limit"));
+			obj.setR51_balance_outstanding(rs.getBigDecimal("r51_balance_outstanding"));
+			obj.setR51_no_of_acct(rs.getBigDecimal("r51_no_of_acct"));
+
+			obj.setR52_product(rs.getString("r52_product"));
+			obj.setR52_approved_limit(rs.getBigDecimal("r52_approved_limit"));
+			obj.setR52_balance_outstanding(rs.getBigDecimal("r52_balance_outstanding"));
+			obj.setR52_no_of_acct(rs.getBigDecimal("r52_no_of_acct"));
+
+			obj.setR53_product(rs.getString("r53_product"));
+			obj.setR53_approved_limit(rs.getBigDecimal("r53_approved_limit"));
+			obj.setR53_balance_outstanding(rs.getBigDecimal("r53_balance_outstanding"));
+			obj.setR53_no_of_acct(rs.getBigDecimal("r53_no_of_acct"));
+
+			obj.setR54_product(rs.getString("r54_product"));
+			obj.setR54_approved_limit(rs.getBigDecimal("r54_approved_limit"));
+			obj.setR54_balance_outstanding(rs.getBigDecimal("r54_balance_outstanding"));
+			obj.setR54_no_of_acct(rs.getBigDecimal("r54_no_of_acct"));
+
+			obj.setR55_product(rs.getString("r55_product"));
+			obj.setR55_approved_limit(rs.getBigDecimal("r55_approved_limit"));
+			obj.setR55_balance_outstanding(rs.getBigDecimal("r55_balance_outstanding"));
+			obj.setR55_no_of_acct(rs.getBigDecimal("r55_no_of_acct"));
+
+			obj.setR56_product(rs.getString("r56_product"));
+			obj.setR56_approved_limit(rs.getBigDecimal("r56_approved_limit"));
+			obj.setR56_balance_outstanding(rs.getBigDecimal("r56_balance_outstanding"));
+			obj.setR56_no_of_acct(rs.getBigDecimal("r56_no_of_acct"));
+
+			obj.setR57_product(rs.getString("r57_product"));
+			obj.setR57_approved_limit(rs.getBigDecimal("r57_approved_limit"));
+			obj.setR57_balance_outstanding(rs.getBigDecimal("r57_balance_outstanding"));
+			obj.setR57_no_of_acct(rs.getBigDecimal("r57_no_of_acct"));
+
+			obj.setR58_product(rs.getString("r58_product"));
+			obj.setR58_approved_limit(rs.getBigDecimal("r58_approved_limit"));
+			obj.setR58_balance_outstanding(rs.getBigDecimal("r58_balance_outstanding"));
+			obj.setR58_no_of_acct(rs.getBigDecimal("r58_no_of_acct"));
+
+			obj.setR59_product(rs.getString("r59_product"));
+			obj.setR59_approved_limit(rs.getBigDecimal("r59_approved_limit"));
+			obj.setR59_balance_outstanding(rs.getBigDecimal("r59_balance_outstanding"));
+			obj.setR59_no_of_acct(rs.getBigDecimal("r59_no_of_acct"));
+
+			obj.setR60_product(rs.getString("r60_product"));
+			obj.setR60_approved_limit(rs.getBigDecimal("r60_approved_limit"));
+			obj.setR60_balance_outstanding(rs.getBigDecimal("r60_balance_outstanding"));
+			obj.setR60_no_of_acct(rs.getBigDecimal("r60_no_of_acct"));
+
+			obj.setR61_product(rs.getString("r61_product"));
+			obj.setR61_approved_limit(rs.getBigDecimal("r61_approved_limit"));
+			obj.setR61_balance_outstanding(rs.getBigDecimal("r61_balance_outstanding"));
+			obj.setR61_no_of_acct(rs.getBigDecimal("r61_no_of_acct"));
+
+			obj.setR62_product(rs.getString("r62_product"));
+			obj.setR62_approved_limit(rs.getBigDecimal("r62_approved_limit"));
+			obj.setR62_balance_outstanding(rs.getBigDecimal("r62_balance_outstanding"));
+			obj.setR62_no_of_acct(rs.getBigDecimal("r62_no_of_acct"));
+
+			obj.setR63_product(rs.getString("r63_product"));
+			obj.setR63_approved_limit(rs.getBigDecimal("r63_approved_limit"));
+			obj.setR63_balance_outstanding(rs.getBigDecimal("r63_balance_outstanding"));
+			obj.setR63_no_of_acct(rs.getBigDecimal("r63_no_of_acct"));
+
+			obj.setR64_product(rs.getString("r64_product"));
+			obj.setR64_approved_limit(rs.getBigDecimal("r64_approved_limit"));
+			obj.setR64_balance_outstanding(rs.getBigDecimal("r64_balance_outstanding"));
+			obj.setR64_no_of_acct(rs.getBigDecimal("r64_no_of_acct"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_RESUBDATE(rs.getDate("REPORT_RESUBDATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+	}
+
+	public static class M_LA1_Archival_Summary_Entity {
+
+		private String r11_product;
+		private BigDecimal r11_approved_limit;
+		private BigDecimal r11_balance_outstanding;
+		private BigDecimal r11_no_of_acct;
+
+		private String r12_product;
+		private BigDecimal r12_approved_limit;
+		private BigDecimal r12_balance_outstanding;
+		private BigDecimal r12_no_of_acct;
+
+		private String r13_product;
+		private BigDecimal r13_approved_limit;
+		private BigDecimal r13_balance_outstanding;
+		private BigDecimal r13_no_of_acct;
+
+		private String r14_product;
+		private BigDecimal r14_approved_limit;
+		private BigDecimal r14_balance_outstanding;
+		private BigDecimal r14_no_of_acct;
+
+		private String r15_product;
+		private BigDecimal r15_approved_limit;
+		private BigDecimal r15_balance_outstanding;
+		private BigDecimal r15_no_of_acct;
+
+		private String r16_product;
+		private BigDecimal r16_approved_limit;
+		private BigDecimal r16_balance_outstanding;
+		private BigDecimal r16_no_of_acct;
+
+		private String r17_product;
+		private BigDecimal r17_approved_limit;
+		private BigDecimal r17_balance_outstanding;
+		private BigDecimal r17_no_of_acct;
+
+		private String r18_product;
+		private BigDecimal r18_approved_limit;
+		private BigDecimal r18_balance_outstanding;
+		private BigDecimal r18_no_of_acct;
+
+		private String r19_product;
+		private BigDecimal r19_approved_limit;
+		private BigDecimal r19_balance_outstanding;
+		private BigDecimal r19_no_of_acct;
+
+		private String r20_product;
+		private BigDecimal r20_approved_limit;
+		private BigDecimal r20_balance_outstanding;
+		private BigDecimal r20_no_of_acct;
+
+		private String r21_product;
+		private BigDecimal r21_approved_limit;
+		private BigDecimal r21_balance_outstanding;
+		private BigDecimal r21_no_of_acct;
+
+		private String r22_product;
+		private BigDecimal r22_approved_limit;
+		private BigDecimal r22_balance_outstanding;
+		private BigDecimal r22_no_of_acct;
+
+		private String r23_product;
+		private BigDecimal r23_approved_limit;
+		private BigDecimal r23_balance_outstanding;
+		private BigDecimal r23_no_of_acct;
+
+		private String r24_product;
+		private BigDecimal r24_approved_limit;
+		private BigDecimal r24_balance_outstanding;
+		private BigDecimal r24_no_of_acct;
+
+		private String r25_product;
+		private BigDecimal r25_approved_limit;
+		private BigDecimal r25_balance_outstanding;
+		private BigDecimal r25_no_of_acct;
+
+		private String r26_product;
+		private BigDecimal r26_approved_limit;
+		private BigDecimal r26_balance_outstanding;
+		private BigDecimal r26_no_of_acct;
+
+		private String r27_product;
+		private BigDecimal r27_approved_limit;
+		private BigDecimal r27_balance_outstanding;
+		private BigDecimal r27_no_of_acct;
+
+		private String r28_product;
+		private BigDecimal r28_approved_limit;
+		private BigDecimal r28_balance_outstanding;
+		private BigDecimal r28_no_of_acct;
+
+		private String r29_product;
+		private BigDecimal r29_approved_limit;
+		private BigDecimal r29_balance_outstanding;
+		private BigDecimal r29_no_of_acct;
+
+		private String r30_product;
+		private BigDecimal r30_approved_limit;
+		private BigDecimal r30_balance_outstanding;
+		private BigDecimal r30_no_of_acct;
+
+		private String r31_product;
+		private BigDecimal r31_approved_limit;
+		private BigDecimal r31_balance_outstanding;
+		private BigDecimal r31_no_of_acct;
+
+		private String r32_product;
+		private BigDecimal r32_approved_limit;
+		private BigDecimal r32_balance_outstanding;
+		private BigDecimal r32_no_of_acct;
+
+		private String r33_product;
+		private BigDecimal r33_approved_limit;
+		private BigDecimal r33_balance_outstanding;
+		private BigDecimal r33_no_of_acct;
+
+		private String r34_product;
+		private BigDecimal r34_approved_limit;
+		private BigDecimal r34_balance_outstanding;
+		private BigDecimal r34_no_of_acct;
+
+		private String r35_product;
+		private BigDecimal r35_approved_limit;
+		private BigDecimal r35_balance_outstanding;
+		private BigDecimal r35_no_of_acct;
+
+		private String r36_product;
+		private BigDecimal r36_approved_limit;
+		private BigDecimal r36_balance_outstanding;
+		private BigDecimal r36_no_of_acct;
+
+		private String r37_product;
+		private BigDecimal r37_approved_limit;
+		private BigDecimal r37_balance_outstanding;
+		private BigDecimal r37_no_of_acct;
+
+		private String r38_product;
+		private BigDecimal r38_approved_limit;
+		private BigDecimal r38_balance_outstanding;
+		private BigDecimal r38_no_of_acct;
+
+		private String r39_product;
+		private BigDecimal r39_approved_limit;
+		private BigDecimal r39_balance_outstanding;
+		private BigDecimal r39_no_of_acct;
+
+		private String r40_product;
+		private BigDecimal r40_approved_limit;
+		private BigDecimal r40_balance_outstanding;
+		private BigDecimal r40_no_of_acct;
+
+		private String r41_product;
+		private BigDecimal r41_approved_limit;
+		private BigDecimal r41_balance_outstanding;
+		private BigDecimal r41_no_of_acct;
+
+		private String r42_product;
+		private BigDecimal r42_approved_limit;
+		private BigDecimal r42_balance_outstanding;
+		private BigDecimal r42_no_of_acct;
+
+		private String r43_product;
+		private BigDecimal r43_approved_limit;
+		private BigDecimal r43_balance_outstanding;
+		private BigDecimal r43_no_of_acct;
+
+		private String r44_product;
+		private BigDecimal r44_approved_limit;
+		private BigDecimal r44_balance_outstanding;
+		private BigDecimal r44_no_of_acct;
+
+		private String r45_product;
+		private BigDecimal r45_approved_limit;
+		private BigDecimal r45_balance_outstanding;
+		private BigDecimal r45_no_of_acct;
+
+		private String r46_product;
+		private BigDecimal r46_approved_limit;
+		private BigDecimal r46_balance_outstanding;
+		private BigDecimal r46_no_of_acct;
+
+		private String r47_product;
+		private BigDecimal r47_approved_limit;
+		private BigDecimal r47_balance_outstanding;
+		private BigDecimal r47_no_of_acct;
+
+		private String r48_product;
+		private BigDecimal r48_approved_limit;
+		private BigDecimal r48_balance_outstanding;
+		private BigDecimal r48_no_of_acct;
+
+		private String r49_product;
+		private BigDecimal r49_approved_limit;
+		private BigDecimal r49_balance_outstanding;
+		private BigDecimal r49_no_of_acct;
+
+		private String r50_product;
+		private BigDecimal r50_approved_limit;
+		private BigDecimal r50_balance_outstanding;
+		private BigDecimal r50_no_of_acct;
+
+		private String r51_product;
+		private BigDecimal r51_approved_limit;
+		private BigDecimal r51_balance_outstanding;
+		private BigDecimal r51_no_of_acct;
+
+		private String r52_product;
+		private BigDecimal r52_approved_limit;
+		private BigDecimal r52_balance_outstanding;
+		private BigDecimal r52_no_of_acct;
+
+		private String r53_product;
+		private BigDecimal r53_approved_limit;
+		private BigDecimal r53_balance_outstanding;
+		private BigDecimal r53_no_of_acct;
+
+		private String r54_product;
+		private BigDecimal r54_approved_limit;
+		private BigDecimal r54_balance_outstanding;
+		private BigDecimal r54_no_of_acct;
+
+		private String r55_product;
+		private BigDecimal r55_approved_limit;
+		private BigDecimal r55_balance_outstanding;
+		private BigDecimal r55_no_of_acct;
+
+		private String r56_product;
+		private BigDecimal r56_approved_limit;
+		private BigDecimal r56_balance_outstanding;
+		private BigDecimal r56_no_of_acct;
+
+		private String r57_product;
+		private BigDecimal r57_approved_limit;
+		private BigDecimal r57_balance_outstanding;
+		private BigDecimal r57_no_of_acct;
+
+		private String r58_product;
+		private BigDecimal r58_approved_limit;
+		private BigDecimal r58_balance_outstanding;
+		private BigDecimal r58_no_of_acct;
+
+		private String r59_product;
+		private BigDecimal r59_approved_limit;
+		private BigDecimal r59_balance_outstanding;
+		private BigDecimal r59_no_of_acct;
+
+		private String r60_product;
+		private BigDecimal r60_approved_limit;
+		private BigDecimal r60_balance_outstanding;
+		private BigDecimal r60_no_of_acct;
+
+		private String r61_product;
+		private BigDecimal r61_approved_limit;
+		private BigDecimal r61_balance_outstanding;
+		private BigDecimal r61_no_of_acct;
+
+		private String r62_product;
+		private BigDecimal r62_approved_limit;
+		private BigDecimal r62_balance_outstanding;
+		private BigDecimal r62_no_of_acct;
+
+		private String r63_product;
+		private BigDecimal r63_approved_limit;
+		private BigDecimal r63_balance_outstanding;
+		private BigDecimal r63_no_of_acct;
+
+		private String r64_product;
+		private BigDecimal r64_approved_limit;
+		private BigDecimal r64_balance_outstanding;
+		private BigDecimal r64_no_of_acct;
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Column(name = "REPORT_RESUBDATE")
+		private Date REPORT_RESUBDATE;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public String getR11_product() {
+			return r11_product;
+		}
+
+		public void setR11_product(String r11_product) {
+			this.r11_product = r11_product;
+		}
+
+		public BigDecimal getR11_approved_limit() {
+			return r11_approved_limit;
+		}
+
+		public void setR11_approved_limit(BigDecimal r11_approved_limit) {
+			this.r11_approved_limit = r11_approved_limit;
+		}
+
+		public BigDecimal getR11_balance_outstanding() {
+			return r11_balance_outstanding;
+		}
+
+		public void setR11_balance_outstanding(BigDecimal r11_balance_outstanding) {
+			this.r11_balance_outstanding = r11_balance_outstanding;
+		}
+
+		public BigDecimal getR11_no_of_acct() {
+			return r11_no_of_acct;
+		}
+
+		public void setR11_no_of_acct(BigDecimal r11_no_of_acct) {
+			this.r11_no_of_acct = r11_no_of_acct;
+		}
+
+		public String getR12_product() {
+			return r12_product;
+		}
+
+		public void setR12_product(String r12_product) {
+			this.r12_product = r12_product;
+		}
+
+		public BigDecimal getR12_approved_limit() {
+			return r12_approved_limit;
+		}
+
+		public void setR12_approved_limit(BigDecimal r12_approved_limit) {
+			this.r12_approved_limit = r12_approved_limit;
+		}
+
+		public BigDecimal getR12_balance_outstanding() {
+			return r12_balance_outstanding;
+		}
+
+		public void setR12_balance_outstanding(BigDecimal r12_balance_outstanding) {
+			this.r12_balance_outstanding = r12_balance_outstanding;
+		}
+
+		public BigDecimal getR12_no_of_acct() {
+			return r12_no_of_acct;
+		}
+
+		public void setR12_no_of_acct(BigDecimal r12_no_of_acct) {
+			this.r12_no_of_acct = r12_no_of_acct;
+		}
+
+		public String getR13_product() {
+			return r13_product;
+		}
+
+		public void setR13_product(String r13_product) {
+			this.r13_product = r13_product;
+		}
+
+		public BigDecimal getR13_approved_limit() {
+			return r13_approved_limit;
+		}
+
+		public void setR13_approved_limit(BigDecimal r13_approved_limit) {
+			this.r13_approved_limit = r13_approved_limit;
+		}
+
+		public BigDecimal getR13_balance_outstanding() {
+			return r13_balance_outstanding;
+		}
+
+		public void setR13_balance_outstanding(BigDecimal r13_balance_outstanding) {
+			this.r13_balance_outstanding = r13_balance_outstanding;
+		}
+
+		public BigDecimal getR13_no_of_acct() {
+			return r13_no_of_acct;
+		}
+
+		public void setR13_no_of_acct(BigDecimal r13_no_of_acct) {
+			this.r13_no_of_acct = r13_no_of_acct;
+		}
+
+		public String getR14_product() {
+			return r14_product;
+		}
+
+		public void setR14_product(String r14_product) {
+			this.r14_product = r14_product;
+		}
+
+		public BigDecimal getR14_approved_limit() {
+			return r14_approved_limit;
+		}
+
+		public void setR14_approved_limit(BigDecimal r14_approved_limit) {
+			this.r14_approved_limit = r14_approved_limit;
+		}
+
+		public BigDecimal getR14_balance_outstanding() {
+			return r14_balance_outstanding;
+		}
+
+		public void setR14_balance_outstanding(BigDecimal r14_balance_outstanding) {
+			this.r14_balance_outstanding = r14_balance_outstanding;
+		}
+
+		public BigDecimal getR14_no_of_acct() {
+			return r14_no_of_acct;
+		}
+
+		public void setR14_no_of_acct(BigDecimal r14_no_of_acct) {
+			this.r14_no_of_acct = r14_no_of_acct;
+		}
+
+		public String getR15_product() {
+			return r15_product;
+		}
+
+		public void setR15_product(String r15_product) {
+			this.r15_product = r15_product;
+		}
+
+		public BigDecimal getR15_approved_limit() {
+			return r15_approved_limit;
+		}
+
+		public void setR15_approved_limit(BigDecimal r15_approved_limit) {
+			this.r15_approved_limit = r15_approved_limit;
+		}
+
+		public BigDecimal getR15_balance_outstanding() {
+			return r15_balance_outstanding;
+		}
+
+		public void setR15_balance_outstanding(BigDecimal r15_balance_outstanding) {
+			this.r15_balance_outstanding = r15_balance_outstanding;
+		}
+
+		public BigDecimal getR15_no_of_acct() {
+			return r15_no_of_acct;
+		}
+
+		public void setR15_no_of_acct(BigDecimal r15_no_of_acct) {
+			this.r15_no_of_acct = r15_no_of_acct;
+		}
+
+		public String getR16_product() {
+			return r16_product;
+		}
+
+		public void setR16_product(String r16_product) {
+			this.r16_product = r16_product;
+		}
+
+		public BigDecimal getR16_approved_limit() {
+			return r16_approved_limit;
+		}
+
+		public void setR16_approved_limit(BigDecimal r16_approved_limit) {
+			this.r16_approved_limit = r16_approved_limit;
+		}
+
+		public BigDecimal getR16_balance_outstanding() {
+			return r16_balance_outstanding;
+		}
+
+		public void setR16_balance_outstanding(BigDecimal r16_balance_outstanding) {
+			this.r16_balance_outstanding = r16_balance_outstanding;
+		}
+
+		public BigDecimal getR16_no_of_acct() {
+			return r16_no_of_acct;
+		}
+
+		public void setR16_no_of_acct(BigDecimal r16_no_of_acct) {
+			this.r16_no_of_acct = r16_no_of_acct;
+		}
+
+		public String getR17_product() {
+			return r17_product;
+		}
+
+		public void setR17_product(String r17_product) {
+			this.r17_product = r17_product;
+		}
+
+		public BigDecimal getR17_approved_limit() {
+			return r17_approved_limit;
+		}
+
+		public void setR17_approved_limit(BigDecimal r17_approved_limit) {
+			this.r17_approved_limit = r17_approved_limit;
+		}
+
+		public BigDecimal getR17_balance_outstanding() {
+			return r17_balance_outstanding;
+		}
+
+		public void setR17_balance_outstanding(BigDecimal r17_balance_outstanding) {
+			this.r17_balance_outstanding = r17_balance_outstanding;
+		}
+
+		public BigDecimal getR17_no_of_acct() {
+			return r17_no_of_acct;
+		}
+
+		public void setR17_no_of_acct(BigDecimal r17_no_of_acct) {
+			this.r17_no_of_acct = r17_no_of_acct;
+		}
+
+		public String getR18_product() {
+			return r18_product;
+		}
+
+		public void setR18_product(String r18_product) {
+			this.r18_product = r18_product;
+		}
+
+		public BigDecimal getR18_approved_limit() {
+			return r18_approved_limit;
+		}
+
+		public void setR18_approved_limit(BigDecimal r18_approved_limit) {
+			this.r18_approved_limit = r18_approved_limit;
+		}
+
+		public BigDecimal getR18_balance_outstanding() {
+			return r18_balance_outstanding;
+		}
+
+		public void setR18_balance_outstanding(BigDecimal r18_balance_outstanding) {
+			this.r18_balance_outstanding = r18_balance_outstanding;
+		}
+
+		public BigDecimal getR18_no_of_acct() {
+			return r18_no_of_acct;
+		}
+
+		public void setR18_no_of_acct(BigDecimal r18_no_of_acct) {
+			this.r18_no_of_acct = r18_no_of_acct;
+		}
+
+		public String getR19_product() {
+			return r19_product;
+		}
+
+		public void setR19_product(String r19_product) {
+			this.r19_product = r19_product;
+		}
+
+		public BigDecimal getR19_approved_limit() {
+			return r19_approved_limit;
+		}
+
+		public void setR19_approved_limit(BigDecimal r19_approved_limit) {
+			this.r19_approved_limit = r19_approved_limit;
+		}
+
+		public BigDecimal getR19_balance_outstanding() {
+			return r19_balance_outstanding;
+		}
+
+		public void setR19_balance_outstanding(BigDecimal r19_balance_outstanding) {
+			this.r19_balance_outstanding = r19_balance_outstanding;
+		}
+
+		public BigDecimal getR19_no_of_acct() {
+			return r19_no_of_acct;
+		}
+
+		public void setR19_no_of_acct(BigDecimal r19_no_of_acct) {
+			this.r19_no_of_acct = r19_no_of_acct;
+		}
+
+		public String getR20_product() {
+			return r20_product;
+		}
+
+		public void setR20_product(String r20_product) {
+			this.r20_product = r20_product;
+		}
+
+		public BigDecimal getR20_approved_limit() {
+			return r20_approved_limit;
+		}
+
+		public void setR20_approved_limit(BigDecimal r20_approved_limit) {
+			this.r20_approved_limit = r20_approved_limit;
+		}
+
+		public BigDecimal getR20_balance_outstanding() {
+			return r20_balance_outstanding;
+		}
+
+		public void setR20_balance_outstanding(BigDecimal r20_balance_outstanding) {
+			this.r20_balance_outstanding = r20_balance_outstanding;
+		}
+
+		public BigDecimal getR20_no_of_acct() {
+			return r20_no_of_acct;
+		}
+
+		public void setR20_no_of_acct(BigDecimal r20_no_of_acct) {
+			this.r20_no_of_acct = r20_no_of_acct;
+		}
+
+		public String getR21_product() {
+			return r21_product;
+		}
+
+		public void setR21_product(String r21_product) {
+			this.r21_product = r21_product;
+		}
+
+		public BigDecimal getR21_approved_limit() {
+			return r21_approved_limit;
+		}
+
+		public void setR21_approved_limit(BigDecimal r21_approved_limit) {
+			this.r21_approved_limit = r21_approved_limit;
+		}
+
+		public BigDecimal getR21_balance_outstanding() {
+			return r21_balance_outstanding;
+		}
+
+		public void setR21_balance_outstanding(BigDecimal r21_balance_outstanding) {
+			this.r21_balance_outstanding = r21_balance_outstanding;
+		}
+
+		public BigDecimal getR21_no_of_acct() {
+			return r21_no_of_acct;
+		}
+
+		public void setR21_no_of_acct(BigDecimal r21_no_of_acct) {
+			this.r21_no_of_acct = r21_no_of_acct;
+		}
+
+		public String getR22_product() {
+			return r22_product;
+		}
+
+		public void setR22_product(String r22_product) {
+			this.r22_product = r22_product;
+		}
+
+		public BigDecimal getR22_approved_limit() {
+			return r22_approved_limit;
+		}
+
+		public void setR22_approved_limit(BigDecimal r22_approved_limit) {
+			this.r22_approved_limit = r22_approved_limit;
+		}
+
+		public BigDecimal getR22_balance_outstanding() {
+			return r22_balance_outstanding;
+		}
+
+		public void setR22_balance_outstanding(BigDecimal r22_balance_outstanding) {
+			this.r22_balance_outstanding = r22_balance_outstanding;
+		}
+
+		public BigDecimal getR22_no_of_acct() {
+			return r22_no_of_acct;
+		}
+
+		public void setR22_no_of_acct(BigDecimal r22_no_of_acct) {
+			this.r22_no_of_acct = r22_no_of_acct;
+		}
+
+		public String getR23_product() {
+			return r23_product;
+		}
+
+		public void setR23_product(String r23_product) {
+			this.r23_product = r23_product;
+		}
+
+		public BigDecimal getR23_approved_limit() {
+			return r23_approved_limit;
+		}
+
+		public void setR23_approved_limit(BigDecimal r23_approved_limit) {
+			this.r23_approved_limit = r23_approved_limit;
+		}
+
+		public BigDecimal getR23_balance_outstanding() {
+			return r23_balance_outstanding;
+		}
+
+		public void setR23_balance_outstanding(BigDecimal r23_balance_outstanding) {
+			this.r23_balance_outstanding = r23_balance_outstanding;
+		}
+
+		public BigDecimal getR23_no_of_acct() {
+			return r23_no_of_acct;
+		}
+
+		public void setR23_no_of_acct(BigDecimal r23_no_of_acct) {
+			this.r23_no_of_acct = r23_no_of_acct;
+		}
+
+		public String getR24_product() {
+			return r24_product;
+		}
+
+		public void setR24_product(String r24_product) {
+			this.r24_product = r24_product;
+		}
+
+		public BigDecimal getR24_approved_limit() {
+			return r24_approved_limit;
+		}
+
+		public void setR24_approved_limit(BigDecimal r24_approved_limit) {
+			this.r24_approved_limit = r24_approved_limit;
+		}
+
+		public BigDecimal getR24_balance_outstanding() {
+			return r24_balance_outstanding;
+		}
+
+		public void setR24_balance_outstanding(BigDecimal r24_balance_outstanding) {
+			this.r24_balance_outstanding = r24_balance_outstanding;
+		}
+
+		public BigDecimal getR24_no_of_acct() {
+			return r24_no_of_acct;
+		}
+
+		public void setR24_no_of_acct(BigDecimal r24_no_of_acct) {
+			this.r24_no_of_acct = r24_no_of_acct;
+		}
+
+		public String getR25_product() {
+			return r25_product;
+		}
+
+		public void setR25_product(String r25_product) {
+			this.r25_product = r25_product;
+		}
+
+		public BigDecimal getR25_approved_limit() {
+			return r25_approved_limit;
+		}
+
+		public void setR25_approved_limit(BigDecimal r25_approved_limit) {
+			this.r25_approved_limit = r25_approved_limit;
+		}
+
+		public BigDecimal getR25_balance_outstanding() {
+			return r25_balance_outstanding;
+		}
+
+		public void setR25_balance_outstanding(BigDecimal r25_balance_outstanding) {
+			this.r25_balance_outstanding = r25_balance_outstanding;
+		}
+
+		public BigDecimal getR25_no_of_acct() {
+			return r25_no_of_acct;
+		}
+
+		public void setR25_no_of_acct(BigDecimal r25_no_of_acct) {
+			this.r25_no_of_acct = r25_no_of_acct;
+		}
+
+		public String getR26_product() {
+			return r26_product;
+		}
+
+		public void setR26_product(String r26_product) {
+			this.r26_product = r26_product;
+		}
+
+		public BigDecimal getR26_approved_limit() {
+			return r26_approved_limit;
+		}
+
+		public void setR26_approved_limit(BigDecimal r26_approved_limit) {
+			this.r26_approved_limit = r26_approved_limit;
+		}
+
+		public BigDecimal getR26_balance_outstanding() {
+			return r26_balance_outstanding;
+		}
+
+		public void setR26_balance_outstanding(BigDecimal r26_balance_outstanding) {
+			this.r26_balance_outstanding = r26_balance_outstanding;
+		}
+
+		public BigDecimal getR26_no_of_acct() {
+			return r26_no_of_acct;
+		}
+
+		public void setR26_no_of_acct(BigDecimal r26_no_of_acct) {
+			this.r26_no_of_acct = r26_no_of_acct;
+		}
+
+		public String getR27_product() {
+			return r27_product;
+		}
+
+		public void setR27_product(String r27_product) {
+			this.r27_product = r27_product;
+		}
+
+		public BigDecimal getR27_approved_limit() {
+			return r27_approved_limit;
+		}
+
+		public void setR27_approved_limit(BigDecimal r27_approved_limit) {
+			this.r27_approved_limit = r27_approved_limit;
+		}
+
+		public BigDecimal getR27_balance_outstanding() {
+			return r27_balance_outstanding;
+		}
+
+		public void setR27_balance_outstanding(BigDecimal r27_balance_outstanding) {
+			this.r27_balance_outstanding = r27_balance_outstanding;
+		}
+
+		public BigDecimal getR27_no_of_acct() {
+			return r27_no_of_acct;
+		}
+
+		public void setR27_no_of_acct(BigDecimal r27_no_of_acct) {
+			this.r27_no_of_acct = r27_no_of_acct;
+		}
+
+		public String getR28_product() {
+			return r28_product;
+		}
+
+		public void setR28_product(String r28_product) {
+			this.r28_product = r28_product;
+		}
+
+		public BigDecimal getR28_approved_limit() {
+			return r28_approved_limit;
+		}
+
+		public void setR28_approved_limit(BigDecimal r28_approved_limit) {
+			this.r28_approved_limit = r28_approved_limit;
+		}
+
+		public BigDecimal getR28_balance_outstanding() {
+			return r28_balance_outstanding;
+		}
+
+		public void setR28_balance_outstanding(BigDecimal r28_balance_outstanding) {
+			this.r28_balance_outstanding = r28_balance_outstanding;
+		}
+
+		public BigDecimal getR28_no_of_acct() {
+			return r28_no_of_acct;
+		}
+
+		public void setR28_no_of_acct(BigDecimal r28_no_of_acct) {
+			this.r28_no_of_acct = r28_no_of_acct;
+		}
+
+		public String getR29_product() {
+			return r29_product;
+		}
+
+		public void setR29_product(String r29_product) {
+			this.r29_product = r29_product;
+		}
+
+		public BigDecimal getR29_approved_limit() {
+			return r29_approved_limit;
+		}
+
+		public void setR29_approved_limit(BigDecimal r29_approved_limit) {
+			this.r29_approved_limit = r29_approved_limit;
+		}
+
+		public BigDecimal getR29_balance_outstanding() {
+			return r29_balance_outstanding;
+		}
+
+		public void setR29_balance_outstanding(BigDecimal r29_balance_outstanding) {
+			this.r29_balance_outstanding = r29_balance_outstanding;
+		}
+
+		public BigDecimal getR29_no_of_acct() {
+			return r29_no_of_acct;
+		}
+
+		public void setR29_no_of_acct(BigDecimal r29_no_of_acct) {
+			this.r29_no_of_acct = r29_no_of_acct;
+		}
+
+		public String getR30_product() {
+			return r30_product;
+		}
+
+		public void setR30_product(String r30_product) {
+			this.r30_product = r30_product;
+		}
+
+		public BigDecimal getR30_approved_limit() {
+			return r30_approved_limit;
+		}
+
+		public void setR30_approved_limit(BigDecimal r30_approved_limit) {
+			this.r30_approved_limit = r30_approved_limit;
+		}
+
+		public BigDecimal getR30_balance_outstanding() {
+			return r30_balance_outstanding;
+		}
+
+		public void setR30_balance_outstanding(BigDecimal r30_balance_outstanding) {
+			this.r30_balance_outstanding = r30_balance_outstanding;
+		}
+
+		public BigDecimal getR30_no_of_acct() {
+			return r30_no_of_acct;
+		}
+
+		public void setR30_no_of_acct(BigDecimal r30_no_of_acct) {
+			this.r30_no_of_acct = r30_no_of_acct;
+		}
+
+		public String getR31_product() {
+			return r31_product;
+		}
+
+		public void setR31_product(String r31_product) {
+			this.r31_product = r31_product;
+		}
+
+		public BigDecimal getR31_approved_limit() {
+			return r31_approved_limit;
+		}
+
+		public void setR31_approved_limit(BigDecimal r31_approved_limit) {
+			this.r31_approved_limit = r31_approved_limit;
+		}
+
+		public BigDecimal getR31_balance_outstanding() {
+			return r31_balance_outstanding;
+		}
+
+		public void setR31_balance_outstanding(BigDecimal r31_balance_outstanding) {
+			this.r31_balance_outstanding = r31_balance_outstanding;
+		}
+
+		public BigDecimal getR31_no_of_acct() {
+			return r31_no_of_acct;
+		}
+
+		public void setR31_no_of_acct(BigDecimal r31_no_of_acct) {
+			this.r31_no_of_acct = r31_no_of_acct;
+		}
+
+		public String getR32_product() {
+			return r32_product;
+		}
+
+		public void setR32_product(String r32_product) {
+			this.r32_product = r32_product;
+		}
+
+		public BigDecimal getR32_approved_limit() {
+			return r32_approved_limit;
+		}
+
+		public void setR32_approved_limit(BigDecimal r32_approved_limit) {
+			this.r32_approved_limit = r32_approved_limit;
+		}
+
+		public BigDecimal getR32_balance_outstanding() {
+			return r32_balance_outstanding;
+		}
+
+		public void setR32_balance_outstanding(BigDecimal r32_balance_outstanding) {
+			this.r32_balance_outstanding = r32_balance_outstanding;
+		}
+
+		public BigDecimal getR32_no_of_acct() {
+			return r32_no_of_acct;
+		}
+
+		public void setR32_no_of_acct(BigDecimal r32_no_of_acct) {
+			this.r32_no_of_acct = r32_no_of_acct;
+		}
+
+		public String getR33_product() {
+			return r33_product;
+		}
+
+		public void setR33_product(String r33_product) {
+			this.r33_product = r33_product;
+		}
+
+		public BigDecimal getR33_approved_limit() {
+			return r33_approved_limit;
+		}
+
+		public void setR33_approved_limit(BigDecimal r33_approved_limit) {
+			this.r33_approved_limit = r33_approved_limit;
+		}
+
+		public BigDecimal getR33_balance_outstanding() {
+			return r33_balance_outstanding;
+		}
+
+		public void setR33_balance_outstanding(BigDecimal r33_balance_outstanding) {
+			this.r33_balance_outstanding = r33_balance_outstanding;
+		}
+
+		public BigDecimal getR33_no_of_acct() {
+			return r33_no_of_acct;
+		}
+
+		public void setR33_no_of_acct(BigDecimal r33_no_of_acct) {
+			this.r33_no_of_acct = r33_no_of_acct;
+		}
+
+		public String getR34_product() {
+			return r34_product;
+		}
+
+		public void setR34_product(String r34_product) {
+			this.r34_product = r34_product;
+		}
+
+		public BigDecimal getR34_approved_limit() {
+			return r34_approved_limit;
+		}
+
+		public void setR34_approved_limit(BigDecimal r34_approved_limit) {
+			this.r34_approved_limit = r34_approved_limit;
+		}
+
+		public BigDecimal getR34_balance_outstanding() {
+			return r34_balance_outstanding;
+		}
+
+		public void setR34_balance_outstanding(BigDecimal r34_balance_outstanding) {
+			this.r34_balance_outstanding = r34_balance_outstanding;
+		}
+
+		public BigDecimal getR34_no_of_acct() {
+			return r34_no_of_acct;
+		}
+
+		public void setR34_no_of_acct(BigDecimal r34_no_of_acct) {
+			this.r34_no_of_acct = r34_no_of_acct;
+		}
+
+		public String getR35_product() {
+			return r35_product;
+		}
+
+		public void setR35_product(String r35_product) {
+			this.r35_product = r35_product;
+		}
+
+		public BigDecimal getR35_approved_limit() {
+			return r35_approved_limit;
+		}
+
+		public void setR35_approved_limit(BigDecimal r35_approved_limit) {
+			this.r35_approved_limit = r35_approved_limit;
+		}
+
+		public BigDecimal getR35_balance_outstanding() {
+			return r35_balance_outstanding;
+		}
+
+		public void setR35_balance_outstanding(BigDecimal r35_balance_outstanding) {
+			this.r35_balance_outstanding = r35_balance_outstanding;
+		}
+
+		public BigDecimal getR35_no_of_acct() {
+			return r35_no_of_acct;
+		}
+
+		public void setR35_no_of_acct(BigDecimal r35_no_of_acct) {
+			this.r35_no_of_acct = r35_no_of_acct;
+		}
+
+		public String getR36_product() {
+			return r36_product;
+		}
+
+		public void setR36_product(String r36_product) {
+			this.r36_product = r36_product;
+		}
+
+		public BigDecimal getR36_approved_limit() {
+			return r36_approved_limit;
+		}
+
+		public void setR36_approved_limit(BigDecimal r36_approved_limit) {
+			this.r36_approved_limit = r36_approved_limit;
+		}
+
+		public BigDecimal getR36_balance_outstanding() {
+			return r36_balance_outstanding;
+		}
+
+		public void setR36_balance_outstanding(BigDecimal r36_balance_outstanding) {
+			this.r36_balance_outstanding = r36_balance_outstanding;
+		}
+
+		public BigDecimal getR36_no_of_acct() {
+			return r36_no_of_acct;
+		}
+
+		public void setR36_no_of_acct(BigDecimal r36_no_of_acct) {
+			this.r36_no_of_acct = r36_no_of_acct;
+		}
+
+		public String getR37_product() {
+			return r37_product;
+		}
+
+		public void setR37_product(String r37_product) {
+			this.r37_product = r37_product;
+		}
+
+		public BigDecimal getR37_approved_limit() {
+			return r37_approved_limit;
+		}
+
+		public void setR37_approved_limit(BigDecimal r37_approved_limit) {
+			this.r37_approved_limit = r37_approved_limit;
+		}
+
+		public BigDecimal getR37_balance_outstanding() {
+			return r37_balance_outstanding;
+		}
+
+		public void setR37_balance_outstanding(BigDecimal r37_balance_outstanding) {
+			this.r37_balance_outstanding = r37_balance_outstanding;
+		}
+
+		public BigDecimal getR37_no_of_acct() {
+			return r37_no_of_acct;
+		}
+
+		public void setR37_no_of_acct(BigDecimal r37_no_of_acct) {
+			this.r37_no_of_acct = r37_no_of_acct;
+		}
+
+		public String getR38_product() {
+			return r38_product;
+		}
+
+		public void setR38_product(String r38_product) {
+			this.r38_product = r38_product;
+		}
+
+		public BigDecimal getR38_approved_limit() {
+			return r38_approved_limit;
+		}
+
+		public void setR38_approved_limit(BigDecimal r38_approved_limit) {
+			this.r38_approved_limit = r38_approved_limit;
+		}
+
+		public BigDecimal getR38_balance_outstanding() {
+			return r38_balance_outstanding;
+		}
+
+		public void setR38_balance_outstanding(BigDecimal r38_balance_outstanding) {
+			this.r38_balance_outstanding = r38_balance_outstanding;
+		}
+
+		public BigDecimal getR38_no_of_acct() {
+			return r38_no_of_acct;
+		}
+
+		public void setR38_no_of_acct(BigDecimal r38_no_of_acct) {
+			this.r38_no_of_acct = r38_no_of_acct;
+		}
+
+		public String getR39_product() {
+			return r39_product;
+		}
+
+		public void setR39_product(String r39_product) {
+			this.r39_product = r39_product;
+		}
+
+		public BigDecimal getR39_approved_limit() {
+			return r39_approved_limit;
+		}
+
+		public void setR39_approved_limit(BigDecimal r39_approved_limit) {
+			this.r39_approved_limit = r39_approved_limit;
+		}
+
+		public BigDecimal getR39_balance_outstanding() {
+			return r39_balance_outstanding;
+		}
+
+		public void setR39_balance_outstanding(BigDecimal r39_balance_outstanding) {
+			this.r39_balance_outstanding = r39_balance_outstanding;
+		}
+
+		public BigDecimal getR39_no_of_acct() {
+			return r39_no_of_acct;
+		}
+
+		public void setR39_no_of_acct(BigDecimal r39_no_of_acct) {
+			this.r39_no_of_acct = r39_no_of_acct;
+		}
+
+		public String getR40_product() {
+			return r40_product;
+		}
+
+		public void setR40_product(String r40_product) {
+			this.r40_product = r40_product;
+		}
+
+		public BigDecimal getR40_approved_limit() {
+			return r40_approved_limit;
+		}
+
+		public void setR40_approved_limit(BigDecimal r40_approved_limit) {
+			this.r40_approved_limit = r40_approved_limit;
+		}
+
+		public BigDecimal getR40_balance_outstanding() {
+			return r40_balance_outstanding;
+		}
+
+		public void setR40_balance_outstanding(BigDecimal r40_balance_outstanding) {
+			this.r40_balance_outstanding = r40_balance_outstanding;
+		}
+
+		public BigDecimal getR40_no_of_acct() {
+			return r40_no_of_acct;
+		}
+
+		public void setR40_no_of_acct(BigDecimal r40_no_of_acct) {
+			this.r40_no_of_acct = r40_no_of_acct;
+		}
+
+		public String getR41_product() {
+			return r41_product;
+		}
+
+		public void setR41_product(String r41_product) {
+			this.r41_product = r41_product;
+		}
+
+		public BigDecimal getR41_approved_limit() {
+			return r41_approved_limit;
+		}
+
+		public void setR41_approved_limit(BigDecimal r41_approved_limit) {
+			this.r41_approved_limit = r41_approved_limit;
+		}
+
+		public BigDecimal getR41_balance_outstanding() {
+			return r41_balance_outstanding;
+		}
+
+		public void setR41_balance_outstanding(BigDecimal r41_balance_outstanding) {
+			this.r41_balance_outstanding = r41_balance_outstanding;
+		}
+
+		public BigDecimal getR41_no_of_acct() {
+			return r41_no_of_acct;
+		}
+
+		public void setR41_no_of_acct(BigDecimal r41_no_of_acct) {
+			this.r41_no_of_acct = r41_no_of_acct;
+		}
+
+		public String getR42_product() {
+			return r42_product;
+		}
+
+		public void setR42_product(String r42_product) {
+			this.r42_product = r42_product;
+		}
+
+		public BigDecimal getR42_approved_limit() {
+			return r42_approved_limit;
+		}
+
+		public void setR42_approved_limit(BigDecimal r42_approved_limit) {
+			this.r42_approved_limit = r42_approved_limit;
+		}
+
+		public BigDecimal getR42_balance_outstanding() {
+			return r42_balance_outstanding;
+		}
+
+		public void setR42_balance_outstanding(BigDecimal r42_balance_outstanding) {
+			this.r42_balance_outstanding = r42_balance_outstanding;
+		}
+
+		public BigDecimal getR42_no_of_acct() {
+			return r42_no_of_acct;
+		}
+
+		public void setR42_no_of_acct(BigDecimal r42_no_of_acct) {
+			this.r42_no_of_acct = r42_no_of_acct;
+		}
+
+		public String getR43_product() {
+			return r43_product;
+		}
+
+		public void setR43_product(String r43_product) {
+			this.r43_product = r43_product;
+		}
+
+		public BigDecimal getR43_approved_limit() {
+			return r43_approved_limit;
+		}
+
+		public void setR43_approved_limit(BigDecimal r43_approved_limit) {
+			this.r43_approved_limit = r43_approved_limit;
+		}
+
+		public BigDecimal getR43_balance_outstanding() {
+			return r43_balance_outstanding;
+		}
+
+		public void setR43_balance_outstanding(BigDecimal r43_balance_outstanding) {
+			this.r43_balance_outstanding = r43_balance_outstanding;
+		}
+
+		public BigDecimal getR43_no_of_acct() {
+			return r43_no_of_acct;
+		}
+
+		public void setR43_no_of_acct(BigDecimal r43_no_of_acct) {
+			this.r43_no_of_acct = r43_no_of_acct;
+		}
+
+		public String getR44_product() {
+			return r44_product;
+		}
+
+		public void setR44_product(String r44_product) {
+			this.r44_product = r44_product;
+		}
+
+		public BigDecimal getR44_approved_limit() {
+			return r44_approved_limit;
+		}
+
+		public void setR44_approved_limit(BigDecimal r44_approved_limit) {
+			this.r44_approved_limit = r44_approved_limit;
+		}
+
+		public BigDecimal getR44_balance_outstanding() {
+			return r44_balance_outstanding;
+		}
+
+		public void setR44_balance_outstanding(BigDecimal r44_balance_outstanding) {
+			this.r44_balance_outstanding = r44_balance_outstanding;
+		}
+
+		public BigDecimal getR44_no_of_acct() {
+			return r44_no_of_acct;
+		}
+
+		public void setR44_no_of_acct(BigDecimal r44_no_of_acct) {
+			this.r44_no_of_acct = r44_no_of_acct;
+		}
+
+		public String getR45_product() {
+			return r45_product;
+		}
+
+		public void setR45_product(String r45_product) {
+			this.r45_product = r45_product;
+		}
+
+		public BigDecimal getR45_approved_limit() {
+			return r45_approved_limit;
+		}
+
+		public void setR45_approved_limit(BigDecimal r45_approved_limit) {
+			this.r45_approved_limit = r45_approved_limit;
+		}
+
+		public BigDecimal getR45_balance_outstanding() {
+			return r45_balance_outstanding;
+		}
+
+		public void setR45_balance_outstanding(BigDecimal r45_balance_outstanding) {
+			this.r45_balance_outstanding = r45_balance_outstanding;
+		}
+
+		public BigDecimal getR45_no_of_acct() {
+			return r45_no_of_acct;
+		}
+
+		public void setR45_no_of_acct(BigDecimal r45_no_of_acct) {
+			this.r45_no_of_acct = r45_no_of_acct;
+		}
+
+		public String getR46_product() {
+			return r46_product;
+		}
+
+		public void setR46_product(String r46_product) {
+			this.r46_product = r46_product;
+		}
+
+		public BigDecimal getR46_approved_limit() {
+			return r46_approved_limit;
+		}
+
+		public void setR46_approved_limit(BigDecimal r46_approved_limit) {
+			this.r46_approved_limit = r46_approved_limit;
+		}
+
+		public BigDecimal getR46_balance_outstanding() {
+			return r46_balance_outstanding;
+		}
+
+		public void setR46_balance_outstanding(BigDecimal r46_balance_outstanding) {
+			this.r46_balance_outstanding = r46_balance_outstanding;
+		}
+
+		public BigDecimal getR46_no_of_acct() {
+			return r46_no_of_acct;
+		}
+
+		public void setR46_no_of_acct(BigDecimal r46_no_of_acct) {
+			this.r46_no_of_acct = r46_no_of_acct;
+		}
+
+		public String getR47_product() {
+			return r47_product;
+		}
+
+		public void setR47_product(String r47_product) {
+			this.r47_product = r47_product;
+		}
+
+		public BigDecimal getR47_approved_limit() {
+			return r47_approved_limit;
+		}
+
+		public void setR47_approved_limit(BigDecimal r47_approved_limit) {
+			this.r47_approved_limit = r47_approved_limit;
+		}
+
+		public BigDecimal getR47_balance_outstanding() {
+			return r47_balance_outstanding;
+		}
+
+		public void setR47_balance_outstanding(BigDecimal r47_balance_outstanding) {
+			this.r47_balance_outstanding = r47_balance_outstanding;
+		}
+
+		public BigDecimal getR47_no_of_acct() {
+			return r47_no_of_acct;
+		}
+
+		public void setR47_no_of_acct(BigDecimal r47_no_of_acct) {
+			this.r47_no_of_acct = r47_no_of_acct;
+		}
+
+		public String getR48_product() {
+			return r48_product;
+		}
+
+		public void setR48_product(String r48_product) {
+			this.r48_product = r48_product;
+		}
+
+		public BigDecimal getR48_approved_limit() {
+			return r48_approved_limit;
+		}
+
+		public void setR48_approved_limit(BigDecimal r48_approved_limit) {
+			this.r48_approved_limit = r48_approved_limit;
+		}
+
+		public BigDecimal getR48_balance_outstanding() {
+			return r48_balance_outstanding;
+		}
+
+		public void setR48_balance_outstanding(BigDecimal r48_balance_outstanding) {
+			this.r48_balance_outstanding = r48_balance_outstanding;
+		}
+
+		public BigDecimal getR48_no_of_acct() {
+			return r48_no_of_acct;
+		}
+
+		public void setR48_no_of_acct(BigDecimal r48_no_of_acct) {
+			this.r48_no_of_acct = r48_no_of_acct;
+		}
+
+		public String getR49_product() {
+			return r49_product;
+		}
+
+		public void setR49_product(String r49_product) {
+			this.r49_product = r49_product;
+		}
+
+		public BigDecimal getR49_approved_limit() {
+			return r49_approved_limit;
+		}
+
+		public void setR49_approved_limit(BigDecimal r49_approved_limit) {
+			this.r49_approved_limit = r49_approved_limit;
+		}
+
+		public BigDecimal getR49_balance_outstanding() {
+			return r49_balance_outstanding;
+		}
+
+		public void setR49_balance_outstanding(BigDecimal r49_balance_outstanding) {
+			this.r49_balance_outstanding = r49_balance_outstanding;
+		}
+
+		public BigDecimal getR49_no_of_acct() {
+			return r49_no_of_acct;
+		}
+
+		public void setR49_no_of_acct(BigDecimal r49_no_of_acct) {
+			this.r49_no_of_acct = r49_no_of_acct;
+		}
+
+		public String getR50_product() {
+			return r50_product;
+		}
+
+		public void setR50_product(String r50_product) {
+			this.r50_product = r50_product;
+		}
+
+		public BigDecimal getR50_approved_limit() {
+			return r50_approved_limit;
+		}
+
+		public void setR50_approved_limit(BigDecimal r50_approved_limit) {
+			this.r50_approved_limit = r50_approved_limit;
+		}
+
+		public BigDecimal getR50_balance_outstanding() {
+			return r50_balance_outstanding;
+		}
+
+		public void setR50_balance_outstanding(BigDecimal r50_balance_outstanding) {
+			this.r50_balance_outstanding = r50_balance_outstanding;
+		}
+
+		public BigDecimal getR50_no_of_acct() {
+			return r50_no_of_acct;
+		}
+
+		public void setR50_no_of_acct(BigDecimal r50_no_of_acct) {
+			this.r50_no_of_acct = r50_no_of_acct;
+		}
+
+		public String getR51_product() {
+			return r51_product;
+		}
+
+		public void setR51_product(String r51_product) {
+			this.r51_product = r51_product;
+		}
+
+		public BigDecimal getR51_approved_limit() {
+			return r51_approved_limit;
+		}
+
+		public void setR51_approved_limit(BigDecimal r51_approved_limit) {
+			this.r51_approved_limit = r51_approved_limit;
+		}
+
+		public BigDecimal getR51_balance_outstanding() {
+			return r51_balance_outstanding;
+		}
+
+		public void setR51_balance_outstanding(BigDecimal r51_balance_outstanding) {
+			this.r51_balance_outstanding = r51_balance_outstanding;
+		}
+
+		public BigDecimal getR51_no_of_acct() {
+			return r51_no_of_acct;
+		}
+
+		public void setR51_no_of_acct(BigDecimal r51_no_of_acct) {
+			this.r51_no_of_acct = r51_no_of_acct;
+		}
+
+		public String getR52_product() {
+			return r52_product;
+		}
+
+		public void setR52_product(String r52_product) {
+			this.r52_product = r52_product;
+		}
+
+		public BigDecimal getR52_approved_limit() {
+			return r52_approved_limit;
+		}
+
+		public void setR52_approved_limit(BigDecimal r52_approved_limit) {
+			this.r52_approved_limit = r52_approved_limit;
+		}
+
+		public BigDecimal getR52_balance_outstanding() {
+			return r52_balance_outstanding;
+		}
+
+		public void setR52_balance_outstanding(BigDecimal r52_balance_outstanding) {
+			this.r52_balance_outstanding = r52_balance_outstanding;
+		}
+
+		public BigDecimal getR52_no_of_acct() {
+			return r52_no_of_acct;
+		}
+
+		public void setR52_no_of_acct(BigDecimal r52_no_of_acct) {
+			this.r52_no_of_acct = r52_no_of_acct;
+		}
+
+		public String getR53_product() {
+			return r53_product;
+		}
+
+		public void setR53_product(String r53_product) {
+			this.r53_product = r53_product;
+		}
+
+		public BigDecimal getR53_approved_limit() {
+			return r53_approved_limit;
+		}
+
+		public void setR53_approved_limit(BigDecimal r53_approved_limit) {
+			this.r53_approved_limit = r53_approved_limit;
+		}
+
+		public BigDecimal getR53_balance_outstanding() {
+			return r53_balance_outstanding;
+		}
+
+		public void setR53_balance_outstanding(BigDecimal r53_balance_outstanding) {
+			this.r53_balance_outstanding = r53_balance_outstanding;
+		}
+
+		public BigDecimal getR53_no_of_acct() {
+			return r53_no_of_acct;
+		}
+
+		public void setR53_no_of_acct(BigDecimal r53_no_of_acct) {
+			this.r53_no_of_acct = r53_no_of_acct;
+		}
+
+		public String getR54_product() {
+			return r54_product;
+		}
+
+		public void setR54_product(String r54_product) {
+			this.r54_product = r54_product;
+		}
+
+		public BigDecimal getR54_approved_limit() {
+			return r54_approved_limit;
+		}
+
+		public void setR54_approved_limit(BigDecimal r54_approved_limit) {
+			this.r54_approved_limit = r54_approved_limit;
+		}
+
+		public BigDecimal getR54_balance_outstanding() {
+			return r54_balance_outstanding;
+		}
+
+		public void setR54_balance_outstanding(BigDecimal r54_balance_outstanding) {
+			this.r54_balance_outstanding = r54_balance_outstanding;
+		}
+
+		public BigDecimal getR54_no_of_acct() {
+			return r54_no_of_acct;
+		}
+
+		public void setR54_no_of_acct(BigDecimal r54_no_of_acct) {
+			this.r54_no_of_acct = r54_no_of_acct;
+		}
+
+		public String getR55_product() {
+			return r55_product;
+		}
+
+		public void setR55_product(String r55_product) {
+			this.r55_product = r55_product;
+		}
+
+		public BigDecimal getR55_approved_limit() {
+			return r55_approved_limit;
+		}
+
+		public void setR55_approved_limit(BigDecimal r55_approved_limit) {
+			this.r55_approved_limit = r55_approved_limit;
+		}
+
+		public BigDecimal getR55_balance_outstanding() {
+			return r55_balance_outstanding;
+		}
+
+		public void setR55_balance_outstanding(BigDecimal r55_balance_outstanding) {
+			this.r55_balance_outstanding = r55_balance_outstanding;
+		}
+
+		public BigDecimal getR55_no_of_acct() {
+			return r55_no_of_acct;
+		}
+
+		public void setR55_no_of_acct(BigDecimal r55_no_of_acct) {
+			this.r55_no_of_acct = r55_no_of_acct;
+		}
+
+		public String getR56_product() {
+			return r56_product;
+		}
+
+		public void setR56_product(String r56_product) {
+			this.r56_product = r56_product;
+		}
+
+		public BigDecimal getR56_approved_limit() {
+			return r56_approved_limit;
+		}
+
+		public void setR56_approved_limit(BigDecimal r56_approved_limit) {
+			this.r56_approved_limit = r56_approved_limit;
+		}
+
+		public BigDecimal getR56_balance_outstanding() {
+			return r56_balance_outstanding;
+		}
+
+		public void setR56_balance_outstanding(BigDecimal r56_balance_outstanding) {
+			this.r56_balance_outstanding = r56_balance_outstanding;
+		}
+
+		public BigDecimal getR56_no_of_acct() {
+			return r56_no_of_acct;
+		}
+
+		public void setR56_no_of_acct(BigDecimal r56_no_of_acct) {
+			this.r56_no_of_acct = r56_no_of_acct;
+		}
+
+		public String getR57_product() {
+			return r57_product;
+		}
+
+		public void setR57_product(String r57_product) {
+			this.r57_product = r57_product;
+		}
+
+		public BigDecimal getR57_approved_limit() {
+			return r57_approved_limit;
+		}
+
+		public void setR57_approved_limit(BigDecimal r57_approved_limit) {
+			this.r57_approved_limit = r57_approved_limit;
+		}
+
+		public BigDecimal getR57_balance_outstanding() {
+			return r57_balance_outstanding;
+		}
+
+		public void setR57_balance_outstanding(BigDecimal r57_balance_outstanding) {
+			this.r57_balance_outstanding = r57_balance_outstanding;
+		}
+
+		public BigDecimal getR57_no_of_acct() {
+			return r57_no_of_acct;
+		}
+
+		public void setR57_no_of_acct(BigDecimal r57_no_of_acct) {
+			this.r57_no_of_acct = r57_no_of_acct;
+		}
+
+		public String getR58_product() {
+			return r58_product;
+		}
+
+		public void setR58_product(String r58_product) {
+			this.r58_product = r58_product;
+		}
+
+		public BigDecimal getR58_approved_limit() {
+			return r58_approved_limit;
+		}
+
+		public void setR58_approved_limit(BigDecimal r58_approved_limit) {
+			this.r58_approved_limit = r58_approved_limit;
+		}
+
+		public BigDecimal getR58_balance_outstanding() {
+			return r58_balance_outstanding;
+		}
+
+		public void setR58_balance_outstanding(BigDecimal r58_balance_outstanding) {
+			this.r58_balance_outstanding = r58_balance_outstanding;
+		}
+
+		public BigDecimal getR58_no_of_acct() {
+			return r58_no_of_acct;
+		}
+
+		public void setR58_no_of_acct(BigDecimal r58_no_of_acct) {
+			this.r58_no_of_acct = r58_no_of_acct;
+		}
+
+		public String getR59_product() {
+			return r59_product;
+		}
+
+		public void setR59_product(String r59_product) {
+			this.r59_product = r59_product;
+		}
+
+		public BigDecimal getR59_approved_limit() {
+			return r59_approved_limit;
+		}
+
+		public void setR59_approved_limit(BigDecimal r59_approved_limit) {
+			this.r59_approved_limit = r59_approved_limit;
+		}
+
+		public BigDecimal getR59_balance_outstanding() {
+			return r59_balance_outstanding;
+		}
+
+		public void setR59_balance_outstanding(BigDecimal r59_balance_outstanding) {
+			this.r59_balance_outstanding = r59_balance_outstanding;
+		}
+
+		public BigDecimal getR59_no_of_acct() {
+			return r59_no_of_acct;
+		}
+
+		public void setR59_no_of_acct(BigDecimal r59_no_of_acct) {
+			this.r59_no_of_acct = r59_no_of_acct;
+		}
+
+		public String getR60_product() {
+			return r60_product;
+		}
+
+		public void setR60_product(String r60_product) {
+			this.r60_product = r60_product;
+		}
+
+		public BigDecimal getR60_approved_limit() {
+			return r60_approved_limit;
+		}
+
+		public void setR60_approved_limit(BigDecimal r60_approved_limit) {
+			this.r60_approved_limit = r60_approved_limit;
+		}
+
+		public BigDecimal getR60_balance_outstanding() {
+			return r60_balance_outstanding;
+		}
+
+		public void setR60_balance_outstanding(BigDecimal r60_balance_outstanding) {
+			this.r60_balance_outstanding = r60_balance_outstanding;
+		}
+
+		public BigDecimal getR60_no_of_acct() {
+			return r60_no_of_acct;
+		}
+
+		public void setR60_no_of_acct(BigDecimal r60_no_of_acct) {
+			this.r60_no_of_acct = r60_no_of_acct;
+		}
+
+		public String getR61_product() {
+			return r61_product;
+		}
+
+		public void setR61_product(String r61_product) {
+			this.r61_product = r61_product;
+		}
+
+		public BigDecimal getR61_approved_limit() {
+			return r61_approved_limit;
+		}
+
+		public void setR61_approved_limit(BigDecimal r61_approved_limit) {
+			this.r61_approved_limit = r61_approved_limit;
+		}
+
+		public BigDecimal getR61_balance_outstanding() {
+			return r61_balance_outstanding;
+		}
+
+		public void setR61_balance_outstanding(BigDecimal r61_balance_outstanding) {
+			this.r61_balance_outstanding = r61_balance_outstanding;
+		}
+
+		public BigDecimal getR61_no_of_acct() {
+			return r61_no_of_acct;
+		}
+
+		public void setR61_no_of_acct(BigDecimal r61_no_of_acct) {
+			this.r61_no_of_acct = r61_no_of_acct;
+		}
+
+		public String getR62_product() {
+			return r62_product;
+		}
+
+		public void setR62_product(String r62_product) {
+			this.r62_product = r62_product;
+		}
+
+		public BigDecimal getR62_approved_limit() {
+			return r62_approved_limit;
+		}
+
+		public void setR62_approved_limit(BigDecimal r62_approved_limit) {
+			this.r62_approved_limit = r62_approved_limit;
+		}
+
+		public BigDecimal getR62_balance_outstanding() {
+			return r62_balance_outstanding;
+		}
+
+		public void setR62_balance_outstanding(BigDecimal r62_balance_outstanding) {
+			this.r62_balance_outstanding = r62_balance_outstanding;
+		}
+
+		public BigDecimal getR62_no_of_acct() {
+			return r62_no_of_acct;
+		}
+
+		public void setR62_no_of_acct(BigDecimal r62_no_of_acct) {
+			this.r62_no_of_acct = r62_no_of_acct;
+		}
+
+		public String getR63_product() {
+			return r63_product;
+		}
+
+		public void setR63_product(String r63_product) {
+			this.r63_product = r63_product;
+		}
+
+		public BigDecimal getR63_approved_limit() {
+			return r63_approved_limit;
+		}
+
+		public void setR63_approved_limit(BigDecimal r63_approved_limit) {
+			this.r63_approved_limit = r63_approved_limit;
+		}
+
+		public BigDecimal getR63_balance_outstanding() {
+			return r63_balance_outstanding;
+		}
+
+		public void setR63_balance_outstanding(BigDecimal r63_balance_outstanding) {
+			this.r63_balance_outstanding = r63_balance_outstanding;
+		}
+
+		public BigDecimal getR63_no_of_acct() {
+			return r63_no_of_acct;
+		}
+
+		public void setR63_no_of_acct(BigDecimal r63_no_of_acct) {
+			this.r63_no_of_acct = r63_no_of_acct;
+		}
+
+		public String getR64_product() {
+			return r64_product;
+		}
+
+		public void setR64_product(String r64_product) {
+			this.r64_product = r64_product;
+		}
+
+		public BigDecimal getR64_approved_limit() {
+			return r64_approved_limit;
+		}
+
+		public void setR64_approved_limit(BigDecimal r64_approved_limit) {
+			this.r64_approved_limit = r64_approved_limit;
+		}
+
+		public BigDecimal getR64_balance_outstanding() {
+			return r64_balance_outstanding;
+		}
+
+		public void setR64_balance_outstanding(BigDecimal r64_balance_outstanding) {
+			this.r64_balance_outstanding = r64_balance_outstanding;
+		}
+
+		public BigDecimal getR64_no_of_acct() {
+			return r64_no_of_acct;
+		}
+
+		public void setR64_no_of_acct(BigDecimal r64_no_of_acct) {
+			this.r64_no_of_acct = r64_no_of_acct;
+		}
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public Date getREPORT_RESUBDATE() {
+			return REPORT_RESUBDATE;
+		}
+
+		public void setREPORT_RESUBDATE(Date REPORT_RESUBDATE) {
+			this.REPORT_RESUBDATE = REPORT_RESUBDATE;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal rEPORT_VERSION) {
+			REPORT_VERSION = rEPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
+	// DETAIL ROW MAPPER
+	class M_LA1DetaillRowMapper implements RowMapper<M_LA1_Detail_Entity> {
+
+		@Override
+		public M_LA1_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			M_LA1_Detail_Entity obj = new M_LA1_Detail_Entity();
+
+			obj.setSno(rs.getLong("SNO"));
+			obj.setCust_id(rs.getString("cust_id"));
+			obj.setAcct_number(rs.getString("acct_number"));
+			obj.setAcct_name(rs.getString("acct_name"));
+			obj.setData_type(rs.getString("data_type"));
+			obj.setReport_label(rs.getString("report_label"));
+			obj.setReport_addl_criteria_1(rs.getString("report_addl_criteria_1"));
+			obj.setReport_remarks(rs.getString("report_remarks"));
+			obj.setModification_remarks(rs.getString("modification_remarks"));
+			obj.setData_entry_version(rs.getString("data_entry_version"));
+			obj.setAcct_balance_in_pula(rs.getBigDecimal("acct_balance_in_pula"));
+
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_name(rs.getString("report_name"));
+			obj.setCreate_user(rs.getString("create_user"));
+			obj.setCreate_time(rs.getDate("create_time"));
+			obj.setModify_user(rs.getString("modify_user"));
+			obj.setModify_time(rs.getDate("modify_time"));
+			obj.setVerify_user(rs.getString("verify_user"));
+			obj.setVerify_time(rs.getDate("verify_time"));
+
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+			obj.setSanction_limit(rs.getBigDecimal("sanction_limit"));
+			obj.setSegment(rs.getString("segment"));
+			obj.setReport_addl_criteria_2(rs.getString("report_addl_criteria_2"));
+			obj.setReport_addl_criteria_3(rs.getString("report_addl_criteria_3"));
+			obj.setSchm_desc(rs.getString("schm_desc"));
+
+			return obj;
+		}
+	}
+
+	public class M_LA1_Detail_Entity {
+
+		private Long sno;
+		private String cust_id;
+		private String acct_number;
+		private String acct_name;
+		private String data_type;
+		private String report_label;
+		private String report_addl_criteria_1;
+		private String report_remarks;
+		private String modification_remarks;
+		private String data_entry_version;
+		private BigDecimal acct_balance_in_pula;
+
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		private Date report_date;
+		private String report_name;
+		private String create_user;
+		private Date create_time;
+		private String modify_user;
+		private Date modify_time;
+		private String verify_user;
+		private Date verify_time;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+		private BigDecimal sanction_limit;
+		private String segment;
+		private String report_addl_criteria_2;
+		private String report_addl_criteria_3;
+		private String schm_desc;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
+
+		public String getCust_id() {
+			return cust_id;
+		}
+
+		public void setCust_id(String cust_id) {
+			this.cust_id = cust_id;
+		}
+
+		public String getAcct_number() {
+			return acct_number;
+		}
+
+		public void setAcct_number(String acct_number) {
+			this.acct_number = acct_number;
+		}
+
+		public String getAcct_name() {
+			return acct_name;
+		}
+
+		public void setAcct_name(String acct_name) {
+			this.acct_name = acct_name;
+		}
+
+		public String getData_type() {
+			return data_type;
+		}
+
+		public void setData_type(String data_type) {
+			this.data_type = data_type;
+		}
+
+		public String getReport_label() {
+			return report_label;
+		}
+
+		public void setReport_label(String report_label) {
+			this.report_label = report_label;
+		}
+
+		public String getReport_addl_criteria_1() {
+			return report_addl_criteria_1;
+		}
+
+		public void setReport_addl_criteria_1(String report_addl_criteria_1) {
+			this.report_addl_criteria_1 = report_addl_criteria_1;
+		}
+
+		public String getReport_remarks() {
+			return report_remarks;
+		}
+
+		public void setReport_remarks(String report_remarks) {
+			this.report_remarks = report_remarks;
+		}
+
+		public String getModification_remarks() {
+			return modification_remarks;
+		}
+
+		public void setModification_remarks(String modification_remarks) {
+			this.modification_remarks = modification_remarks;
+		}
+
+		public String getData_entry_version() {
+			return data_entry_version;
+		}
+
+		public void setData_entry_version(String data_entry_version) {
+			this.data_entry_version = data_entry_version;
+		}
+
+		public BigDecimal getAcct_balance_in_pula() {
+			return acct_balance_in_pula;
+		}
+
+		public void setAcct_balance_in_pula(BigDecimal acct_balance_in_pula) {
+			this.acct_balance_in_pula = acct_balance_in_pula;
+		}
+
+		public Date getReport_date() {
+			return report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public String getReport_name() {
+			return report_name;
+		}
+
+		public void setReport_name(String report_name) {
+			this.report_name = report_name;
+		}
+
+		public String getCreate_user() {
+			return create_user;
+		}
+
+		public void setCreate_user(String create_user) {
+			this.create_user = create_user;
+		}
+
+		public Date getCreate_time() {
+			return create_time;
+		}
+
+		public void setCreate_time(Date create_time) {
+			this.create_time = create_time;
+		}
+
+		public String getModify_user() {
+			return modify_user;
+		}
+
+		public void setModify_user(String modify_user) {
+			this.modify_user = modify_user;
+		}
+
+		public Date getModify_time() {
+			return modify_time;
+		}
+
+		public void setModify_time(Date modify_time) {
+			this.modify_time = modify_time;
+		}
+
+		public String getVerify_user() {
+			return verify_user;
+		}
+
+		public void setVerify_user(String verify_user) {
+			this.verify_user = verify_user;
+		}
+
+		public Date getVerify_time() {
+			return verify_time;
+		}
+
+		public void setVerify_time(Date verify_time) {
+			this.verify_time = verify_time;
+		}
+
+		public String getEntity_flg() {
+			return entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		public BigDecimal getSanction_limit() {
+			return sanction_limit;
+		}
+
+		public void setSanction_limit(BigDecimal sanction_limit) {
+			this.sanction_limit = sanction_limit;
+		}
+
+		public String getSegment() {
+			return segment;
+		}
+
+		public void setSegment(String segment) {
+			this.segment = segment;
+		}
+
+		public String getReport_addl_criteria_2() {
+			return report_addl_criteria_2;
+		}
+
+		public void setReport_addl_criteria_2(String report_addl_criteria_2) {
+			this.report_addl_criteria_2 = report_addl_criteria_2;
+		}
+
+		public String getReport_addl_criteria_3() {
+			return report_addl_criteria_3;
+		}
+
+		public void setReport_addl_criteria_3(String report_addl_criteria_3) {
+			this.report_addl_criteria_3 = report_addl_criteria_3;
+		}
+
+		public String getSchm_desc() {
+			return schm_desc;
+		}
+
+		public void setSchm_desc(String schm_desc) {
+			this.schm_desc = schm_desc;
+		}
+	}
+
+	// DETAIL ARCHIVAL ROW MAPPER
+	class M_LA1ArchivalDetaillRowMapper implements RowMapper<M_LA1_Archival_Detail_Entity> {
+
+		@Override
+		public M_LA1_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			M_LA1_Archival_Detail_Entity obj = new M_LA1_Archival_Detail_Entity();
+
+			obj.setSno(rs.getLong("SNO"));
+			obj.setCust_id(rs.getString("cust_id"));
+			obj.setAcct_number(rs.getString("acct_number"));
+			obj.setAcct_name(rs.getString("acct_name"));
+			obj.setData_type(rs.getString("data_type"));
+			obj.setReport_label(rs.getString("report_label"));
+			obj.setReport_addl_criteria_1(rs.getString("report_addl_criteria_1"));
+			obj.setReport_remarks(rs.getString("report_remarks"));
+			obj.setModification_remarks(rs.getString("modification_remarks"));
+			obj.setData_entry_version(rs.getString("data_entry_version"));
+			obj.setAcct_balance_in_pula(rs.getBigDecimal("acct_balance_in_pula"));
+
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_name(rs.getString("report_name"));
+			obj.setCreate_user(rs.getString("create_user"));
+			obj.setCreate_time(rs.getDate("create_time"));
+			obj.setModify_user(rs.getString("modify_user"));
+			obj.setModify_time(rs.getDate("modify_time"));
+			obj.setVerify_user(rs.getString("verify_user"));
+			obj.setVerify_time(rs.getDate("verify_time"));
+
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+			obj.setSanction_limit(rs.getBigDecimal("sanction_limit"));
+			obj.setSegment(rs.getString("segment"));
+			obj.setReport_addl_criteria_2(rs.getString("report_addl_criteria_2"));
+			obj.setReport_addl_criteria_3(rs.getString("report_addl_criteria_3"));
+			obj.setSchm_desc(rs.getString("schm_desc"));
+
+			return obj;
+		}
+	}
+
+	public class M_LA1_Archival_Detail_Entity {
+
+		private Long sno;
+		private String cust_id;
+		private String acct_number;
+		private String acct_name;
+		private String data_type;
+		private String report_label;
+		private String report_addl_criteria_1;
+		private String report_remarks;
+		private String modification_remarks;
+		private String data_entry_version;
+		private BigDecimal acct_balance_in_pula;
+
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
+		private Date report_date;
+		private String report_name;
+		private String create_user;
+		private Date create_time;
+		private String modify_user;
+		private Date modify_time;
+		private String verify_user;
+		private Date verify_time;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+		private BigDecimal sanction_limit;
+		private String segment;
+		private String report_addl_criteria_2;
+		private String report_addl_criteria_3;
+		private String schm_desc;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
+
+		public String getCust_id() {
+			return cust_id;
+		}
+
+		public void setCust_id(String cust_id) {
+			this.cust_id = cust_id;
+		}
+
+		public String getAcct_number() {
+			return acct_number;
+		}
+
+		public void setAcct_number(String acct_number) {
+			this.acct_number = acct_number;
+		}
+
+		public String getAcct_name() {
+			return acct_name;
+		}
+
+		public void setAcct_name(String acct_name) {
+			this.acct_name = acct_name;
+		}
+
+		public String getData_type() {
+			return data_type;
+		}
+
+		public void setData_type(String data_type) {
+			this.data_type = data_type;
+		}
+
+		public String getReport_label() {
+			return report_label;
+		}
+
+		public void setReport_label(String report_label) {
+			this.report_label = report_label;
+		}
+
+		public String getReport_addl_criteria_1() {
+			return report_addl_criteria_1;
+		}
+
+		public void setReport_addl_criteria_1(String report_addl_criteria_1) {
+			this.report_addl_criteria_1 = report_addl_criteria_1;
+		}
+
+		public String getReport_remarks() {
+			return report_remarks;
+		}
+
+		public void setReport_remarks(String report_remarks) {
+			this.report_remarks = report_remarks;
+		}
+
+		public String getModification_remarks() {
+			return modification_remarks;
+		}
+
+		public void setModification_remarks(String modification_remarks) {
+			this.modification_remarks = modification_remarks;
+		}
+
+		public String getData_entry_version() {
+			return data_entry_version;
+		}
+
+		public void setData_entry_version(String data_entry_version) {
+			this.data_entry_version = data_entry_version;
+		}
+
+		public BigDecimal getAcct_balance_in_pula() {
+			return acct_balance_in_pula;
+		}
+
+		public void setAcct_balance_in_pula(BigDecimal acct_balance_in_pula) {
+			this.acct_balance_in_pula = acct_balance_in_pula;
+		}
+
+		public Date getReport_date() {
+			return report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public String getReport_name() {
+			return report_name;
+		}
+
+		public void setReport_name(String report_name) {
+			this.report_name = report_name;
+		}
+
+		public String getCreate_user() {
+			return create_user;
+		}
+
+		public void setCreate_user(String create_user) {
+			this.create_user = create_user;
+		}
+
+		public Date getCreate_time() {
+			return create_time;
+		}
+
+		public void setCreate_time(Date create_time) {
+			this.create_time = create_time;
+		}
+
+		public String getModify_user() {
+			return modify_user;
+		}
+
+		public void setModify_user(String modify_user) {
+			this.modify_user = modify_user;
+		}
+
+		public Date getModify_time() {
+			return modify_time;
+		}
+
+		public void setModify_time(Date modify_time) {
+			this.modify_time = modify_time;
+		}
+
+		public String getVerify_user() {
+			return verify_user;
+		}
+
+		public void setVerify_user(String verify_user) {
+			this.verify_user = verify_user;
+		}
+
+		public Date getVerify_time() {
+			return verify_time;
+		}
+
+		public void setVerify_time(Date verify_time) {
+			this.verify_time = verify_time;
+		}
+
+		public String getEntity_flg() {
+			return entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		public BigDecimal getSanction_limit() {
+			return sanction_limit;
+		}
+
+		public void setSanction_limit(BigDecimal sanction_limit) {
+			this.sanction_limit = sanction_limit;
+		}
+
+		public String getSegment() {
+			return segment;
+		}
+
+		public void setSegment(String segment) {
+			this.segment = segment;
+		}
+
+		public String getReport_addl_criteria_2() {
+			return report_addl_criteria_2;
+		}
+
+		public void setReport_addl_criteria_2(String report_addl_criteria_2) {
+			this.report_addl_criteria_2 = report_addl_criteria_2;
+		}
+
+		public String getReport_addl_criteria_3() {
+			return report_addl_criteria_3;
+		}
+
+		public void setReport_addl_criteria_3(String report_addl_criteria_3) {
+			this.report_addl_criteria_3 = report_addl_criteria_3;
+		}
+
+		public String getSchm_desc() {
+			return schm_desc;
+		}
+
+		public void setSchm_desc(String schm_desc) {
+			this.schm_desc = schm_desc;
+		}
+	}
+
+	@Autowired
+	UserProfileRep userProfileRep;
+
+	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+
+	public ModelAndView getM_LA1View(String reportId, String fromdate, String todate, String currency, String dtltype,
+	        Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
+
+	    ModelAndView mv = new ModelAndView();
+
+	    String userid = (String) req1.getSession().getAttribute("USERID");
+	    System.out.println("User Id Maker and Checker: " + userid);
+	    String role = userProfileRep.getUserRole(userid);
+	    md.addAttribute("role", role);
+	    System.out.println("Role: " + role);
+
+	    Session hs = sessionFactory.getCurrentSession();
+	    int pageSize = pageable.getPageSize();
+	    int currentPage = pageable.getPageNumber();
+	    int startItem = currentPage * pageSize;
+
+	    System.out.println("M_LA1 View Called");
+	    System.out.println("Type = " + type);
+	    System.out.println("Version = " + version);
+
+	    if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
+
+	        List<M_LA1_Archival_Summary_Entity> T1Master = new ArrayList<>();
+
+	        try {
+
+	            Date dt = dateformat.parse(todate);
+
+	            T1Master = getdatabydateListarchival(dt, version);
+	            System.out.println(type + " Summary size = " + T1Master.size());
+
+	            mv.addObject("REPORT_DATE", dateformat.format(dt));
+	            mv.addObject("allowdetail", getishighestversion(dt, version));
+
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+
+	    } else {
+
+	        List<M_LA1_Summary_Entity> T1Master = new ArrayList<>();
+
+	        try {
+
+	            Date dt = dateformat.parse(todate);
+
+	            T1Master = getDataByDate(dt);
+	            System.out.println("Summary size = " + T1Master.size());
+
+	            mv.addObject("REPORT_DATE", dateformat.format(dt));
+
+	        } catch (ParseException e) {
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+	    }
+
+	    mv.setViewName("BRRS/M_LA1");
+	    mv.addObject("displaymode", "summary");
+
+	    System.out.println("scv" + mv.getViewName());
+	    System.out.println("View Loaded: " + mv.getViewName());
+
+	    return mv;
+	}
+	
+	// =========================
+	// MODEL AND VIEW METHOD detail
+	//=========================
+	
 	public ModelAndView getM_LA1currentDtl(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String filter, String type, String version,HttpServletRequest req1,Model md) {
+			String dtltype, Pageable pageable, String filter, String type, String version, HttpServletRequest req1,
+			Model md) {
 
 		ModelAndView mv = new ModelAndView("BRRS/M_LA1");
 
@@ -176,7 +5766,6 @@ public class BRRS_M_LA1_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
-		
 		int pageSize = pageable != null ? pageable.getPageSize() : 10;
 		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int totalRecords = 0;
@@ -184,91 +5773,104 @@ public class BRRS_M_LA1_ReportService {
 		try {
 // ✅ Parse toDate
 			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
-			}
 
-// ✅ Parse filter (rowId, columnIds)
-			String rowId = null, columnId = null, columnId1 = null, columnId2 = null;
-			if (filter != null && !filter.isEmpty()) {
-				String[] parts = filter.split(",", -1);
-				rowId = parts.length > 0 ? parts[0] : null;
-				columnId = parts.length > 1 ? parts[1] : null;
-				columnId1 = parts.length > 2 ? parts[2] : null;
-				columnId2 = parts.length > 3 ? parts[3] : null;
-			}
+	        if (todate != null && !todate.isEmpty()) {
+	            parsedDate = dateformat.parse(todate);
+	        }
 
-// ✅ ARCHIVAL DATA BRANCH
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && !version.isEmpty()) {
-				logger.info("Fetching ARCHIVAL data for version {}", version);
+	        String reportLabel = null;
+	        String reportAddlCriteria1 = null;
+	        String reportAddlCriteria2 = null;
+	        String reportAddlCriteria3 = null;
+
+	        if (filter != null && filter.contains(",")) {
+
+	            String[] parts = filter.split(",");
+
+	            if (parts.length >= 4) {
+	                reportLabel = parts[0];
+	                reportAddlCriteria1 = parts[1];
+	                reportAddlCriteria2 = parts[2];
+	                reportAddlCriteria3 = parts[3];
+	            }
+	        }
+
+			// ARCHIVAL / RESUB MODE
+			
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
+
+				System.out.println(type + " DETAIL MODE");
 
 				List<M_LA1_Archival_Detail_Entity> detailList;
 
 // 🔹 Filtered (ROWID + COLUMNID)
-				if (rowId != null && !rowId.isEmpty()
-						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
-
+				  if (reportLabel != null) {
+					  
 					logger.info("➡ ARCHIVAL DETAIL QUERY TRIGGERED (with filters)");
-					detailList = M_LA1_Archival_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1,
-							columnId2, parsedDate);
+					detailList = GetArchivalDataByRowIdAndColumnId(
+	                        reportLabel,
+	                        reportAddlCriteria1,
+	                        reportAddlCriteria2,
+	                        reportAddlCriteria3,
+	                        parsedDate,version );
 
 				} else {
 					logger.info("➡ ARCHIVAL LIST QUERY TRIGGERED (with pagination)");
-					detailList = M_LA1_Archival_Detail_Repo.getdatabydateList(parsedDate, version);
-					totalRecords = M_LA1_Archival_Detail_Repo.getdatacount(parsedDate);
+					detailList = getArchivalDetaildatabydateList(parsedDate, version);
+					
 					mv.addObject("pagination", "YES");
 				}
 
 				mv.addObject("reportdetails", detailList);
 				mv.addObject("reportmaster12", detailList);
-				logger.info("ARCHIVAL COUNT: {}", (detailList != null ? detailList.size() : 0));
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
+			}
 
-			} else {
-// ✅ CURRENT DATA BRANCH
+			// CURRENT MODE
+			
+			else {
+
 				logger.info("Fetching CURRENT data for M_LA1");
 
 				List<M_LA1_Detail_Entity> detailList;
 
-				if (rowId != null && !rowId.isEmpty()
-						&& (isNotEmpty(columnId) || isNotEmpty(columnId1) || isNotEmpty(columnId2))) {
+				 if (reportLabel != null) {
 
-					logger.info("➡ CURRENT DETAIL QUERY TRIGGERED (with filters)");
-					detailList = M_LA1_Detail_Repo.GetDataByRowIdAndColumnId(rowId, columnId, columnId1, columnId2,
-							parsedDate);
+					 detailList = GetDetailDataByRowIdAndColumnId(
+		                        reportLabel,
+		                        reportAddlCriteria1,
+		                        reportAddlCriteria2,
+		                        reportAddlCriteria3,
+		                        parsedDate);
 
 				} else {
 					logger.info("➡ CURRENT LIST QUERY TRIGGERED (with pagination)");
-					detailList = M_LA1_Detail_Repo.getdatabydateList(parsedDate);
-					totalRecords = M_LA1_Detail_Repo.getdatacount(parsedDate);
+					detailList = getDetaildatabydateList(parsedDate);
+				
 					mv.addObject("pagination", "YES");
 				}
 
 				mv.addObject("reportdetails", detailList);
 				mv.addObject("reportmaster12", detailList);
-				logger.info("CURRENT COUNT: {}", (detailList != null ? detailList.size() : 0));
 			}
 
-		} catch (ParseException e) {
-			logger.error("Invalid date format: {}", todate, e);
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
-			logger.error("Unexpected error in getM_LA1currentDtl", e);
-			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
+			e.printStackTrace();
+			mv.addObject("errorMessage", e.getMessage());
 		}
-
 // ✅ Common model attributes
-		int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+		mv.setViewName("BRRS/M_LA1");
 		mv.addObject("displaymode", "Details");
-		mv.addObject("currentPage", currentPage);
-		mv.addObject("totalPages", totalPages);
-		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("reportId", reportId);
 
-		logger.info("Total pages calculated: {}", totalPages);
 		return mv;
 	}
 
-//Helper for null/empty check
+
+
+	//Helper for null/empty check
 	private boolean isNotEmpty(String value) {
 		return value != null && !value.trim().isEmpty();
 	}
@@ -282,7 +5884,7 @@ public class BRRS_M_LA1_ReportService {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelM_LA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
-		List<M_LA1_Summary_Entity> dataList = BRRS_M_LA1_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_LA1_Summary_Entity> dataList = getDataByDate(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for LA1 report. Returning empty result.");
@@ -351,26 +5953,25 @@ public class BRRS_M_LA1_ReportService {
 						row = sheet.createRow(startRow + i);
 					}
 
-					//REPORT_DATE
+					// REPORT_DATE
 					row = sheet.getRow(6);
 					Cell cell1 = row.getCell(1);
 					if (cell1 == null) {
-					    cell1 = row.createCell(1);
+						cell1 = row.createCell(1);
 					}
 
-					if (record.getReport_date() != null) {
-					    cell1.setCellValue(record.getReport_date()); // java.util.Date
-					    cell1.setCellStyle(dateStyle);
+					if (record.getREPORT_DATE() != null) {
+						cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+						cell1.setCellStyle(dateStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
-					
 					// row12
 					// Column B
 					row = sheet.getRow(11);
-					 cell1 = row.getCell(1);
+					cell1 = row.getCell(1);
 					if (record.getR12_approved_limit() != null) {
 						cell1.setCellValue(record.getR12_approved_limit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2006,9 +7607,7 @@ public class BRRS_M_LA1_ReportService {
 			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
 			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
 			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-			
-			
-						
+
 			// Default data style (left aligned)
 			CellStyle dataStyle = workbook.createCellStyle();
 			dataStyle.setAlignment(HorizontalAlignment.LEFT);
@@ -2036,14 +7635,15 @@ public class BRRS_M_LA1_ReportService {
 			sanctionStyle.setBorderRight(border);
 
 			// Header row
-			String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
-					"REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
+			String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT",
+					"REPORT LABEL", "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3",
+					"REPORT_DATE" };
 
 			XSSFRow headerRow = sheet.createRow(0);
 			for (int i = 0; i < headers.length; i++) {
 				Cell cell = headerRow.createCell(i);
 				cell.setCellValue(headers[i]);
-				if (i == 3|| i == 4) { // ACCT BALANCE
+				if (i == 3 || i == 4) { // ACCT BALANCE
 					cell.setCellStyle(rightAlignedHeaderStyle);
 				} else {
 					cell.setCellStyle(headerStyle);
@@ -2053,7 +7653,7 @@ public class BRRS_M_LA1_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_LA1_Detail_Entity> reportData = M_LA1_Detail_Repo.getdatabydateList(parsedToDate);
+			List<M_LA1_Detail_Entity> reportData = getDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -2121,20 +7721,38 @@ public class BRRS_M_LA1_ReportService {
 		}
 	}
 
-	public List<Object> getM_LA1Archival() {
-		List<Object> M_LA1Archivallist = new ArrayList<>();
-		try {
-			M_LA1Archivallist = M_LA1_Archival_Summary_Repo.getM_LA1archival();
-			System.out.println("countser" + M_LA1Archivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_LA1 Archival data: " + e.getMessage());
-			e.printStackTrace();
+	// Archival View
+	public List<Object[]> getM_LA1Archival() {
+	    List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_LA1Archivallist;
+	    try {
+
+	        List<M_LA1_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+	        if (repoData != null && !repoData.isEmpty()) {
+	            for (M_LA1_Archival_Summary_Entity entity : repoData) {
+	                Object[] row = new Object[] {
+	                        entity.getREPORT_DATE(),
+	                        entity.getREPORT_VERSION(),
+	                        entity.getREPORT_RESUBDATE()
+	                };
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records");
+	            M_LA1_Archival_Summary_Entity first = repoData.get(0);
+	            System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+	        System.err.println("Error fetching M_LA1 Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
 
 	public byte[] getExcelM_LA1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -2143,8 +7761,7 @@ public class BRRS_M_LA1_ReportService {
 		if (type.equals("ARCHIVAL") & version != null) {
 
 		}
-		List<M_LA1_Archival_Summary_Entity> dataList = M_LA1_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_LA1_Archival_Summary_Entity> dataList =  getdatabydateListarchival(dateformat.parse(todate),version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_LA1 report. Returning empty result.");
@@ -2221,26 +7838,25 @@ public class BRRS_M_LA1_ReportService {
 					if (row == null) {
 						row = sheet.createRow(startRow + i);
 					}
-					//REPORT_DATE
+					// REPORT_DATE
 					row = sheet.getRow(6);
 					Cell cell1 = row.getCell(1);
 					if (cell1 == null) {
-					    cell1 = row.createCell(1);
+						cell1 = row.createCell(1);
 					}
 
-					if (record.getReport_date() != null) {
-					    cell1.setCellValue(record.getReport_date()); // java.util.Date
-					    cell1.setCellStyle(dateStyle);
+					if (record.getREPORT_DATE() != null) {
+						cell1.setCellValue(record.getREPORT_DATE()); // java.util.Date
+						cell1.setCellStyle(dateStyle);
 					} else {
-					    cell1.setCellValue("");
-					    cell1.setCellStyle(textStyle);
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
 					}
 
-					
 					// row12
 					// Column B
 					row = sheet.getRow(11);
-					 cell1 = row.getCell(1);
+					cell1 = row.getCell(1);
 					if (record.getR12_approved_limit() != null) {
 						cell1.setCellValue(record.getR12_approved_limit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3832,7 +9448,8 @@ public class BRRS_M_LA1_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA1 ARCHIVAL SUMMARY", null, "BRRS_M_LA1_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_LA1 ARCHIVAL SUMMARY", null,
+						"BRRS_M_LA1_ARCHIVALTABLE_SUMMARY");
 			}
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
@@ -3842,147 +9459,144 @@ public class BRRS_M_LA1_ReportService {
 	}
 
 	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-	        String dtltype, String type, String version) {
-	    try {
-	        logger.info("Generating Excel for BRRS_M_LA1 ARCHIVAL Details...");
-	        System.out.println("Came to Detail download service");
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for BRRS_M_LA1 ARCHIVAL Details...");
+			System.out.println("Came to Detail download service");
 
-	        // Only proceed if ARCHIVAL and version provided
-	        if (!"ARCHIVAL".equalsIgnoreCase(type) || version == null || version.isEmpty()) {
-	            logger.warn("Invalid type/version for archival download.");
-	            return new byte[0];
-	        }
+			// Only proceed if ARCHIVAL and version provided
+			if (!"ARCHIVAL".equalsIgnoreCase(type) || version == null || version.isEmpty()) {
+				logger.warn("Invalid type/version for archival download.");
+				return new byte[0];
+			}
 
-	        // Create workbook and sheet
-	        XSSFWorkbook workbook = new XSSFWorkbook();
-	        XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1_Archival_Detail");
+			// Create workbook and sheet
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("BRRS_M_LA1_Archival_Detail");
 
-	        // Border style
-	        BorderStyle border = BorderStyle.THIN;
+			// Border style
+			BorderStyle border = BorderStyle.THIN;
 
-	        // Header style
-	        CellStyle headerStyle = workbook.createCellStyle();
-	        Font headerFont = workbook.createFont();
-	        headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 10);
-	        headerStyle.setFont(headerFont);
-	        headerStyle.setAlignment(HorizontalAlignment.LEFT);
-	        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-	        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-	        headerStyle.setBorderTop(border);
-	        headerStyle.setBorderBottom(border);
-	        headerStyle.setBorderLeft(border);
-	        headerStyle.setBorderRight(border);
+			// Header style
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
 
-	        // Right-aligned header (for numeric columns)
-	        CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-	        rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-	        rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// Right-aligned header (for numeric columns)
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
 
-	        // Data style (text)
-	        CellStyle dataStyle = workbook.createCellStyle();
-	        dataStyle.setAlignment(HorizontalAlignment.LEFT);
-	        dataStyle.setBorderTop(border);
-	        dataStyle.setBorderBottom(border);
-	        dataStyle.setBorderLeft(border);
-	        dataStyle.setBorderRight(border);
+			// Data style (text)
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
 
-	        // ACCT BALANCE style (right aligned with 3 decimals)
-	        CellStyle balanceStyle = workbook.createCellStyle();
-	        balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-	        balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
-	        balanceStyle.setBorderTop(border);
-	        balanceStyle.setBorderBottom(border);
-	        balanceStyle.setBorderLeft(border);
-	        balanceStyle.setBorderRight(border);
-	        // Header row
-	        String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT", "REPORT LABEL",
-	                "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3", "REPORT_DATE" };
+			// ACCT BALANCE style (right aligned with 3 decimals)
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+			// Header row
+			String[] headers = { "CUST ID", "ACCT NUMBER", "SCHM DESC", "ACCT BALANCE IN PULA", "APPROVED LIMIT",
+					"REPORT LABEL", "REPORT ADDL CRITERIA 1", "REPORT ADDL CRITERIA 2", "REPORT ADDL CRITERIA 3",
+					"REPORT_DATE" };
 
-	        XSSFRow headerRow = sheet.createRow(0);
-	        for (int i = 0; i < headers.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(headers[i]);
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
 
-	            if (i == 3|| i == 4) { // ACCT BALANCE
-	                cell.setCellStyle(rightAlignedHeaderStyle);
-	            } else {
-	                cell.setCellStyle(headerStyle);
-	            }
+				if (i == 3 || i == 4) { // ACCT BALANCE
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
 
-	            sheet.setColumnWidth(i, 5000);
-	        }
+				sheet.setColumnWidth(i, 5000);
+			}
 
-	        // Parse date
-	        Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			// Parse date
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
 
-	        // Fetch data
-	        List<M_LA1_Archival_Detail_Entity> reportData =
-	                M_LA1_Archival_Detail_Repo.getdatabydateList(parsedToDate, version);
+			// Fetch data
+			List<M_LA1_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
 
-	        if (reportData != null && !reportData.isEmpty()) {
-	            int rowIndex = 1;
-	            for (M_LA1_Archival_Detail_Entity item : reportData) {
-	                XSSFRow row = sheet.createRow(rowIndex++);
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_LA1_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
 
-	                // Text columns
-	                row.createCell(0).setCellValue(item.getCust_id());
-	                row.createCell(1).setCellValue(item.getAcct_number());
-	                row.createCell(2).setCellValue(item.getSchm_desc());
+					// Text columns
+					row.createCell(0).setCellValue(item.getCust_id());
+					row.createCell(1).setCellValue(item.getAcct_number());
+					row.createCell(2).setCellValue(item.getSchm_desc());
 
-	             // ACCT BALANCE (right aligned, 3 decimal places)
-	                Cell balanceCell = row.createCell(3);
-	                if (item.getAcct_balance_in_pula() != null) {
-	                    balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
-	                } else {
-	                    balanceCell.setCellValue(0);
-	                }
-	                balanceCell.setCellStyle(balanceStyle);
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell balanceCell = row.createCell(3);
+					if (item.getAcct_balance_in_pula() != null) {
+						balanceCell.setCellValue(item.getAcct_balance_in_pula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
 
-	                
-	                
-	             // ACCT BALANCE (right aligned, 3 decimal places)
-	                Cell sanctionCell = row.createCell(4);
-	                if (item.getSanction_limit() != null) {
-	                	sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
-	                } else {
-	                	sanctionCell.setCellValue(0);
-	                }
-	                sanctionCell.setCellStyle(balanceStyle);
+					// ACCT BALANCE (right aligned, 3 decimal places)
+					Cell sanctionCell = row.createCell(4);
+					if (item.getSanction_limit() != null) {
+						sanctionCell.setCellValue(item.getSanction_limit().doubleValue());
+					} else {
+						sanctionCell.setCellValue(0);
+					}
+					sanctionCell.setCellStyle(balanceStyle);
 
-	                // Remaining text columns
-	                row.createCell(5).setCellValue(item.getReport_label());
-	                row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
-	                row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
-	                row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
-	                row.createCell(9).setCellValue(item.getReport_date() != null
-	                        ? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
-	                        : "");
+					// Remaining text columns
+					row.createCell(5).setCellValue(item.getReport_label());
+					row.createCell(6).setCellValue(item.getReport_addl_criteria_1());
+					row.createCell(7).setCellValue(item.getReport_addl_criteria_2());
+					row.createCell(8).setCellValue(item.getReport_addl_criteria_3());
+					row.createCell(9)
+							.setCellValue(item.getReport_date() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReport_date())
+									: "");
 
-	                // Apply text style to non-numeric cells
-	                for (int j = 0; j < headers.length; j++) {
-	                    if (j != 3 && j != 4) {
-	                        row.getCell(j).setCellStyle(dataStyle);
-	                    }
-	                }
-	            }
-	        }
+					// Apply text style to non-numeric cells
+					for (int j = 0; j < headers.length; j++) {
+						if (j != 3 && j != 4) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			}
 
-	        // Write to byte array
-	        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-	        workbook.write(bos);
-	        workbook.close();
+			// Write to byte array
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
 
-	        logger.info("Excel generation completed with {} row(s).",
-	                reportData != null ? reportData.size() : 0);
-	        return bos.toByteArray();
+			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
+			return bos.toByteArray();
 
-	    } catch (Exception e) {
-	        logger.error("Error generating BRRS_M_LA1 ARCHIVAL Excel", e);
-	        return new byte[0];
-	    }
+		} catch (Exception e) {
+			logger.error("Error generating BRRS_M_LA1 ARCHIVAL Excel", e);
+			return new byte[0];
+		}
 	}
-
 
 	public List<ReportLineItemDTO> getReportData(String filename) throws Exception {
 		List<ReportLineItemDTO> reportData = new ArrayList<>();
@@ -4109,174 +9723,326 @@ public class BRRS_M_LA1_ReportService {
 //			return false;
 //		}
 //	}
-	
-	
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
 
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-	    ModelAndView mv = new ModelAndView("BRRS/M_LA1"); // ✅ match the report name
-	    System.out.println("Hello");
-	    if (acctNo != null) {
-	        M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
-	        if (la1Entity != null && la1Entity.getReport_date() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
-	            mv.addObject("asondate", formattedDate);
+
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
+
+	    ModelAndView mv = new ModelAndView("BRRS/M_LA1");
+
+	    System.out.println("SNO : " + SNO);
+	    System.out.println("Type : " + type);
+
+	    if (SNO != null) {
+
+	        if ("RESUB".equals(type)) {
+
+	            System.out.println("Inside RESUB FETCH");
+
+	            M_LA1_Detail_Entity la1Entity = findBySnoArch(SNO);
+
+	            if (la1Entity == null) {
+	                System.out.println("RESUB Data is NULL");
+	            } else {
+	                System.out.println("RESUB Data Found : " + la1Entity.getSno());
+
+	                if (la1Entity.getReport_date() != null) {
+	                    String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+	                            .format(la1Entity.getReport_date());
+	                    mv.addObject("asondate", formattedDate);
+	                }
+	            }
+
+	            mv.addObject("Data", la1Entity);
+
+	        } else {
+
+	            System.out.println("Inside CURRENT FETCH");
+
+	            M_LA1_Detail_Entity la1Entity = findBySno(SNO);
+
+	            if (la1Entity == null) {
+	                System.out.println("CURRENT Data is NULL");
+	            } else {
+	                System.out.println("CURRENT Data Found : " + la1Entity.getSno());
+
+	                if (la1Entity.getReport_date() != null) {
+	                    String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+	                            .format(la1Entity.getReport_date());
+	                    mv.addObject("asondate", formattedDate);
+	                }
+	            }
+
+	            mv.addObject("Data", la1Entity);
 	        }
-	        mv.addObject("Data", la1Entity);
 	    }
 
+	    mv.addObject("type", type);
 	    mv.addObject("displaymode", "edit");
 	    mv.addObject("formmode", formMode != null ? formMode : "edit");
+
 	    return mv;
 	}
 	
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 
+	    try {
 
+	        String Sno = request.getParameter("sno");
+	        String acctBalanceInpula = request.getParameter("acct_balance_in_pula");
+	        String sanctionLimitStr = request.getParameter("sanction_limit");
+	        String acctName = request.getParameter("acct_name");
+	        String reportDateStr = request.getParameter("report_date");
 
+	        String type = request.getParameter("type");
+	        String entry = (request.getParameter("entry") != null)
+	                ? request.getParameter("entry")
+	                : "YES";
 
-	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
-	    ModelAndView mv = new ModelAndView("BRRS/M_LA1"); // ✅ match the report name
+	        System.out.println("SNO : " + Sno);
+	        System.out.println("Type : " + type);
 
-	    if (acctNo != null) {
-	        M_LA1_Detail_Entity la1Entity = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
-	        if (la1Entity != null && la1Entity.getReport_date() != null) {
-	            String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReport_date());
-	            mv.addObject("asondate", formattedDate);
-	            System.out.println(formattedDate);
+	        // Load Existing Record
+	        M_LA1_Detail_Entity existing = null;
+
+	        if ("RESUB".equals(type)) {
+	            existing = findBySnoArch(Sno);
+	        } else {
+	            existing = findBySno(Sno);
 	        }
-	        mv.addObject("Data", la1Entity);
+
+	        if (existing == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body("Record not found for update.");
+	        }
+
+	        // Create old copy for audit
+	        M_LA1_Detail_Entity oldcopy = new M_LA1_Detail_Entity();
+	        BeanUtils.copyProperties(existing, oldcopy);
+
+	        boolean isChanged = false;
+
+	        // Update Account Name
+	        if (acctName != null && !acctName.isEmpty()) {
+
+	            if (existing.getAcct_name() == null
+	                    || !existing.getAcct_name().equals(acctName)) {
+
+	                existing.setAcct_name(acctName);
+	                isChanged = true;
+	            }
+	        }
+
+	        // Update Balance
+	        if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+
+	            BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
+
+	            if (existing.getAcct_balance_in_pula() == null
+	                    || existing.getAcct_balance_in_pula().compareTo(newBalance) != 0) {
+
+	                existing.setAcct_balance_in_pula(newBalance);
+	                isChanged = true;
+	            }
+	        }
+
+	        // Update Sanction Limit
+	        if (sanctionLimitStr != null && !sanctionLimitStr.isEmpty()) {
+
+	            BigDecimal newSanctionLimit = new BigDecimal(sanctionLimitStr);
+
+	            if (existing.getSanction_limit() == null
+	                    || existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
+
+	                existing.setSanction_limit(newSanctionLimit);
+	                isChanged = true;
+	            }
+	        }
+
+	        if (isChanged) {
+
+	            String sql;
+
+	            if ("RESUB".equals(type)) {
+
+	                sql = "UPDATE BRRS_M_LA1_ARCHIVALTABLE_DETAIL "
+	                        + "SET ACCT_NAME = ?, "
+	                        + "ACCT_BALANCE_IN_PULA = ?, "
+	                        + "SANCTION_LIMIT = ? "
+	                        + "WHERE SNO = ?";
+
+	            } else {
+
+	                sql = "UPDATE BRRS_M_LA1_DETAILTABLE "
+	                        + "SET ACCT_NAME = ?, "
+	                        + "ACCT_BALANCE_IN_PULA = ?, "
+	                        + "SANCTION_LIMIT = ? "
+	                        + "WHERE SNO = ?";
+	            }
+
+	            jdbcTemplate.update(sql,
+	                    existing.getAcct_name(),
+	                    existing.getAcct_balance_in_pula(),
+	                    existing.getSanction_limit(),
+	                    Sno);
+
+	            // Audit
+	            if ("RESUB".equals(type)) {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        existing,
+	                        Sno,
+	                        "M_LA1 Archival Screen",
+	                        "BRRS_M_LA1_ARCHIVALTABLE_DETAIL");
+
+	            } else {
+
+	                auditService.compareEntitiesmanual(
+	                        oldcopy,
+	                        existing,
+	                        Sno,
+	                        "M_LA1 Screen",
+	                        "BRRS_M_LA1_DETAILTABLE");
+	            }
+
+	            System.out.println("Record updated successfully.");
+
+	            // Regenerate Report
+	            Run_M_LA1_Procudure(reportDateStr, type, entry);
+
+	            if ("RESUB".equals(type) && "NO".equals(entry)) {
+	                return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+	            }
+
+	            return ResponseEntity.ok("Record updated successfully!");
+
+	        } else {
+
+	            return ResponseEntity.ok("No changes were made.");
+	        }
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
 	    }
-
-	    mv.addObject("displaymode", "edit");
-	    mv.addObject("formmode", formMode != null ? formMode : "edit");
-	    return mv;
 	}
-
 	
-		@Transactional
-		public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		    try {
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
 
-		        String acctNo = request.getParameter("acct_number");
-		        String provisionStr = request.getParameter("acct_balance_in_pula");
-		        String sanctionLimitStr = request.getParameter("sanction_limit");
-		        String acctName = request.getParameter("acct_name");
-		        String reportDateStr = request.getParameter("report_Date");
+	    try {
 
-		        logger.info("Received update for ACCT_NO: {}", acctNo);
+	        Run_M_LA1_Procudure(
+	                request.getParameter("reportDate"),
+	                request.getParameter("type"),
+	                request.getParameter("entry"));
 
-		        M_LA1_Detail_Entity existing = M_LA1_Detail_Repo.findByAcctnumber(acctNo);
+	        return ResponseEntity.ok("Resubmitted successfully!");
 
-		        if (existing == null) {
-		            logger.warn("No record found for ACCT_NO: {}", acctNo);
-		            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-		                    .body("Record not found for update.");
-		        }
+	    } catch (Exception e) {
 
-		        // Create old copy for audit comparison
-		        M_LA1_Detail_Entity oldcopy = new M_LA1_Detail_Entity();
-		        BeanUtils.copyProperties(existing, oldcopy);
+	        e.printStackTrace();
 
-		        boolean isChanged = false;
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Error updating record: " + e.getMessage());
+	    }
+	}
+	
+	private void Run_M_LA1_Procudure(String reportDateStr, String type, String entry) {
 
-		        if (acctName != null && !acctName.isEmpty()) {
-		            if (existing.getAcct_name() == null ||
-		                    !existing.getAcct_name().equals(acctName)) {
-
-		                existing.setAcct_name(acctName);
-		                isChanged = true;
-
-		                logger.info("Account name updated to {}", acctName);
-		            }
-		        }
-
-		        if (provisionStr != null && !provisionStr.isEmpty()) {
-
-		            BigDecimal newProvision = new BigDecimal(provisionStr);
-
-		            if (existing.getAcct_balance_in_pula() == null ||
-		                    existing.getAcct_balance_in_pula().compareTo(newProvision) != 0) {
-
-		                existing.setAcct_balance_in_pula(newProvision);
-		                isChanged = true;
-
-		                logger.info("Balance updated to {}", newProvision);
-		            }
-		        }
-
-		        if (sanctionLimitStr != null && !sanctionLimitStr.isEmpty()) {
-
-		            BigDecimal newSanctionLimit = new BigDecimal(sanctionLimitStr);
-
-		            if (existing.getSanction_limit() == null ||
-		                    existing.getSanction_limit().compareTo(newSanctionLimit) != 0) {
-
-		                existing.setSanction_limit(newSanctionLimit);
-		                isChanged = true;
-
-		                logger.info("Sanction limit updated to {}", newSanctionLimit);
-		            }
-		        }
-
-		        if (isChanged) {
-
-		            M_LA1_Detail_Repo.save(existing);
-
-		            // Audit comparison
-		            auditService.compareEntitiesmanual(
-		                    oldcopy,
-		                    existing,
-		                    acctNo,
-		                    "M LA1 Detail Screen",
-		                    "BRRS_M_LA1_DETAIL"
-		            );
-
-		            logger.info("Record updated successfully for account {}", acctNo);
-
-		            String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-		                    .format(new SimpleDateFormat("yyyy-MM-dd")
-		                    .parse(reportDateStr));
-
-		            TransactionSynchronizationManager.registerSynchronization(
-		                    new TransactionSynchronizationAdapter() {
-
-		                        @Override
-		                        public void afterCommit() {
-		                            try {
-
-		                                logger.info(
-		                                        "Transaction committed — calling BRRS_M_LA1_SUMMARY_PROCEDURE({})",
-		                                        formattedDate);
-
-		                                jdbcTemplate.update(
-		                                        "BEGIN BRRS_M_LA1_SUMMARY_PROCEDURE(?); END;",
-		                                        formattedDate);
-
-		                                logger.info("Procedure executed successfully after commit.");
-
-		                            } catch (Exception e) {
-		                                logger.error("Error executing procedure after commit", e);
-		                            }
-		                        }
-		                    });
-
-		            return ResponseEntity.ok("Record updated successfully!");
-
-		        } else {
-
-		            logger.info("No changes detected for ACCT_NO: {}", acctNo);
-		            return ResponseEntity.ok("No changes were made.");
-		        }
-
-		    } catch (Exception e) {
-
-		        logger.error("Error updating M_LA1 record", e);
-
-		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-		                .body("Error updating record: " + e.getMessage());
-		    }
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
 		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO BRRS_M_LA1_DETAILTABLE ("
+						        + "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, "
+						        + "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, SEGMENT, SCHM_DESC, "
+						        + "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
+						        + "MODIFICATION_REMARKS, REPORT_REMARKS, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+						        + "SELECT "
+						        + "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, "
+						        + "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, SEGMENT, SCHM_DESC, "
+						        + "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
+						        + "MODIFICATION_REMARKS, REPORT_REMARKS, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+						        + "FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL "
+						        + "WHERE REPORT_DATE = ?";
+						
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_M_LA1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						StringBuilder columnsPart = new StringBuilder();
+						  String[] tokens = {
+						            "product",
+						            "approved_limit",
+						            "balance_outstanding",
+						            "no_of_acct"
+						    };
+						// Dynamically generate R6 to R62 columns
+						for (int i = 11; i <= 64; i++) {
+							for (String token : tokens) {
+								columnsPart.append("R").append(i).append("_").append(token).append(", ");
+							}
+						}
+
+						// Build the final query cleanly - Notice the '?' replacing REPORT_VERSION in
+						// SELECT
+						String finalsql = "INSERT INTO BRRS_M_LA1_ARCHIVALTABLE_SUMMARY (" + columnsPart.toString()
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT " + columnsPart.toString()
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_M_LA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						String adsumsql = "DELETE FROM BRRS_M_LA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 }

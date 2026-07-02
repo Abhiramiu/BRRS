@@ -5755,6 +5755,7 @@ public class BRRS_M_LA3_ReportService {
 
 	    if (SNO != null) {
 
+	    	
 	    	if (type == "RESUB" || type.equals("RESUB")) {
 
 	            System.out.println("Inside RESUB FETCH");

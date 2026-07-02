@@ -2915,14 +2915,13 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_LA1":
-			try {
-				archivalData = BRRS_M_LA1_reportservice.getM_LA1Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			List<Object[]> M_LA1List = BRRS_M_LA1_reportservice.getM_LA1Archival();
+			archivalData.addAll(M_LA1List);
+			System.out.println("Fetched M_LA1 archival data: " + M_LA1List.size());
 			break;
-
+			
+			
 		case "M_LA1_NEW":
 			try {
 				archivalData = BRRS_M_LA1_reportservice_new.getM_LA1Archival();
@@ -4035,13 +4034,13 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LA1":
-				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_LA1_NEW":
-				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_LA3":
