@@ -46,7 +46,6 @@ import com.bornfire.brrs.entities.BRRS_M_SRWA_12H_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12H_Resub_Detail_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12H_Resub_Summary_Repo;
 import com.bornfire.brrs.entities.BRRS_M_SRWA_12H_Summary_Repo;
-import com.bornfire.brrs.entities.M_LA2_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_SRWA_12H_Detail_Entity;
