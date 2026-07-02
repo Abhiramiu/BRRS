@@ -4140,8 +4140,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "Q_ATF":
-				modelAndView = brrs_q_atf_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = brrs_q_atf_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_FAS":
@@ -4426,6 +4426,9 @@ public class RegulatoryReportServices {
 
 			case "M_LIQ":
 				response = BRRS_M_LIQ_reportservice.callregenprocedure(request);
+				break;
+			case "Q_ATF":
+				response = brrs_q_atf_reportservice.callregenprocedure(request);
 				break;
 
 			default:
