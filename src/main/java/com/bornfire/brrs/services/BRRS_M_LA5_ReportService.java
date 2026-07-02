@@ -13653,12 +13653,13 @@ public class BRRS_M_LA5_ReportService {
 		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
 				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelM_LA5ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
+			return getExcelM_LA5ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
+					version);
 		}
 		if ("email".equalsIgnoreCase(format) && version == null) {
 			logger.info("Got format as Email");
 			logger.info("Service: Generating Email report for version {}", version);
-			return BRRS_M_LA5EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,format, version);
+			return BRRS_M_LA5EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format, version);
 		} else {
 			// Fetch data
 
@@ -18036,7 +18037,7 @@ public class BRRS_M_LA5_ReportService {
 	}
 
 	public byte[] getExcelM_LA5ARCHIVAL(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
@@ -26813,15 +26814,16 @@ public class BRRS_M_LA5_ReportService {
 
 // Normal Email Excel
 	public byte[] BRRS_M_LA5EmailExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Email Excel generation process in memory.");
 
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			try {
 				// Redirecting to Archival
-				return BRRS_M_LA5EmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,format,
-						version);
+				return BRRS_M_LA5EmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
+						format, version);
 			} catch (ParseException e) {
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
@@ -31063,9 +31065,12 @@ public class BRRS_M_LA5_ReportService {
 
 	// Archival Email Excel
 	public byte[] BRRS_M_LA5EmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
-			String currency, String dtltype, String type,String format, BigDecimal version) throws Exception {
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
+
+		}
 
 		List<M_LA5_Archival_Summary_Entity> dataList = getdatabydateListarchival(dateformat.parse(todate), version);
 

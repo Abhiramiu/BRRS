@@ -5,6 +5,7 @@ CREATED BY	: GOPIKA B
 CREATED ON	: 04.04.2026
 PURPOSE		: BRRSREPORT
 -->
+    
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
@@ -355,6 +356,8 @@ PURPOSE		: BRRSREPORT
 		});
 	</script>
 	<script th:inline="javascript">
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
@@ -387,8 +390,11 @@ PURPOSE		: BRRSREPORT
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -614,11 +620,13 @@ PURPOSE		: BRRSREPORT
 			}
 
 			const acctNo = elem.getAttribute("data-acctNo");
+			const SNO = elem.getAttribute("data-SNo");
 			const asondate = elem.getAttribute("data-asondate");
 
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href =
+				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+
+
 		}
 
 
@@ -676,8 +684,33 @@ PURPOSE		: BRRSREPORT
 		let previousUrl = document.referrer;
 
 		function submitFORMAT_IIIUpdate() {
+			let formData = $('#FORMAT_IIIDetailForm').serialize();
+			let userAnswer = null;
 
-			const formData = $('#FORMAT_IIIDetailForm').serialize();
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
+
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitFORMAT_IIIUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitFORMAT_IIIUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
 
 			$('#loader').modal('show');
 
@@ -690,7 +723,19 @@ PURPOSE		: BRRSREPORT
 					$('#loader').modal('hide');
 
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModalDU('BRRS', response);
+
+						if (userAnswer === 'NO') {
+							let title = 'Success';
+							let message = response;
+							document.getElementById('resultModalLabel2').innerText = title;
+							document.getElementById('resultModalBody2').innerText = message;
+
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
+						} else {
+							showResultModalDU('Success', response);
+						}
+
 					} else {
 						showResultModalDU('Information', response || 'No data updated.');
 					}
@@ -702,8 +747,75 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
 
+			let cleanDate = rawDate.replace(/['"]/g, '');
 
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						let title = 'Success';
+						let message = response;
+						document.getElementById('resultModalLabel2').innerText = title;
+						document.getElementById('resultModalBody2').innerText = message;
+
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to process request. Please try again.');
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
+		}
+
+		function showResultModalDU(title, message) {
+			document.getElementById('resultModalLabel1').innerText = title;
+			document.getElementById('resultModalBody1').innerText = message;
+
+			const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+			modal.show();
+		}
+
+		function redirectBack() {
+			if (previousUrl) {
+				window.location.href = previousUrl;
+			} else {
+				window.history.back();
+			}
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
 
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
@@ -1880,13 +1992,14 @@ PURPOSE		: BRRSREPORT
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
+
 											<td>
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
-													<i class="fas fa-edit" style="color: black; cursor:pointer;"
-														th:attr="data-acctNo=${report.acctNumber},
-															data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-														onclick="openFORMAT_IIIDetail(this, 'edit')"></i>
+													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
+																				            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+																				            data-type=${type}" onclick="openFORMAT_IIIDetail(this, 'edit')">
+													</i>
 
 												</a>
 											</td>
@@ -1992,96 +2105,139 @@ PURPOSE		: BRRSREPORT
 								</div>
 							</div>
 
+							<div class="col-sm-1"></div>
 
-							<div style="text-align:center; margin-top:20px;">
-								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-									onclick="submitFORMAT_IIIUpdate()">Update</button>
+							<div class="col-sm-3">
+								<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
+								<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
+									readonly />
 							</div>
-						</form>
+					</div>
+
+					<div style="text-align:center; margin-top:20px;">
+						<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+							onclick="submitFORMAT_IIIUpdate()">Update</button>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
 
-		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-				<div class="modal-content" style="background: transparent;">
-					<div class="modal-body" style="text-align: center">
-						<div>
-							<img th:src=@{/images/loader.gif} id="bfirelogo"
-								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-								alt="Bornfire">
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- For Edit in Detail page -->
+	<div class="modal fade" id="resultModal1" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+								data-dismiss="modal">Modify</button>
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+								Regenerate</button>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
-
-
-		<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
-		<div class="modal fade" id="resultModal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<!-- Your custom styled header -->
-					<div class="menu-title-header">
-						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-							<!-- Title will be set by JavaScript -->
-						</div>
-					</div>
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody"></p>
-						<!-- Your custom styled button -->
-						<button type="button" class="custom-tab-btn" onclick="closemodels()"
-							data-dismiss="modal">Ok</button>
-					</div>
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
 				</div>
 			</div>
 		</div>
-		<!-- For Edit in Detail page -->
-		<div class="modal fade" id="resultModal1" tabindex="-1">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="menu-title-header">
-						<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
-						</div>
-					</div>
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<p id="resultModalBody1"></p>
-						<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
-					</div>
-				</div>
-			</div>
-		</div>
+	</div>
 
-
-		<!-- Custom Cellresult Modal -->
-		<div class="modal fade" id="cellresultModal">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-
-					<!-- Custom header -->
-					<div class="menu-title-header"
-						style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
-						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
-							Do you want to open the report?
-						</div>
-					</div>
-
-					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
-							Cancel
-						</button>
-						<button type="button" class="custom-tab-btn yes-btn"
-							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
-							Yes
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
 
 

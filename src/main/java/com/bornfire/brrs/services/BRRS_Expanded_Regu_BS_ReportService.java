@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -70,7 +71,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -194,28 +195,49 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 // 1. GET BY DATE + VERSION
 
-	public List<Expanded_Regu_BS_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate,
-			String dataEntryVersion) {
-
-		String sql = "SELECT * FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE "
-				+ "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-
-		return jdbcTemplate.query(sql, new Object[] { reportdate, dataEntryVersion },
-				new Expanded_Regu_BSArchivalDetailRowMapper());
-	}
-
 // 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
 
+//Resubmission
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
+	}
+
+	// RESUBMISSION
+	public Expanded_Regu_BS_Detail_Entity findBySno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_EXPANDED_REGU_BS_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new Expanded_Regu_BSDetailRowMapper());
+	}
+
+	public Expanded_Regu_BS_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new Expanded_Regu_BSDetailRowMapper());
+	}
+
+	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
 	public List<Expanded_Regu_BS_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+			String reportAddlCriteria1, Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE " + "WHERE REPORT_LABEL = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? ";
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new Expanded_Regu_BSArchivalDetailRowMapper());
 	}
 
+	public List<Expanded_Regu_BS_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE " + "WHERE REPORT_DATE = ?  ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new Expanded_Regu_BSArchivalDetailRowMapper());
+	}
 	// ROW MAPPER
 
 	class Expanded_Regu_BSRowMapper implements RowMapper<Expanded_Regu_BS_Summary_Entity> {
@@ -846,7 +868,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		}
 
 		public void setREPORT_DATE(Date REPORT_DATE) {
-			REPORT_DATE = REPORT_DATE;
+			this.REPORT_DATE = REPORT_DATE;
 		}
 
 		public String getR7_PRODUCT() {
@@ -1838,7 +1860,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		}
 
 		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
-			REPORT_VERSION = REPORT_VERSION;
+			this.REPORT_VERSION = REPORT_VERSION;
 		}
 
 		public String getREPORT_FREQUENCY() {
@@ -3625,10 +3647,10 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 	}
 
 	public class Expanded_Regu_BS_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -3695,6 +3717,14 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -3879,7 +3909,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		public Expanded_Regu_BS_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			Expanded_Regu_BS_Detail_Entity obj = new Expanded_Regu_BS_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -3915,7 +3945,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		public Expanded_Regu_BS_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			Expanded_Regu_BS_Archival_Detail_Entity obj = new Expanded_Regu_BS_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -3946,10 +3976,10 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 	}
 
 	public class Expanded_Regu_BS_Archival_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -4016,6 +4046,14 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -4209,19 +4247,22 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
 
-		// ARCHIVAL MODE
-
-		if ("ARCHIVAL".equals(type) && version != null) {
+		// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<Expanded_Regu_BS_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
 			try {
+
 				Date dt = dateformat.parse(todate);
-				// SUMMARY ARCHIVAL
+
 				T1Master = getdatabydateListarchival(dt, version);
-				System.out.println("Archival Summary size = " + T1Master.size());
+
+				System.out.println(type + " Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
+				mv.addObject("allowdetail", getishighestversion(dt, version));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -4288,29 +4329,26 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 				}
 			}
 
-			// ARCHIVAL MODE
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type + " DETAIL MODE");
 
-				System.out.println("ARCHIVAL DETAIL MODE");
-
-				List<Expanded_Regu_BS_Archival_Detail_Entity> archivalDetailList;
+				List<Expanded_Regu_BS_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
@@ -4379,19 +4417,32 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/EXPANDED_REGU_BS");
 
-		if (acct_number != null) {
-			Expanded_Regu_BS_Detail_Entity Expanded_Regu_BSEntity = findByAcctnumber(acct_number);
-			if (Expanded_Regu_BSEntity != null && Expanded_Regu_BSEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
-						.format(Expanded_Regu_BSEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+		System.out.println("sno is : " + SNO);
+		System.out.println("Type: " + type);
+		if (SNO != null) {
+			if (type == "RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				Expanded_Regu_BS_Detail_Entity EXPANDED_REGU_BSEntity = findBySnoArch(SNO);
+				if (EXPANDED_REGU_BSEntity != null && EXPANDED_REGU_BSEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+							.format(EXPANDED_REGU_BSEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("Expanded_Regu_BSData", EXPANDED_REGU_BSEntity);
+			} else {
+				Expanded_Regu_BS_Detail_Entity EXPANDED_REGU_BSEntity = findBySno(SNO);
+				if (EXPANDED_REGU_BSEntity != null && EXPANDED_REGU_BSEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+							.format(EXPANDED_REGU_BSEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("Expanded_Regu_BSData", EXPANDED_REGU_BSEntity);
 			}
-			mv.addObject("Expanded_Regu_BSData", Expanded_Regu_BSEntity);
 		}
-
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -4402,9 +4453,9 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 
-			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 
 			String averageStr = request.getParameter("average");
 
@@ -4412,8 +4463,21 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 			String reportDateStr = request.getParameter("reportDate");
 
-			// Existing Record
-			Expanded_Regu_BS_Detail_Entity existing = findByAcctnumber(acctNo);
+			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+
+			// Load Existing Record
+			Expanded_Regu_BS_Detail_Entity existing = null;
+
+			System.out.println("type is : " + type);
+			if ((type == "RESUB") || (type.equals("RESUB"))) {
+				existing = findBySnoArch(Sno);
+			} else {
+				existing = findBySno(Sno);
+			}
+			Expanded_Regu_BS_Detail_Entity oldcopy = new Expanded_Regu_BS_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			if (existing == null) {
 
@@ -4422,7 +4486,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 			boolean isChanged = false;
 
-			// ACCOUNT NAME
+			// Update Name
 			if (acctName != null && !acctName.isEmpty()) {
 
 				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
@@ -4433,10 +4497,10 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 				}
 			}
 
-			// ACCOUNT BALANCE
-			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
 
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
 
 				if (existing.getAcctBalanceInpula() == null
 						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
@@ -4446,8 +4510,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// AVERAGE
+// AVERAGE
 			if (averageStr != null && !averageStr.isEmpty()) {
 
 				BigDecimal newAverage = new BigDecimal(averageStr);
@@ -4459,51 +4522,48 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// UPDATE
+			// Save using JDBC
 			if (isChanged) {
-
-				String sql = "UPDATE BRRS_EXPANDED_REGU_BS_DETAILTABLE " + "SET ACCT_NAME = ?, "
-						+ "ACCT_BALANCE_IN_PULA = ?, " + "AVERAGE = ? " + "WHERE ACCT_NUMBER = ?";
-
+				String sql;
+				System.out.println("Type in update block : " + type);
+				if (type == "RESUB" || type.equals("RESUB")) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				} else {
+					sql = "UPDATE BRRS_EXPANDED_REGU_BS_DETAILTABLE " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅
+																// comma
+																// added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
-						acctNo);
+						Sno);
+				if ((type == "RESUB") || (type.equals("RESUB"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "EXPANDED_REGU_BS Archival Screen",
+							"BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "EXPANDED_REGU_BS Screen",
+							"BRRS_EXPANDED_REGU_BS_DETAILTABLE");
+				}
+				System.out.println("Record updated using JDBC");
 
-				System.out.println("Record updated successfully");
+				Run_EXPANDED_REGU_BS_Procudure(reportDateStr, type, entry);
 
-				// DATE FORMAT
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// PROCEDURE CALL
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_Expanded_Regu_BS_SUMMARY_PROCEDURE(?); END;",
-									formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				if ((type == "RESUB" || type.equals("RESUB")) && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
-			}
-
-			else {
-
+			} else {
 				return ResponseEntity.ok("No changes were made.");
 			}
 
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 
 			e.printStackTrace();
 
@@ -4512,18 +4572,183 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_EXPANDED_REGU_BS_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+
+	private void Run_EXPANDED_REGU_BS_Procudure(String reportDateStr, String type, String entry) {
+
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM BRRS_EXPANDED_REGU_BS_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO BRRS_EXPANDED_REGU_BS_DETAILTABLE "
+								+ " (SNO, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_EXPANDED_REGU_BS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM BRRS_EXPANDED_REGU_BS_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_EXPANDED_REGU_BS_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						String finalsql = "INSERT INTO BRRS_EXPANDED_REGU_BS_ARCHIVAL_SUMMARYTABLE ("
+								+ "R7_PRODUCT, R7_BAL_SHEET_PUB_FS, R7_UNDER_REG_SOC, "
+								+ "R8_PRODUCT, R8_BAL_SHEET_PUB_FS, R8_UNDER_REG_SOC, "
+								+ "R9_PRODUCT, R9_BAL_SHEET_PUB_FS, R9_UNDER_REG_SOC, "
+								+ "R10_PRODUCT, R10_BAL_SHEET_PUB_FS, R10_UNDER_REG_SOC, "
+								+ "R11_PRODUCT, R11_BAL_SHEET_PUB_FS, R11_UNDER_REG_SOC, "
+								+ "R12_PRODUCT, R12_BAL_SHEET_PUB_FS, R12_UNDER_REG_SOC, "
+								+ "R13_PRODUCT, R13_BAL_SHEET_PUB_FS, R13_UNDER_REG_SOC, "
+								+ "R14_PRODUCT, R14_BAL_SHEET_PUB_FS, R14_UNDER_REG_SOC, "
+								+ "R15_PRODUCT, R15_BAL_SHEET_PUB_FS, R15_UNDER_REG_SOC, "
+								+ "R16_PRODUCT, R16_BAL_SHEET_PUB_FS, R16_UNDER_REG_SOC, "
+								+ "R17_PRODUCT, R17_BAL_SHEET_PUB_FS, R17_UNDER_REG_SOC, "
+								+ "R18_PRODUCT, R18_BAL_SHEET_PUB_FS, R18_UNDER_REG_SOC, "
+								+ "R19_PRODUCT, R19_BAL_SHEET_PUB_FS, R19_UNDER_REG_SOC, "
+								+ "R20_PRODUCT, R20_BAL_SHEET_PUB_FS, R20_UNDER_REG_SOC, "
+								+ "R21_PRODUCT, R21_BAL_SHEET_PUB_FS, R21_UNDER_REG_SOC, "
+								+ "R22_PRODUCT, R22_BAL_SHEET_PUB_FS, R22_UNDER_REG_SOC, "
+								+ "R23_PRODUCT, R23_BAL_SHEET_PUB_FS, R23_UNDER_REG_SOC, "
+								+ "R24_PRODUCT, R24_BAL_SHEET_PUB_FS, R24_UNDER_REG_SOC, "
+								+ "R26_PRODUCT, R26_BAL_SHEET_PUB_FS, R26_UNDER_REG_SOC, "
+								+ "R27_PRODUCT, R27_BAL_SHEET_PUB_FS, R27_UNDER_REG_SOC, "
+								+ "R28_PRODUCT, R28_BAL_SHEET_PUB_FS, R28_UNDER_REG_SOC, "
+								+ "R29_PRODUCT, R29_BAL_SHEET_PUB_FS, R29_UNDER_REG_SOC, "
+								+ "R30_PRODUCT, R30_BAL_SHEET_PUB_FS, R30_UNDER_REG_SOC, "
+								+ "R31_PRODUCT, R31_BAL_SHEET_PUB_FS, R31_UNDER_REG_SOC, "
+								+ "R32_PRODUCT, R32_BAL_SHEET_PUB_FS, R32_UNDER_REG_SOC, "
+								+ "R33_PRODUCT, R33_BAL_SHEET_PUB_FS, R33_UNDER_REG_SOC, "
+								+ "R34_PRODUCT, R34_BAL_SHEET_PUB_FS, R34_UNDER_REG_SOC, "
+								+ "R35_PRODUCT, R35_BAL_SHEET_PUB_FS, R35_UNDER_REG_SOC, "
+								+ "R36_PRODUCT, R36_BAL_SHEET_PUB_FS, R36_UNDER_REG_SOC, "
+								+ "R37_PRODUCT, R37_BAL_SHEET_PUB_FS, R37_UNDER_REG_SOC, "
+								+ "R38_PRODUCT, R38_BAL_SHEET_PUB_FS, R38_UNDER_REG_SOC, "
+								+ "R39_PRODUCT, R39_BAL_SHEET_PUB_FS, R39_UNDER_REG_SOC, "
+								+ "R40_PRODUCT, R40_BAL_SHEET_PUB_FS, R40_UNDER_REG_SOC, "
+								+ "R41_PRODUCT, R41_BAL_SHEET_PUB_FS, R41_UNDER_REG_SOC, "
+								+ "R42_PRODUCT, R42_BAL_SHEET_PUB_FS, R42_UNDER_REG_SOC, "
+								+ "R44_PRODUCT, R44_BAL_SHEET_PUB_FS, R44_UNDER_REG_SOC, "
+								+ "R45_PRODUCT, R45_BAL_SHEET_PUB_FS, R45_UNDER_REG_SOC, "
+								+ "R46_PRODUCT, R46_BAL_SHEET_PUB_FS, R46_UNDER_REG_SOC, "
+								+ "R47_PRODUCT, R47_BAL_SHEET_PUB_FS, R47_UNDER_REG_SOC, "
+								+ "R48_PRODUCT, R48_BAL_SHEET_PUB_FS, R48_UNDER_REG_SOC, "
+								+ "R49_PRODUCT, R49_BAL_SHEET_PUB_FS, R49_UNDER_REG_SOC, "
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+								+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) " + "SELECT "
+								+ "R7_PRODUCT, R7_BAL_SHEET_PUB_FS, R7_UNDER_REG_SOC, "
+								+ "R8_PRODUCT, R8_BAL_SHEET_PUB_FS, R8_UNDER_REG_SOC, "
+								+ "R9_PRODUCT, R9_BAL_SHEET_PUB_FS, R9_UNDER_REG_SOC, "
+								+ "R10_PRODUCT, R10_BAL_SHEET_PUB_FS, R10_UNDER_REG_SOC, "
+								+ "R11_PRODUCT, R11_BAL_SHEET_PUB_FS, R11_UNDER_REG_SOC, "
+								+ "R12_PRODUCT, R12_BAL_SHEET_PUB_FS, R12_UNDER_REG_SOC, "
+								+ "R13_PRODUCT, R13_BAL_SHEET_PUB_FS, R13_UNDER_REG_SOC, "
+								+ "R14_PRODUCT, R14_BAL_SHEET_PUB_FS, R14_UNDER_REG_SOC, "
+								+ "R15_PRODUCT, R15_BAL_SHEET_PUB_FS, R15_UNDER_REG_SOC, "
+								+ "R16_PRODUCT, R16_BAL_SHEET_PUB_FS, R16_UNDER_REG_SOC, "
+								+ "R17_PRODUCT, R17_BAL_SHEET_PUB_FS, R17_UNDER_REG_SOC, "
+								+ "R18_PRODUCT, R18_BAL_SHEET_PUB_FS, R18_UNDER_REG_SOC, "
+								+ "R19_PRODUCT, R19_BAL_SHEET_PUB_FS, R19_UNDER_REG_SOC, "
+								+ "R20_PRODUCT, R20_BAL_SHEET_PUB_FS, R20_UNDER_REG_SOC, "
+								+ "R21_PRODUCT, R21_BAL_SHEET_PUB_FS, R21_UNDER_REG_SOC, "
+								+ "R22_PRODUCT, R22_BAL_SHEET_PUB_FS, R22_UNDER_REG_SOC, "
+								+ "R23_PRODUCT, R23_BAL_SHEET_PUB_FS, R23_UNDER_REG_SOC, "
+								+ "R24_PRODUCT, R24_BAL_SHEET_PUB_FS, R24_UNDER_REG_SOC, "
+								+ "R26_PRODUCT, R26_BAL_SHEET_PUB_FS, R26_UNDER_REG_SOC, "
+								+ "R27_PRODUCT, R27_BAL_SHEET_PUB_FS, R27_UNDER_REG_SOC, "
+								+ "R28_PRODUCT, R28_BAL_SHEET_PUB_FS, R28_UNDER_REG_SOC, "
+								+ "R29_PRODUCT, R29_BAL_SHEET_PUB_FS, R29_UNDER_REG_SOC, "
+								+ "R30_PRODUCT, R30_BAL_SHEET_PUB_FS, R30_UNDER_REG_SOC, "
+								+ "R31_PRODUCT, R31_BAL_SHEET_PUB_FS, R31_UNDER_REG_SOC, "
+								+ "R32_PRODUCT, R32_BAL_SHEET_PUB_FS, R32_UNDER_REG_SOC, "
+								+ "R33_PRODUCT, R33_BAL_SHEET_PUB_FS, R33_UNDER_REG_SOC, "
+								+ "R34_PRODUCT, R34_BAL_SHEET_PUB_FS, R34_UNDER_REG_SOC, "
+								+ "R35_PRODUCT, R35_BAL_SHEET_PUB_FS, R35_UNDER_REG_SOC, "
+								+ "R36_PRODUCT, R36_BAL_SHEET_PUB_FS, R36_UNDER_REG_SOC, "
+								+ "R37_PRODUCT, R37_BAL_SHEET_PUB_FS, R37_UNDER_REG_SOC, "
+								+ "R38_PRODUCT, R38_BAL_SHEET_PUB_FS, R38_UNDER_REG_SOC, "
+								+ "R39_PRODUCT, R39_BAL_SHEET_PUB_FS, R39_UNDER_REG_SOC, "
+								+ "R40_PRODUCT, R40_BAL_SHEET_PUB_FS, R40_UNDER_REG_SOC, "
+								+ "R41_PRODUCT, R41_BAL_SHEET_PUB_FS, R41_UNDER_REG_SOC, "
+								+ "R42_PRODUCT, R42_BAL_SHEET_PUB_FS, R42_UNDER_REG_SOC, "
+								+ "R44_PRODUCT, R44_BAL_SHEET_PUB_FS, R44_UNDER_REG_SOC, "
+								+ "R45_PRODUCT, R45_BAL_SHEET_PUB_FS, R45_UNDER_REG_SOC, "
+								+ "R46_PRODUCT, R46_BAL_SHEET_PUB_FS, R46_UNDER_REG_SOC, "
+								+ "R47_PRODUCT, R47_BAL_SHEET_PUB_FS, R47_UNDER_REG_SOC, "
+								+ "R48_PRODUCT, R48_BAL_SHEET_PUB_FS, R48_UNDER_REG_SOC, "
+								+ "R49_PRODUCT, R49_BAL_SHEET_PUB_FS, R49_UNDER_REG_SOC, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+								+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_EXPANDED_REGU_BS_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						String adsumsql = "DELETE FROM BRRS_EXPANDED_REGU_BS_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public byte[] BRRS_Expanded_Regu_BSDetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for  Expanded_Regu_BS Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 				byte[] ARCHIVALreport = getExpanded_Regu_BSDetailNewExcelARCHIVAL(filename, fromdate, todate, currency,
 						dtltype, type, version);
 				return ARCHIVALreport;
 			}
-
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Expanded_Regu_BSDetailsDetail");
 
@@ -4654,7 +4879,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 		try {
 			logger.info("Generating Excel for Expanded_Regu_BS ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -4718,8 +4943,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<Expanded_Regu_BS_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate,
-					version);
+			List<Expanded_Regu_BS_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -4784,11 +5008,12 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.Expanded_Regu_BS");
 
+
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelExpanded_Regu_BSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
-					version);
+			return getExcelExpanded_Regu_BSARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
 		// Fetch data
@@ -5565,7 +5790,8 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "EXPANDED_REGU_BS SUMMARY", null, "BRRS_EXPANDED_REGU_BS_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "EXPANDED_REGU_BS SUMMARY", null,
+						"BRRS_EXPANDED_REGU_BS_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -5577,7 +5803,7 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 
@@ -6353,6 +6579,36 @@ public class BRRS_Expanded_Regu_BS_ReportService {
 			return out.toByteArray();
 		}
 
+	}
+
+	// Resubmission
+	public List<Object[]> getExpanded_Regu_BSResub() {
+		List<Object[]> resubList = new ArrayList<>();
+
+		try {
+
+			List<Expanded_Regu_BS_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (Expanded_Regu_BS_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					resubList.add(row);
+				}
+
+				System.out.println("Fetched " + resubList.size() + " Resub records");
+				Expanded_Regu_BS_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest Resub version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No Resub data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  Expanded_Regu_BS  Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return resubList;
 	}
 
 }

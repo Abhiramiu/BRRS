@@ -166,8 +166,6 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_LA3_ReportService brrs_M_LA3_ReportService;
 
-	@Autowired
-	BRRS_M_LA4_ReportService brrs_M_LA4_ReportService;
 
 	@Autowired
 	BRRS_M_LIQ_ReportService brrs_M_LIQ_ReportService;
@@ -573,27 +571,54 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/updateReport", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	
 
-			@ModelAttribute M_LA4_Summary_Entity2 request1
+	@PostMapping("/updateReport")
+	public ResponseEntity<String> updateReportM_LA4(
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("type") String type, HttpServletRequest request) {
 
-	) {
 		try {
 
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
+			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
 
-			// call services
-			BRRS_M_LA4_ReportService.updateReport(request1);
+			boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+			Object entityInstance = isResub ? new BRRS_M_LA4_ReportService.M_LA4_Archival_Summary_Entity2()
+					: new BRRS_M_LA4_ReportService.M_LA4_Summary_Entity2();
+
+			// Bind all request parameters to entity
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+			binder.bind(request);
+
+			// Set REPORT_DATE dynamically
+			Method setDateMethod = entityInstance.getClass().getMethod("setREPORT_DATE", Date.class);
+
+			setDateMethod.invoke(entityInstance, asondate);
+
+			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
+			System.out.println("REPORT_DATE Set : " + asondate);
+
+			// Call service
+			BRRS_M_LA4_ReportService.updateReport(entityInstance, type);
 
 			return ResponseEntity.ok("Modified Successfully.");
+
 		} catch (Exception e) {
+
+			System.err.println("===== M_LA4 CONTROLLER ERROR =====");
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			System.err.println("ROOT CAUSE : " + root.getMessage());
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
+
 	}
 
 	@RequestMapping(value = "/M_IRBupdateAll", method = { RequestMethod.GET, RequestMethod.POST })

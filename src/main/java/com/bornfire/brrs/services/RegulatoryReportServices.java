@@ -4050,8 +4050,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_LA4":
-				modelAndView = BRRS_M_LA4_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_LA4_reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_MRC":
@@ -4211,8 +4211,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "EXPANDED_REGU_BS":
-				modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_Expanded_Regu_BS_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 			case "COMMON_DISCLOSURE":
 				modelAndView = BRRS_Common_Disclosure_Reportservice.getViewOrEditPage(request.getParameter("SNO"),
@@ -4234,8 +4234,8 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"));
 				break;
 			case "FORMAT_III":
-				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "B_III_CETD":
@@ -4419,7 +4419,12 @@ public class RegulatoryReportServices {
 			case "Q_SMME":
 				response = BRRS_Q_SMME_Intrest_Income_ReportService.callregenprocedure(request);
 				break;
-
+			case "FORMAT_III":
+				response = BRRS_FORMAT_III_ReportService.callregenprocedure(request);
+				break;
+			case "EXPANDED_REGU_BS":
+				response = BRRS_Expanded_Regu_BS_ReportService.callregenprocedure(request);
+				break;
 			case "M_CA2":
 				response = BRRS_M_CA2_reportservice.callregenprocedure(request);
 				break;
@@ -5486,6 +5491,37 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "Q_SMME_LA":
+try {
+	List<Object[]> resubList = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMME_loans_AdvancesResub();
+	resubmissionData.addAll(resubList);
+	System.out.println("Resubmission data fetched for Q_SMME_LA: " + resubList.size());
+} catch (Exception e) {
+	System.err.println("Error fetching resubmission data for Q_SMME_LA: " + e.getMessage());
+	e.printStackTrace();
+}
+break;
+
+case "FORMAT_III":
+try {
+	List<Object[]> resubList = BRRS_FORMAT_III_ReportService.getFORMAT_IIIResub();
+	resubmissionData.addAll(resubList);
+	System.out.println("Resubmission data fetched for FORMAT_III: " + resubList.size());
+} catch (Exception e) {
+	System.err.println("Error fetching resubmission data for FORMAT_III: " + e.getMessage());
+	e.printStackTrace();
+}
+break;
+case "EXPANDED_REGU_BS":
+try {
+	List<Object[]> resubList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSResub();
+	resubmissionData.addAll(resubList);
+	System.out.println("Resubmission data fetched for Expanded_Regu_BS: " + resubList.size());
+} catch (Exception e) {
+	System.err.println("Error fetching resubmission data for Expanded_Regu_BS: " + e.getMessage());
+	e.printStackTrace();
+}
+break;
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}

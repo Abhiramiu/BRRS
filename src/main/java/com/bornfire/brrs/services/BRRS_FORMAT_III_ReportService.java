@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -70,7 +71,7 @@ public class BRRS_FORMAT_III_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -214,6 +215,45 @@ public class BRRS_FORMAT_III_ReportService {
 				new FORMAT_IIIArchivalDetaillRowMapper());
 	}
 
+//RESUBMISSION
+	public FORMAT_III_Detail_Entity findBySno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_FORMAT_III_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new FORMAT_IIIDetaillRowMapper());
+	}
+
+	public FORMAT_III_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new FORMAT_IIIDetaillRowMapper());
+	}
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
+	}
+	// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
+
+	public List<FORMAT_III_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
+				new FORMAT_IIIArchivalDetaillRowMapper());
+	}
+
+	public List<FORMAT_III_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ?  ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new FORMAT_IIIArchivalDetaillRowMapper());
+	}
 	// ROW MAPPER
 
 	class FORMAT_IIIRowMapper implements RowMapper<FORMAT_III_Summary_Entity> {
@@ -1089,10 +1129,10 @@ public class BRRS_FORMAT_III_ReportService {
 	}
 
 	public class FORMAT_III_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -1159,6 +1199,14 @@ public class BRRS_FORMAT_III_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -1343,7 +1391,7 @@ public class BRRS_FORMAT_III_ReportService {
 		public FORMAT_III_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			FORMAT_III_Detail_Entity obj = new FORMAT_III_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1379,7 +1427,7 @@ public class BRRS_FORMAT_III_ReportService {
 		public FORMAT_III_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			FORMAT_III_Archival_Detail_Entity obj = new FORMAT_III_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -1410,10 +1458,10 @@ public class BRRS_FORMAT_III_ReportService {
 	}
 
 	public class FORMAT_III_Archival_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -1480,6 +1528,14 @@ public class BRRS_FORMAT_III_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -1673,19 +1729,22 @@ public class BRRS_FORMAT_III_ReportService {
 		System.out.println("Type = " + type);
 		System.out.println("Version = " + version);
 
-		// ARCHIVAL MODE
-
-		if ("ARCHIVAL".equals(type) && version != null) {
+		// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<FORMAT_III_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
 			try {
+
 				Date dt = dateformat.parse(todate);
-				// SUMMARY ARCHIVAL
+
 				T1Master = getdatabydateListarchival(dt, version);
-				System.out.println("Archival Summary size = " + T1Master.size());
+
+				System.out.println(type + " Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
+				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
+				mv.addObject("allowdetail", getishighestversion(dt, version));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1752,29 +1811,26 @@ public class BRRS_FORMAT_III_ReportService {
 				}
 			}
 
-			// ARCHIVAL MODE
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+				System.out.println(type + " DETAIL MODE");
 
-				System.out.println("ARCHIVAL DETAIL MODE");
-
-				List<FORMAT_III_Archival_Detail_Entity> archivalDetailList;
+				List<FORMAT_III_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
@@ -1843,18 +1899,32 @@ public class BRRS_FORMAT_III_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/FORMAT_III");
 
-		if (acct_number != null) {
-			FORMAT_III_Detail_Entity FORMAT_IIIEntity = findByAcctnumber(acct_number);
-			if (FORMAT_IIIEntity != null && FORMAT_IIIEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(FORMAT_IIIEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+		System.out.println("sno is : " + SNO);
+		System.out.println("Type: " + type);
+		if (SNO != null) {
+			if (type == "RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				FORMAT_III_Detail_Entity FORMAT_IIIEntity = findBySnoArch(SNO);
+				if (FORMAT_IIIEntity != null && FORMAT_IIIEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+							.format(FORMAT_IIIEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("FORMAT_IIIData", FORMAT_IIIEntity);
+			} else {
+				FORMAT_III_Detail_Entity FORMAT_IIIEntity = findBySno(SNO);
+				if (FORMAT_IIIEntity != null && FORMAT_IIIEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy")
+							.format(FORMAT_IIIEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("FORMAT_IIIData", FORMAT_IIIEntity);
 			}
-			mv.addObject("FORMAT_IIIData", FORMAT_IIIEntity);
 		}
-
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -1865,9 +1935,9 @@ public class BRRS_FORMAT_III_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 
-			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 
 			String averageStr = request.getParameter("average");
 
@@ -1875,8 +1945,21 @@ public class BRRS_FORMAT_III_ReportService {
 
 			String reportDateStr = request.getParameter("reportDate");
 
-			// Existing Record
-			FORMAT_III_Detail_Entity existing = findByAcctnumber(acctNo);
+			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+
+			// Load Existing Record
+			FORMAT_III_Detail_Entity existing = null;
+
+			System.out.println("type is : " + type);
+			if ((type == "RESUB") || (type.equals("RESUB"))) {
+				existing = findBySnoArch(Sno);
+			} else {
+				existing = findBySno(Sno);
+			}
+			FORMAT_III_Detail_Entity oldcopy = new FORMAT_III_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			if (existing == null) {
 
@@ -1885,7 +1968,7 @@ public class BRRS_FORMAT_III_ReportService {
 
 			boolean isChanged = false;
 
-			// ACCOUNT NAME
+			// Update Name
 			if (acctName != null && !acctName.isEmpty()) {
 
 				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
@@ -1896,10 +1979,10 @@ public class BRRS_FORMAT_III_ReportService {
 				}
 			}
 
-			// ACCOUNT BALANCE
-			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
 
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
 
 				if (existing.getAcctBalanceInpula() == null
 						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
@@ -1909,8 +1992,7 @@ public class BRRS_FORMAT_III_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// AVERAGE
+// AVERAGE
 			if (averageStr != null && !averageStr.isEmpty()) {
 
 				BigDecimal newAverage = new BigDecimal(averageStr);
@@ -1922,50 +2004,47 @@ public class BRRS_FORMAT_III_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// UPDATE
+			// Save using JDBC
 			if (isChanged) {
-
-				String sql = "UPDATE BRRS_FORMAT_III_DETAILTABLE " + "SET ACCT_NAME = ?, "
-						+ "ACCT_BALANCE_IN_PULA = ?, " + "AVERAGE = ? " + "WHERE ACCT_NUMBER = ?";
-
+				String sql;
+				System.out.println("Type in update block : " + type);
+				if (type == "RESUB" || type.equals("RESUB")) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				} else {
+					sql = "UPDATE BRRS_FORMAT_III_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, " + // ✅
+																															// comma
+																															// added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
-						acctNo);
+						Sno);
+				if ((type == "RESUB") || (type.equals("RESUB"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "FORMAT_III Archival Screen",
+							"BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "FORMAT_III Screen",
+							"BRRS_FORMAT_III_DETAILTABLE");
+				}
+				System.out.println("Record updated using JDBC");
 
-				System.out.println("Record updated successfully");
+				Run_FORMAT_III_Procudure(reportDateStr, type, entry);
 
-				// DATE FORMAT
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// PROCEDURE CALL
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_FORMAT_III_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				if ((type == "RESUB" || type.equals("RESUB")) && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
-			}
-
-			else {
-
+			} else {
 				return ResponseEntity.ok("No changes were made.");
 			}
 
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 
 			e.printStackTrace();
 
@@ -1974,15 +2053,105 @@ public class BRRS_FORMAT_III_ReportService {
 		}
 	}
 
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_FORMAT_III_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+
+	private void Run_FORMAT_III_Procudure(String reportDateStr, String type, String entry) {
+
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM BRRS_FORMAT_III_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO BRRS_FORMAT_III_DETAILTABLE "
+								+ " (SNO, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_FORMAT_III_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_FORMAT_III_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM BRRS_FORMAT_III_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						String finalsql = "INSERT INTO BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY ("
+								+ "R13_BRIEF_BANK, R13_BRIEF_SUBDIARY, R13_EFF_NAME, R13_EFF_INCREASE, R13_EFF_DECREASE, R13_BAL_NAME, R13_BAL_INCREASE, R13_BAL_DECREASE, "
+								+ "R14_BRIEF_BANK, R14_BRIEF_SUBDIARY, R14_EFF_NAME, R14_EFF_INCREASE, R14_EFF_DECREASE, R14_BAL_NAME, R14_BAL_INCREASE, R14_BAL_DECREASE, "
+								+ "R15_BRIEF_BANK, R15_BRIEF_SUBDIARY, R15_EFF_NAME, R15_EFF_INCREASE, R15_EFF_DECREASE, R15_BAL_NAME, R15_BAL_INCREASE, R15_BAL_DECREASE, "
+								+ " REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+
+								+ "SELECT "
+								+ "R13_BRIEF_BANK, R13_BRIEF_SUBDIARY, R13_EFF_NAME, R13_EFF_INCREASE, R13_EFF_DECREASE, R13_BAL_NAME, R13_BAL_INCREASE, R13_BAL_DECREASE, "
+								+ "R14_BRIEF_BANK, R14_BRIEF_SUBDIARY, R14_EFF_NAME, R14_EFF_INCREASE, R14_EFF_DECREASE, R14_BAL_NAME, R14_BAL_INCREASE, R14_BAL_DECREASE, "
+								+ "R15_BRIEF_BANK, R15_BRIEF_SUBDIARY, R15_EFF_NAME, R15_EFF_INCREASE, R15_EFF_DECREASE, R15_BAL_NAME, R15_BAL_INCREASE, R15_BAL_DECREASE, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_FORMAT_III_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						String adsumsql = "DELETE FROM BRRS_FORMAT_III_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 	public byte[] getFORMAT_IIIDetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {
 		try {
 			logger.info("Generating Excel for  FORMAT_III Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
-				byte[] ARCHIVALreport = getFORMAT_IIIDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
-						type, version);
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
+				byte[] ARCHIVALreport = getFORMAT_IIIDetailExcelARCHIVAL(filename, fromdate, todate, currency,
+						dtltype, type, version);
 				return ARCHIVALreport;
 			}
 
@@ -2116,7 +2285,7 @@ public class BRRS_FORMAT_III_ReportService {
 		try {
 			logger.info("Generating Excel for FORMAT_III ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -2180,7 +2349,7 @@ public class BRRS_FORMAT_III_ReportService {
 
 			// Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<FORMAT_III_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate, version);
+			List<FORMAT_III_Archival_Detail_Entity> reportData = getArchivalDetaildatabydateList(parsedToDate);
 
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
@@ -2248,9 +2417,9 @@ public class BRRS_FORMAT_III_ReportService {
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
-			return getExcelFORMAT_IIIARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+			return getExcelFORMAT_IIIARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type,
+					version);
 		}
-
 		// Fetch data
 
 		List<FORMAT_III_Summary_Entity> dataList = getDataByDate(dateformat.parse(todate));
@@ -2470,7 +2639,8 @@ public class BRRS_FORMAT_III_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III  SUMMARY", null, "BRRS_FORMAT_III_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III  SUMMARY", null,
+						"BRRS_FORMAT_III_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -2482,7 +2652,7 @@ public class BRRS_FORMAT_III_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
 
@@ -2704,11 +2874,40 @@ public class BRRS_FORMAT_III_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III ARCHIVAL SUMMARY", null, "BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "FORMAT_III ARCHIVAL SUMMARY", null,
+						"BRRS_FORMAT_III_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
-		}
+		}}
+		//Resubmission
+		public List<Object[]> getFORMAT_IIIResub() {
+			List<Object[]> resubList = new ArrayList<>();
 
-	}
+			try {
+
+				List<FORMAT_III_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+				if (repoData != null && !repoData.isEmpty()) {
+					for (FORMAT_III_Archival_Summary_Entity entity : repoData) {
+						Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+								entity.getREPORT_RESUBDATE() };
+						resubList.add(row);
+					}
+
+					System.out.println("Fetched " + resubList.size() + " Resub records");
+					FORMAT_III_Archival_Summary_Entity first = repoData.get(0);
+					System.out.println("Latest Resub version: " + first.getREPORT_VERSION());
+				} else {
+					System.out.println("No Resub data found.");
+				}
+
+			} catch (Exception e) {
+				System.err.println("Error fetching  FORMAT_III  Resub data: " + e.getMessage());
+				e.printStackTrace();
+			}
+
+			return resubList;
+		}
+	
 
 }
