@@ -962,41 +962,41 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 	</script>
@@ -1031,86 +1031,76 @@ PURPOSE		: BWRBRREPORT
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
 						<!-- 📅 Date -->
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
-								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
-						<!-- Buttons -->
-						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 
+						<!-- DETAILS button (hide when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails()"
+							th:if="${dtltype ne 'detail'}">Details</button>
+
+						<!-- SUMMARY button (show when dtltype = 'detail') -->
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
+							th:if="${dtltype eq 'detail'}">Summary</button>
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
-							id="addRecord">
-							Modify
-						</button>
-
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-
-
-
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
-                   data-asondate=${asondate},
-                   data-fromdate=${fromdate},
-                   data-todate=${todate},
-                   data-currency=${currency}, 
-                   data-dtltype=${dtltype},
-                   data-filename='Q_STAFF.xlsx',
-                   data-type=${type},
-                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							           data-asondate=${asondate},
+							           data-fromdate=${fromdate},
+							           data-todate=${todate},
+							           data-currency=${currency}, 
+							           data-dtltype=${dtltype},
+							           data-filename='Q_STAFF.xlsx',
+							           data-type=${type},
+							           data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
+
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
 							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='EMAIL_Q_STAFF.xlsx',
-			data-type=${type},
-            data-format='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							    data-asondate=${asondate},
+							    data-fromdate=${fromdate},
+							    data-todate=${todate},
+							    data-currency=${currency}, 
+							    data-dtltype=${dtltype},
+							    data-filename='EMAIL_Q_STAFF.xlsx',
+							    data-type=${type},
+							    data-format='email',
+							    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
 
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
-											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
+																 data-fromdate=${fromdate},
+																 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
-											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
+																data-fromdate=${fromdate},
+																data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>

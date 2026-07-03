@@ -133,6 +133,7 @@ import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_SMME_DEP_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service;
+import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
@@ -5144,23 +5145,36 @@ try {
 	@RequestMapping(value = "/PL_SCHSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute PL_SCHS_Summary_Entity request) {
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy")
+	        Date asondate,
 
-		try {
-			System.out.println("came to single controller");
+	        @RequestParam(required = false)
+	        String type,
 
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
+	        @ModelAttribute PL_SCHS_Summary_Entity request) {
 
-			// call services
-			BRRS_PL_SCHS_ReportService.updateReport(request);
+	    try {
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        System.out.println("Came to PL SCHS Controller");
+	        System.out.println("Type : " + type);
+
+	        // Set report date
+	        request.setREPORT_DATE(asondate);
+
+	        // Call service
+	        BRRS_PL_SCHS_ReportService.updateReport(request, type);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed : " + e.getMessage());
+	    }
 	}
 
 	@Autowired
@@ -5341,7 +5355,7 @@ try {
 		try {
 			System.out.println("Came to single controller");
 
-			request1.setReportDate(asondate);
+			request1.setReport_date(asondate);
 
 			QSTAFF_service.updateReport(request1);
 			QSTAFF_service.updateReport2(request1);
@@ -5361,7 +5375,7 @@ try {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute Q_STAFF_Resub_Summary_Entity request,
+			@ModelAttribute BRRS_Q_STAFF_Report_Service.Q_STAFF_Resub_Summary_Entity request,
 
 			HttpServletRequest req) {
 
@@ -5371,12 +5385,12 @@ try {
 
 			if (asondate != null) {
 
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 
 			} else {
 
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			QSTAFF_service.updateResubReport(request);
