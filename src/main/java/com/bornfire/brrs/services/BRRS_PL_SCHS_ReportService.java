@@ -44,6 +44,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -54,6 +55,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -71,7 +73,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -81,6 +83,8 @@ public class BRRS_PL_SCHS_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	// Fetch data by report date
 	public List<PL_SCHS_Summary_Entity> getDataByDate(Date reportDate) {
@@ -203,18 +207,50 @@ public class BRRS_PL_SCHS_ReportService {
 				new PL_SCHSArchivalDetailRowMapper());
 	}
 
-// 2. FILTER BY LABEL + CRITERIA + DATE + VERSION
-
 	public List<PL_SCHS_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
-			String reportAddlCriteria1, Date reportdate, String dataEntryVersion) {
+			String reportAddlCriteria1, Date reportdate) {
 
 		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_LABEL = ? "
-				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND REPORT_DATE = ? " + "AND DATA_ENTRY_VERSION = ?";
+				+ "AND REPORT_ADDL_CRITERIA_1 = ? " + "AND DATA_ENTRY_VERSION = ? ";
 
-		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate, dataEntryVersion },
+		return jdbcTemplate.query(sql, new Object[] { reportLabel, reportAddlCriteria1, reportdate },
 				new PL_SCHSArchivalDetailRowMapper());
 	}
 
+	public List<PL_SCHS_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ?  ";
+
+		return jdbcTemplate.query(sql, new Object[] { reportdate }, new PL_SCHSArchivalDetailRowMapper());
+	}
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+
+	}
+
+	public PL_SCHS_Detail_Entity findBysnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new PL_SCHSDetailRowMapper());
+	}
+
+	public PL_SCHS_Detail_Entity findBySno(String sno) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_DETAILTABLE WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new PL_SCHSDetailRowMapper());
+	}
+
+	public PL_SCHS_Detail_Entity findBySnoArch(String sno) {
+
+		String sql = "SELECT * FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+
+		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new PL_SCHSDetailRowMapper());
+	}
 	// ROW MAPPER
 
 	class PL_SCHSRowMapper implements RowMapper<PL_SCHS_Summary_Entity> {
@@ -11298,10 +11334,10 @@ public class BRRS_PL_SCHS_ReportService {
 	}
 
 	public class PL_SCHS_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -11368,6 +11404,14 @@ public class BRRS_PL_SCHS_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -11552,7 +11596,7 @@ public class BRRS_PL_SCHS_ReportService {
 		public PL_SCHS_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			PL_SCHS_Detail_Entity obj = new PL_SCHS_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -11588,7 +11632,7 @@ public class BRRS_PL_SCHS_ReportService {
 		public PL_SCHS_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 			PL_SCHS_Archival_Detail_Entity obj = new PL_SCHS_Archival_Detail_Entity();
-
+			obj.setSno(rs.getLong("SNO"));
 			obj.setCustId(rs.getString("CUST_ID"));
 			obj.setAcctNumber(rs.getString("ACCT_NUMBER"));
 			obj.setAcctName(rs.getString("ACCT_NAME"));
@@ -11619,10 +11663,10 @@ public class BRRS_PL_SCHS_ReportService {
 	}
 
 	public class PL_SCHS_Archival_Detail_Entity {
-
+		private Long sno;
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 
@@ -11689,6 +11733,14 @@ public class BRRS_PL_SCHS_ReportService {
 
 		@Column(name = "DEL_FLG")
 		private char delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -11884,7 +11936,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 		// ARCHIVAL MODE
 
-		if ("ARCHIVAL".equals(type) && version != null) {
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<PL_SCHS_Archival_Summary_Entity> T1Master = new ArrayList<>();
 
@@ -11895,7 +11947,8 @@ public class BRRS_PL_SCHS_ReportService {
 				System.out.println("Archival Summary size = " + T1Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
-
+				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
+				mv.addObject("allowdetail", getishighestversion(dt, version));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -11963,27 +12016,26 @@ public class BRRS_PL_SCHS_ReportService {
 
 			// ARCHIVAL MODE
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+			// ARCHIVAL / RESUB MODE
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
-				System.out.println("ARCHIVAL DETAIL MODE");
+				System.out.println(type + " DETAIL MODE");
 
-				List<PL_SCHS_Archival_Detail_Entity> archivalDetailList;
+				List<PL_SCHS_Archival_Detail_Entity> detailList;
 
 				if (reportLabel != null && reportAddlCriteria1 != null) {
 
-					archivalDetailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate,
-							version);
+					detailList = GetArchivalDataByRowIdAndColumnId(reportLabel, reportAddlCriteria1, parsedDate);
 
 				} else {
 
-					archivalDetailList = getArchivalDetaildatabydateList(parsedDate, version);
+					detailList = getArchivalDetaildatabydateList(parsedDate);
 				}
 
-				mv.addObject("reportdetails", archivalDetailList);
-				mv.addObject("reportmaster12", archivalDetailList);
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
 
-				System.out.println("ARCHIVAL DETAIL COUNT: " + archivalDetailList.size());
-
+				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
 			// CURRENT MODE
@@ -12052,18 +12104,30 @@ public class BRRS_PL_SCHS_ReportService {
 		return archivalList;
 	}
 
-	public ModelAndView getViewOrEditPage(String acct_number, String formMode) {
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/PL_SCHS");
 
-		if (acct_number != null) {
-			PL_SCHS_Detail_Entity PL_SCHSEntity = findByAcctnumber(acct_number);
-			if (PL_SCHSEntity != null && PL_SCHSEntity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+		System.out.println("sno is : " + SNO);
+		System.out.println("Type: " + type);
+		if (SNO != null) {
+			if (type == "RESUB" || type.equals("RESUB")) {
+				System.out.println("Inside RESUB FETCH");
+				PL_SCHS_Detail_Entity PL_SCHSEntity = findBySnoArch(SNO);
+				if (PL_SCHSEntity != null && PL_SCHSEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("PL_SCHSData", PL_SCHSEntity);
+			} else {
+				PL_SCHS_Detail_Entity PL_SCHSEntity = findBySno(SNO);
+				if (PL_SCHSEntity != null && PL_SCHSEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(PL_SCHSEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("PL_SCHSData", PL_SCHSEntity);
 			}
-			mv.addObject("PL_SCHSData", PL_SCHSEntity);
 		}
-
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -12074,9 +12138,9 @@ public class BRRS_PL_SCHS_ReportService {
 
 		try {
 
-			String acctNo = request.getParameter("acctNumber");
+			String Sno = request.getParameter("sno");
 
-			String acctBalanceInpulaStr = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
 
 			String averageStr = request.getParameter("average");
 
@@ -12084,8 +12148,21 @@ public class BRRS_PL_SCHS_ReportService {
 
 			String reportDateStr = request.getParameter("reportDate");
 
-			// Existing Record
-			PL_SCHS_Detail_Entity existing = findByAcctnumber(acctNo);
+			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+
+			// Load Existing Record
+			PL_SCHS_Detail_Entity existing = null;
+
+			System.out.println("type is : " + type);
+			if ((type == "RESUB") || (type.equals("RESUB"))) {
+				existing = findBySnoArch(Sno);
+			} else {
+				existing = findBySno(Sno);
+			}
+			PL_SCHS_Detail_Entity oldcopy = new PL_SCHS_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
 
 			if (existing == null) {
 
@@ -12094,7 +12171,7 @@ public class BRRS_PL_SCHS_ReportService {
 
 			boolean isChanged = false;
 
-			// ACCOUNT NAME
+			// Update Name
 			if (acctName != null && !acctName.isEmpty()) {
 
 				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
@@ -12105,10 +12182,10 @@ public class BRRS_PL_SCHS_ReportService {
 				}
 			}
 
-			// ACCOUNT BALANCE
-			if (acctBalanceInpulaStr != null && !acctBalanceInpulaStr.isEmpty()) {
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
 
-				BigDecimal newBalance = new BigDecimal(acctBalanceInpulaStr);
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
 
 				if (existing.getAcctBalanceInpula() == null
 						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
@@ -12118,8 +12195,7 @@ public class BRRS_PL_SCHS_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// AVERAGE
+// AVERAGE
 			if (averageStr != null && !averageStr.isEmpty()) {
 
 				BigDecimal newAverage = new BigDecimal(averageStr);
@@ -12131,56 +12207,221 @@ public class BRRS_PL_SCHS_ReportService {
 					isChanged = true;
 				}
 			}
-
-			// UPDATE
+			// Save using JDBC
 			if (isChanged) {
-
-				String sql = "UPDATE BRRS_PL_SCHS_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, "
-						+ "AVERAGE = ? " + "WHERE ACCT_NUMBER = ?";
-
+				String sql;
+				System.out.println("Type in update block : " + type);
+				if (type == "RESUB" || type.equals("RESUB")) {
+					System.out.println("Inside RESUB UPDATE");
+					sql = "UPDATE BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL " + "SET ACCT_NAME = ?, "
+							+ "ACCT_BALANCE_IN_PULA = ?, " + // ✅ comma added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				} else {
+					sql = "UPDATE BRRS_PL_SCHS_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ?, " + // ✅
+																														// comma
+																														// added
+							"AVERAGE = ? " + // ✅ proper concatenation
+							"WHERE SNO = ?";
+				}
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAverage(),
-						acctNo);
+						Sno);
+				if ((type == "RESUB") || (type.equals("RESUB"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "Common Disclosure Archival Screen",
+							"BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "Common Disclosure Screen",
+							"BRRS_PL_SCHS_DETAILTABLE");
+				}
+				System.out.println("Record updated using JDBC");
 
-				System.out.println("Record updated successfully");
+				Run_PL_SCHS_Procudure(reportDateStr, type, entry);
 
-				// DATE FORMAT
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// PROCEDURE CALL
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							jdbcTemplate.update("BEGIN BRRS_PL_SCHS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							System.out.println("Procedure executed");
-
-						} catch (Exception e) {
-
-							e.printStackTrace();
-						}
-					}
-				});
-
+				if ((type == "RESUB" || type.equals("RESUB")) && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
-			}
-
-			else {
-
+			} else {
 				return ResponseEntity.ok("No changes were made.");
 			}
 
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 
 			e.printStackTrace();
 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}
+	}
+
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_PL_SCHS_Procudure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+
+		}
+	}
+
+	private void Run_PL_SCHS_Procudure(String reportDateStr, String type, String entry) {
+
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						// 1. Fixed date conversion here
+						String bdsql = "DELETE FROM BRRS_PL_SCHS_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						// 2. Fixed date conversion here
+						String sqltransfer = "INSERT INTO BRRS_PL_SCHS_DETAILTABLE "
+								+ " (SNO, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO,  ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_PL_SCHS_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_PL_SCHS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						// 3. Fixed date conversion here
+						String adsql = "DELETE FROM BRRS_PL_SCHS_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						// 4. Fixed date conversion here
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						String finalsql = "INSERT INTO BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY ("
+								+ "R9_INTREST_DIV, R9_FIG_BAL_SHEET, R9_FIG_BAL_SHEET_BWP, R9_AMT_STATEMENT_ADJ, R9_AMT_STATEMENT_ADJ_BWP, R9_NET_AMT, R9_NET_AMT_BWP, R9_BAL_SUB, R9_BAL_SUB_BWP, R9_BAL_SUB_DIARIES, R9_BAL_SUB_DIARIES_BWP, "
+								+ "R10_INTREST_DIV, R10_FIG_BAL_SHEET, R10_FIG_BAL_SHEET_BWP, R10_AMT_STATEMENT_ADJ, R10_AMT_STATEMENT_ADJ_BWP, R10_NET_AMT, R10_NET_AMT_BWP, R10_BAL_SUB, R10_BAL_SUB_BWP, R10_BAL_SUB_DIARIES, R10_BAL_SUB_DIARIES_BWP, "
+								+ "R11_INTREST_DIV, R11_FIG_BAL_SHEET, R11_FIG_BAL_SHEET_BWP, R11_AMT_STATEMENT_ADJ, R11_AMT_STATEMENT_ADJ_BWP, R11_NET_AMT, R11_NET_AMT_BWP, R11_BAL_SUB, R11_BAL_SUB_BWP, R11_BAL_SUB_DIARIES, R11_BAL_SUB_DIARIES_BWP, "
+								+ "R12_INTREST_DIV, R12_FIG_BAL_SHEET, R12_FIG_BAL_SHEET_BWP, R12_AMT_STATEMENT_ADJ, R12_AMT_STATEMENT_ADJ_BWP, R12_NET_AMT, R12_NET_AMT_BWP, R12_BAL_SUB, R12_BAL_SUB_BWP, R12_BAL_SUB_DIARIES, R12_BAL_SUB_DIARIES_BWP, "
+								+ "R13_INTREST_DIV, R13_FIG_BAL_SHEET, R13_FIG_BAL_SHEET_BWP, R13_AMT_STATEMENT_ADJ, R13_AMT_STATEMENT_ADJ_BWP, R13_NET_AMT, R13_NET_AMT_BWP, R13_BAL_SUB, R13_BAL_SUB_BWP, R13_BAL_SUB_DIARIES, R13_BAL_SUB_DIARIES_BWP, "
+								+ "R17_OTHER_INCOME, R17_FIG_BAL_SHEET, R17_FIG_BAL_SHEET_BWP, R17_AMT_STATEMENT_ADJ, R17_AMT_STATEMENT_ADJ_BWP, R17_NET_AMT, R17_NET_AMT_BWP, R17_BAL_SUB, R17_BAL_SUB_BWP, R17_BAL_SUB_DIARIES, R17_BAL_SUB_DIARIES_BWP, "
+								+ "R18_OTHER_INCOME, R18_FIG_BAL_SHEET, R18_FIG_BAL_SHEET_BWP, R18_AMT_STATEMENT_ADJ, R18_AMT_STATEMENT_ADJ_BWP, R18_NET_AMT, R18_NET_AMT_BWP, R18_BAL_SUB, R18_BAL_SUB_BWP, R18_BAL_SUB_DIARIES, R18_BAL_SUB_DIARIES_BWP, "
+								+ "R19_OTHER_INCOME, R19_FIG_BAL_SHEET, R19_FIG_BAL_SHEET_BWP, R19_AMT_STATEMENT_ADJ, R19_AMT_STATEMENT_ADJ_BWP, R19_NET_AMT, R19_NET_AMT_BWP, R19_BAL_SUB, R19_BAL_SUB_BWP, R19_BAL_SUB_DIARIES, R19_BAL_SUB_DIARIES_BWP, "
+								+ "R20_OTHER_INCOME, R20_FIG_BAL_SHEET, R20_FIG_BAL_SHEET_BWP, R20_AMT_STATEMENT_ADJ, R20_AMT_STATEMENT_ADJ_BWP, R20_NET_AMT, R20_NET_AMT_BWP, R20_BAL_SUB, R20_BAL_SUB_BWP, R20_BAL_SUB_DIARIES, R20_BAL_SUB_DIARIES_BWP, "
+								+ "R21_OTHER_INCOME, R21_FIG_BAL_SHEET, R21_FIG_BAL_SHEET_BWP, R21_AMT_STATEMENT_ADJ, R21_AMT_STATEMENT_ADJ_BWP, R21_NET_AMT, R21_NET_AMT_BWP, R21_BAL_SUB, R21_BAL_SUB_BWP, R21_BAL_SUB_DIARIES, R21_BAL_SUB_DIARIES_BWP, "
+								+ "R22_OTHER_INCOME, R22_FIG_BAL_SHEET, R22_FIG_BAL_SHEET_BWP, R22_AMT_STATEMENT_ADJ, R22_AMT_STATEMENT_ADJ_BWP, R22_NET_AMT, R22_NET_AMT_BWP, R22_BAL_SUB, R22_BAL_SUB_BWP, R22_BAL_SUB_DIARIES, R22_BAL_SUB_DIARIES_BWP, "
+								+ "R23_OTHER_INCOME, R23_FIG_BAL_SHEET, R23_FIG_BAL_SHEET_BWP, R23_AMT_STATEMENT_ADJ, R23_AMT_STATEMENT_ADJ_BWP, R23_NET_AMT, R23_NET_AMT_BWP, R23_BAL_SUB, R23_BAL_SUB_BWP, R23_BAL_SUB_DIARIES, R23_BAL_SUB_DIARIES_BWP, "
+								+ "R24_OTHER_INCOME, R24_FIG_BAL_SHEET, R24_FIG_BAL_SHEET_BWP, R24_AMT_STATEMENT_ADJ, R24_AMT_STATEMENT_ADJ_BWP, R24_NET_AMT, R24_NET_AMT_BWP, R24_BAL_SUB, R24_BAL_SUB_BWP, R24_BAL_SUB_DIARIES, R24_BAL_SUB_DIARIES_BWP, "
+								+ "R25_OTHER_INCOME, R25_FIG_BAL_SHEET, R25_FIG_BAL_SHEET_BWP, R25_AMT_STATEMENT_ADJ, R25_AMT_STATEMENT_ADJ_BWP, R25_NET_AMT, R25_NET_AMT_BWP, R25_BAL_SUB, R25_BAL_SUB_BWP, R25_BAL_SUB_DIARIES, R25_BAL_SUB_DIARIES_BWP, "
+								+ "R26_OTHER_INCOME, R26_FIG_BAL_SHEET, R26_FIG_BAL_SHEET_BWP, R26_AMT_STATEMENT_ADJ, R26_AMT_STATEMENT_ADJ_BWP, R26_NET_AMT, R26_NET_AMT_BWP, R26_BAL_SUB, R26_BAL_SUB_BWP, R26_BAL_SUB_DIARIES, R26_BAL_SUB_DIARIES_BWP, "
+								+ "R27_OTHER_INCOME, R27_FIG_BAL_SHEET, R27_FIG_BAL_SHEET_BWP, R27_AMT_STATEMENT_ADJ, R27_AMT_STATEMENT_ADJ_BWP, R27_NET_AMT, R27_NET_AMT_BWP, R27_BAL_SUB, R27_BAL_SUB_BWP, R27_BAL_SUB_DIARIES, R27_BAL_SUB_DIARIES_BWP, "
+								+ "R28_OTHER_INCOME, R28_FIG_BAL_SHEET, R28_FIG_BAL_SHEET_BWP, R28_AMT_STATEMENT_ADJ, R28_AMT_STATEMENT_ADJ_BWP, R28_NET_AMT, R28_NET_AMT_BWP, R28_BAL_SUB, R28_BAL_SUB_BWP, R28_BAL_SUB_DIARIES, R28_BAL_SUB_DIARIES_BWP, "
+								+ "R29_OTHER_INCOME, R29_FIG_BAL_SHEET, R29_FIG_BAL_SHEET_BWP, R29_AMT_STATEMENT_ADJ, R29_AMT_STATEMENT_ADJ_BWP, R29_NET_AMT, R29_NET_AMT_BWP, R29_BAL_SUB, R29_BAL_SUB_BWP, R29_BAL_SUB_DIARIES, R29_BAL_SUB_DIARIES_BWP, "
+								+ "R30_OTHER_INCOME, R30_FIG_BAL_SHEET, R30_FIG_BAL_SHEET_BWP, R30_AMT_STATEMENT_ADJ, R30_AMT_STATEMENT_ADJ_BWP, R30_NET_AMT, R30_NET_AMT_BWP, R30_BAL_SUB, R30_BAL_SUB_BWP, R30_BAL_SUB_DIARIES, R30_BAL_SUB_DIARIES_BWP, "
+								+ "R31_OTHER_INCOME, R31_FIG_BAL_SHEET, R31_FIG_BAL_SHEET_BWP, R31_AMT_STATEMENT_ADJ, R31_AMT_STATEMENT_ADJ_BWP, R31_NET_AMT, R31_NET_AMT_BWP, R31_BAL_SUB, R31_BAL_SUB_BWP, R31_BAL_SUB_DIARIES, R31_BAL_SUB_DIARIES_BWP, "
+								+ "R40_INTREST_EXPENDED, R40_FIG_BAL_SHEET, R40_FIG_BAL_SHEET_BWP, R40_AMT_STATEMENT_ADJ, R40_AMT_STATEMENT_ADJ_BWP, R40_NET_AMT, R40_NET_AMT_BWP, R40_BAL_SUB, R40_BAL_SUB_BWP, R40_BAL_SUB_DIARIES, R40_BAL_SUB_DIARIES_BWP, "
+								+ "R41_INTREST_EXPENDED, R41_FIG_BAL_SHEET, R41_FIG_BAL_SHEET_BWP, R41_AMT_STATEMENT_ADJ, R41_AMT_STATEMENT_ADJ_BWP, R41_NET_AMT, R41_NET_AMT_BWP, R41_BAL_SUB, R41_BAL_SUB_BWP, R41_BAL_SUB_DIARIES, R41_BAL_SUB_DIARIES_BWP, "
+								+ "R42_INTREST_EXPENDED, R42_FIG_BAL_SHEET, R42_FIG_BAL_SHEET_BWP, R42_AMT_STATEMENT_ADJ, R42_AMT_STATEMENT_ADJ_BWP, R42_NET_AMT, R42_NET_AMT_BWP, R42_BAL_SUB, R42_BAL_SUB_BWP, R42_BAL_SUB_DIARIES, R42_BAL_SUB_DIARIES_BWP, "
+								+ "R43_INTREST_EXPENDED, R43_FIG_BAL_SHEET, R43_FIG_BAL_SHEET_BWP, R43_AMT_STATEMENT_ADJ, R43_AMT_STATEMENT_ADJ_BWP, R43_NET_AMT, R43_NET_AMT_BWP, R43_BAL_SUB, R43_BAL_SUB_BWP, R43_BAL_SUB_DIARIES, R43_BAL_SUB_DIARIES_BWP, "
+								+ "R48_OPERATING_EXPENSES, R48_FIG_BAL_SHEET, R48_FIG_BAL_SHEET_BWP, R48_AMT_STATEMENT_ADJ, R48_AMT_STATEMENT_ADJ_BWP, R48_NET_AMT, R48_NET_AMT_BWP, R48_BAL_SUB, R48_BAL_SUB_BWP, R48_BAL_SUB_DIARIES, R48_BAL_SUB_DIARIES_BWP, "
+								+ "R49_OPERATING_EXPENSES, R49_FIG_BAL_SHEET, R49_FIG_BAL_SHEET_BWP, R49_AMT_STATEMENT_ADJ, R49_AMT_STATEMENT_ADJ_BWP, R49_NET_AMT, R49_NET_AMT_BWP, R49_BAL_SUB, R49_BAL_SUB_BWP, R49_BAL_SUB_DIARIES, R49_BAL_SUB_DIARIES_BWP, "
+								+ "R50_OPERATING_EXPENSES, R50_FIG_BAL_SHEET, R50_FIG_BAL_SHEET_BWP, R50_AMT_STATEMENT_ADJ, R50_AMT_STATEMENT_ADJ_BWP, R50_NET_AMT, R50_NET_AMT_BWP, R50_BAL_SUB, R50_BAL_SUB_BWP, R50_BAL_SUB_DIARIES, R50_BAL_SUB_DIARIES_BWP, "
+								+ "R51_OPERATING_EXPENSES, R51_FIG_BAL_SHEET, R51_FIG_BAL_SHEET_BWP, R51_AMT_STATEMENT_ADJ, R51_AMT_STATEMENT_ADJ_BWP, R51_NET_AMT, R51_NET_AMT_BWP, R51_BAL_SUB, R51_BAL_SUB_BWP, R51_BAL_SUB_DIARIES, R51_BAL_SUB_DIARIES_BWP, "
+								+ "R52_OPERATING_EXPENSES, R52_FIG_BAL_SHEET, R52_FIG_BAL_SHEET_BWP, R52_AMT_STATEMENT_ADJ, R52_AMT_STATEMENT_ADJ_BWP, R52_NET_AMT, R52_NET_AMT_BWP, R52_BAL_SUB, R52_BAL_SUB_BWP, R52_BAL_SUB_DIARIES, R52_BAL_SUB_DIARIES_BWP, "
+								+ "R53_OPERATING_EXPENSES, R53_FIG_BAL_SHEET, R53_FIG_BAL_SHEET_BWP, R53_AMT_STATEMENT_ADJ, R53_AMT_STATEMENT_ADJ_BWP, R53_NET_AMT, R53_NET_AMT_BWP, R53_BAL_SUB, R53_BAL_SUB_BWP, R53_BAL_SUB_DIARIES, R53_BAL_SUB_DIARIES_BWP, "
+								+ "R54_OPERATING_EXPENSES, R54_FIG_BAL_SHEET, R54_FIG_BAL_SHEET_BWP, R54_AMT_STATEMENT_ADJ, R54_AMT_STATEMENT_ADJ_BWP, R54_NET_AMT, R54_NET_AMT_BWP, R54_BAL_SUB, R54_BAL_SUB_BWP, R54_BAL_SUB_DIARIES, R54_BAL_SUB_DIARIES_BWP, "
+								+ "R55_OPERATING_EXPENSES, R55_FIG_BAL_SHEET, R55_FIG_BAL_SHEET_BWP, R55_AMT_STATEMENT_ADJ, R55_AMT_STATEMENT_ADJ_BWP, R55_NET_AMT, R55_NET_AMT_BWP, R55_BAL_SUB, R55_BAL_SUB_BWP, R55_BAL_SUB_DIARIES, R55_BAL_SUB_DIARIES_BWP, "
+								+ "R56_OPERATING_EXPENSES, R56_FIG_BAL_SHEET, R56_FIG_BAL_SHEET_BWP, R56_AMT_STATEMENT_ADJ, R56_AMT_STATEMENT_ADJ_BWP, R56_NET_AMT, R56_NET_AMT_BWP, R56_BAL_SUB, R56_BAL_SUB_BWP, R56_BAL_SUB_DIARIES, R56_BAL_SUB_DIARIES_BWP, "
+								+ "R57_OPERATING_EXPENSES, R57_FIG_BAL_SHEET, R57_FIG_BAL_SHEET_BWP, R57_AMT_STATEMENT_ADJ, R57_AMT_STATEMENT_ADJ_BWP, R57_NET_AMT, R57_NET_AMT_BWP, R57_BAL_SUB, R57_BAL_SUB_BWP, R57_BAL_SUB_DIARIES, R57_BAL_SUB_DIARIES_BWP, "
+								+ "R58_OPERATING_EXPENSES, R58_FIG_BAL_SHEET, R58_FIG_BAL_SHEET_BWP, R58_AMT_STATEMENT_ADJ, R58_AMT_STATEMENT_ADJ_BWP, R58_NET_AMT, R58_NET_AMT_BWP, R58_BAL_SUB, R58_BAL_SUB_BWP, R58_BAL_SUB_DIARIES, R58_BAL_SUB_DIARIES_BWP, "
+								+ "R59_OPERATING_EXPENSES, R59_FIG_BAL_SHEET, R59_FIG_BAL_SHEET_BWP, R59_AMT_STATEMENT_ADJ, R59_AMT_STATEMENT_ADJ_BWP, R59_NET_AMT, R59_NET_AMT_BWP, R59_BAL_SUB, R59_BAL_SUB_BWP, R59_BAL_SUB_DIARIES, R59_BAL_SUB_DIARIES_BWP, "
+								+ "R60_OPERATING_EXPENSES, R60_FIG_BAL_SHEET, R60_FIG_BAL_SHEET_BWP, R60_AMT_STATEMENT_ADJ, R60_AMT_STATEMENT_ADJ_BWP, R60_NET_AMT, R60_NET_AMT_BWP, R60_BAL_SUB, R60_BAL_SUB_BWP, R60_BAL_SUB_DIARIES, R60_BAL_SUB_DIARIES_BWP, "
+								+ "R61_OPERATING_EXPENSES, R61_FIG_BAL_SHEET, R61_FIG_BAL_SHEET_BWP, R61_AMT_STATEMENT_ADJ, R61_AMT_STATEMENT_ADJ_BWP, R61_NET_AMT, R61_NET_AMT_BWP, R61_BAL_SUB, R61_BAL_SUB_BWP, R61_BAL_SUB_DIARIES, R61_BAL_SUB_DIARIES_BWP, "
+								+ "R62_OPERATING_EXPENSES, R62_FIG_BAL_SHEET, R62_FIG_BAL_SHEET_BWP, R62_AMT_STATEMENT_ADJ, R62_AMT_STATEMENT_ADJ_BWP, R62_NET_AMT, R62_NET_AMT_BWP, R62_BAL_SUB, R62_BAL_SUB_BWP, R62_BAL_SUB_DIARIES, R62_BAL_SUB_DIARIES_BWP, "
+								+ "R63_OPERATING_EXPENSES, R63_FIG_BAL_SHEET, R63_FIG_BAL_SHEET_BWP, R63_AMT_STATEMENT_ADJ, R63_AMT_STATEMENT_ADJ_BWP, R63_NET_AMT, R63_NET_AMT_BWP, R63_BAL_SUB, R63_BAL_SUB_BWP, R63_BAL_SUB_DIARIES, R63_BAL_SUB_DIARIES_BWP, "
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT "
+								+ "R9_INTREST_DIV, R9_FIG_BAL_SHEET, R9_FIG_BAL_SHEET_BWP, R9_AMT_STATEMENT_ADJ, R9_AMT_STATEMENT_ADJ_BWP, R9_NET_AMT, R9_NET_AMT_BWP, R9_BAL_SUB, R9_BAL_SUB_BWP, R9_BAL_SUB_DIARIES, R9_BAL_SUB_DIARIES_BWP, "
+								+ "R10_INTREST_DIV, R10_FIG_BAL_SHEET, R10_FIG_BAL_SHEET_BWP, R10_AMT_STATEMENT_ADJ, R10_AMT_STATEMENT_ADJ_BWP, R10_NET_AMT, R10_NET_AMT_BWP, R10_BAL_SUB, R10_BAL_SUB_BWP, R10_BAL_SUB_DIARIES, R10_BAL_SUB_DIARIES_BWP, "
+								+ "R11_INTREST_DIV, R11_FIG_BAL_SHEET, R11_FIG_BAL_SHEET_BWP, R11_AMT_STATEMENT_ADJ, R11_AMT_STATEMENT_ADJ_BWP, R11_NET_AMT, R11_NET_AMT_BWP, R11_BAL_SUB, R11_BAL_SUB_BWP, R11_BAL_SUB_DIARIES, R11_BAL_SUB_DIARIES_BWP, "
+								+ "R12_INTREST_DIV, R12_FIG_BAL_SHEET, R12_FIG_BAL_SHEET_BWP, R12_AMT_STATEMENT_ADJ, R12_AMT_STATEMENT_ADJ_BWP, R12_NET_AMT, R12_NET_AMT_BWP, R12_BAL_SUB, R12_BAL_SUB_BWP, R12_BAL_SUB_DIARIES, R12_BAL_SUB_DIARIES_BWP, "
+								+ "R13_INTREST_DIV, R13_FIG_BAL_SHEET, R13_FIG_BAL_SHEET_BWP, R13_AMT_STATEMENT_ADJ, R13_AMT_STATEMENT_ADJ_BWP, R13_NET_AMT, R13_NET_AMT_BWP, R13_BAL_SUB, R13_BAL_SUB_BWP, R13_BAL_SUB_DIARIES, R13_BAL_SUB_DIARIES_BWP, "
+								+ "R17_OTHER_INCOME, R17_FIG_BAL_SHEET, R17_FIG_BAL_SHEET_BWP, R17_AMT_STATEMENT_ADJ, R17_AMT_STATEMENT_ADJ_BWP, R17_NET_AMT, R17_NET_AMT_BWP, R17_BAL_SUB, R17_BAL_SUB_BWP, R17_BAL_SUB_DIARIES, R17_BAL_SUB_DIARIES_BWP, "
+								+ "R18_OTHER_INCOME, R18_FIG_BAL_SHEET, R18_FIG_BAL_SHEET_BWP, R18_AMT_STATEMENT_ADJ, R18_AMT_STATEMENT_ADJ_BWP, R18_NET_AMT, R18_NET_AMT_BWP, R18_BAL_SUB, R18_BAL_SUB_BWP, R18_BAL_SUB_DIARIES, R18_BAL_SUB_DIARIES_BWP, "
+								+ "R19_OTHER_INCOME, R19_FIG_BAL_SHEET, R19_FIG_BAL_SHEET_BWP, R19_AMT_STATEMENT_ADJ, R19_AMT_STATEMENT_ADJ_BWP, R19_NET_AMT, R19_NET_AMT_BWP, R19_BAL_SUB, R19_BAL_SUB_BWP, R19_BAL_SUB_DIARIES, R19_BAL_SUB_DIARIES_BWP, "
+								+ "R20_OTHER_INCOME, R20_FIG_BAL_SHEET, R20_FIG_BAL_SHEET_BWP, R20_AMT_STATEMENT_ADJ, R20_AMT_STATEMENT_ADJ_BWP, R20_NET_AMT, R20_NET_AMT_BWP, R20_BAL_SUB, R20_BAL_SUB_BWP, R20_BAL_SUB_DIARIES, R20_BAL_SUB_DIARIES_BWP, "
+								+ "R21_OTHER_INCOME, R21_FIG_BAL_SHEET, R21_FIG_BAL_SHEET_BWP, R21_AMT_STATEMENT_ADJ, R21_AMT_STATEMENT_ADJ_BWP, R21_NET_AMT, R21_NET_AMT_BWP, R21_BAL_SUB, R21_BAL_SUB_BWP, R21_BAL_SUB_DIARIES, R21_BAL_SUB_DIARIES_BWP, "
+								+ "R22_OTHER_INCOME, R22_FIG_BAL_SHEET, R22_FIG_BAL_SHEET_BWP, R22_AMT_STATEMENT_ADJ, R22_AMT_STATEMENT_ADJ_BWP, R22_NET_AMT, R22_NET_AMT_BWP, R22_BAL_SUB, R22_BAL_SUB_BWP, R22_BAL_SUB_DIARIES, R22_BAL_SUB_DIARIES_BWP, "
+								+ "R23_OTHER_INCOME, R23_FIG_BAL_SHEET, R23_FIG_BAL_SHEET_BWP, R23_AMT_STATEMENT_ADJ, R23_AMT_STATEMENT_ADJ_BWP, R23_NET_AMT, R23_NET_AMT_BWP, R23_BAL_SUB, R23_BAL_SUB_BWP, R23_BAL_SUB_DIARIES, R23_BAL_SUB_DIARIES_BWP, "
+								+ "R24_OTHER_INCOME, R24_FIG_BAL_SHEET, R24_FIG_BAL_SHEET_BWP, R24_AMT_STATEMENT_ADJ, R24_AMT_STATEMENT_ADJ_BWP, R24_NET_AMT, R24_NET_AMT_BWP, R24_BAL_SUB, R24_BAL_SUB_BWP, R24_BAL_SUB_DIARIES, R24_BAL_SUB_DIARIES_BWP, "
+								+ "R25_OTHER_INCOME, R25_FIG_BAL_SHEET, R25_FIG_BAL_SHEET_BWP, R25_AMT_STATEMENT_ADJ, R25_AMT_STATEMENT_ADJ_BWP, R25_NET_AMT, R25_NET_AMT_BWP, R25_BAL_SUB, R25_BAL_SUB_BWP, R25_BAL_SUB_DIARIES, R25_BAL_SUB_DIARIES_BWP, "
+								+ "R26_OTHER_INCOME, R26_FIG_BAL_SHEET, R26_FIG_BAL_SHEET_BWP, R26_AMT_STATEMENT_ADJ, R26_AMT_STATEMENT_ADJ_BWP, R26_NET_AMT, R26_NET_AMT_BWP, R26_BAL_SUB, R26_BAL_SUB_BWP, R26_BAL_SUB_DIARIES, R26_BAL_SUB_DIARIES_BWP, "
+								+ "R27_OTHER_INCOME, R27_FIG_BAL_SHEET, R27_FIG_BAL_SHEET_BWP, R27_AMT_STATEMENT_ADJ, R27_AMT_STATEMENT_ADJ_BWP, R27_NET_AMT, R27_NET_AMT_BWP, R27_BAL_SUB, R27_BAL_SUB_BWP, R27_BAL_SUB_DIARIES, R27_BAL_SUB_DIARIES_BWP, "
+								+ "R28_OTHER_INCOME, R28_FIG_BAL_SHEET, R28_FIG_BAL_SHEET_BWP, R28_AMT_STATEMENT_ADJ, R28_AMT_STATEMENT_ADJ_BWP, R28_NET_AMT, R28_NET_AMT_BWP, R28_BAL_SUB, R28_BAL_SUB_BWP, R28_BAL_SUB_DIARIES, R28_BAL_SUB_DIARIES_BWP, "
+								+ "R29_OTHER_INCOME, R29_FIG_BAL_SHEET, R29_FIG_BAL_SHEET_BWP, R29_AMT_STATEMENT_ADJ, R29_AMT_STATEMENT_ADJ_BWP, R29_NET_AMT, R29_NET_AMT_BWP, R29_BAL_SUB, R29_BAL_SUB_BWP, R29_BAL_SUB_DIARIES, R29_BAL_SUB_DIARIES_BWP, "
+								+ "R30_OTHER_INCOME, R30_FIG_BAL_SHEET, R30_FIG_BAL_SHEET_BWP, R30_AMT_STATEMENT_ADJ, R30_AMT_STATEMENT_ADJ_BWP, R30_NET_AMT, R30_NET_AMT_BWP, R30_BAL_SUB, R30_BAL_SUB_BWP, R30_BAL_SUB_DIARIES, R30_BAL_SUB_DIARIES_BWP, "
+								+ "R31_OTHER_INCOME, R31_FIG_BAL_SHEET, R31_FIG_BAL_SHEET_BWP, R31_AMT_STATEMENT_ADJ, R31_AMT_STATEMENT_ADJ_BWP, R31_NET_AMT, R31_NET_AMT_BWP, R31_BAL_SUB, R31_BAL_SUB_BWP, R31_BAL_SUB_DIARIES, R31_BAL_SUB_DIARIES_BWP, "
+								+ "R40_INTREST_EXPENDED, R40_FIG_BAL_SHEET, R40_FIG_BAL_SHEET_BWP, R40_AMT_STATEMENT_ADJ, R40_AMT_STATEMENT_ADJ_BWP, R40_NET_AMT, R40_NET_AMT_BWP, R40_BAL_SUB, R40_BAL_SUB_BWP, R40_BAL_SUB_DIARIES, R40_BAL_SUB_DIARIES_BWP, "
+								+ "R41_INTREST_EXPENDED, R41_FIG_BAL_SHEET, R41_FIG_BAL_SHEET_BWP, R41_AMT_STATEMENT_ADJ, R41_AMT_STATEMENT_ADJ_BWP, R41_NET_AMT, R41_NET_AMT_BWP, R41_BAL_SUB, R41_BAL_SUB_BWP, R41_BAL_SUB_DIARIES, R41_BAL_SUB_DIARIES_BWP, "
+								+ "R42_INTREST_EXPENDED, R42_FIG_BAL_SHEET, R42_FIG_BAL_SHEET_BWP, R42_AMT_STATEMENT_ADJ, R42_AMT_STATEMENT_ADJ_BWP, R42_NET_AMT, R42_NET_AMT_BWP, R42_BAL_SUB, R42_BAL_SUB_BWP, R42_BAL_SUB_DIARIES, R42_BAL_SUB_DIARIES_BWP, "
+								+ "R43_INTREST_EXPENDED, R43_FIG_BAL_SHEET, R43_FIG_BAL_SHEET_BWP, R43_AMT_STATEMENT_ADJ, R43_AMT_STATEMENT_ADJ_BWP, R43_NET_AMT, R43_NET_AMT_BWP, R43_BAL_SUB, R43_BAL_SUB_BWP, R43_BAL_SUB_DIARIES, R43_BAL_SUB_DIARIES_BWP, "
+								+ "R48_OPERATING_EXPENSES, R48_FIG_BAL_SHEET, R48_FIG_BAL_SHEET_BWP, R48_AMT_STATEMENT_ADJ, R48_AMT_STATEMENT_ADJ_BWP, R48_NET_AMT, R48_NET_AMT_BWP, R48_BAL_SUB, R48_BAL_SUB_BWP, R48_BAL_SUB_DIARIES, R48_BAL_SUB_DIARIES_BWP, "
+								+ "R49_OPERATING_EXPENSES, R49_FIG_BAL_SHEET, R49_FIG_BAL_SHEET_BWP, R49_AMT_STATEMENT_ADJ, R49_AMT_STATEMENT_ADJ_BWP, R49_NET_AMT, R49_NET_AMT_BWP, R49_BAL_SUB, R49_BAL_SUB_BWP, R49_BAL_SUB_DIARIES, R49_BAL_SUB_DIARIES_BWP, "
+								+ "R50_OPERATING_EXPENSES, R50_FIG_BAL_SHEET, R50_FIG_BAL_SHEET_BWP, R50_AMT_STATEMENT_ADJ, R50_AMT_STATEMENT_ADJ_BWP, R50_NET_AMT, R50_NET_AMT_BWP, R50_BAL_SUB, R50_BAL_SUB_BWP, R50_BAL_SUB_DIARIES, R50_BAL_SUB_DIARIES_BWP, "
+								+ "R51_OPERATING_EXPENSES, R51_FIG_BAL_SHEET, R51_FIG_BAL_SHEET_BWP, R51_AMT_STATEMENT_ADJ, R51_AMT_STATEMENT_ADJ_BWP, R51_NET_AMT, R51_NET_AMT_BWP, R51_BAL_SUB, R51_BAL_SUB_BWP, R51_BAL_SUB_DIARIES, R51_BAL_SUB_DIARIES_BWP, "
+								+ "R52_OPERATING_EXPENSES, R52_FIG_BAL_SHEET, R52_FIG_BAL_SHEET_BWP, R52_AMT_STATEMENT_ADJ, R52_AMT_STATEMENT_ADJ_BWP, R52_NET_AMT, R52_NET_AMT_BWP, R52_BAL_SUB, R52_BAL_SUB_BWP, R52_BAL_SUB_DIARIES, R52_BAL_SUB_DIARIES_BWP, "
+								+ "R53_OPERATING_EXPENSES, R53_FIG_BAL_SHEET, R53_FIG_BAL_SHEET_BWP, R53_AMT_STATEMENT_ADJ, R53_AMT_STATEMENT_ADJ_BWP, R53_NET_AMT, R53_NET_AMT_BWP, R53_BAL_SUB, R53_BAL_SUB_BWP, R53_BAL_SUB_DIARIES, R53_BAL_SUB_DIARIES_BWP, "
+								+ "R54_OPERATING_EXPENSES, R54_FIG_BAL_SHEET, R54_FIG_BAL_SHEET_BWP, R54_AMT_STATEMENT_ADJ, R54_AMT_STATEMENT_ADJ_BWP, R54_NET_AMT, R54_NET_AMT_BWP, R54_BAL_SUB, R54_BAL_SUB_BWP, R54_BAL_SUB_DIARIES, R54_BAL_SUB_DIARIES_BWP, "
+								+ "R55_OPERATING_EXPENSES, R55_FIG_BAL_SHEET, R55_FIG_BAL_SHEET_BWP, R55_AMT_STATEMENT_ADJ, R55_AMT_STATEMENT_ADJ_BWP, R55_NET_AMT, R55_NET_AMT_BWP, R55_BAL_SUB, R55_BAL_SUB_BWP, R55_BAL_SUB_DIARIES, R55_BAL_SUB_DIARIES_BWP, "
+								+ "R56_OPERATING_EXPENSES, R56_FIG_BAL_SHEET, R56_FIG_BAL_SHEET_BWP, R56_AMT_STATEMENT_ADJ, R56_AMT_STATEMENT_ADJ_BWP, R56_NET_AMT, R56_NET_AMT_BWP, R56_BAL_SUB, R56_BAL_SUB_BWP, R56_BAL_SUB_DIARIES, R56_BAL_SUB_DIARIES_BWP, "
+								+ "R57_OPERATING_EXPENSES, R57_FIG_BAL_SHEET, R57_FIG_BAL_SHEET_BWP, R57_AMT_STATEMENT_ADJ, R57_AMT_STATEMENT_ADJ_BWP, R57_NET_AMT, R57_NET_AMT_BWP, R57_BAL_SUB, R57_BAL_SUB_BWP, R57_BAL_SUB_DIARIES, R57_BAL_SUB_DIARIES_BWP, "
+								+ "R58_OPERATING_EXPENSES, R58_FIG_BAL_SHEET, R58_FIG_BAL_SHEET_BWP, R58_AMT_STATEMENT_ADJ, R58_AMT_STATEMENT_ADJ_BWP, R58_NET_AMT, R58_NET_AMT_BWP, R58_BAL_SUB, R58_BAL_SUB_BWP, R58_BAL_SUB_DIARIES, R58_BAL_SUB_DIARIES_BWP, "
+								+ "R59_OPERATING_EXPENSES, R59_FIG_BAL_SHEET, R59_FIG_BAL_SHEET_BWP, R59_AMT_STATEMENT_ADJ, R59_AMT_STATEMENT_ADJ_BWP, R59_NET_AMT, R59_NET_AMT_BWP, R59_BAL_SUB, R59_BAL_SUB_BWP, R59_BAL_SUB_DIARIES, R59_BAL_SUB_DIARIES_BWP, "
+								+ "R60_OPERATING_EXPENSES, R60_FIG_BAL_SHEET, R60_FIG_BAL_SHEET_BWP, R60_AMT_STATEMENT_ADJ, R60_AMT_STATEMENT_ADJ_BWP, R60_NET_AMT, R60_NET_AMT_BWP, R60_BAL_SUB, R60_BAL_SUB_BWP, R60_BAL_SUB_DIARIES, R60_BAL_SUB_DIARIES_BWP, "
+								+ "R61_OPERATING_EXPENSES, R61_FIG_BAL_SHEET, R61_FIG_BAL_SHEET_BWP, R61_AMT_STATEMENT_ADJ, R61_AMT_STATEMENT_ADJ_BWP, R61_NET_AMT, R61_NET_AMT_BWP, R61_BAL_SUB, R61_BAL_SUB_BWP, R61_BAL_SUB_DIARIES, R61_BAL_SUB_DIARIES_BWP, "
+								+ "R62_OPERATING_EXPENSES, R62_FIG_BAL_SHEET, R62_FIG_BAL_SHEET_BWP, R62_AMT_STATEMENT_ADJ, R62_AMT_STATEMENT_ADJ_BWP, R62_NET_AMT, R62_NET_AMT_BWP, R62_BAL_SUB, R62_BAL_SUB_BWP, R62_BAL_SUB_DIARIES, R62_BAL_SUB_DIARIES_BWP, "
+								+ "R63_OPERATING_EXPENSES, R63_FIG_BAL_SHEET, R63_FIG_BAL_SHEET_BWP, R63_AMT_STATEMENT_ADJ, R63_AMT_STATEMENT_ADJ_BWP, R63_NET_AMT, R63_NET_AMT_BWP, R63_BAL_SUB, R63_BAL_SUB_BWP, R63_BAL_SUB_DIARIES, R63_BAL_SUB_DIARIES_BWP, "
+								+ "REPORT_DATE, ? AS REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_PL_SCHS_SUMMARYTABLE " + "WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						// 6. Fixed date conversion here
+						String adsumsql = "DELETE FROM BRRS_PL_SCHS_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MM-YYYY')";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public byte[] getPL_SCHSDetailExcel(String filename, String fromdate, String todate, String currency,
@@ -16160,7 +16401,8 @@ public class BRRS_PL_SCHS_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "PL_SCHS SUMMARY", null, "BRRS_PL_SCHS_SUMMARYTABLE");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "PL_SCHS SUMMARY", null,
+						"BRRS_PL_SCHS_SUMMARYTABLE");
 			}
 			return out.toByteArray();
 		}
@@ -19873,7 +20115,8 @@ public class BRRS_PL_SCHS_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "PL_SCHS ARCHIVAL SUMMARY", null, "BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "PL_SCHS ARCHIVAL SUMMARY", null,
+						"BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -19881,23 +20124,27 @@ public class BRRS_PL_SCHS_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(PL_SCHS_Summary_Entity updatedEntity) {
+	public void updateReport(PL_SCHS_Summary_Entity updatedEntity, String type) {
+
+		boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+		String tableName = isResub ? "BRRS_PL_SCHS_ARCHIVALTABLE_SUMMARY" : "BRRS_PL_SCHS_SUMMARYTABLE";
 
 		System.out.println("Came to PL SCHS Update");
+		System.out.println("Type : " + (isResub ? "RESUB" : "NORMAL"));
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
 		// Allowed rows
-		int[] rows = { 12,13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29,31, 42,43, 54, 61,63 };
+		int[] rows = { 12, 13, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 42, 43, 54, 61, 63 };
 
 		try {
 
-			// Loop rows
-			for (int r : rows) {
+			// Allowed fields
+			String[] fields = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
+					"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp",
+					"bal_sub", "bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
 
-				// Allowed fields
-				String[] fields = { "intrest_div", "other_income", "operating_expenses", "fig_bal_sheet",
-						"fig_bal_sheet_bwp", "amt_statement_adj", "amt_statement_adj_bwp", "net_amt", "net_amt_bwp",
-						"bal_sub", "bal_sub_bwp", "bal_sub_diaries", "bal_sub_diaries_bwp" };
+			for (int r : rows) {
 
 				for (String field : fields) {
 
@@ -19910,21 +20157,20 @@ public class BRRS_PL_SCHS_ReportService {
 						Object value = getter.invoke(updatedEntity);
 
 						// Skip null values
-						if (value == null)
+						if (value == null) {
 							continue;
+						}
 
-						// DB Column Name
 						String columnName = "R" + r + "_" + field.toUpperCase();
 
-						String sql = "UPDATE BRRS_PL_SCHS_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
+						String sql = "UPDATE " + tableName + " SET " + columnName + " = ? " + " WHERE REPORT_DATE = ?";
 
 						int updatedRows = jdbcTemplate.update(sql, value, updatedEntity.getREPORT_DATE());
 
 						System.out.println(columnName + " Updated -> " + value + " Rows : " + updatedRows);
 
 					} catch (NoSuchMethodException e) {
-						// Skip if getter not exists
+						// Skip fields that don't exist
 						continue;
 					}
 				}
@@ -19934,8 +20180,40 @@ public class BRRS_PL_SCHS_ReportService {
 
 		} catch (Exception e) {
 
+			System.err.println("===== PL SCHS UPDATE ERROR =====");
+			e.printStackTrace();
+
 			throw new RuntimeException("Error while updating PL SCHS fields", e);
 		}
 	}
 
+	// Resubmission
+	public List<Object[]> getPL_SCHSResub() {
+		List<Object[]> resubList = new ArrayList<>();
+
+		try {
+
+			List<PL_SCHS_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (PL_SCHS_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					resubList.add(row);
+				}
+
+				System.out.println("Fetched " + resubList.size() + " Resub records");
+				PL_SCHS_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest Resub version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No Resub data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  PL_SCHS  Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return resubList;
+	}
 }

@@ -480,10 +480,7 @@ public class BRRS_M_PD_ReportService {
 		     // CHECK CHANGES
 		     // =========================================
 
-		     String changes =
-		             auditService.getChanges(
-		                     oldcopy,
-		                     existing);
+		     String changes = auditService.getChanges(oldcopy, existing);
 
 		     // =========================================
 		     // SAVE TO DATABASE
@@ -495,15 +492,24 @@ public class BRRS_M_PD_ReportService {
 		     // AUDIT ONLY IF CHANGES FOUND
 		     // =========================================
 
-		     if (!changes.isEmpty()) {
+		     if (changes != null && !changes.trim().isEmpty()) {
 
-		         auditService.compareEntitiesmanual(
-		                 oldcopy,
-		                 existing,
-		                 updatedEntity.getReport_date().toString(),
-		                 "M PD Manual Summary Screen",
-		                 "BRRS_M_PD_MANUAL_SUMMARY"
-		         );
+		         System.out.println("Audit Length : " + changes.length());
+
+		         if (changes.length() <= 2000) {
+
+		             auditService.compareEntitiesmanual(
+		                     oldcopy,
+		                     existing,
+		                     updatedEntity.getReport_date().toString(),
+		                     "M PD Manual Summary Screen",
+		                     "BRRS_M_PD_MANUAL_SUMMARY"
+		             );
+
+		         } else {
+
+		             System.out.println("Audit skipped because MODI_DETAILS exceeds 2000 characters.");
+		         }
 		     }
 
 		     System.out.println("Record Updated Successfully");

@@ -4229,8 +4229,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "PL_SCHS":
-				modelAndView = BRRS_PL_SCHS_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_PL_SCHS_Reportservice.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 			case "FORMAT_III":
 				modelAndView = BRRS_FORMAT_III_ReportService.getViewOrEditPage(request.getParameter("SNO"),
@@ -5518,6 +5518,16 @@ try {
 	System.out.println("Resubmission data fetched for Expanded_Regu_BS: " + resubList.size());
 } catch (Exception e) {
 	System.err.println("Error fetching resubmission data for Expanded_Regu_BS: " + e.getMessage());
+	e.printStackTrace();
+}
+break;
+case "PL_SCHS":
+try {
+	List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
+	resubmissionData.addAll(resubList);
+	System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
+} catch (Exception e) {
+	System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
 	e.printStackTrace();
 }
 break;
