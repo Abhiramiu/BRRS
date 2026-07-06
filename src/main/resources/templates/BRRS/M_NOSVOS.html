@@ -385,38 +385,38 @@ td:has(input[id^="R"][id$="_RISK_WEIGHTED_AMOUNT_NOSTRO1"]) {
 	//to fetch summary from the database - called from the summary button
 		function showdetail() {
             $('#loader').modal('show');
-            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/;
+            var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
             // showResultModal('BRRS', 'Details page not available for Manual Report');
             location.href = Callurl;
         }
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
 			location.href = Callurl;
 		}
 
         function showArchivalsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
 
         function showArchivaldetail() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
          function showResubsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
          function showResubdetail() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
 			location.href = Callurl;
 		}
 
