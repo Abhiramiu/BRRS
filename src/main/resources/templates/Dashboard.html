@@ -388,7 +388,7 @@
 						<span class="report-date" id="dashboardTargetDate" th:text="${LastUploadedDate}"></span>
 					</td>
 					<td style="text-align:right;font-size: 15px;">
-						<a th:href="@{/CONSOLIDATED_REPORT(formmode='list', date=${LastUploadedDate})}">
+						<a>
 							<button class="run-btn"
 								th:attr="title='Click to generate all reports for ' + ${LastUploadedDate}, data-reportdate=${LastUploadedDate}"
 								onclick="runProcedure(this)">
