@@ -350,7 +350,12 @@ public class BRRS_ReportsController {
 			ByteArrayResource resource = new ByteArrayResource(excelData);
 
 			HttpHeaders headers = new HttpHeaders();
-			filename = filename + ".xlsx";
+
+			// ✅ FIX: Don't add .xlsx again - filename already has it
+			// Just ensure filename has .xlsx, but if it already does, don't add another
+			if (filename != null && !filename.toLowerCase().endsWith(".xlsx")) {
+				filename = filename + ".xlsx";
+			}
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 
 			logger.info("Controller: Sending file '{}' to client ({} bytes).", filename, excelData.length);
@@ -3934,14 +3939,15 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12E_LTV_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Summary_Entity request,
+			HttpServletRequest req) {
 
 		try {
 			System.out.println("came to First controller");
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
+			request.setReport_date(asondate);
 
 			M_SRWA_12Eservice.updateReport(request);
 			return ResponseEntity.ok("Modified Successfully.");
@@ -3957,7 +3963,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_SRWA_12E_LTV_Resub_Summary_Entity request,
+			@ModelAttribute BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Resub_Summary_Entity request,
 
 			HttpServletRequest req) {
 
@@ -3971,12 +3977,12 @@ public class BRRS_ReportsController {
 
 			if (asondate != null) {
 
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 
 			} else {
 
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			// =====================================================
