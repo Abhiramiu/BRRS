@@ -130,6 +130,8 @@ public class BRRS_M_SFINP1_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
+		String displaymode = "summary";
+
 		try {
 			Date reportDate = dateformat.parse(todate);
 
@@ -146,6 +148,21 @@ public class BRRS_M_SFINP1_ReportService {
 
 				mv.addObject("reportsummary", mainList);
 				mv.addObject("reportsummary1", archivalList);
+
+// ======= CASE 2: RESUB (reuses the archival tables — a resub is just an archival version viewed via a different path) =======
+			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+				System.out.println("♻️ Fetching RESUB data for version: " + version);
+
+				List<M_SFINP1_Archival_Summary_Entity> mainList = jdbcTemplate.query(
+						"select * from BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ? and REPORT_VERSION = ?",
+						new Object[] { reportDate, version }, new M_SFINP1ArchivalSummaryRowMapper());
+				List<M_SFINP1_Archival_Summary_Manual_Entity> archivalList = jdbcTemplate.query(
+						"SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL WHERE REPORT_DATE = ?",
+						new Object[] { reportDate }, new M_SFINP1ArchivalSummaryManualRowMapper());
+
+				mv.addObject("reportsummary", mainList);
+				mv.addObject("reportsummary1", archivalList);
+				displaymode = "resubSummary";
 
 			} else {
 
@@ -167,11 +184,16 @@ public class BRRS_M_SFINP1_ReportService {
 				}
 				mv.addObject("reportsummary", T1Master);
 				mv.addObject("reportsummary1", T2Master);
+
+				// Flag set when this live view was reached via the resub "Modify" promotion,
+				// so the HTML can show the Finalise button only in that context.
+				String fromResub = req1.getParameter("fromResub");
+				mv.addObject("fromResub", "true".equalsIgnoreCase(fromResub));
 			}
 
 // ======= Common view settings =======
 			mv.setViewName("BRRS/M_SFINP1");
-			mv.addObject("displaymode", "summary");
+			mv.addObject("displaymode", displaymode);
 			System.out.println("✅ View set to: " + mv.getViewName());
 
 		} catch (ParseException e) {
@@ -203,6 +225,7 @@ public class BRRS_M_SFINP1_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 		// Session hs = sessionFactory.getCurrentSession();
+		String displaymode = "Details";
 		try {
 			Date parsedDate = null;
 			if (todate != null && !todate.isEmpty()) {
@@ -250,6 +273,34 @@ public class BRRS_M_SFINP1_ReportService {
 				mv.addObject("reportmaster12", T1Dt1);
 
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+			} else if ("RESUB".equals(type) && version != null) {
+				// Resub detail reuses the archival detail table — a resub is just an archival version viewed via a different path.
+				System.out.println("Querying RESUB with parsedDate: " + parsedDate + " - version: [" + version + "]");
+
+				List<M_SFINP1_Archival_Detail_Entity> T1Dt1;
+
+				if (rowId != null && columnId != null) {
+					T1Dt1 = jdbcTemplate.query(
+							"select * from BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL where ROW_ID =? and COLUMN_ID=? AND REPORT_DATE=? AND DATA_ENTRY_VERSION=?",
+							new Object[] { rowId, columnId, parsedDate, version },
+							new M_SFINP1ArchivalDetailRowMapper());
+				} else {
+					T1Dt1 = jdbcTemplate.query(
+							"SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?",
+							new Object[] { parsedDate, version }, new M_SFINP1ArchivalDetailRowMapper());
+
+					totalPages = jdbcTemplate.queryForObject(
+							"SELECT COUNT(*) FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?",
+							new Object[] { parsedDate, version }, Integer.class);
+
+					mv.addObject("pagination", "YES");
+				}
+
+				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
+				displaymode = "resubDetail";
+
+				System.out.println("RESUB COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 			} else {
 				// 🔹 Current branch
 				List<M_SFINP1_Detail_Entity> T1Dt1;
@@ -278,8 +329,12 @@ public class BRRS_M_SFINP1_ReportService {
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 		// ✅ Common attributes
+		// Flag set when this view was reached via the resub "Modify" promotion, so the HTML
+		// can show the Finalise button only in that context — mirrors getM_SFINP1View().
+		String fromResub = req1.getParameter("fromResub");
+		mv.addObject("fromResub", "true".equalsIgnoreCase(fromResub));
 		mv.setViewName("BRRS/M_SFINP1");
-		mv.addObject("displaymode", "Details");
+		mv.addObject("displaymode", displaymode);
 		mv.addObject("currentPage", currentPage);
 		System.out.println("totalPages: " + (int) Math.ceil((double) totalPages / 100));
 		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / pageSize));
@@ -1307,8 +1362,8 @@ public class BRRS_M_SFINP1_ReportService {
 
 		LocalDate date = LocalDate.parse(todate, inputFormat);
 		String formattedDate = date.format(outputFormat);
-		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		// ARCHIVAL/RESUB check — a resub is just an archival version, so both are exported the same way
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 			try {
 				// Redirecting to Archival
 				return getExcelM_SFINP1ARCHIVAL(filename, reportId, fromdate, formattedDate, // todate
@@ -1319,18 +1374,6 @@ public class BRRS_M_SFINP1_ReportService {
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
-//			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-//				logger.info("Service: Generating RESUB report for version {}", version);
-//
-//				try {
-//					// ✅ Redirecting to Resub Excel
-//					return BRRS_M_SFINP1ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format,
-//							version);
-//
-//				} catch (ParseException e) {
-//					logger.error("Invalid report date format: {}", fromdate, e);
-//					throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-//				}
 		} else {
 
 			if ("email".equalsIgnoreCase(format) && version == null) {
@@ -2299,7 +2342,7 @@ public class BRRS_M_SFINP1_ReportService {
 
 		LocalDate date = LocalDate.parse(todate, inputFormat);
 		String formattedDate = date.format(outputFormat);
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 			try {
 				// Redirecting to Archival
 				return BRRS_M_SFINP1EmailArchivalExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
@@ -2308,18 +2351,6 @@ public class BRRS_M_SFINP1_ReportService {
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
-//			} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-//				logger.info("Service: Generating RESUB report for version {}", version);
-//
-//				try {
-//					// ✅ Redirecting to Resub Excel
-//					return BRRS_M_SFINP1ResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-//							version);
-//
-//				} catch (ParseException e) {
-//					logger.error("Invalid report date format: {}", fromdate, e);
-//					throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-//				}
 		} else {
 			// Fetch data
 			List<M_SFINP1_Summary_Entity> dataList = jdbcTemplate.query(
@@ -5182,1873 +5213,6 @@ public class BRRS_M_SFINP1_ReportService {
 		}
 	}
 
-//		// Resub Format excel
-//		public byte[] BRRS_M_SFINP1ResubExcel(String filename, String reportId, String fromdate, String todate,
-//				String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
-//
-//			logger.info("Service: Starting Excel generation process in memory for RESUB (Format) Excel.");
-//
-//			if ("email".equalsIgnoreCase(format) && version != null) {
-//				logger.info("Service: Generating RESUB report for version {}", version);
-//
-//				try {
-//					// ✅ Redirecting to Resub Excel
-//					return BRRS_M_SFINP1ResubEmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type,
-//							version);
-//
-//				} catch (ParseException e) {
-//					logger.error("Invalid report date format: {}", fromdate, e);
-//					throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-//				}
-//			}
-//
-//			List<M_SFINP1_Resub_Summary_Entity> dataList = brrs_M_SFINP1_resub_summary_repo
-//					.getdatabydateListarchival(dateformat.parse(todate), version);
-//
-//			if (dataList.isEmpty()) {
-//				logger.warn("Service: No data found for M_SFINP1 report. Returning empty result.");
-//				return new byte[0];
-//			}
-//
-//			String templateDir = env.getProperty("output.exportpathtemp");
-//			String templateFileName = filename;
-//			System.out.println(filename);
-//			Path templatePath = Paths.get(templateDir, templateFileName);
-//			System.out.println(templatePath);
-//
-//			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-//
-//			if (!Files.exists(templatePath)) {
-//				// This specific exception will be caught by the controller.
-//				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-//			}
-//			if (!Files.isReadable(templatePath)) {
-//				// A specific exception for permission errors.
-//				throw new SecurityException(
-//						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-//			}
-//
-//			// This try-with-resources block is perfect. It guarantees all resources are
-//			// closed automatically.
-//			try (InputStream templateInputStream = Files.newInputStream(templatePath);
-//					Workbook workbook = WorkbookFactory.create(templateInputStream);
-//					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-//
-//				Sheet sheet = workbook.getSheetAt(0);
-//
-//				// --- Style Definitions ---
-//				CreationHelper createHelper = workbook.getCreationHelper();
-//
-//				CellStyle dateStyle = workbook.createCellStyle();
-//				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-//				dateStyle.setBorderBottom(BorderStyle.THIN);
-//				dateStyle.setBorderTop(BorderStyle.THIN);
-//				dateStyle.setBorderLeft(BorderStyle.THIN);
-//				dateStyle.setBorderRight(BorderStyle.THIN);
-//
-//				CellStyle textStyle = workbook.createCellStyle();
-//				textStyle.setBorderBottom(BorderStyle.THIN);
-//				textStyle.setBorderTop(BorderStyle.THIN);
-//				textStyle.setBorderLeft(BorderStyle.THIN);
-//				textStyle.setBorderRight(BorderStyle.THIN);
-//
-//				// Create the font
-//				Font font = workbook.createFont();
-//				font.setFontHeightInPoints((short) 8); // size 8
-//				font.setFontName("Arial");
-//
-//				CellStyle numberStyle = workbook.createCellStyle();
-//				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-//				numberStyle.setBorderBottom(BorderStyle.THIN);
-//				numberStyle.setBorderTop(BorderStyle.THIN);
-//				numberStyle.setBorderLeft(BorderStyle.THIN);
-//				numberStyle.setBorderRight(BorderStyle.THIN);
-//				numberStyle.setFont(font);
-//				// --- End of Style Definitions ---
-//
-//				int startRow = 9;
-//
-//				if (!dataList.isEmpty()) {
-//					for (int i = 0; i < dataList.size(); i++) {
-//
-//						M_SFINP1_Resub_Summary_Entity record = dataList.get(i);
-//						System.out.println("rownumber=" + startRow + i);
-//						System.out.println("rownumber=" + startRow + i);
-//						Row row = sheet.getRow(startRow + i);
-//						if (row == null) {
-//							row = sheet.createRow(startRow + i);
-//						}
-//	//NORMAL
-//						
-//
-//						Cell cellC, cellD;
-//						CellStyle originalStyle;
-//						// ===== Row 10 / Col C =====
-//						row = sheet.getRow(9);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR10_month_end() != null)
-//							cellC.setCellValue(record.getR10_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 10 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR10_average() != null)
-//							cellD.setCellValue(record.getR10_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 11 / Col C =====
-//						row = sheet.getRow(10);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR11_month_end() != null)
-//							cellC.setCellValue(record.getR11_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 11 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR11_average() != null)
-//							cellD.setCellValue(record.getR11_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 13 / Col C =====
-//						row = sheet.getRow(12);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR13_month_end() != null)
-//							cellC.setCellValue(record.getR13_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 13 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR13_average() != null)
-//							cellD.setCellValue(record.getR13_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 14 / Col C =====
-//						row = sheet.getRow(13);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR14_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR14_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 14 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR14_average() != null)
-//							cellD.setCellValue(record.getR14_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 15 / Col C =====
-//						row = sheet.getRow(14);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR15_month_end() != null)
-//							cellC.setCellValue(record.getR15_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 15 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR15_average() != null)
-//							cellD.setCellValue(record.getR15_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 16 / Col C =====
-//						row = sheet.getRow(15);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR16_month_end() != null)
-//							cellC.setCellValue(record.getR16_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 16 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR16_average() != null)
-//							cellD.setCellValue(record.getR16_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 17 / Col C =====
-//						row = sheet.getRow(16);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR17_month_end() != null)
-//							cellC.setCellValue(record.getR17_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 17 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR17_average() != null)
-//							cellD.setCellValue(record.getR17_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 18 / Col C =====
-//						row = sheet.getRow(17);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR18_month_end() != null)
-//							cellC.setCellValue(record.getR18_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 18 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR18_average() != null)
-//							cellD.setCellValue(record.getR18_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 19 / Col C =====
-//						row = sheet.getRow(18);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR19_month_end() != null)
-//							cellC.setCellValue(record.getR19_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 19 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR19_average() != null)
-//							cellD.setCellValue(record.getR19_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 22 / Col C =====
-//						row = sheet.getRow(21);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR22_month_end() != null)
-//							cellC.setCellValue(record.getR22_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 22 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR22_average() != null)
-//							cellD.setCellValue(record.getR22_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 23 / Col C =====
-//						row = sheet.getRow(22);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR23_month_end() != null)
-//							cellC.setCellValue(record.getR23_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 23 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR23_average() != null)
-//							cellD.setCellValue(record.getR23_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 25 / Col C =====
-//						row = sheet.getRow(24);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR25_month_end() != null)
-//							cellC.setCellValue(record.getR25_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 25 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR25_average() != null)
-//							cellD.setCellValue(record.getR25_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 26 / Col C =====
-//						row = sheet.getRow(25);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR26_month_end() != null)
-//							cellC.setCellValue(record.getR26_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 26 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR26_average() != null)
-//							cellD.setCellValue(record.getR26_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 28 / Col C =====
-//						row = sheet.getRow(27);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR28_month_end() != null)
-//							cellC.setCellValue(record.getR28_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 28 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR28_average() != null)
-//							cellD.setCellValue(record.getR28_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 29 / Col C =====
-//						row = sheet.getRow(28);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR29_month_end() != null)
-//							cellC.setCellValue(record.getR29_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 29 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR29_average() != null)
-//							cellD.setCellValue(record.getR29_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 30 / Col C =====
-//						row = sheet.getRow(29);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR30_month_end() != null)
-//							cellC.setCellValue(record.getR30_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 30 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR30_average() != null)
-//							cellD.setCellValue(record.getR30_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 32 / Col C =====
-//						row = sheet.getRow(31);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR32_month_end() != null)
-//							cellC.setCellValue(record.getR32_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 32 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR32_average() != null)
-//							cellD.setCellValue(record.getR32_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 33 / Col C =====
-//						row = sheet.getRow(32);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR33_month_end() != null)
-//							cellC.setCellValue(record.getR33_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 33 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR33_average() != null)
-//							cellD.setCellValue(record.getR33_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 34 / Col C =====
-//						row = sheet.getRow(33);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR34_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR34_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 34 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR34_average() != null)
-//							cellD.setCellValue(record.getR34_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 36 / Col C =====
-//						row = sheet.getRow(35);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR36_month_end() != null)
-//							cellC.setCellValue(record.getR36_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 36 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR36_average() != null)
-//							cellD.setCellValue(record.getR36_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 37 / Col C =====
-//						row = sheet.getRow(36);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR37_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR37_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 37 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR37_average() != null)
-//							cellD.setCellValue(record.getR37_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 39 / Col C =====
-//						row = sheet.getRow(38);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR39_month_end() != null)
-//							cellC.setCellValue(record.getR39_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 39 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR39_average() != null)
-//							cellD.setCellValue(record.getR39_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 41 / Col C =====
-//						row = sheet.getRow(40);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR41_month_end() != null)
-//							cellC.setCellValue(record.getR41_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 41 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR41_average() != null)
-//							cellD.setCellValue(record.getR41_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 42 / Col C =====
-//						row = sheet.getRow(41);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR42_month_end() != null)
-//							cellC.setCellValue(record.getR42_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 42 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR42_average() != null)
-//							cellD.setCellValue(record.getR42_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 43 / Col C =====
-//						row = sheet.getRow(42);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR43_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR43_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 43 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR43_average() != null)
-//							cellD.setCellValue(record.getR43_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 45 / Col C =====
-//						row = sheet.getRow(44);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR45_month_end() != null)
-//							cellC.setCellValue(record.getR45_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 45 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR45_average() != null)
-//							cellD.setCellValue(record.getR45_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 46 / Col C =====
-//						row = sheet.getRow(45);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR46_month_end() != null)
-//							cellC.setCellValue(record.getR46_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 46 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR46_average() != null)
-//							cellD.setCellValue(record.getR46_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 47 / Col C =====
-//						row = sheet.getRow(46);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR47_month_end() != null)
-//							cellC.setCellValue(record.getR47_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 47 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR47_average() != null)
-//							cellD.setCellValue(record.getR47_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 48 / Col C =====
-//						row = sheet.getRow(47);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR48_month_end() != null)
-//							cellC.setCellValue(record.getR48_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 48 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR48_average() != null)
-//							cellD.setCellValue(record.getR48_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 50 / Col C =====
-//						row = sheet.getRow(49);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR50_month_end() != null)
-//							cellC.setCellValue(record.getR50_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 50 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR50_average() != null)
-//							cellD.setCellValue(record.getR50_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 51 / Col C =====
-//						row = sheet.getRow(50);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR51_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR51_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 51 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR51_average() != null)
-//							cellD.setCellValue(record.getR51_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 52 / Col C =====
-//						row = sheet.getRow(51);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR52_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR52_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 52 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR52_average() != null)
-//							cellD.setCellValue(record.getR52_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 53 / Col C =====
-//						row = sheet.getRow(52);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR53_month_end() != null)
-//							cellC.setCellValue(record.getR53_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 53 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR53_average() != null)
-//							cellD.setCellValue(record.getR53_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 54 / Col C =====
-//						row = sheet.getRow(53);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR54_month_end() != null)
-//							cellC.setCellValue(record.getR54_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 54 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR54_average() != null)
-//							cellD.setCellValue(record.getR54_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 55 / Col C =====
-//						row = sheet.getRow(54);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR55_month_end() != null)
-//							cellC.setCellValue(record.getR55_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 55 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR55_average() != null)
-//							cellD.setCellValue(record.getR55_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 57 / Col C =====
-//						row = sheet.getRow(56);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR57_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR57_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 57 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR57_average() != null)
-//							cellD.setCellValue(record.getR57_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 58 / Col C =====
-//						row = sheet.getRow(57);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR58_month_end() != null)
-//							cellC.setCellValue(record.getR58_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 58 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR58_average() != null)
-//							cellD.setCellValue(record.getR58_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 59 / Col C =====
-//						row = sheet.getRow(58);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR59_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR59_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 59 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR59_average() != null)
-//							cellD.setCellValue(record.getR59_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 60 / Col C =====
-//						row = sheet.getRow(59);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR60_month_end() != null)
-//							cellC.setCellValue(record.getR60_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 60 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR60_average() != null)
-//							cellD.setCellValue(record.getR60_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//					}
-//
-//
-//
-//
-//
-//					}
-//					workbook.setForceFormulaRecalculation(true);
-//				} else {
-//
-//				}
-//
-//				// Write the final workbook content to the in-memory stream.
-//				workbook.write(out);
-//
-//				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-//
-//				return out.toByteArray();
-//			}
-//
-//		}
-//
-//		// Resub Email Excel
-//		public byte[] BRRS_M_SFINP1ResubEmailExcel(String filename, String reportId, String fromdate, String todate,
-//				String currency, String dtltype, String type, BigDecimal version) throws Exception {
-//
-//			logger.info("Service: Starting Archival Email Excel generation process in memory.");
-//
-//			List<M_SFINP1_Resub_Summary_Entity> dataList = brrs_M_SFINP1_resub_summary_repo
-//					.getdatabydateListarchival(dateformat.parse(todate), version);
-//
-//			if (dataList.isEmpty()) {
-//				logger.warn("Service: No data found for BRRS_M_SFINP1 report. Returning empty result.");
-//				return new byte[0];
-//			}
-//
-//			String templateDir = env.getProperty("output.exportpathtemp");
-//			String templateFileName = filename;
-//			System.out.println(filename);
-//			Path templatePath = Paths.get(templateDir, templateFileName);
-//			System.out.println(templatePath);
-//
-//			logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
-//
-//			if (!Files.exists(templatePath)) {
-//				// This specific exception will be caught by the controller.
-//				throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
-//			}
-//			if (!Files.isReadable(templatePath)) {
-//				// A specific exception for permission errors.
-//				throw new SecurityException(
-//						"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
-//			}
-//
-//			// This try-with-resources block is perfect. It guarantees all resources are
-//			// closed automatically.
-//			try (InputStream templateInputStream = Files.newInputStream(templatePath);
-//					Workbook workbook = WorkbookFactory.create(templateInputStream);
-//					ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-//
-//				Sheet sheet = workbook.getSheetAt(0);
-//
-//				// --- Style Definitions ---
-//				CreationHelper createHelper = workbook.getCreationHelper();
-//
-//				CellStyle dateStyle = workbook.createCellStyle();
-//				dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-//				dateStyle.setBorderBottom(BorderStyle.THIN);
-//				dateStyle.setBorderTop(BorderStyle.THIN);
-//				dateStyle.setBorderLeft(BorderStyle.THIN);
-//				dateStyle.setBorderRight(BorderStyle.THIN);
-//
-//				CellStyle textStyle = workbook.createCellStyle();
-//				textStyle.setBorderBottom(BorderStyle.THIN);
-//				textStyle.setBorderTop(BorderStyle.THIN);
-//				textStyle.setBorderLeft(BorderStyle.THIN);
-//				textStyle.setBorderRight(BorderStyle.THIN);
-//
-//				// Create the font
-//				Font font = workbook.createFont();
-//				font.setFontHeightInPoints((short) 8); // size 8
-//				font.setFontName("Arial");
-//
-//				CellStyle numberStyle = workbook.createCellStyle();
-//				// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
-//				numberStyle.setBorderBottom(BorderStyle.THIN);
-//				numberStyle.setBorderTop(BorderStyle.THIN);
-//				numberStyle.setBorderLeft(BorderStyle.THIN);
-//				numberStyle.setBorderRight(BorderStyle.THIN);
-//				numberStyle.setFont(font);
-//				// --- End of Style Definitions ---
-//
-//				int startRow = 9;
-//
-//				if (!dataList.isEmpty()) {
-//					for (int i = 0; i < dataList.size(); i++) {
-//						M_SFINP1_Resub_Summary_Entity record = dataList.get(i);
-//						System.out.println("rownumber=" + startRow + i);
-//						Row row = sheet.getRow(startRow + i);
-//						if (row == null) {
-//							row = sheet.createRow(startRow + i);
-//						}
-//	//EMAIL
-//
-//
-//						Cell cellC, cellD;
-//						CellStyle originalStyle;
-//						// ===== Row 10 / Col C =====
-//						row = sheet.getRow(9);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR10_month_end() != null)
-//							cellC.setCellValue(record.getR10_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 10 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR10_average() != null)
-//							cellD.setCellValue(record.getR10_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 11 / Col C =====
-//						row = sheet.getRow(10);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR11_month_end() != null)
-//							cellC.setCellValue(record.getR11_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 11 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR11_average() != null)
-//							cellD.setCellValue(record.getR11_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 13 / Col C =====
-//						row = sheet.getRow(12);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR13_month_end() != null)
-//							cellC.setCellValue(record.getR13_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 13 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR13_average() != null)
-//							cellD.setCellValue(record.getR13_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 14 / Col C =====
-//						row = sheet.getRow(13);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR14_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR14_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 14 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR14_average() != null)
-//							cellD.setCellValue(record.getR14_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 15 / Col C =====
-//						row = sheet.getRow(14);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR15_month_end() != null)
-//							cellC.setCellValue(record.getR15_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 15 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR15_average() != null)
-//							cellD.setCellValue(record.getR15_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 16 / Col C =====
-//						row = sheet.getRow(15);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR16_month_end() != null)
-//							cellC.setCellValue(record.getR16_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 16 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR16_average() != null)
-//							cellD.setCellValue(record.getR16_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 17 / Col C =====
-//						row = sheet.getRow(16);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR17_month_end() != null)
-//							cellC.setCellValue(record.getR17_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 17 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR17_average() != null)
-//							cellD.setCellValue(record.getR17_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 18 / Col C =====
-//						row = sheet.getRow(17);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR18_month_end() != null)
-//							cellC.setCellValue(record.getR18_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 18 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR18_average() != null)
-//							cellD.setCellValue(record.getR18_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 19 / Col C =====
-//						row = sheet.getRow(18);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR19_month_end() != null)
-//							cellC.setCellValue(record.getR19_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 19 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR19_average() != null)
-//							cellD.setCellValue(record.getR19_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 22 / Col C =====
-//						row = sheet.getRow(21);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR22_month_end() != null)
-//							cellC.setCellValue(record.getR22_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 22 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR22_average() != null)
-//							cellD.setCellValue(record.getR22_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 23 / Col C =====
-//						row = sheet.getRow(22);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR23_month_end() != null)
-//							cellC.setCellValue(record.getR23_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 23 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR23_average() != null)
-//							cellD.setCellValue(record.getR23_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 25 / Col C =====
-//						row = sheet.getRow(24);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR25_month_end() != null)
-//							cellC.setCellValue(record.getR25_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 25 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR25_average() != null)
-//							cellD.setCellValue(record.getR25_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 26 / Col C =====
-//						row = sheet.getRow(25);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR26_month_end() != null)
-//							cellC.setCellValue(record.getR26_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 26 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR26_average() != null)
-//							cellD.setCellValue(record.getR26_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 28 / Col C =====
-//						row = sheet.getRow(27);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR28_month_end() != null)
-//							cellC.setCellValue(record.getR28_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 28 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR28_average() != null)
-//							cellD.setCellValue(record.getR28_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 29 / Col C =====
-//						row = sheet.getRow(28);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR29_month_end() != null)
-//							cellC.setCellValue(record.getR29_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 29 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR29_average() != null)
-//							cellD.setCellValue(record.getR29_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 30 / Col C =====
-//						row = sheet.getRow(29);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR30_month_end() != null)
-//							cellC.setCellValue(record.getR30_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 30 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR30_average() != null)
-//							cellD.setCellValue(record.getR30_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 32 / Col C =====
-//						row = sheet.getRow(31);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR32_month_end() != null)
-//							cellC.setCellValue(record.getR32_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 32 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR32_average() != null)
-//							cellD.setCellValue(record.getR32_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 33 / Col C =====
-//						row = sheet.getRow(32);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR33_month_end() != null)
-//							cellC.setCellValue(record.getR33_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 33 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR33_average() != null)
-//							cellD.setCellValue(record.getR33_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 34 / Col C =====
-//						row = sheet.getRow(33);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR34_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR34_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 34 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR34_average() != null)
-//							cellD.setCellValue(record.getR34_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 36 / Col C =====
-//						row = sheet.getRow(35);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR36_month_end() != null)
-//							cellC.setCellValue(record.getR36_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 36 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR36_average() != null)
-//							cellD.setCellValue(record.getR36_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 37 / Col C =====
-//						row = sheet.getRow(36);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR37_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR37_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 37 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR37_average() != null)
-//							cellD.setCellValue(record.getR37_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 39 / Col C =====
-//						row = sheet.getRow(38);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR39_month_end() != null)
-//							cellC.setCellValue(record.getR39_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 39 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR39_average() != null)
-//							cellD.setCellValue(record.getR39_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 41 / Col C =====
-//						row = sheet.getRow(40);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR41_month_end() != null)
-//							cellC.setCellValue(record.getR41_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 41 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR41_average() != null)
-//							cellD.setCellValue(record.getR41_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 42 / Col C =====
-//						row = sheet.getRow(41);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR42_month_end() != null)
-//							cellC.setCellValue(record.getR42_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 42 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR42_average() != null)
-//							cellD.setCellValue(record.getR42_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 43 / Col C =====
-//						row = sheet.getRow(42);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR43_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR43_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 43 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR43_average() != null)
-//							cellD.setCellValue(record.getR43_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 45 / Col C =====
-//						row = sheet.getRow(44);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR45_month_end() != null)
-//							cellC.setCellValue(record.getR45_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 45 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR45_average() != null)
-//							cellD.setCellValue(record.getR45_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 46 / Col C =====
-//						row = sheet.getRow(45);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR46_month_end() != null)
-//							cellC.setCellValue(record.getR46_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 46 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR46_average() != null)
-//							cellD.setCellValue(record.getR46_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 47 / Col C =====
-//						row = sheet.getRow(46);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR47_month_end() != null)
-//							cellC.setCellValue(record.getR47_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 47 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR47_average() != null)
-//							cellD.setCellValue(record.getR47_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 48 / Col C =====
-//						row = sheet.getRow(47);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR48_month_end() != null)
-//							cellC.setCellValue(record.getR48_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 48 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR48_average() != null)
-//							cellD.setCellValue(record.getR48_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 50 / Col C =====
-//						row = sheet.getRow(49);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR50_month_end() != null)
-//							cellC.setCellValue(record.getR50_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 50 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR50_average() != null)
-//							cellD.setCellValue(record.getR50_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 51 / Col C =====
-//						row = sheet.getRow(50);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR51_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR51_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 51 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR51_average() != null)
-//							cellD.setCellValue(record.getR51_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 52 / Col C =====
-//						row = sheet.getRow(51);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR52_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR52_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 52 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR52_average() != null)
-//							cellD.setCellValue(record.getR52_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 53 / Col C =====
-//						row = sheet.getRow(52);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR53_month_end() != null)
-//							cellC.setCellValue(record.getR53_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 53 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR53_average() != null)
-//							cellD.setCellValue(record.getR53_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 54 / Col C =====
-//						row = sheet.getRow(53);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR54_month_end() != null)
-//							cellC.setCellValue(record.getR54_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 54 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR54_average() != null)
-//							cellD.setCellValue(record.getR54_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 55 / Col C =====
-//						row = sheet.getRow(54);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR55_month_end() != null)
-//							cellC.setCellValue(record.getR55_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 55 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR55_average() != null)
-//							cellD.setCellValue(record.getR55_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 57 / Col C =====
-//						row = sheet.getRow(56);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR57_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR57_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 57 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR57_average() != null)
-//							cellD.setCellValue(record.getR57_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 58 / Col C =====
-//						row = sheet.getRow(57);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR58_month_end() != null)
-//							cellC.setCellValue(record.getR58_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 58 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR58_average() != null)
-//							cellD.setCellValue(record.getR58_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 59 / Col C =====
-//						row = sheet.getRow(58);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record1.getR59_MONTH_END() != null)
-//							cellC.setCellValue(record1.getR59_MONTH_END().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 59 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR59_average() != null)
-//							cellD.setCellValue(record.getR59_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//						// ===== Row 60 / Col C =====
-//						row = sheet.getRow(59);
-//						cellC = row.getCell(2);
-//						if (cellC == null)
-//							cellC = row.createCell(2);
-//						originalStyle = cellC.getCellStyle();
-//						if (record.getR60_month_end() != null)
-//							cellC.setCellValue(record.getR60_month_end().doubleValue());
-//						else
-//							cellC.setCellValue("");
-//						cellC.setCellStyle(originalStyle);
-//						// ===== Row 60 / Col D =====
-//						cellD = row.getCell(3);
-//						if (cellD == null)
-//							cellD = row.createCell(3);
-//						originalStyle = cellD.getCellStyle();
-//						if (record.getR60_average() != null)
-//							cellD.setCellValue(record.getR60_average().doubleValue());
-//						else
-//							cellD.setCellValue("");
-//						cellD.setCellStyle(originalStyle);
-//					}
-//
-//
-//
-//
-//
-//					}
-//					workbook.setForceFormulaRecalculation(true);
-//				} else {
-//
-//				}
-//
-//				// Write the final workbook content to the in-memory stream.
-//				workbook.write(out);
-//
-//				logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
-//
-//				return out.toByteArray();
-//			}
-//		}
-
 	// ------------------------------
 	// Finds detail entity by account number
 	// ------------------------------
@@ -7084,6 +5248,188 @@ public class BRRS_M_SFINP1_ReportService {
 				entity.getR57_MONTH_END(), entity.getR59_MONTH_END(), entity.getREPORT_VERSION(),
 				entity.getREPORT_FREQUENCY(), entity.getREPORT_CODE(), entity.getREPORT_DESC(), entity.getENTITY_FLG(),
 				entity.getMODIFY_FLG(), entity.getDEL_FLG(), entity.getREPORT_DATE());
+	}
+
+	// ------------------------------
+	// Generic reflection-based INSERT — builds the column list/placeholders from
+	// the entity's declared fields (field name == column name throughout this file),
+	// so it works unmodified for any of the SUMMARYTABLE / SUMMARYTABLE_MANUAL /
+	// DETAILTABLE / ARCHIVALTABLE_* entity classes.
+	// ------------------------------
+	private void insertEntityReflective(String tableName, Object entity) {
+		StringBuilder sql = new StringBuilder("INSERT INTO " + tableName + " (");
+		StringBuilder values = new StringBuilder(" VALUES (");
+		List<Object> params = new ArrayList<>();
+		java.lang.reflect.Field[] fields = entity.getClass().getDeclaredFields();
+		boolean first = true;
+		for (java.lang.reflect.Field field : fields) {
+			if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+			if (!first) {
+				sql.append(", ");
+				values.append(", ");
+			}
+			Column columnAnn = field.getAnnotation(Column.class);
+			String columnName = (columnAnn != null && !columnAnn.name().isEmpty()) ? columnAnn.name()
+					: field.getName();
+			sql.append(columnName);
+			values.append("?");
+			try {
+				field.setAccessible(true);
+				params.add(field.get(entity));
+			} catch (Exception e) {
+				params.add(null);
+			}
+			first = false;
+		}
+		sql.append(")").append(values).append(")");
+		jdbcTemplate.update(sql.toString(), params.toArray());
+	}
+
+	// ------------------------------
+	// Finds the highest REPORT_VERSION already archived for a given date
+	// ------------------------------
+	private BigDecimal findMaxVersion(Date reportDate) {
+		BigDecimal maxVersion = jdbcTemplate.queryForObject(
+				"SELECT MAX(REPORT_VERSION) FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, BigDecimal.class);
+		return maxVersion != null ? maxVersion : BigDecimal.ZERO;
+	}
+
+	// ------------------------------
+	// Promotes one archived (date, version) resub snapshot into the live tables,
+	// replacing whatever is currently live for that date, so it can be corrected
+	// using the report's normal live-edit tooling.
+	// ------------------------------
+	@Transactional
+	public void promoteResubToLive(Date reportDate, BigDecimal version) {
+		logger.info("Promoting M_SFINP1 resub snapshot to live — date={}, version={}", reportDate, version);
+
+		List<M_SFINP1_Archival_Summary_Entity> archSummaryList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_SFINP1ArchivalSummaryRowMapper());
+		if (archSummaryList.isEmpty()) {
+			throw new RuntimeException(
+					"No archival summary found for REPORT_DATE=" + reportDate + " REPORT_VERSION=" + version);
+		}
+		M_SFINP1_Archival_Summary_Entity archSummary = archSummaryList.get(0);
+
+		List<M_SFINP1_Archival_Summary_Manual_Entity> archSummaryManualList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, new M_SFINP1ArchivalSummaryManualRowMapper());
+
+		List<M_SFINP1_Archival_Detail_Entity> archDetailList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+				new Object[] { reportDate, version.toString() }, new M_SFINP1ArchivalDetailRowMapper());
+
+		// Replace whatever is currently live for this date with the archived snapshot.
+		jdbcTemplate.update("DELETE FROM BRRS_M_SFINP1_DETAILTABLE WHERE REPORT_DATE = ?", reportDate);
+		jdbcTemplate.update("DELETE FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE = ?", reportDate);
+		jdbcTemplate.update("DELETE FROM BRRS_M_SFINP1_SUMMARYTABLE WHERE REPORT_DATE = ?", reportDate);
+
+		M_SFINP1_Summary_Entity liveSummary = new M_SFINP1_Summary_Entity();
+		BeanUtils.copyProperties(archSummary, liveSummary);
+		// REPORT_DATE/REPORT_VERSION getters differ in case between the archival and live
+		// summary entities, so BeanUtils won't match them by property name — set explicitly.
+		liveSummary.setReport_date(reportDate);
+		liveSummary.setReport_version(version);
+		insertEntityReflective("BRRS_M_SFINP1_SUMMARYTABLE", liveSummary);
+
+		if (!archSummaryManualList.isEmpty()) {
+			M_SFINP1_Summary_Manual_Entity liveSummaryManual = new M_SFINP1_Summary_Manual_Entity();
+			BeanUtils.copyProperties(archSummaryManualList.get(0), liveSummaryManual);
+			liveSummaryManual.setREPORT_DATE(reportDate);
+			insertEntityReflective("BRRS_M_SFINP1_SUMMARYTABLE_MANUAL", liveSummaryManual);
+		}
+
+		for (M_SFINP1_Archival_Detail_Entity archDetail : archDetailList) {
+			M_SFINP1_Detail_Entity liveDetail = new M_SFINP1_Detail_Entity();
+			BeanUtils.copyProperties(archDetail, liveDetail);
+			liveDetail.setReportDate(reportDate);
+			insertEntityReflective("BRRS_M_SFINP1_DETAILTABLE", liveDetail);
+		}
+
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "PROMOTE_RESUB_TO_LIVE", "M_SFINP1 Resub Promote to Live",
+					null, "BRRS_M_SFINP1_SUMMARYTABLE");
+		}
+
+		logger.info("M_SFINP1 resub promote-to-live complete for date={} version={}", reportDate, version);
+	}
+
+	// ------------------------------
+	// Finalises a live report that was promoted from resub: runs the existing
+	// BRRS_M_SFINP1_SUMMARY_PROCEDURE for the report's own date, then snapshots
+	// whatever the procedure leaves live back into the archival tables as a new,
+	// incremented REPORT_VERSION (the procedure itself always hardcodes version
+	// '1', so the increment has to happen here in Java, not in the DB).
+	// ------------------------------
+	@Transactional
+	public void finaliseResub(Date reportDate) {
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+		logger.info("Finalising M_SFINP1 resub for date={} — running BRRS_M_SFINP1_SUMMARY_PROCEDURE({})", reportDate,
+				formattedDate);
+
+		// Run synchronously (not afterCommit) — the version-increment step below depends on
+		// reading the procedure's output, so it must complete before we continue.
+		jdbcTemplate.update("BEGIN BRRS_M_SFINP1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+		logger.info("BRRS_M_SFINP1_SUMMARY_PROCEDURE completed for date={}", reportDate);
+
+		List<M_SFINP1_Summary_Entity> liveSummaryList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_SUMMARYTABLE WHERE REPORT_DATE = ?", new Object[] { reportDate },
+				new M_SFINP1SummaryRowMapper());
+		if (liveSummaryList.isEmpty()) {
+			throw new RuntimeException(
+					"BRRS_M_SFINP1_SUMMARY_PROCEDURE left no live summary row for REPORT_DATE=" + reportDate);
+		}
+		M_SFINP1_Summary_Entity liveSummary = liveSummaryList.get(0);
+
+		List<M_SFINP1_Summary_Manual_Entity> liveSummaryManualList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_SUMMARYTABLE_MANUAL WHERE REPORT_DATE = ?", new Object[] { reportDate },
+				new M_SFINP1SummaryManualRowMapper());
+
+		List<M_SFINP1_Detail_Entity> liveDetailList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SFINP1_DETAILTABLE WHERE REPORT_DATE = ?", new Object[] { reportDate },
+				new M_SFINP1DetailRowMapper());
+
+		BigDecimal newVersion = findMaxVersion(reportDate).add(BigDecimal.ONE);
+
+		M_SFINP1_Archival_Summary_Entity archSummary = new M_SFINP1_Archival_Summary_Entity();
+		BeanUtils.copyProperties(liveSummary, archSummary);
+		archSummary.setReportDate(reportDate);
+		archSummary.setReportVersion(newVersion);
+		archSummary.setReportResubDate(new Date());
+		insertEntityReflective("BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY", archSummary);
+
+		if (!liveSummaryManualList.isEmpty()) {
+			M_SFINP1_Archival_Summary_Manual_Entity archSummaryManual = new M_SFINP1_Archival_Summary_Manual_Entity();
+			BeanUtils.copyProperties(liveSummaryManualList.get(0), archSummaryManual);
+			archSummaryManual.setREPORT_DATE(reportDate);
+			archSummaryManual.setREPORT_VERSION(newVersion);
+			insertEntityReflective("BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY_MANUAL", archSummaryManual);
+		}
+
+		for (M_SFINP1_Detail_Entity liveDetail : liveDetailList) {
+			M_SFINP1_Archival_Detail_Entity archDetail = new M_SFINP1_Archival_Detail_Entity();
+			BeanUtils.copyProperties(liveDetail, archDetail);
+			archDetail.setReportDate(reportDate);
+			archDetail.setDataEntryVersion(newVersion.toString());
+			insertEntityReflective("BRRS_M_SFINP1_ARCHIVALTABLE_DETAIL", archDetail);
+		}
+
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if (attrs != null) {
+			HttpServletRequest request = attrs.getRequest();
+			String userid = (String) request.getSession().getAttribute("USERID");
+			auditService.createBusinessAudit(userid, "FINALISE_RESUB", "M_SFINP1 Resub Finalise",
+					null, "BRRS_M_SFINP1_ARCHIVALTABLE_SUMMARY");
+		}
+
+		logger.info("M_SFINP1 resub finalised for date={} — new REPORT_VERSION={}", reportDate, newVersion);
 	}
 
 // =========================================================================

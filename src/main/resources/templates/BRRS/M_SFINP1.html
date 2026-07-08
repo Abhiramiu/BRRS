@@ -457,7 +457,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 			var Callurl;
 			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version},fromResub=${fromResub})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
 
@@ -465,7 +465,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version}, fromResub=${fromResub})}]]*/
 				location.href = Callurl;
 		}
 
@@ -1262,6 +1262,77 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 				$('#loader').modal('hide');
 			}
 		}
+
+		// Resub "Modify": pulls the archived (date, version) snapshot being viewed into the
+		// live tables, replacing whatever is currently live for that date, then navigates to
+		// the normal live page (flagged so it can show the Finalise button).
+		function promoteResubToLive(btn) {
+			var reportid = btn.getAttribute('data-reportid');
+			var todate = btn.getAttribute('data-todate');
+			var fromdate = btn.getAttribute('data-fromdate');
+			var currency = btn.getAttribute('data-currency');
+			var dtltype = btn.getAttribute('data-dtltype');
+			var version = btn.getAttribute('data-version');
+
+			if (!confirm('This will replace the current live data for ' + todate + ' with this resubmitted version. Continue?')) {
+				return;
+			}
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './M_SFINP1PromoteResubToLive',
+				type: 'POST',
+				data: {
+					reportDate: todate,
+					version: version
+				},
+				success: function () {
+					location.href = '/BRRS/Reports/' + reportid +
+						'?dtltype=' + encodeURIComponent(dtltype) +
+						'&fromdate=' + encodeURIComponent(fromdate) +
+						'&todate=' + encodeURIComponent(todate) +
+						'&asondate=' + encodeURIComponent(todate) +
+						'&currency=' + encodeURIComponent(currency) +
+						'&fromResub=true';
+				},
+				error: function (jqXHR) {
+					$('#loader').modal('hide');
+					console.error('Promote failed:', jqXHR.responseText);
+					showResultModal('Error', 'Failed to promote resub data to live. Please try again.');
+				}
+			});
+		}
+
+		// Finalise: reruns the summary procedure for this report date, then archives the
+		// resulting live state as a new, incremented resub version.
+		function finaliseResub(btn) {
+			var todate = btn.getAttribute('data-todate');
+
+			if (!confirm('This will run the summary procedure for ' + todate + ' and archive the result as a new version. Continue?')) {
+				return;
+			}
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './M_SFINP1FinaliseResub',
+				type: 'POST',
+				data: {
+					reportDate: todate
+				},
+				success: function () {
+					$('#loader').modal('hide');
+					showResultModal('BRRS', 'Finalised successfully.');
+					setTimeout(function () { location.reload(); }, 1500);
+				},
+				error: function (jqXHR) {
+					$('#loader').modal('hide');
+					console.error('Finalise failed:', jqXHR.responseText);
+					showResultModal('Error', 'Failed to finalise. Please try again.');
+				}
+			});
+		}
 	</script>
 	<script>
 
@@ -1370,15 +1441,32 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-							th:if="${displaymode == 'Details'}">Summary</button>
+							th:if="${displaymode == 'Details' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-							th:if="${displaymode == 'summary'}">Details</button>
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
 						<!-- Modify Button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records" th:if="${ role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">
 							Modify
+						</button>
+						<!-- Resub "Modify": pulls this archived (date, version) snapshot into the live tables -->
+						<button type="button" class="custom-tab-btn" onclick="promoteResubToLive(this);"
+							title="Pull this resubmitted version into the live report for correction"
+							th:if="${displaymode == 'resubSummary'}"
+							th:attr="data-reportid=${reportid}, data-todate=${todate}, data-fromdate=${fromdate},
+							         data-currency=${currency}, data-dtltype=${dtltype}, data-version=${version}"
+							id="promoteResubBtn">
+							Modify
+						</button>
+						<!-- Finalise: only shown on the live page when reached via the resub "Modify" promotion above -->
+						<button type="button" class="custom-tab-btn" onclick="finaliseResub(this);"
+							title="Run the summary procedure and archive this correction as a new version"
+							th:if="${fromResub == true}"
+							th:attr="data-reportid=${reportid}, data-todate=${todate}, data-asondate=${asondate}"
+							id="finaliseResubBtn">
+							Finalise
 						</button>
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1474,7 +1562,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 			</div>
 
 
-			<div th:if="${displaymode == 'summary'}">
+			<div th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">
 				<div class="row">
 					<div class="col-sm-12">
 						<form action="#" method="POST" id="fileupload">
@@ -2201,7 +2289,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 				</div>
 			</div>
 
-			<div th:if="${displaymode == 'Details'}">
+			<div th:if="${displaymode == 'Details' or displaymode == 'resubDetail'}">
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="table-container" style="border-right: 1px solid #dee2e6; ">
