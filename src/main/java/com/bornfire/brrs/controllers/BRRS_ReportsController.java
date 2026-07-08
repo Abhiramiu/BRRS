@@ -72,6 +72,9 @@ import com.bornfire.brrs.services.BRRS_M_CR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService.M_DEP3_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
+import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity1;
+import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity2;
+import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService.M_DEP4_Summary_Entity3;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService.M_FAS_Summary_Entity;
@@ -2803,7 +2806,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OB_Summary_Entity request) {
+			@ModelAttribute BRRS_M_OB_ReportService.M_OB_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
@@ -2826,7 +2829,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OB_Resub_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute BRRS_M_OB_ReportService.M_OB_Resub_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
