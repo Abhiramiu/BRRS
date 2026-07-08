@@ -86,23 +86,23 @@ public class BRRS_M_FXR_ReportService {
 
 	@Autowired
 	BRRS_M_FXR_Resub_Detail_Repo brrs_M_FXR_resub_detail_repo;
-	
+
 	@Autowired
 	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getM_FXRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
-		
+
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
-		
+
 		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
@@ -290,8 +290,12 @@ public class BRRS_M_FXR_ReportService {
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
+
+			if (changes.length() > 2000) {
+				changes = changes.substring(0, 2000);
+			}
+
 			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
 					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
 		}
@@ -414,8 +418,12 @@ public class BRRS_M_FXR_ReportService {
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
+
+			if (changes.length() > 2000) {
+				changes = changes.substring(0, 2000);
+			}
+
 			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
 					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
 		}
@@ -509,8 +517,12 @@ public class BRRS_M_FXR_ReportService {
 		brrs_M_FXR_summary_repo.save(existingSummary);
 		brrs_M_FXR_detail_repo.save(detailEntity);
 
-		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
+
+			if (changes.length() > 2000) {
+				changes = changes.substring(0, 2000);
+			}
+
 			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
 					"M_FXR Summary Screen", "BRRS_M_FXR_SUMMARY");
 		}

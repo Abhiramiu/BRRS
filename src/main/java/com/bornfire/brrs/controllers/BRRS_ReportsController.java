@@ -126,6 +126,8 @@ import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService.PL_SCHS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
+import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA1_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_RLFA2_ReportService;
@@ -4076,7 +4078,7 @@ public class BRRS_ReportsController {
 			System.out.println("Came to single controller");
 
 			// set date into all 3 entities
-			request1.setReportDate(asondate);
+			request1.setReport_date(asondate);
 
 			// call services
 			QBRANCHNET_service.QBranchnetUpdate1(request1);
@@ -4097,7 +4099,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute Q_BRANCHNET_Resub_Summary_Entity request,
+			@ModelAttribute BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Resub_Summary_Entity request,
 
 			HttpServletRequest req) {
 
@@ -4107,12 +4109,12 @@ public class BRRS_ReportsController {
 
 			if (asondate != null) {
 
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 
 			} else {
 
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			QBRANCHNET_service.updateResubReport(request);

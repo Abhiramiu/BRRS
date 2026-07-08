@@ -3290,12 +3290,12 @@ public class RegulatoryReportServices {
 		case "Q_BRANCHNET":
 			List<Object[]> QBList = BRRS_Q_BRANCHNET_reportservice.getQ_BRANCHNETArchival();
 			archivalData.addAll(QBList);
-			System.out.println("Fetched M_SRWA_12H archival data: " + QBList.size());
+			System.out.println("Fetched Q_BRANCHNET archival data: " + QBList.size());
 			break;
 		case "M_UNCONS_INVEST":
 			List<Object[]> UIList = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTArchival();
 			archivalData.addAll(UIList);
-			System.out.println("Fetched M_SRWA_12H archival data: " + UIList.size());
+			System.out.println("Fetched M_UNCONS_INVEST archival data: " + UIList.size());
 			break;
 		case "M_CA4":
 			List<Object[]> ca4List = BRRS_M_CA4_reportservice.getM_CA4Archival();
@@ -3306,7 +3306,7 @@ public class RegulatoryReportServices {
 		case "Q_RLFA2":
 			List<Object[]> rlfa2List = brrs_q_rlfa2_reportservice.getQ_RLFA2Archival();
 			archivalData.addAll(rlfa2List);
-			System.out.println("Fetched M_CA4 archival data: " + rlfa2List.size());
+			System.out.println("Fetched Q_RLFA2 archival data: " + rlfa2List.size());
 			break;
 
 		case "M_EPR":

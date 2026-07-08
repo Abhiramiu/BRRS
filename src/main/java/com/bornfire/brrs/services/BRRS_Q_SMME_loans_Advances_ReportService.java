@@ -4251,7 +4251,7 @@ public class BRRS_Q_SMME_loans_Advances_ReportService {
 						if (row == null) {
 							row = sheet.createRow(startRow + i);
 						}
-						Cell R12Cell = row.createCell(3);
+						Cell R12Cell = row.createCell(2);
 
 						if (record.getReport_date() != null) {
 

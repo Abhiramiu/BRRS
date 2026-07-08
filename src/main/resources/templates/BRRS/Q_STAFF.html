@@ -791,17 +791,20 @@ PURPOSE		: BWRBRREPORT
 		});
 
 		function closemodel() {
-			const modalElement = document.getElementById('resultModal');
-			const modal = bootstrap.Modal.getInstance(modalElement);
-			modal.hide();
+		    const modalElement = document.getElementById('resultModal');
+		    const modal = bootstrap.Modal.getInstance(modalElement);
 
-			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+		    if (modal) {
+		        modal.hide();
+		    }
 
-			if (message.includes("resubmission")) {
-				window.history.back();
-			} else {
-				location.reload();
-			}
+		    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+
+		    if (message.includes("resubmission")) {
+		        window.location.href = document.referrer;
+		    } else {
+		        location.reload();
+		    }
 		}
 
 	</SCRIPT>

@@ -57,7 +57,6 @@ import com.bornfire.brrs.entities.M_SIR_Detail_Entity;
 import com.bornfire.brrs.entities.M_SIR_Resub_Detail_Entity;
 import com.bornfire.brrs.entities.M_SIR_Resub_Summary_Entity;
 import com.bornfire.brrs.entities.M_SIR_Summary_Entity;
-import com.bornfire.brrs.entities.Q_BRANCHNET_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 

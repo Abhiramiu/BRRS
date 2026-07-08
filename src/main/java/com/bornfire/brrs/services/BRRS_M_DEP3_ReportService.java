@@ -4203,34 +4203,34 @@ public class BRRS_M_DEP3_ReportService {
 							R32cell3.setCellValue("");
 							R32cell3.setCellStyle(textStyle);
 						}
-// R33 Col B
-						row = sheet.getRow(32);
-						Cell R33cell1 = row.createCell(1);
-						if (record.getR33_import() != null) {
-							R33cell1.setCellValue(record.getR33_import().doubleValue());
-							R33cell1.setCellStyle(numberStyle);
-						} else {
-							R33cell1.setCellValue("");
-							R33cell1.setCellStyle(textStyle);
-						}
-// R33 Col C
-						Cell R33cell2 = row.createCell(2);
-						if (record.getR33_investment() != null) {
-							R33cell2.setCellValue(record.getR33_investment().doubleValue());
-							R33cell2.setCellStyle(numberStyle);
-						} else {
-							R33cell2.setCellValue("");
-							R33cell2.setCellStyle(textStyle);
-						}
-// R33 Col D
-						Cell R33cell3 = row.createCell(3);
-						if (record.getR33_other() != null) {
-							R33cell3.setCellValue(record.getR33_other().doubleValue());
-							R33cell3.setCellStyle(numberStyle);
-						} else {
-							R33cell3.setCellValue("");
-							R33cell3.setCellStyle(textStyle);
-						}
+//// R33 Col B
+//						row = sheet.getRow(32);
+//						Cell R33cell1 = row.createCell(1);
+//						if (record.getR33_import() != null) {
+//							R33cell1.setCellValue(record.getR33_import().doubleValue());
+//							R33cell1.setCellStyle(numberStyle);
+//						} else {
+//							R33cell1.setCellValue("");
+//							R33cell1.setCellStyle(textStyle);
+//						}
+//// R33 Col C
+//						Cell R33cell2 = row.createCell(2);
+//						if (record.getR33_investment() != null) {
+//							R33cell2.setCellValue(record.getR33_investment().doubleValue());
+//							R33cell2.setCellStyle(numberStyle);
+//						} else {
+//							R33cell2.setCellValue("");
+//							R33cell2.setCellStyle(textStyle);
+//						}
+//// R33 Col D
+//						Cell R33cell3 = row.createCell(3);
+//						if (record.getR33_other() != null) {
+//							R33cell3.setCellValue(record.getR33_other().doubleValue());
+//							R33cell3.setCellStyle(numberStyle);
+//						} else {
+//							R33cell3.setCellValue("");
+//							R33cell3.setCellStyle(textStyle);
+//						}
 
 //Entity 3
 
@@ -4329,25 +4329,25 @@ public class BRRS_M_DEP3_ReportService {
 							R32cell2e3.setCellValue("");
 							R32cell2e3.setCellStyle(textStyle);
 						}
-// R33 Col B
-						row = sheet.getRow(32);
-						Cell R33cell1e3 = row.createCell(8);
-						if (record.getR33_residents() != null) {
-							R33cell1e3.setCellValue(record.getR33_residents().doubleValue());
-							R33cell1e3.setCellStyle(numberStyle);
-						} else {
-							R33cell1e3.setCellValue("");
-							R33cell1e3.setCellStyle(textStyle);
-						}
-// R33 Col C
-						Cell R33cell2e3 = row.createCell(10);
-						if (record.getR33_non_residents() != null) {
-							R33cell2e3.setCellValue(record.getR33_non_residents().doubleValue());
-							R33cell2e3.setCellStyle(numberStyle);
-						} else {
-							R33cell2e3.setCellValue("");
-							R33cell2e3.setCellStyle(textStyle);
-						}
+//// R33 Col B
+//						row = sheet.getRow(32);
+//						Cell R33cell1e3 = row.createCell(8);
+//						if (record.getR33_residents() != null) {
+//							R33cell1e3.setCellValue(record.getR33_residents().doubleValue());
+//							R33cell1e3.setCellStyle(numberStyle);
+//						} else {
+//							R33cell1e3.setCellValue("");
+//							R33cell1e3.setCellStyle(textStyle);
+//						}
+//// R33 Col C
+//						Cell R33cell2e3 = row.createCell(10);
+//						if (record.getR33_non_residents() != null) {
+//							R33cell2e3.setCellValue(record.getR33_non_residents().doubleValue());
+//							R33cell2e3.setCellStyle(numberStyle);
+//						} else {
+//							R33cell2e3.setCellValue("");
+//							R33cell2e3.setCellStyle(textStyle);
+//						}
 
 					}
 					workbook.setForceFormulaRecalculation(true);
@@ -7677,34 +7677,34 @@ public class BRRS_M_DEP3_ReportService {
 						R32cell3.setCellValue("");
 						R32cell3.setCellStyle(textStyle);
 					}
-// R33 Col B
-					row = sheet.getRow(32);
-					Cell R33cell1 = row.createCell(1);
-					if (record.getR33_import() != null) {
-						R33cell1.setCellValue(record.getR33_import().doubleValue());
-						R33cell1.setCellStyle(numberStyle);
-					} else {
-						R33cell1.setCellValue("");
-						R33cell1.setCellStyle(textStyle);
-					}
-// R33 Col C
-					Cell R33cell2 = row.createCell(2);
-					if (record.getR33_investment() != null) {
-						R33cell2.setCellValue(record.getR33_investment().doubleValue());
-						R33cell2.setCellStyle(numberStyle);
-					} else {
-						R33cell2.setCellValue("");
-						R33cell2.setCellStyle(textStyle);
-					}
-// R33 Col D
-					Cell R33cell3 = row.createCell(3);
-					if (record.getR33_other() != null) {
-						R33cell3.setCellValue(record.getR33_other().doubleValue());
-						R33cell3.setCellStyle(numberStyle);
-					} else {
-						R33cell3.setCellValue("");
-						R33cell3.setCellStyle(textStyle);
-					}
+//// R33 Col B
+//					row = sheet.getRow(32);
+//					Cell R33cell1 = row.createCell(1);
+//					if (record.getR33_import() != null) {
+//						R33cell1.setCellValue(record.getR33_import().doubleValue());
+//						R33cell1.setCellStyle(numberStyle);
+//					} else {
+//						R33cell1.setCellValue("");
+//						R33cell1.setCellStyle(textStyle);
+//					}
+//// R33 Col C
+//					Cell R33cell2 = row.createCell(2);
+//					if (record.getR33_investment() != null) {
+//						R33cell2.setCellValue(record.getR33_investment().doubleValue());
+//						R33cell2.setCellStyle(numberStyle);
+//					} else {
+//						R33cell2.setCellValue("");
+//						R33cell2.setCellStyle(textStyle);
+//					}
+//// R33 Col D
+//					Cell R33cell3 = row.createCell(3);
+//					if (record.getR33_other() != null) {
+//						R33cell3.setCellValue(record.getR33_other().doubleValue());
+//						R33cell3.setCellStyle(numberStyle);
+//					} else {
+//						R33cell3.setCellValue("");
+//						R33cell3.setCellStyle(textStyle);
+//					}
 
 //Entity 3
 
@@ -7803,25 +7803,25 @@ public class BRRS_M_DEP3_ReportService {
 						R32cell2e3.setCellValue("");
 						R32cell2e3.setCellStyle(textStyle);
 					}
-// R33 Col B
-					row = sheet.getRow(32);
-					Cell R33cell1e3 = row.createCell(8);
-					if (record.getR33_residents() != null) {
-						R33cell1e3.setCellValue(record.getR33_residents().doubleValue());
-						R33cell1e3.setCellStyle(numberStyle);
-					} else {
-						R33cell1e3.setCellValue("");
-						R33cell1e3.setCellStyle(textStyle);
-					}
-// R33 Col C
-					Cell R33cell2e3 = row.createCell(10);
-					if (record.getR33_non_residents() != null) {
-						R33cell2e3.setCellValue(record.getR33_non_residents().doubleValue());
-						R33cell2e3.setCellStyle(numberStyle);
-					} else {
-						R33cell2e3.setCellValue("");
-						R33cell2e3.setCellStyle(textStyle);
-					}
+//// R33 Col B
+//					row = sheet.getRow(32);
+//					Cell R33cell1e3 = row.createCell(8);
+//					if (record.getR33_residents() != null) {
+//						R33cell1e3.setCellValue(record.getR33_residents().doubleValue());
+//						R33cell1e3.setCellStyle(numberStyle);
+//					} else {
+//						R33cell1e3.setCellValue("");
+//						R33cell1e3.setCellStyle(textStyle);
+//					}
+//// R33 Col C
+//					Cell R33cell2e3 = row.createCell(10);
+//					if (record.getR33_non_residents() != null) {
+//						R33cell2e3.setCellValue(record.getR33_non_residents().doubleValue());
+//						R33cell2e3.setCellStyle(numberStyle);
+//					} else {
+//						R33cell2e3.setCellValue("");
+//						R33cell2e3.setCellStyle(textStyle);
+//					}
 
 				}
 				workbook.setForceFormulaRecalculation(true);
