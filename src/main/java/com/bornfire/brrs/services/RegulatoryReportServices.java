@@ -399,9 +399,7 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_AS_11_ReportService BRRS_AS_11_Reportservice;
 
-	@Autowired
-	BRRS_M_OPTR_NEW_ReportService BRRS_M_OPTR_NEW_ReportService;
-
+	
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
 
@@ -1495,11 +1493,6 @@ public class RegulatoryReportServices {
 					dtltype, pageable, Filter, type, version);
 			break;
 
-		case "M_OPTR_NEW":
-
-			repdetail = BRRS_M_OPTR_NEW_ReportService.getM_OPTRNEWcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
 
 		case "M_P_L":
 
@@ -2799,11 +2792,7 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 
-		else if ("M_OPTR_NEWDetail".equals(filename)) {
-			return BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
-
+		
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -3566,11 +3555,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_OPTR_NEW":
-			List<Object[]> optrnewList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWArchival();
-			archivalData.addAll(optrnewList);
-			System.out.println("Fetched M_OPTR_NEW archival data: " + optrnewList.size());
-			break;
+		
 
 		case "Q_STAFF":
 			List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
@@ -3949,11 +3934,7 @@ public class RegulatoryReportServices {
 					dtltype, type, version);
 		}
 
-		else if ("M_OPTR_NEWDetail".equals(filename)) {
-
-			fileData = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
@@ -5353,16 +5334,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "M_OPTR_NEW":
-			try {
-				List<Object[]> resubList = BRRS_M_OPTR_NEW_ReportService.getM_OPTR_NEWResub();
-				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for M_OPTR_NEW: " + resubList.size());
-			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for M_OPTR_NEW: " + e.getMessage());
-				e.printStackTrace();
-			}
-			break;
+		
 
 		case "M_UNCONS_INVEST":
 			try {

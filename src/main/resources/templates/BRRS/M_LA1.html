@@ -2339,6 +2339,10 @@ PURPOSE		: BRRSREPORT
 										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
 								</div>
 							</div>
+							<input type="hidden" th:field="*{sno}"
+																	class="form-control form-control-sm" readonly />
+														<input type="hidden" th:value="${type}" name="type"
+																	class="form-control form-control-sm" readonly />
 
 
 							<!-- Update Button -->

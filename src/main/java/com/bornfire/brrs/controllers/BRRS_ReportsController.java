@@ -1,7 +1,6 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -96,7 +95,6 @@ import com.bornfire.brrs.services.BRRS_M_LIQ_ReportService;
 import com.bornfire.brrs.services.BRRS_M_MRC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_NOSVOS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OB_ReportService;
-import com.bornfire.brrs.services.BRRS_M_OPTR_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OPTR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_OR2_ReportService;
@@ -1790,106 +1788,69 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_OPTR_ReportService BRRS_M_OPTR_reportservice;
 
-	@RequestMapping(value = "/M_OPTRupdate", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/M_OPTRupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OPTR_Summary_Entity request) {
+	public ResponseEntity<String> updateAllReports(
 
-		try {
-			System.out.println("came to single controller");
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
+	        @ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_Summary_Entity request) {
 
-			// call services
+	    try {
 
-			BRRS_M_OPTR_reportservice.updateReport(request);
+	        if (asondate != null) {
+	            request.setREPORT_DATE(asondate);
+	        }
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        BRRS_M_OPTR_reportservice.updateReport(request);
+
+	        return ResponseEntity.ok("Modified Successfully.");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed : " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/UpdateM_OPTR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OPTR_Resub_Summary_Entity request, HttpServletRequest req) {
 
-		try {
-			System.out.println("Came to Resub Controller");
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
+	        @RequestParam(required = false) String type,
 
-			// Call service to create a new versioned row
-			BRRS_M_OPTR_reportservice.updateResubReport(request);
+	        @ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_RESUB_Summary_Entity request,
 
-			return ResponseEntity.ok("Resubmission Updated Successfully");
+	        HttpServletRequest req) {
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
+	    try {
+
+	        System.out.println("Came to M_OPTR Resub Controller");
+
+	        if (asondate != null) {
+	            request.setREPORT_DATE(asondate);
+	        }
+
+	        BRRS_M_OPTR_reportservice.updateResubReport(request);
+
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("M_OPTR Resubmission Update Failed : " + e.getMessage());
+	    }
 	}
+	
 
-	@Autowired
-	BRRS_M_OPTR_NEW_ReportService M_OPTRNEWreportService;
-
-	@PostMapping("/M_OPTR_NEWupdateAll")
-	@ResponseBody
-	public ResponseEntity<String> updateMOPTRNEWAllReports(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@RequestParam Map<String, String> allParams) {
-		try {
-			System.out.println("Came to M_OPTR_NEW controller");
-
-			M_OPTRNEWreportService.updateDetailFromForm(asondate, allParams);
-
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
-
-	@RequestMapping(value = "/UpdateM_OPTR_NEW_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_OPTR_NEW_Summary_Entity request, HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReportDate(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
-			}
-
-			// Call service to create a new versioned row
-			M_OPTRNEWreportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
-	}
 
 	@Autowired
 	private BRRS_BDISB3_ReportService BDISB3reportService;
