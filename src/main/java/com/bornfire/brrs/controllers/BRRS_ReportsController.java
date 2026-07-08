@@ -799,7 +799,7 @@ public class BRRS_ReportsController {
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_MRC_Summary_Entity request1
+			@ModelAttribute BRRS_M_MRC_ReportService.M_MRC_Summary_Entity request1
 
 	) {
 		try {
@@ -2430,6 +2430,37 @@ public class BRRS_ReportsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	// Resub "Modify" — pulls one archived (date, version) snapshot into the live tables,
+	// replacing whatever is currently live for that date.
+	@PostMapping("/M_SFINP1PromoteResubToLive")
+	@ResponseBody
+	public ResponseEntity<String> promoteM_SFINP1ResubToLive(
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date reportDate,
+			@RequestParam BigDecimal version) {
+		try {
+			M_SFINP1_ReportService.promoteResubToLive(reportDate, version);
+			return ResponseEntity.ok("Promoted to live.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Promote Failed: " + e.getMessage());
+		}
+	}
+
+	// Resub "Finalise" — reruns BRRS_M_SFINP1_SUMMARY_PROCEDURE for the report's date, then
+	// archives the resulting live state as a new, incremented REPORT_VERSION.
+	@PostMapping("/M_SFINP1FinaliseResub")
+	@ResponseBody
+	public ResponseEntity<String> finaliseM_SFINP1Resub(
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date reportDate) {
+		try {
+			M_SFINP1_ReportService.finaliseResub(reportDate);
+			return ResponseEntity.ok("Finalised.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Finalise Failed: " + e.getMessage());
 		}
 	}
 
