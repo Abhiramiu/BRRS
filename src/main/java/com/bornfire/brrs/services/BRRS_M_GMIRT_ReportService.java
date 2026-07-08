@@ -46,19 +46,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_RESUB_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_RESUB_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_GMIRT_Summary_Repo;
-
-import com.bornfire.brrs.entities.M_GMIRT_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_Detail_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_RESUB_Detail_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_RESUB_Summary_Entity;
-import com.bornfire.brrs.entities.M_GMIRT_Summary_Entity;
+import java.io.Serializable;
+import java.util.Objects;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
@@ -78,32 +75,16 @@ public class BRRS_M_GMIRT_ReportService {
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_GMIRT_Detail_Repo brrs_m_gmirt_detail_repo;
-
-	@Autowired
-	BRRS_M_GMIRT_Summary_Repo brrs_m_gmirt_summary_repo;
-
-	@Autowired
-	BRRS_M_GMIRT_Detail_Repo m_gmirt_Detail_Repo;
-
-	@Autowired
-	BRRS_M_GMIRT_Archival_Detail_Repo m_gmirt_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_GMIRT_Archival_Summary_Repo brrs_m_gmirt_Archival_summary_repo;
-
-	@Autowired
-	BRRS_M_GMIRT_RESUB_Summary_Repo BRRS_M_GMIRT_resub_Summary_Repo;
-
-	@Autowired
-	BRRS_M_GMIRT_RESUB_Detail_Repo BRRS_M_GMIRT_resub_Detail_Repo;
+	private JdbcTemplate jdbcTemplate;
 	
 	@Autowired
 	UserProfileRep userProfileRep;
 
-	
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// ------------------------------
+	// Method to display view page for M_GMIRT report
+	// ------------------------------
 	public ModelAndView getM_GMIRTView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
@@ -135,8 +116,8 @@ public class BRRS_M_GMIRT_ReportService {
 			// ---------- CASE 1: ARCHIVAL ----------
 			if (type.equals("ARCHIVAL") & version != null) {
 
-				List<M_GMIRT_Archival_Summary_Entity> T1Master = brrs_m_gmirt_Archival_summary_repo
-						.getdatabydateListarchival(d1, version);
+				String sql = "SELECT * FROM BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+				List<M_GMIRT_Archival_Summary_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Archival_Summary_Entity.class), d1, version);
 
 				mv.addObject("displaymode", "summary");
 
@@ -145,8 +126,8 @@ public class BRRS_M_GMIRT_ReportService {
 			}
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_GMIRT_RESUB_Summary_Entity> T1Master = BRRS_M_GMIRT_resub_Summary_Repo
-						.getdatabydateListarchival(d1, version);
+				String sql = "SELECT * FROM BRRS_M_GMIRT_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+				List<M_GMIRT_RESUB_Summary_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_RESUB_Summary_Entity.class), d1, version);
 
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
@@ -154,8 +135,8 @@ public class BRRS_M_GMIRT_ReportService {
 			// ---------- CASE 3: NORMAL ----------
 			else {
 
-				List<M_GMIRT_Summary_Entity> T1Master = brrs_m_gmirt_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+				String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
+				List<M_GMIRT_Summary_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), dateformat.parse(todate));
 				
 				mv.addObject("reportsummary", T1Master);
 				mv.addObject("displaymode", "summary");
@@ -168,8 +149,8 @@ public class BRRS_M_GMIRT_ReportService {
 				// DETAIL + ARCHIVAL
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 					
-					List<M_GMIRT_Archival_Detail_Entity> T1Master = m_gmirt_Archival_Detail_Repo
-							.getdatabydateListarchival(d1, version);
+					String sql = "SELECT * FROM BRRS_M_GMIRT_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+					List<M_GMIRT_Archival_Detail_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Archival_Detail_Entity.class), d1, version);
 					
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
@@ -177,8 +158,8 @@ public class BRRS_M_GMIRT_ReportService {
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-					List<M_GMIRT_RESUB_Detail_Entity> T1Master = BRRS_M_GMIRT_resub_Detail_Repo
-							.getdatabydateListarchival(d1, version);
+					String sql = "SELECT * FROM BRRS_M_GMIRT_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+					List<M_GMIRT_RESUB_Detail_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_RESUB_Detail_Entity.class), d1, version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -188,8 +169,8 @@ public class BRRS_M_GMIRT_ReportService {
 				// DETAIL + NORMAL
 				else {
 
-					List<M_GMIRT_Detail_Entity> T1Master = m_gmirt_Detail_Repo
-							.getdatabydateList(dateformat.parse(todate));
+					String sql = "SELECT * FROM BRRS_M_GMIRT_DETAILTABLE WHERE REPORT_DATE = ?";
+					List<M_GMIRT_Detail_Entity> T1Master = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Detail_Entity.class), dateformat.parse(todate));
 					
 					mv.addObject("displaymode", "Details");
 					mv.addObject("reportsummary", T1Master);
@@ -208,13 +189,17 @@ public class BRRS_M_GMIRT_ReportService {
 	}
 
 
+	// ------------------------------
+	// Method to update summary report fields
+	// ------------------------------
 	public void updateReport(M_GMIRT_Summary_Entity updatedEntity) {
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_GMIRT_Summary_Entity existing = brrs_m_gmirt_summary_repo.findById(updatedEntity.getReport_date())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		M_GMIRT_Summary_Entity existing = findSummaryById(updatedEntity.getReport_date());
+		if (existing == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
 
 		try {
 			// 1️⃣ Loop from R11 to R23 and copy fields
@@ -249,15 +234,20 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 
 		// 3️⃣ Save updated entity
-		brrs_m_gmirt_summary_repo.save(existing);
+		saveEntity(existing, "BRRS_M_GMIRT_SUMMARYTABLE");
 	}
 
+	// ------------------------------
+	// Method to update detail report fields
+	// ------------------------------
 	public void updateDetail(M_GMIRT_Detail_Entity updatedEntity) {
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_GMIRT_Detail_Entity existing = m_gmirt_Detail_Repo.findById(updatedEntity.getReport_date()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		M_GMIRT_Detail_Entity existing = findDetailById(updatedEntity.getReport_date());
+		if (existing == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
 
 		try {
 			// 1️⃣ Loop from R11 to R23 and copy fields
@@ -292,10 +282,12 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 
 		// 3️⃣ Save updated entity
-		m_gmirt_Detail_Repo.save(existing);
+		saveEntity(existing, "BRRS_M_GMIRT_DETAILTABLE");
 	}
 
-
+	// ------------------------------
+	// Method to perform resubmission update for M_GMIRT report
+	// ------------------------------
 	public void updateResubReport(M_GMIRT_RESUB_Summary_Entity updatedEntity) {
 
 
@@ -305,7 +297,7 @@ public class BRRS_M_GMIRT_ReportService {
 		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
 		// ----------------------------------------------------
 
-		BigDecimal maxResubVer = BRRS_M_GMIRT_resub_Summary_Repo.findMaxVersion(reportDate);
+		BigDecimal maxResubVer = findMaxVersion(reportDate);
 
 		if (maxResubVer == null)
 			throw new RuntimeException("No record for: " + reportDate);
@@ -320,7 +312,7 @@ public class BRRS_M_GMIRT_ReportService {
 
 		M_GMIRT_RESUB_Summary_Entity resubSummary = new M_GMIRT_RESUB_Summary_Entity();
 
-		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "reportResubDate");
+		BeanUtils.copyProperties(updatedEntity, resubSummary, "reportDate", "reportVersion", "report_date", "report_version", "reportResubDate");
 
 		resubSummary.setReport_date(reportDate);
 		resubSummary.setReport_version(newVersion);
@@ -332,7 +324,7 @@ public class BRRS_M_GMIRT_ReportService {
 
 		M_GMIRT_RESUB_Detail_Entity resubDetail = new M_GMIRT_RESUB_Detail_Entity();
 
-		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "reportResubDate");
+		BeanUtils.copyProperties(updatedEntity, resubDetail, "reportDate", "reportVersion", "report_date", "report_version", "reportResubDate");
 
 		resubDetail.setReport_date(reportDate);
 		resubDetail.setReport_version(newVersion);
@@ -344,7 +336,7 @@ public class BRRS_M_GMIRT_ReportService {
 
 		M_GMIRT_Archival_Summary_Entity archSummary = new M_GMIRT_Archival_Summary_Entity();
 
-		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "reportResubDate");
+		BeanUtils.copyProperties(updatedEntity, archSummary, "reportDate", "reportVersion", "report_date", "report_version", "reportResubDate");
 
 		archSummary.setReport_date(reportDate);
 		archSummary.setReport_version(newVersion); // SAME VERSION
@@ -356,7 +348,7 @@ public class BRRS_M_GMIRT_ReportService {
 
 		M_GMIRT_Archival_Detail_Entity archDetail = new M_GMIRT_Archival_Detail_Entity();
 
-		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "reportResubDate");
+		BeanUtils.copyProperties(updatedEntity, archDetail, "reportDate", "reportVersion", "report_date", "report_version", "reportResubDate");
 
 		archDetail.setReport_date(reportDate);
 		archDetail.setReport_version(newVersion); // SAME VERSION
@@ -366,20 +358,22 @@ public class BRRS_M_GMIRT_ReportService {
 		// 6️⃣ SAVE ALL WITH SAME DATA
 		// ====================================================
 
-		BRRS_M_GMIRT_resub_Summary_Repo.save(resubSummary);
-		BRRS_M_GMIRT_resub_Detail_Repo.save(resubDetail);
+		saveEntity(resubSummary, "BRRS_M_GMIRT_RESUB_SUMMARYTABLE");
+		saveEntity(resubDetail, "BRRS_M_GMIRT_RESUB_DETAILTABLE");
 
-		brrs_m_gmirt_Archival_summary_repo.save(archSummary);
-		m_gmirt_Archival_Detail_Repo.save(archDetail);
+		saveEntity(archSummary, "BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY");
+		saveEntity(archDetail, "BRRS_M_GMIRT_ARCHIVALTABLE_DETAIL");
 	}
 
-	//RESUB VIEW
+	// ------------------------------
+	// Method to fetch resubmission versions list
+	// ------------------------------
 	public List<Object[]> getM_GMIRTResub() {
 
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_GMIRT_RESUB_Summary_Entity> latestArchivalList = BRRS_M_GMIRT_resub_Summary_Repo
-					.getdatabydateListWithVersionAll();
+			String sql = "SELECT * FROM BRRS_M_GMIRT_RESUB_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL";
+			List<M_GMIRT_RESUB_Summary_Entity> latestArchivalList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_RESUB_Summary_Entity.class));
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_GMIRT_RESUB_Summary_Entity entity : latestArchivalList) {
@@ -400,13 +394,15 @@ public class BRRS_M_GMIRT_ReportService {
 		return resubList;
 	}
 
-	//Archival View
+	// ------------------------------
+	// Method to fetch archival versions list
+	// ------------------------------
 	public List<Object[]> getM_GMIRTArchival() {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_GMIRT_Archival_Summary_Entity> repoData = brrs_m_gmirt_Archival_summary_repo
-					.getdatabydateListWithVersion();
+			String sql = "SELECT * FROM BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			List<M_GMIRT_Archival_Summary_Entity> repoData = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Archival_Summary_Entity.class));
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_GMIRT_Archival_Summary_Entity entity : repoData) {
@@ -431,6 +427,137 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 
 		return archivalList;
+	}
+
+	// ------------------------------
+	// Method to query a summary record by report date
+	// ------------------------------
+	private M_GMIRT_Summary_Entity findSummaryById(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		List<M_GMIRT_Summary_Entity> list = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// ------------------------------
+	// Method to query a detail record by report date
+	// ------------------------------
+	private M_GMIRT_Detail_Entity findDetailById(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_GMIRT_DETAILTABLE WHERE REPORT_DATE = ?";
+		List<M_GMIRT_Detail_Entity> list = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Detail_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// ------------------------------
+	// Method to find the maximum version from resub table for a date
+	// ------------------------------
+	private BigDecimal findMaxVersion(Date date) {
+		String sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_GMIRT_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, BigDecimal.class, date);
+	}
+
+	// ------------------------------
+	// Method to dynamically save or update an entity to the database using reflection
+	// ------------------------------
+	private void saveEntity(Object entity, String tableName) {
+		try {
+			Class<?> clazz = entity.getClass();
+			java.lang.reflect.Field[] fields = clazz.getDeclaredFields();
+			
+			List<String> pkColumns = new ArrayList<>();
+			List<Object> pkValues = new ArrayList<>();
+			
+			List<String> dataColumns = new ArrayList<>();
+			List<Object> dataValues = new ArrayList<>();
+			
+			for (java.lang.reflect.Field field : fields) {
+				field.setAccessible(true);
+				
+				if (field.getName().startsWith("$") || field.getName().equals("serialVersionUID")) {
+					continue;
+				}
+				
+				String columnName = null;
+				if (field.isAnnotationPresent(Column.class)) {
+					columnName = field.getAnnotation(Column.class).name();
+				}
+				if (columnName == null || columnName.isEmpty()) {
+					columnName = field.getName().toUpperCase();
+				}
+				
+				Object value = field.get(entity);
+				if (value instanceof java.util.Date) {
+					if (field.isAnnotationPresent(Temporal.class) && 
+						field.getAnnotation(Temporal.class).value() == TemporalType.DATE) {
+						value = new java.sql.Date(((java.util.Date) value).getTime());
+					} else {
+						value = new java.sql.Timestamp(((java.util.Date) value).getTime());
+					}
+				}
+				
+				if (field.isAnnotationPresent(Id.class)) {
+					pkColumns.add(columnName);
+					pkValues.add(value);
+				} else {
+					dataColumns.add(columnName);
+					dataValues.add(value);
+				}
+			}
+			
+			StringBuilder selectSql = new StringBuilder("SELECT COUNT(*) FROM ").append(tableName).append(" WHERE ");
+			for (int i = 0; i < pkColumns.size(); i++) {
+				if (i > 0) selectSql.append(" AND ");
+				selectSql.append(pkColumns.get(i)).append(" = ?");
+			}
+			
+			Integer count = jdbcTemplate.queryForObject(selectSql.toString(), Integer.class, pkValues.toArray());
+			
+			if (count != null && count > 0) {
+				StringBuilder updateSql = new StringBuilder("UPDATE ").append(tableName).append(" SET ");
+				List<Object> params = new ArrayList<>();
+				for (int i = 0; i < dataColumns.size(); i++) {
+					if (i > 0) updateSql.append(", ");
+					updateSql.append(dataColumns.get(i)).append(" = ?");
+					params.add(dataValues.get(i));
+				}
+				updateSql.append(" WHERE ");
+				for (int i = 0; i < pkColumns.size(); i++) {
+					if (i > 0) updateSql.append(" AND ");
+					updateSql.append(pkColumns.get(i)).append(" = ?");
+					params.add(pkValues.get(i));
+				}
+				jdbcTemplate.update(updateSql.toString(), params.toArray());
+			} else {
+				StringBuilder insertSql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
+				StringBuilder placeholders = new StringBuilder();
+				List<Object> params = new ArrayList<>();
+				
+				int colIndex = 0;
+				for (int i = 0; i < pkColumns.size(); i++) {
+					if (colIndex > 0) {
+						insertSql.append(", ");
+						placeholders.append(", ");
+					}
+					insertSql.append(pkColumns.get(i));
+					placeholders.append("?");
+					params.add(pkValues.get(i));
+					colIndex++;
+				}
+				for (int i = 0; i < dataColumns.size(); i++) {
+					if (colIndex > 0) {
+						insertSql.append(", ");
+						placeholders.append(", ");
+					}
+					insertSql.append(dataColumns.get(i));
+					placeholders.append("?");
+					params.add(dataValues.get(i));
+					colIndex++;
+				}
+				insertSql.append(") VALUES (").append(placeholders).append(")");
+				jdbcTemplate.update(insertSql.toString(), params.toArray());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error executing saveEntity on " + tableName, e);
+		}
 	}
 
 	//Normal Format Excel
@@ -476,7 +603,8 @@ public class BRRS_M_GMIRT_ReportService {
 
 		
 
-		List<M_GMIRT_Summary_Entity> dataList = brrs_m_gmirt_summary_repo.getdatabydateList(dateformat.parse(todate));
+		String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		List<M_GMIRT_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
@@ -951,7 +1079,8 @@ public class BRRS_M_GMIRT_ReportService {
 
 		// Fetch data
 
-		List<M_GMIRT_Summary_Entity> dataList = brrs_m_gmirt_summary_repo.getdatabydateList(dateformat.parse(todate));
+		String sql = "SELECT * FROM BRRS_M_GMIRT_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		List<M_GMIRT_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Summary_Entity.class), dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
@@ -1431,8 +1560,8 @@ public class BRRS_M_GMIRT_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} 
-		List<M_GMIRT_Archival_Summary_Entity> dataList = brrs_m_gmirt_Archival_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_GMIRT_Archival_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Archival_Summary_Entity.class), dateformat.parse(todate), version);
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
 			return new byte[0];
@@ -1903,8 +2032,8 @@ public class BRRS_M_GMIRT_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		List<M_GMIRT_Archival_Summary_Entity> dataList = brrs_m_gmirt_Archival_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_GMIRT_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_GMIRT_Archival_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_Archival_Summary_Entity.class), dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
@@ -2389,8 +2518,8 @@ public class BRRS_M_GMIRT_ReportService {
 		}
 	}
 
-		List<M_GMIRT_RESUB_Summary_Entity> dataList = BRRS_M_GMIRT_resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_GMIRT_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_GMIRT_RESUB_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_RESUB_Summary_Entity.class), dateformat.parse(todate), version);
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
 			return new byte[0];
@@ -2861,8 +2990,8 @@ public class BRRS_M_GMIRT_ReportService {
 
 			logger.info("Service: Starting Excel generation process in memory.");
 
-			List<M_GMIRT_RESUB_Summary_Entity> dataList = BRRS_M_GMIRT_resub_Summary_Repo
-					.getdatabydateListarchival(dateformat.parse(todate), version);
+			String sql = "SELECT * FROM BRRS_M_GMIRT_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+			List<M_GMIRT_RESUB_Summary_Entity> dataList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_GMIRT_RESUB_Summary_Entity.class), dateformat.parse(todate), version);
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for M_GMIRT report. Returning empty result.");
@@ -3327,6 +3456,1125 @@ public class BRRS_M_GMIRT_ReportService {
 			}
 
 		}
+
+
+
+	// ------------------------------
+	// Primary key class for M_GMIRT archival and resubmission entities
+	// ------------------------------
+	public static class M_GMIRT_PK implements Serializable {
+		private Date report_date;
+		private BigDecimal report_version;
+
+		public M_GMIRT_PK() {}
+
+		public M_GMIRT_PK(Date report_date, BigDecimal report_version) {
+			this.report_date = report_date;
+			this.report_version = report_version;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof M_GMIRT_PK)) return false;
+			M_GMIRT_PK that = (M_GMIRT_PK) o;
+			return Objects.equals(report_date, that.report_date) &&
+			       Objects.equals(report_version, that.report_version);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(report_date, report_version);
+		}
+
+		public Date getReport_date() { return report_date; }
+		public void setReport_date(Date report_date) { this.report_date = report_date; }
+
+		public BigDecimal getReport_version() { return report_version; }
+		public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_Summary_Entity
+	// ------------------------------
+	public static class M_GMIRT_Summary_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+
+	public M_GMIRT_Summary_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_Detail_Entity
+	// ------------------------------
+	public static class M_GMIRT_Detail_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+
+	public M_GMIRT_Detail_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_Archival_Summary_Entity
+	// ------------------------------
+	@IdClass(M_GMIRT_PK.class)
+	public static class M_GMIRT_Archival_Summary_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	public M_GMIRT_Archival_Summary_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	public Date getReportResubDate() { return reportResubDate; }
+	public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_Archival_Detail_Entity
+	// ------------------------------
+	@IdClass(M_GMIRT_PK.class)
+	public static class M_GMIRT_Archival_Detail_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	public M_GMIRT_Archival_Detail_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	public Date getReportResubDate() { return reportResubDate; }
+	public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_RESUB_Summary_Entity
+	// ------------------------------
+	@IdClass(M_GMIRT_PK.class)
+	public static class M_GMIRT_RESUB_Summary_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	public M_GMIRT_RESUB_Summary_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	public Date getReportResubDate() { return reportResubDate; }
+	public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+	}
+
+	// ------------------------------
+	// Entity representing M_GMIRT_RESUB_Detail_Entity
+	// ------------------------------
+	@IdClass(M_GMIRT_PK.class)
+	public static class M_GMIRT_RESUB_Detail_Entity implements Serializable {
+
+	private String	r9_currency;
+	private BigDecimal	r9_pula;
+	private BigDecimal	r9_usd;
+	private BigDecimal	r9_zar;
+	private BigDecimal	r9_gbp;
+	private BigDecimal	r9_euro;
+	private BigDecimal	r9_jpy;
+	private BigDecimal	r9_rupee;
+	private BigDecimal	r9_renminbi;
+	private BigDecimal	r9_other;
+	private BigDecimal	r9_tot_cap_req;
+
+	private String	r10_currency;
+	private BigDecimal	r10_pula;
+	private BigDecimal	r10_usd;
+	private BigDecimal	r10_zar;
+	private BigDecimal	r10_gbp;
+	private BigDecimal	r10_euro;
+	private BigDecimal	r10_jpy;
+	private BigDecimal	r10_rupee;
+	private BigDecimal	r10_renminbi;
+	private BigDecimal	r10_other;
+	private BigDecimal	r10_tot_cap_req;
+
+	private String	r11_currency;
+	private BigDecimal	r11_pula;
+	private BigDecimal	r11_usd;
+	private BigDecimal	r11_zar;
+	private BigDecimal	r11_gbp;
+	private BigDecimal	r11_euro;
+	private BigDecimal	r11_jpy;
+	private BigDecimal	r11_rupee;
+	private BigDecimal	r11_renminbi;
+	private BigDecimal	r11_other;
+	private BigDecimal	r11_tot_cap_req;
+
+	private String	r12_currency;
+	private BigDecimal	r12_pula;
+	private BigDecimal	r12_usd;
+	private BigDecimal	r12_zar;
+	private BigDecimal	r12_gbp;
+	private BigDecimal	r12_euro;
+	private BigDecimal	r12_jpy;
+	private BigDecimal	r12_rupee;
+	private BigDecimal	r12_renminbi;
+	private BigDecimal	r12_other;
+	private BigDecimal	r12_tot_cap_req;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private Date	report_date;
+	private BigDecimal	report_version;
+	private String	report_frequency;
+	private String	report_code;
+	private String	report_desc;
+	private String	entity_flg;
+	private String	modify_flg;
+	private String	del_flg;
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	public M_GMIRT_RESUB_Detail_Entity() { super(); }
+
+	public String getR9_currency() { return r9_currency; }
+	public void setR9_currency(String r9_currency) { this.r9_currency = r9_currency; }
+	public BigDecimal getR9_pula() { return r9_pula; }
+	public void setR9_pula(BigDecimal r9_pula) { this.r9_pula = r9_pula; }
+	public BigDecimal getR9_usd() { return r9_usd; }
+	public void setR9_usd(BigDecimal r9_usd) { this.r9_usd = r9_usd; }
+	public BigDecimal getR9_zar() { return r9_zar; }
+	public void setR9_zar(BigDecimal r9_zar) { this.r9_zar = r9_zar; }
+	public BigDecimal getR9_gbp() { return r9_gbp; }
+	public void setR9_gbp(BigDecimal r9_gbp) { this.r9_gbp = r9_gbp; }
+	public BigDecimal getR9_euro() { return r9_euro; }
+	public void setR9_euro(BigDecimal r9_euro) { this.r9_euro = r9_euro; }
+	public BigDecimal getR9_jpy() { return r9_jpy; }
+	public void setR9_jpy(BigDecimal r9_jpy) { this.r9_jpy = r9_jpy; }
+	public BigDecimal getR9_rupee() { return r9_rupee; }
+	public void setR9_rupee(BigDecimal r9_rupee) { this.r9_rupee = r9_rupee; }
+	public BigDecimal getR9_renminbi() { return r9_renminbi; }
+	public void setR9_renminbi(BigDecimal r9_renminbi) { this.r9_renminbi = r9_renminbi; }
+	public BigDecimal getR9_other() { return r9_other; }
+	public void setR9_other(BigDecimal r9_other) { this.r9_other = r9_other; }
+	public BigDecimal getR9_tot_cap_req() { return r9_tot_cap_req; }
+	public void setR9_tot_cap_req(BigDecimal r9_tot_cap_req) { this.r9_tot_cap_req = r9_tot_cap_req; }
+
+	public String getR10_currency() { return r10_currency; }
+	public void setR10_currency(String r10_currency) { this.r10_currency = r10_currency; }
+	public BigDecimal getR10_pula() { return r10_pula; }
+	public void setR10_pula(BigDecimal r10_pula) { this.r10_pula = r10_pula; }
+	public BigDecimal getR10_usd() { return r10_usd; }
+	public void setR10_usd(BigDecimal r10_usd) { this.r10_usd = r10_usd; }
+	public BigDecimal getR10_zar() { return r10_zar; }
+	public void setR10_zar(BigDecimal r10_zar) { this.r10_zar = r10_zar; }
+	public BigDecimal getR10_gbp() { return r10_gbp; }
+	public void setR10_gbp(BigDecimal r10_gbp) { this.r10_gbp = r10_gbp; }
+	public BigDecimal getR10_euro() { return r10_euro; }
+	public void setR10_euro(BigDecimal r10_euro) { this.r10_euro = r10_euro; }
+	public BigDecimal getR10_jpy() { return r10_jpy; }
+	public void setR10_jpy(BigDecimal r10_jpy) { this.r10_jpy = r10_jpy; }
+	public BigDecimal getR10_rupee() { return r10_rupee; }
+	public void setR10_rupee(BigDecimal r10_rupee) { this.r10_rupee = r10_rupee; }
+	public BigDecimal getR10_renminbi() { return r10_renminbi; }
+	public void setR10_renminbi(BigDecimal r10_renminbi) { this.r10_renminbi = r10_renminbi; }
+	public BigDecimal getR10_other() { return r10_other; }
+	public void setR10_other(BigDecimal r10_other) { this.r10_other = r10_other; }
+	public BigDecimal getR10_tot_cap_req() { return r10_tot_cap_req; }
+	public void setR10_tot_cap_req(BigDecimal r10_tot_cap_req) { this.r10_tot_cap_req = r10_tot_cap_req; }
+
+	public String getR11_currency() { return r11_currency; }
+	public void setR11_currency(String r11_currency) { this.r11_currency = r11_currency; }
+	public BigDecimal getR11_pula() { return r11_pula; }
+	public void setR11_pula(BigDecimal r11_pula) { this.r11_pula = r11_pula; }
+	public BigDecimal getR11_usd() { return r11_usd; }
+	public void setR11_usd(BigDecimal r11_usd) { this.r11_usd = r11_usd; }
+	public BigDecimal getR11_zar() { return r11_zar; }
+	public void setR11_zar(BigDecimal r11_zar) { this.r11_zar = r11_zar; }
+	public BigDecimal getR11_gbp() { return r11_gbp; }
+	public void setR11_gbp(BigDecimal r11_gbp) { this.r11_gbp = r11_gbp; }
+	public BigDecimal getR11_euro() { return r11_euro; }
+	public void setR11_euro(BigDecimal r11_euro) { this.r11_euro = r11_euro; }
+	public BigDecimal getR11_jpy() { return r11_jpy; }
+	public void setR11_jpy(BigDecimal r11_jpy) { this.r11_jpy = r11_jpy; }
+	public BigDecimal getR11_rupee() { return r11_rupee; }
+	public void setR11_rupee(BigDecimal r11_rupee) { this.r11_rupee = r11_rupee; }
+	public BigDecimal getR11_renminbi() { return r11_renminbi; }
+	public void setR11_renminbi(BigDecimal r11_renminbi) { this.r11_renminbi = r11_renminbi; }
+	public BigDecimal getR11_other() { return r11_other; }
+	public void setR11_other(BigDecimal r11_other) { this.r11_other = r11_other; }
+	public BigDecimal getR11_tot_cap_req() { return r11_tot_cap_req; }
+	public void setR11_tot_cap_req(BigDecimal r11_tot_cap_req) { this.r11_tot_cap_req = r11_tot_cap_req; }
+
+	public String getR12_currency() { return r12_currency; }
+	public void setR12_currency(String r12_currency) { this.r12_currency = r12_currency; }
+	public BigDecimal getR12_pula() { return r12_pula; }
+	public void setR12_pula(BigDecimal r12_pula) { this.r12_pula = r12_pula; }
+	public BigDecimal getR12_usd() { return r12_usd; }
+	public void setR12_usd(BigDecimal r12_usd) { this.r12_usd = r12_usd; }
+	public BigDecimal getR12_zar() { return r12_zar; }
+	public void setR12_zar(BigDecimal r12_zar) { this.r12_zar = r12_zar; }
+	public BigDecimal getR12_gbp() { return r12_gbp; }
+	public void setR12_gbp(BigDecimal r12_gbp) { this.r12_gbp = r12_gbp; }
+	public BigDecimal getR12_euro() { return r12_euro; }
+	public void setR12_euro(BigDecimal r12_euro) { this.r12_euro = r12_euro; }
+	public BigDecimal getR12_jpy() { return r12_jpy; }
+	public void setR12_jpy(BigDecimal r12_jpy) { this.r12_jpy = r12_jpy; }
+	public BigDecimal getR12_rupee() { return r12_rupee; }
+	public void setR12_rupee(BigDecimal r12_rupee) { this.r12_rupee = r12_rupee; }
+	public BigDecimal getR12_renminbi() { return r12_renminbi; }
+	public void setR12_renminbi(BigDecimal r12_renminbi) { this.r12_renminbi = r12_renminbi; }
+	public BigDecimal getR12_other() { return r12_other; }
+	public void setR12_other(BigDecimal r12_other) { this.r12_other = r12_other; }
+	public BigDecimal getR12_tot_cap_req() { return r12_tot_cap_req; }
+	public void setR12_tot_cap_req(BigDecimal r12_tot_cap_req) { this.r12_tot_cap_req = r12_tot_cap_req; }
+
+	public Date getReport_date() { return report_date; }
+	public void setReport_date(Date report_date) { this.report_date = report_date; }
+	public BigDecimal getReport_version() { return report_version; }
+	public void setReport_version(BigDecimal report_version) { this.report_version = report_version; }
+	public String getReport_frequency() { return report_frequency; }
+	public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
+	public String getReport_code() { return report_code; }
+	public void setReport_code(String report_code) { this.report_code = report_code; }
+	public String getReport_desc() { return report_desc; }
+	public void setReport_desc(String report_desc) { this.report_desc = report_desc; }
+	public String getEntity_flg() { return entity_flg; }
+	public void setEntity_flg(String entity_flg) { this.entity_flg = entity_flg; }
+	public String getModify_flg() { return modify_flg; }
+	public void setModify_flg(String modify_flg) { this.modify_flg = modify_flg; }
+	public String getDel_flg() { return del_flg; }
+	public void setDel_flg(String del_flg) { this.del_flg = del_flg; }
+	public Date getReportResubDate() { return reportResubDate; }
+	public void setReportResubDate(Date reportResubDate) { this.reportResubDate = reportResubDate; }
+	}
 
 
 }

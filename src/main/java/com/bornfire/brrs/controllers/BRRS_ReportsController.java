@@ -74,9 +74,15 @@ import com.bornfire.brrs.services.BRRS_M_DEP3_ReportService.M_DEP3_Summary_Entit
 import com.bornfire.brrs.services.BRRS_M_DEP4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
+import com.bornfire.brrs.services.BRRS_M_FAS_ReportService.M_FAS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
+import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Detail_Entity;
+import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_RESUB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
@@ -111,6 +117,8 @@ import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService.M_SFINP1_Summary_M
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService.M_SFINP2_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;

@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +34,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -40,23 +43,23 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_FXR_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FXR_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FXR_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FXR_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FXR_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_FXR_Summary_Repo;
-import com.bornfire.brrs.entities.M_FXR_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_FXR_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_FXR_Detail_Entity;
-import com.bornfire.brrs.entities.M_FXR_Resub_Detail_Entity;
-import com.bornfire.brrs.entities.M_FXR_Resub_Summary_Entity;
-import com.bornfire.brrs.entities.M_FXR_Summary_Entity;
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
 @Service
 
+// ------------------------------
+// Service class for handling M_FXR report data logic and generation
+// ------------------------------
 public class BRRS_M_FXR_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_FXR_ReportService.class);
 
@@ -70,28 +73,17 @@ public class BRRS_M_FXR_ReportService {
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_FXR_Summary_Repo brrs_M_FXR_summary_repo;
-
-	@Autowired
-	BRRS_M_FXR_Detail_Repo brrs_M_FXR_detail_repo;
-
-	@Autowired
-	BRRS_M_FXR_Archival_Summary_Repo M_FXR_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_FXR_Archival_Detail_Repo BRRS_M_FXR_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_FXR_Resub_Summary_Repo brrs_M_FXR_resub_summary_repo;
-
-	@Autowired
-	BRRS_M_FXR_Resub_Detail_Repo brrs_M_FXR_resub_detail_repo;
+	private JdbcTemplate jdbcTemplate;
+	
 
 	@Autowired
 	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// ------------------------------
+	// Method to retrieve the ModelAndView view for the FXR report
+	// ------------------------------
 	public ModelAndView getM_FXRView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
@@ -129,17 +121,18 @@ public class BRRS_M_FXR_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_FXR_Archival_Summary_Entity> T1Master = M_FXR_Archival_Summary_Repo.getdatabydateListarchival(d1,
-						version);
+				String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+				List<M_FXR_Archival_Summary_Entity> T1Master = jdbcTemplate.query(
+						sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Summary_Entity.class), d1, version);
 				mv.addObject("displaymode", "summary");
-
 				mv.addObject("reportsummary", T1Master);
 			}
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_FXR_Resub_Summary_Entity> T1Master = brrs_M_FXR_resub_summary_repo.getdatabydateListarchival(d1,
-						version);
+				String sql = "SELECT * FROM BRRS_M_FXR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+				List<M_FXR_Resub_Summary_Entity> T1Master = jdbcTemplate.query(
+						sql, new BeanPropertyRowMapper<>(M_FXR_Resub_Summary_Entity.class), d1, version);
 
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
@@ -147,7 +140,9 @@ public class BRRS_M_FXR_ReportService {
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<M_FXR_Summary_Entity> T1Master = brrs_M_FXR_summary_repo.getdatabydateList(d1);
+				String sql = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+				List<M_FXR_Summary_Entity> T1Master = jdbcTemplate.query(
+						sql, new BeanPropertyRowMapper<>(M_FXR_Summary_Entity.class), d1);
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
@@ -158,17 +153,17 @@ public class BRRS_M_FXR_ReportService {
 
 				// DETAIL + ARCHIVAL
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-
-					List<M_FXR_Archival_Detail_Entity> T1Master = BRRS_M_FXR_Archival_Detail_Repo
-							.getdatabydateListarchival(d1, version);
+					String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+					List<M_FXR_Archival_Detail_Entity> T1Master = jdbcTemplate.query(
+							sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Detail_Entity.class), d1, version);
 					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-
-					List<M_FXR_Resub_Detail_Entity> T1Master = brrs_M_FXR_resub_detail_repo
-							.getdatabydateListarchival(d1, version);
+					String sql = "SELECT * FROM BRRS_M_FXR_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+					List<M_FXR_Resub_Detail_Entity> T1Master = jdbcTemplate.query(
+							sql, new BeanPropertyRowMapper<>(M_FXR_Resub_Detail_Entity.class), d1, version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -177,9 +172,9 @@ public class BRRS_M_FXR_ReportService {
 				}
 				// DETAIL + NORMAL
 				else {
-
-					List<M_FXR_Detail_Entity> T1Master = brrs_M_FXR_detail_repo
-							.getdatabydateList(dateformat.parse(todate));
+					String sql = "SELECT * FROM BRRS_M_FXR_DETAILTABLE WHERE REPORT_DATE = ?";
+					List<M_FXR_Detail_Entity> T1Master = jdbcTemplate.query(
+							sql, new BeanPropertyRowMapper<>(M_FXR_Detail_Entity.class), dateformat.parse(todate));
 					System.out.println("Details......T1Master Size " + T1Master.size());
 					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
@@ -195,23 +190,149 @@ public class BRRS_M_FXR_ReportService {
 		return mv;
 	}
 
+	// ------------------------------
+	// Method to query a summary record by report date
+	// ------------------------------
+	private M_FXR_Summary_Entity findSummaryById(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		List<M_FXR_Summary_Entity> list = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_FXR_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// ------------------------------
+	// Method to query a detail record by report date
+	// ------------------------------
+	private M_FXR_Detail_Entity findDetailById(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_FXR_DETAILTABLE WHERE REPORT_DATE = ?";
+		List<M_FXR_Detail_Entity> list = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_FXR_Detail_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// ------------------------------
+	// Method to dynamically save or update an entity to the database using reflection
+	// ------------------------------
+	private void saveEntity(Object entity, String tableName) {
+		try {
+			Class<?> clazz = entity.getClass();
+			java.lang.reflect.Field[] fields = clazz.getDeclaredFields();
+			
+			List<String> pkColumns = new ArrayList<>();
+			List<Object> pkValues = new ArrayList<>();
+			
+			List<String> dataColumns = new ArrayList<>();
+			List<Object> dataValues = new ArrayList<>();
+			
+			for (java.lang.reflect.Field field : fields) {
+				field.setAccessible(true);
+				
+				if (field.getName().startsWith("$") || field.getName().equals("serialVersionUID")) {
+					continue;
+				}
+				
+				String columnName = null;
+				if (field.isAnnotationPresent(Column.class)) {
+					columnName = field.getAnnotation(Column.class).name();
+				}
+				if (columnName == null || columnName.isEmpty()) {
+					columnName = field.getName().toUpperCase();
+				}
+				
+				Object value = field.get(entity);
+				if (value instanceof java.util.Date) {
+					if (field.isAnnotationPresent(Temporal.class) && 
+						field.getAnnotation(Temporal.class).value() == TemporalType.DATE) {
+						value = new java.sql.Date(((java.util.Date) value).getTime());
+					} else {
+						value = new java.sql.Timestamp(((java.util.Date) value).getTime());
+					}
+				}
+				
+				if (field.isAnnotationPresent(Id.class)) {
+					pkColumns.add(columnName);
+					pkValues.add(value);
+				} else {
+					dataColumns.add(columnName);
+					dataValues.add(value);
+				}
+			}
+			
+			StringBuilder selectSql = new StringBuilder("SELECT COUNT(*) FROM ").append(tableName).append(" WHERE ");
+			for (int i = 0; i < pkColumns.size(); i++) {
+				if (i > 0) selectSql.append(" AND ");
+				selectSql.append(pkColumns.get(i)).append(" = ?");
+			}
+			
+			Integer count = jdbcTemplate.queryForObject(selectSql.toString(), Integer.class, pkValues.toArray());
+			
+			if (count != null && count > 0) {
+				StringBuilder updateSql = new StringBuilder("UPDATE ").append(tableName).append(" SET ");
+				List<Object> params = new ArrayList<>();
+				for (int i = 0; i < dataColumns.size(); i++) {
+					if (i > 0) updateSql.append(", ");
+					updateSql.append(dataColumns.get(i)).append(" = ?");
+					params.add(dataValues.get(i));
+				}
+				updateSql.append(" WHERE ");
+				for (int i = 0; i < pkColumns.size(); i++) {
+					if (i > 0) updateSql.append(" AND ");
+					updateSql.append(pkColumns.get(i)).append(" = ?");
+					params.add(pkValues.get(i));
+				}
+				jdbcTemplate.update(updateSql.toString(), params.toArray());
+			} else {
+				StringBuilder insertSql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
+				StringBuilder placeholders = new StringBuilder();
+				List<Object> params = new ArrayList<>();
+				
+				int colIndex = 0;
+				for (int i = 0; i < pkColumns.size(); i++) {
+					if (colIndex > 0) {
+						insertSql.append(", ");
+						placeholders.append(", ");
+					}
+					insertSql.append(pkColumns.get(i));
+					placeholders.append("?");
+					params.add(pkValues.get(i));
+					colIndex++;
+				}
+				for (int i = 0; i < dataColumns.size(); i++) {
+					if (colIndex > 0) {
+						insertSql.append(", ");
+						placeholders.append(", ");
+					}
+					insertSql.append(dataColumns.get(i));
+					placeholders.append("?");
+					params.add(dataValues.get(i));
+					colIndex++;
+				}
+				insertSql.append(") VALUES (").append(placeholders).append(")");
+				jdbcTemplate.update(insertSql.toString(), params.toArray());
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error saving entity to table " + tableName, e);
+		}
+	}
+
+	// ------------------------------
+	// Method to update Part 1 fields of the FXR summary and detail report
+	// ------------------------------
 	public void updateReport1(M_FXR_Summary_Entity updatedEntity) {
 		System.out.println("Came to services1");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_FXR_Summary_Entity existingSummary = findSummaryById(updatedEntity.getReportDate());
+		if (existingSummary == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+		}
 		// 🔹 Create Audit Copy before editing
 		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
-				.orElseGet(() -> {
-					M_FXR_Detail_Entity d = new M_FXR_Detail_Entity();
-					d.setReportDate(updatedEntity.getReportDate());
-					return d;
-				});
+		M_FXR_Detail_Entity detailEntity = findDetailById(updatedEntity.getReportDate());
+		if (detailEntity == null) {
+			detailEntity = new M_FXR_Detail_Entity();
+			detailEntity.setReportDate(updatedEntity.getReportDate());
+		}
 
 		try {
 			// 1️⃣ Loop from R11 to R16 and copy fields
@@ -287,8 +408,8 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_FXR_summary_repo.save(existingSummary);
-		brrs_M_FXR_detail_repo.save(detailEntity);
+		saveEntity(existingSummary, "BRRS_M_FXR_SUMMARYTABLE");
+		saveEntity(detailEntity, "BRRS_M_FXR_DETAILTABLE");
 
 		if (changes != null && !changes.isEmpty()) {
 
@@ -303,23 +424,26 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Update completed successfully");
 	}
 
+	// ------------------------------
+	// Method to update Part 2 fields of the FXR summary and detail report
+	// ------------------------------
 	public void updateReport2(M_FXR_Summary_Entity updatedEntity) {
 		System.out.println("Came to services2");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_FXR_Summary_Entity existingSummary = findSummaryById(updatedEntity.getReportDate());
+		if (existingSummary == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+		}
 		// 🔹 Create Audit Copy before editing
 		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
-				.orElseGet(() -> {
-					M_FXR_Detail_Entity d = new M_FXR_Detail_Entity();
-					d.setReportDate(updatedEntity.getReportDate());
-					return d;
-				});
+		M_FXR_Detail_Entity detailEntity = findDetailById(updatedEntity.getReportDate());
+		if (detailEntity == null) {
+			detailEntity = new M_FXR_Detail_Entity();
+			detailEntity.setReportDate(updatedEntity.getReportDate());
+		}
 
 		try {
 			// 1️⃣ Loop from R11 to R50 and copy fields
@@ -415,8 +539,8 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_FXR_summary_repo.save(existingSummary);
-		brrs_M_FXR_detail_repo.save(detailEntity);
+		saveEntity(existingSummary, "BRRS_M_FXR_SUMMARYTABLE");
+		saveEntity(detailEntity, "BRRS_M_FXR_DETAILTABLE");
 
 		if (changes != null && !changes.isEmpty()) {
 
@@ -431,23 +555,26 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Update completed successfully");
 	}
 
+	// ------------------------------
+	// Method to update Part 3 fields of the FXR summary and detail report
+	// ------------------------------
 	public void updateReport3(M_FXR_Summary_Entity updatedEntity) {
 		System.out.println("Came to services3");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_FXR_Summary_Entity existingSummary = brrs_M_FXR_summary_repo.findById(updatedEntity.getReportDate())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		M_FXR_Summary_Entity existingSummary = findSummaryById(updatedEntity.getReportDate());
+		if (existingSummary == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+		}
 		// 🔹 Create Audit Copy before editing
 		M_FXR_Summary_Entity oldcopy = new M_FXR_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_FXR_Detail_Entity detailEntity = brrs_M_FXR_detail_repo.findById(updatedEntity.getReportDate())
-				.orElseGet(() -> {
-					M_FXR_Detail_Entity d = new M_FXR_Detail_Entity();
-					d.setReportDate(updatedEntity.getReportDate());
-					return d;
-				});
+		M_FXR_Detail_Entity detailEntity = findDetailById(updatedEntity.getReportDate());
+		if (detailEntity == null) {
+			detailEntity = new M_FXR_Detail_Entity();
+			detailEntity.setReportDate(updatedEntity.getReportDate());
+		}
 
 		try {
 
@@ -514,8 +641,8 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_FXR_summary_repo.save(existingSummary);
-		brrs_M_FXR_detail_repo.save(detailEntity);
+		saveEntity(existingSummary, "BRRS_M_FXR_SUMMARYTABLE");
+		saveEntity(detailEntity, "BRRS_M_FXR_DETAILTABLE");
 
 		if (changes != null && !changes.isEmpty()) {
 
@@ -530,6 +657,9 @@ public class BRRS_M_FXR_ReportService {
 		System.out.println("Update completed successfully");
 	}
 
+	// ------------------------------
+	// Method to insert resubmitted summary and detail records
+	// ------------------------------
 	public void updateResubReport(M_FXR_Resub_Summary_Entity updatedEntity) {
 
 		Date reportDate = updatedEntity.getReportDate();
@@ -538,7 +668,13 @@ public class BRRS_M_FXR_ReportService {
 		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
 		// ----------------------------------------------------
 
-		BigDecimal maxResubVer = brrs_M_FXR_resub_summary_repo.findMaxVersion(reportDate);
+		String sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_FXR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		BigDecimal maxResubVer = null;
+		try {
+			maxResubVer = jdbcTemplate.queryForObject(sql, BigDecimal.class, reportDate);
+		} catch (Exception e) {
+			maxResubVer = null;
+		}
 
 		if (maxResubVer == null)
 			throw new RuntimeException("No record for: " + reportDate);
@@ -599,18 +735,22 @@ public class BRRS_M_FXR_ReportService {
 		// 6️⃣ SAVE ALL WITH SAME DATA
 		// ====================================================
 
-		brrs_M_FXR_resub_summary_repo.save(resubSummary);
-		brrs_M_FXR_resub_detail_repo.save(resubDetail);
+		saveEntity(resubSummary, "BRRS_M_FXR_RESUB_SUMMARYTABLE");
+		saveEntity(resubDetail, "BRRS_M_FXR_RESUB_DETAILTABLE");
 
-		M_FXR_Archival_Summary_Repo.save(archSummary);
-		BRRS_M_FXR_Archival_Detail_Repo.save(archDetail);
+		saveEntity(archSummary, "BRRS_M_FXR_ARCHIVALTABLE_SUMMARY");
+		saveEntity(archDetail, "BRRS_M_FXR_ARCHIVALTABLE_DETAIL");
 	}
 
+	// ------------------------------
+	// Method to retrieve the resubmission summary list
+	// ------------------------------
 	public List<Object[]> getM_FXRResub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_FXR_Archival_Summary_Entity> latestArchivalList = M_FXR_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			List<M_FXR_Archival_Summary_Entity> latestArchivalList = jdbcTemplate.query(
+					sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Summary_Entity.class));
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_FXR_Archival_Summary_Entity entity : latestArchivalList) {
@@ -630,11 +770,16 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Archival View
+	// ------------------------------
+	// Method to retrieve the archival summary list
+	// ------------------------------
 	public List<Object[]> getM_FXRArchival() {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_FXR_Archival_Summary_Entity> repoData = M_FXR_Archival_Summary_Repo.getdatabydateListWithVersion();
+			String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			List<M_FXR_Archival_Summary_Entity> repoData = jdbcTemplate.query(
+					sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Summary_Entity.class));
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_FXR_Archival_Summary_Entity entity : repoData) {
@@ -660,6 +805,9 @@ public class BRRS_M_FXR_ReportService {
 
 	// Normal format Excel
 
+	// ------------------------------
+	// Method to generate the Excel file for the FXR report
+	// ------------------------------
 	public byte[] getM_FXRExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -704,8 +852,9 @@ public class BRRS_M_FXR_ReportService {
 
 				// Fetch data
 
-				List<M_FXR_Summary_Entity> dataList = brrs_M_FXR_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+				String sql = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+				List<M_FXR_Summary_Entity> dataList = jdbcTemplate.query(
+						sql, new BeanPropertyRowMapper<>(M_FXR_Summary_Entity.class), dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_FXR report. Returning empty result.");
@@ -1470,6 +1619,9 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Normal Email Excel
+	// ------------------------------
+	// Method to generate the email Excel file for the FXR report
+	// ------------------------------
 	public byte[] BRRS_M_FXREmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
@@ -1497,7 +1649,9 @@ public class BRRS_M_FXR_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} else {
-			List<M_FXR_Summary_Entity> dataList = brrs_M_FXR_summary_repo.getdatabydateList(dateformat.parse(todate));
+			String sql = "SELECT * FROM BRRS_M_FXR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+			List<M_FXR_Summary_Entity> dataList = jdbcTemplate.query(
+					sql, new BeanPropertyRowMapper<>(M_FXR_Summary_Entity.class), dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for BRRS_M_FXR report. Returning empty result.");
@@ -2336,6 +2490,9 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Archival format excel
+	// ------------------------------
+	// Method to generate the archival Excel file for the FXR report
+	// ------------------------------
 	public byte[] getExcelM_FXRARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
@@ -2352,8 +2509,9 @@ public class BRRS_M_FXR_ReportService {
 			}
 		}
 
-		List<M_FXR_Archival_Summary_Entity> dataList = M_FXR_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_FXR_Archival_Summary_Entity> dataList = jdbcTemplate.query(
+				sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Summary_Entity.class), dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_FXR report. Returning empty result.");
@@ -3115,13 +3273,17 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Archival Email Excel
+	// ------------------------------
+	// Method to generate the email archival Excel file for the FXR report
+	// ------------------------------
 	public byte[] BRRS_M_FXREmailArchivalExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_FXR_Archival_Summary_Entity> dataList = M_FXR_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_FXR_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_FXR_Archival_Summary_Entity> dataList = jdbcTemplate.query(
+				sql, new BeanPropertyRowMapper<>(M_FXR_Archival_Summary_Entity.class), dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_FXR report. Returning empty result.");
@@ -3959,6 +4121,9 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Resub Format excel
+	// ------------------------------
+	// Method to generate the resubmission Excel file for the FXR report
+	// ------------------------------
 	public byte[] BRRS_M_FXRResubExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 
@@ -3978,8 +4143,9 @@ public class BRRS_M_FXR_ReportService {
 			}
 		}
 
-		List<M_FXR_Resub_Summary_Entity> dataList = brrs_M_FXR_resub_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_FXR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_FXR_Resub_Summary_Entity> dataList = jdbcTemplate.query(
+				sql, new BeanPropertyRowMapper<>(M_FXR_Resub_Summary_Entity.class), dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_FXR report. Returning empty result.");
@@ -4739,13 +4905,17 @@ public class BRRS_M_FXR_ReportService {
 	}
 
 	// Resub Email Excel
+	// ------------------------------
+	// Method to generate the email resubmission Excel file for the FXR report
+	// ------------------------------
 	public byte[] BRRS_M_FXRResubEmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_FXR_Resub_Summary_Entity> dataList = brrs_M_FXR_resub_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		String sql = "SELECT * FROM BRRS_M_FXR_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		List<M_FXR_Resub_Summary_Entity> dataList = jdbcTemplate.query(
+				sql, new BeanPropertyRowMapper<>(M_FXR_Resub_Summary_Entity.class), dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_FXR report. Returning empty result.");
@@ -5579,5 +5749,4843 @@ public class BRRS_M_FXR_ReportService {
 			return out.toByteArray();
 		}
 	}
+
+
+
+	// ------------------------------
+	// Primary key class for FXR archival and resubmission entities
+	// ------------------------------
+public static class M_FXR_PK implements Serializable {
+
+    private Date reportDate;
+    private BigDecimal reportVersion;
+
+    // default constructor
+    public M_FXR_PK() {}
+
+    // parameterized constructor
+    public M_FXR_PK(Date reportDate, BigDecimal reportVersion) {
+        this.reportDate = reportDate;
+        this.reportVersion = reportVersion;
+    }
+
+    // equals and hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof M_FXR_PK)) return false;
+        M_FXR_PK that = (M_FXR_PK) o;
+        return Objects.equals(reportDate, that.reportDate) &&
+               Objects.equals(reportVersion, that.reportVersion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reportDate, reportVersion);
+    }
+
+    // getters & setters
+    public Date getReportDate() { return reportDate; }
+    public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+
+    public BigDecimal getReportVersion() { return reportVersion; }
+    public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+}
+
+
+
+
+
+	// ------------------------------
+	// Entity representing the summary table for the FXR report
+	// ------------------------------
+public static class M_FXR_Summary_Entity {
+
+   // ===== PRIMARY KEY =====
+
+    @Id
+    @Column(name = "REPORT_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date reportDate;
+
+    // ===== R11 =====
+
+    @Column(name = "R11_NET_SPOT_POSITION")
+    private BigDecimal r11_net_spot_position;
+
+    @Column(name = "R11_NET_FORWARD_POSITION")
+    private BigDecimal r11_net_forward_position;
+
+    @Column(name = "R11_GUARANTEES")
+    private BigDecimal r11_guarantees;
+
+    @Column(name = "R11_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r11_net_future_inc_or_exp;
+
+    @Column(name = "R11_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r11_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R11_OTHER_ITEMS")
+    private BigDecimal r11_other_items;
+
+    @Column(name = "R11_NET_LONG_POSITION")
+    private BigDecimal r11_net_long_position;
+
+    @Column(name = "R11_OR")
+    private BigDecimal r11_or;
+
+    @Column(name = "R11_NET_SHORT_POSITION")
+    private BigDecimal r11_net_short_position;
+
+    // ===== R12 =====
+
+    @Column(name = "R12_NET_SPOT_POSITION")
+    private BigDecimal r12_net_spot_position;
+
+    @Column(name = "R12_NET_FORWARD_POSITION")
+    private BigDecimal r12_net_forward_position;
+
+    @Column(name = "R12_GUARANTEES")
+    private BigDecimal r12_guarantees;
+
+    @Column(name = "R12_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r12_net_future_inc_or_exp;
+
+    @Column(name = "R12_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r12_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R12_OTHER_ITEMS")
+    private BigDecimal r12_other_items;
+
+    @Column(name = "R12_NET_LONG_POSITION")
+    private BigDecimal r12_net_long_position;
+
+    @Column(name = "R12_OR")
+    private BigDecimal r12_or;
+
+    @Column(name = "R12_NET_SHORT_POSITION")
+    private BigDecimal r12_net_short_position;
+
+    // ===== R13 =====
+
+    @Column(name = "R13_NET_SPOT_POSITION")
+    private BigDecimal r13_net_spot_position;
+
+    @Column(name = "R13_NET_FORWARD_POSITION")
+    private BigDecimal r13_net_forward_position;
+
+    @Column(name = "R13_GUARANTEES")
+    private BigDecimal r13_guarantees;
+
+    @Column(name = "R13_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r13_net_future_inc_or_exp;
+
+    @Column(name = "R13_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r13_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R13_OTHER_ITEMS")
+    private BigDecimal r13_other_items;
+
+    @Column(name = "R13_NET_LONG_POSITION")
+    private BigDecimal r13_net_long_position;
+
+    @Column(name = "R13_OR")
+    private BigDecimal r13_or;
+
+    @Column(name = "R13_NET_SHORT_POSITION")
+    private BigDecimal r13_net_short_position;
+
+    // ===== R14 =====
+
+    @Column(name = "R14_NET_SPOT_POSITION")
+    private BigDecimal r14_net_spot_position;
+
+    @Column(name = "R14_NET_FORWARD_POSITION")
+    private BigDecimal r14_net_forward_position;
+
+    @Column(name = "R14_GUARANTEES")
+    private BigDecimal r14_guarantees;
+
+    @Column(name = "R14_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r14_net_future_inc_or_exp;
+
+    @Column(name = "R14_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r14_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R14_OTHER_ITEMS")
+    private BigDecimal r14_other_items;
+
+    @Column(name = "R14_NET_LONG_POSITION")
+    private BigDecimal r14_net_long_position;
+
+    @Column(name = "R14_OR")
+    private BigDecimal r14_or;
+
+    @Column(name = "R14_NET_SHORT_POSITION")
+    private BigDecimal r14_net_short_position;
+
+    // ===== R15 =====
+
+    @Column(name = "R15_NET_SPOT_POSITION")
+    private BigDecimal r15_net_spot_position;
+
+    @Column(name = "R15_NET_FORWARD_POSITION")
+    private BigDecimal r15_net_forward_position;
+
+    @Column(name = "R15_GUARANTEES")
+    private BigDecimal r15_guarantees;
+
+    @Column(name = "R15_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r15_net_future_inc_or_exp;
+
+    @Column(name = "R15_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r15_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R15_OTHER_ITEMS")
+    private BigDecimal r15_other_items;
+
+    @Column(name = "R15_NET_LONG_POSITION")
+    private BigDecimal r15_net_long_position;
+
+    @Column(name = "R15_OR")
+    private BigDecimal r15_or;
+
+    @Column(name = "R15_NET_SHORT_POSITION")
+    private BigDecimal r15_net_short_position;
+
+    // ===== R16 =====
+
+    @Column(name = "R16_NET_SPOT_POSITION")
+    private BigDecimal r16_net_spot_position;
+
+    @Column(name = "R16_NET_FORWARD_POSITION")
+    private BigDecimal r16_net_forward_position;
+
+    @Column(name = "R16_GUARANTEES")
+    private BigDecimal r16_guarantees;
+
+    @Column(name = "R16_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r16_net_future_inc_or_exp;
+
+    @Column(name = "R16_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r16_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R16_OTHER_ITEMS")
+    private BigDecimal r16_other_items;
+
+    @Column(name = "R16_NET_LONG_POSITION")
+    private BigDecimal r16_net_long_position;
+
+    @Column(name = "R16_OR")
+    private BigDecimal r16_or;
+
+    @Column(name = "R16_NET_SHORT_POSITION")
+    private BigDecimal r16_net_short_position;
+
+    // ===== R17 =====
+
+    @Column(name = "R17_NET_LONG_POSITION")
+    private BigDecimal r17_net_long_position;
+
+    @Column(name = "R17_OR")
+    private BigDecimal r17_or;
+
+    @Column(name = "R17_NET_SHORT_POSITION")
+    private BigDecimal r17_net_short_position;
+
+    // ===== R21 =====
+
+    @Column(name = "R21_LONG")
+    private BigDecimal r21_long;
+
+    @Column(name = "R21_SHORT")
+    private BigDecimal r21_short;
+
+    @Column(name = "R21_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r21_total_gross_long_short;
+
+    @Column(name = "R21_NET_POSITION")
+    private BigDecimal r21_net_position;
+
+    // ===== R22 =====
+
+    @Column(name = "R22_LONG")
+    private BigDecimal r22_long;
+
+    @Column(name = "R22_SHORT")
+    private BigDecimal r22_short;
+
+    @Column(name = "R22_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r22_total_gross_long_short;
+
+    @Column(name = "R22_NET_POSITION")
+    private BigDecimal r22_net_position;
+
+    // ===== R23 =====
+
+    @Column(name = "R23_NET_POSITION")
+    private BigDecimal r23_net_position;
+
+    // ===== R29 & R30 =====
+
+    @Column(name = "R29_GREATER_NET_LONG_OR_SHORT")
+    private BigDecimal r29_greater_net_long_or_short;
+
+    @Column(name = "R29_ABS_VALUE_NET_GOLD_POSI")
+    private BigDecimal r29_abs_value_net_gold_posi;
+
+    @Column(name = "R29_CAPITAL_CHARGE")
+    private BigDecimal r29_capital_charge;
+
+    @Column(name = "R30_CAPITAL_REQUIRE")
+    private BigDecimal r30_capital_require;
+
+    // ===== COMMON FIELDS =====
+
+    @Column(name = "REPORT_VERSION")
+    private BigDecimal report_version;
+
+    @Column(name = "REPORT_FREQUENCY")
+    private String report_frequency;
+
+    @Column(name = "REPORT_CODE")
+    private String report_code;
+
+    @Column(name = "REPORT_DESC")
+    private String report_desc;
+
+    @Column(name = "ENTITY_FLG")
+    private String entity_flg;
+
+    @Column(name = "MODIFY_FLG")
+    private String modify_flg;
+
+    @Column(name = "DEL_FLG")
+    private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+
+
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Summary_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+}
+
+
+
+	// ------------------------------
+	// Entity representing the detail table for the FXR report
+	// ------------------------------
+public static class M_FXR_Detail_Entity {
+
+	 // ===== PRIMARY KEY =====
+
+    @Id
+    @Column(name = "REPORT_DATE")
+    @Temporal(TemporalType.DATE)
+    private Date reportDate;
+
+    // ===== R11 =====
+
+    @Column(name = "R11_NET_SPOT_POSITION")
+    private BigDecimal r11_net_spot_position;
+
+    @Column(name = "R11_NET_FORWARD_POSITION")
+    private BigDecimal r11_net_forward_position;
+
+    @Column(name = "R11_GUARANTEES")
+    private BigDecimal r11_guarantees;
+
+    @Column(name = "R11_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r11_net_future_inc_or_exp;
+
+    @Column(name = "R11_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r11_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R11_OTHER_ITEMS")
+    private BigDecimal r11_other_items;
+
+    @Column(name = "R11_NET_LONG_POSITION")
+    private BigDecimal r11_net_long_position;
+
+    @Column(name = "R11_OR")
+    private BigDecimal r11_or;
+
+    @Column(name = "R11_NET_SHORT_POSITION")
+    private BigDecimal r11_net_short_position;
+
+    // ===== R12 =====
+
+    @Column(name = "R12_NET_SPOT_POSITION")
+    private BigDecimal r12_net_spot_position;
+
+    @Column(name = "R12_NET_FORWARD_POSITION")
+    private BigDecimal r12_net_forward_position;
+
+    @Column(name = "R12_GUARANTEES")
+    private BigDecimal r12_guarantees;
+
+    @Column(name = "R12_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r12_net_future_inc_or_exp;
+
+    @Column(name = "R12_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r12_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R12_OTHER_ITEMS")
+    private BigDecimal r12_other_items;
+
+    @Column(name = "R12_NET_LONG_POSITION")
+    private BigDecimal r12_net_long_position;
+
+    @Column(name = "R12_OR")
+    private BigDecimal r12_or;
+
+    @Column(name = "R12_NET_SHORT_POSITION")
+    private BigDecimal r12_net_short_position;
+
+    // ===== R13 =====
+
+    @Column(name = "R13_NET_SPOT_POSITION")
+    private BigDecimal r13_net_spot_position;
+
+    @Column(name = "R13_NET_FORWARD_POSITION")
+    private BigDecimal r13_net_forward_position;
+
+    @Column(name = "R13_GUARANTEES")
+    private BigDecimal r13_guarantees;
+
+    @Column(name = "R13_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r13_net_future_inc_or_exp;
+
+    @Column(name = "R13_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r13_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R13_OTHER_ITEMS")
+    private BigDecimal r13_other_items;
+
+    @Column(name = "R13_NET_LONG_POSITION")
+    private BigDecimal r13_net_long_position;
+
+    @Column(name = "R13_OR")
+    private BigDecimal r13_or;
+
+    @Column(name = "R13_NET_SHORT_POSITION")
+    private BigDecimal r13_net_short_position;
+
+    // ===== R14 =====
+
+    @Column(name = "R14_NET_SPOT_POSITION")
+    private BigDecimal r14_net_spot_position;
+
+    @Column(name = "R14_NET_FORWARD_POSITION")
+    private BigDecimal r14_net_forward_position;
+
+    @Column(name = "R14_GUARANTEES")
+    private BigDecimal r14_guarantees;
+
+    @Column(name = "R14_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r14_net_future_inc_or_exp;
+
+    @Column(name = "R14_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r14_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R14_OTHER_ITEMS")
+    private BigDecimal r14_other_items;
+
+    @Column(name = "R14_NET_LONG_POSITION")
+    private BigDecimal r14_net_long_position;
+
+    @Column(name = "R14_OR")
+    private BigDecimal r14_or;
+
+    @Column(name = "R14_NET_SHORT_POSITION")
+    private BigDecimal r14_net_short_position;
+
+    // ===== R15 =====
+
+    @Column(name = "R15_NET_SPOT_POSITION")
+    private BigDecimal r15_net_spot_position;
+
+    @Column(name = "R15_NET_FORWARD_POSITION")
+    private BigDecimal r15_net_forward_position;
+
+    @Column(name = "R15_GUARANTEES")
+    private BigDecimal r15_guarantees;
+
+    @Column(name = "R15_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r15_net_future_inc_or_exp;
+
+    @Column(name = "R15_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r15_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R15_OTHER_ITEMS")
+    private BigDecimal r15_other_items;
+
+    @Column(name = "R15_NET_LONG_POSITION")
+    private BigDecimal r15_net_long_position;
+
+    @Column(name = "R15_OR")
+    private BigDecimal r15_or;
+
+    @Column(name = "R15_NET_SHORT_POSITION")
+    private BigDecimal r15_net_short_position;
+
+    // ===== R16 =====
+
+    @Column(name = "R16_NET_SPOT_POSITION")
+    private BigDecimal r16_net_spot_position;
+
+    @Column(name = "R16_NET_FORWARD_POSITION")
+    private BigDecimal r16_net_forward_position;
+
+    @Column(name = "R16_GUARANTEES")
+    private BigDecimal r16_guarantees;
+
+    @Column(name = "R16_NET_FUTURE_INC_OR_EXP")
+    private BigDecimal r16_net_future_inc_or_exp;
+
+    @Column(name = "R16_NET_DELTA_WEI_FX_OPT_POSI")
+    private BigDecimal r16_net_delta_wei_fx_opt_posi;
+
+    @Column(name = "R16_OTHER_ITEMS")
+    private BigDecimal r16_other_items;
+
+    @Column(name = "R16_NET_LONG_POSITION")
+    private BigDecimal r16_net_long_position;
+
+    @Column(name = "R16_OR")
+    private BigDecimal r16_or;
+
+    @Column(name = "R16_NET_SHORT_POSITION")
+    private BigDecimal r16_net_short_position;
+
+    // ===== R17 =====
+
+    @Column(name = "R17_NET_LONG_POSITION")
+    private BigDecimal r17_net_long_position;
+
+    @Column(name = "R17_OR")
+    private BigDecimal r17_or;
+
+    @Column(name = "R17_NET_SHORT_POSITION")
+    private BigDecimal r17_net_short_position;
+
+    // ===== R21 =====
+
+    @Column(name = "R21_LONG")
+    private BigDecimal r21_long;
+
+    @Column(name = "R21_SHORT")
+    private BigDecimal r21_short;
+
+    @Column(name = "R21_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r21_total_gross_long_short;
+
+    @Column(name = "R21_NET_POSITION")
+    private BigDecimal r21_net_position;
+
+    // ===== R22 =====
+
+    @Column(name = "R22_LONG")
+    private BigDecimal r22_long;
+
+    @Column(name = "R22_SHORT")
+    private BigDecimal r22_short;
+
+    @Column(name = "R22_TOTAL_GROSS_LONG_SHORT")
+    private BigDecimal r22_total_gross_long_short;
+
+    @Column(name = "R22_NET_POSITION")
+    private BigDecimal r22_net_position;
+
+    // ===== R23 =====
+
+    @Column(name = "R23_NET_POSITION")
+    private BigDecimal r23_net_position;
+
+    // ===== R29 & R30 =====
+
+    @Column(name = "R29_GREATER_NET_LONG_OR_SHORT")
+    private BigDecimal r29_greater_net_long_or_short;
+
+    @Column(name = "R29_ABS_VALUE_NET_GOLD_POSI")
+    private BigDecimal r29_abs_value_net_gold_posi;
+
+    @Column(name = "R29_CAPITAL_CHARGE")
+    private BigDecimal r29_capital_charge;
+
+    @Column(name = "R30_CAPITAL_REQUIRE")
+    private BigDecimal r30_capital_require;
+
+    // ===== COMMON FIELDS =====
+
+    @Column(name = "REPORT_VERSION")
+    private BigDecimal report_version;
+
+    @Column(name = "REPORT_FREQUENCY")
+    private String report_frequency;
+
+    @Column(name = "REPORT_CODE")
+    private String report_code;
+
+    @Column(name = "REPORT_DESC")
+    private String report_desc;
+
+    @Column(name = "ENTITY_FLG")
+    private String entity_flg;
+
+    @Column(name = "MODIFY_FLG")
+    private String modify_flg;
+
+    @Column(name = "DEL_FLG")
+    private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+
+	public BigDecimal getReport_version() {
+		return report_version;
+	}
+
+	public void setReport_version(BigDecimal report_version) {
+		this.report_version = report_version;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Detail_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+}
+
+
+
+	// ------------------------------
+	// Entity representing the archival summary table for the FXR report
+	// ------------------------------
+public static class M_FXR_Archival_Summary_Entity {
+
+//	private String r11_currency;
+	private BigDecimal r11_net_spot_position;
+	private BigDecimal r11_net_forward_position;
+	private BigDecimal r11_guarantees;
+	private BigDecimal r11_net_future_inc_or_exp;
+	private BigDecimal r11_net_delta_wei_fx_opt_posi;
+	private BigDecimal r11_other_items;
+	private BigDecimal r11_net_long_position;
+	private BigDecimal r11_or;
+	private BigDecimal r11_net_short_position;
+//	private String r12_currency;
+	private BigDecimal r12_net_spot_position;
+	private BigDecimal r12_net_forward_position;
+	private BigDecimal r12_guarantees;
+	private BigDecimal r12_net_future_inc_or_exp;
+	private BigDecimal r12_net_delta_wei_fx_opt_posi;
+	private BigDecimal r12_other_items;
+	private BigDecimal r12_net_long_position;
+	private BigDecimal r12_or;
+	private BigDecimal r12_net_short_position;
+//	private String r13_currency;
+	private BigDecimal r13_net_spot_position;
+	private BigDecimal r13_net_forward_position;
+	private BigDecimal r13_guarantees;
+	private BigDecimal r13_net_future_inc_or_exp;
+	private BigDecimal r13_net_delta_wei_fx_opt_posi;
+	private BigDecimal r13_other_items;
+	private BigDecimal r13_net_long_position;
+	private BigDecimal r13_or;
+	private BigDecimal r13_net_short_position;
+//	private String r14_currency;
+	private BigDecimal r14_net_spot_position;
+	private BigDecimal r14_net_forward_position;
+	private BigDecimal r14_guarantees;
+	private BigDecimal r14_net_future_inc_or_exp;
+	private BigDecimal r14_net_delta_wei_fx_opt_posi;
+	private BigDecimal r14_other_items;
+	private BigDecimal r14_net_long_position;
+	private BigDecimal r14_or;
+	private BigDecimal r14_net_short_position;
+//	private String r15_currency;
+	private BigDecimal r15_net_spot_position;
+	private BigDecimal r15_net_forward_position;
+	private BigDecimal r15_guarantees;
+	private BigDecimal r15_net_future_inc_or_exp;
+	private BigDecimal r15_net_delta_wei_fx_opt_posi;
+	private BigDecimal r15_other_items;
+	private BigDecimal r15_net_long_position;
+	private BigDecimal r15_or;
+	private BigDecimal r15_net_short_position;
+//	private String r16_currency;
+	private BigDecimal r16_net_spot_position;
+	private BigDecimal r16_net_forward_position;
+	private BigDecimal r16_guarantees;
+	private BigDecimal r16_net_future_inc_or_exp;
+	private BigDecimal r16_net_delta_wei_fx_opt_posi;
+	private BigDecimal r16_other_items;
+	private BigDecimal r16_net_long_position;
+	private BigDecimal r16_or;
+	private BigDecimal r16_net_short_position;
+
+	private BigDecimal r17_net_long_position;
+	private BigDecimal r17_or;
+	private BigDecimal r17_net_short_position;
+
+	private BigDecimal r21_long;
+	private BigDecimal r21_short;
+	private BigDecimal r21_total_gross_long_short;
+	private BigDecimal r21_net_position;
+	private BigDecimal r22_long;
+	private BigDecimal r22_short;
+	private BigDecimal r22_total_gross_long_short;
+	private BigDecimal r22_net_position;
+
+	private BigDecimal r23_net_position;
+
+	private BigDecimal r29_greater_net_long_or_short;
+	private BigDecimal r29_abs_value_net_gold_posi;
+	// private BigDecimal r29_capital_require;
+	private BigDecimal r29_capital_charge;
+	private BigDecimal r30_capital_require;
+
+@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Archival_Summary_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+}
+
+
+
+	// ------------------------------
+	// Entity representing the archival detail table for the FXR report
+	// ------------------------------
+public static class M_FXR_Archival_Detail_Entity {
+
+//	private String r11_currency;
+	private BigDecimal r11_net_spot_position;
+	private BigDecimal r11_net_forward_position;
+	private BigDecimal r11_guarantees;
+	private BigDecimal r11_net_future_inc_or_exp;
+	private BigDecimal r11_net_delta_wei_fx_opt_posi;
+	private BigDecimal r11_other_items;
+	private BigDecimal r11_net_long_position;
+	private BigDecimal r11_or;
+	private BigDecimal r11_net_short_position;
+//	private String r12_currency;
+	private BigDecimal r12_net_spot_position;
+	private BigDecimal r12_net_forward_position;
+	private BigDecimal r12_guarantees;
+	private BigDecimal r12_net_future_inc_or_exp;
+	private BigDecimal r12_net_delta_wei_fx_opt_posi;
+	private BigDecimal r12_other_items;
+	private BigDecimal r12_net_long_position;
+	private BigDecimal r12_or;
+	private BigDecimal r12_net_short_position;
+//	private String r13_currency;
+	private BigDecimal r13_net_spot_position;
+	private BigDecimal r13_net_forward_position;
+	private BigDecimal r13_guarantees;
+	private BigDecimal r13_net_future_inc_or_exp;
+	private BigDecimal r13_net_delta_wei_fx_opt_posi;
+	private BigDecimal r13_other_items;
+	private BigDecimal r13_net_long_position;
+	private BigDecimal r13_or;
+	private BigDecimal r13_net_short_position;
+//	private String r14_currency;
+	private BigDecimal r14_net_spot_position;
+	private BigDecimal r14_net_forward_position;
+	private BigDecimal r14_guarantees;
+	private BigDecimal r14_net_future_inc_or_exp;
+	private BigDecimal r14_net_delta_wei_fx_opt_posi;
+	private BigDecimal r14_other_items;
+	private BigDecimal r14_net_long_position;
+	private BigDecimal r14_or;
+	private BigDecimal r14_net_short_position;
+//	private String r15_currency;
+	private BigDecimal r15_net_spot_position;
+	private BigDecimal r15_net_forward_position;
+	private BigDecimal r15_guarantees;
+	private BigDecimal r15_net_future_inc_or_exp;
+	private BigDecimal r15_net_delta_wei_fx_opt_posi;
+	private BigDecimal r15_other_items;
+	private BigDecimal r15_net_long_position;
+	private BigDecimal r15_or;
+	private BigDecimal r15_net_short_position;
+//	private String r16_currency;
+	private BigDecimal r16_net_spot_position;
+	private BigDecimal r16_net_forward_position;
+	private BigDecimal r16_guarantees;
+	private BigDecimal r16_net_future_inc_or_exp;
+	private BigDecimal r16_net_delta_wei_fx_opt_posi;
+	private BigDecimal r16_other_items;
+	private BigDecimal r16_net_long_position;
+	private BigDecimal r16_or;
+	private BigDecimal r16_net_short_position;
+
+	private BigDecimal r17_net_long_position;
+	private BigDecimal r17_or;
+	private BigDecimal r17_net_short_position;
+
+	private BigDecimal r21_long;
+	private BigDecimal r21_short;
+	private BigDecimal r21_total_gross_long_short;
+	private BigDecimal r21_net_position;
+	private BigDecimal r22_long;
+	private BigDecimal r22_short;
+	private BigDecimal r22_total_gross_long_short;
+	private BigDecimal r22_net_position;
+
+	private BigDecimal r23_net_position;
+
+	private BigDecimal r29_greater_net_long_or_short;
+	private BigDecimal r29_abs_value_net_gold_posi;
+	// private BigDecimal r29_capital_require;
+	private BigDecimal r29_capital_charge;
+	private BigDecimal r30_capital_require;
+
+	@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Archival_Detail_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+}
+
+
+
+	// ------------------------------
+	// Entity representing the resubmission summary table for the FXR report
+	// ------------------------------
+public static class M_FXR_Resub_Summary_Entity {
+
+//	private String r11_currency;
+	private BigDecimal r11_net_spot_position;
+	private BigDecimal r11_net_forward_position;
+	private BigDecimal r11_guarantees;
+	private BigDecimal r11_net_future_inc_or_exp;
+	private BigDecimal r11_net_delta_wei_fx_opt_posi;
+	private BigDecimal r11_other_items;
+	private BigDecimal r11_net_long_position;
+	private BigDecimal r11_or;
+	private BigDecimal r11_net_short_position;
+//	private String r12_currency;
+	private BigDecimal r12_net_spot_position;
+	private BigDecimal r12_net_forward_position;
+	private BigDecimal r12_guarantees;
+	private BigDecimal r12_net_future_inc_or_exp;
+	private BigDecimal r12_net_delta_wei_fx_opt_posi;
+	private BigDecimal r12_other_items;
+	private BigDecimal r12_net_long_position;
+	private BigDecimal r12_or;
+	private BigDecimal r12_net_short_position;
+//	private String r13_currency;
+	private BigDecimal r13_net_spot_position;
+	private BigDecimal r13_net_forward_position;
+	private BigDecimal r13_guarantees;
+	private BigDecimal r13_net_future_inc_or_exp;
+	private BigDecimal r13_net_delta_wei_fx_opt_posi;
+	private BigDecimal r13_other_items;
+	private BigDecimal r13_net_long_position;
+	private BigDecimal r13_or;
+	private BigDecimal r13_net_short_position;
+//	private String r14_currency;
+	private BigDecimal r14_net_spot_position;
+	private BigDecimal r14_net_forward_position;
+	private BigDecimal r14_guarantees;
+	private BigDecimal r14_net_future_inc_or_exp;
+	private BigDecimal r14_net_delta_wei_fx_opt_posi;
+	private BigDecimal r14_other_items;
+	private BigDecimal r14_net_long_position;
+	private BigDecimal r14_or;
+	private BigDecimal r14_net_short_position;
+//	private String r15_currency;
+	private BigDecimal r15_net_spot_position;
+	private BigDecimal r15_net_forward_position;
+	private BigDecimal r15_guarantees;
+	private BigDecimal r15_net_future_inc_or_exp;
+	private BigDecimal r15_net_delta_wei_fx_opt_posi;
+	private BigDecimal r15_other_items;
+	private BigDecimal r15_net_long_position;
+	private BigDecimal r15_or;
+	private BigDecimal r15_net_short_position;
+//	private String r16_currency;
+	private BigDecimal r16_net_spot_position;
+	private BigDecimal r16_net_forward_position;
+	private BigDecimal r16_guarantees;
+	private BigDecimal r16_net_future_inc_or_exp;
+	private BigDecimal r16_net_delta_wei_fx_opt_posi;
+	private BigDecimal r16_other_items;
+	private BigDecimal r16_net_long_position;
+	private BigDecimal r16_or;
+	private BigDecimal r16_net_short_position;
+
+	private BigDecimal r17_net_long_position;
+	private BigDecimal r17_or;
+	private BigDecimal r17_net_short_position;
+
+	private BigDecimal r21_long;
+	private BigDecimal r21_short;
+	private BigDecimal r21_total_gross_long_short;
+	private BigDecimal r21_net_position;
+	private BigDecimal r22_long;
+	private BigDecimal r22_short;
+	private BigDecimal r22_total_gross_long_short;
+	private BigDecimal r22_net_position;
+
+	private BigDecimal r23_net_position;
+
+	private BigDecimal r29_greater_net_long_or_short;
+	private BigDecimal r29_abs_value_net_gold_posi;
+	// private BigDecimal r29_capital_require;
+	private BigDecimal r29_capital_charge;
+	private BigDecimal r30_capital_require;
+
+@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Resub_Summary_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+
+}
+
+
+
+	// ------------------------------
+	// Entity representing the resubmission detail table for the FXR report
+	// ------------------------------
+public static class M_FXR_Resub_Detail_Entity {
+
+//	private String r11_currency;
+	private BigDecimal r11_net_spot_position;
+	private BigDecimal r11_net_forward_position;
+	private BigDecimal r11_guarantees;
+	private BigDecimal r11_net_future_inc_or_exp;
+	private BigDecimal r11_net_delta_wei_fx_opt_posi;
+	private BigDecimal r11_other_items;
+	private BigDecimal r11_net_long_position;
+	private BigDecimal r11_or;
+	private BigDecimal r11_net_short_position;
+//	private String r12_currency;
+	private BigDecimal r12_net_spot_position;
+	private BigDecimal r12_net_forward_position;
+	private BigDecimal r12_guarantees;
+	private BigDecimal r12_net_future_inc_or_exp;
+	private BigDecimal r12_net_delta_wei_fx_opt_posi;
+	private BigDecimal r12_other_items;
+	private BigDecimal r12_net_long_position;
+	private BigDecimal r12_or;
+	private BigDecimal r12_net_short_position;
+//	private String r13_currency;
+	private BigDecimal r13_net_spot_position;
+	private BigDecimal r13_net_forward_position;
+	private BigDecimal r13_guarantees;
+	private BigDecimal r13_net_future_inc_or_exp;
+	private BigDecimal r13_net_delta_wei_fx_opt_posi;
+	private BigDecimal r13_other_items;
+	private BigDecimal r13_net_long_position;
+	private BigDecimal r13_or;
+	private BigDecimal r13_net_short_position;
+//	private String r14_currency;
+	private BigDecimal r14_net_spot_position;
+	private BigDecimal r14_net_forward_position;
+	private BigDecimal r14_guarantees;
+	private BigDecimal r14_net_future_inc_or_exp;
+	private BigDecimal r14_net_delta_wei_fx_opt_posi;
+	private BigDecimal r14_other_items;
+	private BigDecimal r14_net_long_position;
+	private BigDecimal r14_or;
+	private BigDecimal r14_net_short_position;
+//	private String r15_currency;
+	private BigDecimal r15_net_spot_position;
+	private BigDecimal r15_net_forward_position;
+	private BigDecimal r15_guarantees;
+	private BigDecimal r15_net_future_inc_or_exp;
+	private BigDecimal r15_net_delta_wei_fx_opt_posi;
+	private BigDecimal r15_other_items;
+	private BigDecimal r15_net_long_position;
+	private BigDecimal r15_or;
+	private BigDecimal r15_net_short_position;
+//	private String r16_currency;
+	private BigDecimal r16_net_spot_position;
+	private BigDecimal r16_net_forward_position;
+	private BigDecimal r16_guarantees;
+	private BigDecimal r16_net_future_inc_or_exp;
+	private BigDecimal r16_net_delta_wei_fx_opt_posi;
+	private BigDecimal r16_other_items;
+	private BigDecimal r16_net_long_position;
+	private BigDecimal r16_or;
+	private BigDecimal r16_net_short_position;
+
+	private BigDecimal r17_net_long_position;
+	private BigDecimal r17_or;
+	private BigDecimal r17_net_short_position;
+
+	private BigDecimal r21_long;
+	private BigDecimal r21_short;
+	private BigDecimal r21_total_gross_long_short;
+	private BigDecimal r21_net_position;
+	private BigDecimal r22_long;
+	private BigDecimal r22_short;
+	private BigDecimal r22_total_gross_long_short;
+	private BigDecimal r22_net_position;
+
+	private BigDecimal r23_net_position;
+
+	private BigDecimal r29_greater_net_long_or_short;
+	private BigDecimal r29_abs_value_net_gold_posi;
+	// private BigDecimal r29_capital_require;
+	private BigDecimal r29_capital_charge;
+	private BigDecimal r30_capital_require;
+
+@Id
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPORT_DATE")
+	private Date reportDate;
+
+	@Id
+	@Column(name = "REPORT_VERSION")
+	private BigDecimal reportVersion;
+
+	@Column(name = "REPORT_RESUBDATE")
+	private Date reportResubDate;
+
+	private String report_frequency;
+	private String report_code;
+	private String report_desc;
+	private String entity_flg;
+	private String modify_flg;
+	private String del_flg;
+
+	public BigDecimal getR11_net_spot_position() {
+		return r11_net_spot_position;
+	}
+
+	public void setR11_net_spot_position(BigDecimal r11_net_spot_position) {
+		this.r11_net_spot_position = r11_net_spot_position;
+	}
+
+	public BigDecimal getR11_net_forward_position() {
+		return r11_net_forward_position;
+	}
+
+	public void setR11_net_forward_position(BigDecimal r11_net_forward_position) {
+		this.r11_net_forward_position = r11_net_forward_position;
+	}
+
+	public BigDecimal getR11_guarantees() {
+		return r11_guarantees;
+	}
+
+	public void setR11_guarantees(BigDecimal r11_guarantees) {
+		this.r11_guarantees = r11_guarantees;
+	}
+
+	public BigDecimal getR11_net_future_inc_or_exp() {
+		return r11_net_future_inc_or_exp;
+	}
+
+	public void setR11_net_future_inc_or_exp(BigDecimal r11_net_future_inc_or_exp) {
+		this.r11_net_future_inc_or_exp = r11_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR11_net_delta_wei_fx_opt_posi() {
+		return r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR11_net_delta_wei_fx_opt_posi(BigDecimal r11_net_delta_wei_fx_opt_posi) {
+		this.r11_net_delta_wei_fx_opt_posi = r11_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR11_other_items() {
+		return r11_other_items;
+	}
+
+	public void setR11_other_items(BigDecimal r11_other_items) {
+		this.r11_other_items = r11_other_items;
+	}
+
+	public BigDecimal getR11_net_long_position() {
+		return r11_net_long_position;
+	}
+
+	public void setR11_net_long_position(BigDecimal r11_net_long_position) {
+		this.r11_net_long_position = r11_net_long_position;
+	}
+
+	public BigDecimal getR11_or() {
+		return r11_or;
+	}
+
+	public void setR11_or(BigDecimal r11_or) {
+		this.r11_or = r11_or;
+	}
+
+	public BigDecimal getR11_net_short_position() {
+		return r11_net_short_position;
+	}
+
+	public void setR11_net_short_position(BigDecimal r11_net_short_position) {
+		this.r11_net_short_position = r11_net_short_position;
+	}
+
+	public BigDecimal getR12_net_spot_position() {
+		return r12_net_spot_position;
+	}
+
+	public void setR12_net_spot_position(BigDecimal r12_net_spot_position) {
+		this.r12_net_spot_position = r12_net_spot_position;
+	}
+
+	public BigDecimal getR12_net_forward_position() {
+		return r12_net_forward_position;
+	}
+
+	public void setR12_net_forward_position(BigDecimal r12_net_forward_position) {
+		this.r12_net_forward_position = r12_net_forward_position;
+	}
+
+	public BigDecimal getR12_guarantees() {
+		return r12_guarantees;
+	}
+
+	public void setR12_guarantees(BigDecimal r12_guarantees) {
+		this.r12_guarantees = r12_guarantees;
+	}
+
+	public BigDecimal getR12_net_future_inc_or_exp() {
+		return r12_net_future_inc_or_exp;
+	}
+
+	public void setR12_net_future_inc_or_exp(BigDecimal r12_net_future_inc_or_exp) {
+		this.r12_net_future_inc_or_exp = r12_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR12_net_delta_wei_fx_opt_posi() {
+		return r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR12_net_delta_wei_fx_opt_posi(BigDecimal r12_net_delta_wei_fx_opt_posi) {
+		this.r12_net_delta_wei_fx_opt_posi = r12_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR12_other_items() {
+		return r12_other_items;
+	}
+
+	public void setR12_other_items(BigDecimal r12_other_items) {
+		this.r12_other_items = r12_other_items;
+	}
+
+	public BigDecimal getR12_net_long_position() {
+		return r12_net_long_position;
+	}
+
+	public void setR12_net_long_position(BigDecimal r12_net_long_position) {
+		this.r12_net_long_position = r12_net_long_position;
+	}
+
+	public BigDecimal getR12_or() {
+		return r12_or;
+	}
+
+	public void setR12_or(BigDecimal r12_or) {
+		this.r12_or = r12_or;
+	}
+
+	public BigDecimal getR12_net_short_position() {
+		return r12_net_short_position;
+	}
+
+	public void setR12_net_short_position(BigDecimal r12_net_short_position) {
+		this.r12_net_short_position = r12_net_short_position;
+	}
+
+	public BigDecimal getR13_net_spot_position() {
+		return r13_net_spot_position;
+	}
+
+	public void setR13_net_spot_position(BigDecimal r13_net_spot_position) {
+		this.r13_net_spot_position = r13_net_spot_position;
+	}
+
+	public BigDecimal getR13_net_forward_position() {
+		return r13_net_forward_position;
+	}
+
+	public void setR13_net_forward_position(BigDecimal r13_net_forward_position) {
+		this.r13_net_forward_position = r13_net_forward_position;
+	}
+
+	public BigDecimal getR13_guarantees() {
+		return r13_guarantees;
+	}
+
+	public void setR13_guarantees(BigDecimal r13_guarantees) {
+		this.r13_guarantees = r13_guarantees;
+	}
+
+	public BigDecimal getR13_net_future_inc_or_exp() {
+		return r13_net_future_inc_or_exp;
+	}
+
+	public void setR13_net_future_inc_or_exp(BigDecimal r13_net_future_inc_or_exp) {
+		this.r13_net_future_inc_or_exp = r13_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR13_net_delta_wei_fx_opt_posi() {
+		return r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR13_net_delta_wei_fx_opt_posi(BigDecimal r13_net_delta_wei_fx_opt_posi) {
+		this.r13_net_delta_wei_fx_opt_posi = r13_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR13_other_items() {
+		return r13_other_items;
+	}
+
+	public void setR13_other_items(BigDecimal r13_other_items) {
+		this.r13_other_items = r13_other_items;
+	}
+
+	public BigDecimal getR13_net_long_position() {
+		return r13_net_long_position;
+	}
+
+	public void setR13_net_long_position(BigDecimal r13_net_long_position) {
+		this.r13_net_long_position = r13_net_long_position;
+	}
+
+	public BigDecimal getR13_or() {
+		return r13_or;
+	}
+
+	public void setR13_or(BigDecimal r13_or) {
+		this.r13_or = r13_or;
+	}
+
+	public BigDecimal getR13_net_short_position() {
+		return r13_net_short_position;
+	}
+
+	public void setR13_net_short_position(BigDecimal r13_net_short_position) {
+		this.r13_net_short_position = r13_net_short_position;
+	}
+
+	public BigDecimal getR14_net_spot_position() {
+		return r14_net_spot_position;
+	}
+
+	public void setR14_net_spot_position(BigDecimal r14_net_spot_position) {
+		this.r14_net_spot_position = r14_net_spot_position;
+	}
+
+	public BigDecimal getR14_net_forward_position() {
+		return r14_net_forward_position;
+	}
+
+	public void setR14_net_forward_position(BigDecimal r14_net_forward_position) {
+		this.r14_net_forward_position = r14_net_forward_position;
+	}
+
+	public BigDecimal getR14_guarantees() {
+		return r14_guarantees;
+	}
+
+	public void setR14_guarantees(BigDecimal r14_guarantees) {
+		this.r14_guarantees = r14_guarantees;
+	}
+
+	public BigDecimal getR14_net_future_inc_or_exp() {
+		return r14_net_future_inc_or_exp;
+	}
+
+	public void setR14_net_future_inc_or_exp(BigDecimal r14_net_future_inc_or_exp) {
+		this.r14_net_future_inc_or_exp = r14_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR14_net_delta_wei_fx_opt_posi() {
+		return r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR14_net_delta_wei_fx_opt_posi(BigDecimal r14_net_delta_wei_fx_opt_posi) {
+		this.r14_net_delta_wei_fx_opt_posi = r14_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR14_other_items() {
+		return r14_other_items;
+	}
+
+	public void setR14_other_items(BigDecimal r14_other_items) {
+		this.r14_other_items = r14_other_items;
+	}
+
+	public BigDecimal getR14_net_long_position() {
+		return r14_net_long_position;
+	}
+
+	public void setR14_net_long_position(BigDecimal r14_net_long_position) {
+		this.r14_net_long_position = r14_net_long_position;
+	}
+
+	public BigDecimal getR14_or() {
+		return r14_or;
+	}
+
+	public void setR14_or(BigDecimal r14_or) {
+		this.r14_or = r14_or;
+	}
+
+	public BigDecimal getR14_net_short_position() {
+		return r14_net_short_position;
+	}
+
+	public void setR14_net_short_position(BigDecimal r14_net_short_position) {
+		this.r14_net_short_position = r14_net_short_position;
+	}
+
+	public BigDecimal getR15_net_spot_position() {
+		return r15_net_spot_position;
+	}
+
+	public void setR15_net_spot_position(BigDecimal r15_net_spot_position) {
+		this.r15_net_spot_position = r15_net_spot_position;
+	}
+
+	public BigDecimal getR15_net_forward_position() {
+		return r15_net_forward_position;
+	}
+
+	public void setR15_net_forward_position(BigDecimal r15_net_forward_position) {
+		this.r15_net_forward_position = r15_net_forward_position;
+	}
+
+	public BigDecimal getR15_guarantees() {
+		return r15_guarantees;
+	}
+
+	public void setR15_guarantees(BigDecimal r15_guarantees) {
+		this.r15_guarantees = r15_guarantees;
+	}
+
+	public BigDecimal getR15_net_future_inc_or_exp() {
+		return r15_net_future_inc_or_exp;
+	}
+
+	public void setR15_net_future_inc_or_exp(BigDecimal r15_net_future_inc_or_exp) {
+		this.r15_net_future_inc_or_exp = r15_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR15_net_delta_wei_fx_opt_posi() {
+		return r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR15_net_delta_wei_fx_opt_posi(BigDecimal r15_net_delta_wei_fx_opt_posi) {
+		this.r15_net_delta_wei_fx_opt_posi = r15_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR15_other_items() {
+		return r15_other_items;
+	}
+
+	public void setR15_other_items(BigDecimal r15_other_items) {
+		this.r15_other_items = r15_other_items;
+	}
+
+	public BigDecimal getR15_net_long_position() {
+		return r15_net_long_position;
+	}
+
+	public void setR15_net_long_position(BigDecimal r15_net_long_position) {
+		this.r15_net_long_position = r15_net_long_position;
+	}
+
+	public BigDecimal getR15_or() {
+		return r15_or;
+	}
+
+	public void setR15_or(BigDecimal r15_or) {
+		this.r15_or = r15_or;
+	}
+
+	public BigDecimal getR15_net_short_position() {
+		return r15_net_short_position;
+	}
+
+	public void setR15_net_short_position(BigDecimal r15_net_short_position) {
+		this.r15_net_short_position = r15_net_short_position;
+	}
+
+	public BigDecimal getR16_net_spot_position() {
+		return r16_net_spot_position;
+	}
+
+	public void setR16_net_spot_position(BigDecimal r16_net_spot_position) {
+		this.r16_net_spot_position = r16_net_spot_position;
+	}
+
+	public BigDecimal getR16_net_forward_position() {
+		return r16_net_forward_position;
+	}
+
+	public void setR16_net_forward_position(BigDecimal r16_net_forward_position) {
+		this.r16_net_forward_position = r16_net_forward_position;
+	}
+
+	public BigDecimal getR16_guarantees() {
+		return r16_guarantees;
+	}
+
+	public void setR16_guarantees(BigDecimal r16_guarantees) {
+		this.r16_guarantees = r16_guarantees;
+	}
+
+	public BigDecimal getR16_net_future_inc_or_exp() {
+		return r16_net_future_inc_or_exp;
+	}
+
+	public void setR16_net_future_inc_or_exp(BigDecimal r16_net_future_inc_or_exp) {
+		this.r16_net_future_inc_or_exp = r16_net_future_inc_or_exp;
+	}
+
+	public BigDecimal getR16_net_delta_wei_fx_opt_posi() {
+		return r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public void setR16_net_delta_wei_fx_opt_posi(BigDecimal r16_net_delta_wei_fx_opt_posi) {
+		this.r16_net_delta_wei_fx_opt_posi = r16_net_delta_wei_fx_opt_posi;
+	}
+
+	public BigDecimal getR16_other_items() {
+		return r16_other_items;
+	}
+
+	public void setR16_other_items(BigDecimal r16_other_items) {
+		this.r16_other_items = r16_other_items;
+	}
+
+	public BigDecimal getR16_net_long_position() {
+		return r16_net_long_position;
+	}
+
+	public void setR16_net_long_position(BigDecimal r16_net_long_position) {
+		this.r16_net_long_position = r16_net_long_position;
+	}
+
+	public BigDecimal getR16_or() {
+		return r16_or;
+	}
+
+	public void setR16_or(BigDecimal r16_or) {
+		this.r16_or = r16_or;
+	}
+
+	public BigDecimal getR16_net_short_position() {
+		return r16_net_short_position;
+	}
+
+	public void setR16_net_short_position(BigDecimal r16_net_short_position) {
+		this.r16_net_short_position = r16_net_short_position;
+	}
+
+	public BigDecimal getR17_net_long_position() {
+		return r17_net_long_position;
+	}
+
+	public void setR17_net_long_position(BigDecimal r17_net_long_position) {
+		this.r17_net_long_position = r17_net_long_position;
+	}
+
+	public BigDecimal getR17_or() {
+		return r17_or;
+	}
+
+	public void setR17_or(BigDecimal r17_or) {
+		this.r17_or = r17_or;
+	}
+
+	public BigDecimal getR17_net_short_position() {
+		return r17_net_short_position;
+	}
+
+	public void setR17_net_short_position(BigDecimal r17_net_short_position) {
+		this.r17_net_short_position = r17_net_short_position;
+	}
+
+	public BigDecimal getR21_long() {
+		return r21_long;
+	}
+
+	public void setR21_long(BigDecimal r21_long) {
+		this.r21_long = r21_long;
+	}
+
+	public BigDecimal getR21_short() {
+		return r21_short;
+	}
+
+	public void setR21_short(BigDecimal r21_short) {
+		this.r21_short = r21_short;
+	}
+
+	public BigDecimal getR21_total_gross_long_short() {
+		return r21_total_gross_long_short;
+	}
+
+	public void setR21_total_gross_long_short(BigDecimal r21_total_gross_long_short) {
+		this.r21_total_gross_long_short = r21_total_gross_long_short;
+	}
+
+	public BigDecimal getR21_net_position() {
+		return r21_net_position;
+	}
+
+	public void setR21_net_position(BigDecimal r21_net_position) {
+		this.r21_net_position = r21_net_position;
+	}
+
+	public BigDecimal getR22_long() {
+		return r22_long;
+	}
+
+	public void setR22_long(BigDecimal r22_long) {
+		this.r22_long = r22_long;
+	}
+
+	public BigDecimal getR22_short() {
+		return r22_short;
+	}
+
+	public void setR22_short(BigDecimal r22_short) {
+		this.r22_short = r22_short;
+	}
+
+	public BigDecimal getR22_total_gross_long_short() {
+		return r22_total_gross_long_short;
+	}
+
+	public void setR22_total_gross_long_short(BigDecimal r22_total_gross_long_short) {
+		this.r22_total_gross_long_short = r22_total_gross_long_short;
+	}
+
+	public BigDecimal getR22_net_position() {
+		return r22_net_position;
+	}
+
+	public void setR22_net_position(BigDecimal r22_net_position) {
+		this.r22_net_position = r22_net_position;
+	}
+
+	public BigDecimal getR23_net_position() {
+		return r23_net_position;
+	}
+
+	public void setR23_net_position(BigDecimal r23_net_position) {
+		this.r23_net_position = r23_net_position;
+	}
+
+	public BigDecimal getR29_greater_net_long_or_short() {
+		return r29_greater_net_long_or_short;
+	}
+
+	public void setR29_greater_net_long_or_short(BigDecimal r29_greater_net_long_or_short) {
+		this.r29_greater_net_long_or_short = r29_greater_net_long_or_short;
+	}
+
+	public BigDecimal getR29_abs_value_net_gold_posi() {
+		return r29_abs_value_net_gold_posi;
+	}
+
+	public void setR29_abs_value_net_gold_posi(BigDecimal r29_abs_value_net_gold_posi) {
+		this.r29_abs_value_net_gold_posi = r29_abs_value_net_gold_posi;
+	}
+
+	public BigDecimal getR29_capital_charge() {
+		return r29_capital_charge;
+	}
+
+	public void setR29_capital_charge(BigDecimal r29_capital_charge) {
+		this.r29_capital_charge = r29_capital_charge;
+	}
+
+	public BigDecimal getR30_capital_require() {
+		return r30_capital_require;
+	}
+
+	public void setR30_capital_require(BigDecimal r30_capital_require) {
+		this.r30_capital_require = r30_capital_require;
+	}
+
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	public BigDecimal getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(BigDecimal reportVersion) {
+		this.reportVersion = reportVersion;
+	}
+
+	public String getReport_frequency() {
+		return report_frequency;
+	}
+
+	public void setReport_frequency(String report_frequency) {
+		this.report_frequency = report_frequency;
+	}
+
+	public String getReport_code() {
+		return report_code;
+	}
+
+	public void setReport_code(String report_code) {
+		this.report_code = report_code;
+	}
+
+	public String getReport_desc() {
+		return report_desc;
+	}
+
+	public void setReport_desc(String report_desc) {
+		this.report_desc = report_desc;
+	}
+
+	public String getEntity_flg() {
+		return entity_flg;
+	}
+
+	public void setEntity_flg(String entity_flg) {
+		this.entity_flg = entity_flg;
+	}
+
+	public String getModify_flg() {
+		return modify_flg;
+	}
+
+	public void setModify_flg(String modify_flg) {
+		this.modify_flg = modify_flg;
+	}
+
+	public String getDel_flg() {
+		return del_flg;
+	}
+
+	public void setDel_flg(String del_flg) {
+		this.del_flg = del_flg;
+	}
+
+	public M_FXR_Resub_Detail_Entity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Date getReportResubDate() {
+		return reportResubDate;
+	}
+
+	public void setReportResubDate(Date reportResubDate) {
+		this.reportResubDate = reportResubDate;
+	}
+}
+
+
 
 }
