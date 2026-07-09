@@ -226,7 +226,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
 			@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "version", required = false) BigDecimal version,
+			@RequestParam(value = "version", required = false) String versionStr,
 			@RequestParam(value = "page", required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size,
 			@RequestParam(value = "reportingTime", required = false) String reportingTime, Model md,
@@ -239,6 +239,53 @@ public class BRRS_ReportsController {
 		int currentPage = page.orElse(0);
 		int pageSize = size.orElse(Integer.parseInt(pagesize));
 		System.out.println("date" + fromdate);
+
+		// =====================================================
+		// ✅ CONVERT VERSION SAFELY WITH ARCHIVAL AUTO-DETECT
+		// =====================================================
+		BigDecimal version = null;
+
+		// If type is ARCHIVAL, auto-fetch the latest version
+		if ("ARCHIVAL".equalsIgnoreCase(type)) {
+		    try {
+		        // Parse the date for archival lookup
+		        Date reportDate = dateFormat.parse(todate);
+
+		        // Check which report service to use based on reportid
+		        if ("M_SRWA_12D".equalsIgnoreCase(reportid)) {
+		            // ✅ Use fully qualified inner class type
+		            Optional<BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity> latest = 
+		                SRWA12DreportService.getSrw12dLatestArchivalSummaryVersionByDate(reportDate);
+		            if (latest.isPresent()) {
+		                version = latest.get().getReport_version();
+		                System.out.println("✅ Auto-detected Archival Version: " + version + " for date: " + todate);
+		            } else {
+		                System.out.println("⚠️ No archival data found for date: " + todate);
+		            }
+		        }
+		        // Add other report types here if needed (12E, 12F, etc.)
+		        else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
+		            // ✅ Use fully qualified inner class type
+		            Optional<BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Archival_Summary_Entity> latest = 
+		                M_SRWA_12Eservice.getLatestArchivalSummaryVersionByDate(reportDate);
+		            if (latest.isPresent()) {
+		                version = latest.get().getReport_version();
+		                System.out.println("✅ Auto-detected 12E Archival Version: " + version);
+		            }
+		        }
+		    } catch (Exception e) {
+		        System.out.println("⚠️ Error fetching archival version: " + e.getMessage());
+		    }
+		} else {
+			// For non-ARCHIVAL types, parse version normally
+			if (versionStr != null && !versionStr.trim().isEmpty() && !"null".equalsIgnoreCase(versionStr.trim())) {
+				try {
+					version = new BigDecimal(versionStr.trim());
+				} catch (NumberFormatException e) {
+					logger.warn("Invalid version format for {}: {}", reportid, versionStr);
+				}
+			}
+		}
 		// Assigning required Modal Attributes
 		md.addAttribute("UserId", userid);
 		md.addAttribute("RoleId", roleid);
@@ -864,7 +911,8 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12D_Summary_Entity request1
+			@ModelAttribute BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Summary_Entity request1 // ✅ Use fully qualified
+																								// name
 
 	) {
 		try {
@@ -1807,65 +1855,60 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 
-	        @RequestParam(required = false)
-	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-	        @ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_Summary_Entity request) {
+			@ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_Summary_Entity request) {
 
-	    try {
+		try {
 
-	        if (asondate != null) {
-	            request.setREPORT_DATE(asondate);
-	        }
+			if (asondate != null) {
+				request.setREPORT_DATE(asondate);
+			}
 
-	        BRRS_M_OPTR_reportservice.updateReport(request);
+			BRRS_M_OPTR_reportservice.updateReport(request);
 
-	        return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 
-	    } catch (Exception e) {
+		} catch (Exception e) {
 
-	        e.printStackTrace();
+			e.printStackTrace();
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed : " + e.getMessage());
-	    }
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/UpdateM_OPTR_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 
-	        @RequestParam(required = false)
-	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-	        @RequestParam(required = false) String type,
+			@RequestParam(required = false) String type,
 
-	        @ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_RESUB_Summary_Entity request,
+			@ModelAttribute BRRS_M_OPTR_ReportService.M_OPTR_RESUB_Summary_Entity request,
 
-	        HttpServletRequest req) {
+			HttpServletRequest req) {
 
-	    try {
+		try {
 
-	        System.out.println("Came to M_OPTR Resub Controller");
+			System.out.println("Came to M_OPTR Resub Controller");
 
-	        if (asondate != null) {
-	            request.setREPORT_DATE(asondate);
-	        }
+			if (asondate != null) {
+				request.setREPORT_DATE(asondate);
+			}
 
-	        BRRS_M_OPTR_reportservice.updateResubReport(request);
+			BRRS_M_OPTR_reportservice.updateResubReport(request);
 
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
+			return ResponseEntity.ok("Resubmission Updated Successfully");
 
-	    } catch (Exception e) {
+		} catch (Exception e) {
 
-	        e.printStackTrace();
+			e.printStackTrace();
 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("M_OPTR Resubmission Update Failed : " + e.getMessage());
-	    }
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("M_OPTR Resubmission Update Failed : " + e.getMessage());
+		}
 	}
-	
-
 
 	@Autowired
 	private BRRS_BDISB3_ReportService BDISB3reportService;
@@ -2409,13 +2452,13 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	// Resub "Modify" — pulls one archived (date, version) snapshot into the live tables,
+	// Resub "Modify" — pulls one archived (date, version) snapshot into the live
+	// tables,
 	// replacing whatever is currently live for that date.
 	@PostMapping("/M_SFINP1PromoteResubToLive")
 	@ResponseBody
 	public ResponseEntity<String> promoteM_SFINP1ResubToLive(
-			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date reportDate,
-			@RequestParam BigDecimal version) {
+			@RequestParam @DateTimeFormat(pattern = "dd/MM/yyyy") Date reportDate, @RequestParam BigDecimal version) {
 		try {
 			M_SFINP1_ReportService.promoteResubToLive(reportDate, version);
 			return ResponseEntity.ok("Promoted to live.");
@@ -2425,7 +2468,8 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	// Resub "Finalise" — reruns BRRS_M_SFINP1_SUMMARY_PROCEDURE for the report's date, then
+	// Resub "Finalise" — reruns BRRS_M_SFINP1_SUMMARY_PROCEDURE for the report's
+	// date, then
 	// archives the resulting live state as a new, incremented REPORT_VERSION.
 	@PostMapping("/M_SFINP1FinaliseResub")
 	@ResponseBody
@@ -5516,32 +5560,27 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/SRWA12DupdateAll1", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports1(
-
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
 			@RequestParam("reportType") String reportType,
-
-			@ModelAttribute M_SRWA_12D_Resub_Summary_Entity request1
-
-	) {
+			@ModelAttribute BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Resub_Summary_Entity request1) {
 
 		try {
-
 			System.out.println("Entered Controller");
-
 			request1.setReport_date(asondate);
 
-			// 🔹 Create other 3 entity objects
-			M_SRWA_12D_Resub_Detail_Entity request2 = new M_SRWA_12D_Resub_Detail_Entity();
-			M_SRWA_12D_Archival_Summary_Entity request3 = new M_SRWA_12D_Archival_Summary_Entity();
-			M_SRWA_12D_Archival_Detail_Entity request4 = new M_SRWA_12D_Archival_Detail_Entity();
+			// ✅ Create entities using the service instance
+			BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Resub_Detail_Entity request2 = SRWA12DreportService.new M_SRWA_12D_Resub_Detail_Entity();
+
+			BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity request3 = SRWA12DreportService.new M_SRWA_12D_Archival_Summary_Entity();
+
+			BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Detail_Entity request4 = SRWA12DreportService.new M_SRWA_12D_Archival_Detail_Entity();
 
 			// 🔹 Copy all values from request1 into other entities
 			BeanUtils.copyProperties(request1, request2);
 			BeanUtils.copyProperties(request1, request3);
 			BeanUtils.copyProperties(request1, request4);
 
-			// 🔹 Call 4 service methods
+			// 🔹 Call service methods
 			SRWA12DreportService.updateReport1(request1);
 			SRWA12DreportService.updateReport2(request2);
 			SRWA12DreportService.updateReport3(request3);
@@ -5550,7 +5589,6 @@ public class BRRS_ReportsController {
 			return ResponseEntity.ok("Modified Successfully.");
 
 		} catch (Exception e) {
-
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}

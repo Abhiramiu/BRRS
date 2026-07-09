@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +18,13 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -24,45 +32,43 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_SECL_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SFINP2_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_SRWA_12D_Summary_Repo;
-import com.bornfire.brrs.entities.M_SRWA_12D_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_Resub_Detail_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_Resub_Summary_Entity;
-import com.bornfire.brrs.entities.M_SRWA_12D_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
-public class BRRS_M_SRWA_12D_ReportService {
 
+public class BRRS_M_SRWA_12D_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SRWA_12D_ReportService.class);
 
 	@Autowired
@@ -74,170 +80,18136 @@ public class BRRS_M_SRWA_12D_ReportService {
 	@Autowired
 	AuditService auditService;
 
-	@Autowired
-	BRRS_M_SFINP2_Detail_Repo M_SFINP2_DETAIL_Repo;
+	@PersistenceContext
+	private EntityManager entityManager;
 
 	@Autowired
-	BRRS_M_SECL_Archival_Summary_Repo M_SECL_Archival_Summary_Repo;
+	private JdbcTemplate jdbcTemplate;
 
-	@Autowired
-	BRRS_M_SRWA_12D_Summary_Repo M_SRWA_12D_Summary_Repo;
-
-	@Autowired
-	BRRS_M_SRWA_12D_Detail_Repo bRRS_M_SRWA_12D_Detail_Repo;
-
-	@Autowired
-	BRRS_M_SRWA_12D_Archival_Summary_Repo bRRS_M_SRWA_12D_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_SRWA_12D_Archival_Detail_Repo bRRS_M_SRWA_12D_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_SRWA_12D_Resub_Summary_Repo bRRS_M_SRWA_12D_Resub_Summary_Repo;
-
-	@Autowired
-	BRRS_M_SRWA_12D_Resub_Detail_Repo bRRS_M_SRWA_12D_Resub_Detail_Repo;
-	
 	@Autowired
 	UserProfileRep userProfileRep;
 
+//===============================
+//JDBC REPOSITORIES
+//===============================
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D SUMMARY
+//====================================
+
+//✅ Fetch records by REPORT_DATE
+	public List<M_SRWA_12D_Summary_Entity> getSrw12dSummaryDataByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_SRWA_12D_Summary_EntityRowMapper());
+	}
+
+//✅ Check if summary exists for a date
+	public boolean srw12dSummaryExistsForDate(Date reportDate) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			Integer count = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, Integer.class);
+			return count != null && count > 0;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	// ✅ Get latest report date
+	public Date getSrw12dLatestSummaryReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_SUMMARYTABLE";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in SUMMARYTABLE");
+			return null;
+		}
+	}
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D DETAIL
+//====================================
+
+//✅ Fetch records by REPORT_DATE
+	public List<M_SRWA_12D_Detail_Entity> getSrw12dDetailDataByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new M_SRWA_12D_Detail_EntityRowMapper());
+	}
+
+//✅ Check if detail exists for a date
+	public boolean srw12dDetailExistsForDate(Date reportDate) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			Integer count = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, Integer.class);
+			return count != null && count > 0;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+//✅ Get detail count for a date
+	public int getSrw12dDetailCountByDate(Date reportDate) {
+		String sql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, Integer.class);
+		} catch (Exception e) {
+			logger.warn("No detail data found for date: {}", reportDate);
+			return 0;
+		}
+	}
+
+	// ✅ Get latest report date from detail table
+	public Date getSrw12dLatestDetailReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_DETAILTABLE";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in DETAILTABLE");
+			return null;
+		}
+	}
+
+	// ✅ Get latest version for a specific date from detail table
+	public Optional<M_SRWA_12D_Detail_Entity> getSrw12dLatestDetailVersionByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_DETAILTABLE "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC FETCH FIRST 1 ROWS ONLY";
+		List<M_SRWA_12D_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new M_SRWA_12D_Detail_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+	// ✅ Get global max version across all dates from detail table
+	public BigDecimal getSrw12dGlobalMaxDetailVersion() {
+		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM BRRS_M_SRWA_12D_DETAILTABLE";
+		try {
+			return jdbcTemplate.queryForObject(sql, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No detail data found");
+			return BigDecimal.ZERO;
+		}
+	}
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D ARCHIVAL SUMMARY
+//====================================
+
+//✅ Get REPORT_DATE only ordered by REPORT_VERSION
+	public List<Date> getSrw12dArchivalSummaryReportDatesOnly() {
+		String sql = "SELECT REPORT_DATE FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getDate("REPORT_DATE"));
+	}
+
+//✅ Get records with REPORT_VERSION IS NOT NULL ordered by REPORT_VERSION ASC
+	public List<M_SRWA_12D_Archival_Summary_Entity> getSrw12dArchivalSummaryDataWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+	}
+
+//✅ Fetch archival summary records by date and version
+	public List<M_SRWA_12D_Archival_Summary_Entity> getSrw12dArchivalSummaryDataByDateAndVersion(Date reportDate,
+			BigDecimal reportVersion) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[] { reportDate, reportVersion },
+				new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+	}
+
+//✅ Get REPORT_DATE and REPORT_VERSION ordered by REPORT_VERSION
+	public List<Object[]> getSrw12dArchivalSummaryReportDateAndVersion() {
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//✅ Get latest archival version for a given date
+	public Optional<M_SRWA_12D_Archival_Summary_Entity> getSrw12dLatestArchivalSummaryVersionByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC FETCH FIRST 1 ROWS ONLY";
+		List<M_SRWA_12D_Archival_Summary_Entity> results = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Find by REPORT_DATE and REPORT_VERSION (returns Optional)
+	public Optional<M_SRWA_12D_Archival_Summary_Entity> findSrw12dArchivalSummaryByDateAndVersion(Date reportDate,
+			BigDecimal reportVersion) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		List<M_SRWA_12D_Archival_Summary_Entity> results = jdbcTemplate.query(sql,
+				new Object[] { reportDate, reportVersion }, new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Get first record (lowest version) with version not null
+	public List<M_SRWA_12D_Archival_Summary_Entity> getSrw12dFirstArchivalSummaryWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC FETCH FIRST 1 ROWS ONLY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+	}
+
+//✅ Get all archival summary records
+	public List<M_SRWA_12D_Archival_Summary_Entity> getSrw12dArchivalSummaryAllData() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Summary_EntityRowMapper());
+	}
+
+//✅ Find global max report version across all dates
+	public BigDecimal getSrw12dGlobalMaxArchivalSummaryVersion() {
+		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY";
+		try {
+			return jdbcTemplate.queryForObject(sql, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No archival summary data found");
+			return BigDecimal.ZERO;
+		}
+	}
+
+	// ✅ Get latest report date from archival summary
+	public Date getSrw12dLatestArchivalSummaryReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in ARCHIVALTABLE_SUMMARY");
+			return null;
+		}
+	}
+
+//✅ Find max version for a given date
+	public BigDecimal getSrw12dMaxArchivalSummaryVersion(Date date) {
+		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			return jdbcTemplate.queryForObject(sql, new Object[] { date }, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No archival summary data found for date: {}", date);
+			return BigDecimal.ZERO;
+		}
+	}
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D ARCHIVAL DETAIL
+//====================================
+
+//✅ Get REPORT_DATE ordered by REPORT_VERSION
+	public List<Date> getSrw12dArchivalDetailReportDatesOnly() {
+		String sql = "SELECT REPORT_DATE FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getDate("REPORT_DATE"));
+	}
+
+//✅ Get records with REPORT_VERSION ordered ASC
+	public List<M_SRWA_12D_Archival_Detail_Entity> getSrw12dArchivalDetailDataWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+	}
+
+//✅ Fetch archival data by REPORT_DATE and REPORT_VERSION
+	public List<M_SRWA_12D_Archival_Detail_Entity> getSrw12dArchivalDetailDataByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[] { reportDate, version },
+				new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+	}
+
+//✅ Get REPORT_DATE and REPORT_VERSION
+	public List<Object[]> getSrw12dArchivalDetailReportDateAndVersion() {
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//✅ Fetch latest archival version for given REPORT_DATE
+	public Optional<M_SRWA_12D_Archival_Detail_Entity> getSrw12dLatestArchivalDetailVersionByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC FETCH FIRST 1 ROWS ONLY";
+		List<M_SRWA_12D_Archival_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Find by REPORT_DATE and REPORT_VERSION
+	public Optional<M_SRWA_12D_Archival_Detail_Entity> findSrw12dArchivalDetailByDateAndVersion(Date reportDate,
+			BigDecimal reportVersion) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		List<M_SRWA_12D_Archival_Detail_Entity> results = jdbcTemplate.query(sql,
+				new Object[] { reportDate, reportVersion }, new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Get first record with REPORT_VERSION
+	public List<M_SRWA_12D_Archival_Detail_Entity> getSrw12dFirstArchivalDetailWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC FETCH FIRST 1 ROWS ONLY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+	}
+
+//✅ Get all records with REPORT_VERSION
+	public List<M_SRWA_12D_Archival_Detail_Entity> getSrw12dArchivalDetailDataWithVersionAll() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL WHERE REPORT_VERSION IS NOT NULL";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Archival_Detail_EntityRowMapper());
+	}
+
+//✅ Find global maximum REPORT_VERSION
+	public BigDecimal getSrw12dGlobalMaxArchivalDetailVersion() {
+		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL";
+		try {
+			return jdbcTemplate.queryForObject(sql, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No archival detail data found");
+			return BigDecimal.ZERO;
+		}
+	}
+
+	// ✅ Get latest report date from archival detail
+	public Date getSrw12dLatestArchivalDetailReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in ARCHIVALTABLE_DETAIL");
+			return null;
+		}
+	}
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D RESUB SUMMARY
+//====================================
+
+//✅ Get REPORT_DATE ordered by REPORT_VERSION
+	public List<Date> getSrw12dResubSummaryReportDatesOnly() {
+		String sql = "SELECT REPORT_DATE FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getDate("REPORT_DATE"));
+	}
+
+//✅ Get records with REPORT_VERSION ordered ASC
+	public List<M_SRWA_12D_Resub_Summary_Entity> getSrw12dResubSummaryDataWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+	}
+
+//✅ Fetch data by REPORT_DATE and REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Summary_Entity> getSrw12dResubSummaryDataByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[] { reportDate, version },
+				new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+	}
+
+//✅ Get REPORT_DATE and REPORT_VERSION
+	public List<Object[]> getSrw12dResubSummaryReportDateAndVersion() {
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//✅ Get latest version for REPORT_DATE
+	public Optional<M_SRWA_12D_Resub_Summary_Entity> getSrw12dLatestResubSummaryVersionByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC FETCH FIRST 1 ROWS ONLY";
+		List<M_SRWA_12D_Resub_Summary_Entity> results = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Find by REPORT_DATE and REPORT_VERSION
+	public Optional<M_SRWA_12D_Resub_Summary_Entity> findSrw12dResubSummaryByDateAndVersion(Date reportDate,
+			BigDecimal reportVersion) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		List<M_SRWA_12D_Resub_Summary_Entity> results = jdbcTemplate.query(sql,
+				new Object[] { reportDate, reportVersion }, new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Get first record with REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Summary_Entity> getSrw12dFirstResubSummaryWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC FETCH FIRST 1 ROWS ONLY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+	}
+
+//✅ Get all records with REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Summary_Entity> getSrw12dResubSummaryDataWithVersionAll() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+	}
+
+//✅ Get REPORT_DATE, REPORT_VERSION and REPORT_RESUBDATE
+	public List<Object[]> getSrw12dResubSummaryDataWithResubDate() {
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY ORDER BY TO_NUMBER(REPORT_VERSION) ASC";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
+				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
+	}
+
+//✅ Get all records
+	public List<M_SRWA_12D_Resub_Summary_Entity> getSrw12dResubSummaryAllData() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Summary_EntityRowMapper());
+	}
+
+//✅ Find global maximum REPORT_VERSION
+	public BigDecimal getSrw12dGlobalMaxResubSummaryVersion() {
+		String sql = "SELECT COALESCE(MAX(TO_NUMBER(REPORT_VERSION)), 0) FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY";
+		try {
+			return jdbcTemplate.queryForObject(sql, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No resub summary data found");
+			return BigDecimal.ZERO;
+		}
+	}
+
+//✅ Find maximum REPORT_VERSION for a REPORT_DATE
+	public BigDecimal getSrw12dMaxResubSummaryVersionByDate(Date reportDate) {
+		String sql = "SELECT COALESCE(MAX(TO_NUMBER(REPORT_VERSION)), 0) "
+				+ "FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No resub summary data found for date: {}", reportDate);
+			return BigDecimal.ZERO;
+		}
+	}
+
+	// ✅ Get latest report date from resub summary
+	public Date getSrw12dLatestResubSummaryReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in RESUBTABLE_SUMMARY");
+			return null;
+		}
+	}
+
+//====================================
+//JDBC REPOSITORIES - SRWA 12D RESUB DETAIL
+//====================================
+
+//✅ Get REPORT_DATE ordered by REPORT_VERSION
+	public List<Date> getSrw12dResubDetailReportDatesOnly() {
+		String sql = "SELECT REPORT_DATE FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getDate("REPORT_DATE"));
+	}
+
+//✅ Get records with REPORT_VERSION ordered ASC
+	public List<M_SRWA_12D_Resub_Detail_Entity> getSrw12dResubDetailDataWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+	}
+
+//✅ Fetch records by REPORT_DATE and REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Detail_Entity> getSrw12dResubDetailDataByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new Object[] { reportDate, version },
+				new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+	}
+
+//✅ Get REPORT_DATE and REPORT_VERSION
+	public List<Object[]> getSrw12dResubDetailReportDateAndVersion() {
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL ORDER BY TO_NUMBER(REPORT_VERSION)";
+		return jdbcTemplate.query(sql,
+				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+	}
+
+//✅ Fetch latest version for REPORT_DATE
+	public Optional<M_SRWA_12D_Resub_Detail_Entity> getSrw12dLatestResubDetailVersionByDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY TO_NUMBER(REPORT_VERSION) DESC FETCH FIRST 1 ROWS ONLY";
+		List<M_SRWA_12D_Resub_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Find by REPORT_DATE and REPORT_VERSION
+	public Optional<M_SRWA_12D_Resub_Detail_Entity> findSrw12dResubDetailByDateAndVersion(Date reportDate,
+			BigDecimal reportVersion) {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+		List<M_SRWA_12D_Resub_Detail_Entity> results = jdbcTemplate.query(sql,
+				new Object[] { reportDate, reportVersion }, new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+	}
+
+//✅ Get first record with REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Detail_Entity> getSrw12dFirstResubDetailWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+				+ "WHERE REPORT_VERSION IS NOT NULL ORDER BY TO_NUMBER(REPORT_VERSION) ASC FETCH FIRST 1 ROWS ONLY";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+	}
+
+//✅ Get all records with REPORT_VERSION
+	public List<M_SRWA_12D_Resub_Detail_Entity> getSrw12dResubDetailDataWithVersionAll() {
+		String sql = "SELECT * FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL WHERE REPORT_VERSION IS NOT NULL";
+		return jdbcTemplate.query(sql, new M_SRWA_12D_Resub_Detail_EntityRowMapper());
+	}
+
+//✅ Find global maximum REPORT_VERSION
+	public BigDecimal getSrw12dGlobalMaxResubDetailVersion() {
+		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL";
+		try {
+			return jdbcTemplate.queryForObject(sql, BigDecimal.class);
+		} catch (Exception e) {
+			logger.warn("No resub detail data found");
+			return BigDecimal.ZERO;
+		}
+	}
+
+	// ✅ Get latest report date from resub detail
+	public Date getSrw12dLatestResubDetailReportDate() {
+		String sql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL";
+		try {
+			return jdbcTemplate.queryForObject(sql, Date.class);
+		} catch (Exception e) {
+			logger.warn("No data found in RESUBTABLE_DETAIL");
+			return null;
+		}
+	}
+
+//=======================
+//ENTITY ROW MAPPERS
+//=======================
+
+//====================================
+//M_SRWA_12D_Summary_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Summary_EntityRowMapper implements RowMapper<M_SRWA_12D_Summary_Entity> {
+
+		@Override
+		public M_SRWA_12D_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Summary_Entity obj = new M_SRWA_12D_Summary_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+//===============
+//ENTITY CLASS
+//================
+
+	public class M_SRWA_12D_Summary_Entity {
+
+		@Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "dd/MM/yyyy")
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+	}
+
+//====================================
+//M_SRWA_12D_Detail_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Detail_EntityRowMapper implements RowMapper<M_SRWA_12D_Detail_Entity> {
+
+		@Override
+		public M_SRWA_12D_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Detail_Entity obj = new M_SRWA_12D_Detail_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+	public class M_SRWA_12D_Detail_Entity {
+
+		@Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "dd/MM/yyyy")
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// CONSTRUCTOR
+		// =========================
+		public M_SRWA_12D_Detail_Entity() {
+			super();
+		}
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+	}
+
+//====================================
+//M_SRWA_12D_Archival_Summary_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Archival_Summary_EntityRowMapper implements RowMapper<M_SRWA_12D_Archival_Summary_Entity> {
+
+		@Override
+		public M_SRWA_12D_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Archival_Summary_Entity obj = new M_SRWA_12D_Archival_Summary_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReportResubDate(rs.getTimestamp("report_resubdate"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+	public class M_SRWA_12D_Archival_Summary_Entity {
+
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// CONSTRUCTOR
+		// =========================
+		public M_SRWA_12D_Archival_Summary_Entity() {
+			super();
+		}
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public Date getReportResubDate() {
+			return this.reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		// =========================
+//R12 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R12 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R43 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R44 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R45 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+	}
+
+//====================================
+//M_SRWA_12D_Archival_Detail_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Archival_Detail_EntityRowMapper implements RowMapper<M_SRWA_12D_Archival_Detail_Entity> {
+
+		@Override
+		public M_SRWA_12D_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Archival_Detail_Entity obj = new M_SRWA_12D_Archival_Detail_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReportResubDate(rs.getTimestamp("report_resubdate"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+	public class M_SRWA_12D_Archival_Detail_Entity {
+
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// CONSTRUCTOR
+		// =========================
+		public M_SRWA_12D_Archival_Detail_Entity() {
+			super();
+		}
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public Date getReportResubDate() {
+			return this.reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+//=========================
+//R12 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R12 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R43 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R44 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R45 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+	}
+
+//====================================
+//M_SRWA_12D_Resub_Summary_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Resub_Summary_EntityRowMapper implements RowMapper<M_SRWA_12D_Resub_Summary_Entity> {
+
+		@Override
+		public M_SRWA_12D_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Resub_Summary_Entity obj = new M_SRWA_12D_Resub_Summary_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReportResubDate(rs.getTimestamp("report_resubdate"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+	public class M_SRWA_12D_Resub_Summary_Entity {
+
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// CONSTRUCTOR
+		// =========================
+		public M_SRWA_12D_Resub_Summary_Entity() {
+			super();
+		}
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public Date getReportResubDate() {
+			return this.reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+		// =========================
+//R12 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R12 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R43 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R44 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R45 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+	}
+
+//====================================
+//M_SRWA_12D_Resub_Detail_Entity - ROW MAPPER
+//====================================
+
+	public class M_SRWA_12D_Resub_Detail_EntityRowMapper implements RowMapper<M_SRWA_12D_Resub_Detail_Entity> {
+
+		@Override
+		public M_SRWA_12D_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_SRWA_12D_Resub_Detail_Entity obj = new M_SRWA_12D_Resub_Detail_Entity();
+
+			// =========================
+			// COMMON FIELDS
+			// =========================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReportResubDate(rs.getTimestamp("report_resubdate"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			// =========================
+			// R12 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R12 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR12_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R12_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R12_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R13 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR13_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R13_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R13_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R14 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR14_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R14_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R14_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - EXCHANGE CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_EXCHANGE_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS"));
+
+			// =========================
+			// R15 FIELDS - INTEREST CONTRACTS
+			// =========================
+			obj.setR15_LINE_NO_INTEREST_CONTRACTS(rs.getBigDecimal("R15_LINE_NO_INTEREST_CONTRACTS"));
+			obj.setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(rs.getString("R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS"));
+			obj.setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS"));
+			obj.setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(rs.getBigDecimal("R15_TOTAL_CURRENT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"));
+			obj.setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS"));
+			obj.setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS"));
+			obj.setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS"));
+			obj.setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+					rs.getBigDecimal("R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R21 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR21_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R22 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR22_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R23 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR23_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - EQUITY CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_EQUITY_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_EQUITY_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(rs.getBigDecimal("R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS"));
+
+			// =========================
+			// R24 FIELDS - PRECIOUS CONTRACTS
+			// =========================
+			obj.setR24_LINE_NO_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_LINE_NO_PRECIOUS_CONTRACTS"));
+			obj.setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(rs.getString("R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS"));
+			obj.setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS"));
+			obj.setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(rs.getBigDecimal("R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"));
+			obj.setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS"));
+			obj.setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS"));
+			obj.setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS"));
+			obj.setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+					rs.getBigDecimal("R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R30 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR30_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R30_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R31 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR31_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R31_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R32 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR32_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R32_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - DEBT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_DEBT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_DEBT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_DEBT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS"));
+
+			// =========================
+			// R33 FIELDS - CREDIT CONTRACTS
+			// =========================
+			obj.setR33_LINE_NO_CREDIT_CONTRACTS(rs.getBigDecimal("R33_LINE_NO_CREDIT_CONTRACTS"));
+			obj.setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(rs.getString("R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS"));
+			obj.setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS"));
+			obj.setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_TOTAL_CURRENT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"));
+			obj.setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS"));
+			obj.setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(rs.getBigDecimal("R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS"));
+			obj.setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS"));
+			obj.setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(
+					rs.getBigDecimal("R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS"));
+
+			// =========================
+			// R43 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR43_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R43_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R44 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR44_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R44_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			// =========================
+			// R45 FIELDS - DERIVATIVE CONTRACTS
+			// =========================
+			obj.setR45_LINE_NO_DERIVATIVE_CONTRACTS(rs.getBigDecimal("R45_LINE_NO_DERIVATIVE_CONTRACTS"));
+			obj.setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(rs.getString("R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"));
+			obj.setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS"));
+			obj.setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS"));
+			obj.setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS"));
+			obj.setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+					rs.getBigDecimal("R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"));
+
+			return obj;
+		}
+	}
+
+	public class M_SRWA_12D_Resub_Detail_Entity {
+
+		@Id
+		private Date report_date;
+		private BigDecimal report_version;
+		private Date reportResubDate;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		private BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R12_LINE_NO_INTEREST_CONTRACTS;
+		private String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R13_LINE_NO_INTEREST_CONTRACTS;
+		private String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R14_LINE_NO_INTEREST_CONTRACTS;
+		private String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		private BigDecimal R15_LINE_NO_INTEREST_CONTRACTS;
+		private String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		private BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		private BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		private BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		private BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		private BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		private BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+
+		private BigDecimal R21_LINE_NO_EQUITY_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R22_LINE_NO_EQUITY_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R23_LINE_NO_EQUITY_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R24_LINE_NO_EQUITY_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		private BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS;
+		private String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		private BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+
+		private BigDecimal R30_LINE_NO_DEBT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R30_LINE_NO_CREDIT_CONTRACTS;
+		private String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R31_LINE_NO_DEBT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R31_LINE_NO_CREDIT_CONTRACTS;
+		private String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R32_LINE_NO_DEBT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R32_LINE_NO_CREDIT_CONTRACTS;
+		private String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R33_LINE_NO_DEBT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		private BigDecimal R33_LINE_NO_CREDIT_CONTRACTS;
+		private String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		private BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		private BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		private BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		private BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		private BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		private BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+
+		private BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		private BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		private String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		private BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+
+		// =========================
+		// CONSTRUCTOR
+		// =========================
+		public M_SRWA_12D_Resub_Detail_Entity() {
+			super();
+		}
+
+		// =========================
+		// GETTERS AND SETTERS
+		// =========================
+
+		public Date getReport_date() {
+			return this.report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return this.report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public Date getReportResubDate() {
+			return this.reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
+
+		public String getReport_frequency() {
+			return this.report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return this.report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return this.report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return this.entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return this.modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return this.del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+//=========================
+//R12 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R12_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R12_LINE_NO_EXCHANGE_CONTRACTS = R12_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R12_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R12_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R12_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R12_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R12 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR12_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_LINE_NO_INTEREST_CONTRACTS(BigDecimal R12_LINE_NO_INTEREST_CONTRACTS) {
+			this.R12_LINE_NO_INTEREST_CONTRACTS = R12_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R12_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R12_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R12_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R12_TOTAL_CURRENT_INTEREST_CONTRACTS = R12_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R12_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R13_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R13_LINE_NO_EXCHANGE_CONTRACTS = R13_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R13_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R13_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R13_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R13_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R13_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R13 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR13_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_LINE_NO_INTEREST_CONTRACTS(BigDecimal R13_LINE_NO_INTEREST_CONTRACTS) {
+			this.R13_LINE_NO_INTEREST_CONTRACTS = R13_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R13_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R13_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R13_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R13_TOTAL_CURRENT_INTEREST_CONTRACTS = R13_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R13_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R14_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R14_LINE_NO_EXCHANGE_CONTRACTS = R14_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R14_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R14_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R14_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R14_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R14_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R14 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR14_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_LINE_NO_INTEREST_CONTRACTS(BigDecimal R14_LINE_NO_INTEREST_CONTRACTS) {
+			this.R14_LINE_NO_INTEREST_CONTRACTS = R14_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R14_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R14_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R14_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R14_TOTAL_CURRENT_INTEREST_CONTRACTS = R14_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R14_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - EXCHANGE CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_EXCHANGE_CONTRACTS() {
+			return this.R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_EXCHANGE_CONTRACTS(BigDecimal R15_LINE_NO_EXCHANGE_CONTRACTS) {
+			this.R15_LINE_NO_EXCHANGE_CONTRACTS = R15_LINE_NO_EXCHANGE_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS(String R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS = R15_RESIDUAL_MATURITY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS = R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_EXCHANGE_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS = R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS = R15_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS = R15_RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS;
+		}
+
+//=========================
+//R15 FIELDS - INTEREST CONTRACTS
+//=========================
+		public BigDecimal getR15_LINE_NO_INTEREST_CONTRACTS() {
+			return this.R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_LINE_NO_INTEREST_CONTRACTS(BigDecimal R15_LINE_NO_INTEREST_CONTRACTS) {
+			this.R15_LINE_NO_INTEREST_CONTRACTS = R15_LINE_NO_INTEREST_CONTRACTS;
+		}
+
+		public String getR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS() {
+			return this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RESIDUAL_MATURITY_INTEREST_CONTRACTS(String R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS) {
+			this.R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS = R15_RESIDUAL_MATURITY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS() {
+			return this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS(BigDecimal R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS) {
+			this.R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS = R15_PRINCIPAL_AMOUNT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_TOTAL_CURRENT_INTEREST_CONTRACTS() {
+			return this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_TOTAL_CURRENT_INTEREST_CONTRACTS(BigDecimal R15_TOTAL_CURRENT_INTEREST_CONTRACTS) {
+			this.R15_TOTAL_CURRENT_INTEREST_CONTRACTS = R15_TOTAL_CURRENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS() {
+			return this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS(
+				BigDecimal R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS) {
+			this.R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS = R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
+			return this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS(BigDecimal R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS) {
+			this.R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS = R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS() {
+			return this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS(
+				BigDecimal R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS) {
+			this.R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS = R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS;
+		}
+
+		public BigDecimal getR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS() {
+			return this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+		public void setR15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS(
+				BigDecimal R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS) {
+			this.R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS = R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_EQUITY_CONTRACTS(BigDecimal R21_LINE_NO_EQUITY_CONTRACTS) {
+			this.R21_LINE_NO_EQUITY_CONTRACTS = R21_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R21_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_EQUITY_CONTRACTS = R21_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R21_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R21 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR21_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R21_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R21_LINE_NO_PRECIOUS_CONTRACTS = R21_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R21_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R21_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R21_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R21_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R21_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R21_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_EQUITY_CONTRACTS(BigDecimal R22_LINE_NO_EQUITY_CONTRACTS) {
+			this.R22_LINE_NO_EQUITY_CONTRACTS = R22_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R22_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R22_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_EQUITY_CONTRACTS = R22_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R22_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R22 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR22_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R22_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R22_LINE_NO_PRECIOUS_CONTRACTS = R22_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R22_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R22_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R22_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R22_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R22_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R22_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_EQUITY_CONTRACTS(BigDecimal R23_LINE_NO_EQUITY_CONTRACTS) {
+			this.R23_LINE_NO_EQUITY_CONTRACTS = R23_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R23_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R23_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_EQUITY_CONTRACTS = R23_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R23_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R23 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR23_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R23_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R23_LINE_NO_PRECIOUS_CONTRACTS = R23_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R23_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R23_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R23_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R23_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R23_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - EQUITY CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_EQUITY_CONTRACTS() {
+			return this.R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_EQUITY_CONTRACTS(BigDecimal R24_LINE_NO_EQUITY_CONTRACTS) {
+			this.R24_LINE_NO_EQUITY_CONTRACTS = R24_LINE_NO_EQUITY_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_EQUITY_CONTRACTS(String R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS = R24_RESIDUAL_MATURITY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS = R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_EQUITY_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_EQUITY_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_EQUITY_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_EQUITY_CONTRACTS = R24_TOTAL_CURRENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS = R24_CREDIT_EQUIVALENT_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS(BigDecimal R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS = R24_RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS;
+		}
+
+//=========================
+//R24 FIELDS - PRECIOUS CONTRACTS
+//=========================
+		public BigDecimal getR24_LINE_NO_PRECIOUS_CONTRACTS() {
+			return this.R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_LINE_NO_PRECIOUS_CONTRACTS(BigDecimal R24_LINE_NO_PRECIOUS_CONTRACTS) {
+			this.R24_LINE_NO_PRECIOUS_CONTRACTS = R24_LINE_NO_PRECIOUS_CONTRACTS;
+		}
+
+		public String getR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS() {
+			return this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS(String R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS) {
+			this.R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS = R24_RESIDUAL_MATURITY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS() {
+			return this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS(BigDecimal R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS) {
+			this.R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS = R24_PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS() {
+			return this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_TOTAL_CURRENT_PRECIOUS_CONTRACTS(BigDecimal R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS) {
+			this.R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS = R24_TOTAL_CURRENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
+			return this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS(
+				BigDecimal R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS) {
+			this.R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS = R24_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
+			return this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS(BigDecimal R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS) {
+			this.R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS = R24_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS() {
+			return this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS(
+				BigDecimal R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS) {
+			this.R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS = R24_APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS;
+		}
+
+		public BigDecimal getR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS() {
+			return this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+		public void setR24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS(
+				BigDecimal R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS) {
+			this.R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS = R24_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_DEBT_CONTRACTS() {
+			return this.R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_DEBT_CONTRACTS(BigDecimal R30_LINE_NO_DEBT_CONTRACTS) {
+			this.R30_LINE_NO_DEBT_CONTRACTS = R30_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R30_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_DEBT_CONTRACTS = R30_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_DEBT_CONTRACTS = R30_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R30_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R30 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR30_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_LINE_NO_CREDIT_CONTRACTS(BigDecimal R30_LINE_NO_CREDIT_CONTRACTS) {
+			this.R30_LINE_NO_CREDIT_CONTRACTS = R30_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R30_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R30_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R30_TOTAL_CURRENT_CREDIT_CONTRACTS = R30_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R30_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R30_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R30_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_DEBT_CONTRACTS() {
+			return this.R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_DEBT_CONTRACTS(BigDecimal R31_LINE_NO_DEBT_CONTRACTS) {
+			this.R31_LINE_NO_DEBT_CONTRACTS = R31_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R31_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_DEBT_CONTRACTS = R31_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_DEBT_CONTRACTS = R31_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R31_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R31 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR31_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_LINE_NO_CREDIT_CONTRACTS(BigDecimal R31_LINE_NO_CREDIT_CONTRACTS) {
+			this.R31_LINE_NO_CREDIT_CONTRACTS = R31_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R31_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R31_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R31_TOTAL_CURRENT_CREDIT_CONTRACTS = R31_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R31_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R31_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R31_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_DEBT_CONTRACTS() {
+			return this.R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_DEBT_CONTRACTS(BigDecimal R32_LINE_NO_DEBT_CONTRACTS) {
+			this.R32_LINE_NO_DEBT_CONTRACTS = R32_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R32_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_DEBT_CONTRACTS = R32_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_DEBT_CONTRACTS = R32_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R32_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R32 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR32_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_LINE_NO_CREDIT_CONTRACTS(BigDecimal R32_LINE_NO_CREDIT_CONTRACTS) {
+			this.R32_LINE_NO_CREDIT_CONTRACTS = R32_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R32_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R32_TOTAL_CURRENT_CREDIT_CONTRACTS = R32_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R32_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R32_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R32_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - DEBT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_DEBT_CONTRACTS() {
+			return this.R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_DEBT_CONTRACTS(BigDecimal R33_LINE_NO_DEBT_CONTRACTS) {
+			this.R33_LINE_NO_DEBT_CONTRACTS = R33_LINE_NO_DEBT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_DEBT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_DEBT_CONTRACTS(String R33_RESIDUAL_MATURITY_DEBT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_DEBT_CONTRACTS = R33_RESIDUAL_MATURITY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS = R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_DEBT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_DEBT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_DEBT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_DEBT_CONTRACTS = R33_TOTAL_CURRENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_DEBT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS = R33_CREDIT_EQUIVALENT_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_DEBT_CONTRACTS;
+		}
+
+//=========================
+//R33 FIELDS - CREDIT CONTRACTS
+//=========================
+		public BigDecimal getR33_LINE_NO_CREDIT_CONTRACTS() {
+			return this.R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_LINE_NO_CREDIT_CONTRACTS(BigDecimal R33_LINE_NO_CREDIT_CONTRACTS) {
+			this.R33_LINE_NO_CREDIT_CONTRACTS = R33_LINE_NO_CREDIT_CONTRACTS;
+		}
+
+		public String getR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS() {
+			return this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RESIDUAL_MATURITY_CREDIT_CONTRACTS(String R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS) {
+			this.R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS = R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS() {
+			return this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS(BigDecimal R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS) {
+			this.R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS = R33_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_TOTAL_CURRENT_CREDIT_CONTRACTS() {
+			return this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_TOTAL_CURRENT_CREDIT_CONTRACTS(BigDecimal R33_TOTAL_CURRENT_CREDIT_CONTRACTS) {
+			this.R33_TOTAL_CURRENT_CREDIT_CONTRACTS = R33_TOTAL_CURRENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+			return this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS(
+				BigDecimal R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS) {
+			this.R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS = R33_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS() {
+			return this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS(BigDecimal R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS) {
+			this.R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS = R33_CREDIT_EQUIVALENT_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS() {
+			return this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS(
+				BigDecimal R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS) {
+			this.R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS = R33_APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS;
+		}
+
+		public BigDecimal getR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS() {
+			return this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+		public void setR33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS(BigDecimal R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS) {
+			this.R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS = R33_RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS;
+		}
+
+//=========================
+//R43 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR43_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R43_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R43_LINE_NO_DERIVATIVE_CONTRACTS = R43_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R43_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R43_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R44 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR44_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R44_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R44_LINE_NO_DERIVATIVE_CONTRACTS = R44_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R44_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R44_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+//=========================
+//R45 FIELDS - DERIVATIVE CONTRACTS
+//=========================
+		public BigDecimal getR45_LINE_NO_DERIVATIVE_CONTRACTS() {
+			return this.R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_LINE_NO_DERIVATIVE_CONTRACTS(BigDecimal R45_LINE_NO_DERIVATIVE_CONTRACTS) {
+			this.R45_LINE_NO_DERIVATIVE_CONTRACTS = R45_LINE_NO_DERIVATIVE_CONTRACTS;
+		}
+
+		public String getR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS() {
+			return this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS(String R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS) {
+			this.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS = R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS() {
+			return this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS(BigDecimal R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS) {
+			this.R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS = R45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS) {
+			this.R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS = R45_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS() {
+			return this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS(BigDecimal R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS) {
+			this.R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS = R45_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS() {
+			return this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS) {
+			this.R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS = R45_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS() {
+			return this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS) {
+			this.R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS = R45_APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS;
+		}
+
+		public BigDecimal getR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS() {
+			return this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+		public void setR45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS(
+				BigDecimal R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS) {
+			this.R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS = R45_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS;
+		}
+
+	}
+
+//=====================================================
+//MODEL AND VIEW METHOD
+//=====================================================
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	public ModelAndView getM_SRWA_12DView(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
+	public ModelAndView getBRRS_M_SRWA_12D_View(String reportId, String fromdate, String todate, String currency,
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
-		System.out.println("========== ENTERED getM_SRWA_12DView ==========");
+		ModelAndView mv = new ModelAndView();
 
-		ModelAndView mv = new ModelAndView("BRRS/M_SRWA_12D");
-		
 		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
-		Date reportDate = null;
+		int pageSize = pageable.getPageSize();
+		int currentPage = pageable.getPageNumber();
+		int startItem = currentPage * pageSize;
+		System.out.println("dtltype...." + dtltype);
+		System.out.println("type...." + type);
 
 		try {
-			reportDate = dateformat.parse(todate);
-			System.out.println("Parsed Report Date : " + reportDate);
+			// Parse only once
+			Date reportDate = dateformat.parse(todate);
+
+			System.out.println("======= VIEW SCREEN =======");
+			System.out.println("TYPE      : " + type);
+			System.out.println("DTLTYPE   : " + dtltype);
+			System.out.println("DATE      : " + reportDate);
+			System.out.println("VERSION   : " + version);
+			System.out.println("==========================");
+
+			// ===========================================================
+			// SUMMARY SECTION - Using JDBC Methods
+			// ===========================================================
+
+			// ---------- CASE 1: ARCHIVAL ----------
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+				// ✅ Using JDBC method instead of JPA
+				List<M_SRWA_12D_Archival_Summary_Entity> summaryList = getSrw12dArchivalSummaryDataByDateAndVersion(
+						reportDate, version);
+
+				mv.addObject("displaymode", "summary");
+				mv.addObject("reportsummary", summaryList);
+				System.out.println("Archival Summary Size: " + summaryList.size());
+			}
+
+			// ---------- CASE 2: RESUB ----------
+			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+				// ✅ Using JDBC method instead of JPA
+				List<M_SRWA_12D_Resub_Summary_Entity> summaryList = getSrw12dResubSummaryDataByDateAndVersion(
+						reportDate, version);
+
+				mv.addObject("displaymode", "resubSummary");
+				mv.addObject("reportsummary", summaryList);
+				System.out.println("Resub Summary Size: " + summaryList.size());
+			}
+
+			// ---------- CASE 3: NORMAL ----------
+			else {
+
+				// ✅ Using JDBC method instead of JPA
+				List<M_SRWA_12D_Summary_Entity> summaryList = getSrw12dSummaryDataByDate(reportDate);
+
+				mv.addObject("displaymode", "summary");
+				mv.addObject("reportsummary", summaryList);
+				System.out.println("Normal Summary Size: " + summaryList.size());
+			}
+
+			// ===========================================================
+			// DETAIL SECTION
+			// ===========================================================
+
+			if ("detail".equalsIgnoreCase(dtltype)) {
+
+				// ---------- DETAIL + ARCHIVAL ----------
+				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+
+					// ✅ Using JDBC method instead of JPA
+					List<M_SRWA_12D_Archival_Detail_Entity> detailList = getSrw12dArchivalDetailDataByDateAndVersion(
+							reportDate, version);
+
+					mv.addObject("displaymode", "detail");
+					mv.addObject("reportsummary", detailList);
+					System.out.println("Archival Detail Size: " + detailList.size());
+				}
+
+				// ---------- DETAIL + RESUB ----------
+				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+
+					// ✅ Using JDBC method instead of JPA
+					List<M_SRWA_12D_Resub_Detail_Entity> detailList = getSrw12dResubDetailDataByDateAndVersion(
+							reportDate, version);
+
+					mv.addObject("displaymode", "resubDetail");
+					mv.addObject("reportsummary", detailList);
+					System.out.println("Resub Detail Size: " + detailList.size());
+				}
+
+				// ---------- DETAIL + NORMAL ----------
+				else {
+
+					// ✅ Using JDBC method instead of JPA
+					List<M_SRWA_12D_Detail_Entity> detailList = getSrw12dDetailDataByDate(reportDate);
+
+					mv.addObject("displaymode", "detail");
+					mv.addObject("reportsummary", detailList);
+					System.out.println("Normal Detail Size: " + detailList.size());
+				}
+			}
+
 		} catch (ParseException e) {
-			System.out.println("❌ DATE PARSE ERROR");
 			e.printStackTrace();
 		}
 
-		System.out.println("Report ID   : " + reportId);
-		System.out.println("From Date   : " + fromdate);
-		System.out.println("To Date     : " + todate);
-		System.out.println("Currency    : " + currency);
-		System.out.println("Type        : " + type);
-		System.out.println("DtlType     : " + dtltype);
-		System.out.println("Version     : " + version);
-
-		if (type == null) {
-			System.out.println("❌ TYPE IS NULL");
-		}
-
-		if (version == null) {
-			System.out.println("❌ VERSION IS NULL");
-		}
-
-		/* ===================== ARCHIVAL ===================== */
-		if ("ARCHIVAL".equalsIgnoreCase(type)) {
-
-			System.out.println("➡ ENTERED ARCHIVAL BLOCK");
-
-			if ("detail".equalsIgnoreCase(dtltype)) {
-
-				System.out.println("➡ FETCHING ARCHIVAL DETAIL");
-
-				List<M_SRWA_12D_Archival_Detail_Entity> detailList = bRRS_M_SRWA_12D_Archival_Detail_Repo
-						.getdatabydateListarchival(reportDate, version);
-
-				System.out.println("Archival Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
-
-				mv.addObject("reportsummary", detailList);
-				mv.addObject("displaymode", "detail");
-
-			} else {
-
-				System.out.println("➡ FETCHING ARCHIVAL SUMMARY");
-
-				List<M_SRWA_12D_Archival_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Archival_Summary_Repo
-						.getdatabydateListarchival(reportDate, version);
-
-				System.out
-						.println("Archival Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
-
-				mv.addObject("reportsummary", summaryList);
-				mv.addObject("displaymode", "summary");
-			}
-		}
-
-		/* ===================== RESUB ===================== */
-		else if ("RESUB".equalsIgnoreCase(type)) {
-
-			System.out.println("➡ ENTERED RESUB BLOCK");
-
-			if ("detail".equalsIgnoreCase(dtltype)) {
-
-				System.out.println("➡ FETCHING RESUB DETAIL");
-
-				List<M_SRWA_12D_Resub_Detail_Entity> detailList = bRRS_M_SRWA_12D_Resub_Detail_Repo
-						.getdatabydateListarchival(reportDate, version);
-
-				System.out.println("Resub Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
-
-				mv.addObject("reportsummary", detailList);
-				mv.addObject("displaymode", "detail");
-
-			} else {
-
-				System.out.println("➡ FETCHING RESUB SUMMARY");
-
-				List<M_SRWA_12D_Resub_Summary_Entity> summaryList = bRRS_M_SRWA_12D_Resub_Summary_Repo
-						.getdatabydateListarchival(reportDate, version);
-
-				System.out.println("Resub Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
-
-				mv.addObject("reportsummary", summaryList);
-				mv.addObject("displaymode", "summary");
-			}
-		}
-
-		/* ===================== NORMAL ===================== */
-		else {
-
-			System.out.println("➡ ENTERED NORMAL BLOCK");
-
-			if ("detail".equalsIgnoreCase(dtltype)) {
-
-				System.out.println("➡ FETCHING NORMAL DETAIL");
-
-				List<M_SRWA_12D_Detail_Entity> detailList = bRRS_M_SRWA_12D_Detail_Repo.getdatabydateList(reportDate);
-
-				System.out.println("Normal Detail List Size : " + (detailList != null ? detailList.size() : "NULL"));
-
-				mv.addObject("reportsummary", detailList);
-				mv.addObject("displaymode", "detail");
-
-			} else {
-
-				System.out.println("➡ FETCHING NORMAL SUMMARY");
-
-				List<M_SRWA_12D_Summary_Entity> summaryList = M_SRWA_12D_Summary_Repo.getdatabydateList(reportDate);
-
-				System.out.println("Normal Summary List Size : " + (summaryList != null ? summaryList.size() : "NULL"));
-
-				mv.addObject("reportsummary", summaryList);
-				mv.addObject("displaymode", "summary");
-			}
-		}
-
-		System.out.println("========== EXIT getM_SRWA_12DView ==========");
-
+		mv.setViewName("BRRS/M_SRWA_12D");
+		System.out.println("View set to: " + mv.getViewName());
 		return mv;
 	}
+
+//=========================================
+//UPDATE REPORT METHOD - JDBC VERSION
+//=========================================
 
 	@Transactional
 	public void updateReport(M_SRWA_12D_Summary_Entity updatedEntity) {
@@ -245,48 +18217,91 @@ public class BRRS_M_SRWA_12D_ReportService {
 		System.out.println("Came to services");
 		System.out.println("report_date: " + updatedEntity.getReport_date());
 
-		M_SRWA_12D_Summary_Entity existing = M_SRWA_12D_Summary_Repo.findById(updatedEntity.getReport_date())
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		Date reportDate = updatedEntity.getReport_date();
 
-		M_SRWA_12D_Detail_Entity existing1 = bRRS_M_SRWA_12D_Detail_Repo.findById(updatedEntity.getReport_date())
-				.orElseThrow(() -> new RuntimeException(
-						"Detail Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
-
-		// 🔹 Audit copy: Create a clone of the original database summary state before
-		// making updates
+		// =====================================================
+		// 1️⃣ FETCH EXISTING SUMMARY USING JDBC
+		// =====================================================
+		List<M_SRWA_12D_Summary_Entity> existingSummaryList = getSrw12dSummaryDataByDate(reportDate);
+		M_SRWA_12D_Summary_Entity existing;
 		M_SRWA_12D_Summary_Entity oldcopy = new M_SRWA_12D_Summary_Entity();
-		BeanUtils.copyProperties(existing, oldcopy);
 
+		if (!existingSummaryList.isEmpty()) {
+			existing = existingSummaryList.get(0);
+			BeanUtils.copyProperties(existing, oldcopy);
+			System.out.println("✅ Existing Summary record found for date: " + reportDate);
+		} else {
+			existing = new M_SRWA_12D_Summary_Entity();
+			existing.setReport_date(reportDate);
+			System.out.println("⚠️ No Summary record found — creating new entry for date: " + reportDate);
+		}
+
+		// =====================================================
+		// 2️⃣ FETCH OR CREATE DETAIL USING JDBC
+		// =====================================================
+		List<M_SRWA_12D_Detail_Entity> existingDetailList = getSrw12dDetailDataByDate(reportDate);
+		M_SRWA_12D_Detail_Entity existingDetail;
+
+		if (!existingDetailList.isEmpty()) {
+			existingDetail = existingDetailList.get(0);
+			System.out.println("✅ Existing Detail record found for date: " + reportDate);
+		} else {
+			existingDetail = new M_SRWA_12D_Detail_Entity();
+			existingDetail.setReport_date(reportDate);
+			System.out.println("⚠️ No Detail record found — creating new entry for date: " + reportDate);
+		}
+
+		// =====================================================
+		// 3️⃣ UPDATE FIELDS USING REFLECTION
+		// =====================================================
 		try {
-
-			String[] totalFields = { "PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
-					"PRINCIPAL_AMOUNT_INTEREST_CONTRACTS", "TOTAL_CURRENT_INTEREST_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+			// Define all field names (without R-prefix)
+			String[] fieldNames = { "LINE_NO_EXCHANGE_CONTRACTS", "RESIDUAL_MATURITY_EXCHANGE_CONTRACTS",
+					"PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
+					"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS", "LINE_NO_INTEREST_CONTRACTS",
+					"RESIDUAL_MATURITY_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
+					"TOTAL_CURRENT_INTEREST_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "CREDIT_EQUIVALENT_INTEREST_CONTRACTS",
+					"APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS", "RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
+					"LINE_NO_EQUITY_CONTRACTS", "RESIDUAL_MATURITY_EQUITY_CONTRACTS",
 					"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
-					"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
-					"PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS",
+					"CREDIT_EQUIVALENT_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS", "LINE_NO_PRECIOUS_CONTRACTS",
+					"RESIDUAL_MATURITY_PRECIOUS_CONTRACTS", "PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS",
+					"TOTAL_CURRENT_PRECIOUS_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS",
+					"APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS", "RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
+					"LINE_NO_DEBT_CONTRACTS", "RESIDUAL_MATURITY_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS",
+					"TOTAL_CURRENT_DEBT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "CREDIT_EQUIVALENT_DEBT_CONTRACTS",
+					"APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
+					"LINE_NO_CREDIT_CONTRACTS", "RESIDUAL_MATURITY_CREDIT_CONTRACTS",
 					"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
-					"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS", "POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS",
-					"ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS", "APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS" };
+					"POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
+					"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS", "LINE_NO_DERIVATIVE_CONTRACTS",
+					"NETTED_EXPOSURES_DERIVATIVE_CONTRACTS", "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
+					"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
+					"CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS", "APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" };
 
-			for (int i = 12; i <= 45; i++) {
+			// Rows that exist in the entity (R12, R13, R14, R15, R21, R22, R23, R24, R30,
+			// R31, R32, R33, R43, R44, R45)
+			String[] rowNumbers = { "12", "13", "14", "15", "21", "22", "23", "24", "30", "31", "32", "33", "43", "44",
+					"45" };
 
-				String prefix = "R" + i + "_";
+			for (String rowNum : rowNumbers) {
+				String prefix = "R" + rowNum + "_";
 
-				for (String field : totalFields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+				for (String fieldName : fieldNames) {
+					String getterName = "get" + prefix + fieldName;
+					String setterName = "set" + prefix + fieldName;
 
 					try {
-
-						// ===== Summary Update =====
+						// ===== SUMMARY UPDATE =====
 						Method getterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
 						Method setterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(setterName,
 								getterSummary.getReturnType());
@@ -294,7 +18309,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 						Object newValue = getterSummary.invoke(updatedEntity);
 						Object existingValue = getterSummary.invoke(existing);
 
-						// --- FIX: Normalize state differences to keep audit log payload minimal ---
+						// Normalize state differences
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -304,15 +18319,19 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 						setterSummary.invoke(existing, newValue);
 
-						// ===== Detail Update =====
+						// ===== DETAIL UPDATE =====
 						Method getterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(getterName);
 						Method setterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(setterName,
 								getterDetail.getReturnType());
 
-						setterDetail.invoke(existing1, newValue);
+						setterDetail.invoke(existingDetail, newValue);
 
 					} catch (NoSuchMethodException e) {
+						// Skip if field doesn't exist
 						continue;
+					} catch (Exception e) {
+						System.err.println("Error processing field: " + getterName);
+						e.printStackTrace();
 					}
 				}
 			}
@@ -323,32 +18342,92 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 		System.out.println("Saving Summary and Detail...");
 
-		M_SRWA_12D_Summary_Repo.save(existing);
-		bRRS_M_SRWA_12D_Detail_Repo.save(existing1);
+		// =====================================================
+		// 4️⃣ SAVE BOTH TABLES USING JDBC
+		// =====================================================
+		saveOrUpdateSrw12dSummary(existing);
+		saveOrUpdateSrw12dDetail(existingDetail);
 
 		// =====================================================
-		// EVALUATE AND LOG AUDIT TRAIL
+		// 5️⃣ EVALUATE AND LOG AUDIT TRAIL
 		// =====================================================
 		String changes = auditService.getChanges(oldcopy, existing);
 		System.out.println("M_SRWA_12D Changes Length = " + changes.length());
 
 		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReport_date().toString(),
-					"M_SRWA_12D Summary Screen", "BRRS_M_SRWA_12D_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), "M_SRWA_12D Summary Screen",
+					"BRRS_M_SRWA_12D_SUMMARY");
 		}
 
 		System.out.println("Update Completed Successfully");
 	}
 
+//============================
+//SAVE/UPDATE METHODS FOR SRWA 12D SUMMARY
+//============================
+
+	private void saveOrUpdateSrw12dSummary(M_SRWA_12D_Summary_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_SUMMARYTABLE SET "
+					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date());
+			System.out.println("✅ Summary updated for date: " + entity.getReport_date());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_SUMMARYTABLE "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
+					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
+					entity.getDel_flg());
+			System.out.println("✅ Summary inserted for date: " + entity.getReport_date());
+		}
+	}
+
+//============================
+//SAVE/UPDATE METHODS FOR SRWA 12D DETAIL
+//============================
+
+	private void saveOrUpdateSrw12dDetail(M_SRWA_12D_Detail_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_DETAILTABLE SET "
+					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date());
+			System.out.println("✅ Detail updated for date: " + entity.getReport_date());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_DETAILTABLE "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
+					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
+					entity.getDel_flg());
+			System.out.println("✅ Detail inserted for date: " + entity.getReport_date());
+		}
+	}
+
+//========================================
+//ARCHIVAL VIEW - JDBC VERSION
+//========================================
+
 	public List<Date> getSRWA_12DArchival() {
-
 		try {
-			List<Date> archivalList = bRRS_M_SRWA_12D_Archival_Summary_Repo.getM_SECLParchival();
-
+			// ✅ Using JDBC method instead of JPA
+			List<Date> archivalList = getSrw12dArchivalSummaryReportDatesOnly();
 			System.out.println("Archival count : " + archivalList.size());
-
 			return archivalList;
-
 		} catch (Exception e) {
 			System.err.println("Error fetching SRWA_12D Archival data : " + e.getMessage());
 			e.printStackTrace();
@@ -357,43 +18436,36 @@ public class BRRS_M_SRWA_12D_ReportService {
 	}
 
 	public List<Object> getSRWA_12DArchival1() {
-
 		List<Object> archivalList = new ArrayList<>();
-
 		try {
-
-			List<M_SRWA_12D_Archival_Summary_Entity> repoData = bRRS_M_SRWA_12D_Archival_Summary_Repo
-					.getdatabydateListWithVersion1();
+			// ✅ Using JDBC method instead of JPA
+			List<M_SRWA_12D_Archival_Summary_Entity> repoData = getSrw12dArchivalSummaryDataWithVersion();
 
 			if (repoData != null && !repoData.isEmpty()) {
-
 				for (M_SRWA_12D_Archival_Summary_Entity entity : repoData) {
-
 					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
 							entity.getReportResubDate() };
-
-					archivalList.add(row); // Object[] stored as Object
+					archivalList.add(row);
 				}
-
 				System.out.println("Fetched " + archivalList.size() + " archival records");
-
 			} else {
 				System.out.println("No archival data found.");
 			}
-
 		} catch (Exception e) {
 			System.err.println("Error fetching SRWA_12D Archival data: " + e.getMessage());
 			e.printStackTrace();
 		}
-
 		return archivalList;
 	}
 
+//========================================
+//RESUB VIEW - JDBC VERSION
+//========================================
+
 	public List<Object[]> getM_SRWA_12DResub() {
-
 		try {
-
-			List<Object[]> repoData = bRRS_M_SRWA_12D_Resub_Summary_Repo.getResubData();
+			// ✅ Using JDBC method instead of JPA
+			List<Object[]> repoData = getSrw12dResubSummaryDataWithResubDate();
 
 			if (repoData == null || repoData.isEmpty()) {
 				return Collections.emptyList();
@@ -402,15 +18474,11 @@ public class BRRS_M_SRWA_12D_ReportService {
 			Map<String, Object[]> uniqueMap = new LinkedHashMap<>();
 
 			for (Object[] e : repoData) {
-
 				Date reportDate = e[0] != null ? (Date) e[0] : null;
-
 				BigDecimal reportVersion = e[1] != null ? (BigDecimal) e[1] : null;
-
 				Date reportResubDate = e[2] != null ? (Date) e[2] : null;
 
 				String key = reportDate + "_" + reportVersion;
-
 				uniqueMap.putIfAbsent(key, new Object[] { reportDate, reportVersion, reportResubDate });
 			}
 
@@ -422,6 +18490,10 @@ public class BRRS_M_SRWA_12D_ReportService {
 		}
 	}
 
+//========================================
+//UPDATE RESUB REPORT METHOD - JDBC VERSION
+//========================================
+
 	@Transactional
 	public void updateReport1(M_SRWA_12D_Resub_Summary_Entity updatedEntity) {
 
@@ -429,21 +18501,22 @@ public class BRRS_M_SRWA_12D_ReportService {
 		System.out.println("report_date: " + updatedEntity.getReport_date());
 
 		try {
+			// ==========================
+			// 1️⃣ GET NEW VERSION USING JDBC
+			// ==========================
+			BigDecimal maxVersion = getSrw12dGlobalMaxResubSummaryVersion();
+			BigDecimal newVersion = (maxVersion == null || maxVersion.compareTo(BigDecimal.ZERO) == 0) ? BigDecimal.ONE
+					: maxVersion.add(BigDecimal.ONE);
+
+			System.out.println("New Version: " + newVersion);
 
 			// ==========================
-			// 1️⃣ GET NEW VERSION
-			// ==========================
-			BigDecimal maxVersion = bRRS_M_SRWA_12D_Resub_Summary_Repo.findGlobalMaxReportVersion();
-
-			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
-
-			// ==========================
-			// 2️⃣ CREATE NEW ROW OBJECT
+			// 2️⃣ CREATE NEW ENTITY OBJECT
 			// ==========================
 			M_SRWA_12D_Resub_Summary_Entity newEntity = new M_SRWA_12D_Resub_Summary_Entity();
 
 			// ==========================
-			// 3️⃣ SET PRIMARY KEY FIRST
+			// 3️⃣ SET PRIMARY KEY & COMMON FIELDS
 			// ==========================
 			newEntity.setReport_date(updatedEntity.getReport_date());
 			newEntity.setReport_version(newVersion);
@@ -485,15 +18558,47 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 
 			// ==========================
-			// 8️⃣ SAVE
+			// 8️⃣ SAVE USING JDBC
 			// ==========================
-			bRRS_M_SRWA_12D_Resub_Summary_Repo.saveAndFlush(newEntity);
+			saveOrUpdateSrw12dResubSummary(newEntity);
 
 			System.out.println("Insert Success with version: " + newVersion);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Insert failed", e);
+		}
+	}
+
+//============================
+//SAVE/UPDATE METHOD FOR SRWA 12D RESUB SUMMARY
+//============================
+
+	private void saveOrUpdateSrw12dResubSummary(M_SRWA_12D_Resub_Summary_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		Integer count = jdbcTemplate.queryForObject(checkSql,
+				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY SET "
+					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date(), entity.getReport_version());
+			System.out.println("✅ Resub Summary updated for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_RESUBTABLE_SUMMARY "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
+					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
+					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			System.out.println("✅ Resub Summary inserted for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
 		}
 	}
 
@@ -554,6 +18659,10 @@ public class BRRS_M_SRWA_12D_ReportService {
 		}
 	}
 
+	// ========================================
+	// UPDATE RESUB DETAIL REPORT METHOD - JDBC VERSION
+	// ========================================
+
 	@Transactional
 	public void updateReport2(M_SRWA_12D_Resub_Detail_Entity updatedEntity) {
 
@@ -561,13 +18670,12 @@ public class BRRS_M_SRWA_12D_ReportService {
 		System.out.println("report_date: " + updatedEntity.getReport_date());
 
 		try {
-
 			// ==========================
-			// 1️⃣ GET NEW VERSION
+			// 1️⃣ GET NEW VERSION USING JDBC
 			// ==========================
-			BigDecimal maxVersion = bRRS_M_SRWA_12D_Resub_Detail_Repo.findGlobalMaxReportVersion();
-
-			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal maxVersion = getSrw12dGlobalMaxResubDetailVersion();
+			BigDecimal newVersion = (maxVersion == null || maxVersion.compareTo(BigDecimal.ZERO) == 0) ? BigDecimal.ONE
+					: maxVersion.add(BigDecimal.ONE);
 
 			System.out.println("New Version: " + newVersion);
 
@@ -613,9 +18721,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 
 			// ==========================
-			// 6️⃣ SAVE NEW ROW
+			// 6️⃣ SAVE NEW ROW USING JDBC
 			// ==========================
-			bRRS_M_SRWA_12D_Resub_Detail_Repo.saveAndFlush(newEntity);
+			saveOrUpdateSrw12dResubDetail(newEntity);
 
 			System.out.println("✅ Detail Insert Success with Version: " + newVersion);
 			System.out.println("========== END updateReport2 ==========");
@@ -623,6 +18731,38 @@ public class BRRS_M_SRWA_12D_ReportService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Detail Insert failed", e);
+		}
+	}
+
+	// ============================
+	// SAVE/UPDATE METHOD FOR SRWA 12D RESUB DETAIL
+	// ============================
+
+	private void saveOrUpdateSrw12dResubDetail(M_SRWA_12D_Resub_Detail_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_RESUBTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		Integer count = jdbcTemplate.queryForObject(checkSql,
+				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_RESUBTABLE_DETAIL SET "
+					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date(), entity.getReport_version());
+			System.out.println("✅ Resub Detail updated for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_RESUBTABLE_DETAIL "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
+					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
+					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			System.out.println("✅ Resub Detail inserted for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
 		}
 	}
 
@@ -684,6 +18824,10 @@ public class BRRS_M_SRWA_12D_ReportService {
 		}
 	}
 
+	// ========================================
+	// UPDATE ARCHIVAL SUMMARY REPORT METHOD - JDBC VERSION
+	// ========================================
+
 	@Transactional
 	public void updateReport3(M_SRWA_12D_Archival_Summary_Entity updatedEntity) {
 
@@ -691,13 +18835,12 @@ public class BRRS_M_SRWA_12D_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		try {
-
 			// ==========================
-			// 1️⃣ GET NEW VERSION
+			// 1️⃣ GET NEW VERSION USING JDBC
 			// ==========================
-			BigDecimal maxVersion = bRRS_M_SRWA_12D_Archival_Summary_Repo.findGlobalMaxReportVersion();
-
-			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal maxVersion = getSrw12dGlobalMaxArchivalSummaryVersion();
+			BigDecimal newVersion = (maxVersion == null || maxVersion.compareTo(BigDecimal.ZERO) == 0) ? BigDecimal.ONE
+					: maxVersion.add(BigDecimal.ONE);
 
 			System.out.println("New Version: " + newVersion);
 
@@ -743,9 +18886,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 
 			// ==========================
-			// 6️⃣ SAVE NEW ROW
+			// 6️⃣ SAVE NEW ROW USING JDBC
 			// ==========================
-			bRRS_M_SRWA_12D_Archival_Summary_Repo.saveAndFlush(newEntity);
+			saveOrUpdateSrw12dArchivalSummary(newEntity);
 
 			System.out.println("✅ Archival Summary Insert Success Version: " + newVersion);
 			System.out.println("========== END updateReport3 ==========");
@@ -753,6 +18896,38 @@ public class BRRS_M_SRWA_12D_ReportService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Archival Summary Insert failed", e);
+		}
+	}
+
+	// ============================
+	// SAVE/UPDATE METHOD FOR SRWA 12D ARCHIVAL SUMMARY
+	// ============================
+
+	private void saveOrUpdateSrw12dArchivalSummary(M_SRWA_12D_Archival_Summary_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		Integer count = jdbcTemplate.queryForObject(checkSql,
+				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY SET "
+					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date(), entity.getReport_version());
+			System.out.println("✅ Archival Summary updated for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_ARCHIVALTABLE_SUMMARY "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
+					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
+					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			System.out.println("✅ Archival Summary inserted for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
 		}
 	}
 
@@ -814,6 +18989,10 @@ public class BRRS_M_SRWA_12D_ReportService {
 		}
 	}
 
+	// ========================================
+	// UPDATE ARCHIVAL DETAIL REPORT METHOD - JDBC VERSION
+	// ========================================
+
 	@Transactional
 	public void updateReport4(M_SRWA_12D_Archival_Detail_Entity updatedEntity) {
 
@@ -821,13 +19000,12 @@ public class BRRS_M_SRWA_12D_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		try {
-
 			// ==========================
-			// 1️⃣ GET NEW VERSION
+			// 1️⃣ GET NEW VERSION USING JDBC
 			// ==========================
-			BigDecimal maxVersion = bRRS_M_SRWA_12D_Archival_Detail_Repo.findGlobalMaxReportVersion();
-
-			BigDecimal newVersion = (maxVersion == null) ? BigDecimal.ONE : maxVersion.add(BigDecimal.ONE);
+			BigDecimal maxVersion = getSrw12dGlobalMaxArchivalDetailVersion();
+			BigDecimal newVersion = (maxVersion == null || maxVersion.compareTo(BigDecimal.ZERO) == 0) ? BigDecimal.ONE
+					: maxVersion.add(BigDecimal.ONE);
 
 			System.out.println("New Version: " + newVersion);
 
@@ -873,9 +19051,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 
 			// ==========================
-			// 6️⃣ SAVE NEW ROW
+			// 6️⃣ SAVE NEW ROW USING JDBC
 			// ==========================
-			bRRS_M_SRWA_12D_Archival_Detail_Repo.saveAndFlush(newEntity);
+			saveOrUpdateSrw12dArchivalDetail(newEntity);
 
 			System.out.println("✅ Archival Detail Insert Success Version: " + newVersion);
 			System.out.println("========== END updateReport4 ==========");
@@ -883,6 +19061,38 @@ public class BRRS_M_SRWA_12D_ReportService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Archival Detail Insert failed", e);
+		}
+	}
+
+	// ============================
+	// SAVE/UPDATE METHOD FOR SRWA 12D ARCHIVAL DETAIL
+	// ============================
+
+	private void saveOrUpdateSrw12dArchivalDetail(M_SRWA_12D_Archival_Detail_Entity entity) {
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		Integer count = jdbcTemplate.queryForObject(checkSql,
+				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
+
+		if (count > 0) {
+			String sql = "UPDATE BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL SET "
+					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
+					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+					entity.getReport_date(), entity.getReport_version());
+			System.out.println("✅ Archival Detail updated for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
+		} else {
+			String sql = "INSERT INTO BRRS_M_SRWA_12D_ARCHIVALTABLE_DETAIL "
+					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
+					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
+					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			System.out.println("✅ Archival Detail inserted for date: " + entity.getReport_date() + ", version: "
+					+ entity.getReport_version());
 		}
 	}
 
@@ -987,10 +19197,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 						version);
 			} else {
 
-				// Fetch data
-
-				List<M_SRWA_12D_Summary_Entity> dataList = M_SRWA_12D_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate));
+				// ✅ Fetch data using JDBC instead of JPA
+				List<M_SRWA_12D_Summary_Entity> dataList = getSrw12dSummaryDataByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_SRWA_12D report. Returning empty result.");
@@ -1006,17 +19214,13 @@ public class BRRS_M_SRWA_12D_ReportService {
 				logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 				if (!Files.exists(templatePath)) {
-					// This specific exception will be caught by the controller.
 					throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 				}
 				if (!Files.isReadable(templatePath)) {
-					// A specific exception for permission errors.
 					throw new SecurityException("Template file exists but is not readable (check permissions): "
 							+ templatePath.toAbsolutePath());
 				}
 
-				// This try-with-resources block is perfect. It guarantees all resources are
-				// closed automatically.
 				try (InputStream templateInputStream = Files.newInputStream(templatePath);
 						Workbook workbook = WorkbookFactory.create(templateInputStream);
 						ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -1039,13 +19243,11 @@ public class BRRS_M_SRWA_12D_ReportService {
 					textStyle.setBorderLeft(BorderStyle.THIN);
 					textStyle.setBorderRight(BorderStyle.THIN);
 
-					// Create the font
 					Font font = workbook.createFont();
-					font.setFontHeightInPoints((short) 8); // size 8
+					font.setFontHeightInPoints((short) 8);
 					font.setFontName("Arial");
 
 					CellStyle numberStyle = workbook.createCellStyle();
-					// numberStyle.setDataFormat(createHelper.createDataFormat().getFormat("0.000"));
 					numberStyle.setBorderBottom(BorderStyle.THIN);
 					numberStyle.setBorderTop(BorderStyle.THIN);
 					numberStyle.setBorderLeft(BorderStyle.THIN);
@@ -1063,7 +19265,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 							if (row == null) {
 								row = sheet.createRow(startRow + i);
 							}
-//NORMAL
+
+							// NORMAL
+
 							Cell R12Cell = row.createCell(4);
 
 							if (record.getReport_date() != null) {
@@ -2126,11 +20330,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 						}
 
 						workbook.setForceFormulaRecalculation(true);
-					} else {
-
 					}
 
-					// Write the final workbook content to the in-memory stream.
 					workbook.write(out);
 
 					logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
@@ -2195,8 +20396,7 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 				// Fetch data
 
-				List<M_SRWA_12D_Summary_Entity> dataList = M_SRWA_12D_Summary_Repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<M_SRWA_12D_Summary_Entity> dataList = getSrw12dSummaryDataByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_SRWA_12D report. Returning empty result.");
@@ -3382,8 +21582,8 @@ public class BRRS_M_SRWA_12D_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} else {
-			List<M_SRWA_12D_Summary_Entity> dataList = M_SRWA_12D_Summary_Repo
-					.getdatabydateList(dateformat.parse(todate));
+			// ✅ NEW - JDBC Method
+			List<M_SRWA_12D_Summary_Entity> dataList = getSrw12dSummaryDataByDate(dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for BRRS_M_SRWA_12D report. Returning empty result.");
@@ -4543,8 +22743,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 		}
 
-		List<M_SRWA_12D_Archival_Summary_Entity> dataList = bRRS_M_SRWA_12D_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		// ✅ NEW - JDBC Method
+		List<M_SRWA_12D_Archival_Summary_Entity> dataList = getSrw12dArchivalSummaryDataByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SRWA_12D report. Returning empty result.");
@@ -5675,8 +23876,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_SRWA_12D_Archival_Summary_Entity> dataList = bRRS_M_SRWA_12D_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		// ✅ NEW - JDBC Method
+		List<M_SRWA_12D_Archival_Summary_Entity> dataList = getSrw12dArchivalSummaryDataByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_SRWA_12D report. Returning empty result.");
@@ -6819,8 +25021,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 			}
 		}
 
-		List<M_SRWA_12D_Resub_Summary_Entity> dataList = bRRS_M_SRWA_12D_Resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		// ✅ NEW - JDBC Method
+		List<M_SRWA_12D_Resub_Summary_Entity> dataList = getSrw12dResubSummaryDataByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_SRWA_12D report. Returning empty result.");
@@ -7952,8 +26155,9 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_SRWA_12D_Resub_Summary_Entity> dataList = bRRS_M_SRWA_12D_Resub_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		// ✅ NEW - JDBC Method
+		List<M_SRWA_12D_Resub_Summary_Entity> dataList = getSrw12dResubSummaryDataByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_SRWA_12D report. Returning empty result.");

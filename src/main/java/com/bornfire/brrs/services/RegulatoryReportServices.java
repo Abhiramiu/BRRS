@@ -399,7 +399,6 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_AS_11_ReportService BRRS_AS_11_Reportservice;
 
-	
 	@Autowired
 	BRRS_Q_STAFF_Report_Service BRRS_Q_STAFF_report_service;
 
@@ -519,8 +518,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_SRWA_12D":
-			repsummary = brrs_m_srwa_12d_reportservice.getM_SRWA_12DView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version, req, md);
+			repsummary = brrs_m_srwa_12d_reportservice.getBRRS_M_SRWA_12D_View(reportId, fromdate, todate, currency,
+					dtltype, pageable, type, version, req, md);
 			break;
 
 		case "Q_LARADV":
@@ -1492,7 +1491,6 @@ public class RegulatoryReportServices {
 			repdetail = brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPcurrentDtl(reportId, fromdate, todate, currency,
 					dtltype, pageable, Filter, type, version);
 			break;
-
 
 		case "M_P_L":
 
@@ -2792,7 +2790,6 @@ public class RegulatoryReportServices {
 					type, version);
 		}
 
-		
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
@@ -2904,13 +2901,12 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_LA1":
-			
+
 			List<Object[]> M_LA1List = BRRS_M_LA1_reportservice.getM_LA1Archival();
 			archivalData.addAll(M_LA1List);
 			System.out.println("Fetched M_LA1 archival data: " + M_LA1List.size());
 			break;
-			
-			
+
 		case "M_LA1_NEW":
 			try {
 				archivalData = BRRS_M_LA1_reportservice_new.getM_LA1Archival();
@@ -3555,8 +3551,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		
-
 		case "Q_STAFF":
 			List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
 			archivalData.addAll(QSList);
@@ -3933,8 +3927,6 @@ public class RegulatoryReportServices {
 			fileData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
 					dtltype, type, version);
 		}
-
-		
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
@@ -5334,8 +5326,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		
-
 		case "M_UNCONS_INVEST":
 			try {
 				List<Object[]> resubList = BRRS_M_UNCONS_INVEST_reportservice.getM_UNCONS_INVESTResub();
@@ -5463,46 +5453,46 @@ public class RegulatoryReportServices {
 			}
 			break;
 		case "Q_SMME_LA":
-try {
-	List<Object[]> resubList = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMME_loans_AdvancesResub();
-	resubmissionData.addAll(resubList);
-	System.out.println("Resubmission data fetched for Q_SMME_LA: " + resubList.size());
-} catch (Exception e) {
-	System.err.println("Error fetching resubmission data for Q_SMME_LA: " + e.getMessage());
-	e.printStackTrace();
-}
-break;
+			try {
+				List<Object[]> resubList = BRRS_Q_SMME_loans_Advances_reportService.getQ_SMME_loans_AdvancesResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Q_SMME_LA: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Q_SMME_LA: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 
-case "FORMAT_III":
-try {
-	List<Object[]> resubList = BRRS_FORMAT_III_ReportService.getFORMAT_IIIResub();
-	resubmissionData.addAll(resubList);
-	System.out.println("Resubmission data fetched for FORMAT_III: " + resubList.size());
-} catch (Exception e) {
-	System.err.println("Error fetching resubmission data for FORMAT_III: " + e.getMessage());
-	e.printStackTrace();
-}
-break;
-case "EXPANDED_REGU_BS":
-try {
-	List<Object[]> resubList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSResub();
-	resubmissionData.addAll(resubList);
-	System.out.println("Resubmission data fetched for Expanded_Regu_BS: " + resubList.size());
-} catch (Exception e) {
-	System.err.println("Error fetching resubmission data for Expanded_Regu_BS: " + e.getMessage());
-	e.printStackTrace();
-}
-break;
-case "PL_SCHS":
-try {
-	List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
-	resubmissionData.addAll(resubList);
-	System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
-} catch (Exception e) {
-	System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
-	e.printStackTrace();
-}
-break;
+		case "FORMAT_III":
+			try {
+				List<Object[]> resubList = BRRS_FORMAT_III_ReportService.getFORMAT_IIIResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for FORMAT_III: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for FORMAT_III: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "EXPANDED_REGU_BS":
+			try {
+				List<Object[]> resubList = BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for Expanded_Regu_BS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for Expanded_Regu_BS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "PL_SCHS":
+			try {
+				List<Object[]> resubList = BRRS_PL_SCHS_Reportservice.getPL_SCHSResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for PL_SCHS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for PL_SCHS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}
