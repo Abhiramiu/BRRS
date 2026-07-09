@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Lob; 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class AuditServicesEntity {
     private String audit_screen;
     private String event_id;
     private String event_name;
+    @Lob
     private String modi_details;
     private String entry_user;
     @DateTimeFormat(pattern = "dd-MM-yyyy")
