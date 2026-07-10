@@ -247,35 +247,35 @@ public class BRRS_ReportsController {
 
 		// If type is ARCHIVAL, auto-fetch the latest version
 		if ("ARCHIVAL".equalsIgnoreCase(type)) {
-		    try {
-		        // Parse the date for archival lookup
-		        Date reportDate = dateFormat.parse(todate);
+			try {
+				// Parse the date for archival lookup
+				Date reportDate = dateFormat.parse(todate);
 
-		        // Check which report service to use based on reportid
-		        if ("M_SRWA_12D".equalsIgnoreCase(reportid)) {
-		            // ✅ Use fully qualified inner class type
-		            Optional<BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity> latest = 
-		                SRWA12DreportService.getSrw12dLatestArchivalSummaryVersionByDate(reportDate);
-		            if (latest.isPresent()) {
-		                version = latest.get().getReport_version();
-		                System.out.println("✅ Auto-detected Archival Version: " + version + " for date: " + todate);
-		            } else {
-		                System.out.println("⚠️ No archival data found for date: " + todate);
-		            }
-		        }
-		        // Add other report types here if needed (12E, 12F, etc.)
-		        else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
-		            // ✅ Use fully qualified inner class type
-		            Optional<BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Archival_Summary_Entity> latest = 
-		                M_SRWA_12Eservice.getLatestArchivalSummaryVersionByDate(reportDate);
-		            if (latest.isPresent()) {
-		                version = latest.get().getReport_version();
-		                System.out.println("✅ Auto-detected 12E Archival Version: " + version);
-		            }
-		        }
-		    } catch (Exception e) {
-		        System.out.println("⚠️ Error fetching archival version: " + e.getMessage());
-		    }
+				// Check which report service to use based on reportid
+				if ("M_SRWA_12D".equalsIgnoreCase(reportid)) {
+					// ✅ Use fully qualified inner class type
+					Optional<BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity> latest = SRWA12DreportService
+							.getSrw12dLatestArchivalSummaryVersionByDate(reportDate);
+					if (latest.isPresent()) {
+						version = latest.get().getReport_version();
+						System.out.println("✅ Auto-detected Archival Version: " + version + " for date: " + todate);
+					} else {
+						System.out.println("⚠️ No archival data found for date: " + todate);
+					}
+				}
+				// Add other report types here if needed (12E, 12F, etc.)
+				else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
+					// ✅ Use fully qualified inner class type
+					Optional<BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Archival_Summary_Entity> latest = M_SRWA_12Eservice
+							.getLatestArchivalSummaryVersionByDate(reportDate);
+					if (latest.isPresent()) {
+						version = latest.get().getReport_version();
+						System.out.println("✅ Auto-detected 12E Archival Version: " + version);
+					}
+				}
+			} catch (Exception e) {
+				System.out.println("⚠️ Error fetching archival version: " + e.getMessage());
+			}
 		} else {
 			// For non-ARCHIVAL types, parse version normally
 			if (versionStr != null && !versionStr.trim().isEmpty() && !"null".equalsIgnoreCase(versionStr.trim())) {
@@ -2491,16 +2491,16 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute BRRS_M_SEC_Summary_Entity1 request1, @ModelAttribute BRRS_M_SEC_Summary_Entity2 request2,
-			@ModelAttribute BRRS_M_SEC_Summary_Entity3 request3, @ModelAttribute BRRS_M_SEC_Summary_Entity4 request4) {
+			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity2 request2,
+			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity3 request3,
+			@ModelAttribute BRRS_M_SEC_ReportService.BRRS_M_SEC_Summary_Entity4 request4) {
 		try {
-
 			// set date into all 4 entities
-			request1.setReportDate(asondate);
-			request2.setReportDate(asondate);
-			request3.setReportDate(asondate);
-			request4.setReportDate(asondate);
+			request1.setReport_date(asondate); // Note: Use setReport_date() not setReportDate()
+			request2.setReport_date(asondate);
+			request3.setReport_date(asondate);
+			request4.setReport_date(asondate);
 
 			// call services
 			SECreportService.updateReport(request1);
@@ -2508,7 +2508,7 @@ public class BRRS_ReportsController {
 			SECreportService.updateReport2(request3);
 			SECreportService.updateReport3(request4);
 
-			return ResponseEntity.ok("Modifeid Successfully.");
+			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2518,13 +2518,12 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_SEC_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate, // ✅ ISO format
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 			@RequestParam(required = false) String type,
-
-			@ModelAttribute M_SEC_RESUB_Summary_Entity1 request1, @ModelAttribute M_SEC_RESUB_Summary_Entity2 request2,
-			@ModelAttribute M_SEC_RESUB_Summary_Entity3 request3, @ModelAttribute M_SEC_RESUB_Summary_Entity4 request4,
-			HttpServletRequest req) {
+			@ModelAttribute BRRS_M_SEC_ReportService.M_SEC_RESUB_Summary_Entity1 request1,
+			@ModelAttribute BRRS_M_SEC_ReportService.M_SEC_RESUB_Summary_Entity2 request2,
+			@ModelAttribute BRRS_M_SEC_ReportService.M_SEC_RESUB_Summary_Entity3 request3,
+			@ModelAttribute BRRS_M_SEC_ReportService.M_SEC_RESUB_Summary_Entity4 request4, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to M_SEC Resub Controller");
