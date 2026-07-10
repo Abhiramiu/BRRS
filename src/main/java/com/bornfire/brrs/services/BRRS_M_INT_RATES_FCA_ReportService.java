@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,14 +27,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -40,12 +42,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_RESUB_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_RESUB_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_INT_RATES_FCA_Summary_Repo;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Detail_Entity;
@@ -54,7 +50,6 @@ import com.bornfire.brrs.entities.M_INT_RATES_FCA_RESUB_Summary_Entity;
 import com.bornfire.brrs.entities.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
-@Component
 @Service
 
 public class BRRS_M_INT_RATES_FCA_ReportService {
@@ -63,39 +58,444 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	@Autowired
 	private Environment env;
 
-//	@Autowired
-//	private JdbcTemplate jdbcTemplate;
-	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
 	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	SessionFactory sessionFactory;
-
-	@Autowired
-	BRRS_M_INT_RATES_FCA_RESUB_Summary_Repo M_INT_RATES_FCA_resub_summary_repo;
-	
-@Autowired
-	BRRS_M_INT_RATES_FCA_RESUB_Detail_Repo M_INT_RATES_FCA_resub_detail_repo;
-
-	
-
-	@Autowired
-	BRRS_M_INT_RATES_FCA_Summary_Repo M_INT_RATES_FCA_Summary_Repo;
-
-	@Autowired
-	BRRS_M_INT_RATES_FCA_Archival_Summary_Repo M_INT_RATES_FCA_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_INT_RATES_FCA_Detail_Repo M_INT_RATES_FCA_Detail_Repo;
-
-	@Autowired
-	BRRS_M_INT_RATES_FCA_Archival_Detail_Repo M_INT_RATES_FCA_Archival_Detail_Repo;
-	
-	@Autowired
 	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// =========================================================
+	// JDBC QUERY METHODS
+	// =========================================================
+
+	public List<M_INT_RATES_FCA_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_SUMMARYTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new M_INT_RATES_FCASummaryRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_DETAILTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, new M_INT_RATES_FCADetailRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_INT_RATES_FCAArchivalSummaryRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_Archival_Summary_Entity> getArchivalSummaryWithVersionAll() {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
+			new M_INT_RATES_FCAArchivalSummaryRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_INT_RATES_FCAArchivalDetailRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_RESUB_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_INT_RATES_FCAResubSummaryRowMapper());
+	}
+
+	public List<M_INT_RATES_FCA_RESUB_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+			"SELECT * FROM BRRS_M_INT_RATES_FCA_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			new Object[]{reportDate, version}, new M_INT_RATES_FCAResubDetailRowMapper());
+	}
+
+	public BigDecimal findMaxResubVersion(Date reportDate) {
+		return jdbcTemplate.queryForObject(
+			"SELECT MAX(REPORT_VERSION) FROM BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?",
+			new Object[]{reportDate}, BigDecimal.class);
+	}
+
+	// =========================================================
+	// JDBC WRITE METHODS
+	// =========================================================
+
+	private static final String R_COLS =
+		"R10_CURRENCY,R10_CURRENT,R10_CALL,R10_SAVINGS,R10_NOTICE_0_31_DAYS,R10_NOTICE_32_88_DAYS,R10_91_DEPOSIT_DAY," +
+		"R10_FD_1_6_MONTHS,R10_FD_7_12_MONTHS,R10_FD_13_18_MONTHS,R10_FD_19_24_MONTHS,R10_FD_OVER_24_MONTHS,R10_TOTAL," +
+		"R11_CURRENCY,R11_CURRENT,R11_CALL,R11_SAVINGS,R11_NOTICE_0_31_DAYS,R11_NOTICE_32_88_DAYS,R11_91_DEPOSIT_DAY," +
+		"R11_FD_1_6_MONTHS,R11_FD_7_12_MONTHS,R11_FD_13_18_MONTHS,R11_FD_19_24_MONTHS,R11_FD_OVER_24_MONTHS,R11_TOTAL," +
+		"R12_CURRENCY,R12_CURRENT,R12_CALL,R12_SAVINGS,R12_NOTICE_0_31_DAYS,R12_NOTICE_32_88_DAYS,R12_91_DEPOSIT_DAY," +
+		"R12_FD_1_6_MONTHS,R12_FD_7_12_MONTHS,R12_FD_13_18_MONTHS,R12_FD_19_24_MONTHS,R12_FD_OVER_24_MONTHS,R12_TOTAL," +
+		"R13_CURRENCY,R13_CURRENT,R13_CALL,R13_SAVINGS,R13_NOTICE_0_31_DAYS,R13_NOTICE_32_88_DAYS,R13_91_DEPOSIT_DAY," +
+		"R13_FD_1_6_MONTHS,R13_FD_7_12_MONTHS,R13_FD_13_18_MONTHS,R13_FD_19_24_MONTHS,R13_FD_OVER_24_MONTHS,R13_TOTAL," +
+		"R14_CURRENCY,R14_CURRENT,R14_CALL,R14_SAVINGS,R14_NOTICE_0_31_DAYS,R14_NOTICE_32_88_DAYS,R14_91_DEPOSIT_DAY," +
+		"R14_FD_1_6_MONTHS,R14_FD_7_12_MONTHS,R14_FD_13_18_MONTHS,R14_FD_19_24_MONTHS,R14_FD_OVER_24_MONTHS,R14_TOTAL," +
+		"R15_CURRENCY,R15_CURRENT,R15_CALL,R15_SAVINGS,R15_NOTICE_0_31_DAYS,R15_NOTICE_32_88_DAYS,R15_91_DEPOSIT_DAY," +
+		"R15_FD_1_6_MONTHS,R15_FD_7_12_MONTHS,R15_FD_13_18_MONTHS,R15_FD_19_24_MONTHS,R15_FD_OVER_24_MONTHS,R15_TOTAL";
+
+	private static final String R_FIELDS_SET =
+		"R10_CURRENCY=?,R10_CURRENT=?,R10_CALL=?,R10_SAVINGS=?,R10_NOTICE_0_31_DAYS=?,R10_NOTICE_32_88_DAYS=?,R10_91_DEPOSIT_DAY=?," +
+		"R10_FD_1_6_MONTHS=?,R10_FD_7_12_MONTHS=?,R10_FD_13_18_MONTHS=?,R10_FD_19_24_MONTHS=?,R10_FD_OVER_24_MONTHS=?,R10_TOTAL=?," +
+		"R11_CURRENCY=?,R11_CURRENT=?,R11_CALL=?,R11_SAVINGS=?,R11_NOTICE_0_31_DAYS=?,R11_NOTICE_32_88_DAYS=?,R11_91_DEPOSIT_DAY=?," +
+		"R11_FD_1_6_MONTHS=?,R11_FD_7_12_MONTHS=?,R11_FD_13_18_MONTHS=?,R11_FD_19_24_MONTHS=?,R11_FD_OVER_24_MONTHS=?,R11_TOTAL=?," +
+		"R12_CURRENCY=?,R12_CURRENT=?,R12_CALL=?,R12_SAVINGS=?,R12_NOTICE_0_31_DAYS=?,R12_NOTICE_32_88_DAYS=?,R12_91_DEPOSIT_DAY=?," +
+		"R12_FD_1_6_MONTHS=?,R12_FD_7_12_MONTHS=?,R12_FD_13_18_MONTHS=?,R12_FD_19_24_MONTHS=?,R12_FD_OVER_24_MONTHS=?,R12_TOTAL=?," +
+		"R13_CURRENCY=?,R13_CURRENT=?,R13_CALL=?,R13_SAVINGS=?,R13_NOTICE_0_31_DAYS=?,R13_NOTICE_32_88_DAYS=?,R13_91_DEPOSIT_DAY=?," +
+		"R13_FD_1_6_MONTHS=?,R13_FD_7_12_MONTHS=?,R13_FD_13_18_MONTHS=?,R13_FD_19_24_MONTHS=?,R13_FD_OVER_24_MONTHS=?,R13_TOTAL=?," +
+		"R14_CURRENCY=?,R14_CURRENT=?,R14_CALL=?,R14_SAVINGS=?,R14_NOTICE_0_31_DAYS=?,R14_NOTICE_32_88_DAYS=?,R14_91_DEPOSIT_DAY=?," +
+		"R14_FD_1_6_MONTHS=?,R14_FD_7_12_MONTHS=?,R14_FD_13_18_MONTHS=?,R14_FD_19_24_MONTHS=?,R14_FD_OVER_24_MONTHS=?,R14_TOTAL=?," +
+		"R15_CURRENCY=?,R15_CURRENT=?,R15_CALL=?,R15_SAVINGS=?,R15_NOTICE_0_31_DAYS=?,R15_NOTICE_32_88_DAYS=?,R15_91_DEPOSIT_DAY=?," +
+		"R15_FD_1_6_MONTHS=?,R15_FD_7_12_MONTHS=?,R15_FD_13_18_MONTHS=?,R15_FD_19_24_MONTHS=?,R15_FD_OVER_24_MONTHS=?,R15_TOTAL=?";
+
+	private static final String R_PLACEHOLDERS =
+		"?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?," +
+		"?,?,?,?,?,?,?,?,?,?,?,?,?";
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_Archival_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_Archival_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_RESUB_Summary_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private Object[] rFieldValues(M_INT_RATES_FCA_RESUB_Detail_Entity e) {
+		return new Object[]{
+			e.getR10_CURRENCY(), e.getR10_CURRENT(), e.getR10_CALL(), e.getR10_SAVINGS(),
+			e.getR10_NOTICE_0_31_DAYS(), e.getR10_NOTICE_32_88_DAYS(), e.getR10_91_DEPOSIT_DAY(),
+			e.getR10_FD_1_6_MONTHS(), e.getR10_FD_7_12_MONTHS(), e.getR10_FD_13_18_MONTHS(),
+			e.getR10_FD_19_24_MONTHS(), e.getR10_FD_OVER_24_MONTHS(), e.getR10_TOTAL(),
+
+			e.getR11_CURRENCY(), e.getR11_CURRENT(), e.getR11_CALL(), e.getR11_SAVINGS(),
+			e.getR11_NOTICE_0_31_DAYS(), e.getR11_NOTICE_32_88_DAYS(), e.getR11_91_DEPOSIT_DAY(),
+			e.getR11_FD_1_6_MONTHS(), e.getR11_FD_7_12_MONTHS(), e.getR11_FD_13_18_MONTHS(),
+			e.getR11_FD_19_24_MONTHS(), e.getR11_FD_OVER_24_MONTHS(), e.getR11_TOTAL(),
+
+			e.getR12_CURRENCY(), e.getR12_CURRENT(), e.getR12_CALL(), e.getR12_SAVINGS(),
+			e.getR12_NOTICE_0_31_DAYS(), e.getR12_NOTICE_32_88_DAYS(), e.getR12_91_DEPOSIT_DAY(),
+			e.getR12_FD_1_6_MONTHS(), e.getR12_FD_7_12_MONTHS(), e.getR12_FD_13_18_MONTHS(),
+			e.getR12_FD_19_24_MONTHS(), e.getR12_FD_OVER_24_MONTHS(), e.getR12_TOTAL(),
+
+			e.getR13_CURRENCY(), e.getR13_CURRENT(), e.getR13_CALL(), e.getR13_SAVINGS(),
+			e.getR13_NOTICE_0_31_DAYS(), e.getR13_NOTICE_32_88_DAYS(), e.getR13_91_DEPOSIT_DAY(),
+			e.getR13_FD_1_6_MONTHS(), e.getR13_FD_7_12_MONTHS(), e.getR13_FD_13_18_MONTHS(),
+			e.getR13_FD_19_24_MONTHS(), e.getR13_FD_OVER_24_MONTHS(), e.getR13_TOTAL(),
+
+			e.getR14_CURRENCY(), e.getR14_CURRENT(), e.getR14_CALL(), e.getR14_SAVINGS(),
+			e.getR14_NOTICE_0_31_DAYS(), e.getR14_NOTICE_32_88_DAYS(), e.getR14_91_DEPOSIT_DAY(),
+			e.getR14_FD_1_6_MONTHS(), e.getR14_FD_7_12_MONTHS(), e.getR14_FD_13_18_MONTHS(),
+			e.getR14_FD_19_24_MONTHS(), e.getR14_FD_OVER_24_MONTHS(), e.getR14_TOTAL(),
+
+			e.getR15_CURRENCY(), e.getR15_CURRENT(), e.getR15_CALL(), e.getR15_SAVINGS(),
+			e.getR15_NOTICE_0_31_DAYS(), e.getR15_NOTICE_32_88_DAYS(), e.getR15_91_DEPOSIT_DAY(),
+			e.getR15_FD_1_6_MONTHS(), e.getR15_FD_7_12_MONTHS(), e.getR15_FD_13_18_MONTHS(),
+			e.getR15_FD_19_24_MONTHS(), e.getR15_FD_OVER_24_MONTHS(), e.getR15_TOTAL()
+		};
+	}
+
+	private void saveSummary(M_INT_RATES_FCA_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 8];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReportVersion();
+		params[rVals.length + 1] = e.getReport_frequency();
+		params[rVals.length + 2] = e.getReport_code();
+		params[rVals.length + 3] = e.getReport_desc();
+		params[rVals.length + 4] = e.getEntity_flg();
+		params[rVals.length + 5] = e.getModify_flg();
+		params[rVals.length + 6] = e.getDel_flg();
+		params[rVals.length + 7] = e.getReportDate();
+		jdbcTemplate.update(
+			"UPDATE BRRS_M_INT_RATES_FCA_SUMMARYTABLE SET " + R_FIELDS_SET +
+			",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE REPORT_DATE=?", params);
+	}
+
+	private void saveDetail(M_INT_RATES_FCA_Detail_Entity e) {
+		int cnt = jdbcTemplate.queryForObject(
+			"SELECT COUNT(*) FROM BRRS_M_INT_RATES_FCA_DETAILTABLE WHERE REPORT_DATE=?",
+			new Object[]{e.getReport_date()}, Integer.class);
+		Object[] rVals = rFieldValues(e);
+		if (cnt > 0) {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length]     = e.getReport_version();
+			params[rVals.length + 1] = e.getReport_frequency();
+			params[rVals.length + 2] = e.getReport_code();
+			params[rVals.length + 3] = e.getReport_desc();
+			params[rVals.length + 4] = e.getEntity_flg();
+			params[rVals.length + 5] = e.getModify_flg();
+			params[rVals.length + 6] = e.getDel_flg();
+			params[rVals.length + 7] = e.getReport_date();
+			jdbcTemplate.update(
+				"UPDATE BRRS_M_INT_RATES_FCA_DETAILTABLE SET " + R_FIELDS_SET +
+				",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+				" WHERE REPORT_DATE=?", params);
+		} else {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length]     = e.getReport_date();
+			params[rVals.length + 1] = e.getReport_version();
+			params[rVals.length + 2] = e.getReport_frequency();
+			params[rVals.length + 3] = e.getReport_code();
+			params[rVals.length + 4] = e.getReport_desc();
+			params[rVals.length + 5] = e.getEntity_flg();
+			params[rVals.length + 6] = e.getModify_flg();
+			params[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update(
+				"INSERT INTO BRRS_M_INT_RATES_FCA_DETAILTABLE (REPORT_DATE," + R_COLS +
+				",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?," +
+				R_PLACEHOLDERS + ",?,?,?,?,?,?,?)", params);
+		}
+	}
+
+	private void insertResubSummary(M_INT_RATES_FCA_RESUB_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReport_date();
+		params[rVals.length + 1] = e.getReport_version();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertResubDetail(M_INT_RATES_FCA_RESUB_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReport_date();
+		params[rVals.length + 1] = e.getReport_version();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_INT_RATES_FCA_RESUB_DETAILTABLE (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalSummary(M_INT_RATES_FCA_Archival_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReport_date();
+		params[rVals.length + 1] = e.getReport_version();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_SUMMARY (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalDetail(M_INT_RATES_FCA_Archival_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length]     = e.getReport_date();
+		params[rVals.length + 1] = e.getReport_version();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update(
+			"INSERT INTO BRRS_M_INT_RATES_FCA_ARCHIVALTABLE_DETAIL (" + R_COLS +
+			",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (" +
+			R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
 
 	public ModelAndView getINT_RATES_FCAView(
 	        String reportId,
@@ -139,8 +539,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	        if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
 	            List<M_INT_RATES_FCA_Archival_Summary_Entity> T1Master =
-	                    M_INT_RATES_FCA_Archival_Summary_Repo
-	                            .getdatabydateListarchival(d1, version);
+	                    getArchivalSummaryByDateAndVersion(d1, version);
 
 	            System.out.println("Archival Summary Size : " + T1Master.size());
 
@@ -152,8 +551,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	        else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
 	            List<M_INT_RATES_FCA_RESUB_Summary_Entity> T1Master =
-	                    M_INT_RATES_FCA_resub_summary_repo
-	                            .getdatabydateListarchival(d1, version);
+	                    getResubSummaryByDateAndVersion(d1, version);
 
 	            System.out.println("Resub Summary Size : " + T1Master.size());
 
@@ -165,8 +563,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	        else {
 
 	            List<M_INT_RATES_FCA_Summary_Entity> T1Master =
-	                    M_INT_RATES_FCA_Summary_Repo
-	                            .getdatabydateList(d1);
+	                    getSummaryByDate(d1);
 
 	            System.out.println("Normal Summary Size : " + T1Master.size());
 
@@ -184,8 +581,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	            if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
 	                List<M_INT_RATES_FCA_Archival_Detail_Entity> T1Master =
-	                        M_INT_RATES_FCA_Archival_Detail_Repo
-	                                .getdatabydateListarchival(d1, version);
+	                        getArchivalDetailByDateAndVersion(d1, version);
 
 	                System.out.println("Archival Detail Size : " + T1Master.size());
 
@@ -197,8 +593,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	            else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
 	                List<M_INT_RATES_FCA_RESUB_Detail_Entity> T1Master =
-	                        M_INT_RATES_FCA_resub_detail_repo
-	                                .getdatabydateListarchival(d1, version);
+	                        getResubDetailByDateAndVersion(d1, version);
 
 	                System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -210,8 +605,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	            else {
 
 	            	 List<M_INT_RATES_FCA_Detail_Entity> T1Master =
-		                        M_INT_RATES_FCA_Detail_Repo
-		                                .getdatabydateList(d1);
+		                        getDetailByDate(d1);
 
 	                System.out.println("Normal Detail Size : " + T1Master.size());
 
@@ -230,86 +624,6 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	    return mv;
 	}
-	
-//	@Transactional
-//	public void updateReport(  M_INT_RATES_FCA_Summary_Entity updatedEntity) {
-//
-//	    System.out.println("Came to services");
-//	    System.out.println("Report Date: " + updatedEntity.getReportDate());
-//
-//	    // 1️⃣ Fetch existing SUMMARY
-//	     M_INT_RATES_FCA_Summary_Entity existingSummary =
-//	            M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
-//	                    .orElseThrow(() -> new RuntimeException(
-//	                            "Summary record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
-//
-//	    // 2️⃣ Fetch or create DETAIL
-//	      M_INT_RATES_FCA_Detail_Entity existingDetail =
-//	            M_INT_RATES_FCA_Detail_Repo.findById(updatedEntity.getReportDate())
-//	                    .orElseGet(() -> {
-//	                          M_INT_RATES_FCA_Detail_Entity d = new   M_INT_RATES_FCA_Detail_Entity();
-//	                        d.setReport_date(updatedEntity.getReportDate());
-//	                        return d;
-//	                    });
-//
-//	   try {
-//			// 1️⃣ Loop through R14 to R100
-//			for (int i = 10; i <= 15; i++) {
-//				String prefix = "R" + i + "_";
-//
-//				String[] fields = {"CURRENT",
-//				        "CALL",
-//				        "SAVINGS",
-//				        "NOTICE_0_31_DAYS",
-//				        "NOTICE_32_88_DAYS",
-//				        "91_DEPOSIT_DAY",
-//				        "FD_1_6_MONTHS",
-//				        "FD_7_12_MONTHS",
-//				        "FD_13_18_MONTHS",
-//				        "FD_19_24_MONTHS",
-//				        "FD_OVER_24_MONTHS",
-//				        "TOTAL"};
-//
-//	            for (String field : fields) {
-//
-//	                String getterName = "get" + prefix + field;
-//	                String setterName = "set" + prefix + field;
-//
-//	                try {
-//	                    Method getter =
-//	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
-//
-//	                    Method summarySetter =
-//	                              M_INT_RATES_FCA_Summary_Entity.class.getMethod(
-//	                                    setterName, getter.getReturnType());
-//
-//	                    Method detailSetter =
-//	                              M_INT_RATES_FCA_Detail_Entity.class.getMethod(
-//	                                    setterName, getter.getReturnType());
-//
-//	                    Object newValue = getter.invoke(updatedEntity);
-//
-//	                    // ✅ set into SUMMARY
-//	                    summarySetter.invoke(existingSummary, newValue);
-//
-//	                    // ✅ set into DETAIL
-//	                    detailSetter.invoke(existingDetail, newValue);
-//
-//	                } catch (NoSuchMethodException e) {
-//	                    // skip missing fields safely
-//	                    continue;
-//	                }
-//	            }
-//	        }
-//
-//	    } catch (Exception e) {
-//	        throw new RuntimeException("Error while updating report fields", e);
-//	    }
-//
-//	    // 3️⃣ Save BOTH (same transaction)
-//	    M_INT_RATES_FCA_Summary_Repo.save(existingSummary);
-//	    M_INT_RATES_FCA_Detail_Repo.save(existingDetail);
-//	}
 
 	@Transactional
 	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
@@ -318,11 +632,14 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
 	    // 1️⃣ Fetch existing SUMMARY
-	    M_INT_RATES_FCA_Summary_Entity existingSummary =
-	            M_INT_RATES_FCA_Summary_Repo.findById(updatedEntity.getReportDate())
-	                    .orElseThrow(() -> new RuntimeException(
-	                            "Summary record not found for REPORT_DATE: "
-	                                    + updatedEntity.getReportDate()));
+	    List<M_INT_RATES_FCA_Summary_Entity> summaryList =
+	            getSummaryByDate(updatedEntity.getReportDate());
+	    if (summaryList.isEmpty()) {
+	        throw new RuntimeException(
+	                "Summary record not found for REPORT_DATE: "
+	                        + updatedEntity.getReportDate());
+	    }
+	    M_INT_RATES_FCA_Summary_Entity existingSummary = summaryList.get(0);
 
 	    // =========================================
 	    // AUDIT OLD COPY
@@ -334,18 +651,15 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	    BeanUtils.copyProperties(existingSummary, oldcopy);
 
 	    // 2️⃣ Fetch or create DETAIL
-	    M_INT_RATES_FCA_Detail_Entity existingDetail =
-	            M_INT_RATES_FCA_Detail_Repo.findById(updatedEntity.getReportDate())
-	                    .orElseGet(() -> {
-
-	                        M_INT_RATES_FCA_Detail_Entity d =
-	                                new M_INT_RATES_FCA_Detail_Entity();
-
-	                        d.setReport_date(
-	                                updatedEntity.getReportDate());
-
-	                        return d;
-	                    });
+	    List<M_INT_RATES_FCA_Detail_Entity> detailList =
+	            getDetailByDate(updatedEntity.getReportDate());
+	    M_INT_RATES_FCA_Detail_Entity existingDetail;
+	    if (detailList.isEmpty()) {
+	        existingDetail = new M_INT_RATES_FCA_Detail_Entity();
+	        existingDetail.setReport_date(updatedEntity.getReportDate());
+	    } else {
+	        existingDetail = detailList.get(0);
+	    }
 
 	    try {
 
@@ -437,8 +751,8 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 	    // SAVE BOTH TABLES
 	    // =========================================
 
-	    M_INT_RATES_FCA_Summary_Repo.save(existingSummary);
-	    M_INT_RATES_FCA_Detail_Repo.save(existingDetail);
+	    saveSummary(existingSummary);
+	    saveDetail(existingDetail);
 
 	    // =========================================
 	    // AUDIT ONLY IF CHANGES FOUND
@@ -467,7 +781,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		    List<Object[]> resubList = new ArrayList<>();
 		    try {
 		        List<M_INT_RATES_FCA_Archival_Summary_Entity> latestArchivalList =
-		        		M_INT_RATES_FCA_Archival_Summary_Repo.getdatabydateListWithVersion();
+		        		getArchivalSummaryWithVersionAll();
 
 		        if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 		            for (M_INT_RATES_FCA_Archival_Summary_Entity entity : latestArchivalList) {
@@ -489,94 +803,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		    return resubList;
 		}
 
-		
-//		@Transactional
-//	    public void updateResubReport(M_INT_RATES_FCA_RESUB_Summary_Entity updatedEntity) {
-//
-//	        Date reportDate = updatedEntity.getReport_date();
-//
-//	        // ----------------------------------------------------
-//	        // GET CURRENT VERSION FROM RESUB TABLE
-//	        // ----------------------------------------------------
-//
-//	        BigDecimal maxResubVer =
-//	            M_INT_RATES_FCA_resub_summary_repo.findMaxVersion(reportDate);
-//
-//	        if (maxResubVer == null)
-//	            throw new RuntimeException("No record for: " + reportDate);
-//
-//	        BigDecimal newVersion = maxResubVer.add(BigDecimal.ONE);
-//
-//	        Date now = new Date();
-//
-//	        // ====================================================
-//	        // 2️⃣ RESUB SUMMARY – FROM UPDATED VALUES
-//	        // ====================================================
-//
-//	        M_INT_RATES_FCA_RESUB_Summary_Entity resubSummary =
-//	            new M_INT_RATES_FCA_RESUB_Summary_Entity();
-//
-//	        BeanUtils.copyProperties(updatedEntity, resubSummary,
-//	            "reportDate", "reportVersion", "reportResubDate");
-//
-//	        resubSummary.setReport_date(reportDate);
-//	        resubSummary.setReport_version(newVersion);
-//	        resubSummary.setReportResubDate(now);
-//
-//	        // ====================================================
-//	        // 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
-//	        // ====================================================
-//
-//	        M_INT_RATES_FCA_RESUB_Detail_Entity resubDetail =
-//	            new M_INT_RATES_FCA_RESUB_Detail_Entity();
-//
-//	        BeanUtils.copyProperties(updatedEntity, resubDetail,
-//	            "reportDate", "reportVersion", "reportResubDate");
-//
-//	        resubDetail.setReport_date(reportDate);
-//	        resubDetail.setReport_version(newVersion);
-//	        resubDetail.setReportResubDate(now);
-//
-//	        // ====================================================
-//	        // 4️⃣ ARCHIVAL SUMMARY – SAME VALUES + SAME VERSION
-//	        // ====================================================
-//
-//	        M_INT_RATES_FCA_Archival_Summary_Entity archSummary =
-//	            new M_INT_RATES_FCA_Archival_Summary_Entity();
-//
-//	        BeanUtils.copyProperties(updatedEntity, archSummary,
-//	            "reportDate", "reportVersion", "reportResubDate");
-//
-//	        archSummary.setReport_date(reportDate);
-//	        archSummary.setReport_version(newVersion);   // SAME VERSION
-//	        archSummary.setReportResubDate(now);
-//
-//	        // ====================================================
-//	        // 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
-//	        // ====================================================
-//
-//	        M_INT_RATES_FCA_Archival_Detail_Entity archDetail =
-//	            new M_INT_RATES_FCA_Archival_Detail_Entity();
-//
-//	        BeanUtils.copyProperties(updatedEntity, archDetail,
-//	            "reportDate", "reportVersion", "reportResubDate");
-//
-//	        archDetail.setReport_date(reportDate);
-//	        archDetail.setReport_version(newVersion);    // SAME VERSION
-//	        archDetail.setReportResubDate(now);
-//
-//	        // ====================================================
-//	        // 6️⃣ SAVE ALL WITH SAME DATA
-//	        // ====================================================
-//
-//	        M_INT_RATES_FCA_resub_summary_repo.save(resubSummary);
-//	        M_INT_RATES_FCA_resub_detail_repo.save(resubDetail);
-//
-//	        M_INT_RATES_FCA_Archival_Summary_Repo.save(archSummary);
-//	        M_INT_RATES_FCA_Archival_Detail_Repo.save(archDetail);
-//	    }
-//		
-	
+
 		@Transactional
 		public void updateResubReport(
 		        M_INT_RATES_FCA_RESUB_Summary_Entity updatedEntity) {
@@ -588,8 +815,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		    // ----------------------------------------------------
 
 		    BigDecimal maxResubVer =
-		            M_INT_RATES_FCA_resub_summary_repo
-		                    .findMaxVersion(reportDate);
+		            findMaxResubVersion(reportDate);
 
 		    if (maxResubVer == null) {
 		        throw new RuntimeException(
@@ -677,11 +903,11 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		    // SAVE ALL
 		    // ====================================================
 
-		    M_INT_RATES_FCA_resub_summary_repo.save(resubSummary);
-		    M_INT_RATES_FCA_resub_detail_repo.save(resubDetail);
+		    insertResubSummary(resubSummary);
+		    insertResubDetail(resubDetail);
 
-		    M_INT_RATES_FCA_Archival_Summary_Repo.save(archSummary);
-		    M_INT_RATES_FCA_Archival_Detail_Repo.save(archDetail);
+		    insertArchivalSummary(archSummary);
+		    insertArchivalDetail(archDetail);
 
 		    // ====================================================
 		    // AUDIT
@@ -720,8 +946,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				List<Object[]> archivalList = new ArrayList<>();
 
 				try {
-					List<M_INT_RATES_FCA_Archival_Summary_Entity> repoData = M_INT_RATES_FCA_Archival_Summary_Repo
-							.getdatabydateListWithVersion();
+					List<M_INT_RATES_FCA_Archival_Summary_Entity> repoData = getArchivalSummaryWithVersionAll();
 
 					if (repoData != null && !repoData.isEmpty()) {
 						for (M_INT_RATES_FCA_Archival_Summary_Entity entity : repoData) {
@@ -797,8 +1022,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 						// Fetch data
 
-						List<M_INT_RATES_FCA_Summary_Entity> dataList = M_INT_RATES_FCA_Summary_Repo
-								.getdatabydateList(dateformat.parse(todate));
+						List<M_INT_RATES_FCA_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 						if (dataList.isEmpty()) {
 							logger.warn("Service: No data found for BRRS_M_INT_RATES_FCA report. Returning empty result.");
@@ -1620,7 +1844,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 					}
 				} 
 				else {
-				List<M_INT_RATES_FCA_Summary_Entity> dataList = M_INT_RATES_FCA_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				List<M_INT_RATES_FCA_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_INT_RATES_FCA report. Returning empty result.");
@@ -2435,8 +2659,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 					}
 				} 
 
-				List<M_INT_RATES_FCA_Archival_Summary_Entity> dataList = M_INT_RATES_FCA_Archival_Summary_Repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
+				List<M_INT_RATES_FCA_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for M_INT_RATES_FCA report. Returning empty result.");
@@ -4042,8 +4265,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 				logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-				List<M_INT_RATES_FCA_Archival_Summary_Entity> dataList = M_INT_RATES_FCA_Archival_Summary_Repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
+				List<M_INT_RATES_FCA_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_INT_RATES_FCA report. Returning empty result.");
@@ -4858,8 +5080,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 				}
 			}
 
-				List<M_INT_RATES_FCA_RESUB_Summary_Entity> dataList = M_INT_RATES_FCA_resub_summary_repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
+				List<M_INT_RATES_FCA_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for M_INT_RATES_FCA report. Returning empty result.");
@@ -5661,8 +5882,7 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 				logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-				List<M_INT_RATES_FCA_RESUB_Summary_Entity> dataList = M_INT_RATES_FCA_resub_summary_repo
-						.getdatabydateListarchival(dateformat.parse(todate), version);
+				List<M_INT_RATES_FCA_RESUB_Summary_Entity> dataList = getResubSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_INT_RATES_FCA report. Returning empty result.");
@@ -6450,13 +6670,408 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 										String userid = (String) request.getSession().getAttribute("USERID");
 										auditService.createBusinessAudit(userid, "DOWNLOAD", "M_INT_RATES_FCA EMAIL RESUB SUMMARY", null, "BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE");
 									}
-					
+
 
 					return out.toByteArray();
 				}
 			}
 
+	// =========================================================
+	// ROW MAPPERS
+	// =========================================================
 
+	class M_INT_RATES_FCASummaryRowMapper implements RowMapper<M_INT_RATES_FCA_Summary_Entity> {
+		@Override
+		public M_INT_RATES_FCA_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_Summary_Entity obj = new M_INT_RATES_FCA_Summary_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
 
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
+
+	class M_INT_RATES_FCADetailRowMapper implements RowMapper<M_INT_RATES_FCA_Detail_Entity> {
+		@Override
+		public M_INT_RATES_FCA_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_Detail_Entity obj = new M_INT_RATES_FCA_Detail_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
+
+	class M_INT_RATES_FCAArchivalSummaryRowMapper implements RowMapper<M_INT_RATES_FCA_Archival_Summary_Entity> {
+		@Override
+		public M_INT_RATES_FCA_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_Archival_Summary_Entity obj = new M_INT_RATES_FCA_Archival_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
+
+	class M_INT_RATES_FCAArchivalDetailRowMapper implements RowMapper<M_INT_RATES_FCA_Archival_Detail_Entity> {
+		@Override
+		public M_INT_RATES_FCA_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_Archival_Detail_Entity obj = new M_INT_RATES_FCA_Archival_Detail_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
+
+	class M_INT_RATES_FCAResubSummaryRowMapper implements RowMapper<M_INT_RATES_FCA_RESUB_Summary_Entity> {
+		@Override
+		public M_INT_RATES_FCA_RESUB_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_RESUB_Summary_Entity obj = new M_INT_RATES_FCA_RESUB_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
+
+	class M_INT_RATES_FCAResubDetailRowMapper implements RowMapper<M_INT_RATES_FCA_RESUB_Detail_Entity> {
+		@Override
+		public M_INT_RATES_FCA_RESUB_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_INT_RATES_FCA_RESUB_Detail_Entity obj = new M_INT_RATES_FCA_RESUB_Detail_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+
+			obj.setR10_CURRENCY(rs.getString("R10_CURRENCY")); obj.setR10_CURRENT(rs.getString("R10_CURRENT"));
+			obj.setR10_CALL(rs.getString("R10_CALL")); obj.setR10_SAVINGS(rs.getString("R10_SAVINGS"));
+			obj.setR10_NOTICE_0_31_DAYS(rs.getString("R10_NOTICE_0_31_DAYS")); obj.setR10_NOTICE_32_88_DAYS(rs.getString("R10_NOTICE_32_88_DAYS"));
+			obj.setR10_91_DEPOSIT_DAY(rs.getString("R10_91_DEPOSIT_DAY")); obj.setR10_FD_1_6_MONTHS(rs.getString("R10_FD_1_6_MONTHS"));
+			obj.setR10_FD_7_12_MONTHS(rs.getString("R10_FD_7_12_MONTHS")); obj.setR10_FD_13_18_MONTHS(rs.getString("R10_FD_13_18_MONTHS"));
+			obj.setR10_FD_19_24_MONTHS(rs.getString("R10_FD_19_24_MONTHS")); obj.setR10_FD_OVER_24_MONTHS(rs.getString("R10_FD_OVER_24_MONTHS"));
+			obj.setR10_TOTAL(rs.getString("R10_TOTAL"));
+
+			obj.setR11_CURRENCY(rs.getString("R11_CURRENCY")); obj.setR11_CURRENT(rs.getString("R11_CURRENT"));
+			obj.setR11_CALL(rs.getString("R11_CALL")); obj.setR11_SAVINGS(rs.getString("R11_SAVINGS"));
+			obj.setR11_NOTICE_0_31_DAYS(rs.getString("R11_NOTICE_0_31_DAYS")); obj.setR11_NOTICE_32_88_DAYS(rs.getString("R11_NOTICE_32_88_DAYS"));
+			obj.setR11_91_DEPOSIT_DAY(rs.getString("R11_91_DEPOSIT_DAY")); obj.setR11_FD_1_6_MONTHS(rs.getString("R11_FD_1_6_MONTHS"));
+			obj.setR11_FD_7_12_MONTHS(rs.getString("R11_FD_7_12_MONTHS")); obj.setR11_FD_13_18_MONTHS(rs.getString("R11_FD_13_18_MONTHS"));
+			obj.setR11_FD_19_24_MONTHS(rs.getString("R11_FD_19_24_MONTHS")); obj.setR11_FD_OVER_24_MONTHS(rs.getString("R11_FD_OVER_24_MONTHS"));
+			obj.setR11_TOTAL(rs.getString("R11_TOTAL"));
+
+			obj.setR12_CURRENCY(rs.getString("R12_CURRENCY")); obj.setR12_CURRENT(rs.getString("R12_CURRENT"));
+			obj.setR12_CALL(rs.getString("R12_CALL")); obj.setR12_SAVINGS(rs.getString("R12_SAVINGS"));
+			obj.setR12_NOTICE_0_31_DAYS(rs.getString("R12_NOTICE_0_31_DAYS")); obj.setR12_NOTICE_32_88_DAYS(rs.getString("R12_NOTICE_32_88_DAYS"));
+			obj.setR12_91_DEPOSIT_DAY(rs.getString("R12_91_DEPOSIT_DAY")); obj.setR12_FD_1_6_MONTHS(rs.getString("R12_FD_1_6_MONTHS"));
+			obj.setR12_FD_7_12_MONTHS(rs.getString("R12_FD_7_12_MONTHS")); obj.setR12_FD_13_18_MONTHS(rs.getString("R12_FD_13_18_MONTHS"));
+			obj.setR12_FD_19_24_MONTHS(rs.getString("R12_FD_19_24_MONTHS")); obj.setR12_FD_OVER_24_MONTHS(rs.getString("R12_FD_OVER_24_MONTHS"));
+			obj.setR12_TOTAL(rs.getString("R12_TOTAL"));
+
+			obj.setR13_CURRENCY(rs.getString("R13_CURRENCY")); obj.setR13_CURRENT(rs.getString("R13_CURRENT"));
+			obj.setR13_CALL(rs.getString("R13_CALL")); obj.setR13_SAVINGS(rs.getString("R13_SAVINGS"));
+			obj.setR13_NOTICE_0_31_DAYS(rs.getString("R13_NOTICE_0_31_DAYS")); obj.setR13_NOTICE_32_88_DAYS(rs.getString("R13_NOTICE_32_88_DAYS"));
+			obj.setR13_91_DEPOSIT_DAY(rs.getString("R13_91_DEPOSIT_DAY")); obj.setR13_FD_1_6_MONTHS(rs.getString("R13_FD_1_6_MONTHS"));
+			obj.setR13_FD_7_12_MONTHS(rs.getString("R13_FD_7_12_MONTHS")); obj.setR13_FD_13_18_MONTHS(rs.getString("R13_FD_13_18_MONTHS"));
+			obj.setR13_FD_19_24_MONTHS(rs.getString("R13_FD_19_24_MONTHS")); obj.setR13_FD_OVER_24_MONTHS(rs.getString("R13_FD_OVER_24_MONTHS"));
+			obj.setR13_TOTAL(rs.getString("R13_TOTAL"));
+
+			obj.setR14_CURRENCY(rs.getString("R14_CURRENCY")); obj.setR14_CURRENT(rs.getString("R14_CURRENT"));
+			obj.setR14_CALL(rs.getString("R14_CALL")); obj.setR14_SAVINGS(rs.getString("R14_SAVINGS"));
+			obj.setR14_NOTICE_0_31_DAYS(rs.getString("R14_NOTICE_0_31_DAYS")); obj.setR14_NOTICE_32_88_DAYS(rs.getString("R14_NOTICE_32_88_DAYS"));
+			obj.setR14_91_DEPOSIT_DAY(rs.getString("R14_91_DEPOSIT_DAY")); obj.setR14_FD_1_6_MONTHS(rs.getString("R14_FD_1_6_MONTHS"));
+			obj.setR14_FD_7_12_MONTHS(rs.getString("R14_FD_7_12_MONTHS")); obj.setR14_FD_13_18_MONTHS(rs.getString("R14_FD_13_18_MONTHS"));
+			obj.setR14_FD_19_24_MONTHS(rs.getString("R14_FD_19_24_MONTHS")); obj.setR14_FD_OVER_24_MONTHS(rs.getString("R14_FD_OVER_24_MONTHS"));
+			obj.setR14_TOTAL(rs.getString("R14_TOTAL"));
+
+			obj.setR15_CURRENCY(rs.getString("R15_CURRENCY")); obj.setR15_CURRENT(rs.getString("R15_CURRENT"));
+			obj.setR15_CALL(rs.getString("R15_CALL")); obj.setR15_SAVINGS(rs.getString("R15_SAVINGS"));
+			obj.setR15_NOTICE_0_31_DAYS(rs.getString("R15_NOTICE_0_31_DAYS")); obj.setR15_NOTICE_32_88_DAYS(rs.getString("R15_NOTICE_32_88_DAYS"));
+			obj.setR15_91_DEPOSIT_DAY(rs.getString("R15_91_DEPOSIT_DAY")); obj.setR15_FD_1_6_MONTHS(rs.getString("R15_FD_1_6_MONTHS"));
+			obj.setR15_FD_7_12_MONTHS(rs.getString("R15_FD_7_12_MONTHS")); obj.setR15_FD_13_18_MONTHS(rs.getString("R15_FD_13_18_MONTHS"));
+			obj.setR15_FD_19_24_MONTHS(rs.getString("R15_FD_19_24_MONTHS")); obj.setR15_FD_OVER_24_MONTHS(rs.getString("R15_FD_OVER_24_MONTHS"));
+			obj.setR15_TOTAL(rs.getString("R15_TOTAL"));
+
+			return obj;
+		}
+	}
 
 }

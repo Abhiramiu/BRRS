@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,14 +28,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -41,12 +43,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Archival_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Resub_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Resub_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_UNCONS_INVEST_Summary_Repo;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_UNCONS_INVEST_Detail_Entity;
@@ -65,33 +61,455 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-
-	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_UNCONS_INVEST_Summary_Repo brrs_M_UNCONS_INVEST_summary_repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Detail_Repo brrs_M_UNCONS_INVEST_detail_repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Archival_Summary_Repo M_UNCONS_INVEST_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Archival_Detail_Repo BRRS_M_UNCONS_INVEST_Archival_Detail_Repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Resub_Summary_Repo brrs_M_UNCONS_INVEST_resub_summary_repo;
-
-	@Autowired
-	BRRS_M_UNCONS_INVEST_Resub_Detail_Repo brrs_M_UNCONS_INVEST_resub_detail_repo;
-	
-	@Autowired
 	UserProfileRep userProfileRep;
 
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// =========================================================
+	// JDBC QUERY METHODS
+	// =========================================================
+
+	public List<M_UNCONS_INVEST_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query("SELECT * FROM BRRS_M_UNCONS_INVEST_SUMMARYTABLE WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, new M_UNCONS_INVESTSummaryRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query("SELECT * FROM BRRS_M_UNCONS_INVEST_DETAILTABLE WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, new M_UNCONS_INVESTDetailRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_UNCONS_INVESTArchivalSummaryRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_UNCONS_INVESTArchivalDetailRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Archival_Summary_Entity> getArchivalSummaryWithVersionAll() {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
+				new M_UNCONS_INVESTArchivalSummaryRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Resub_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_UNCONS_INVESTResubSummaryRowMapper());
+	}
+
+	public List<M_UNCONS_INVEST_Resub_Detail_Entity> getResubDetailByDateAndVersion(Date reportDate,
+			BigDecimal version) {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_UNCONS_INVEST_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_UNCONS_INVESTResubDetailRowMapper());
+	}
+
+	public BigDecimal findMaxResubVersion(Date reportDate) {
+		return jdbcTemplate.queryForObject(
+				"SELECT MAX(REPORT_VERSION) FROM BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, BigDecimal.class);
+	}
+
+	// =========================================================
+	// JDBC WRITE METHODS
+	// =========================================================
+
+	private static final String R_COLS = "R11_PRODUCT,R11_AMOUNT,R11_PERCENT_OF_CET1_HOLDING,R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,R11_PERCENT_OF_TIER_2_HOLDING,"
+			+ "R12_PRODUCT,R12_AMOUNT,R12_PERCENT_OF_CET1_HOLDING,R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,R12_PERCENT_OF_TIER_2_HOLDING,"
+			+ "R13_PRODUCT,R13_AMOUNT,R13_PERCENT_OF_CET1_HOLDING,R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,R13_PERCENT_OF_TIER_2_HOLDING,"
+			+ "R14_PRODUCT,R14_AMOUNT,R14_PERCENT_OF_CET1_HOLDING,R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,R14_PERCENT_OF_TIER_2_HOLDING,"
+			+ "R15_PRODUCT,R15_AMOUNT,R15_PERCENT_OF_CET1_HOLDING,R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING,R15_PERCENT_OF_TIER_2_HOLDING,"
+			+ "R22_PRODUCT,R22_ACCUULATED_EQUITY_INTEREST_5,R22_ASSETS,R22_LIABILITIES,R22_REVENUE,R22_PROFIT_OR_LOSS,R22_UNREG_SHARE_OF_LOSS,R22_CUMULATIVE_UNREG_SHARE_OF_LOSS,"
+			+ "R23_PRODUCT,R23_ACCUULATED_EQUITY_INTEREST_5,R23_ASSETS,R23_LIABILITIES,R23_REVENUE,R23_PROFIT_OR_LOSS,R23_UNREG_SHARE_OF_LOSS,R23_CUMULATIVE_UNREG_SHARE_OF_LOSS,"
+			+ "R24_PRODUCT,R24_ACCUULATED_EQUITY_INTEREST_5,R24_ASSETS,R24_LIABILITIES,R24_REVENUE,R24_PROFIT_OR_LOSS,R24_UNREG_SHARE_OF_LOSS,R24_CUMULATIVE_UNREG_SHARE_OF_LOSS,"
+			+ "R29_PRODUCT,R29_FAIR_VALUE,"
+			+ "R35_PRODUCT,R35_COMPANY,R35_JURISDICTION_OF_INCORP_1,R35_JURISDICTION_OF_INCORP_2,R35_LINE_OF_BUSINESS,R35_CURRENCY,R35_SHARE_CAPITAL,R35_ACCUMULATED_EQUITY_INTEREST,"
+			+ "R36_PRODUCT,R36_COMPANY,R36_JURISDICTION_OF_INCORP_1,R36_JURISDICTION_OF_INCORP_2,R36_LINE_OF_BUSINESS,R36_CURRENCY,R36_SHARE_CAPITAL,R36_ACCUMULATED_EQUITY_INTEREST,"
+			+ "R37_PRODUCT,R37_COMPANY,R37_JURISDICTION_OF_INCORP_1,R37_JURISDICTION_OF_INCORP_2,R37_LINE_OF_BUSINESS,R37_CURRENCY,R37_SHARE_CAPITAL,R37_ACCUMULATED_EQUITY_INTEREST,"
+			+ "R38_PRODUCT,R38_COMPANY,R38_JURISDICTION_OF_INCORP_1,R38_JURISDICTION_OF_INCORP_2,R38_LINE_OF_BUSINESS,R38_CURRENCY,R38_SHARE_CAPITAL,R38_ACCUMULATED_EQUITY_INTEREST";
+
+	private static final String R_PLACEHOLDERS = "?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, "
+			+ "?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?, " + "?,?, "
+			+ "?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?";
+
+	private static String rFieldsSet() {
+		StringBuilder sb = new StringBuilder();
+		for (String col : R_COLS.split(",")) {
+			sb.append(col).append("=?,");
+		}
+		return sb.substring(0, sb.length() - 1);
+	}
+
+	private static final String R_FIELDS_SET = rFieldsSet();
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Summary_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Detail_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Archival_Summary_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Archival_Detail_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Resub_Summary_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private Object[] rFieldValues(M_UNCONS_INVEST_Resub_Detail_Entity e) {
+		return new Object[] { e.getR11_product(), e.getR11_amount(), e.getR11_percent_of_cet1_holding(),
+				e.getR11_percent_of_additional_tier_1_holding(), e.getR11_percent_of_tier_2_holding(),
+				e.getR12_product(), e.getR12_amount(), e.getR12_percent_of_cet1_holding(),
+				e.getR12_percent_of_additional_tier_1_holding(), e.getR12_percent_of_tier_2_holding(),
+				e.getR13_product(), e.getR13_amount(), e.getR13_percent_of_cet1_holding(),
+				e.getR13_percent_of_additional_tier_1_holding(), e.getR13_percent_of_tier_2_holding(),
+				e.getR14_product(), e.getR14_amount(), e.getR14_percent_of_cet1_holding(),
+				e.getR14_percent_of_additional_tier_1_holding(), e.getR14_percent_of_tier_2_holding(),
+				e.getR15_product(), e.getR15_amount(), e.getR15_percent_of_cet1_holding(),
+				e.getR15_percent_of_additional_tier_1_holding(), e.getR15_percent_of_tier_2_holding(),
+				e.getR22_product(), e.getR22_accuulated_equity_interest_5(), e.getR22_assets(), e.getR22_liabilities(),
+				e.getR22_revenue(), e.getR22_profit_or_loss(), e.getR22_unreg_share_of_loss(),
+				e.getR22_cumulative_unreg_share_of_loss(),
+				e.getR23_product(), e.getR23_accuulated_equity_interest_5(), e.getR23_assets(), e.getR23_liabilities(),
+				e.getR23_revenue(), e.getR23_profit_or_loss(), e.getR23_unreg_share_of_loss(),
+				e.getR23_cumulative_unreg_share_of_loss(),
+				e.getR24_product(), e.getR24_accuulated_equity_interest_5(), e.getR24_assets(), e.getR24_liabilities(),
+				e.getR24_revenue(), e.getR24_profit_or_loss(), e.getR24_unreg_share_of_loss(),
+				e.getR24_cumulative_unreg_share_of_loss(),
+				e.getR29_product(), e.getR29_fair_value(),
+				e.getR35_product(), e.getR35_company(), e.getR35_jurisdiction_of_incorp_1(),
+				e.getR35_jurisdiction_of_incorp_2(), e.getR35_line_of_business(), e.getR35_currency(),
+				e.getR35_share_capital(), e.getR35_accumulated_equity_interest(),
+				e.getR36_product(), e.getR36_company(), e.getR36_jurisdiction_of_incorp_1(),
+				e.getR36_jurisdiction_of_incorp_2(), e.getR36_line_of_business(), e.getR36_currency(),
+				e.getR36_share_capital(), e.getR36_accumulated_equity_interest(),
+				e.getR37_product(), e.getR37_company(), e.getR37_jurisdiction_of_incorp_1(),
+				e.getR37_jurisdiction_of_incorp_2(), e.getR37_line_of_business(), e.getR37_currency(),
+				e.getR37_share_capital(), e.getR37_accumulated_equity_interest(),
+				e.getR38_product(), e.getR38_company(), e.getR38_jurisdiction_of_incorp_1(),
+				e.getR38_jurisdiction_of_incorp_2(), e.getR38_line_of_business(), e.getR38_currency(),
+				e.getR38_share_capital(), e.getR38_accumulated_equity_interest() };
+	}
+
+	private void saveSummary(M_UNCONS_INVEST_Summary_Entity e) {
+		Integer cnt = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM BRRS_M_UNCONS_INVEST_SUMMARYTABLE WHERE REPORT_DATE=?",
+				new Object[] { e.getReport_date() }, Integer.class);
+		Object[] rVals = rFieldValues(e);
+		if (cnt != null && cnt > 0) {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length] = e.getReport_version();
+			params[rVals.length + 1] = e.getReport_frequency();
+			params[rVals.length + 2] = e.getReport_code();
+			params[rVals.length + 3] = e.getReport_desc();
+			params[rVals.length + 4] = e.getEntity_flg();
+			params[rVals.length + 5] = e.getModify_flg();
+			params[rVals.length + 6] = e.getDel_flg();
+			params[rVals.length + 7] = e.getReport_date();
+			jdbcTemplate.update("UPDATE BRRS_M_UNCONS_INVEST_SUMMARYTABLE SET " + R_FIELDS_SET
+					+ ",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=? WHERE REPORT_DATE=?",
+					params);
+		} else {
+			Object[] params = new Object[rVals.length + 8];
+			params[0] = e.getReport_date();
+			System.arraycopy(rVals, 0, params, 1, rVals.length);
+			params[rVals.length + 1] = e.getReport_version();
+			params[rVals.length + 2] = e.getReport_frequency();
+			params[rVals.length + 3] = e.getReport_code();
+			params[rVals.length + 4] = e.getReport_desc();
+			params[rVals.length + 5] = e.getEntity_flg();
+			params[rVals.length + 6] = e.getModify_flg();
+			params[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_SUMMARYTABLE (REPORT_DATE," + R_COLS
+					+ ",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?,"
+					+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?)", params);
+		}
+	}
+
+	private void saveDetail(M_UNCONS_INVEST_Detail_Entity e) {
+		Integer cnt = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM BRRS_M_UNCONS_INVEST_DETAILTABLE WHERE REPORT_DATE=?",
+				new Object[] { e.getReport_date() }, Integer.class);
+		Object[] rVals = rFieldValues(e);
+		if (cnt != null && cnt > 0) {
+			Object[] params = new Object[rVals.length + 8];
+			System.arraycopy(rVals, 0, params, 0, rVals.length);
+			params[rVals.length] = e.getReport_version();
+			params[rVals.length + 1] = e.getReport_frequency();
+			params[rVals.length + 2] = e.getReport_code();
+			params[rVals.length + 3] = e.getReport_desc();
+			params[rVals.length + 4] = e.getEntity_flg();
+			params[rVals.length + 5] = e.getModify_flg();
+			params[rVals.length + 6] = e.getDel_flg();
+			params[rVals.length + 7] = e.getReport_date();
+			jdbcTemplate.update("UPDATE BRRS_M_UNCONS_INVEST_DETAILTABLE SET " + R_FIELDS_SET
+					+ ",REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?,REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=? WHERE REPORT_DATE=?",
+					params);
+		} else {
+			Object[] params = new Object[rVals.length + 8];
+			params[0] = e.getReport_date();
+			System.arraycopy(rVals, 0, params, 1, rVals.length);
+			params[rVals.length + 1] = e.getReport_version();
+			params[rVals.length + 2] = e.getReport_frequency();
+			params[rVals.length + 3] = e.getReport_code();
+			params[rVals.length + 4] = e.getReport_desc();
+			params[rVals.length + 5] = e.getEntity_flg();
+			params[rVals.length + 6] = e.getModify_flg();
+			params[rVals.length + 7] = e.getDel_flg();
+			jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_DETAILTABLE (REPORT_DATE," + R_COLS
+					+ ",REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES (?,"
+					+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?)", params);
+		}
+	}
+
+	private void insertResubSummary(M_UNCONS_INVEST_Resub_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length] = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_RESUB_SUMMARYTABLE (" + R_COLS
+				+ ",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES ("
+				+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertResubDetail(M_UNCONS_INVEST_Resub_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length] = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_RESUB_DETAILTABLE (" + R_COLS
+				+ ",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES ("
+				+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalSummary(M_UNCONS_INVEST_Archival_Summary_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length] = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_SUMMARY (" + R_COLS
+				+ ",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES ("
+				+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
+
+	private void insertArchivalDetail(M_UNCONS_INVEST_Archival_Detail_Entity e) {
+		Object[] rVals = rFieldValues(e);
+		Object[] params = new Object[rVals.length + 9];
+		System.arraycopy(rVals, 0, params, 0, rVals.length);
+		params[rVals.length] = e.getReportDate();
+		params[rVals.length + 1] = e.getReportVersion();
+		params[rVals.length + 2] = e.getReportResubDate();
+		params[rVals.length + 3] = e.getReport_frequency();
+		params[rVals.length + 4] = e.getReport_code();
+		params[rVals.length + 5] = e.getReport_desc();
+		params[rVals.length + 6] = e.getEntity_flg();
+		params[rVals.length + 7] = e.getModify_flg();
+		params[rVals.length + 8] = e.getDel_flg();
+		jdbcTemplate.update("INSERT INTO BRRS_M_UNCONS_INVEST_ARCHIVALTABLE_DETAIL (" + R_COLS
+				+ ",REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,REPORT_FREQUENCY,REPORT_CODE,REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG) VALUES ("
+				+ R_PLACEHOLDERS + ",?,?,?,?,?,?,?,?,?)", params);
+	}
 
 	public ModelAndView getM_UNCONS_INVESTView(String reportId, String fromdate, String todate, String currency,
 			String dtltype, Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
@@ -103,8 +521,6 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
-		
-		Session hs = sessionFactory.getCurrentSession();
 
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
@@ -130,8 +546,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 			// ---------- CASE 1: ARCHIVAL ----------
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-				List<M_UNCONS_INVEST_Archival_Summary_Entity> T1Master = M_UNCONS_INVEST_Archival_Summary_Repo
-						.getdatabydateListarchival(d1, version);
+				List<M_UNCONS_INVEST_Archival_Summary_Entity> T1Master = getArchivalSummaryByDateAndVersion(d1,
+						version);
 				mv.addObject("displaymode", "summary");
 
 				mv.addObject("reportsummary", T1Master);
@@ -139,8 +555,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 			// ---------- CASE 2: RESUB ----------
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-				List<M_UNCONS_INVEST_Resub_Summary_Entity> T1Master = brrs_M_UNCONS_INVEST_resub_summary_repo
-						.getdatabydateListarchival(d1, version);
+				List<M_UNCONS_INVEST_Resub_Summary_Entity> T1Master = getResubSummaryByDateAndVersion(d1, version);
 
 				mv.addObject("displaymode", "resubSummary");
 				mv.addObject("reportsummary", T1Master);
@@ -148,7 +563,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 			// ---------- CASE 3: NORMAL ----------
 			else {
-				List<M_UNCONS_INVEST_Summary_Entity> T1Master = brrs_M_UNCONS_INVEST_summary_repo.getdatabydateList(d1);
+				List<M_UNCONS_INVEST_Summary_Entity> T1Master = getSummaryByDate(d1);
 				System.out.println("T1Master Size " + T1Master.size());
 				mv.addObject("displaymode", "summary");
 				mv.addObject("reportsummary", T1Master);
@@ -160,16 +575,15 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				// DETAIL + ARCHIVAL
 				if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
-					List<M_UNCONS_INVEST_Archival_Detail_Entity> T1Master = BRRS_M_UNCONS_INVEST_Archival_Detail_Repo
-							.getdatabydateListarchival(d1, version);
+					List<M_UNCONS_INVEST_Archival_Detail_Entity> T1Master = getArchivalDetailByDateAndVersion(d1,
+							version);
 					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
 				}
 				// ---------- RESUB DETAIL ----------
 				else if ("RESUB".equalsIgnoreCase(type) && version != null) {
 
-					List<M_UNCONS_INVEST_Resub_Detail_Entity> T1Master = brrs_M_UNCONS_INVEST_resub_detail_repo
-							.getdatabydateListarchival(d1, version);
+					List<M_UNCONS_INVEST_Resub_Detail_Entity> T1Master = getResubDetailByDateAndVersion(d1, version);
 
 					System.out.println("Resub Detail Size : " + T1Master.size());
 
@@ -179,8 +593,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				// DETAIL + NORMAL
 				else {
 
-					List<M_UNCONS_INVEST_Detail_Entity> T1Master = brrs_M_UNCONS_INVEST_detail_repo
-							.getdatabydateList(dateformat.parse(todate));
+					List<M_UNCONS_INVEST_Detail_Entity> T1Master = getDetailByDate(dateformat.parse(todate));
 					System.out.println("Details......T1Master Size " + T1Master.size());
 					mv.addObject("displaymode", "detail");
 					mv.addObject("reportsummary", T1Master);
@@ -201,19 +614,23 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Came to services 1");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 		// 🔹 Fetch existing SUMMARY
-		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
-				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (existingSummaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
 		// 🔹 Create Audit Copy before editing
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
-				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
-					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
+		M_UNCONS_INVEST_Detail_Entity detailEntity;
+		if (existingDetailList.isEmpty()) {
+			detailEntity = new M_UNCONS_INVEST_Detail_Entity();
+			detailEntity.setReport_date(updatedEntity.getReport_date());
+		} else {
+			detailEntity = existingDetailList.get(0);
+		}
 
 		try {
 			// 1️⃣ Loop from R11 to R15 and copy fields
@@ -299,8 +716,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
-		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+		saveSummary(existingSummary);
+		saveDetail(detailEntity);
 
 		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
@@ -317,19 +734,23 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		// 🔹 Fetch existing SUMMARY
-		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
-				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (existingSummaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
 		// 🔹 Create Audit Copy before editing
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
-				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
-					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
+		M_UNCONS_INVEST_Detail_Entity detailEntity;
+		if (existingDetailList.isEmpty()) {
+			detailEntity = new M_UNCONS_INVEST_Detail_Entity();
+			detailEntity.setReport_date(updatedEntity.getReport_date());
+		} else {
+			detailEntity = existingDetailList.get(0);
+		}
 
 		try {
 			// 1️⃣ Loop from R22 to R24 and copy fields
@@ -381,8 +802,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
-		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+		saveSummary(existingSummary);
+		saveDetail(detailEntity);
 
 		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
@@ -400,19 +821,23 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		// 🔹 Fetch existing SUMMARY
-		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
-				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (existingSummaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
 		// 🔹 Create Audit Copy before editing
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
-				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
-					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
+		M_UNCONS_INVEST_Detail_Entity detailEntity;
+		if (existingDetailList.isEmpty()) {
+			detailEntity = new M_UNCONS_INVEST_Detail_Entity();
+			detailEntity.setReport_date(updatedEntity.getReport_date());
+		} else {
+			detailEntity = existingDetailList.get(0);
+		}
 
 		try {
 			// 🔁 LOOP FOR R29 ONLY
@@ -463,8 +888,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
-		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+		saveSummary(existingSummary);
+		saveDetail(detailEntity);
 
 		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
@@ -481,19 +906,23 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
 		// 🔹 Fetch existing SUMMARY
-		M_UNCONS_INVEST_Summary_Entity existingSummary = brrs_M_UNCONS_INVEST_summary_repo
-				.findById(updatedEntity.getReport_date()).orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReport_date()));
+		List<M_UNCONS_INVEST_Summary_Entity> existingSummaryList = getSummaryByDate(updatedEntity.getReport_date());
+		if (existingSummaryList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+		}
+		M_UNCONS_INVEST_Summary_Entity existingSummary = existingSummaryList.get(0);
 		// 🔹 Create Audit Copy before editing
 		M_UNCONS_INVEST_Summary_Entity oldcopy = new M_UNCONS_INVEST_Summary_Entity();
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 		// 🔹 Fetch or create DETAIL
-		M_UNCONS_INVEST_Detail_Entity detailEntity = brrs_M_UNCONS_INVEST_detail_repo
-				.findById(updatedEntity.getReport_date()).orElseGet(() -> {
-					M_UNCONS_INVEST_Detail_Entity d = new M_UNCONS_INVEST_Detail_Entity();
-					d.setReport_date(updatedEntity.getReport_date());
-					return d;
-				});
+		List<M_UNCONS_INVEST_Detail_Entity> existingDetailList = getDetailByDate(updatedEntity.getReport_date());
+		M_UNCONS_INVEST_Detail_Entity detailEntity;
+		if (existingDetailList.isEmpty()) {
+			detailEntity = new M_UNCONS_INVEST_Detail_Entity();
+			detailEntity.setReport_date(updatedEntity.getReport_date());
+		} else {
+			detailEntity = existingDetailList.get(0);
+		}
 
 		try {
 			// 1️⃣ Loop from R35 to R38 and copy fields
@@ -545,8 +974,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		System.out.println("Saving Summary & Detail tables");
 
 		// 💾 Save both tables
-		brrs_M_UNCONS_INVEST_summary_repo.save(existingSummary);
-		brrs_M_UNCONS_INVEST_detail_repo.save(detailEntity);
+		saveSummary(existingSummary);
+		saveDetail(detailEntity);
 
 		// Only invoke audit logger if actual physical modifications exist
 		if (changes != null && !changes.isEmpty()) {
@@ -565,7 +994,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		// 1️⃣ GET CURRENT VERSION FROM RESUB TABLE
 		// ----------------------------------------------------
 
-		BigDecimal maxResubVer = brrs_M_UNCONS_INVEST_resub_summary_repo.findMaxVersion(reportDate);
+		BigDecimal maxResubVer = findMaxResubVersion(reportDate);
 
 		if (maxResubVer == null)
 			throw new RuntimeException("No record for: " + reportDate);
@@ -626,11 +1055,11 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		// 6️⃣ SAVE ALL WITH SAME DATA
 		// ====================================================
 
-		brrs_M_UNCONS_INVEST_resub_summary_repo.save(resubSummary);
-		brrs_M_UNCONS_INVEST_resub_detail_repo.save(resubDetail);
+		insertResubSummary(resubSummary);
+		insertResubDetail(resubDetail);
 
-		M_UNCONS_INVEST_Archival_Summary_Repo.save(archSummary);
-		BRRS_M_UNCONS_INVEST_Archival_Detail_Repo.save(archDetail);
+		insertArchivalSummary(archSummary);
+		insertArchivalDetail(archDetail);
 	}
 
 //////////////////////////////////////////RESUBMISSION///////////////////////////////////////////////////////////////////	
@@ -639,8 +1068,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 	public List<Object[]> getM_UNCONS_INVESTResub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = M_UNCONS_INVEST_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			List<M_UNCONS_INVEST_Archival_Summary_Entity> latestArchivalList = getArchivalSummaryWithVersionAll();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : latestArchivalList) {
@@ -664,8 +1092,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			List<M_UNCONS_INVEST_Archival_Summary_Entity> repoData = M_UNCONS_INVEST_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			List<M_UNCONS_INVEST_Archival_Summary_Entity> repoData = getArchivalSummaryWithVersionAll();
 
 			if (repoData != null && !repoData.isEmpty()) {
 				for (M_UNCONS_INVEST_Archival_Summary_Entity entity : repoData) {
@@ -736,8 +1163,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 				// Fetch data
 
-				List<M_UNCONS_INVEST_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_summary_repo
-						.getdatabydateList(dateformat.parse(todate));
+				List<M_UNCONS_INVEST_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 				if (dataList.isEmpty()) {
 					logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
@@ -1664,8 +2090,7 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
 			}
 		} else {
-			List<M_UNCONS_INVEST_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_summary_repo
-					.getdatabydateList(dateformat.parse(todate));
+			List<M_UNCONS_INVEST_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 			if (dataList.isEmpty()) {
 				logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
@@ -2310,8 +2735,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			}
 		}
 
-		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = M_UNCONS_INVEST_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_UNCONS_INVEST report. Returning empty result.");
@@ -3215,8 +3640,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = M_UNCONS_INVEST_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
@@ -3864,8 +4289,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 			}
 		}
 
-		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_resub_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_UNCONS_INVEST report. Returning empty result.");
@@ -4755,8 +5180,8 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 
 		logger.info("Service: Starting Archival Email Excel generation process in memory.");
 
-		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = brrs_M_UNCONS_INVEST_resub_summary_repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_UNCONS_INVEST_Resub_Summary_Entity> dataList = getResubSummaryByDateAndVersion(
+				dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for BRRS_M_UNCONS_INVEST report. Returning empty result.");
@@ -5383,4 +5808,605 @@ public class BRRS_M_UNCONS_INVEST_ReportService {
 		}
 	}
 
+	// =========================================================
+	// ROW MAPPERS
+	// =========================================================
+
+	class M_UNCONS_INVESTSummaryRowMapper implements RowMapper<M_UNCONS_INVEST_Summary_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Summary_Entity obj = new M_UNCONS_INVEST_Summary_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
+
+	class M_UNCONS_INVESTDetailRowMapper implements RowMapper<M_UNCONS_INVEST_Detail_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Detail_Entity obj = new M_UNCONS_INVEST_Detail_Entity();
+			obj.setReport_date(rs.getDate("REPORT_DATE"));
+			obj.setReport_version(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
+
+	class M_UNCONS_INVESTArchivalSummaryRowMapper implements RowMapper<M_UNCONS_INVEST_Archival_Summary_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Archival_Summary_Entity obj = new M_UNCONS_INVEST_Archival_Summary_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
+
+	class M_UNCONS_INVESTArchivalDetailRowMapper implements RowMapper<M_UNCONS_INVEST_Archival_Detail_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Archival_Detail_Entity obj = new M_UNCONS_INVEST_Archival_Detail_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
+
+	class M_UNCONS_INVESTResubSummaryRowMapper implements RowMapper<M_UNCONS_INVEST_Resub_Summary_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Resub_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Resub_Summary_Entity obj = new M_UNCONS_INVEST_Resub_Summary_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
+
+	class M_UNCONS_INVESTResubDetailRowMapper implements RowMapper<M_UNCONS_INVEST_Resub_Detail_Entity> {
+		@Override
+		public M_UNCONS_INVEST_Resub_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+			M_UNCONS_INVEST_Resub_Detail_Entity obj = new M_UNCONS_INVEST_Resub_Detail_Entity();
+			obj.setReportDate(rs.getDate("REPORT_DATE"));
+			obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+			obj.setReport_frequency(rs.getString("REPORT_FREQUENCY"));
+			obj.setReport_code(rs.getString("REPORT_CODE"));
+			obj.setReport_desc(rs.getString("REPORT_DESC"));
+			obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+			obj.setModify_flg(rs.getString("MODIFY_FLG"));
+			obj.setDel_flg(rs.getString("DEL_FLG"));
+			obj.setR11_product(rs.getString("R11_PRODUCT"));
+			obj.setR11_amount(rs.getBigDecimal("R11_AMOUNT"));
+			obj.setR11_percent_of_cet1_holding(rs.getBigDecimal("R11_PERCENT_OF_CET1_HOLDING"));
+			obj.setR11_percent_of_additional_tier_1_holding(rs.getBigDecimal("R11_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR11_percent_of_tier_2_holding(rs.getBigDecimal("R11_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR12_product(rs.getString("R12_PRODUCT"));
+			obj.setR12_amount(rs.getBigDecimal("R12_AMOUNT"));
+			obj.setR12_percent_of_cet1_holding(rs.getBigDecimal("R12_PERCENT_OF_CET1_HOLDING"));
+			obj.setR12_percent_of_additional_tier_1_holding(rs.getBigDecimal("R12_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR12_percent_of_tier_2_holding(rs.getBigDecimal("R12_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR13_product(rs.getString("R13_PRODUCT"));
+			obj.setR13_amount(rs.getBigDecimal("R13_AMOUNT"));
+			obj.setR13_percent_of_cet1_holding(rs.getBigDecimal("R13_PERCENT_OF_CET1_HOLDING"));
+			obj.setR13_percent_of_additional_tier_1_holding(rs.getBigDecimal("R13_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR13_percent_of_tier_2_holding(rs.getBigDecimal("R13_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR14_product(rs.getString("R14_PRODUCT"));
+			obj.setR14_amount(rs.getBigDecimal("R14_AMOUNT"));
+			obj.setR14_percent_of_cet1_holding(rs.getBigDecimal("R14_PERCENT_OF_CET1_HOLDING"));
+			obj.setR14_percent_of_additional_tier_1_holding(rs.getBigDecimal("R14_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR14_percent_of_tier_2_holding(rs.getBigDecimal("R14_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR15_product(rs.getString("R15_PRODUCT"));
+			obj.setR15_amount(rs.getBigDecimal("R15_AMOUNT"));
+			obj.setR15_percent_of_cet1_holding(rs.getBigDecimal("R15_PERCENT_OF_CET1_HOLDING"));
+			obj.setR15_percent_of_additional_tier_1_holding(rs.getBigDecimal("R15_PERCENT_OF_ADDITIONAL_TIER_1_HOLDING"));
+			obj.setR15_percent_of_tier_2_holding(rs.getBigDecimal("R15_PERCENT_OF_TIER_2_HOLDING"));
+			obj.setR22_product(rs.getString("R22_PRODUCT"));
+			obj.setR22_accuulated_equity_interest_5(rs.getBigDecimal("R22_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR22_assets(rs.getBigDecimal("R22_ASSETS"));
+			obj.setR22_liabilities(rs.getBigDecimal("R22_LIABILITIES"));
+			obj.setR22_revenue(rs.getBigDecimal("R22_REVENUE"));
+			obj.setR22_profit_or_loss(rs.getBigDecimal("R22_PROFIT_OR_LOSS"));
+			obj.setR22_unreg_share_of_loss(rs.getBigDecimal("R22_UNREG_SHARE_OF_LOSS"));
+			obj.setR22_cumulative_unreg_share_of_loss(rs.getBigDecimal("R22_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_product(rs.getString("R23_PRODUCT"));
+			obj.setR23_accuulated_equity_interest_5(rs.getBigDecimal("R23_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR23_assets(rs.getBigDecimal("R23_ASSETS"));
+			obj.setR23_liabilities(rs.getBigDecimal("R23_LIABILITIES"));
+			obj.setR23_revenue(rs.getBigDecimal("R23_REVENUE"));
+			obj.setR23_profit_or_loss(rs.getBigDecimal("R23_PROFIT_OR_LOSS"));
+			obj.setR23_unreg_share_of_loss(rs.getBigDecimal("R23_UNREG_SHARE_OF_LOSS"));
+			obj.setR23_cumulative_unreg_share_of_loss(rs.getBigDecimal("R23_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_product(rs.getString("R24_PRODUCT"));
+			obj.setR24_accuulated_equity_interest_5(rs.getBigDecimal("R24_ACCUULATED_EQUITY_INTEREST_5"));
+			obj.setR24_assets(rs.getBigDecimal("R24_ASSETS"));
+			obj.setR24_liabilities(rs.getBigDecimal("R24_LIABILITIES"));
+			obj.setR24_revenue(rs.getBigDecimal("R24_REVENUE"));
+			obj.setR24_profit_or_loss(rs.getBigDecimal("R24_PROFIT_OR_LOSS"));
+			obj.setR24_unreg_share_of_loss(rs.getBigDecimal("R24_UNREG_SHARE_OF_LOSS"));
+			obj.setR24_cumulative_unreg_share_of_loss(rs.getBigDecimal("R24_CUMULATIVE_UNREG_SHARE_OF_LOSS"));
+			obj.setR29_product(rs.getString("R29_PRODUCT"));
+			obj.setR29_fair_value(rs.getBigDecimal("R29_FAIR_VALUE"));
+			obj.setR35_product(rs.getString("R35_PRODUCT"));
+			obj.setR35_company(rs.getBigDecimal("R35_COMPANY"));
+			obj.setR35_jurisdiction_of_incorp_1(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_1"));
+			obj.setR35_jurisdiction_of_incorp_2(rs.getBigDecimal("R35_JURISDICTION_OF_INCORP_2"));
+			obj.setR35_line_of_business(rs.getBigDecimal("R35_LINE_OF_BUSINESS"));
+			obj.setR35_currency(rs.getBigDecimal("R35_CURRENCY"));
+			obj.setR35_share_capital(rs.getBigDecimal("R35_SHARE_CAPITAL"));
+			obj.setR35_accumulated_equity_interest(rs.getBigDecimal("R35_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR36_product(rs.getString("R36_PRODUCT"));
+			obj.setR36_company(rs.getBigDecimal("R36_COMPANY"));
+			obj.setR36_jurisdiction_of_incorp_1(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_1"));
+			obj.setR36_jurisdiction_of_incorp_2(rs.getBigDecimal("R36_JURISDICTION_OF_INCORP_2"));
+			obj.setR36_line_of_business(rs.getBigDecimal("R36_LINE_OF_BUSINESS"));
+			obj.setR36_currency(rs.getBigDecimal("R36_CURRENCY"));
+			obj.setR36_share_capital(rs.getBigDecimal("R36_SHARE_CAPITAL"));
+			obj.setR36_accumulated_equity_interest(rs.getBigDecimal("R36_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR37_product(rs.getString("R37_PRODUCT"));
+			obj.setR37_company(rs.getBigDecimal("R37_COMPANY"));
+			obj.setR37_jurisdiction_of_incorp_1(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_1"));
+			obj.setR37_jurisdiction_of_incorp_2(rs.getBigDecimal("R37_JURISDICTION_OF_INCORP_2"));
+			obj.setR37_line_of_business(rs.getBigDecimal("R37_LINE_OF_BUSINESS"));
+			obj.setR37_currency(rs.getBigDecimal("R37_CURRENCY"));
+			obj.setR37_share_capital(rs.getBigDecimal("R37_SHARE_CAPITAL"));
+			obj.setR37_accumulated_equity_interest(rs.getBigDecimal("R37_ACCUMULATED_EQUITY_INTEREST"));
+			obj.setR38_product(rs.getString("R38_PRODUCT"));
+			obj.setR38_company(rs.getBigDecimal("R38_COMPANY"));
+			obj.setR38_jurisdiction_of_incorp_1(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_1"));
+			obj.setR38_jurisdiction_of_incorp_2(rs.getBigDecimal("R38_JURISDICTION_OF_INCORP_2"));
+			obj.setR38_line_of_business(rs.getBigDecimal("R38_LINE_OF_BUSINESS"));
+			obj.setR38_currency(rs.getBigDecimal("R38_CURRENCY"));
+			obj.setR38_share_capital(rs.getBigDecimal("R38_SHARE_CAPITAL"));
+			obj.setR38_accumulated_equity_interest(rs.getBigDecimal("R38_ACCUMULATED_EQUITY_INTEREST"));
+			return obj;
+		}
+	}
 }
