@@ -116,6 +116,8 @@ import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
+import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService.M_SFINP1_Summary_Manual_Entity;
