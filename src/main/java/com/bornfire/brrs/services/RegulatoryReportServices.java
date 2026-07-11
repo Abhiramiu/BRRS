@@ -1599,7 +1599,7 @@ public class RegulatoryReportServices {
 		case "Q_RLFA1":
 			try {
 				repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+						dtltype, type,format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -5831,8 +5831,8 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate,
-							todate, currency, dtltype, type, version);
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
 				case "Q_RLFA2":
 					return brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("EMAIL_Q_RLFA2.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
@@ -6080,8 +6080,8 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, version);
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1.xlsx",  reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
 
 				case "Q_RLFA2":
 					return brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("Q_RLFA2.xlsx", reportName, fromdate, todate,
@@ -7891,7 +7891,8 @@ public class RegulatoryReportServices {
 			try {
 				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, null, // type
-						null // version
+						null ,
+						null// version
 				);
 
 				if (excelBytes == null || excelBytes.length == 0) {
@@ -10269,7 +10270,7 @@ public class RegulatoryReportServices {
 			try {
 
 				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("EMAIL_Q_RLFA1.xlsx", reportId, fromdate,
-						todate, currency, dtltype, null, null);
+						todate, currency, dtltype, null, null,null);
 
 				// Excel validation
 				if (excelBytes == null || excelBytes.length == 0) {

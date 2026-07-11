@@ -6,6 +6,9 @@ CREATED ON	: 05.11.2025
 PURPOSE		: BRRS REPORT
 -->
 
+
+
+
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -605,100 +608,100 @@ PURPOSE		: BRRS REPORT
 
 
 		function downloadfile(button) {
-			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
-			var currency = button.getAttribute('data-currency');
-			var subreportid = button.getAttribute('data-subreportid');
-			var secid = button.getAttribute('data-secid');
-			var dtltype = button.getAttribute('data-dtltype');
-			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
+			    var reportid = button.getAttribute('data-reportid');
+			    var asondate = button.getAttribute('data-asondate');
+			    var fromdate = button.getAttribute('data-fromdate');
+			    var todate = button.getAttribute('data-todate');
+			    var currency = button.getAttribute('data-currency');
+			    var subreportid = button.getAttribute('data-subreportid');
+			    var secid = button.getAttribute('data-secid');
+			    var dtltype = button.getAttribute('data-dtltype');
+			    var filename = button.getAttribute('data-filename');
+			    var type = button.getAttribute('data-type');
+			    var version = button.getAttribute('data-version');
+			    var format = button.getAttribute('data-format');
 
+			    if (format === null) {
+			        format = '';   // treat as null
+			    }
 
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
+			    $('#loader').modal('show');
 
-			$.ajax({
-				url: './downloadExcel?reportid=' + reportid +
-					'&fromdate=' + fromdate +
-					'&asondate=' + asondate +
-					'&todate=' + todate +
-					'&currency=' + currency +
-					'&subreportid=' + subreportid +
-					'&dtltype=' + dtltype +
-					'&secid=' + secid +
-					'&filename=' + filename +
-					'&type=' + type +
-					'&version=' + version,
-				type: 'GET',
-				xhrFields: {
-					responseType: 'blob'
-				},
-				success: function (data) {
-					$('#loader').modal('hide');
-
-					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
-						const url = window.URL.createObjectURL(blob);
-						const a = document.createElement('a');
-						a.style.display = 'none';
-						a.href = url;
-						a.download = filename;
-						document.body.appendChild(a);
-						a.click();
-						window.URL.revokeObjectURL(url);
-						document.body.removeChild(a);
-
-						showResultModal('BRRS', filename + ' downloaded successfully.');
-					} else {
-						showResultModal('Information', 'No data was available to create a download.');
-					}
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					$('#loader').modal('hide');
-					console.error("Download failed:", textStatus, errorThrown);
-					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-				}
-			});
-		}
-		
+			    $.ajax({
+			        url: './downloadExcel?reportid=' + reportid +
+			             '&fromdate=' + fromdate +
+			             '&asondate=' + asondate +
+			             '&todate=' + todate +
+			             '&currency=' + currency +
+			             '&subreportid=' + subreportid +
+			             '&secid=' + secid +
+			             '&filename=' + filename +
+			             '&type=' + type +
+			             '&version=' + version +
+			             '&format=' + format,
+			        type: 'GET',
+			        xhrFields: {
+			            responseType: 'blob'
+			        },
+			        success: function (data) {
+			            $('#loader').modal('hide');
+			            if (data && data.size > 100) {
+			                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+			                const url = window.URL.createObjectURL(blob);
+			                const a = document.createElement('a');
+			                a.style.display = 'none';
+			                a.href = url;
+			                a.download = filename;
+			                document.body.appendChild(a);
+			                a.click();
+			                window.URL.revokeObjectURL(url);
+			                document.body.removeChild(a);
+			                showResultModal('BRRS', filename + ' downloaded successfully.');
+			            } else {
+			                showResultModal('Information', 'No data was available to create a download.');
+			            }
+			        },
+			        error: function () {
+			            $('#loader').modal('hide');
+			            showResultModal('Error', 'An error occurred while downloading the file.');
+			        }
+			    });
+			}
+			
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -1279,7 +1282,8 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}" id="addRecord">Modify</button>
+							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1290,52 +1294,55 @@ PURPOSE		: BRRS REPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${role != 'M'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='Q_RLFA1.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+							th:attr="data-reportid=${reportid},
+						                   data-asondate=${asondate},
+						                   data-fromdate=${fromdate},
+						                   data-todate=${todate},
+						                   data-currency=${currency}, 
+						                   data-dtltype=${dtltype},
+						                   data-filename='Q_RLFA1.xlsx',
+						                   data-type=${type},
+						                   data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" th:if="${role != 'M'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${'email_report'}, 
-                     				 data-filename='EMAIL_Q_RLFA1.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+							th:attr="data-reportid=${reportid},
+						            data-asondate=${asondate},
+						            data-fromdate=${fromdate},
+						            data-todate=${todate},
+						            data-currency=${currency}, 
+						            data-dtltype=${dtltype},
+						            data-filename='EMAIL_Q_RLFA1.xlsx',
+						            data-type=${type},
+						            data-format='email',
+						            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
+
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>

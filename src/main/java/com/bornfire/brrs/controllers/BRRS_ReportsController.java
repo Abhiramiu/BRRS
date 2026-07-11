@@ -3392,7 +3392,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_RLFA1_Summary_Entity request) {
+			@ModelAttribute BRRS_Q_RLFA1_ReportService.Q_RLFA1_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
@@ -3414,7 +3414,7 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_RLFA1_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute BRRS_Q_RLFA1_ReportService.Q_RLFA1_Resub_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("Came to Resub Controller");
@@ -3428,7 +3428,7 @@ public class BRRS_ReportsController {
 			}
 
 			// Call service to create a new versioned row
-			brrs_q_rlfa1_reportservice.updateReportResub(request);
+			brrs_q_rlfa1_reportservice.updateResubReport(request);
 
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 
@@ -3724,13 +3724,13 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute Q_SMME_DEP_Summary_Entity request) {
+			@ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Summary_Entity request) {
 
 		try {
 			System.out.println("came to single controller");
 
 			// ? set the asondate into entity
-			request.setReportDate(asondate);
+			request.setReport_date(asondate);
 
 			// call services
 			BRRS_Q_SMME_DEP_ReportService.updateReport(request);
@@ -3748,7 +3748,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute Q_SMME_DEP_Resub_Summary_Entity request,
+			@ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Resub_Summary_Entity request,
 
 			HttpServletRequest req) {
 
@@ -3758,12 +3758,12 @@ public class BRRS_ReportsController {
 
 			if (asondate != null) {
 
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 
 			} else {
 
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			BRRS_Q_SMME_DEP_ReportService.updateResubReport(request);
