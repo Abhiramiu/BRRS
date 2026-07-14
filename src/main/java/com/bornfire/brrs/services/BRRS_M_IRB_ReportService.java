@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -32,23 +35,19 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.BRRS_M_IRB_Archival_Summary_Repo;
-import com.bornfire.brrs.entities.BRRS_M_IRB_Detail_Archival_Repo;
-import com.bornfire.brrs.entities.BRRS_M_IRB_Detail_Repo;
-import com.bornfire.brrs.entities.BRRS_M_IRB_Summary_Repo;
 import com.bornfire.brrs.entities.M_IRB_Archival_Detail_Entity;
 import com.bornfire.brrs.entities.M_IRB_Archival_Summary_Entity;
 import com.bornfire.brrs.entities.M_IRB_Detail_Entity;
@@ -56,8 +55,8 @@ import com.bornfire.brrs.entities.M_IRB_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 
-@Component
 @Service
+@Transactional
 
 public class BRRS_M_IRB_ReportService {
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_LIQ_ReportService.class);
@@ -66,28 +65,571 @@ public class BRRS_M_IRB_ReportService {
 	private Environment env;
 
 	@Autowired
-	SessionFactory sessionFactory;
-	
-	@Autowired
 	AuditService auditService;
 
 	@Autowired
-	BRRS_M_IRB_Summary_Repo brrs_m_irb_Summary_Repo;
-
-	@Autowired
-	BRRS_M_IRB_Archival_Summary_Repo m_irb_Archival_Summary_Repo;
-
-	@Autowired
-	BRRS_M_IRB_Detail_Repo brrs_m_irb_detail_Repo;
-
-	@Autowired
-	BRRS_M_IRB_Detail_Archival_Repo brrs_m_irb_archival_detail_Repo;
-	
-	@Autowired
 	UserProfileRep userProfileRep;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+
+	// ===================== JDBC Query Methods (M_IRB) =====================
+
+	public List<M_IRB_Summary_Entity> getSummaryByDate(Date reportDate) {
+		return jdbcTemplate.query("select * from BRRS_M_IRB_SUMMARYTABLE WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, new M_IRBSummaryRowMapper());
+	}
+
+	public List<M_IRB_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
+		return jdbcTemplate.query(
+				"select * from BRRS_M_IRB_ARCHIVALTABLE_SUMMARY where REPORT_DATE = ? and REPORT_VERSION = ?",
+				new Object[] { reportDate, version }, new M_IRBArchivalSummaryRowMapper());
+	}
+
+	public List<M_IRB_Archival_Summary_Entity> getArchivalSummaryWithVersion() {
+		return jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_IRB_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC",
+				new M_IRBArchivalSummaryRowMapper());
+	}
+
+	public List<M_IRB_Detail_Entity> getDetailByDate(Date reportDate) {
+		return jdbcTemplate.query("select * from BRRS_M_IRB_DETAILTABLE where REPORT_DATE = ?",
+				new Object[] { reportDate }, new M_IRBDetailRowMapper());
+	}
+
+	public List<M_IRB_Detail_Entity> getDetailByDatePaged(Date reportDate, int startpage, int endpage) {
+		return jdbcTemplate.query(
+				"select * from BRRS_M_IRB_DETAILTABLE where REPORT_DATE=? offset ? rows fetch next ? rows only",
+				new Object[] { reportDate, startpage, endpage }, new M_IRBDetailRowMapper());
+	}
+
+	public int getDetailCount(Date reportDate) {
+		return jdbcTemplate.queryForObject("select count(*) from BRRS_M_IRB_DETAILTABLE where REPORT_DATE=?",
+				new Object[] { reportDate }, Integer.class);
+	}
+
+	public List<M_IRB_Detail_Entity> getDetailByRowIdAndColumnId(String rowId, String columnId, Date reportDate) {
+		return jdbcTemplate.query(
+				"select * from BRRS_M_IRB_DETAILTABLE where ROW_ID =? and COLUMN_ID=? AND REPORT_DATE=?",
+				new Object[] { rowId, columnId, reportDate }, new M_IRBDetailRowMapper());
+	}
+
+	public List<M_IRB_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
+		return jdbcTemplate.query(
+				"select * from BRRS_M_IRB_ARCHIVALTABLE_DETAIL where REPORT_DATE=? AND DATA_ENTRY_VERSION=?",
+				new Object[] { reportDate, version }, new M_IRBArchivalDetailRowMapper());
+	}
+
+	public List<M_IRB_Archival_Detail_Entity> getArchivalDetailByRowIdAndColumnId(String rowId, String columnId,
+			Date reportDate, String version) {
+		return jdbcTemplate.query(
+				"select * from BRRS_M_IRB_ARCHIVALTABLE_DETAIL where ROW_ID =? and COLUMN_ID=? AND REPORT_DATE=? AND DATA_ENTRY_VERSION=?",
+				new Object[] { rowId, columnId, reportDate, version }, new M_IRBArchivalDetailRowMapper());
+	}
+
+	private static final String UPDATE_M_IRB_SUMMARY_SQL = "UPDATE BRRS_M_IRB_SUMMARYTABLE SET " +
+			"R10_PRODUCT=?,R10_UP_TO_1_MONTH=?,R10_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R10_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R10_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R10_MORE_THAN_12_MONTH_TO_3_YEARS=?,R10_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R10_MORE_THAN_5_YEARS_TO_10_YEARS=?,R10_MORE_THAN_10_YEARS=?,R10_NON_RATIO_SENSATIVE_ITEMS=?," +
+			"R10_TOTAL=?,R11_PRODUCT=?,R11_UP_TO_1_MONTH=?,R11_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R11_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R11_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R11_MORE_THAN_12_MONTH_TO_3_YEARS=?,R11_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R11_MORE_THAN_5_YEARS_TO_10_YEARS=?,R11_MORE_THAN_10_YEARS=?,R11_TOTAL=?,R12_PRODUCT=?," +
+			"R12_UP_TO_1_MONTH=?,R12_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R12_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R12_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R12_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R12_MORE_THAN_3_YEARS_TO_5_YEARS=?,R12_MORE_THAN_5_YEARS_TO_10_YEARS=?,R12_MORE_THAN_10_YEARS=?," +
+			"R12_TOTAL=?,R13_PRODUCT=?,R13_UP_TO_1_MONTH=?,R13_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R13_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R13_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R13_MORE_THAN_12_MONTH_TO_3_YEARS=?,R13_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R13_MORE_THAN_5_YEARS_TO_10_YEARS=?,R13_MORE_THAN_10_YEARS=?,R13_TOTAL=?,R14_PRODUCT=?," +
+			"R14_UP_TO_1_MONTH=?,R14_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R14_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R14_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R14_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R14_MORE_THAN_3_YEARS_TO_5_YEARS=?,R14_MORE_THAN_5_YEARS_TO_10_YEARS=?,R14_MORE_THAN_10_YEARS=?," +
+			"R14_TOTAL=?,R15_PRODUCT=?,R15_UP_TO_1_MONTH=?,R15_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R15_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R15_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R15_MORE_THAN_12_MONTH_TO_3_YEARS=?,R15_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R15_MORE_THAN_5_YEARS_TO_10_YEARS=?,R15_MORE_THAN_10_YEARS=?,R15_TOTAL=?,R16_PRODUCT=?," +
+			"R16_UP_TO_1_MONTH=?,R16_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R16_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R16_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R16_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R16_MORE_THAN_3_YEARS_TO_5_YEARS=?,R16_MORE_THAN_5_YEARS_TO_10_YEARS=?,R16_MORE_THAN_10_YEARS=?," +
+			"R16_TOTAL=?,R17_PRODUCT=?,R17_UP_TO_1_MONTH=?,R17_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R17_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R17_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R17_MORE_THAN_12_MONTH_TO_3_YEARS=?,R17_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R17_MORE_THAN_5_YEARS_TO_10_YEARS=?,R17_MORE_THAN_10_YEARS=?,R17_TOTAL=?,R18_PRODUCT=?," +
+			"R18_UP_TO_1_MONTH=?,R18_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R18_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R18_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R18_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R18_MORE_THAN_3_YEARS_TO_5_YEARS=?,R18_MORE_THAN_5_YEARS_TO_10_YEARS=?,R18_MORE_THAN_10_YEARS=?," +
+			"R18_TOTAL=?,R19_PRODUCT=?,R19_UP_TO_1_MONTH=?,R19_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R19_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R19_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R19_MORE_THAN_12_MONTH_TO_3_YEARS=?,R19_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R19_MORE_THAN_5_YEARS_TO_10_YEARS=?,R19_MORE_THAN_10_YEARS=?,R19_TOTAL=?,R20_PRODUCT=?," +
+			"R20_UP_TO_1_MONTH=?,R20_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R20_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R20_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R20_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R20_MORE_THAN_3_YEARS_TO_5_YEARS=?,R20_MORE_THAN_5_YEARS_TO_10_YEARS=?,R20_MORE_THAN_10_YEARS=?," +
+			"R20_TOTAL=?,R21_PRODUCT=?,R21_UP_TO_1_MONTH=?,R21_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R21_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R21_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R21_MORE_THAN_12_MONTH_TO_3_YEARS=?,R21_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R21_MORE_THAN_5_YEARS_TO_10_YEARS=?,R21_MORE_THAN_10_YEARS=?,R21_TOTAL=?,R22_PRODUCT=?," +
+			"R22_UP_TO_1_MONTH=?,R22_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R22_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R22_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R22_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R22_MORE_THAN_3_YEARS_TO_5_YEARS=?,R22_MORE_THAN_5_YEARS_TO_10_YEARS=?,R22_MORE_THAN_10_YEARS=?," +
+			"R22_TOTAL=?,R23_PRODUCT=?,R23_UP_TO_1_MONTH=?,R23_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R23_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R23_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R23_MORE_THAN_12_MONTH_TO_3_YEARS=?,R23_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R23_MORE_THAN_5_YEARS_TO_10_YEARS=?,R23_MORE_THAN_10_YEARS=?,R23_TOTAL=?,R24_PRODUCT=?," +
+			"R24_UP_TO_1_MONTH=?,R24_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R24_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R24_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R24_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R24_MORE_THAN_3_YEARS_TO_5_YEARS=?,R24_MORE_THAN_5_YEARS_TO_10_YEARS=?,R24_MORE_THAN_10_YEARS=?," +
+			"R24_TOTAL=?,R25_PRODUCT=?,R25_UP_TO_1_MONTH=?,R25_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R25_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R25_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R25_MORE_THAN_12_MONTH_TO_3_YEARS=?,R25_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R25_MORE_THAN_5_YEARS_TO_10_YEARS=?,R25_MORE_THAN_10_YEARS=?,R25_TOTAL=?,R26_PRODUCT=?," +
+			"R26_UP_TO_1_MONTH=?,R26_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R26_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R26_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R26_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R26_MORE_THAN_3_YEARS_TO_5_YEARS=?,R26_MORE_THAN_5_YEARS_TO_10_YEARS=?,R26_MORE_THAN_10_YEARS=?," +
+			"R26_TOTAL=?,R27_PRODUCT=?,R27_UP_TO_1_MONTH=?,R27_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R27_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R27_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R27_MORE_THAN_12_MONTH_TO_3_YEARS=?,R27_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R27_MORE_THAN_5_YEARS_TO_10_YEARS=?,R27_MORE_THAN_10_YEARS=?,R27_TOTAL=?,R28_PRODUCT=?," +
+			"R28_UP_TO_1_MONTH=?,R28_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R28_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R28_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R28_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R28_MORE_THAN_3_YEARS_TO_5_YEARS=?,R28_MORE_THAN_5_YEARS_TO_10_YEARS=?,R28_MORE_THAN_10_YEARS=?," +
+			"R28_TOTAL=?,R29_PRODUCT=?,R29_UP_TO_1_MONTH=?,R29_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R29_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R29_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R29_MORE_THAN_12_MONTH_TO_3_YEARS=?,R29_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R29_MORE_THAN_5_YEARS_TO_10_YEARS=?,R29_MORE_THAN_10_YEARS=?,R29_TOTAL=?,R30_PRODUCT=?," +
+			"R30_UP_TO_1_MONTH=?,R30_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R30_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R30_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R30_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R30_MORE_THAN_3_YEARS_TO_5_YEARS=?,R30_MORE_THAN_5_YEARS_TO_10_YEARS=?,R30_MORE_THAN_10_YEARS=?," +
+			"R30_TOTAL=?,R31_PRODUCT=?,R31_UP_TO_1_MONTH=?,R31_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R31_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R31_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R31_MORE_THAN_12_MONTH_TO_3_YEARS=?,R31_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R31_MORE_THAN_5_YEARS_TO_10_YEARS=?,R31_MORE_THAN_10_YEARS=?,R31_TOTAL=?,R32_PRODUCT=?," +
+			"R32_UP_TO_1_MONTH=?,R32_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R32_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R32_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R32_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R32_MORE_THAN_3_YEARS_TO_5_YEARS=?,R32_MORE_THAN_5_YEARS_TO_10_YEARS=?,R32_MORE_THAN_10_YEARS=?," +
+			"R32_TOTAL=?,R33_PRODUCT=?,R33_UP_TO_1_MONTH=?,R33_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R33_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R33_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R33_MORE_THAN_12_MONTH_TO_3_YEARS=?,R33_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R33_MORE_THAN_5_YEARS_TO_10_YEARS=?,R33_MORE_THAN_10_YEARS=?,R33_TOTAL=?,R34_PRODUCT=?," +
+			"R34_UP_TO_1_MONTH=?,R34_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R34_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R34_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R34_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R34_MORE_THAN_3_YEARS_TO_5_YEARS=?,R34_MORE_THAN_5_YEARS_TO_10_YEARS=?,R34_MORE_THAN_10_YEARS=?," +
+			"R34_TOTAL=?,R35_PRODUCT=?,R35_UP_TO_1_MONTH=?,R35_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R35_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R35_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R35_MORE_THAN_12_MONTH_TO_3_YEARS=?,R35_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R35_MORE_THAN_5_YEARS_TO_10_YEARS=?,R35_MORE_THAN_10_YEARS=?,R35_TOTAL=?,R36_PRODUCT=?," +
+			"R36_UP_TO_1_MONTH=?,R36_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R36_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R36_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R36_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R36_MORE_THAN_3_YEARS_TO_5_YEARS=?,R36_MORE_THAN_5_YEARS_TO_10_YEARS=?,R36_MORE_THAN_10_YEARS=?," +
+			"R36_TOTAL=?,R37_PRODUCT=?,R37_UP_TO_1_MONTH=?,R37_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R37_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R37_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R37_MORE_THAN_12_MONTH_TO_3_YEARS=?,R37_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R37_MORE_THAN_5_YEARS_TO_10_YEARS=?,R37_MORE_THAN_10_YEARS=?,R37_TOTAL=?,R38_PRODUCT=?," +
+			"R38_UP_TO_1_MONTH=?,R38_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R38_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R38_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R38_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R38_MORE_THAN_3_YEARS_TO_5_YEARS=?,R38_MORE_THAN_5_YEARS_TO_10_YEARS=?,R38_MORE_THAN_10_YEARS=?," +
+			"R38_TOTAL=?,R39_PRODUCT=?,R39_UP_TO_1_MONTH=?,R39_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R39_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R39_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R39_MORE_THAN_12_MONTH_TO_3_YEARS=?,R39_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R39_MORE_THAN_5_YEARS_TO_10_YEARS=?,R39_MORE_THAN_10_YEARS=?,R39_TOTAL=?,R40_PRODUCT=?," +
+			"R40_UP_TO_1_MONTH=?,R40_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R40_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R40_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R40_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R40_MORE_THAN_3_YEARS_TO_5_YEARS=?,R40_MORE_THAN_5_YEARS_TO_10_YEARS=?,R40_MORE_THAN_10_YEARS=?," +
+			"R40_TOTAL=?,R41_PRODUCT=?,R41_UP_TO_1_MONTH=?,R41_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R41_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R41_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R41_MORE_THAN_12_MONTH_TO_3_YEARS=?,R41_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R41_MORE_THAN_5_YEARS_TO_10_YEARS=?,R41_MORE_THAN_10_YEARS=?,R41_TOTAL=?,R42_PRODUCT=?," +
+			"R42_UP_TO_1_MONTH=?,R42_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R42_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R42_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R42_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R42_MORE_THAN_3_YEARS_TO_5_YEARS=?,R42_MORE_THAN_5_YEARS_TO_10_YEARS=?,R42_MORE_THAN_10_YEARS=?," +
+			"R42_TOTAL=?,R43_PRODUCT=?,R43_UP_TO_1_MONTH=?,R43_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R43_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R43_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R43_MORE_THAN_12_MONTH_TO_3_YEARS=?,R43_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R43_MORE_THAN_5_YEARS_TO_10_YEARS=?,R43_MORE_THAN_10_YEARS=?,R43_TOTAL=?,R44_PRODUCT=?," +
+			"R44_UP_TO_1_MONTH=?,R44_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R44_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R44_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R44_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R44_MORE_THAN_3_YEARS_TO_5_YEARS=?,R44_MORE_THAN_5_YEARS_TO_10_YEARS=?,R44_MORE_THAN_10_YEARS=?," +
+			"R44_TOTAL=?,R45_PRODUCT=?,R45_UP_TO_1_MONTH=?,R45_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R45_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R45_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R45_MORE_THAN_12_MONTH_TO_3_YEARS=?,R45_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R45_MORE_THAN_5_YEARS_TO_10_YEARS=?,R45_MORE_THAN_10_YEARS=?,R45_TOTAL=?,R46_PRODUCT=?," +
+			"R46_UP_TO_1_MONTH=?,R46_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R46_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R46_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R46_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R46_MORE_THAN_3_YEARS_TO_5_YEARS=?,R46_MORE_THAN_5_YEARS_TO_10_YEARS=?,R46_MORE_THAN_10_YEARS=?," +
+			"R46_TOTAL=?,R47_NON_RATIO_SENSATIVE_ITEMS=?,R47_TOTAL=?,R48_NON_RATIO_SENSATIVE_ITEMS=?,R48_TOTAL=?," +
+			"R49_NON_RATIO_SENSATIVE_ITEMS=?,R49_TOTAL=?,R50_NON_RATIO_SENSATIVE_ITEMS=?,R50_TOTAL=?," +
+			"R51_NON_RATIO_SENSATIVE_ITEMS=?,R51_TOTAL=?,R52_NON_RATIO_SENSATIVE_ITEMS=?,R52_TOTAL=?," +
+			"R53_NON_RATIO_SENSATIVE_ITEMS=?,R53_TOTAL=?,R54_NON_RATIO_SENSATIVE_ITEMS=?,R54_TOTAL=?," +
+			"R55_NON_RATIO_SENSATIVE_ITEMS=?,R55_TOTAL=?,R56_NON_RATIO_SENSATIVE_ITEMS=?,R56_TOTAL=?," +
+			"R57_NON_RATIO_SENSATIVE_ITEMS=?,R57_TOTAL=?,R58_NON_RATIO_SENSATIVE_ITEMS=?,R58_TOTAL=?," +
+			"R59_PRODUCT=?,R59_UP_TO_1_MONTH=?,R59_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R59_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R59_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R59_MORE_THAN_12_MONTH_TO_3_YEARS=?,R59_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R59_MORE_THAN_5_YEARS_TO_10_YEARS=?,R59_MORE_THAN_10_YEARS=?,R59_NON_RATIO_SENSATIVE_ITEMS=?," +
+			"R59_TOTAL=?,R60_PRODUCT=?,R60_UP_TO_1_MONTH=?,R60_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R60_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R60_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R60_MORE_THAN_12_MONTH_TO_3_YEARS=?,R60_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R60_MORE_THAN_5_YEARS_TO_10_YEARS=?,R60_MORE_THAN_10_YEARS=?,R60_TOTAL=?,R61_PRODUCT=?," +
+			"R61_UP_TO_1_MONTH=?,R61_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R61_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R61_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R61_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R61_MORE_THAN_3_YEARS_TO_5_YEARS=?,R61_MORE_THAN_5_YEARS_TO_10_YEARS=?,R61_MORE_THAN_10_YEARS=?," +
+			"R61_TOTAL=?,R62_PRODUCT=?,R62_UP_TO_1_MONTH=?,R62_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R62_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R62_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R62_MORE_THAN_12_MONTH_TO_3_YEARS=?,R62_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R62_MORE_THAN_5_YEARS_TO_10_YEARS=?,R62_MORE_THAN_10_YEARS=?,R62_TOTAL=?,R63_PRODUCT=?," +
+			"R63_UP_TO_1_MONTH=?,R63_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R63_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R63_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R63_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R63_MORE_THAN_3_YEARS_TO_5_YEARS=?,R63_MORE_THAN_5_YEARS_TO_10_YEARS=?,R63_MORE_THAN_10_YEARS=?," +
+			"R63_TOTAL=?,R64_PRODUCT=?,R64_UP_TO_1_MONTH=?,R64_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R64_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R64_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R64_MORE_THAN_12_MONTH_TO_3_YEARS=?,R64_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R64_MORE_THAN_5_YEARS_TO_10_YEARS=?,R64_MORE_THAN_10_YEARS=?,R64_TOTAL=?,R65_PRODUCT=?," +
+			"R65_UP_TO_1_MONTH=?,R65_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R65_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R65_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R65_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R65_MORE_THAN_3_YEARS_TO_5_YEARS=?,R65_MORE_THAN_5_YEARS_TO_10_YEARS=?,R65_MORE_THAN_10_YEARS=?," +
+			"R65_TOTAL=?,R66_PRODUCT=?,R66_UP_TO_1_MONTH=?,R66_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R66_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R66_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R66_MORE_THAN_12_MONTH_TO_3_YEARS=?,R66_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R66_MORE_THAN_5_YEARS_TO_10_YEARS=?,R66_MORE_THAN_10_YEARS=?,R66_TOTAL=?,R67_PRODUCT=?," +
+			"R67_UP_TO_1_MONTH=?,R67_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R67_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R67_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R67_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R67_MORE_THAN_3_YEARS_TO_5_YEARS=?,R67_MORE_THAN_5_YEARS_TO_10_YEARS=?,R67_MORE_THAN_10_YEARS=?," +
+			"R67_TOTAL=?,R68_PRODUCT=?,R68_UP_TO_1_MONTH=?,R68_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R68_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R68_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R68_MORE_THAN_12_MONTH_TO_3_YEARS=?,R68_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R68_MORE_THAN_5_YEARS_TO_10_YEARS=?,R68_MORE_THAN_10_YEARS=?,R68_TOTAL=?,R69_PRODUCT=?," +
+			"R69_UP_TO_1_MONTH=?,R69_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R69_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R69_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R69_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R69_MORE_THAN_3_YEARS_TO_5_YEARS=?,R69_MORE_THAN_5_YEARS_TO_10_YEARS=?,R69_MORE_THAN_10_YEARS=?," +
+			"R69_TOTAL=?,R70_PRODUCT=?,R70_UP_TO_1_MONTH=?,R70_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R70_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R70_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R70_MORE_THAN_12_MONTH_TO_3_YEARS=?,R70_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R70_MORE_THAN_5_YEARS_TO_10_YEARS=?,R70_MORE_THAN_10_YEARS=?,R70_TOTAL=?,R71_PRODUCT=?," +
+			"R71_UP_TO_1_MONTH=?,R71_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R71_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R71_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R71_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R71_MORE_THAN_3_YEARS_TO_5_YEARS=?,R71_MORE_THAN_5_YEARS_TO_10_YEARS=?,R71_MORE_THAN_10_YEARS=?," +
+			"R71_TOTAL=?,R72_PRODUCT=?,R72_UP_TO_1_MONTH=?,R72_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R72_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R72_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R72_MORE_THAN_12_MONTH_TO_3_YEARS=?,R72_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R72_MORE_THAN_5_YEARS_TO_10_YEARS=?,R72_MORE_THAN_10_YEARS=?,R72_TOTAL=?,R73_PRODUCT=?," +
+			"R73_UP_TO_1_MONTH=?,R73_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R73_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R73_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R73_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R73_MORE_THAN_3_YEARS_TO_5_YEARS=?,R73_MORE_THAN_5_YEARS_TO_10_YEARS=?,R73_MORE_THAN_10_YEARS=?," +
+			"R73_TOTAL=?,R74_PRODUCT=?,R74_UP_TO_1_MONTH=?,R74_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R74_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R74_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R74_MORE_THAN_12_MONTH_TO_3_YEARS=?,R74_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R74_MORE_THAN_5_YEARS_TO_10_YEARS=?,R74_MORE_THAN_10_YEARS=?,R74_TOTAL=?,R75_PRODUCT=?," +
+			"R75_UP_TO_1_MONTH=?,R75_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R75_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R75_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R75_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R75_MORE_THAN_3_YEARS_TO_5_YEARS=?,R75_MORE_THAN_5_YEARS_TO_10_YEARS=?,R75_MORE_THAN_10_YEARS=?," +
+			"R75_TOTAL=?,R76_PRODUCT=?,R76_UP_TO_1_MONTH=?,R76_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R76_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R76_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R76_MORE_THAN_12_MONTH_TO_3_YEARS=?,R76_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R76_MORE_THAN_5_YEARS_TO_10_YEARS=?,R76_MORE_THAN_10_YEARS=?,R76_TOTAL=?,R77_PRODUCT=?," +
+			"R77_UP_TO_1_MONTH=?,R77_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R77_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R77_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R77_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R77_MORE_THAN_3_YEARS_TO_5_YEARS=?,R77_MORE_THAN_5_YEARS_TO_10_YEARS=?,R77_MORE_THAN_10_YEARS=?," +
+			"R77_TOTAL=?,R78_PRODUCT=?,R78_UP_TO_1_MONTH=?,R78_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R78_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R78_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R78_MORE_THAN_12_MONTH_TO_3_YEARS=?,R78_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R78_MORE_THAN_5_YEARS_TO_10_YEARS=?,R78_MORE_THAN_10_YEARS=?,R78_TOTAL=?,R79_PRODUCT=?," +
+			"R79_UP_TO_1_MONTH=?,R79_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R79_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R79_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R79_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R79_MORE_THAN_3_YEARS_TO_5_YEARS=?,R79_MORE_THAN_5_YEARS_TO_10_YEARS=?,R79_MORE_THAN_10_YEARS=?," +
+			"R79_TOTAL=?,R80_PRODUCT=?,R80_UP_TO_1_MONTH=?,R80_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R80_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R80_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R80_MORE_THAN_12_MONTH_TO_3_YEARS=?,R80_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R80_MORE_THAN_5_YEARS_TO_10_YEARS=?,R80_MORE_THAN_10_YEARS=?,R80_TOTAL=?,R81_PRODUCT=?," +
+			"R81_UP_TO_1_MONTH=?,R81_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R81_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R81_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R81_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R81_MORE_THAN_3_YEARS_TO_5_YEARS=?,R81_MORE_THAN_5_YEARS_TO_10_YEARS=?,R81_MORE_THAN_10_YEARS=?," +
+			"R81_TOTAL=?,R82_PRODUCT=?,R82_UP_TO_1_MONTH=?,R82_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R82_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R82_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R82_MORE_THAN_12_MONTH_TO_3_YEARS=?,R82_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R82_MORE_THAN_5_YEARS_TO_10_YEARS=?,R82_MORE_THAN_10_YEARS=?,R82_TOTAL=?,R83_PRODUCT=?," +
+			"R83_UP_TO_1_MONTH=?,R83_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R83_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R83_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R83_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R83_MORE_THAN_3_YEARS_TO_5_YEARS=?,R83_MORE_THAN_5_YEARS_TO_10_YEARS=?,R83_MORE_THAN_10_YEARS=?," +
+			"R83_TOTAL=?,R84_NON_RATIO_SENSATIVE_ITEMS=?,R84_TOTAL=?,R85_NON_RATIO_SENSATIVE_ITEMS=?,R85_TOTAL=?," +
+			"R86_NON_RATIO_SENSATIVE_ITEMS=?,R86_TOTAL=?,R87_NON_RATIO_SENSATIVE_ITEMS=?,R87_TOTAL=?," +
+			"R88_NON_RATIO_SENSATIVE_ITEMS=?,R88_TOTAL=?,R89_NON_RATIO_SENSATIVE_ITEMS=?,R89_TOTAL=?," +
+			"R90_NON_RATIO_SENSATIVE_ITEMS=?,R90_TOTAL=?,R91_NON_RATIO_SENSATIVE_ITEMS=?,R91_TOTAL=?," +
+			"R92_PRODUCT=?,R92_UP_TO_1_MONTH=?,R92_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R92_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R92_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R92_MORE_THAN_12_MONTH_TO_3_YEARS=?,R92_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R92_MORE_THAN_5_YEARS_TO_10_YEARS=?,R92_MORE_THAN_10_YEARS=?,R92_TOTAL=?,R93_PRODUCT=?," +
+			"R93_UP_TO_1_MONTH=?,R93_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R93_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R93_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R93_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R93_MORE_THAN_3_YEARS_TO_5_YEARS=?,R93_MORE_THAN_5_YEARS_TO_10_YEARS=?,R93_MORE_THAN_10_YEARS=?," +
+			"R93_TOTAL=?,R94_PRODUCT=?,R94_UP_TO_1_MONTH=?,R94_MORE_THAN_1_MONTH_TO_3_MONTHS=?," +
+			"R94_MORE_THAN_3_MONTH_TO_6_MONTHS=?,R94_MORE_THAN_6_MONTH_TO_12_MONTHS=?," +
+			"R94_MORE_THAN_12_MONTH_TO_3_YEARS=?,R94_MORE_THAN_3_YEARS_TO_5_YEARS=?," +
+			"R94_MORE_THAN_5_YEARS_TO_10_YEARS=?,R94_MORE_THAN_10_YEARS=?,R94_TOTAL=?," +
+			"R95_NON_RATIO_SENSATIVE_ITEMS=?,R95_TOTAL=?,R96_PRODUCT=?,R96_UP_TO_1_MONTH=?," +
+			"R96_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R96_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R96_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R96_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R96_MORE_THAN_3_YEARS_TO_5_YEARS=?,R96_MORE_THAN_5_YEARS_TO_10_YEARS=?,R96_MORE_THAN_10_YEARS=?," +
+			"R96_NON_RATIO_SENSATIVE_ITEMS=?,R96_TOTAL=?,R97_PRODUCT=?,R97_UP_TO_1_MONTH=?," +
+			"R97_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R97_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R97_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R97_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R97_MORE_THAN_3_YEARS_TO_5_YEARS=?,R97_MORE_THAN_5_YEARS_TO_10_YEARS=?,R97_MORE_THAN_10_YEARS=?," +
+			"R97_NON_RATIO_SENSATIVE_ITEMS=?,R97_TOTAL=?,R98_PRODUCT=?,R98_UP_TO_1_MONTH=?," +
+			"R98_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R98_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R98_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R98_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R98_MORE_THAN_3_YEARS_TO_5_YEARS=?,R98_MORE_THAN_5_YEARS_TO_10_YEARS=?,R98_MORE_THAN_10_YEARS=?," +
+			"R98_NON_RATIO_SENSATIVE_ITEMS=?,R98_TOTAL=?,R99_PRODUCT=?,R99_UP_TO_1_MONTH=?," +
+			"R99_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R99_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R99_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R99_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R99_MORE_THAN_3_YEARS_TO_5_YEARS=?,R99_MORE_THAN_5_YEARS_TO_10_YEARS=?,R99_MORE_THAN_10_YEARS=?," +
+			"R99_NON_RATIO_SENSATIVE_ITEMS=?,R99_TOTAL=?,R100_PRODUCT=?,R100_UP_TO_1_MONTH=?," +
+			"R100_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R100_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R100_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R100_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R100_MORE_THAN_3_YEARS_TO_5_YEARS=?,R100_MORE_THAN_5_YEARS_TO_10_YEARS=?,R100_MORE_THAN_10_YEARS=?," +
+			"R100_NON_RATIO_SENSATIVE_ITEMS=?,R100_TOTAL=?,R101_PRODUCT=?,R101_UP_TO_1_MONTH=?," +
+			"R101_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R101_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R101_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R101_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R101_MORE_THAN_3_YEARS_TO_5_YEARS=?,R101_MORE_THAN_5_YEARS_TO_10_YEARS=?,R101_MORE_THAN_10_YEARS=?," +
+			"R101_NON_RATIO_SENSATIVE_ITEMS=?,R101_TOTAL=?,R102_PRODUCT=?,R102_UP_TO_1_MONTH=?," +
+			"R102_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R102_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R102_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R102_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R102_MORE_THAN_3_YEARS_TO_5_YEARS=?,R102_MORE_THAN_5_YEARS_TO_10_YEARS=?,R102_MORE_THAN_10_YEARS=?," +
+			"R102_NON_RATIO_SENSATIVE_ITEMS=?,R102_TOTAL=?,R103_PRODUCT=?,R103_UP_TO_1_MONTH=?," +
+			"R103_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R103_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R103_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R103_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R103_MORE_THAN_3_YEARS_TO_5_YEARS=?,R103_MORE_THAN_5_YEARS_TO_10_YEARS=?,R103_MORE_THAN_10_YEARS=?," +
+			"R103_NON_RATIO_SENSATIVE_ITEMS=?,R103_TOTAL=?,R104_PRODUCT=?,R104_UP_TO_1_MONTH=?," +
+			"R104_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R104_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R104_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R104_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R104_MORE_THAN_3_YEARS_TO_5_YEARS=?,R104_MORE_THAN_5_YEARS_TO_10_YEARS=?,R104_MORE_THAN_10_YEARS=?," +
+			"R104_NON_RATIO_SENSATIVE_ITEMS=?,R104_TOTAL=?,R105_PRODUCT=?,R105_UP_TO_1_MONTH=?," +
+			"R105_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R105_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R105_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R105_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R105_MORE_THAN_3_YEARS_TO_5_YEARS=?,R105_MORE_THAN_5_YEARS_TO_10_YEARS=?,R105_MORE_THAN_10_YEARS=?," +
+			"R105_NON_RATIO_SENSATIVE_ITEMS=?,R105_TOTAL=?,R106_PRODUCT=?,R106_UP_TO_1_MONTH=?," +
+			"R106_MORE_THAN_1_MONTH_TO_3_MONTHS=?,R106_MORE_THAN_3_MONTH_TO_6_MONTHS=?," +
+			"R106_MORE_THAN_6_MONTH_TO_12_MONTHS=?,R106_MORE_THAN_12_MONTH_TO_3_YEARS=?," +
+			"R106_MORE_THAN_3_YEARS_TO_5_YEARS=?,R106_MORE_THAN_5_YEARS_TO_10_YEARS=?,R106_MORE_THAN_10_YEARS=?," +
+			"R106_NON_RATIO_SENSATIVE_ITEMS=?,R106_TOTAL=?,REPORT_VERSION=?,REPORT_FREQUENCY=?,REPORT_CODE=?," +
+			"REPORT_DESC=?,ENTITY_FLG=?,MODIFY_FLG=?,DEL_FLG=?" +
+			" WHERE REPORT_DATE=?";
+
+	public void updateSummary(M_IRB_Summary_Entity e) {
+		Object[] params = new Object[] {
+			e.getR10product(), e.getR10_upTo1Month(), e.getR10_moreThan1MonthTo3Months(), e.getR10_moreThan3MonthTo6Months(), 
+			e.getR10_moreThan6MonthTo12Months(), e.getR10_moreThan12MonthTo3Years(), e.getR10_moreThan3YearsTo5Years(), e.getR10_moreThan5YearsTo10Years(), 
+			e.getR10_moreThan10Years(), e.getR10_nonRatioSensativeItems(), e.getR10_total(), e.getR11product(), 
+			e.getR11_upTo1Month(), e.getR11_moreThan1MonthTo3Months(), e.getR11_moreThan3MonthTo6Months(), e.getR11_moreThan6MonthTo12Months(), 
+			e.getR11_moreThan12MonthTo3Years(), e.getR11_moreThan3YearsTo5Years(), e.getR11_moreThan5YearsTo10Years(), e.getR11_moreThan10Years(), 
+			e.getR11_total(), e.getR12product(), e.getR12_upTo1Month(), e.getR12_moreThan1MonthTo3Months(), 
+			e.getR12_moreThan3MonthTo6Months(), e.getR12_moreThan6MonthTo12Months(), e.getR12_moreThan12MonthTo3Years(), e.getR12_moreThan3YearsTo5Years(), 
+			e.getR12_moreThan5YearsTo10Years(), e.getR12_moreThan10Years(), e.getR12_total(), e.getR13product(), 
+			e.getR13_upTo1Month(), e.getR13_moreThan1MonthTo3Months(), e.getR13_moreThan3MonthTo6Months(), e.getR13_moreThan6MonthTo12Months(), 
+			e.getR13_moreThan12MonthTo3Years(), e.getR13_moreThan3YearsTo5Years(), e.getR13_moreThan5YearsTo10Years(), e.getR13_moreThan10Years(), 
+			e.getR13_total(), e.getR14product(), e.getR14_upTo1Month(), e.getR14_moreThan1MonthTo3Months(), 
+			e.getR14_moreThan3MonthTo6Months(), e.getR14_moreThan6MonthTo12Months(), e.getR14_moreThan12MonthTo3Years(), e.getR14_moreThan3YearsTo5Years(), 
+			e.getR14_moreThan5YearsTo10Years(), e.getR14_moreThan10Years(), e.getR14_total(), e.getR15product(), 
+			e.getR15_upTo1Month(), e.getR15_moreThan1MonthTo3Months(), e.getR15_moreThan3MonthTo6Months(), e.getR15_moreThan6MonthTo12Months(), 
+			e.getR15_moreThan12MonthTo3Years(), e.getR15_moreThan3YearsTo5Years(), e.getR15_moreThan5YearsTo10Years(), e.getR15_moreThan10Years(), 
+			e.getR15_total(), e.getR16product(), e.getR16_upTo1Month(), e.getR16_moreThan1MonthTo3Months(), 
+			e.getR16_moreThan3MonthTo6Months(), e.getR16_moreThan6MonthTo12Months(), e.getR16_moreThan12MonthTo3Years(), e.getR16_moreThan3YearsTo5Years(), 
+			e.getR16_moreThan5YearsTo10Years(), e.getR16_moreThan10Years(), e.getR16_total(), e.getR17product(), 
+			e.getR17_upTo1Month(), e.getR17_moreThan1MonthTo3Months(), e.getR17_moreThan3MonthTo6Months(), e.getR17_moreThan6MonthTo12Months(), 
+			e.getR17_moreThan12MonthTo3Years(), e.getR17_moreThan3YearsTo5Years(), e.getR17_moreThan5YearsTo10Years(), e.getR17_moreThan10Years(), 
+			e.getR17_total(), e.getR18product(), e.getR18_upTo1Month(), e.getR18_moreThan1MonthTo3Months(), 
+			e.getR18_moreThan3MonthTo6Months(), e.getR18_moreThan6MonthTo12Months(), e.getR18_moreThan12MonthTo3Years(), e.getR18_moreThan3YearsTo5Years(), 
+			e.getR18_moreThan5YearsTo10Years(), e.getR18_moreThan10Years(), e.getR18_total(), e.getR19product(), 
+			e.getR19_upTo1Month(), e.getR19_moreThan1MonthTo3Months(), e.getR19_moreThan3MonthTo6Months(), e.getR19_moreThan6MonthTo12Months(), 
+			e.getR19_moreThan12MonthTo3Years(), e.getR19_moreThan3YearsTo5Years(), e.getR19_moreThan5YearsTo10Years(), e.getR19_moreThan10Years(), 
+			e.getR19_total(), e.getR20product(), e.getR20_upTo1Month(), e.getR20_moreThan1MonthTo3Months(), 
+			e.getR20_moreThan3MonthTo6Months(), e.getR20_moreThan6MonthTo12Months(), e.getR20_moreThan12MonthTo3Years(), e.getR20_moreThan3YearsTo5Years(), 
+			e.getR20_moreThan5YearsTo10Years(), e.getR20_moreThan10Years(), e.getR20_total(), e.getR21product(), 
+			e.getR21_upTo1Month(), e.getR21_moreThan1MonthTo3Months(), e.getR21_moreThan3MonthTo6Months(), e.getR21_moreThan6MonthTo12Months(), 
+			e.getR21_moreThan12MonthTo3Years(), e.getR21_moreThan3YearsTo5Years(), e.getR21_moreThan5YearsTo10Years(), e.getR21_moreThan10Years(), 
+			e.getR21_total(), e.getR22product(), e.getR22_upTo1Month(), e.getR22_moreThan1MonthTo3Months(), 
+			e.getR22_moreThan3MonthTo6Months(), e.getR22_moreThan6MonthTo12Months(), e.getR22_moreThan12MonthTo3Years(), e.getR22_moreThan3YearsTo5Years(), 
+			e.getR22_moreThan5YearsTo10Years(), e.getR22_moreThan10Years(), e.getR22_total(), e.getR23product(), 
+			e.getR23_upTo1Month(), e.getR23_moreThan1MonthTo3Months(), e.getR23_moreThan3MonthTo6Months(), e.getR23_moreThan6MonthTo12Months(), 
+			e.getR23_moreThan12MonthTo3Years(), e.getR23_moreThan3YearsTo5Years(), e.getR23_moreThan5YearsTo10Years(), e.getR23_moreThan10Years(), 
+			e.getR23_total(), e.getR24product(), e.getR24_upTo1Month(), e.getR24_moreThan1MonthTo3Months(), 
+			e.getR24_moreThan3MonthTo6Months(), e.getR24_moreThan6MonthTo12Months(), e.getR24_moreThan12MonthTo3Years(), e.getR24_moreThan3YearsTo5Years(), 
+			e.getR24_moreThan5YearsTo10Years(), e.getR24_moreThan10Years(), e.getR24_total(), e.getR25product(), 
+			e.getR25_upTo1Month(), e.getR25_moreThan1MonthTo3Months(), e.getR25_moreThan3MonthTo6Months(), e.getR25_moreThan6MonthTo12Months(), 
+			e.getR25_moreThan12MonthTo3Years(), e.getR25_moreThan3YearsTo5Years(), e.getR25_moreThan5YearsTo10Years(), e.getR25_moreThan10Years(), 
+			e.getR25_total(), e.getR26product(), e.getR26_upTo1Month(), e.getR26_moreThan1MonthTo3Months(), 
+			e.getR26_moreThan3MonthTo6Months(), e.getR26_moreThan6MonthTo12Months(), e.getR26_moreThan12MonthTo3Years(), e.getR26_moreThan3YearsTo5Years(), 
+			e.getR26_moreThan5YearsTo10Years(), e.getR26_moreThan10Years(), e.getR26_total(), e.getR27product(), 
+			e.getR27_upTo1Month(), e.getR27_moreThan1MonthTo3Months(), e.getR27_moreThan3MonthTo6Months(), e.getR27_moreThan6MonthTo12Months(), 
+			e.getR27_moreThan12MonthTo3Years(), e.getR27_moreThan3YearsTo5Years(), e.getR27_moreThan5YearsTo10Years(), e.getR27_moreThan10Years(), 
+			e.getR27_total(), e.getR28product(), e.getR28_upTo1Month(), e.getR28_moreThan1MonthTo3Months(), 
+			e.getR28_moreThan3MonthTo6Months(), e.getR28_moreThan6MonthTo12Months(), e.getR28_moreThan12MonthTo3Years(), e.getR28_moreThan3YearsTo5Years(), 
+			e.getR28_moreThan5YearsTo10Years(), e.getR28_moreThan10Years(), e.getR28_total(), e.getR29product(), 
+			e.getR29_upTo1Month(), e.getR29_moreThan1MonthTo3Months(), e.getR29_moreThan3MonthTo6Months(), e.getR29_moreThan6MonthTo12Months(), 
+			e.getR29_moreThan12MonthTo3Years(), e.getR29_moreThan3YearsTo5Years(), e.getR29_moreThan5YearsTo10Years(), e.getR29_moreThan10Years(), 
+			e.getR29_total(), e.getR30product(), e.getR30_upTo1Month(), e.getR30_moreThan1MonthTo3Months(), 
+			e.getR30_moreThan3MonthTo6Months(), e.getR30_moreThan6MonthTo12Months(), e.getR30_moreThan12MonthTo3Years(), e.getR30_moreThan3YearsTo5Years(), 
+			e.getR30_moreThan5YearsTo10Years(), e.getR30_moreThan10Years(), e.getR30_total(), e.getR31product(), 
+			e.getR31_upTo1Month(), e.getR31_moreThan1MonthTo3Months(), e.getR31_moreThan3MonthTo6Months(), e.getR31_moreThan6MonthTo12Months(), 
+			e.getR31_moreThan12MonthTo3Years(), e.getR31_moreThan3YearsTo5Years(), e.getR31_moreThan5YearsTo10Years(), e.getR31_moreThan10Years(), 
+			e.getR31_total(), e.getR32product(), e.getR32_upTo1Month(), e.getR32_moreThan1MonthTo3Months(), 
+			e.getR32_moreThan3MonthTo6Months(), e.getR32_moreThan6MonthTo12Months(), e.getR32_moreThan12MonthTo3Years(), e.getR32_moreThan3YearsTo5Years(), 
+			e.getR32_moreThan5YearsTo10Years(), e.getR32_moreThan10Years(), e.getR32_total(), e.getR33product(), 
+			e.getR33_upTo1Month(), e.getR33_moreThan1MonthTo3Months(), e.getR33_moreThan3MonthTo6Months(), e.getR33_moreThan6MonthTo12Months(), 
+			e.getR33_moreThan12MonthTo3Years(), e.getR33_moreThan3YearsTo5Years(), e.getR33_moreThan5YearsTo10Years(), e.getR33_moreThan10Years(), 
+			e.getR33_total(), e.getR34product(), e.getR34_upTo1Month(), e.getR34_moreThan1MonthTo3Months(), 
+			e.getR34_moreThan3MonthTo6Months(), e.getR34_moreThan6MonthTo12Months(), e.getR34_moreThan12MonthTo3Years(), e.getR34_moreThan3YearsTo5Years(), 
+			e.getR34_moreThan5YearsTo10Years(), e.getR34_moreThan10Years(), e.getR34_total(), e.getR35product(), 
+			e.getR35_upTo1Month(), e.getR35_moreThan1MonthTo3Months(), e.getR35_moreThan3MonthTo6Months(), e.getR35_moreThan6MonthTo12Months(), 
+			e.getR35_moreThan12MonthTo3Years(), e.getR35_moreThan3YearsTo5Years(), e.getR35_moreThan5YearsTo10Years(), e.getR35_moreThan10Years(), 
+			e.getR35_total(), e.getR36product(), e.getR36_upTo1Month(), e.getR36_moreThan1MonthTo3Months(), 
+			e.getR36_moreThan3MonthTo6Months(), e.getR36_moreThan6MonthTo12Months(), e.getR36_moreThan12MonthTo3Years(), e.getR36_moreThan3YearsTo5Years(), 
+			e.getR36_moreThan5YearsTo10Years(), e.getR36_moreThan10Years(), e.getR36_total(), e.getR37product(), 
+			e.getR37_upTo1Month(), e.getR37_moreThan1MonthTo3Months(), e.getR37_moreThan3MonthTo6Months(), e.getR37_moreThan6MonthTo12Months(), 
+			e.getR37_moreThan12MonthTo3Years(), e.getR37_moreThan3YearsTo5Years(), e.getR37_moreThan5YearsTo10Years(), e.getR37_moreThan10Years(), 
+			e.getR37_total(), e.getR38product(), e.getR38_upTo1Month(), e.getR38_moreThan1MonthTo3Months(), 
+			e.getR38_moreThan3MonthTo6Months(), e.getR38_moreThan6MonthTo12Months(), e.getR38_moreThan12MonthTo3Years(), e.getR38_moreThan3YearsTo5Years(), 
+			e.getR38_moreThan5YearsTo10Years(), e.getR38_moreThan10Years(), e.getR38_total(), e.getR39product(), 
+			e.getR39_upTo1Month(), e.getR39_moreThan1MonthTo3Months(), e.getR39_moreThan3MonthTo6Months(), e.getR39_moreThan6MonthTo12Months(), 
+			e.getR39_moreThan12MonthTo3Years(), e.getR39_moreThan3YearsTo5Years(), e.getR39_moreThan5YearsTo10Years(), e.getR39_moreThan10Years(), 
+			e.getR39_total(), e.getR40product(), e.getR40_upTo1Month(), e.getR40_moreThan1MonthTo3Months(), 
+			e.getR40_moreThan3MonthTo6Months(), e.getR40_moreThan6MonthTo12Months(), e.getR40_moreThan12MonthTo3Years(), e.getR40_moreThan3YearsTo5Years(), 
+			e.getR40_moreThan5YearsTo10Years(), e.getR40_moreThan10Years(), e.getR40_total(), e.getR41product(), 
+			e.getR41_upTo1Month(), e.getR41_moreThan1MonthTo3Months(), e.getR41_moreThan3MonthTo6Months(), e.getR41_moreThan6MonthTo12Months(), 
+			e.getR41_moreThan12MonthTo3Years(), e.getR41_moreThan3YearsTo5Years(), e.getR41_moreThan5YearsTo10Years(), e.getR41_moreThan10Years(), 
+			e.getR41_total(), e.getR42product(), e.getR42_upTo1Month(), e.getR42_moreThan1MonthTo3Months(), 
+			e.getR42_moreThan3MonthTo6Months(), e.getR42_moreThan6MonthTo12Months(), e.getR42_moreThan12MonthTo3Years(), e.getR42_moreThan3YearsTo5Years(), 
+			e.getR42_moreThan5YearsTo10Years(), e.getR42_moreThan10Years(), e.getR42_total(), e.getR43product(), 
+			e.getR43_upTo1Month(), e.getR43_moreThan1MonthTo3Months(), e.getR43_moreThan3MonthTo6Months(), e.getR43_moreThan6MonthTo12Months(), 
+			e.getR43_moreThan12MonthTo3Years(), e.getR43_moreThan3YearsTo5Years(), e.getR43_moreThan5YearsTo10Years(), e.getR43_moreThan10Years(), 
+			e.getR43_total(), e.getR44product(), e.getR44_upTo1Month(), e.getR44_moreThan1MonthTo3Months(), 
+			e.getR44_moreThan3MonthTo6Months(), e.getR44_moreThan6MonthTo12Months(), e.getR44_moreThan12MonthTo3Years(), e.getR44_moreThan3YearsTo5Years(), 
+			e.getR44_moreThan5YearsTo10Years(), e.getR44_moreThan10Years(), e.getR44_total(), e.getR45product(), 
+			e.getR45_upTo1Month(), e.getR45_moreThan1MonthTo3Months(), e.getR45_moreThan3MonthTo6Months(), e.getR45_moreThan6MonthTo12Months(), 
+			e.getR45_moreThan12MonthTo3Years(), e.getR45_moreThan3YearsTo5Years(), e.getR45_moreThan5YearsTo10Years(), e.getR45_moreThan10Years(), 
+			e.getR45_total(), e.getR46product(), e.getR46_upTo1Month(), e.getR46_moreThan1MonthTo3Months(), 
+			e.getR46_moreThan3MonthTo6Months(), e.getR46_moreThan6MonthTo12Months(), e.getR46_moreThan12MonthTo3Years(), e.getR46_moreThan3YearsTo5Years(), 
+			e.getR46_moreThan5YearsTo10Years(), e.getR46_moreThan10Years(), e.getR46_total(), e.getR47_nonRatioSensativeItems(), 
+			e.getR47_total(), e.getR48_nonRatioSensativeItems(), e.getR48_total(), e.getR49_nonRatioSensativeItems(), 
+			e.getR49_total(), e.getR50_nonRatioSensativeItems(), e.getR50_total(), e.getR51_nonRatioSensativeItems(), 
+			e.getR51_total(), e.getR52_nonRatioSensativeItems(), e.getR52_total(), e.getR53_nonRatioSensativeItems(), 
+			e.getR53_total(), e.getR54_nonRatioSensativeItems(), e.getR54_total(), e.getR55_nonRatioSensativeItems(), 
+			e.getR55_total(), e.getR56_nonRatioSensativeItems(), e.getR56_total(), e.getR57_nonRatioSensativeItems(), 
+			e.getR57_total(), e.getR58_nonRatioSensativeItems(), e.getR58_total(), e.getR59product(), 
+			e.getR59_upTo1Month(), e.getR59_moreThan1MonthTo3Months(), e.getR59_moreThan3MonthTo6Months(), e.getR59_moreThan6MonthTo12Months(), 
+			e.getR59_moreThan12MonthTo3Years(), e.getR59_moreThan3YearsTo5Years(), e.getR59_moreThan5YearsTo10Years(), e.getR59_moreThan10Years(), 
+			e.getR59_nonRatioSensativeItems(), e.getR59_total(), e.getR60product(), e.getR60_upTo1Month(), 
+			e.getR60_moreThan1MonthTo3Months(), e.getR60_moreThan3MonthTo6Months(), e.getR60_moreThan6MonthTo12Months(), e.getR60_moreThan12MonthTo3Years(), 
+			e.getR60_moreThan3YearsTo5Years(), e.getR60_moreThan5YearsTo10Years(), e.getR60_moreThan10Years(), e.getR60_total(), 
+			e.getR61product(), e.getR61_upTo1Month(), e.getR61_moreThan1MonthTo3Months(), e.getR61_moreThan3MonthTo6Months(), 
+			e.getR61_moreThan6MonthTo12Months(), e.getR61_moreThan12MonthTo3Years(), e.getR61_moreThan3YearsTo5Years(), e.getR61_moreThan5YearsTo10Years(), 
+			e.getR61_moreThan10Years(), e.getR61_total(), e.getR62product(), e.getR62_upTo1Month(), 
+			e.getR62_moreThan1MonthTo3Months(), e.getR62_moreThan3MonthTo6Months(), e.getR62_moreThan6MonthTo12Months(), e.getR62_moreThan12MonthTo3Years(), 
+			e.getR62_moreThan3YearsTo5Years(), e.getR62_moreThan5YearsTo10Years(), e.getR62_moreThan10Years(), e.getR62_total(), 
+			e.getR63product(), e.getR63_upTo1Month(), e.getR63_moreThan1MonthTo3Months(), e.getR63_moreThan3MonthTo6Months(), 
+			e.getR63_moreThan6MonthTo12Months(), e.getR63_moreThan12MonthTo3Years(), e.getR63_moreThan3YearsTo5Years(), e.getR63_moreThan5YearsTo10Years(), 
+			e.getR63_moreThan10Years(), e.getR63_total(), e.getR64product(), e.getR64_upTo1Month(), 
+			e.getR64_moreThan1MonthTo3Months(), e.getR64_moreThan3MonthTo6Months(), e.getR64_moreThan6MonthTo12Months(), e.getR64_moreThan12MonthTo3Years(), 
+			e.getR64_moreThan3YearsTo5Years(), e.getR64_moreThan5YearsTo10Years(), e.getR64_moreThan10Years(), e.getR64_total(), 
+			e.getR65product(), e.getR65_upTo1Month(), e.getR65_moreThan1MonthTo3Months(), e.getR65_moreThan3MonthTo6Months(), 
+			e.getR65_moreThan6MonthTo12Months(), e.getR65_moreThan12MonthTo3Years(), e.getR65_moreThan3YearsTo5Years(), e.getR65_moreThan5YearsTo10Years(), 
+			e.getR65_moreThan10Years(), e.getR65_total(), e.getR66product(), e.getR66_upTo1Month(), 
+			e.getR66_moreThan1MonthTo3Months(), e.getR66_moreThan3MonthTo6Months(), e.getR66_moreThan6MonthTo12Months(), e.getR66_moreThan12MonthTo3Years(), 
+			e.getR66_moreThan3YearsTo5Years(), e.getR66_moreThan5YearsTo10Years(), e.getR66_moreThan10Years(), e.getR66_total(), 
+			e.getR67product(), e.getR67_upTo1Month(), e.getR67_moreThan1MonthTo3Months(), e.getR67_moreThan3MonthTo6Months(), 
+			e.getR67_moreThan6MonthTo12Months(), e.getR67_moreThan12MonthTo3Years(), e.getR67_moreThan3YearsTo5Years(), e.getR67_moreThan5YearsTo10Years(), 
+			e.getR67_moreThan10Years(), e.getR67_total(), e.getR68product(), e.getR68_upTo1Month(), 
+			e.getR68_moreThan1MonthTo3Months(), e.getR68_moreThan3MonthTo6Months(), e.getR68_moreThan6MonthTo12Months(), e.getR68_moreThan12MonthTo3Years(), 
+			e.getR68_moreThan3YearsTo5Years(), e.getR68_moreThan5YearsTo10Years(), e.getR68_moreThan10Years(), e.getR68_total(), 
+			e.getR69product(), e.getR69_upTo1Month(), e.getR69_moreThan1MonthTo3Months(), e.getR69_moreThan3MonthTo6Months(), 
+			e.getR69_moreThan6MonthTo12Months(), e.getR69_moreThan12MonthTo3Years(), e.getR69_moreThan3YearsTo5Years(), e.getR69_moreThan5YearsTo10Years(), 
+			e.getR69_moreThan10Years(), e.getR69_total(), e.getR70product(), e.getR70_upTo1Month(), 
+			e.getR70_moreThan1MonthTo3Months(), e.getR70_moreThan3MonthTo6Months(), e.getR70_moreThan6MonthTo12Months(), e.getR70_moreThan12MonthTo3Years(), 
+			e.getR70_moreThan3YearsTo5Years(), e.getR70_moreThan5YearsTo10Years(), e.getR70_moreThan10Years(), e.getR70_total(), 
+			e.getR71product(), e.getR71_upTo1Month(), e.getR71_moreThan1MonthTo3Months(), e.getR71_moreThan3MonthTo6Months(), 
+			e.getR71_moreThan6MonthTo12Months(), e.getR71_moreThan12MonthTo3Years(), e.getR71_moreThan3YearsTo5Years(), e.getR71_moreThan5YearsTo10Years(), 
+			e.getR71_moreThan10Years(), e.getR71_total(), e.getR72product(), e.getR72_upTo1Month(), 
+			e.getR72_moreThan1MonthTo3Months(), e.getR72_moreThan3MonthTo6Months(), e.getR72_moreThan6MonthTo12Months(), e.getR72_moreThan12MonthTo3Years(), 
+			e.getR72_moreThan3YearsTo5Years(), e.getR72_moreThan5YearsTo10Years(), e.getR72_moreThan10Years(), e.getR72_total(), 
+			e.getR73product(), e.getR73_upTo1Month(), e.getR73_moreThan1MonthTo3Months(), e.getR73_moreThan3MonthTo6Months(), 
+			e.getR73_moreThan6MonthTo12Months(), e.getR73_moreThan12MonthTo3Years(), e.getR73_moreThan3YearsTo5Years(), e.getR73_moreThan5YearsTo10Years(), 
+			e.getR73_moreThan10Years(), e.getR73_total(), e.getR74product(), e.getR74_upTo1Month(), 
+			e.getR74_moreThan1MonthTo3Months(), e.getR74_moreThan3MonthTo6Months(), e.getR74_moreThan6MonthTo12Months(), e.getR74_moreThan12MonthTo3Years(), 
+			e.getR74_moreThan3YearsTo5Years(), e.getR74_moreThan5YearsTo10Years(), e.getR74_moreThan10Years(), e.getR74_total(), 
+			e.getR75product(), e.getR75_upTo1Month(), e.getR75_moreThan1MonthTo3Months(), e.getR75_moreThan3MonthTo6Months(), 
+			e.getR75_moreThan6MonthTo12Months(), e.getR75_moreThan12MonthTo3Years(), e.getR75_moreThan3YearsTo5Years(), e.getR75_moreThan5YearsTo10Years(), 
+			e.getR75_moreThan10Years(), e.getR75_total(), e.getR76product(), e.getR76_upTo1Month(), 
+			e.getR76_moreThan1MonthTo3Months(), e.getR76_moreThan3MonthTo6Months(), e.getR76_moreThan6MonthTo12Months(), e.getR76_moreThan12MonthTo3Years(), 
+			e.getR76_moreThan3YearsTo5Years(), e.getR76_moreThan5YearsTo10Years(), e.getR76_moreThan10Years(), e.getR76_total(), 
+			e.getR77product(), e.getR77_upTo1Month(), e.getR77_moreThan1MonthTo3Months(), e.getR77_moreThan3MonthTo6Months(), 
+			e.getR77_moreThan6MonthTo12Months(), e.getR77_moreThan12MonthTo3Years(), e.getR77_moreThan3YearsTo5Years(), e.getR77_moreThan5YearsTo10Years(), 
+			e.getR77_moreThan10Years(), e.getR77_total(), e.getR78product(), e.getR78_upTo1Month(), 
+			e.getR78_moreThan1MonthTo3Months(), e.getR78_moreThan3MonthTo6Months(), e.getR78_moreThan6MonthTo12Months(), e.getR78_moreThan12MonthTo3Years(), 
+			e.getR78_moreThan3YearsTo5Years(), e.getR78_moreThan5YearsTo10Years(), e.getR78_moreThan10Years(), e.getR78_total(), 
+			e.getR79product(), e.getR79_upTo1Month(), e.getR79_moreThan1MonthTo3Months(), e.getR79_moreThan3MonthTo6Months(), 
+			e.getR79_moreThan6MonthTo12Months(), e.getR79_moreThan12MonthTo3Years(), e.getR79_moreThan3YearsTo5Years(), e.getR79_moreThan5YearsTo10Years(), 
+			e.getR79_moreThan10Years(), e.getR79_total(), e.getR80product(), e.getR80_upTo1Month(), 
+			e.getR80_moreThan1MonthTo3Months(), e.getR80_moreThan3MonthTo6Months(), e.getR80_moreThan6MonthTo12Months(), e.getR80_moreThan12MonthTo3Years(), 
+			e.getR80_moreThan3YearsTo5Years(), e.getR80_moreThan5YearsTo10Years(), e.getR80_moreThan10Years(), e.getR80_total(), 
+			e.getR81product(), e.getR81_upTo1Month(), e.getR81_moreThan1MonthTo3Months(), e.getR81_moreThan3MonthTo6Months(), 
+			e.getR81_moreThan6MonthTo12Months(), e.getR81_moreThan12MonthTo3Years(), e.getR81_moreThan3YearsTo5Years(), e.getR81_moreThan5YearsTo10Years(), 
+			e.getR81_moreThan10Years(), e.getR81_total(), e.getR82product(), e.getR82_upTo1Month(), 
+			e.getR82_moreThan1MonthTo3Months(), e.getR82_moreThan3MonthTo6Months(), e.getR82_moreThan6MonthTo12Months(), e.getR82_moreThan12MonthTo3Years(), 
+			e.getR82_moreThan3YearsTo5Years(), e.getR82_moreThan5YearsTo10Years(), e.getR82_moreThan10Years(), e.getR82_total(), 
+			e.getR83product(), e.getR83_upTo1Month(), e.getR83_moreThan1MonthTo3Months(), e.getR83_moreThan3MonthTo6Months(), 
+			e.getR83_moreThan6MonthTo12Months(), e.getR83_moreThan12MonthTo3Years(), e.getR83_moreThan3YearsTo5Years(), e.getR83_moreThan5YearsTo10Years(), 
+			e.getR83_moreThan10Years(), e.getR83_total(), e.getR84_nonRatioSensativeItems(), e.getR84_total(), 
+			e.getR85_nonRatioSensativeItems(), e.getR85_total(), e.getR86_nonRatioSensativeItems(), e.getR86_total(), 
+			e.getR87_nonRatioSensativeItems(), e.getR87_total(), e.getR88_nonRatioSensativeItems(), e.getR88_total(), 
+			e.getR89_nonRatioSensativeItems(), e.getR89_total(), e.getR90_nonRatioSensativeItems(), e.getR90_total(), 
+			e.getR91_nonRatioSensativeItems(), e.getR91_total(), e.getR92product(), e.getR92_upTo1Month(), 
+			e.getR92_moreThan1MonthTo3Months(), e.getR92_moreThan3MonthTo6Months(), e.getR92_moreThan6MonthTo12Months(), e.getR92_moreThan12MonthTo3Years(), 
+			e.getR92_moreThan3YearsTo5Years(), e.getR92_moreThan5YearsTo10Years(), e.getR92_moreThan10Years(), e.getR92_total(), 
+			e.getR93product(), e.getR93_upTo1Month(), e.getR93_moreThan1MonthTo3Months(), e.getR93_moreThan3MonthTo6Months(), 
+			e.getR93_moreThan6MonthTo12Months(), e.getR93_moreThan12MonthTo3Years(), e.getR93_moreThan3YearsTo5Years(), e.getR93_moreThan5YearsTo10Years(), 
+			e.getR93_moreThan10Years(), e.getR93_total(), e.getR94product(), e.getR94_upTo1Month(), 
+			e.getR94_moreThan1MonthTo3Months(), e.getR94_moreThan3MonthTo6Months(), e.getR94_moreThan6MonthTo12Months(), e.getR94_moreThan12MonthTo3Years(), 
+			e.getR94_moreThan3YearsTo5Years(), e.getR94_moreThan5YearsTo10Years(), e.getR94_moreThan10Years(), e.getR94_total(), 
+			e.getR95_nonRatioSensativeItems(), e.getR95_total(), e.getR96product(), e.getR96_upTo1Month(), 
+			e.getR96_moreThan1MonthTo3Months(), e.getR96_moreThan3MonthTo6Months(), e.getR96_moreThan6MonthTo12Months(), e.getR96_moreThan12MonthTo3Years(), 
+			e.getR96_moreThan3YearsTo5Years(), e.getR96_moreThan5YearsTo10Years(), e.getR96_moreThan10Years(), e.getR96_nonRatioSensativeItems(), 
+			e.getR96_total(), e.getR97product(), e.getR97_upTo1Month(), e.getR97_moreThan1MonthTo3Months(), 
+			e.getR97_moreThan3MonthTo6Months(), e.getR97_moreThan6MonthTo12Months(), e.getR97_moreThan12MonthTo3Years(), e.getR97_moreThan3YearsTo5Years(), 
+			e.getR97_moreThan5YearsTo10Years(), e.getR97_moreThan10Years(), e.getR97_nonRatioSensativeItems(), e.getR97_total(), 
+			e.getR98product(), e.getR98_upTo1Month(), e.getR98_moreThan1MonthTo3Months(), e.getR98_moreThan3MonthTo6Months(), 
+			e.getR98_moreThan6MonthTo12Months(), e.getR98_moreThan12MonthTo3Years(), e.getR98_moreThan3YearsTo5Years(), e.getR98_moreThan5YearsTo10Years(), 
+			e.getR98_moreThan10Years(), e.getR98_nonRatioSensativeItems(), e.getR98_total(), e.getR99product(), 
+			e.getR99_upTo1Month(), e.getR99_moreThan1MonthTo3Months(), e.getR99_moreThan3MonthTo6Months(), e.getR99_moreThan6MonthTo12Months(), 
+			e.getR99_moreThan12MonthTo3Years(), e.getR99_moreThan3YearsTo5Years(), e.getR99_moreThan5YearsTo10Years(), e.getR99_moreThan10Years(), 
+			e.getR99_nonRatioSensativeItems(), e.getR99_total(), e.getR100product(), e.getR100_upTo1Month(), 
+			e.getR100_moreThan1MonthTo3Months(), e.getR100_moreThan3MonthTo6Months(), e.getR100_moreThan6MonthTo12Months(), e.getR100_moreThan12MonthTo3Years(), 
+			e.getR100_moreThan3YearsTo5Years(), e.getR100_moreThan5YearsTo10Years(), e.getR100_moreThan10Years(), e.getR100_nonRatioSensativeItems(), 
+			e.getR100_total(), e.getR101product(), e.getR101_upTo1Month(), e.getR101_moreThan1MonthTo3Months(), 
+			e.getR101_moreThan3MonthTo6Months(), e.getR101_moreThan6MonthTo12Months(), e.getR101_moreThan12MonthTo3Years(), e.getR101_moreThan3YearsTo5Years(), 
+			e.getR101_moreThan5YearsTo10Years(), e.getR101_moreThan10Years(), e.getR101_nonRatioSensativeItems(), e.getR101_total(), 
+			e.getR102product(), e.getR102_upTo1Month(), e.getR102_moreThan1MonthTo3Months(), e.getR102_moreThan3MonthTo6Months(), 
+			e.getR102_moreThan6MonthTo12Months(), e.getR102_moreThan12MonthTo3Years(), e.getR102_moreThan3YearsTo5Years(), e.getR102_moreThan5YearsTo10Years(), 
+			e.getR102_moreThan10Years(), e.getR102_nonRatioSensativeItems(), e.getR102_total(), e.getR103product(), 
+			e.getR103_upTo1Month(), e.getR103_moreThan1MonthTo3Months(), e.getR103_moreThan3MonthTo6Months(), e.getR103_moreThan6MonthTo12Months(), 
+			e.getR103_moreThan12MonthTo3Years(), e.getR103_moreThan3YearsTo5Years(), e.getR103_moreThan5YearsTo10Years(), e.getR103_moreThan10Years(), 
+			e.getR103_nonRatioSensativeItems(), e.getR103_total(), e.getR104product(), e.getR104_upTo1Month(), 
+			e.getR104_moreThan1MonthTo3Months(), e.getR104_moreThan3MonthTo6Months(), e.getR104_moreThan6MonthTo12Months(), e.getR104_moreThan12MonthTo3Years(), 
+			e.getR104_moreThan3YearsTo5Years(), e.getR104_moreThan5YearsTo10Years(), e.getR104_moreThan10Years(), e.getR104_nonRatioSensativeItems(), 
+			e.getR104_total(), e.getR105product(), e.getR105_upTo1Month(), e.getR105_moreThan1MonthTo3Months(), 
+			e.getR105_moreThan3MonthTo6Months(), e.getR105_moreThan6MonthTo12Months(), e.getR105_moreThan12MonthTo3Years(), e.getR105_moreThan3YearsTo5Years(), 
+			e.getR105_moreThan5YearsTo10Years(), e.getR105_moreThan10Years(), e.getR105_nonRatioSensativeItems(), e.getR105_total(), 
+			e.getR106product(), e.getR106_upTo1Month(), e.getR106_moreThan1MonthTo3Months(), e.getR106_moreThan3MonthTo6Months(), 
+			e.getR106_moreThan6MonthTo12Months(), e.getR106_moreThan12MonthTo3Years(), e.getR106_moreThan3YearsTo5Years(), e.getR106_moreThan5YearsTo10Years(), 
+			e.getR106_moreThan10Years(), e.getR106_nonRatioSensativeItems(), e.getR106_total(), e.getReportVersion(), 
+			e.getReportFrequency(), e.getReportCode(), e.getReportDesc(), e.getEntityFlg(), 
+			e.getModifyFlg(), e.getDelFlg(), e.getReportDate(), 
+		};
+		jdbcTemplate.update(UPDATE_M_IRB_SUMMARY_SQL, params);
+	}
+	// ===================== End JDBC Query/Update Methods =====================
 
 	public ModelAndView getM_IRBView(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
@@ -107,7 +649,7 @@ public class BRRS_M_IRB_ReportService {
 			System.out.println(version);
 			try {
 
-				T1Master = m_irb_Archival_Summary_Repo.getdatabydateListarchival(dateformat.parse(todate), version);
+				T1Master = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -120,7 +662,7 @@ public class BRRS_M_IRB_ReportService {
 			try {
 				Date d1 = dateformat.parse(todate);
 
-				T1Master = brrs_m_irb_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+				T1Master = getSummaryByDate(dateformat.parse(todate));
 
 				System.out.println("t1 master for IRB is :" + T1Master.size());
 				mv.addObject("report_date", dateformat.format(d1));
@@ -182,10 +724,10 @@ public class BRRS_M_IRB_ReportService {
 				// 🔹 Archival branch
 				List<M_IRB_Archival_Detail_Entity> T1Dt1;
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = brrs_m_irb_archival_detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
+					T1Dt1 = getArchivalDetailByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
 							parsedDate, version);
 				} else {
-					T1Dt1 = brrs_m_irb_archival_detail_Repo.getdatabydateList(parsedDate, version);
+					T1Dt1 = getArchivalDetailByDateAndVersion(parsedDate, version);
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
@@ -197,11 +739,11 @@ public class BRRS_M_IRB_ReportService {
 				List<M_IRB_Detail_Entity> T1Dt1;
 
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					T1Dt1 = brrs_m_irb_detail_Repo.GetDataByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
+					T1Dt1 = getDetailByRowIdAndColumnId(reportLable, reportAddlCriteria_1,
 							parsedDate);
 				} else {
-					T1Dt1 = brrs_m_irb_detail_Repo.getdatabydateList(parsedDate, currentPage, pageSize);
-					totalPages = brrs_m_irb_detail_Repo.getdatacount(parsedDate);
+					T1Dt1 = getDetailByDatePaged(parsedDate, currentPage, pageSize);
+					totalPages = getDetailCount(parsedDate);
 					mv.addObject("pagination", "YES");
 
 				}
@@ -240,8 +782,7 @@ public class BRRS_M_IRB_ReportService {
 	public List<Object[]> getM_IRBArchival() {
 		List<Object[]> archivalList = new ArrayList<>();
 		try {
-			List<M_IRB_Archival_Summary_Entity> latestArchivalList = m_irb_Archival_Summary_Repo
-					.getdatabydateListWithVersion();
+			List<M_IRB_Archival_Summary_Entity> latestArchivalList = getArchivalSummaryWithVersion();
 
 			if (latestArchivalList != null && !latestArchivalList.isEmpty()) {
 				for (M_IRB_Archival_Summary_Entity entity : latestArchivalList) {
@@ -330,7 +871,7 @@ public class BRRS_M_IRB_ReportService {
 			}
 //Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_IRB_Detail_Entity> reportData = brrs_m_irb_detail_Repo.getdatabydateList(parsedToDate);
+			List<M_IRB_Detail_Entity> reportData = getDetailByDate(parsedToDate);
 			if (reportData != null && !reportData.isEmpty()) {
 				int rowIndex = 1;
 				for (M_IRB_Detail_Entity item : reportData) {
@@ -444,8 +985,7 @@ public class BRRS_M_IRB_ReportService {
 
 // Get data
 			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_IRB_Archival_Detail_Entity> reportData = brrs_m_irb_archival_detail_Repo
-					.getdatabydateList(parsedToDate, version);
+			List<M_IRB_Archival_Detail_Entity> reportData = getArchivalDetailByDateAndVersion(parsedToDate, version);
 			System.out.println("Size");
 			System.out.println(reportData.size());
 			if (reportData != null && !reportData.isEmpty()) {
@@ -502,8 +1042,11 @@ public class BRRS_M_IRB_ReportService {
 		System.out.println("Came to MIS UPDATE services");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_IRB_Summary_Entity existing = brrs_m_irb_Summary_Repo.findById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+		List<M_IRB_Summary_Entity> existingList = getSummaryByDate(updatedEntity.getReportDate());
+		if (existingList == null || existingList.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+		}
+		M_IRB_Summary_Entity existing = existingList.get(0);
 
 		try {
 			// 1️⃣ Loop from R10 to R16 and copy fields
@@ -537,7 +1080,7 @@ public class BRRS_M_IRB_ReportService {
 		}
 
 		// 3️⃣ Save updated entity
-		brrs_m_irb_Summary_Repo.save(existing);
+		updateSummary(existing);
 	}
 
 	// SUMMARY FORMAT EXCEL
@@ -552,7 +1095,7 @@ public class BRRS_M_IRB_ReportService {
 			return ARCHIVALreport;
 		}
 
-		List<M_IRB_Summary_Entity> dataList = brrs_m_irb_Summary_Repo.getdatabydateList(dateformat.parse(todate));
+		List<M_IRB_Summary_Entity> dataList = getSummaryByDate(dateformat.parse(todate));
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_IRB report. Returning empty result.");
@@ -5313,8 +5856,8 @@ public class BRRS_M_IRB_ReportService {
 		if ("ARCHIVAL".equals(type) && version != null) {
 
 		}
-		List<M_IRB_Archival_Summary_Entity> dataList = m_irb_Archival_Summary_Repo
-				.getdatabydateListarchival(dateformat.parse(todate), version);
+		List<M_IRB_Archival_Summary_Entity> dataList = getArchivalSummaryByDateAndVersion(dateformat.parse(todate),
+				version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for M_PI report. Returning empty result.");
@@ -10070,4 +10613,1735 @@ public class BRRS_M_IRB_ReportService {
 
 
 
+class M_IRBSummaryRowMapper implements RowMapper<M_IRB_Summary_Entity> {
+	@Override
+	public M_IRB_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+		M_IRB_Summary_Entity obj = new M_IRB_Summary_Entity();
+		obj.setR10product(rs.getString("R10_PRODUCT"));
+		obj.setR10_upTo1Month(rs.getBigDecimal("R10_UP_TO_1_MONTH"));
+		obj.setR10_moreThan1MonthTo3Months(rs.getBigDecimal("R10_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR10_moreThan3MonthTo6Months(rs.getBigDecimal("R10_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR10_moreThan6MonthTo12Months(rs.getBigDecimal("R10_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR10_moreThan12MonthTo3Years(rs.getBigDecimal("R10_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR10_moreThan3YearsTo5Years(rs.getBigDecimal("R10_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR10_moreThan5YearsTo10Years(rs.getBigDecimal("R10_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR10_moreThan10Years(rs.getBigDecimal("R10_MORE_THAN_10_YEARS"));
+		obj.setR10_nonRatioSensativeItems(rs.getBigDecimal("R10_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR10_total(rs.getBigDecimal("R10_TOTAL"));
+		obj.setR11product(rs.getString("R11_PRODUCT"));
+		obj.setR11_upTo1Month(rs.getBigDecimal("R11_UP_TO_1_MONTH"));
+		obj.setR11_moreThan1MonthTo3Months(rs.getBigDecimal("R11_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR11_moreThan3MonthTo6Months(rs.getBigDecimal("R11_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR11_moreThan6MonthTo12Months(rs.getBigDecimal("R11_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR11_moreThan12MonthTo3Years(rs.getBigDecimal("R11_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR11_moreThan3YearsTo5Years(rs.getBigDecimal("R11_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR11_moreThan5YearsTo10Years(rs.getBigDecimal("R11_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR11_moreThan10Years(rs.getBigDecimal("R11_MORE_THAN_10_YEARS"));
+		obj.setR11_total(rs.getBigDecimal("R11_TOTAL"));
+		obj.setR12product(rs.getString("R12_PRODUCT"));
+		obj.setR12_upTo1Month(rs.getBigDecimal("R12_UP_TO_1_MONTH"));
+		obj.setR12_moreThan1MonthTo3Months(rs.getBigDecimal("R12_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR12_moreThan3MonthTo6Months(rs.getBigDecimal("R12_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR12_moreThan6MonthTo12Months(rs.getBigDecimal("R12_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR12_moreThan12MonthTo3Years(rs.getBigDecimal("R12_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR12_moreThan3YearsTo5Years(rs.getBigDecimal("R12_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR12_moreThan5YearsTo10Years(rs.getBigDecimal("R12_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR12_moreThan10Years(rs.getBigDecimal("R12_MORE_THAN_10_YEARS"));
+		obj.setR12_total(rs.getBigDecimal("R12_TOTAL"));
+		obj.setR13product(rs.getString("R13_PRODUCT"));
+		obj.setR13_upTo1Month(rs.getBigDecimal("R13_UP_TO_1_MONTH"));
+		obj.setR13_moreThan1MonthTo3Months(rs.getBigDecimal("R13_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR13_moreThan3MonthTo6Months(rs.getBigDecimal("R13_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR13_moreThan6MonthTo12Months(rs.getBigDecimal("R13_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR13_moreThan12MonthTo3Years(rs.getBigDecimal("R13_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR13_moreThan3YearsTo5Years(rs.getBigDecimal("R13_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR13_moreThan5YearsTo10Years(rs.getBigDecimal("R13_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR13_moreThan10Years(rs.getBigDecimal("R13_MORE_THAN_10_YEARS"));
+		obj.setR13_total(rs.getBigDecimal("R13_TOTAL"));
+		obj.setR14product(rs.getString("R14_PRODUCT"));
+		obj.setR14_upTo1Month(rs.getBigDecimal("R14_UP_TO_1_MONTH"));
+		obj.setR14_moreThan1MonthTo3Months(rs.getBigDecimal("R14_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR14_moreThan3MonthTo6Months(rs.getBigDecimal("R14_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR14_moreThan6MonthTo12Months(rs.getBigDecimal("R14_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR14_moreThan12MonthTo3Years(rs.getBigDecimal("R14_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR14_moreThan3YearsTo5Years(rs.getBigDecimal("R14_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR14_moreThan5YearsTo10Years(rs.getBigDecimal("R14_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR14_moreThan10Years(rs.getBigDecimal("R14_MORE_THAN_10_YEARS"));
+		obj.setR14_total(rs.getBigDecimal("R14_TOTAL"));
+		obj.setR15product(rs.getString("R15_PRODUCT"));
+		obj.setR15_upTo1Month(rs.getBigDecimal("R15_UP_TO_1_MONTH"));
+		obj.setR15_moreThan1MonthTo3Months(rs.getBigDecimal("R15_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR15_moreThan3MonthTo6Months(rs.getBigDecimal("R15_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR15_moreThan6MonthTo12Months(rs.getBigDecimal("R15_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR15_moreThan12MonthTo3Years(rs.getBigDecimal("R15_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR15_moreThan3YearsTo5Years(rs.getBigDecimal("R15_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR15_moreThan5YearsTo10Years(rs.getBigDecimal("R15_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR15_moreThan10Years(rs.getBigDecimal("R15_MORE_THAN_10_YEARS"));
+		obj.setR15_total(rs.getBigDecimal("R15_TOTAL"));
+		obj.setR16product(rs.getString("R16_PRODUCT"));
+		obj.setR16_upTo1Month(rs.getBigDecimal("R16_UP_TO_1_MONTH"));
+		obj.setR16_moreThan1MonthTo3Months(rs.getBigDecimal("R16_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR16_moreThan3MonthTo6Months(rs.getBigDecimal("R16_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR16_moreThan6MonthTo12Months(rs.getBigDecimal("R16_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR16_moreThan12MonthTo3Years(rs.getBigDecimal("R16_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR16_moreThan3YearsTo5Years(rs.getBigDecimal("R16_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR16_moreThan5YearsTo10Years(rs.getBigDecimal("R16_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR16_moreThan10Years(rs.getBigDecimal("R16_MORE_THAN_10_YEARS"));
+		obj.setR16_total(rs.getBigDecimal("R16_TOTAL"));
+		obj.setR17product(rs.getString("R17_PRODUCT"));
+		obj.setR17_upTo1Month(rs.getBigDecimal("R17_UP_TO_1_MONTH"));
+		obj.setR17_moreThan1MonthTo3Months(rs.getBigDecimal("R17_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR17_moreThan3MonthTo6Months(rs.getBigDecimal("R17_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR17_moreThan6MonthTo12Months(rs.getBigDecimal("R17_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR17_moreThan12MonthTo3Years(rs.getBigDecimal("R17_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR17_moreThan3YearsTo5Years(rs.getBigDecimal("R17_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR17_moreThan5YearsTo10Years(rs.getBigDecimal("R17_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR17_moreThan10Years(rs.getBigDecimal("R17_MORE_THAN_10_YEARS"));
+		obj.setR17_total(rs.getBigDecimal("R17_TOTAL"));
+		obj.setR18product(rs.getString("R18_PRODUCT"));
+		obj.setR18_upTo1Month(rs.getBigDecimal("R18_UP_TO_1_MONTH"));
+		obj.setR18_moreThan1MonthTo3Months(rs.getBigDecimal("R18_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR18_moreThan3MonthTo6Months(rs.getBigDecimal("R18_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR18_moreThan6MonthTo12Months(rs.getBigDecimal("R18_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR18_moreThan12MonthTo3Years(rs.getBigDecimal("R18_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR18_moreThan3YearsTo5Years(rs.getBigDecimal("R18_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR18_moreThan5YearsTo10Years(rs.getBigDecimal("R18_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR18_moreThan10Years(rs.getBigDecimal("R18_MORE_THAN_10_YEARS"));
+		obj.setR18_total(rs.getBigDecimal("R18_TOTAL"));
+		obj.setR19product(rs.getString("R19_PRODUCT"));
+		obj.setR19_upTo1Month(rs.getBigDecimal("R19_UP_TO_1_MONTH"));
+		obj.setR19_moreThan1MonthTo3Months(rs.getBigDecimal("R19_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR19_moreThan3MonthTo6Months(rs.getBigDecimal("R19_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR19_moreThan6MonthTo12Months(rs.getBigDecimal("R19_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR19_moreThan12MonthTo3Years(rs.getBigDecimal("R19_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR19_moreThan3YearsTo5Years(rs.getBigDecimal("R19_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR19_moreThan5YearsTo10Years(rs.getBigDecimal("R19_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR19_moreThan10Years(rs.getBigDecimal("R19_MORE_THAN_10_YEARS"));
+		obj.setR19_total(rs.getBigDecimal("R19_TOTAL"));
+		obj.setR20product(rs.getString("R20_PRODUCT"));
+		obj.setR20_upTo1Month(rs.getBigDecimal("R20_UP_TO_1_MONTH"));
+		obj.setR20_moreThan1MonthTo3Months(rs.getBigDecimal("R20_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR20_moreThan3MonthTo6Months(rs.getBigDecimal("R20_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR20_moreThan6MonthTo12Months(rs.getBigDecimal("R20_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR20_moreThan12MonthTo3Years(rs.getBigDecimal("R20_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR20_moreThan3YearsTo5Years(rs.getBigDecimal("R20_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR20_moreThan5YearsTo10Years(rs.getBigDecimal("R20_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR20_moreThan10Years(rs.getBigDecimal("R20_MORE_THAN_10_YEARS"));
+		obj.setR20_total(rs.getBigDecimal("R20_TOTAL"));
+		obj.setR21product(rs.getString("R21_PRODUCT"));
+		obj.setR21_upTo1Month(rs.getBigDecimal("R21_UP_TO_1_MONTH"));
+		obj.setR21_moreThan1MonthTo3Months(rs.getBigDecimal("R21_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR21_moreThan3MonthTo6Months(rs.getBigDecimal("R21_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR21_moreThan6MonthTo12Months(rs.getBigDecimal("R21_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR21_moreThan12MonthTo3Years(rs.getBigDecimal("R21_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR21_moreThan3YearsTo5Years(rs.getBigDecimal("R21_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR21_moreThan5YearsTo10Years(rs.getBigDecimal("R21_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR21_moreThan10Years(rs.getBigDecimal("R21_MORE_THAN_10_YEARS"));
+		obj.setR21_total(rs.getBigDecimal("R21_TOTAL"));
+		obj.setR22product(rs.getString("R22_PRODUCT"));
+		obj.setR22_upTo1Month(rs.getBigDecimal("R22_UP_TO_1_MONTH"));
+		obj.setR22_moreThan1MonthTo3Months(rs.getBigDecimal("R22_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR22_moreThan3MonthTo6Months(rs.getBigDecimal("R22_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR22_moreThan6MonthTo12Months(rs.getBigDecimal("R22_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR22_moreThan12MonthTo3Years(rs.getBigDecimal("R22_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR22_moreThan3YearsTo5Years(rs.getBigDecimal("R22_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR22_moreThan5YearsTo10Years(rs.getBigDecimal("R22_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR22_moreThan10Years(rs.getBigDecimal("R22_MORE_THAN_10_YEARS"));
+		obj.setR22_total(rs.getBigDecimal("R22_TOTAL"));
+		obj.setR23product(rs.getString("R23_PRODUCT"));
+		obj.setR23_upTo1Month(rs.getBigDecimal("R23_UP_TO_1_MONTH"));
+		obj.setR23_moreThan1MonthTo3Months(rs.getBigDecimal("R23_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR23_moreThan3MonthTo6Months(rs.getBigDecimal("R23_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR23_moreThan6MonthTo12Months(rs.getBigDecimal("R23_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR23_moreThan12MonthTo3Years(rs.getBigDecimal("R23_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR23_moreThan3YearsTo5Years(rs.getBigDecimal("R23_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR23_moreThan5YearsTo10Years(rs.getBigDecimal("R23_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR23_moreThan10Years(rs.getBigDecimal("R23_MORE_THAN_10_YEARS"));
+		obj.setR23_total(rs.getBigDecimal("R23_TOTAL"));
+		obj.setR24product(rs.getString("R24_PRODUCT"));
+		obj.setR24_upTo1Month(rs.getBigDecimal("R24_UP_TO_1_MONTH"));
+		obj.setR24_moreThan1MonthTo3Months(rs.getBigDecimal("R24_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR24_moreThan3MonthTo6Months(rs.getBigDecimal("R24_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR24_moreThan6MonthTo12Months(rs.getBigDecimal("R24_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR24_moreThan12MonthTo3Years(rs.getBigDecimal("R24_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR24_moreThan3YearsTo5Years(rs.getBigDecimal("R24_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR24_moreThan5YearsTo10Years(rs.getBigDecimal("R24_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR24_moreThan10Years(rs.getBigDecimal("R24_MORE_THAN_10_YEARS"));
+		obj.setR24_total(rs.getBigDecimal("R24_TOTAL"));
+		obj.setR25product(rs.getString("R25_PRODUCT"));
+		obj.setR25_upTo1Month(rs.getBigDecimal("R25_UP_TO_1_MONTH"));
+		obj.setR25_moreThan1MonthTo3Months(rs.getBigDecimal("R25_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR25_moreThan3MonthTo6Months(rs.getBigDecimal("R25_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR25_moreThan6MonthTo12Months(rs.getBigDecimal("R25_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR25_moreThan12MonthTo3Years(rs.getBigDecimal("R25_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR25_moreThan3YearsTo5Years(rs.getBigDecimal("R25_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR25_moreThan5YearsTo10Years(rs.getBigDecimal("R25_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR25_moreThan10Years(rs.getBigDecimal("R25_MORE_THAN_10_YEARS"));
+		obj.setR25_total(rs.getBigDecimal("R25_TOTAL"));
+		obj.setR26product(rs.getString("R26_PRODUCT"));
+		obj.setR26_upTo1Month(rs.getBigDecimal("R26_UP_TO_1_MONTH"));
+		obj.setR26_moreThan1MonthTo3Months(rs.getBigDecimal("R26_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR26_moreThan3MonthTo6Months(rs.getBigDecimal("R26_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR26_moreThan6MonthTo12Months(rs.getBigDecimal("R26_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR26_moreThan12MonthTo3Years(rs.getBigDecimal("R26_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR26_moreThan3YearsTo5Years(rs.getBigDecimal("R26_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR26_moreThan5YearsTo10Years(rs.getBigDecimal("R26_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR26_moreThan10Years(rs.getBigDecimal("R26_MORE_THAN_10_YEARS"));
+		obj.setR26_total(rs.getBigDecimal("R26_TOTAL"));
+		obj.setR27product(rs.getString("R27_PRODUCT"));
+		obj.setR27_upTo1Month(rs.getBigDecimal("R27_UP_TO_1_MONTH"));
+		obj.setR27_moreThan1MonthTo3Months(rs.getBigDecimal("R27_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR27_moreThan3MonthTo6Months(rs.getBigDecimal("R27_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR27_moreThan6MonthTo12Months(rs.getBigDecimal("R27_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR27_moreThan12MonthTo3Years(rs.getBigDecimal("R27_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR27_moreThan3YearsTo5Years(rs.getBigDecimal("R27_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR27_moreThan5YearsTo10Years(rs.getBigDecimal("R27_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR27_moreThan10Years(rs.getBigDecimal("R27_MORE_THAN_10_YEARS"));
+		obj.setR27_total(rs.getBigDecimal("R27_TOTAL"));
+		obj.setR28product(rs.getString("R28_PRODUCT"));
+		obj.setR28_upTo1Month(rs.getBigDecimal("R28_UP_TO_1_MONTH"));
+		obj.setR28_moreThan1MonthTo3Months(rs.getBigDecimal("R28_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR28_moreThan3MonthTo6Months(rs.getBigDecimal("R28_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR28_moreThan6MonthTo12Months(rs.getBigDecimal("R28_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR28_moreThan12MonthTo3Years(rs.getBigDecimal("R28_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR28_moreThan3YearsTo5Years(rs.getBigDecimal("R28_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR28_moreThan5YearsTo10Years(rs.getBigDecimal("R28_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR28_moreThan10Years(rs.getBigDecimal("R28_MORE_THAN_10_YEARS"));
+		obj.setR28_total(rs.getBigDecimal("R28_TOTAL"));
+		obj.setR29product(rs.getString("R29_PRODUCT"));
+		obj.setR29_upTo1Month(rs.getBigDecimal("R29_UP_TO_1_MONTH"));
+		obj.setR29_moreThan1MonthTo3Months(rs.getBigDecimal("R29_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR29_moreThan3MonthTo6Months(rs.getBigDecimal("R29_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR29_moreThan6MonthTo12Months(rs.getBigDecimal("R29_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR29_moreThan12MonthTo3Years(rs.getBigDecimal("R29_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR29_moreThan3YearsTo5Years(rs.getBigDecimal("R29_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR29_moreThan5YearsTo10Years(rs.getBigDecimal("R29_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR29_moreThan10Years(rs.getBigDecimal("R29_MORE_THAN_10_YEARS"));
+		obj.setR29_total(rs.getBigDecimal("R29_TOTAL"));
+		obj.setR30product(rs.getString("R30_PRODUCT"));
+		obj.setR30_upTo1Month(rs.getBigDecimal("R30_UP_TO_1_MONTH"));
+		obj.setR30_moreThan1MonthTo3Months(rs.getBigDecimal("R30_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR30_moreThan3MonthTo6Months(rs.getBigDecimal("R30_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR30_moreThan6MonthTo12Months(rs.getBigDecimal("R30_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR30_moreThan12MonthTo3Years(rs.getBigDecimal("R30_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR30_moreThan3YearsTo5Years(rs.getBigDecimal("R30_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR30_moreThan5YearsTo10Years(rs.getBigDecimal("R30_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR30_moreThan10Years(rs.getBigDecimal("R30_MORE_THAN_10_YEARS"));
+		obj.setR30_total(rs.getBigDecimal("R30_TOTAL"));
+		obj.setR31product(rs.getString("R31_PRODUCT"));
+		obj.setR31_upTo1Month(rs.getBigDecimal("R31_UP_TO_1_MONTH"));
+		obj.setR31_moreThan1MonthTo3Months(rs.getBigDecimal("R31_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR31_moreThan3MonthTo6Months(rs.getBigDecimal("R31_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR31_moreThan6MonthTo12Months(rs.getBigDecimal("R31_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR31_moreThan12MonthTo3Years(rs.getBigDecimal("R31_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR31_moreThan3YearsTo5Years(rs.getBigDecimal("R31_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR31_moreThan5YearsTo10Years(rs.getBigDecimal("R31_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR31_moreThan10Years(rs.getBigDecimal("R31_MORE_THAN_10_YEARS"));
+		obj.setR31_total(rs.getBigDecimal("R31_TOTAL"));
+		obj.setR32product(rs.getString("R32_PRODUCT"));
+		obj.setR32_upTo1Month(rs.getBigDecimal("R32_UP_TO_1_MONTH"));
+		obj.setR32_moreThan1MonthTo3Months(rs.getBigDecimal("R32_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR32_moreThan3MonthTo6Months(rs.getBigDecimal("R32_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR32_moreThan6MonthTo12Months(rs.getBigDecimal("R32_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR32_moreThan12MonthTo3Years(rs.getBigDecimal("R32_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR32_moreThan3YearsTo5Years(rs.getBigDecimal("R32_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR32_moreThan5YearsTo10Years(rs.getBigDecimal("R32_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR32_moreThan10Years(rs.getBigDecimal("R32_MORE_THAN_10_YEARS"));
+		obj.setR32_total(rs.getBigDecimal("R32_TOTAL"));
+		obj.setR33product(rs.getString("R33_PRODUCT"));
+		obj.setR33_upTo1Month(rs.getBigDecimal("R33_UP_TO_1_MONTH"));
+		obj.setR33_moreThan1MonthTo3Months(rs.getBigDecimal("R33_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR33_moreThan3MonthTo6Months(rs.getBigDecimal("R33_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR33_moreThan6MonthTo12Months(rs.getBigDecimal("R33_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR33_moreThan12MonthTo3Years(rs.getBigDecimal("R33_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR33_moreThan3YearsTo5Years(rs.getBigDecimal("R33_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR33_moreThan5YearsTo10Years(rs.getBigDecimal("R33_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR33_moreThan10Years(rs.getBigDecimal("R33_MORE_THAN_10_YEARS"));
+		obj.setR33_total(rs.getBigDecimal("R33_TOTAL"));
+		obj.setR34product(rs.getString("R34_PRODUCT"));
+		obj.setR34_upTo1Month(rs.getBigDecimal("R34_UP_TO_1_MONTH"));
+		obj.setR34_moreThan1MonthTo3Months(rs.getBigDecimal("R34_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR34_moreThan3MonthTo6Months(rs.getBigDecimal("R34_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR34_moreThan6MonthTo12Months(rs.getBigDecimal("R34_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR34_moreThan12MonthTo3Years(rs.getBigDecimal("R34_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR34_moreThan3YearsTo5Years(rs.getBigDecimal("R34_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR34_moreThan5YearsTo10Years(rs.getBigDecimal("R34_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR34_moreThan10Years(rs.getBigDecimal("R34_MORE_THAN_10_YEARS"));
+		obj.setR34_total(rs.getBigDecimal("R34_TOTAL"));
+		obj.setR35product(rs.getString("R35_PRODUCT"));
+		obj.setR35_upTo1Month(rs.getBigDecimal("R35_UP_TO_1_MONTH"));
+		obj.setR35_moreThan1MonthTo3Months(rs.getBigDecimal("R35_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR35_moreThan3MonthTo6Months(rs.getBigDecimal("R35_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR35_moreThan6MonthTo12Months(rs.getBigDecimal("R35_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR35_moreThan12MonthTo3Years(rs.getBigDecimal("R35_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR35_moreThan3YearsTo5Years(rs.getBigDecimal("R35_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR35_moreThan5YearsTo10Years(rs.getBigDecimal("R35_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR35_moreThan10Years(rs.getBigDecimal("R35_MORE_THAN_10_YEARS"));
+		obj.setR35_total(rs.getBigDecimal("R35_TOTAL"));
+		obj.setR36product(rs.getString("R36_PRODUCT"));
+		obj.setR36_upTo1Month(rs.getBigDecimal("R36_UP_TO_1_MONTH"));
+		obj.setR36_moreThan1MonthTo3Months(rs.getBigDecimal("R36_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR36_moreThan3MonthTo6Months(rs.getBigDecimal("R36_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR36_moreThan6MonthTo12Months(rs.getBigDecimal("R36_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR36_moreThan12MonthTo3Years(rs.getBigDecimal("R36_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR36_moreThan3YearsTo5Years(rs.getBigDecimal("R36_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR36_moreThan5YearsTo10Years(rs.getBigDecimal("R36_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR36_moreThan10Years(rs.getBigDecimal("R36_MORE_THAN_10_YEARS"));
+		obj.setR36_total(rs.getBigDecimal("R36_TOTAL"));
+		obj.setR37product(rs.getString("R37_PRODUCT"));
+		obj.setR37_upTo1Month(rs.getBigDecimal("R37_UP_TO_1_MONTH"));
+		obj.setR37_moreThan1MonthTo3Months(rs.getBigDecimal("R37_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR37_moreThan3MonthTo6Months(rs.getBigDecimal("R37_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR37_moreThan6MonthTo12Months(rs.getBigDecimal("R37_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR37_moreThan12MonthTo3Years(rs.getBigDecimal("R37_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR37_moreThan3YearsTo5Years(rs.getBigDecimal("R37_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR37_moreThan5YearsTo10Years(rs.getBigDecimal("R37_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR37_moreThan10Years(rs.getBigDecimal("R37_MORE_THAN_10_YEARS"));
+		obj.setR37_total(rs.getBigDecimal("R37_TOTAL"));
+		obj.setR38product(rs.getString("R38_PRODUCT"));
+		obj.setR38_upTo1Month(rs.getBigDecimal("R38_UP_TO_1_MONTH"));
+		obj.setR38_moreThan1MonthTo3Months(rs.getBigDecimal("R38_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR38_moreThan3MonthTo6Months(rs.getBigDecimal("R38_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR38_moreThan6MonthTo12Months(rs.getBigDecimal("R38_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR38_moreThan12MonthTo3Years(rs.getBigDecimal("R38_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR38_moreThan3YearsTo5Years(rs.getBigDecimal("R38_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR38_moreThan5YearsTo10Years(rs.getBigDecimal("R38_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR38_moreThan10Years(rs.getBigDecimal("R38_MORE_THAN_10_YEARS"));
+		obj.setR38_total(rs.getBigDecimal("R38_TOTAL"));
+		obj.setR39product(rs.getString("R39_PRODUCT"));
+		obj.setR39_upTo1Month(rs.getBigDecimal("R39_UP_TO_1_MONTH"));
+		obj.setR39_moreThan1MonthTo3Months(rs.getBigDecimal("R39_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR39_moreThan3MonthTo6Months(rs.getBigDecimal("R39_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR39_moreThan6MonthTo12Months(rs.getBigDecimal("R39_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR39_moreThan12MonthTo3Years(rs.getBigDecimal("R39_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR39_moreThan3YearsTo5Years(rs.getBigDecimal("R39_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR39_moreThan5YearsTo10Years(rs.getBigDecimal("R39_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR39_moreThan10Years(rs.getBigDecimal("R39_MORE_THAN_10_YEARS"));
+		obj.setR39_total(rs.getBigDecimal("R39_TOTAL"));
+		obj.setR40product(rs.getString("R40_PRODUCT"));
+		obj.setR40_upTo1Month(rs.getBigDecimal("R40_UP_TO_1_MONTH"));
+		obj.setR40_moreThan1MonthTo3Months(rs.getBigDecimal("R40_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR40_moreThan3MonthTo6Months(rs.getBigDecimal("R40_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR40_moreThan6MonthTo12Months(rs.getBigDecimal("R40_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR40_moreThan12MonthTo3Years(rs.getBigDecimal("R40_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR40_moreThan3YearsTo5Years(rs.getBigDecimal("R40_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR40_moreThan5YearsTo10Years(rs.getBigDecimal("R40_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR40_moreThan10Years(rs.getBigDecimal("R40_MORE_THAN_10_YEARS"));
+		obj.setR40_total(rs.getBigDecimal("R40_TOTAL"));
+		obj.setR41product(rs.getString("R41_PRODUCT"));
+		obj.setR41_upTo1Month(rs.getBigDecimal("R41_UP_TO_1_MONTH"));
+		obj.setR41_moreThan1MonthTo3Months(rs.getBigDecimal("R41_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR41_moreThan3MonthTo6Months(rs.getBigDecimal("R41_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR41_moreThan6MonthTo12Months(rs.getBigDecimal("R41_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR41_moreThan12MonthTo3Years(rs.getBigDecimal("R41_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR41_moreThan3YearsTo5Years(rs.getBigDecimal("R41_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR41_moreThan5YearsTo10Years(rs.getBigDecimal("R41_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR41_moreThan10Years(rs.getBigDecimal("R41_MORE_THAN_10_YEARS"));
+		obj.setR41_total(rs.getBigDecimal("R41_TOTAL"));
+		obj.setR42product(rs.getString("R42_PRODUCT"));
+		obj.setR42_upTo1Month(rs.getBigDecimal("R42_UP_TO_1_MONTH"));
+		obj.setR42_moreThan1MonthTo3Months(rs.getBigDecimal("R42_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR42_moreThan3MonthTo6Months(rs.getBigDecimal("R42_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR42_moreThan6MonthTo12Months(rs.getBigDecimal("R42_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR42_moreThan12MonthTo3Years(rs.getBigDecimal("R42_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR42_moreThan3YearsTo5Years(rs.getBigDecimal("R42_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR42_moreThan5YearsTo10Years(rs.getBigDecimal("R42_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR42_moreThan10Years(rs.getBigDecimal("R42_MORE_THAN_10_YEARS"));
+		obj.setR42_total(rs.getBigDecimal("R42_TOTAL"));
+		obj.setR43product(rs.getString("R43_PRODUCT"));
+		obj.setR43_upTo1Month(rs.getBigDecimal("R43_UP_TO_1_MONTH"));
+		obj.setR43_moreThan1MonthTo3Months(rs.getBigDecimal("R43_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR43_moreThan3MonthTo6Months(rs.getBigDecimal("R43_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR43_moreThan6MonthTo12Months(rs.getBigDecimal("R43_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR43_moreThan12MonthTo3Years(rs.getBigDecimal("R43_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR43_moreThan3YearsTo5Years(rs.getBigDecimal("R43_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR43_moreThan5YearsTo10Years(rs.getBigDecimal("R43_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR43_moreThan10Years(rs.getBigDecimal("R43_MORE_THAN_10_YEARS"));
+		obj.setR43_total(rs.getBigDecimal("R43_TOTAL"));
+		obj.setR44product(rs.getString("R44_PRODUCT"));
+		obj.setR44_upTo1Month(rs.getBigDecimal("R44_UP_TO_1_MONTH"));
+		obj.setR44_moreThan1MonthTo3Months(rs.getBigDecimal("R44_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR44_moreThan3MonthTo6Months(rs.getBigDecimal("R44_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR44_moreThan6MonthTo12Months(rs.getBigDecimal("R44_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR44_moreThan12MonthTo3Years(rs.getBigDecimal("R44_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR44_moreThan3YearsTo5Years(rs.getBigDecimal("R44_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR44_moreThan5YearsTo10Years(rs.getBigDecimal("R44_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR44_moreThan10Years(rs.getBigDecimal("R44_MORE_THAN_10_YEARS"));
+		obj.setR44_total(rs.getBigDecimal("R44_TOTAL"));
+		obj.setR45product(rs.getString("R45_PRODUCT"));
+		obj.setR45_upTo1Month(rs.getBigDecimal("R45_UP_TO_1_MONTH"));
+		obj.setR45_moreThan1MonthTo3Months(rs.getBigDecimal("R45_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR45_moreThan3MonthTo6Months(rs.getBigDecimal("R45_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR45_moreThan6MonthTo12Months(rs.getBigDecimal("R45_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR45_moreThan12MonthTo3Years(rs.getBigDecimal("R45_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR45_moreThan3YearsTo5Years(rs.getBigDecimal("R45_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR45_moreThan5YearsTo10Years(rs.getBigDecimal("R45_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR45_moreThan10Years(rs.getBigDecimal("R45_MORE_THAN_10_YEARS"));
+		obj.setR45_total(rs.getBigDecimal("R45_TOTAL"));
+		obj.setR46product(rs.getString("R46_PRODUCT"));
+		obj.setR46_upTo1Month(rs.getBigDecimal("R46_UP_TO_1_MONTH"));
+		obj.setR46_moreThan1MonthTo3Months(rs.getBigDecimal("R46_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR46_moreThan3MonthTo6Months(rs.getBigDecimal("R46_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR46_moreThan6MonthTo12Months(rs.getBigDecimal("R46_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR46_moreThan12MonthTo3Years(rs.getBigDecimal("R46_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR46_moreThan3YearsTo5Years(rs.getBigDecimal("R46_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR46_moreThan5YearsTo10Years(rs.getBigDecimal("R46_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR46_moreThan10Years(rs.getBigDecimal("R46_MORE_THAN_10_YEARS"));
+		obj.setR46_total(rs.getBigDecimal("R46_TOTAL"));
+		obj.setR47_nonRatioSensativeItems(rs.getBigDecimal("R47_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR47_total(rs.getBigDecimal("R47_TOTAL"));
+		obj.setR48_nonRatioSensativeItems(rs.getBigDecimal("R48_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR48_total(rs.getBigDecimal("R48_TOTAL"));
+		obj.setR49_nonRatioSensativeItems(rs.getBigDecimal("R49_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR49_total(rs.getBigDecimal("R49_TOTAL"));
+		obj.setR50_nonRatioSensativeItems(rs.getBigDecimal("R50_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR50_total(rs.getBigDecimal("R50_TOTAL"));
+		obj.setR51_nonRatioSensativeItems(rs.getBigDecimal("R51_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR51_total(rs.getBigDecimal("R51_TOTAL"));
+		obj.setR52_nonRatioSensativeItems(rs.getBigDecimal("R52_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR52_total(rs.getBigDecimal("R52_TOTAL"));
+		obj.setR53_nonRatioSensativeItems(rs.getBigDecimal("R53_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR53_total(rs.getBigDecimal("R53_TOTAL"));
+		obj.setR54_nonRatioSensativeItems(rs.getBigDecimal("R54_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR54_total(rs.getBigDecimal("R54_TOTAL"));
+		obj.setR55_nonRatioSensativeItems(rs.getBigDecimal("R55_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR55_total(rs.getBigDecimal("R55_TOTAL"));
+		obj.setR56_nonRatioSensativeItems(rs.getBigDecimal("R56_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR56_total(rs.getBigDecimal("R56_TOTAL"));
+		obj.setR57_nonRatioSensativeItems(rs.getBigDecimal("R57_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR57_total(rs.getBigDecimal("R57_TOTAL"));
+		obj.setR58_nonRatioSensativeItems(rs.getBigDecimal("R58_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR58_total(rs.getBigDecimal("R58_TOTAL"));
+		obj.setR59product(rs.getString("R59_PRODUCT"));
+		obj.setR59_upTo1Month(rs.getBigDecimal("R59_UP_TO_1_MONTH"));
+		obj.setR59_moreThan1MonthTo3Months(rs.getBigDecimal("R59_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR59_moreThan3MonthTo6Months(rs.getBigDecimal("R59_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR59_moreThan6MonthTo12Months(rs.getBigDecimal("R59_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR59_moreThan12MonthTo3Years(rs.getBigDecimal("R59_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR59_moreThan3YearsTo5Years(rs.getBigDecimal("R59_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR59_moreThan5YearsTo10Years(rs.getBigDecimal("R59_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR59_moreThan10Years(rs.getBigDecimal("R59_MORE_THAN_10_YEARS"));
+		obj.setR59_nonRatioSensativeItems(rs.getBigDecimal("R59_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR59_total(rs.getBigDecimal("R59_TOTAL"));
+		obj.setR60product(rs.getString("R60_PRODUCT"));
+		obj.setR60_upTo1Month(rs.getBigDecimal("R60_UP_TO_1_MONTH"));
+		obj.setR60_moreThan1MonthTo3Months(rs.getBigDecimal("R60_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR60_moreThan3MonthTo6Months(rs.getBigDecimal("R60_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR60_moreThan6MonthTo12Months(rs.getBigDecimal("R60_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR60_moreThan12MonthTo3Years(rs.getBigDecimal("R60_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR60_moreThan3YearsTo5Years(rs.getBigDecimal("R60_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR60_moreThan5YearsTo10Years(rs.getBigDecimal("R60_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR60_moreThan10Years(rs.getBigDecimal("R60_MORE_THAN_10_YEARS"));
+		obj.setR60_total(rs.getBigDecimal("R60_TOTAL"));
+		obj.setR61product(rs.getString("R61_PRODUCT"));
+		obj.setR61_upTo1Month(rs.getBigDecimal("R61_UP_TO_1_MONTH"));
+		obj.setR61_moreThan1MonthTo3Months(rs.getBigDecimal("R61_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR61_moreThan3MonthTo6Months(rs.getBigDecimal("R61_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR61_moreThan6MonthTo12Months(rs.getBigDecimal("R61_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR61_moreThan12MonthTo3Years(rs.getBigDecimal("R61_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR61_moreThan3YearsTo5Years(rs.getBigDecimal("R61_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR61_moreThan5YearsTo10Years(rs.getBigDecimal("R61_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR61_moreThan10Years(rs.getBigDecimal("R61_MORE_THAN_10_YEARS"));
+		obj.setR61_total(rs.getBigDecimal("R61_TOTAL"));
+		obj.setR62product(rs.getString("R62_PRODUCT"));
+		obj.setR62_upTo1Month(rs.getBigDecimal("R62_UP_TO_1_MONTH"));
+		obj.setR62_moreThan1MonthTo3Months(rs.getBigDecimal("R62_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR62_moreThan3MonthTo6Months(rs.getBigDecimal("R62_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR62_moreThan6MonthTo12Months(rs.getBigDecimal("R62_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR62_moreThan12MonthTo3Years(rs.getBigDecimal("R62_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR62_moreThan3YearsTo5Years(rs.getBigDecimal("R62_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR62_moreThan5YearsTo10Years(rs.getBigDecimal("R62_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR62_moreThan10Years(rs.getBigDecimal("R62_MORE_THAN_10_YEARS"));
+		obj.setR62_total(rs.getBigDecimal("R62_TOTAL"));
+		obj.setR63product(rs.getString("R63_PRODUCT"));
+		obj.setR63_upTo1Month(rs.getBigDecimal("R63_UP_TO_1_MONTH"));
+		obj.setR63_moreThan1MonthTo3Months(rs.getBigDecimal("R63_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR63_moreThan3MonthTo6Months(rs.getBigDecimal("R63_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR63_moreThan6MonthTo12Months(rs.getBigDecimal("R63_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR63_moreThan12MonthTo3Years(rs.getBigDecimal("R63_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR63_moreThan3YearsTo5Years(rs.getBigDecimal("R63_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR63_moreThan5YearsTo10Years(rs.getBigDecimal("R63_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR63_moreThan10Years(rs.getBigDecimal("R63_MORE_THAN_10_YEARS"));
+		obj.setR63_total(rs.getBigDecimal("R63_TOTAL"));
+		obj.setR64product(rs.getString("R64_PRODUCT"));
+		obj.setR64_upTo1Month(rs.getBigDecimal("R64_UP_TO_1_MONTH"));
+		obj.setR64_moreThan1MonthTo3Months(rs.getBigDecimal("R64_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR64_moreThan3MonthTo6Months(rs.getBigDecimal("R64_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR64_moreThan6MonthTo12Months(rs.getBigDecimal("R64_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR64_moreThan12MonthTo3Years(rs.getBigDecimal("R64_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR64_moreThan3YearsTo5Years(rs.getBigDecimal("R64_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR64_moreThan5YearsTo10Years(rs.getBigDecimal("R64_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR64_moreThan10Years(rs.getBigDecimal("R64_MORE_THAN_10_YEARS"));
+		obj.setR64_total(rs.getBigDecimal("R64_TOTAL"));
+		obj.setR65product(rs.getString("R65_PRODUCT"));
+		obj.setR65_upTo1Month(rs.getBigDecimal("R65_UP_TO_1_MONTH"));
+		obj.setR65_moreThan1MonthTo3Months(rs.getBigDecimal("R65_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR65_moreThan3MonthTo6Months(rs.getBigDecimal("R65_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR65_moreThan6MonthTo12Months(rs.getBigDecimal("R65_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR65_moreThan12MonthTo3Years(rs.getBigDecimal("R65_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR65_moreThan3YearsTo5Years(rs.getBigDecimal("R65_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR65_moreThan5YearsTo10Years(rs.getBigDecimal("R65_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR65_moreThan10Years(rs.getBigDecimal("R65_MORE_THAN_10_YEARS"));
+		obj.setR65_total(rs.getBigDecimal("R65_TOTAL"));
+		obj.setR66product(rs.getString("R66_PRODUCT"));
+		obj.setR66_upTo1Month(rs.getBigDecimal("R66_UP_TO_1_MONTH"));
+		obj.setR66_moreThan1MonthTo3Months(rs.getBigDecimal("R66_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR66_moreThan3MonthTo6Months(rs.getBigDecimal("R66_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR66_moreThan6MonthTo12Months(rs.getBigDecimal("R66_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR66_moreThan12MonthTo3Years(rs.getBigDecimal("R66_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR66_moreThan3YearsTo5Years(rs.getBigDecimal("R66_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR66_moreThan5YearsTo10Years(rs.getBigDecimal("R66_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR66_moreThan10Years(rs.getBigDecimal("R66_MORE_THAN_10_YEARS"));
+		obj.setR66_total(rs.getBigDecimal("R66_TOTAL"));
+		obj.setR67product(rs.getString("R67_PRODUCT"));
+		obj.setR67_upTo1Month(rs.getBigDecimal("R67_UP_TO_1_MONTH"));
+		obj.setR67_moreThan1MonthTo3Months(rs.getBigDecimal("R67_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR67_moreThan3MonthTo6Months(rs.getBigDecimal("R67_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR67_moreThan6MonthTo12Months(rs.getBigDecimal("R67_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR67_moreThan12MonthTo3Years(rs.getBigDecimal("R67_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR67_moreThan3YearsTo5Years(rs.getBigDecimal("R67_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR67_moreThan5YearsTo10Years(rs.getBigDecimal("R67_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR67_moreThan10Years(rs.getBigDecimal("R67_MORE_THAN_10_YEARS"));
+		obj.setR67_total(rs.getBigDecimal("R67_TOTAL"));
+		obj.setR68product(rs.getString("R68_PRODUCT"));
+		obj.setR68_upTo1Month(rs.getBigDecimal("R68_UP_TO_1_MONTH"));
+		obj.setR68_moreThan1MonthTo3Months(rs.getBigDecimal("R68_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR68_moreThan3MonthTo6Months(rs.getBigDecimal("R68_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR68_moreThan6MonthTo12Months(rs.getBigDecimal("R68_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR68_moreThan12MonthTo3Years(rs.getBigDecimal("R68_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR68_moreThan3YearsTo5Years(rs.getBigDecimal("R68_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR68_moreThan5YearsTo10Years(rs.getBigDecimal("R68_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR68_moreThan10Years(rs.getBigDecimal("R68_MORE_THAN_10_YEARS"));
+		obj.setR68_total(rs.getBigDecimal("R68_TOTAL"));
+		obj.setR69product(rs.getString("R69_PRODUCT"));
+		obj.setR69_upTo1Month(rs.getBigDecimal("R69_UP_TO_1_MONTH"));
+		obj.setR69_moreThan1MonthTo3Months(rs.getBigDecimal("R69_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR69_moreThan3MonthTo6Months(rs.getBigDecimal("R69_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR69_moreThan6MonthTo12Months(rs.getBigDecimal("R69_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR69_moreThan12MonthTo3Years(rs.getBigDecimal("R69_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR69_moreThan3YearsTo5Years(rs.getBigDecimal("R69_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR69_moreThan5YearsTo10Years(rs.getBigDecimal("R69_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR69_moreThan10Years(rs.getBigDecimal("R69_MORE_THAN_10_YEARS"));
+		obj.setR69_total(rs.getBigDecimal("R69_TOTAL"));
+		obj.setR70product(rs.getString("R70_PRODUCT"));
+		obj.setR70_upTo1Month(rs.getBigDecimal("R70_UP_TO_1_MONTH"));
+		obj.setR70_moreThan1MonthTo3Months(rs.getBigDecimal("R70_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR70_moreThan3MonthTo6Months(rs.getBigDecimal("R70_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR70_moreThan6MonthTo12Months(rs.getBigDecimal("R70_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR70_moreThan12MonthTo3Years(rs.getBigDecimal("R70_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR70_moreThan3YearsTo5Years(rs.getBigDecimal("R70_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR70_moreThan5YearsTo10Years(rs.getBigDecimal("R70_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR70_moreThan10Years(rs.getBigDecimal("R70_MORE_THAN_10_YEARS"));
+		obj.setR70_total(rs.getBigDecimal("R70_TOTAL"));
+		obj.setR71product(rs.getString("R71_PRODUCT"));
+		obj.setR71_upTo1Month(rs.getBigDecimal("R71_UP_TO_1_MONTH"));
+		obj.setR71_moreThan1MonthTo3Months(rs.getBigDecimal("R71_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR71_moreThan3MonthTo6Months(rs.getBigDecimal("R71_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR71_moreThan6MonthTo12Months(rs.getBigDecimal("R71_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR71_moreThan12MonthTo3Years(rs.getBigDecimal("R71_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR71_moreThan3YearsTo5Years(rs.getBigDecimal("R71_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR71_moreThan5YearsTo10Years(rs.getBigDecimal("R71_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR71_moreThan10Years(rs.getBigDecimal("R71_MORE_THAN_10_YEARS"));
+		obj.setR71_total(rs.getBigDecimal("R71_TOTAL"));
+		obj.setR72product(rs.getString("R72_PRODUCT"));
+		obj.setR72_upTo1Month(rs.getBigDecimal("R72_UP_TO_1_MONTH"));
+		obj.setR72_moreThan1MonthTo3Months(rs.getBigDecimal("R72_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR72_moreThan3MonthTo6Months(rs.getBigDecimal("R72_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR72_moreThan6MonthTo12Months(rs.getBigDecimal("R72_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR72_moreThan12MonthTo3Years(rs.getBigDecimal("R72_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR72_moreThan3YearsTo5Years(rs.getBigDecimal("R72_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR72_moreThan5YearsTo10Years(rs.getBigDecimal("R72_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR72_moreThan10Years(rs.getBigDecimal("R72_MORE_THAN_10_YEARS"));
+		obj.setR72_total(rs.getBigDecimal("R72_TOTAL"));
+		obj.setR73product(rs.getString("R73_PRODUCT"));
+		obj.setR73_upTo1Month(rs.getBigDecimal("R73_UP_TO_1_MONTH"));
+		obj.setR73_moreThan1MonthTo3Months(rs.getBigDecimal("R73_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR73_moreThan3MonthTo6Months(rs.getBigDecimal("R73_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR73_moreThan6MonthTo12Months(rs.getBigDecimal("R73_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR73_moreThan12MonthTo3Years(rs.getBigDecimal("R73_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR73_moreThan3YearsTo5Years(rs.getBigDecimal("R73_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR73_moreThan5YearsTo10Years(rs.getBigDecimal("R73_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR73_moreThan10Years(rs.getBigDecimal("R73_MORE_THAN_10_YEARS"));
+		obj.setR73_total(rs.getBigDecimal("R73_TOTAL"));
+		obj.setR74product(rs.getString("R74_PRODUCT"));
+		obj.setR74_upTo1Month(rs.getBigDecimal("R74_UP_TO_1_MONTH"));
+		obj.setR74_moreThan1MonthTo3Months(rs.getBigDecimal("R74_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR74_moreThan3MonthTo6Months(rs.getBigDecimal("R74_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR74_moreThan6MonthTo12Months(rs.getBigDecimal("R74_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR74_moreThan12MonthTo3Years(rs.getBigDecimal("R74_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR74_moreThan3YearsTo5Years(rs.getBigDecimal("R74_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR74_moreThan5YearsTo10Years(rs.getBigDecimal("R74_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR74_moreThan10Years(rs.getBigDecimal("R74_MORE_THAN_10_YEARS"));
+		obj.setR74_total(rs.getBigDecimal("R74_TOTAL"));
+		obj.setR75product(rs.getString("R75_PRODUCT"));
+		obj.setR75_upTo1Month(rs.getBigDecimal("R75_UP_TO_1_MONTH"));
+		obj.setR75_moreThan1MonthTo3Months(rs.getBigDecimal("R75_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR75_moreThan3MonthTo6Months(rs.getBigDecimal("R75_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR75_moreThan6MonthTo12Months(rs.getBigDecimal("R75_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR75_moreThan12MonthTo3Years(rs.getBigDecimal("R75_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR75_moreThan3YearsTo5Years(rs.getBigDecimal("R75_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR75_moreThan5YearsTo10Years(rs.getBigDecimal("R75_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR75_moreThan10Years(rs.getBigDecimal("R75_MORE_THAN_10_YEARS"));
+		obj.setR75_total(rs.getBigDecimal("R75_TOTAL"));
+		obj.setR76product(rs.getString("R76_PRODUCT"));
+		obj.setR76_upTo1Month(rs.getBigDecimal("R76_UP_TO_1_MONTH"));
+		obj.setR76_moreThan1MonthTo3Months(rs.getBigDecimal("R76_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR76_moreThan3MonthTo6Months(rs.getBigDecimal("R76_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR76_moreThan6MonthTo12Months(rs.getBigDecimal("R76_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR76_moreThan12MonthTo3Years(rs.getBigDecimal("R76_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR76_moreThan3YearsTo5Years(rs.getBigDecimal("R76_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR76_moreThan5YearsTo10Years(rs.getBigDecimal("R76_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR76_moreThan10Years(rs.getBigDecimal("R76_MORE_THAN_10_YEARS"));
+		obj.setR76_total(rs.getBigDecimal("R76_TOTAL"));
+		obj.setR77product(rs.getString("R77_PRODUCT"));
+		obj.setR77_upTo1Month(rs.getBigDecimal("R77_UP_TO_1_MONTH"));
+		obj.setR77_moreThan1MonthTo3Months(rs.getBigDecimal("R77_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR77_moreThan3MonthTo6Months(rs.getBigDecimal("R77_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR77_moreThan6MonthTo12Months(rs.getBigDecimal("R77_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR77_moreThan12MonthTo3Years(rs.getBigDecimal("R77_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR77_moreThan3YearsTo5Years(rs.getBigDecimal("R77_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR77_moreThan5YearsTo10Years(rs.getBigDecimal("R77_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR77_moreThan10Years(rs.getBigDecimal("R77_MORE_THAN_10_YEARS"));
+		obj.setR77_total(rs.getBigDecimal("R77_TOTAL"));
+		obj.setR78product(rs.getString("R78_PRODUCT"));
+		obj.setR78_upTo1Month(rs.getBigDecimal("R78_UP_TO_1_MONTH"));
+		obj.setR78_moreThan1MonthTo3Months(rs.getBigDecimal("R78_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR78_moreThan3MonthTo6Months(rs.getBigDecimal("R78_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR78_moreThan6MonthTo12Months(rs.getBigDecimal("R78_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR78_moreThan12MonthTo3Years(rs.getBigDecimal("R78_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR78_moreThan3YearsTo5Years(rs.getBigDecimal("R78_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR78_moreThan5YearsTo10Years(rs.getBigDecimal("R78_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR78_moreThan10Years(rs.getBigDecimal("R78_MORE_THAN_10_YEARS"));
+		obj.setR78_total(rs.getBigDecimal("R78_TOTAL"));
+		obj.setR79product(rs.getString("R79_PRODUCT"));
+		obj.setR79_upTo1Month(rs.getBigDecimal("R79_UP_TO_1_MONTH"));
+		obj.setR79_moreThan1MonthTo3Months(rs.getBigDecimal("R79_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR79_moreThan3MonthTo6Months(rs.getBigDecimal("R79_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR79_moreThan6MonthTo12Months(rs.getBigDecimal("R79_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR79_moreThan12MonthTo3Years(rs.getBigDecimal("R79_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR79_moreThan3YearsTo5Years(rs.getBigDecimal("R79_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR79_moreThan5YearsTo10Years(rs.getBigDecimal("R79_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR79_moreThan10Years(rs.getBigDecimal("R79_MORE_THAN_10_YEARS"));
+		obj.setR79_total(rs.getBigDecimal("R79_TOTAL"));
+		obj.setR80product(rs.getString("R80_PRODUCT"));
+		obj.setR80_upTo1Month(rs.getBigDecimal("R80_UP_TO_1_MONTH"));
+		obj.setR80_moreThan1MonthTo3Months(rs.getBigDecimal("R80_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR80_moreThan3MonthTo6Months(rs.getBigDecimal("R80_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR80_moreThan6MonthTo12Months(rs.getBigDecimal("R80_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR80_moreThan12MonthTo3Years(rs.getBigDecimal("R80_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR80_moreThan3YearsTo5Years(rs.getBigDecimal("R80_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR80_moreThan5YearsTo10Years(rs.getBigDecimal("R80_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR80_moreThan10Years(rs.getBigDecimal("R80_MORE_THAN_10_YEARS"));
+		obj.setR80_total(rs.getBigDecimal("R80_TOTAL"));
+		obj.setR81product(rs.getString("R81_PRODUCT"));
+		obj.setR81_upTo1Month(rs.getBigDecimal("R81_UP_TO_1_MONTH"));
+		obj.setR81_moreThan1MonthTo3Months(rs.getBigDecimal("R81_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR81_moreThan3MonthTo6Months(rs.getBigDecimal("R81_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR81_moreThan6MonthTo12Months(rs.getBigDecimal("R81_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR81_moreThan12MonthTo3Years(rs.getBigDecimal("R81_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR81_moreThan3YearsTo5Years(rs.getBigDecimal("R81_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR81_moreThan5YearsTo10Years(rs.getBigDecimal("R81_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR81_moreThan10Years(rs.getBigDecimal("R81_MORE_THAN_10_YEARS"));
+		obj.setR81_total(rs.getBigDecimal("R81_TOTAL"));
+		obj.setR82product(rs.getString("R82_PRODUCT"));
+		obj.setR82_upTo1Month(rs.getBigDecimal("R82_UP_TO_1_MONTH"));
+		obj.setR82_moreThan1MonthTo3Months(rs.getBigDecimal("R82_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR82_moreThan3MonthTo6Months(rs.getBigDecimal("R82_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR82_moreThan6MonthTo12Months(rs.getBigDecimal("R82_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR82_moreThan12MonthTo3Years(rs.getBigDecimal("R82_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR82_moreThan3YearsTo5Years(rs.getBigDecimal("R82_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR82_moreThan5YearsTo10Years(rs.getBigDecimal("R82_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR82_moreThan10Years(rs.getBigDecimal("R82_MORE_THAN_10_YEARS"));
+		obj.setR82_total(rs.getBigDecimal("R82_TOTAL"));
+		obj.setR83product(rs.getString("R83_PRODUCT"));
+		obj.setR83_upTo1Month(rs.getBigDecimal("R83_UP_TO_1_MONTH"));
+		obj.setR83_moreThan1MonthTo3Months(rs.getBigDecimal("R83_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR83_moreThan3MonthTo6Months(rs.getBigDecimal("R83_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR83_moreThan6MonthTo12Months(rs.getBigDecimal("R83_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR83_moreThan12MonthTo3Years(rs.getBigDecimal("R83_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR83_moreThan3YearsTo5Years(rs.getBigDecimal("R83_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR83_moreThan5YearsTo10Years(rs.getBigDecimal("R83_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR83_moreThan10Years(rs.getBigDecimal("R83_MORE_THAN_10_YEARS"));
+		obj.setR83_total(rs.getBigDecimal("R83_TOTAL"));
+		obj.setR84_nonRatioSensativeItems(rs.getBigDecimal("R84_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR84_total(rs.getBigDecimal("R84_TOTAL"));
+		obj.setR85_nonRatioSensativeItems(rs.getBigDecimal("R85_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR85_total(rs.getBigDecimal("R85_TOTAL"));
+		obj.setR86_nonRatioSensativeItems(rs.getBigDecimal("R86_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR86_total(rs.getBigDecimal("R86_TOTAL"));
+		obj.setR87_nonRatioSensativeItems(rs.getBigDecimal("R87_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR87_total(rs.getBigDecimal("R87_TOTAL"));
+		obj.setR88_nonRatioSensativeItems(rs.getBigDecimal("R88_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR88_total(rs.getBigDecimal("R88_TOTAL"));
+		obj.setR89_nonRatioSensativeItems(rs.getBigDecimal("R89_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR89_total(rs.getBigDecimal("R89_TOTAL"));
+		obj.setR90_nonRatioSensativeItems(rs.getBigDecimal("R90_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR90_total(rs.getBigDecimal("R90_TOTAL"));
+		obj.setR91_nonRatioSensativeItems(rs.getBigDecimal("R91_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR91_total(rs.getBigDecimal("R91_TOTAL"));
+		obj.setR92product(rs.getString("R92_PRODUCT"));
+		obj.setR92_upTo1Month(rs.getBigDecimal("R92_UP_TO_1_MONTH"));
+		obj.setR92_moreThan1MonthTo3Months(rs.getBigDecimal("R92_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR92_moreThan3MonthTo6Months(rs.getBigDecimal("R92_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR92_moreThan6MonthTo12Months(rs.getBigDecimal("R92_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR92_moreThan12MonthTo3Years(rs.getBigDecimal("R92_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR92_moreThan3YearsTo5Years(rs.getBigDecimal("R92_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR92_moreThan5YearsTo10Years(rs.getBigDecimal("R92_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR92_moreThan10Years(rs.getBigDecimal("R92_MORE_THAN_10_YEARS"));
+		obj.setR92_total(rs.getBigDecimal("R92_TOTAL"));
+		obj.setR93product(rs.getString("R93_PRODUCT"));
+		obj.setR93_upTo1Month(rs.getBigDecimal("R93_UP_TO_1_MONTH"));
+		obj.setR93_moreThan1MonthTo3Months(rs.getBigDecimal("R93_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR93_moreThan3MonthTo6Months(rs.getBigDecimal("R93_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR93_moreThan6MonthTo12Months(rs.getBigDecimal("R93_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR93_moreThan12MonthTo3Years(rs.getBigDecimal("R93_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR93_moreThan3YearsTo5Years(rs.getBigDecimal("R93_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR93_moreThan5YearsTo10Years(rs.getBigDecimal("R93_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR93_moreThan10Years(rs.getBigDecimal("R93_MORE_THAN_10_YEARS"));
+		obj.setR93_total(rs.getBigDecimal("R93_TOTAL"));
+		obj.setR94product(rs.getString("R94_PRODUCT"));
+		obj.setR94_upTo1Month(rs.getBigDecimal("R94_UP_TO_1_MONTH"));
+		obj.setR94_moreThan1MonthTo3Months(rs.getBigDecimal("R94_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR94_moreThan3MonthTo6Months(rs.getBigDecimal("R94_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR94_moreThan6MonthTo12Months(rs.getBigDecimal("R94_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR94_moreThan12MonthTo3Years(rs.getBigDecimal("R94_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR94_moreThan3YearsTo5Years(rs.getBigDecimal("R94_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR94_moreThan5YearsTo10Years(rs.getBigDecimal("R94_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR94_moreThan10Years(rs.getBigDecimal("R94_MORE_THAN_10_YEARS"));
+		obj.setR94_total(rs.getBigDecimal("R94_TOTAL"));
+		obj.setR95_nonRatioSensativeItems(rs.getBigDecimal("R95_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR95_total(rs.getBigDecimal("R95_TOTAL"));
+		obj.setR96product(rs.getString("R96_PRODUCT"));
+		obj.setR96_upTo1Month(rs.getBigDecimal("R96_UP_TO_1_MONTH"));
+		obj.setR96_moreThan1MonthTo3Months(rs.getBigDecimal("R96_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR96_moreThan3MonthTo6Months(rs.getBigDecimal("R96_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR96_moreThan6MonthTo12Months(rs.getBigDecimal("R96_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR96_moreThan12MonthTo3Years(rs.getBigDecimal("R96_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR96_moreThan3YearsTo5Years(rs.getBigDecimal("R96_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR96_moreThan5YearsTo10Years(rs.getBigDecimal("R96_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR96_moreThan10Years(rs.getBigDecimal("R96_MORE_THAN_10_YEARS"));
+		obj.setR96_nonRatioSensativeItems(rs.getBigDecimal("R96_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR96_total(rs.getBigDecimal("R96_TOTAL"));
+		obj.setR97product(rs.getString("R97_PRODUCT"));
+		obj.setR97_upTo1Month(rs.getBigDecimal("R97_UP_TO_1_MONTH"));
+		obj.setR97_moreThan1MonthTo3Months(rs.getBigDecimal("R97_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR97_moreThan3MonthTo6Months(rs.getBigDecimal("R97_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR97_moreThan6MonthTo12Months(rs.getBigDecimal("R97_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR97_moreThan12MonthTo3Years(rs.getBigDecimal("R97_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR97_moreThan3YearsTo5Years(rs.getBigDecimal("R97_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR97_moreThan5YearsTo10Years(rs.getBigDecimal("R97_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR97_moreThan10Years(rs.getBigDecimal("R97_MORE_THAN_10_YEARS"));
+		obj.setR97_nonRatioSensativeItems(rs.getBigDecimal("R97_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR97_total(rs.getBigDecimal("R97_TOTAL"));
+		obj.setR98product(rs.getString("R98_PRODUCT"));
+		obj.setR98_upTo1Month(rs.getBigDecimal("R98_UP_TO_1_MONTH"));
+		obj.setR98_moreThan1MonthTo3Months(rs.getBigDecimal("R98_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR98_moreThan3MonthTo6Months(rs.getBigDecimal("R98_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR98_moreThan6MonthTo12Months(rs.getBigDecimal("R98_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR98_moreThan12MonthTo3Years(rs.getBigDecimal("R98_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR98_moreThan3YearsTo5Years(rs.getBigDecimal("R98_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR98_moreThan5YearsTo10Years(rs.getBigDecimal("R98_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR98_moreThan10Years(rs.getBigDecimal("R98_MORE_THAN_10_YEARS"));
+		obj.setR98_nonRatioSensativeItems(rs.getBigDecimal("R98_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR98_total(rs.getBigDecimal("R98_TOTAL"));
+		obj.setR99product(rs.getString("R99_PRODUCT"));
+		obj.setR99_upTo1Month(rs.getBigDecimal("R99_UP_TO_1_MONTH"));
+		obj.setR99_moreThan1MonthTo3Months(rs.getBigDecimal("R99_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR99_moreThan3MonthTo6Months(rs.getBigDecimal("R99_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR99_moreThan6MonthTo12Months(rs.getBigDecimal("R99_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR99_moreThan12MonthTo3Years(rs.getBigDecimal("R99_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR99_moreThan3YearsTo5Years(rs.getBigDecimal("R99_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR99_moreThan5YearsTo10Years(rs.getBigDecimal("R99_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR99_moreThan10Years(rs.getBigDecimal("R99_MORE_THAN_10_YEARS"));
+		obj.setR99_nonRatioSensativeItems(rs.getBigDecimal("R99_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR99_total(rs.getBigDecimal("R99_TOTAL"));
+		obj.setR100product(rs.getString("R100_PRODUCT"));
+		obj.setR100_upTo1Month(rs.getBigDecimal("R100_UP_TO_1_MONTH"));
+		obj.setR100_moreThan1MonthTo3Months(rs.getBigDecimal("R100_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR100_moreThan3MonthTo6Months(rs.getBigDecimal("R100_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR100_moreThan6MonthTo12Months(rs.getBigDecimal("R100_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR100_moreThan12MonthTo3Years(rs.getBigDecimal("R100_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR100_moreThan3YearsTo5Years(rs.getBigDecimal("R100_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR100_moreThan5YearsTo10Years(rs.getBigDecimal("R100_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR100_moreThan10Years(rs.getBigDecimal("R100_MORE_THAN_10_YEARS"));
+		obj.setR100_nonRatioSensativeItems(rs.getBigDecimal("R100_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR100_total(rs.getBigDecimal("R100_TOTAL"));
+		obj.setR101product(rs.getString("R101_PRODUCT"));
+		obj.setR101_upTo1Month(rs.getBigDecimal("R101_UP_TO_1_MONTH"));
+		obj.setR101_moreThan1MonthTo3Months(rs.getBigDecimal("R101_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR101_moreThan3MonthTo6Months(rs.getBigDecimal("R101_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR101_moreThan6MonthTo12Months(rs.getBigDecimal("R101_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR101_moreThan12MonthTo3Years(rs.getBigDecimal("R101_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR101_moreThan3YearsTo5Years(rs.getBigDecimal("R101_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR101_moreThan5YearsTo10Years(rs.getBigDecimal("R101_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR101_moreThan10Years(rs.getBigDecimal("R101_MORE_THAN_10_YEARS"));
+		obj.setR101_nonRatioSensativeItems(rs.getBigDecimal("R101_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR101_total(rs.getBigDecimal("R101_TOTAL"));
+		obj.setR102product(rs.getString("R102_PRODUCT"));
+		obj.setR102_upTo1Month(rs.getBigDecimal("R102_UP_TO_1_MONTH"));
+		obj.setR102_moreThan1MonthTo3Months(rs.getBigDecimal("R102_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR102_moreThan3MonthTo6Months(rs.getBigDecimal("R102_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR102_moreThan6MonthTo12Months(rs.getBigDecimal("R102_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR102_moreThan12MonthTo3Years(rs.getBigDecimal("R102_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR102_moreThan3YearsTo5Years(rs.getBigDecimal("R102_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR102_moreThan5YearsTo10Years(rs.getBigDecimal("R102_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR102_moreThan10Years(rs.getBigDecimal("R102_MORE_THAN_10_YEARS"));
+		obj.setR102_nonRatioSensativeItems(rs.getBigDecimal("R102_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR102_total(rs.getBigDecimal("R102_TOTAL"));
+		obj.setR103product(rs.getString("R103_PRODUCT"));
+		obj.setR103_upTo1Month(rs.getBigDecimal("R103_UP_TO_1_MONTH"));
+		obj.setR103_moreThan1MonthTo3Months(rs.getBigDecimal("R103_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR103_moreThan3MonthTo6Months(rs.getBigDecimal("R103_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR103_moreThan6MonthTo12Months(rs.getBigDecimal("R103_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR103_moreThan12MonthTo3Years(rs.getBigDecimal("R103_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR103_moreThan3YearsTo5Years(rs.getBigDecimal("R103_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR103_moreThan5YearsTo10Years(rs.getBigDecimal("R103_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR103_moreThan10Years(rs.getBigDecimal("R103_MORE_THAN_10_YEARS"));
+		obj.setR103_nonRatioSensativeItems(rs.getBigDecimal("R103_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR103_total(rs.getBigDecimal("R103_TOTAL"));
+		obj.setR104product(rs.getString("R104_PRODUCT"));
+		obj.setR104_upTo1Month(rs.getBigDecimal("R104_UP_TO_1_MONTH"));
+		obj.setR104_moreThan1MonthTo3Months(rs.getBigDecimal("R104_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR104_moreThan3MonthTo6Months(rs.getBigDecimal("R104_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR104_moreThan6MonthTo12Months(rs.getBigDecimal("R104_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR104_moreThan12MonthTo3Years(rs.getBigDecimal("R104_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR104_moreThan3YearsTo5Years(rs.getBigDecimal("R104_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR104_moreThan5YearsTo10Years(rs.getBigDecimal("R104_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR104_moreThan10Years(rs.getBigDecimal("R104_MORE_THAN_10_YEARS"));
+		obj.setR104_nonRatioSensativeItems(rs.getBigDecimal("R104_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR104_total(rs.getBigDecimal("R104_TOTAL"));
+		obj.setR105product(rs.getString("R105_PRODUCT"));
+		obj.setR105_upTo1Month(rs.getBigDecimal("R105_UP_TO_1_MONTH"));
+		obj.setR105_moreThan1MonthTo3Months(rs.getBigDecimal("R105_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR105_moreThan3MonthTo6Months(rs.getBigDecimal("R105_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR105_moreThan6MonthTo12Months(rs.getBigDecimal("R105_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR105_moreThan12MonthTo3Years(rs.getBigDecimal("R105_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR105_moreThan3YearsTo5Years(rs.getBigDecimal("R105_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR105_moreThan5YearsTo10Years(rs.getBigDecimal("R105_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR105_moreThan10Years(rs.getBigDecimal("R105_MORE_THAN_10_YEARS"));
+		obj.setR105_nonRatioSensativeItems(rs.getBigDecimal("R105_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR105_total(rs.getBigDecimal("R105_TOTAL"));
+		obj.setR106product(rs.getString("R106_PRODUCT"));
+		obj.setR106_upTo1Month(rs.getBigDecimal("R106_UP_TO_1_MONTH"));
+		obj.setR106_moreThan1MonthTo3Months(rs.getBigDecimal("R106_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR106_moreThan3MonthTo6Months(rs.getBigDecimal("R106_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR106_moreThan6MonthTo12Months(rs.getBigDecimal("R106_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR106_moreThan12MonthTo3Years(rs.getBigDecimal("R106_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR106_moreThan3YearsTo5Years(rs.getBigDecimal("R106_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR106_moreThan5YearsTo10Years(rs.getBigDecimal("R106_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR106_moreThan10Years(rs.getBigDecimal("R106_MORE_THAN_10_YEARS"));
+		obj.setR106_nonRatioSensativeItems(rs.getBigDecimal("R106_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR106_total(rs.getBigDecimal("R106_TOTAL"));
+		obj.setReportDate(rs.getDate("REPORT_DATE"));
+		obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+		obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+		obj.setReportCode(rs.getString("REPORT_CODE"));
+		obj.setReportDesc(rs.getString("REPORT_DESC"));
+		obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+		obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+		obj.setDelFlg(rs.getString("DEL_FLG"));
+		return obj;
+	}
+}
+class M_IRBArchivalSummaryRowMapper implements RowMapper<M_IRB_Archival_Summary_Entity> {
+	@Override
+	public M_IRB_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+		M_IRB_Archival_Summary_Entity obj = new M_IRB_Archival_Summary_Entity();
+		obj.setR10product(rs.getString("R10_PRODUCT"));
+		obj.setR10_upTo1Month(rs.getBigDecimal("R10_UP_TO_1_MONTH"));
+		obj.setR10_moreThan1MonthTo3Months(rs.getBigDecimal("R10_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR10_moreThan3MonthTo6Months(rs.getBigDecimal("R10_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR10_moreThan6MonthTo12Months(rs.getBigDecimal("R10_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR10_moreThan12MonthTo3Years(rs.getBigDecimal("R10_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR10_moreThan3YearsTo5Years(rs.getBigDecimal("R10_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR10_moreThan5YearsTo10Years(rs.getBigDecimal("R10_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR10_moreThan10Years(rs.getBigDecimal("R10_MORE_THAN_10_YEARS"));
+		obj.setR10_nonRatioSensativeItems(rs.getBigDecimal("R10_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR10_total(rs.getBigDecimal("R10_TOTAL"));
+		obj.setR11product(rs.getString("R11_PRODUCT"));
+		obj.setR11_upTo1Month(rs.getBigDecimal("R11_UP_TO_1_MONTH"));
+		obj.setR11_moreThan1MonthTo3Months(rs.getBigDecimal("R11_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR11_moreThan3MonthTo6Months(rs.getBigDecimal("R11_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR11_moreThan6MonthTo12Months(rs.getBigDecimal("R11_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR11_moreThan12MonthTo3Years(rs.getBigDecimal("R11_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR11_moreThan3YearsTo5Years(rs.getBigDecimal("R11_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR11_moreThan5YearsTo10Years(rs.getBigDecimal("R11_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR11_moreThan10Years(rs.getBigDecimal("R11_MORE_THAN_10_YEARS"));
+		obj.setR11_total(rs.getBigDecimal("R11_TOTAL"));
+		obj.setR12product(rs.getString("R12_PRODUCT"));
+		obj.setR12_upTo1Month(rs.getBigDecimal("R12_UP_TO_1_MONTH"));
+		obj.setR12_moreThan1MonthTo3Months(rs.getBigDecimal("R12_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR12_moreThan3MonthTo6Months(rs.getBigDecimal("R12_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR12_moreThan6MonthTo12Months(rs.getBigDecimal("R12_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR12_moreThan12MonthTo3Years(rs.getBigDecimal("R12_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR12_moreThan3YearsTo5Years(rs.getBigDecimal("R12_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR12_moreThan5YearsTo10Years(rs.getBigDecimal("R12_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR12_moreThan10Years(rs.getBigDecimal("R12_MORE_THAN_10_YEARS"));
+		obj.setR12_total(rs.getBigDecimal("R12_TOTAL"));
+		obj.setR13product(rs.getString("R13_PRODUCT"));
+		obj.setR13_upTo1Month(rs.getBigDecimal("R13_UP_TO_1_MONTH"));
+		obj.setR13_moreThan1MonthTo3Months(rs.getBigDecimal("R13_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR13_moreThan3MonthTo6Months(rs.getBigDecimal("R13_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR13_moreThan6MonthTo12Months(rs.getBigDecimal("R13_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR13_moreThan12MonthTo3Years(rs.getBigDecimal("R13_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR13_moreThan3YearsTo5Years(rs.getBigDecimal("R13_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR13_moreThan5YearsTo10Years(rs.getBigDecimal("R13_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR13_moreThan10Years(rs.getBigDecimal("R13_MORE_THAN_10_YEARS"));
+		obj.setR13_total(rs.getBigDecimal("R13_TOTAL"));
+		obj.setR14product(rs.getString("R14_PRODUCT"));
+		obj.setR14_upTo1Month(rs.getBigDecimal("R14_UP_TO_1_MONTH"));
+		obj.setR14_moreThan1MonthTo3Months(rs.getBigDecimal("R14_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR14_moreThan3MonthTo6Months(rs.getBigDecimal("R14_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR14_moreThan6MonthTo12Months(rs.getBigDecimal("R14_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR14_moreThan12MonthTo3Years(rs.getBigDecimal("R14_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR14_moreThan3YearsTo5Years(rs.getBigDecimal("R14_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR14_moreThan5YearsTo10Years(rs.getBigDecimal("R14_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR14_moreThan10Years(rs.getBigDecimal("R14_MORE_THAN_10_YEARS"));
+		obj.setR14_total(rs.getBigDecimal("R14_TOTAL"));
+		obj.setR15product(rs.getString("R15_PRODUCT"));
+		obj.setR15_upTo1Month(rs.getBigDecimal("R15_UP_TO_1_MONTH"));
+		obj.setR15_moreThan1MonthTo3Months(rs.getBigDecimal("R15_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR15_moreThan3MonthTo6Months(rs.getBigDecimal("R15_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR15_moreThan6MonthTo12Months(rs.getBigDecimal("R15_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR15_moreThan12MonthTo3Years(rs.getBigDecimal("R15_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR15_moreThan3YearsTo5Years(rs.getBigDecimal("R15_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR15_moreThan5YearsTo10Years(rs.getBigDecimal("R15_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR15_moreThan10Years(rs.getBigDecimal("R15_MORE_THAN_10_YEARS"));
+		obj.setR15_total(rs.getBigDecimal("R15_TOTAL"));
+		obj.setR16product(rs.getString("R16_PRODUCT"));
+		obj.setR16_upTo1Month(rs.getBigDecimal("R16_UP_TO_1_MONTH"));
+		obj.setR16_moreThan1MonthTo3Months(rs.getBigDecimal("R16_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR16_moreThan3MonthTo6Months(rs.getBigDecimal("R16_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR16_moreThan6MonthTo12Months(rs.getBigDecimal("R16_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR16_moreThan12MonthTo3Years(rs.getBigDecimal("R16_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR16_moreThan3YearsTo5Years(rs.getBigDecimal("R16_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR16_moreThan5YearsTo10Years(rs.getBigDecimal("R16_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR16_moreThan10Years(rs.getBigDecimal("R16_MORE_THAN_10_YEARS"));
+		obj.setR16_total(rs.getBigDecimal("R16_TOTAL"));
+		obj.setR17product(rs.getString("R17_PRODUCT"));
+		obj.setR17_upTo1Month(rs.getBigDecimal("R17_UP_TO_1_MONTH"));
+		obj.setR17_moreThan1MonthTo3Months(rs.getBigDecimal("R17_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR17_moreThan3MonthTo6Months(rs.getBigDecimal("R17_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR17_moreThan6MonthTo12Months(rs.getBigDecimal("R17_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR17_moreThan12MonthTo3Years(rs.getBigDecimal("R17_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR17_moreThan3YearsTo5Years(rs.getBigDecimal("R17_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR17_moreThan5YearsTo10Years(rs.getBigDecimal("R17_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR17_moreThan10Years(rs.getBigDecimal("R17_MORE_THAN_10_YEARS"));
+		obj.setR17_total(rs.getBigDecimal("R17_TOTAL"));
+		obj.setR18product(rs.getString("R18_PRODUCT"));
+		obj.setR18_upTo1Month(rs.getBigDecimal("R18_UP_TO_1_MONTH"));
+		obj.setR18_moreThan1MonthTo3Months(rs.getBigDecimal("R18_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR18_moreThan3MonthTo6Months(rs.getBigDecimal("R18_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR18_moreThan6MonthTo12Months(rs.getBigDecimal("R18_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR18_moreThan12MonthTo3Years(rs.getBigDecimal("R18_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR18_moreThan3YearsTo5Years(rs.getBigDecimal("R18_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR18_moreThan5YearsTo10Years(rs.getBigDecimal("R18_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR18_moreThan10Years(rs.getBigDecimal("R18_MORE_THAN_10_YEARS"));
+		obj.setR18_total(rs.getBigDecimal("R18_TOTAL"));
+		obj.setR19product(rs.getString("R19_PRODUCT"));
+		obj.setR19_upTo1Month(rs.getBigDecimal("R19_UP_TO_1_MONTH"));
+		obj.setR19_moreThan1MonthTo3Months(rs.getBigDecimal("R19_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR19_moreThan3MonthTo6Months(rs.getBigDecimal("R19_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR19_moreThan6MonthTo12Months(rs.getBigDecimal("R19_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR19_moreThan12MonthTo3Years(rs.getBigDecimal("R19_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR19_moreThan3YearsTo5Years(rs.getBigDecimal("R19_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR19_moreThan5YearsTo10Years(rs.getBigDecimal("R19_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR19_moreThan10Years(rs.getBigDecimal("R19_MORE_THAN_10_YEARS"));
+		obj.setR19_total(rs.getBigDecimal("R19_TOTAL"));
+		obj.setR20product(rs.getString("R20_PRODUCT"));
+		obj.setR20_upTo1Month(rs.getBigDecimal("R20_UP_TO_1_MONTH"));
+		obj.setR20_moreThan1MonthTo3Months(rs.getBigDecimal("R20_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR20_moreThan3MonthTo6Months(rs.getBigDecimal("R20_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR20_moreThan6MonthTo12Months(rs.getBigDecimal("R20_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR20_moreThan12MonthTo3Years(rs.getBigDecimal("R20_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR20_moreThan3YearsTo5Years(rs.getBigDecimal("R20_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR20_moreThan5YearsTo10Years(rs.getBigDecimal("R20_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR20_moreThan10Years(rs.getBigDecimal("R20_MORE_THAN_10_YEARS"));
+		obj.setR20_total(rs.getBigDecimal("R20_TOTAL"));
+		obj.setR21product(rs.getString("R21_PRODUCT"));
+		obj.setR21_upTo1Month(rs.getBigDecimal("R21_UP_TO_1_MONTH"));
+		obj.setR21_moreThan1MonthTo3Months(rs.getBigDecimal("R21_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR21_moreThan3MonthTo6Months(rs.getBigDecimal("R21_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR21_moreThan6MonthTo12Months(rs.getBigDecimal("R21_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR21_moreThan12MonthTo3Years(rs.getBigDecimal("R21_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR21_moreThan3YearsTo5Years(rs.getBigDecimal("R21_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR21_moreThan5YearsTo10Years(rs.getBigDecimal("R21_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR21_moreThan10Years(rs.getBigDecimal("R21_MORE_THAN_10_YEARS"));
+		obj.setR21_total(rs.getBigDecimal("R21_TOTAL"));
+		obj.setR22product(rs.getString("R22_PRODUCT"));
+		obj.setR22_upTo1Month(rs.getBigDecimal("R22_UP_TO_1_MONTH"));
+		obj.setR22_moreThan1MonthTo3Months(rs.getBigDecimal("R22_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR22_moreThan3MonthTo6Months(rs.getBigDecimal("R22_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR22_moreThan6MonthTo12Months(rs.getBigDecimal("R22_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR22_moreThan12MonthTo3Years(rs.getBigDecimal("R22_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR22_moreThan3YearsTo5Years(rs.getBigDecimal("R22_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR22_moreThan5YearsTo10Years(rs.getBigDecimal("R22_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR22_moreThan10Years(rs.getBigDecimal("R22_MORE_THAN_10_YEARS"));
+		obj.setR22_total(rs.getBigDecimal("R22_TOTAL"));
+		obj.setR23product(rs.getString("R23_PRODUCT"));
+		obj.setR23_upTo1Month(rs.getBigDecimal("R23_UP_TO_1_MONTH"));
+		obj.setR23_moreThan1MonthTo3Months(rs.getBigDecimal("R23_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR23_moreThan3MonthTo6Months(rs.getBigDecimal("R23_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR23_moreThan6MonthTo12Months(rs.getBigDecimal("R23_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR23_moreThan12MonthTo3Years(rs.getBigDecimal("R23_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR23_moreThan3YearsTo5Years(rs.getBigDecimal("R23_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR23_moreThan5YearsTo10Years(rs.getBigDecimal("R23_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR23_moreThan10Years(rs.getBigDecimal("R23_MORE_THAN_10_YEARS"));
+		obj.setR23_total(rs.getBigDecimal("R23_TOTAL"));
+		obj.setR24product(rs.getString("R24_PRODUCT"));
+		obj.setR24_upTo1Month(rs.getBigDecimal("R24_UP_TO_1_MONTH"));
+		obj.setR24_moreThan1MonthTo3Months(rs.getBigDecimal("R24_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR24_moreThan3MonthTo6Months(rs.getBigDecimal("R24_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR24_moreThan6MonthTo12Months(rs.getBigDecimal("R24_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR24_moreThan12MonthTo3Years(rs.getBigDecimal("R24_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR24_moreThan3YearsTo5Years(rs.getBigDecimal("R24_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR24_moreThan5YearsTo10Years(rs.getBigDecimal("R24_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR24_moreThan10Years(rs.getBigDecimal("R24_MORE_THAN_10_YEARS"));
+		obj.setR24_total(rs.getBigDecimal("R24_TOTAL"));
+		obj.setR25product(rs.getString("R25_PRODUCT"));
+		obj.setR25_upTo1Month(rs.getBigDecimal("R25_UP_TO_1_MONTH"));
+		obj.setR25_moreThan1MonthTo3Months(rs.getBigDecimal("R25_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR25_moreThan3MonthTo6Months(rs.getBigDecimal("R25_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR25_moreThan6MonthTo12Months(rs.getBigDecimal("R25_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR25_moreThan12MonthTo3Years(rs.getBigDecimal("R25_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR25_moreThan3YearsTo5Years(rs.getBigDecimal("R25_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR25_moreThan5YearsTo10Years(rs.getBigDecimal("R25_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR25_moreThan10Years(rs.getBigDecimal("R25_MORE_THAN_10_YEARS"));
+		obj.setR25_total(rs.getBigDecimal("R25_TOTAL"));
+		obj.setR26product(rs.getString("R26_PRODUCT"));
+		obj.setR26_upTo1Month(rs.getBigDecimal("R26_UP_TO_1_MONTH"));
+		obj.setR26_moreThan1MonthTo3Months(rs.getBigDecimal("R26_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR26_moreThan3MonthTo6Months(rs.getBigDecimal("R26_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR26_moreThan6MonthTo12Months(rs.getBigDecimal("R26_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR26_moreThan12MonthTo3Years(rs.getBigDecimal("R26_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR26_moreThan3YearsTo5Years(rs.getBigDecimal("R26_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR26_moreThan5YearsTo10Years(rs.getBigDecimal("R26_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR26_moreThan10Years(rs.getBigDecimal("R26_MORE_THAN_10_YEARS"));
+		obj.setR26_total(rs.getBigDecimal("R26_TOTAL"));
+		obj.setR27product(rs.getString("R27_PRODUCT"));
+		obj.setR27_upTo1Month(rs.getBigDecimal("R27_UP_TO_1_MONTH"));
+		obj.setR27_moreThan1MonthTo3Months(rs.getBigDecimal("R27_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR27_moreThan3MonthTo6Months(rs.getBigDecimal("R27_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR27_moreThan6MonthTo12Months(rs.getBigDecimal("R27_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR27_moreThan12MonthTo3Years(rs.getBigDecimal("R27_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR27_moreThan3YearsTo5Years(rs.getBigDecimal("R27_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR27_moreThan5YearsTo10Years(rs.getBigDecimal("R27_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR27_moreThan10Years(rs.getBigDecimal("R27_MORE_THAN_10_YEARS"));
+		obj.setR27_total(rs.getBigDecimal("R27_TOTAL"));
+		obj.setR28product(rs.getString("R28_PRODUCT"));
+		obj.setR28_upTo1Month(rs.getBigDecimal("R28_UP_TO_1_MONTH"));
+		obj.setR28_moreThan1MonthTo3Months(rs.getBigDecimal("R28_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR28_moreThan3MonthTo6Months(rs.getBigDecimal("R28_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR28_moreThan6MonthTo12Months(rs.getBigDecimal("R28_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR28_moreThan12MonthTo3Years(rs.getBigDecimal("R28_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR28_moreThan3YearsTo5Years(rs.getBigDecimal("R28_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR28_moreThan5YearsTo10Years(rs.getBigDecimal("R28_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR28_moreThan10Years(rs.getBigDecimal("R28_MORE_THAN_10_YEARS"));
+		obj.setR28_total(rs.getBigDecimal("R28_TOTAL"));
+		obj.setR29product(rs.getString("R29_PRODUCT"));
+		obj.setR29_upTo1Month(rs.getBigDecimal("R29_UP_TO_1_MONTH"));
+		obj.setR29_moreThan1MonthTo3Months(rs.getBigDecimal("R29_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR29_moreThan3MonthTo6Months(rs.getBigDecimal("R29_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR29_moreThan6MonthTo12Months(rs.getBigDecimal("R29_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR29_moreThan12MonthTo3Years(rs.getBigDecimal("R29_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR29_moreThan3YearsTo5Years(rs.getBigDecimal("R29_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR29_moreThan5YearsTo10Years(rs.getBigDecimal("R29_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR29_moreThan10Years(rs.getBigDecimal("R29_MORE_THAN_10_YEARS"));
+		obj.setR29_total(rs.getBigDecimal("R29_TOTAL"));
+		obj.setR30product(rs.getString("R30_PRODUCT"));
+		obj.setR30_upTo1Month(rs.getBigDecimal("R30_UP_TO_1_MONTH"));
+		obj.setR30_moreThan1MonthTo3Months(rs.getBigDecimal("R30_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR30_moreThan3MonthTo6Months(rs.getBigDecimal("R30_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR30_moreThan6MonthTo12Months(rs.getBigDecimal("R30_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR30_moreThan12MonthTo3Years(rs.getBigDecimal("R30_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR30_moreThan3YearsTo5Years(rs.getBigDecimal("R30_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR30_moreThan5YearsTo10Years(rs.getBigDecimal("R30_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR30_moreThan10Years(rs.getBigDecimal("R30_MORE_THAN_10_YEARS"));
+		obj.setR30_total(rs.getBigDecimal("R30_TOTAL"));
+		obj.setR31product(rs.getString("R31_PRODUCT"));
+		obj.setR31_upTo1Month(rs.getBigDecimal("R31_UP_TO_1_MONTH"));
+		obj.setR31_moreThan1MonthTo3Months(rs.getBigDecimal("R31_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR31_moreThan3MonthTo6Months(rs.getBigDecimal("R31_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR31_moreThan6MonthTo12Months(rs.getBigDecimal("R31_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR31_moreThan12MonthTo3Years(rs.getBigDecimal("R31_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR31_moreThan3YearsTo5Years(rs.getBigDecimal("R31_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR31_moreThan5YearsTo10Years(rs.getBigDecimal("R31_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR31_moreThan10Years(rs.getBigDecimal("R31_MORE_THAN_10_YEARS"));
+		obj.setR31_total(rs.getBigDecimal("R31_TOTAL"));
+		obj.setR32product(rs.getString("R32_PRODUCT"));
+		obj.setR32_upTo1Month(rs.getBigDecimal("R32_UP_TO_1_MONTH"));
+		obj.setR32_moreThan1MonthTo3Months(rs.getBigDecimal("R32_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR32_moreThan3MonthTo6Months(rs.getBigDecimal("R32_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR32_moreThan6MonthTo12Months(rs.getBigDecimal("R32_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR32_moreThan12MonthTo3Years(rs.getBigDecimal("R32_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR32_moreThan3YearsTo5Years(rs.getBigDecimal("R32_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR32_moreThan5YearsTo10Years(rs.getBigDecimal("R32_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR32_moreThan10Years(rs.getBigDecimal("R32_MORE_THAN_10_YEARS"));
+		obj.setR32_total(rs.getBigDecimal("R32_TOTAL"));
+		obj.setR33product(rs.getString("R33_PRODUCT"));
+		obj.setR33_upTo1Month(rs.getBigDecimal("R33_UP_TO_1_MONTH"));
+		obj.setR33_moreThan1MonthTo3Months(rs.getBigDecimal("R33_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR33_moreThan3MonthTo6Months(rs.getBigDecimal("R33_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR33_moreThan6MonthTo12Months(rs.getBigDecimal("R33_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR33_moreThan12MonthTo3Years(rs.getBigDecimal("R33_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR33_moreThan3YearsTo5Years(rs.getBigDecimal("R33_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR33_moreThan5YearsTo10Years(rs.getBigDecimal("R33_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR33_moreThan10Years(rs.getBigDecimal("R33_MORE_THAN_10_YEARS"));
+		obj.setR33_total(rs.getBigDecimal("R33_TOTAL"));
+		obj.setR34product(rs.getString("R34_PRODUCT"));
+		obj.setR34_upTo1Month(rs.getBigDecimal("R34_UP_TO_1_MONTH"));
+		obj.setR34_moreThan1MonthTo3Months(rs.getBigDecimal("R34_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR34_moreThan3MonthTo6Months(rs.getBigDecimal("R34_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR34_moreThan6MonthTo12Months(rs.getBigDecimal("R34_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR34_moreThan12MonthTo3Years(rs.getBigDecimal("R34_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR34_moreThan3YearsTo5Years(rs.getBigDecimal("R34_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR34_moreThan5YearsTo10Years(rs.getBigDecimal("R34_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR34_moreThan10Years(rs.getBigDecimal("R34_MORE_THAN_10_YEARS"));
+		obj.setR34_total(rs.getBigDecimal("R34_TOTAL"));
+		obj.setR35product(rs.getString("R35_PRODUCT"));
+		obj.setR35_upTo1Month(rs.getBigDecimal("R35_UP_TO_1_MONTH"));
+		obj.setR35_moreThan1MonthTo3Months(rs.getBigDecimal("R35_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR35_moreThan3MonthTo6Months(rs.getBigDecimal("R35_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR35_moreThan6MonthTo12Months(rs.getBigDecimal("R35_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR35_moreThan12MonthTo3Years(rs.getBigDecimal("R35_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR35_moreThan3YearsTo5Years(rs.getBigDecimal("R35_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR35_moreThan5YearsTo10Years(rs.getBigDecimal("R35_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR35_moreThan10Years(rs.getBigDecimal("R35_MORE_THAN_10_YEARS"));
+		obj.setR35_total(rs.getBigDecimal("R35_TOTAL"));
+		obj.setR36product(rs.getString("R36_PRODUCT"));
+		obj.setR36_upTo1Month(rs.getBigDecimal("R36_UP_TO_1_MONTH"));
+		obj.setR36_moreThan1MonthTo3Months(rs.getBigDecimal("R36_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR36_moreThan3MonthTo6Months(rs.getBigDecimal("R36_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR36_moreThan6MonthTo12Months(rs.getBigDecimal("R36_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR36_moreThan12MonthTo3Years(rs.getBigDecimal("R36_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR36_moreThan3YearsTo5Years(rs.getBigDecimal("R36_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR36_moreThan5YearsTo10Years(rs.getBigDecimal("R36_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR36_moreThan10Years(rs.getBigDecimal("R36_MORE_THAN_10_YEARS"));
+		obj.setR36_total(rs.getBigDecimal("R36_TOTAL"));
+		obj.setR37product(rs.getString("R37_PRODUCT"));
+		obj.setR37_upTo1Month(rs.getBigDecimal("R37_UP_TO_1_MONTH"));
+		obj.setR37_moreThan1MonthTo3Months(rs.getBigDecimal("R37_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR37_moreThan3MonthTo6Months(rs.getBigDecimal("R37_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR37_moreThan6MonthTo12Months(rs.getBigDecimal("R37_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR37_moreThan12MonthTo3Years(rs.getBigDecimal("R37_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR37_moreThan3YearsTo5Years(rs.getBigDecimal("R37_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR37_moreThan5YearsTo10Years(rs.getBigDecimal("R37_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR37_moreThan10Years(rs.getBigDecimal("R37_MORE_THAN_10_YEARS"));
+		obj.setR37_total(rs.getBigDecimal("R37_TOTAL"));
+		obj.setR38product(rs.getString("R38_PRODUCT"));
+		obj.setR38_upTo1Month(rs.getBigDecimal("R38_UP_TO_1_MONTH"));
+		obj.setR38_moreThan1MonthTo3Months(rs.getBigDecimal("R38_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR38_moreThan3MonthTo6Months(rs.getBigDecimal("R38_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR38_moreThan6MonthTo12Months(rs.getBigDecimal("R38_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR38_moreThan12MonthTo3Years(rs.getBigDecimal("R38_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR38_moreThan3YearsTo5Years(rs.getBigDecimal("R38_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR38_moreThan5YearsTo10Years(rs.getBigDecimal("R38_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR38_moreThan10Years(rs.getBigDecimal("R38_MORE_THAN_10_YEARS"));
+		obj.setR38_total(rs.getBigDecimal("R38_TOTAL"));
+		obj.setR39product(rs.getString("R39_PRODUCT"));
+		obj.setR39_upTo1Month(rs.getBigDecimal("R39_UP_TO_1_MONTH"));
+		obj.setR39_moreThan1MonthTo3Months(rs.getBigDecimal("R39_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR39_moreThan3MonthTo6Months(rs.getBigDecimal("R39_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR39_moreThan6MonthTo12Months(rs.getBigDecimal("R39_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR39_moreThan12MonthTo3Years(rs.getBigDecimal("R39_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR39_moreThan3YearsTo5Years(rs.getBigDecimal("R39_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR39_moreThan5YearsTo10Years(rs.getBigDecimal("R39_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR39_moreThan10Years(rs.getBigDecimal("R39_MORE_THAN_10_YEARS"));
+		obj.setR39_total(rs.getBigDecimal("R39_TOTAL"));
+		obj.setR40product(rs.getString("R40_PRODUCT"));
+		obj.setR40_upTo1Month(rs.getBigDecimal("R40_UP_TO_1_MONTH"));
+		obj.setR40_moreThan1MonthTo3Months(rs.getBigDecimal("R40_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR40_moreThan3MonthTo6Months(rs.getBigDecimal("R40_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR40_moreThan6MonthTo12Months(rs.getBigDecimal("R40_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR40_moreThan12MonthTo3Years(rs.getBigDecimal("R40_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR40_moreThan3YearsTo5Years(rs.getBigDecimal("R40_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR40_moreThan5YearsTo10Years(rs.getBigDecimal("R40_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR40_moreThan10Years(rs.getBigDecimal("R40_MORE_THAN_10_YEARS"));
+		obj.setR40_total(rs.getBigDecimal("R40_TOTAL"));
+		obj.setR41product(rs.getString("R41_PRODUCT"));
+		obj.setR41_upTo1Month(rs.getBigDecimal("R41_UP_TO_1_MONTH"));
+		obj.setR41_moreThan1MonthTo3Months(rs.getBigDecimal("R41_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR41_moreThan3MonthTo6Months(rs.getBigDecimal("R41_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR41_moreThan6MonthTo12Months(rs.getBigDecimal("R41_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR41_moreThan12MonthTo3Years(rs.getBigDecimal("R41_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR41_moreThan3YearsTo5Years(rs.getBigDecimal("R41_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR41_moreThan5YearsTo10Years(rs.getBigDecimal("R41_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR41_moreThan10Years(rs.getBigDecimal("R41_MORE_THAN_10_YEARS"));
+		obj.setR41_total(rs.getBigDecimal("R41_TOTAL"));
+		obj.setR42product(rs.getString("R42_PRODUCT"));
+		obj.setR42_upTo1Month(rs.getBigDecimal("R42_UP_TO_1_MONTH"));
+		obj.setR42_moreThan1MonthTo3Months(rs.getBigDecimal("R42_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR42_moreThan3MonthTo6Months(rs.getBigDecimal("R42_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR42_moreThan6MonthTo12Months(rs.getBigDecimal("R42_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR42_moreThan12MonthTo3Years(rs.getBigDecimal("R42_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR42_moreThan3YearsTo5Years(rs.getBigDecimal("R42_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR42_moreThan5YearsTo10Years(rs.getBigDecimal("R42_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR42_moreThan10Years(rs.getBigDecimal("R42_MORE_THAN_10_YEARS"));
+		obj.setR42_total(rs.getBigDecimal("R42_TOTAL"));
+		obj.setR43product(rs.getString("R43_PRODUCT"));
+		obj.setR43_upTo1Month(rs.getBigDecimal("R43_UP_TO_1_MONTH"));
+		obj.setR43_moreThan1MonthTo3Months(rs.getBigDecimal("R43_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR43_moreThan3MonthTo6Months(rs.getBigDecimal("R43_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR43_moreThan6MonthTo12Months(rs.getBigDecimal("R43_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR43_moreThan12MonthTo3Years(rs.getBigDecimal("R43_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR43_moreThan3YearsTo5Years(rs.getBigDecimal("R43_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR43_moreThan5YearsTo10Years(rs.getBigDecimal("R43_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR43_moreThan10Years(rs.getBigDecimal("R43_MORE_THAN_10_YEARS"));
+		obj.setR43_total(rs.getBigDecimal("R43_TOTAL"));
+		obj.setR44product(rs.getString("R44_PRODUCT"));
+		obj.setR44_upTo1Month(rs.getBigDecimal("R44_UP_TO_1_MONTH"));
+		obj.setR44_moreThan1MonthTo3Months(rs.getBigDecimal("R44_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR44_moreThan3MonthTo6Months(rs.getBigDecimal("R44_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR44_moreThan6MonthTo12Months(rs.getBigDecimal("R44_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR44_moreThan12MonthTo3Years(rs.getBigDecimal("R44_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR44_moreThan3YearsTo5Years(rs.getBigDecimal("R44_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR44_moreThan5YearsTo10Years(rs.getBigDecimal("R44_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR44_moreThan10Years(rs.getBigDecimal("R44_MORE_THAN_10_YEARS"));
+		obj.setR44_total(rs.getBigDecimal("R44_TOTAL"));
+		obj.setR45product(rs.getString("R45_PRODUCT"));
+		obj.setR45_upTo1Month(rs.getBigDecimal("R45_UP_TO_1_MONTH"));
+		obj.setR45_moreThan1MonthTo3Months(rs.getBigDecimal("R45_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR45_moreThan3MonthTo6Months(rs.getBigDecimal("R45_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR45_moreThan6MonthTo12Months(rs.getBigDecimal("R45_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR45_moreThan12MonthTo3Years(rs.getBigDecimal("R45_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR45_moreThan3YearsTo5Years(rs.getBigDecimal("R45_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR45_moreThan5YearsTo10Years(rs.getBigDecimal("R45_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR45_moreThan10Years(rs.getBigDecimal("R45_MORE_THAN_10_YEARS"));
+		obj.setR45_total(rs.getBigDecimal("R45_TOTAL"));
+		obj.setR46product(rs.getString("R46_PRODUCT"));
+		obj.setR46_upTo1Month(rs.getBigDecimal("R46_UP_TO_1_MONTH"));
+		obj.setR46_moreThan1MonthTo3Months(rs.getBigDecimal("R46_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR46_moreThan3MonthTo6Months(rs.getBigDecimal("R46_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR46_moreThan6MonthTo12Months(rs.getBigDecimal("R46_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR46_moreThan12MonthTo3Years(rs.getBigDecimal("R46_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR46_moreThan3YearsTo5Years(rs.getBigDecimal("R46_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR46_moreThan5YearsTo10Years(rs.getBigDecimal("R46_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR46_moreThan10Years(rs.getBigDecimal("R46_MORE_THAN_10_YEARS"));
+		obj.setR46_total(rs.getBigDecimal("R46_TOTAL"));
+		obj.setR47_nonRatioSensativeItems(rs.getBigDecimal("R47_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR47_total(rs.getBigDecimal("R47_TOTAL"));
+		obj.setR48_nonRatioSensativeItems(rs.getBigDecimal("R48_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR48_total(rs.getBigDecimal("R48_TOTAL"));
+		obj.setR49_nonRatioSensativeItems(rs.getBigDecimal("R49_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR49_total(rs.getBigDecimal("R49_TOTAL"));
+		obj.setR50_nonRatioSensativeItems(rs.getBigDecimal("R50_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR50_total(rs.getBigDecimal("R50_TOTAL"));
+		obj.setR51_nonRatioSensativeItems(rs.getBigDecimal("R51_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR51_total(rs.getBigDecimal("R51_TOTAL"));
+		obj.setR52_nonRatioSensativeItems(rs.getBigDecimal("R52_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR52_total(rs.getBigDecimal("R52_TOTAL"));
+		obj.setR53_nonRatioSensativeItems(rs.getBigDecimal("R53_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR53_total(rs.getBigDecimal("R53_TOTAL"));
+		obj.setR54_nonRatioSensativeItems(rs.getBigDecimal("R54_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR54_total(rs.getBigDecimal("R54_TOTAL"));
+		obj.setR55_nonRatioSensativeItems(rs.getBigDecimal("R55_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR55_total(rs.getBigDecimal("R55_TOTAL"));
+		obj.setR56_nonRatioSensativeItems(rs.getBigDecimal("R56_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR56_total(rs.getBigDecimal("R56_TOTAL"));
+		obj.setR57_nonRatioSensativeItems(rs.getBigDecimal("R57_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR57_total(rs.getBigDecimal("R57_TOTAL"));
+		obj.setR58_nonRatioSensativeItems(rs.getBigDecimal("R58_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR58_total(rs.getBigDecimal("R58_TOTAL"));
+		obj.setR59product(rs.getString("R59_PRODUCT"));
+		obj.setR59_upTo1Month(rs.getBigDecimal("R59_UP_TO_1_MONTH"));
+		obj.setR59_moreThan1MonthTo3Months(rs.getBigDecimal("R59_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR59_moreThan3MonthTo6Months(rs.getBigDecimal("R59_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR59_moreThan6MonthTo12Months(rs.getBigDecimal("R59_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR59_moreThan12MonthTo3Years(rs.getBigDecimal("R59_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR59_moreThan3YearsTo5Years(rs.getBigDecimal("R59_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR59_moreThan5YearsTo10Years(rs.getBigDecimal("R59_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR59_moreThan10Years(rs.getBigDecimal("R59_MORE_THAN_10_YEARS"));
+		obj.setR59_nonRatioSensativeItems(rs.getBigDecimal("R59_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR59_total(rs.getBigDecimal("R59_TOTAL"));
+		obj.setR60product(rs.getString("R60_PRODUCT"));
+		obj.setR60_upTo1Month(rs.getBigDecimal("R60_UP_TO_1_MONTH"));
+		obj.setR60_moreThan1MonthTo3Months(rs.getBigDecimal("R60_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR60_moreThan3MonthTo6Months(rs.getBigDecimal("R60_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR60_moreThan6MonthTo12Months(rs.getBigDecimal("R60_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR60_moreThan12MonthTo3Years(rs.getBigDecimal("R60_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR60_moreThan3YearsTo5Years(rs.getBigDecimal("R60_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR60_moreThan5YearsTo10Years(rs.getBigDecimal("R60_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR60_moreThan10Years(rs.getBigDecimal("R60_MORE_THAN_10_YEARS"));
+		obj.setR60_total(rs.getBigDecimal("R60_TOTAL"));
+		obj.setR61product(rs.getString("R61_PRODUCT"));
+		obj.setR61_upTo1Month(rs.getBigDecimal("R61_UP_TO_1_MONTH"));
+		obj.setR61_moreThan1MonthTo3Months(rs.getBigDecimal("R61_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR61_moreThan3MonthTo6Months(rs.getBigDecimal("R61_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR61_moreThan6MonthTo12Months(rs.getBigDecimal("R61_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR61_moreThan12MonthTo3Years(rs.getBigDecimal("R61_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR61_moreThan3YearsTo5Years(rs.getBigDecimal("R61_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR61_moreThan5YearsTo10Years(rs.getBigDecimal("R61_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR61_moreThan10Years(rs.getBigDecimal("R61_MORE_THAN_10_YEARS"));
+		obj.setR61_total(rs.getBigDecimal("R61_TOTAL"));
+		obj.setR62product(rs.getString("R62_PRODUCT"));
+		obj.setR62_upTo1Month(rs.getBigDecimal("R62_UP_TO_1_MONTH"));
+		obj.setR62_moreThan1MonthTo3Months(rs.getBigDecimal("R62_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR62_moreThan3MonthTo6Months(rs.getBigDecimal("R62_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR62_moreThan6MonthTo12Months(rs.getBigDecimal("R62_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR62_moreThan12MonthTo3Years(rs.getBigDecimal("R62_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR62_moreThan3YearsTo5Years(rs.getBigDecimal("R62_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR62_moreThan5YearsTo10Years(rs.getBigDecimal("R62_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR62_moreThan10Years(rs.getBigDecimal("R62_MORE_THAN_10_YEARS"));
+		obj.setR62_total(rs.getBigDecimal("R62_TOTAL"));
+		obj.setR63product(rs.getString("R63_PRODUCT"));
+		obj.setR63_upTo1Month(rs.getBigDecimal("R63_UP_TO_1_MONTH"));
+		obj.setR63_moreThan1MonthTo3Months(rs.getBigDecimal("R63_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR63_moreThan3MonthTo6Months(rs.getBigDecimal("R63_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR63_moreThan6MonthTo12Months(rs.getBigDecimal("R63_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR63_moreThan12MonthTo3Years(rs.getBigDecimal("R63_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR63_moreThan3YearsTo5Years(rs.getBigDecimal("R63_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR63_moreThan5YearsTo10Years(rs.getBigDecimal("R63_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR63_moreThan10Years(rs.getBigDecimal("R63_MORE_THAN_10_YEARS"));
+		obj.setR63_total(rs.getBigDecimal("R63_TOTAL"));
+		obj.setR64product(rs.getString("R64_PRODUCT"));
+		obj.setR64_upTo1Month(rs.getBigDecimal("R64_UP_TO_1_MONTH"));
+		obj.setR64_moreThan1MonthTo3Months(rs.getBigDecimal("R64_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR64_moreThan3MonthTo6Months(rs.getBigDecimal("R64_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR64_moreThan6MonthTo12Months(rs.getBigDecimal("R64_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR64_moreThan12MonthTo3Years(rs.getBigDecimal("R64_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR64_moreThan3YearsTo5Years(rs.getBigDecimal("R64_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR64_moreThan5YearsTo10Years(rs.getBigDecimal("R64_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR64_moreThan10Years(rs.getBigDecimal("R64_MORE_THAN_10_YEARS"));
+		obj.setR64_total(rs.getBigDecimal("R64_TOTAL"));
+		obj.setR65product(rs.getString("R65_PRODUCT"));
+		obj.setR65_upTo1Month(rs.getBigDecimal("R65_UP_TO_1_MONTH"));
+		obj.setR65_moreThan1MonthTo3Months(rs.getBigDecimal("R65_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR65_moreThan3MonthTo6Months(rs.getBigDecimal("R65_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR65_moreThan6MonthTo12Months(rs.getBigDecimal("R65_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR65_moreThan12MonthTo3Years(rs.getBigDecimal("R65_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR65_moreThan3YearsTo5Years(rs.getBigDecimal("R65_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR65_moreThan5YearsTo10Years(rs.getBigDecimal("R65_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR65_moreThan10Years(rs.getBigDecimal("R65_MORE_THAN_10_YEARS"));
+		obj.setR65_total(rs.getBigDecimal("R65_TOTAL"));
+		obj.setR66product(rs.getString("R66_PRODUCT"));
+		obj.setR66_upTo1Month(rs.getBigDecimal("R66_UP_TO_1_MONTH"));
+		obj.setR66_moreThan1MonthTo3Months(rs.getBigDecimal("R66_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR66_moreThan3MonthTo6Months(rs.getBigDecimal("R66_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR66_moreThan6MonthTo12Months(rs.getBigDecimal("R66_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR66_moreThan12MonthTo3Years(rs.getBigDecimal("R66_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR66_moreThan3YearsTo5Years(rs.getBigDecimal("R66_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR66_moreThan5YearsTo10Years(rs.getBigDecimal("R66_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR66_moreThan10Years(rs.getBigDecimal("R66_MORE_THAN_10_YEARS"));
+		obj.setR66_total(rs.getBigDecimal("R66_TOTAL"));
+		obj.setR67product(rs.getString("R67_PRODUCT"));
+		obj.setR67_upTo1Month(rs.getBigDecimal("R67_UP_TO_1_MONTH"));
+		obj.setR67_moreThan1MonthTo3Months(rs.getBigDecimal("R67_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR67_moreThan3MonthTo6Months(rs.getBigDecimal("R67_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR67_moreThan6MonthTo12Months(rs.getBigDecimal("R67_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR67_moreThan12MonthTo3Years(rs.getBigDecimal("R67_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR67_moreThan3YearsTo5Years(rs.getBigDecimal("R67_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR67_moreThan5YearsTo10Years(rs.getBigDecimal("R67_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR67_moreThan10Years(rs.getBigDecimal("R67_MORE_THAN_10_YEARS"));
+		obj.setR67_total(rs.getBigDecimal("R67_TOTAL"));
+		obj.setR68product(rs.getString("R68_PRODUCT"));
+		obj.setR68_upTo1Month(rs.getBigDecimal("R68_UP_TO_1_MONTH"));
+		obj.setR68_moreThan1MonthTo3Months(rs.getBigDecimal("R68_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR68_moreThan3MonthTo6Months(rs.getBigDecimal("R68_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR68_moreThan6MonthTo12Months(rs.getBigDecimal("R68_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR68_moreThan12MonthTo3Years(rs.getBigDecimal("R68_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR68_moreThan3YearsTo5Years(rs.getBigDecimal("R68_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR68_moreThan5YearsTo10Years(rs.getBigDecimal("R68_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR68_moreThan10Years(rs.getBigDecimal("R68_MORE_THAN_10_YEARS"));
+		obj.setR68_total(rs.getBigDecimal("R68_TOTAL"));
+		obj.setR69product(rs.getString("R69_PRODUCT"));
+		obj.setR69_upTo1Month(rs.getBigDecimal("R69_UP_TO_1_MONTH"));
+		obj.setR69_moreThan1MonthTo3Months(rs.getBigDecimal("R69_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR69_moreThan3MonthTo6Months(rs.getBigDecimal("R69_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR69_moreThan6MonthTo12Months(rs.getBigDecimal("R69_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR69_moreThan12MonthTo3Years(rs.getBigDecimal("R69_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR69_moreThan3YearsTo5Years(rs.getBigDecimal("R69_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR69_moreThan5YearsTo10Years(rs.getBigDecimal("R69_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR69_moreThan10Years(rs.getBigDecimal("R69_MORE_THAN_10_YEARS"));
+		obj.setR69_total(rs.getBigDecimal("R69_TOTAL"));
+		obj.setR70product(rs.getString("R70_PRODUCT"));
+		obj.setR70_upTo1Month(rs.getBigDecimal("R70_UP_TO_1_MONTH"));
+		obj.setR70_moreThan1MonthTo3Months(rs.getBigDecimal("R70_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR70_moreThan3MonthTo6Months(rs.getBigDecimal("R70_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR70_moreThan6MonthTo12Months(rs.getBigDecimal("R70_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR70_moreThan12MonthTo3Years(rs.getBigDecimal("R70_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR70_moreThan3YearsTo5Years(rs.getBigDecimal("R70_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR70_moreThan5YearsTo10Years(rs.getBigDecimal("R70_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR70_moreThan10Years(rs.getBigDecimal("R70_MORE_THAN_10_YEARS"));
+		obj.setR70_total(rs.getBigDecimal("R70_TOTAL"));
+		obj.setR71product(rs.getString("R71_PRODUCT"));
+		obj.setR71_upTo1Month(rs.getBigDecimal("R71_UP_TO_1_MONTH"));
+		obj.setR71_moreThan1MonthTo3Months(rs.getBigDecimal("R71_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR71_moreThan3MonthTo6Months(rs.getBigDecimal("R71_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR71_moreThan6MonthTo12Months(rs.getBigDecimal("R71_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR71_moreThan12MonthTo3Years(rs.getBigDecimal("R71_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR71_moreThan3YearsTo5Years(rs.getBigDecimal("R71_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR71_moreThan5YearsTo10Years(rs.getBigDecimal("R71_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR71_moreThan10Years(rs.getBigDecimal("R71_MORE_THAN_10_YEARS"));
+		obj.setR71_total(rs.getBigDecimal("R71_TOTAL"));
+		obj.setR72product(rs.getString("R72_PRODUCT"));
+		obj.setR72_upTo1Month(rs.getBigDecimal("R72_UP_TO_1_MONTH"));
+		obj.setR72_moreThan1MonthTo3Months(rs.getBigDecimal("R72_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR72_moreThan3MonthTo6Months(rs.getBigDecimal("R72_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR72_moreThan6MonthTo12Months(rs.getBigDecimal("R72_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR72_moreThan12MonthTo3Years(rs.getBigDecimal("R72_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR72_moreThan3YearsTo5Years(rs.getBigDecimal("R72_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR72_moreThan5YearsTo10Years(rs.getBigDecimal("R72_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR72_moreThan10Years(rs.getBigDecimal("R72_MORE_THAN_10_YEARS"));
+		obj.setR72_total(rs.getBigDecimal("R72_TOTAL"));
+		obj.setR73product(rs.getString("R73_PRODUCT"));
+		obj.setR73_upTo1Month(rs.getBigDecimal("R73_UP_TO_1_MONTH"));
+		obj.setR73_moreThan1MonthTo3Months(rs.getBigDecimal("R73_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR73_moreThan3MonthTo6Months(rs.getBigDecimal("R73_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR73_moreThan6MonthTo12Months(rs.getBigDecimal("R73_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR73_moreThan12MonthTo3Years(rs.getBigDecimal("R73_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR73_moreThan3YearsTo5Years(rs.getBigDecimal("R73_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR73_moreThan5YearsTo10Years(rs.getBigDecimal("R73_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR73_moreThan10Years(rs.getBigDecimal("R73_MORE_THAN_10_YEARS"));
+		obj.setR73_total(rs.getBigDecimal("R73_TOTAL"));
+		obj.setR74product(rs.getString("R74_PRODUCT"));
+		obj.setR74_upTo1Month(rs.getBigDecimal("R74_UP_TO_1_MONTH"));
+		obj.setR74_moreThan1MonthTo3Months(rs.getBigDecimal("R74_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR74_moreThan3MonthTo6Months(rs.getBigDecimal("R74_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR74_moreThan6MonthTo12Months(rs.getBigDecimal("R74_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR74_moreThan12MonthTo3Years(rs.getBigDecimal("R74_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR74_moreThan3YearsTo5Years(rs.getBigDecimal("R74_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR74_moreThan5YearsTo10Years(rs.getBigDecimal("R74_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR74_moreThan10Years(rs.getBigDecimal("R74_MORE_THAN_10_YEARS"));
+		obj.setR74_total(rs.getBigDecimal("R74_TOTAL"));
+		obj.setR75product(rs.getString("R75_PRODUCT"));
+		obj.setR75_upTo1Month(rs.getBigDecimal("R75_UP_TO_1_MONTH"));
+		obj.setR75_moreThan1MonthTo3Months(rs.getBigDecimal("R75_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR75_moreThan3MonthTo6Months(rs.getBigDecimal("R75_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR75_moreThan6MonthTo12Months(rs.getBigDecimal("R75_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR75_moreThan12MonthTo3Years(rs.getBigDecimal("R75_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR75_moreThan3YearsTo5Years(rs.getBigDecimal("R75_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR75_moreThan5YearsTo10Years(rs.getBigDecimal("R75_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR75_moreThan10Years(rs.getBigDecimal("R75_MORE_THAN_10_YEARS"));
+		obj.setR75_total(rs.getBigDecimal("R75_TOTAL"));
+		obj.setR76product(rs.getString("R76_PRODUCT"));
+		obj.setR76_upTo1Month(rs.getBigDecimal("R76_UP_TO_1_MONTH"));
+		obj.setR76_moreThan1MonthTo3Months(rs.getBigDecimal("R76_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR76_moreThan3MonthTo6Months(rs.getBigDecimal("R76_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR76_moreThan6MonthTo12Months(rs.getBigDecimal("R76_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR76_moreThan12MonthTo3Years(rs.getBigDecimal("R76_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR76_moreThan3YearsTo5Years(rs.getBigDecimal("R76_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR76_moreThan5YearsTo10Years(rs.getBigDecimal("R76_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR76_moreThan10Years(rs.getBigDecimal("R76_MORE_THAN_10_YEARS"));
+		obj.setR76_total(rs.getBigDecimal("R76_TOTAL"));
+		obj.setR77product(rs.getString("R77_PRODUCT"));
+		obj.setR77_upTo1Month(rs.getBigDecimal("R77_UP_TO_1_MONTH"));
+		obj.setR77_moreThan1MonthTo3Months(rs.getBigDecimal("R77_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR77_moreThan3MonthTo6Months(rs.getBigDecimal("R77_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR77_moreThan6MonthTo12Months(rs.getBigDecimal("R77_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR77_moreThan12MonthTo3Years(rs.getBigDecimal("R77_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR77_moreThan3YearsTo5Years(rs.getBigDecimal("R77_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR77_moreThan5YearsTo10Years(rs.getBigDecimal("R77_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR77_moreThan10Years(rs.getBigDecimal("R77_MORE_THAN_10_YEARS"));
+		obj.setR77_total(rs.getBigDecimal("R77_TOTAL"));
+		obj.setR78product(rs.getString("R78_PRODUCT"));
+		obj.setR78_upTo1Month(rs.getBigDecimal("R78_UP_TO_1_MONTH"));
+		obj.setR78_moreThan1MonthTo3Months(rs.getBigDecimal("R78_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR78_moreThan3MonthTo6Months(rs.getBigDecimal("R78_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR78_moreThan6MonthTo12Months(rs.getBigDecimal("R78_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR78_moreThan12MonthTo3Years(rs.getBigDecimal("R78_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR78_moreThan3YearsTo5Years(rs.getBigDecimal("R78_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR78_moreThan5YearsTo10Years(rs.getBigDecimal("R78_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR78_moreThan10Years(rs.getBigDecimal("R78_MORE_THAN_10_YEARS"));
+		obj.setR78_total(rs.getBigDecimal("R78_TOTAL"));
+		obj.setR79product(rs.getString("R79_PRODUCT"));
+		obj.setR79_upTo1Month(rs.getBigDecimal("R79_UP_TO_1_MONTH"));
+		obj.setR79_moreThan1MonthTo3Months(rs.getBigDecimal("R79_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR79_moreThan3MonthTo6Months(rs.getBigDecimal("R79_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR79_moreThan6MonthTo12Months(rs.getBigDecimal("R79_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR79_moreThan12MonthTo3Years(rs.getBigDecimal("R79_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR79_moreThan3YearsTo5Years(rs.getBigDecimal("R79_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR79_moreThan5YearsTo10Years(rs.getBigDecimal("R79_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR79_moreThan10Years(rs.getBigDecimal("R79_MORE_THAN_10_YEARS"));
+		obj.setR79_total(rs.getBigDecimal("R79_TOTAL"));
+		obj.setR80product(rs.getString("R80_PRODUCT"));
+		obj.setR80_upTo1Month(rs.getBigDecimal("R80_UP_TO_1_MONTH"));
+		obj.setR80_moreThan1MonthTo3Months(rs.getBigDecimal("R80_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR80_moreThan3MonthTo6Months(rs.getBigDecimal("R80_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR80_moreThan6MonthTo12Months(rs.getBigDecimal("R80_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR80_moreThan12MonthTo3Years(rs.getBigDecimal("R80_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR80_moreThan3YearsTo5Years(rs.getBigDecimal("R80_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR80_moreThan5YearsTo10Years(rs.getBigDecimal("R80_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR80_moreThan10Years(rs.getBigDecimal("R80_MORE_THAN_10_YEARS"));
+		obj.setR80_total(rs.getBigDecimal("R80_TOTAL"));
+		obj.setR81product(rs.getString("R81_PRODUCT"));
+		obj.setR81_upTo1Month(rs.getBigDecimal("R81_UP_TO_1_MONTH"));
+		obj.setR81_moreThan1MonthTo3Months(rs.getBigDecimal("R81_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR81_moreThan3MonthTo6Months(rs.getBigDecimal("R81_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR81_moreThan6MonthTo12Months(rs.getBigDecimal("R81_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR81_moreThan12MonthTo3Years(rs.getBigDecimal("R81_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR81_moreThan3YearsTo5Years(rs.getBigDecimal("R81_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR81_moreThan5YearsTo10Years(rs.getBigDecimal("R81_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR81_moreThan10Years(rs.getBigDecimal("R81_MORE_THAN_10_YEARS"));
+		obj.setR81_total(rs.getBigDecimal("R81_TOTAL"));
+		obj.setR82product(rs.getString("R82_PRODUCT"));
+		obj.setR82_upTo1Month(rs.getBigDecimal("R82_UP_TO_1_MONTH"));
+		obj.setR82_moreThan1MonthTo3Months(rs.getBigDecimal("R82_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR82_moreThan3MonthTo6Months(rs.getBigDecimal("R82_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR82_moreThan6MonthTo12Months(rs.getBigDecimal("R82_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR82_moreThan12MonthTo3Years(rs.getBigDecimal("R82_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR82_moreThan3YearsTo5Years(rs.getBigDecimal("R82_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR82_moreThan5YearsTo10Years(rs.getBigDecimal("R82_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR82_moreThan10Years(rs.getBigDecimal("R82_MORE_THAN_10_YEARS"));
+		obj.setR82_total(rs.getBigDecimal("R82_TOTAL"));
+		obj.setR83product(rs.getString("R83_PRODUCT"));
+		obj.setR83_upTo1Month(rs.getBigDecimal("R83_UP_TO_1_MONTH"));
+		obj.setR83_moreThan1MonthTo3Months(rs.getBigDecimal("R83_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR83_moreThan3MonthTo6Months(rs.getBigDecimal("R83_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR83_moreThan6MonthTo12Months(rs.getBigDecimal("R83_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR83_moreThan12MonthTo3Years(rs.getBigDecimal("R83_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR83_moreThan3YearsTo5Years(rs.getBigDecimal("R83_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR83_moreThan5YearsTo10Years(rs.getBigDecimal("R83_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR83_moreThan10Years(rs.getBigDecimal("R83_MORE_THAN_10_YEARS"));
+		obj.setR83_total(rs.getBigDecimal("R83_TOTAL"));
+		obj.setR84_nonRatioSensativeItems(rs.getBigDecimal("R84_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR84_total(rs.getBigDecimal("R84_TOTAL"));
+		obj.setR85_nonRatioSensativeItems(rs.getBigDecimal("R85_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR85_total(rs.getBigDecimal("R85_TOTAL"));
+		obj.setR86_nonRatioSensativeItems(rs.getBigDecimal("R86_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR86_total(rs.getBigDecimal("R86_TOTAL"));
+		obj.setR87_nonRatioSensativeItems(rs.getBigDecimal("R87_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR87_total(rs.getBigDecimal("R87_TOTAL"));
+		obj.setR88_nonRatioSensativeItems(rs.getBigDecimal("R88_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR88_total(rs.getBigDecimal("R88_TOTAL"));
+		obj.setR89_nonRatioSensativeItems(rs.getBigDecimal("R89_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR89_total(rs.getBigDecimal("R89_TOTAL"));
+		obj.setR90_nonRatioSensativeItems(rs.getBigDecimal("R90_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR90_total(rs.getBigDecimal("R90_TOTAL"));
+		obj.setR91_nonRatioSensativeItems(rs.getBigDecimal("R91_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR91_total(rs.getBigDecimal("R91_TOTAL"));
+		obj.setR92product(rs.getString("R92_PRODUCT"));
+		obj.setR92_upTo1Month(rs.getBigDecimal("R92_UP_TO_1_MONTH"));
+		obj.setR92_moreThan1MonthTo3Months(rs.getBigDecimal("R92_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR92_moreThan3MonthTo6Months(rs.getBigDecimal("R92_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR92_moreThan6MonthTo12Months(rs.getBigDecimal("R92_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR92_moreThan12MonthTo3Years(rs.getBigDecimal("R92_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR92_moreThan3YearsTo5Years(rs.getBigDecimal("R92_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR92_moreThan5YearsTo10Years(rs.getBigDecimal("R92_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR92_moreThan10Years(rs.getBigDecimal("R92_MORE_THAN_10_YEARS"));
+		obj.setR92_total(rs.getBigDecimal("R92_TOTAL"));
+		obj.setR93product(rs.getString("R93_PRODUCT"));
+		obj.setR93_upTo1Month(rs.getBigDecimal("R93_UP_TO_1_MONTH"));
+		obj.setR93_moreThan1MonthTo3Months(rs.getBigDecimal("R93_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR93_moreThan3MonthTo6Months(rs.getBigDecimal("R93_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR93_moreThan6MonthTo12Months(rs.getBigDecimal("R93_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR93_moreThan12MonthTo3Years(rs.getBigDecimal("R93_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR93_moreThan3YearsTo5Years(rs.getBigDecimal("R93_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR93_moreThan5YearsTo10Years(rs.getBigDecimal("R93_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR93_moreThan10Years(rs.getBigDecimal("R93_MORE_THAN_10_YEARS"));
+		obj.setR93_total(rs.getBigDecimal("R93_TOTAL"));
+		obj.setR94product(rs.getString("R94_PRODUCT"));
+		obj.setR94_upTo1Month(rs.getBigDecimal("R94_UP_TO_1_MONTH"));
+		obj.setR94_moreThan1MonthTo3Months(rs.getBigDecimal("R94_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR94_moreThan3MonthTo6Months(rs.getBigDecimal("R94_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR94_moreThan6MonthTo12Months(rs.getBigDecimal("R94_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR94_moreThan12MonthTo3Years(rs.getBigDecimal("R94_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR94_moreThan3YearsTo5Years(rs.getBigDecimal("R94_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR94_moreThan5YearsTo10Years(rs.getBigDecimal("R94_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR94_moreThan10Years(rs.getBigDecimal("R94_MORE_THAN_10_YEARS"));
+		obj.setR94_total(rs.getBigDecimal("R94_TOTAL"));
+		obj.setR95_nonRatioSensativeItems(rs.getBigDecimal("R95_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR95_total(rs.getBigDecimal("R95_TOTAL"));
+		obj.setR96product(rs.getString("R96_PRODUCT"));
+		obj.setR96_upTo1Month(rs.getBigDecimal("R96_UP_TO_1_MONTH"));
+		obj.setR96_moreThan1MonthTo3Months(rs.getBigDecimal("R96_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR96_moreThan3MonthTo6Months(rs.getBigDecimal("R96_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR96_moreThan6MonthTo12Months(rs.getBigDecimal("R96_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR96_moreThan12MonthTo3Years(rs.getBigDecimal("R96_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR96_moreThan3YearsTo5Years(rs.getBigDecimal("R96_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR96_moreThan5YearsTo10Years(rs.getBigDecimal("R96_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR96_moreThan10Years(rs.getBigDecimal("R96_MORE_THAN_10_YEARS"));
+		obj.setR96_nonRatioSensativeItems(rs.getBigDecimal("R96_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR96_total(rs.getBigDecimal("R96_TOTAL"));
+		obj.setR97product(rs.getString("R97_PRODUCT"));
+		obj.setR97_upTo1Month(rs.getBigDecimal("R97_UP_TO_1_MONTH"));
+		obj.setR97_moreThan1MonthTo3Months(rs.getBigDecimal("R97_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR97_moreThan3MonthTo6Months(rs.getBigDecimal("R97_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR97_moreThan6MonthTo12Months(rs.getBigDecimal("R97_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR97_moreThan12MonthTo3Years(rs.getBigDecimal("R97_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR97_moreThan3YearsTo5Years(rs.getBigDecimal("R97_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR97_moreThan5YearsTo10Years(rs.getBigDecimal("R97_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR97_moreThan10Years(rs.getBigDecimal("R97_MORE_THAN_10_YEARS"));
+		obj.setR97_nonRatioSensativeItems(rs.getBigDecimal("R97_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR97_total(rs.getBigDecimal("R97_TOTAL"));
+		obj.setR98product(rs.getString("R98_PRODUCT"));
+		obj.setR98_upTo1Month(rs.getBigDecimal("R98_UP_TO_1_MONTH"));
+		obj.setR98_moreThan1MonthTo3Months(rs.getBigDecimal("R98_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR98_moreThan3MonthTo6Months(rs.getBigDecimal("R98_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR98_moreThan6MonthTo12Months(rs.getBigDecimal("R98_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR98_moreThan12MonthTo3Years(rs.getBigDecimal("R98_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR98_moreThan3YearsTo5Years(rs.getBigDecimal("R98_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR98_moreThan5YearsTo10Years(rs.getBigDecimal("R98_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR98_moreThan10Years(rs.getBigDecimal("R98_MORE_THAN_10_YEARS"));
+		obj.setR98_nonRatioSensativeItems(rs.getBigDecimal("R98_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR98_total(rs.getBigDecimal("R98_TOTAL"));
+		obj.setR99product(rs.getString("R99_PRODUCT"));
+		obj.setR99_upTo1Month(rs.getBigDecimal("R99_UP_TO_1_MONTH"));
+		obj.setR99_moreThan1MonthTo3Months(rs.getBigDecimal("R99_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR99_moreThan3MonthTo6Months(rs.getBigDecimal("R99_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR99_moreThan6MonthTo12Months(rs.getBigDecimal("R99_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR99_moreThan12MonthTo3Years(rs.getBigDecimal("R99_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR99_moreThan3YearsTo5Years(rs.getBigDecimal("R99_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR99_moreThan5YearsTo10Years(rs.getBigDecimal("R99_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR99_moreThan10Years(rs.getBigDecimal("R99_MORE_THAN_10_YEARS"));
+		obj.setR99_nonRatioSensativeItems(rs.getBigDecimal("R99_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR99_total(rs.getBigDecimal("R99_TOTAL"));
+		obj.setR100product(rs.getString("R100_PRODUCT"));
+		obj.setR100_upTo1Month(rs.getBigDecimal("R100_UP_TO_1_MONTH"));
+		obj.setR100_moreThan1MonthTo3Months(rs.getBigDecimal("R100_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR100_moreThan3MonthTo6Months(rs.getBigDecimal("R100_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR100_moreThan6MonthTo12Months(rs.getBigDecimal("R100_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR100_moreThan12MonthTo3Years(rs.getBigDecimal("R100_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR100_moreThan3YearsTo5Years(rs.getBigDecimal("R100_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR100_moreThan5YearsTo10Years(rs.getBigDecimal("R100_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR100_moreThan10Years(rs.getBigDecimal("R100_MORE_THAN_10_YEARS"));
+		obj.setR100_nonRatioSensativeItems(rs.getBigDecimal("R100_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR100_total(rs.getBigDecimal("R100_TOTAL"));
+		obj.setR101product(rs.getString("R101_PRODUCT"));
+		obj.setR101_upTo1Month(rs.getBigDecimal("R101_UP_TO_1_MONTH"));
+		obj.setR101_moreThan1MonthTo3Months(rs.getBigDecimal("R101_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR101_moreThan3MonthTo6Months(rs.getBigDecimal("R101_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR101_moreThan6MonthTo12Months(rs.getBigDecimal("R101_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR101_moreThan12MonthTo3Years(rs.getBigDecimal("R101_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR101_moreThan3YearsTo5Years(rs.getBigDecimal("R101_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR101_moreThan5YearsTo10Years(rs.getBigDecimal("R101_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR101_moreThan10Years(rs.getBigDecimal("R101_MORE_THAN_10_YEARS"));
+		obj.setR101_nonRatioSensativeItems(rs.getBigDecimal("R101_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR101_total(rs.getBigDecimal("R101_TOTAL"));
+		obj.setR102product(rs.getString("R102_PRODUCT"));
+		obj.setR102_upTo1Month(rs.getBigDecimal("R102_UP_TO_1_MONTH"));
+		obj.setR102_moreThan1MonthTo3Months(rs.getBigDecimal("R102_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR102_moreThan3MonthTo6Months(rs.getBigDecimal("R102_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR102_moreThan6MonthTo12Months(rs.getBigDecimal("R102_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR102_moreThan12MonthTo3Years(rs.getBigDecimal("R102_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR102_moreThan3YearsTo5Years(rs.getBigDecimal("R102_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR102_moreThan5YearsTo10Years(rs.getBigDecimal("R102_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR102_moreThan10Years(rs.getBigDecimal("R102_MORE_THAN_10_YEARS"));
+		obj.setR102_nonRatioSensativeItems(rs.getBigDecimal("R102_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR102_total(rs.getBigDecimal("R102_TOTAL"));
+		obj.setR103product(rs.getString("R103_PRODUCT"));
+		obj.setR103_upTo1Month(rs.getBigDecimal("R103_UP_TO_1_MONTH"));
+		obj.setR103_moreThan1MonthTo3Months(rs.getBigDecimal("R103_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR103_moreThan3MonthTo6Months(rs.getBigDecimal("R103_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR103_moreThan6MonthTo12Months(rs.getBigDecimal("R103_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR103_moreThan12MonthTo3Years(rs.getBigDecimal("R103_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR103_moreThan3YearsTo5Years(rs.getBigDecimal("R103_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR103_moreThan5YearsTo10Years(rs.getBigDecimal("R103_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR103_moreThan10Years(rs.getBigDecimal("R103_MORE_THAN_10_YEARS"));
+		obj.setR103_nonRatioSensativeItems(rs.getBigDecimal("R103_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR103_total(rs.getBigDecimal("R103_TOTAL"));
+		obj.setR104product(rs.getString("R104_PRODUCT"));
+		obj.setR104_upTo1Month(rs.getBigDecimal("R104_UP_TO_1_MONTH"));
+		obj.setR104_moreThan1MonthTo3Months(rs.getBigDecimal("R104_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR104_moreThan3MonthTo6Months(rs.getBigDecimal("R104_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR104_moreThan6MonthTo12Months(rs.getBigDecimal("R104_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR104_moreThan12MonthTo3Years(rs.getBigDecimal("R104_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR104_moreThan3YearsTo5Years(rs.getBigDecimal("R104_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR104_moreThan5YearsTo10Years(rs.getBigDecimal("R104_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR104_moreThan10Years(rs.getBigDecimal("R104_MORE_THAN_10_YEARS"));
+		obj.setR104_nonRatioSensativeItems(rs.getBigDecimal("R104_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR104_total(rs.getBigDecimal("R104_TOTAL"));
+		obj.setR105product(rs.getString("R105_PRODUCT"));
+		obj.setR105_upTo1Month(rs.getBigDecimal("R105_UP_TO_1_MONTH"));
+		obj.setR105_moreThan1MonthTo3Months(rs.getBigDecimal("R105_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR105_moreThan3MonthTo6Months(rs.getBigDecimal("R105_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR105_moreThan6MonthTo12Months(rs.getBigDecimal("R105_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR105_moreThan12MonthTo3Years(rs.getBigDecimal("R105_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR105_moreThan3YearsTo5Years(rs.getBigDecimal("R105_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR105_moreThan5YearsTo10Years(rs.getBigDecimal("R105_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR105_moreThan10Years(rs.getBigDecimal("R105_MORE_THAN_10_YEARS"));
+		obj.setR105_nonRatioSensativeItems(rs.getBigDecimal("R105_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR105_total(rs.getBigDecimal("R105_TOTAL"));
+		obj.setR106product(rs.getString("R106_PRODUCT"));
+		obj.setR106_upTo1Month(rs.getBigDecimal("R106_UP_TO_1_MONTH"));
+		obj.setR106_moreThan1MonthTo3Months(rs.getBigDecimal("R106_MORE_THAN_1_MONTH_TO_3_MONTHS"));
+		obj.setR106_moreThan3MonthTo6Months(rs.getBigDecimal("R106_MORE_THAN_3_MONTH_TO_6_MONTHS"));
+		obj.setR106_moreThan6MonthTo12Months(rs.getBigDecimal("R106_MORE_THAN_6_MONTH_TO_12_MONTHS"));
+		obj.setR106_moreThan12MonthTo3Years(rs.getBigDecimal("R106_MORE_THAN_12_MONTH_TO_3_YEARS"));
+		obj.setR106_moreThan3YearsTo5Years(rs.getBigDecimal("R106_MORE_THAN_3_YEARS_TO_5_YEARS"));
+		obj.setR106_moreThan5YearsTo10Years(rs.getBigDecimal("R106_MORE_THAN_5_YEARS_TO_10_YEARS"));
+		obj.setR106_moreThan10Years(rs.getBigDecimal("R106_MORE_THAN_10_YEARS"));
+		obj.setR106_nonRatioSensativeItems(rs.getBigDecimal("R106_NON_RATIO_SENSATIVE_ITEMS"));
+		obj.setR106_total(rs.getBigDecimal("R106_TOTAL"));
+		obj.setReportDate(rs.getDate("REPORT_DATE"));
+		obj.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
+		obj.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
+		obj.setReportCode(rs.getString("REPORT_CODE"));
+		obj.setReportDesc(rs.getString("REPORT_DESC"));
+		obj.setEntityFlg(rs.getString("ENTITY_FLG"));
+		obj.setModifyFlg(rs.getString("MODIFY_FLG"));
+		obj.setDelFlg(rs.getString("DEL_FLG"));
+		obj.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
+		return obj;
+	}
+}
+class M_IRBDetailRowMapper implements RowMapper<M_IRB_Detail_Entity> {
+	@Override
+	public M_IRB_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+		M_IRB_Detail_Entity obj = new M_IRB_Detail_Entity();
+		obj.setSno(rs.getString("SNO"));
+		obj.setCust_id(rs.getString("CUST_ID"));
+		obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+		obj.setAcct_name(rs.getString("ACCT_NAME"));
+		obj.setData_type(rs.getString("DATA_TYPE"));
+		obj.setReport_name(rs.getString("REPORT_NAME"));
+		obj.setReport_label(rs.getString("REPORT_LABEL"));
+		obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+		obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+		obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+		obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+		obj.setSanction_limit(rs.getBigDecimal("SANCTION_LIMIT"));
+		obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+		obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+		obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+		obj.setReport_date(rs.getDate("REPORT_DATE"));
+		obj.setCreate_user(rs.getString("CREATE_USER"));
+		obj.setCreate_time(rs.getDate("CREATE_TIME"));
+		obj.setModify_user(rs.getString("MODIFY_USER"));
+		obj.setModify_time(rs.getDate("MODIFY_TIME"));
+		obj.setVerify_user(rs.getString("VERIFY_USER"));
+		obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+		obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+		obj.setModify_flg(rs.getString("MODIFY_FLG"));
+		obj.setDel_flg(rs.getString("DEL_FLG"));
+		obj.setGl_code(rs.getString("GL_CODE"));
+		obj.setGlsh_code(rs.getString("GLSH_CODE"));
+		obj.setCurrency(rs.getString("CURRENCY"));
+		return obj;
+	}
+}
+class M_IRBArchivalDetailRowMapper implements RowMapper<M_IRB_Archival_Detail_Entity> {
+	@Override
+	public M_IRB_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+		M_IRB_Archival_Detail_Entity obj = new M_IRB_Archival_Detail_Entity();
+		obj.setSno(rs.getString("SNO"));
+		obj.setCust_id(rs.getString("CUST_ID"));
+		obj.setAcct_number(rs.getString("ACCT_NUMBER"));
+		obj.setAcct_name(rs.getString("ACCT_NAME"));
+		obj.setData_type(rs.getString("DATA_TYPE"));
+		obj.setReport_name(rs.getString("REPORT_NAME"));
+		obj.setReport_label(rs.getString("REPORT_LABEL"));
+		obj.setReport_addl_criteria_1(rs.getString("REPORT_ADDL_CRITERIA_1"));
+		obj.setReport_addl_criteria_2(rs.getString("REPORT_ADDL_CRITERIA_2"));
+		obj.setReport_addl_criteria_3(rs.getString("REPORT_ADDL_CRITERIA_3"));
+		obj.setReport_remarks(rs.getString("REPORT_REMARKS"));
+		obj.setSanction_limit(rs.getBigDecimal("SANCTION_LIMIT"));
+		obj.setModification_remarks(rs.getString("MODIFICATION_REMARKS"));
+		obj.setData_entry_version(rs.getString("DATA_ENTRY_VERSION"));
+		obj.setAcct_balance_in_pula(rs.getBigDecimal("ACCT_BALANCE_IN_PULA"));
+		obj.setReport_date(rs.getDate("REPORT_DATE"));
+		obj.setCreate_user(rs.getString("CREATE_USER"));
+		obj.setCreate_time(rs.getDate("CREATE_TIME"));
+		obj.setModify_user(rs.getString("MODIFY_USER"));
+		obj.setModify_time(rs.getDate("MODIFY_TIME"));
+		obj.setVerify_user(rs.getString("VERIFY_USER"));
+		obj.setVerify_time(rs.getDate("VERIFY_TIME"));
+		obj.setEntity_flg(rs.getString("ENTITY_FLG"));
+		obj.setModify_flg(rs.getString("MODIFY_FLG"));
+		obj.setDel_flg(rs.getString("DEL_FLG"));
+		obj.setGl_code(rs.getString("GL_CODE"));
+		obj.setGlsh_code(rs.getString("GLSH_CODE"));
+		obj.setCurrency(rs.getString("CURRENCY"));
+		return obj;
+	}
+}
 }
