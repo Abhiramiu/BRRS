@@ -887,10 +887,8 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_LIQGAP_Manual_Summary_Entity request1
-
-	) {
+			// ✅ Use the service's inner class type
+			@ModelAttribute BRRS_M_LIQGAP_ReportService.M_LIQGAP_Manual_Summary_Entity request1) {
 		try {
 			System.out.println("Came to single controller");
 
@@ -2652,14 +2650,14 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12F_Summary_Entity request, HttpServletRequest req) {
+			@ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Summary_Entity request, HttpServletRequest req) {
 
 		try {
 			System.out.println("came to First controller");
 			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
+			request.setReport_date(asondate);
 
 			M_SRWA_12FreportService.updateReport(request);
 			return ResponseEntity.ok("Modified Successfully.");
@@ -2675,7 +2673,7 @@ public class BRRS_ReportsController {
 
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			@ModelAttribute M_SRWA_12F_Resub_Summary_Entity request,
+			@ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Resub_Summary_Entity request,
 
 			HttpServletRequest req) {
 
@@ -2689,12 +2687,12 @@ public class BRRS_ReportsController {
 
 			if (asondate != null) {
 
-				request.setReportDate(asondate);
+				request.setReport_date(asondate);
 				System.out.println("Set Report Date: " + asondate);
 
 			} else {
 
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReportDate());
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
 			}
 
 			// =====================================================
