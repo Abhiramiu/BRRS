@@ -12,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bornfire.brrs.entities.BRRS_M_PLL_Detail_Repo;
 import com.bornfire.brrs.entities.BrrsCommonMappingEntity;
 import com.bornfire.brrs.entities.BrrsCommonMappingRepo;
-import com.bornfire.brrs.entities.M_PLL_Detail_Entity;
 
 @Service
 public class CommonMappingService {
