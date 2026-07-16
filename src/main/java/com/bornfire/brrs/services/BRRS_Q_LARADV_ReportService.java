@@ -1,6 +1,7 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -41,12 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.bornfire.brrs.entities.Q_LARADV_Archival_Detail_Entity;
-import com.bornfire.brrs.entities.Q_LARADV_Archival_Summary_Entity;
-import com.bornfire.brrs.entities.Q_LARADV_Detail_Entity;
-import com.bornfire.brrs.entities.Q_LARADV_Resub_Detail_Entity;
-import com.bornfire.brrs.entities.Q_LARADV_Resub_Summary_Entity;
-import com.bornfire.brrs.entities.Q_LARADV_Summary_Entity;
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
@@ -756,6 +751,481 @@ public class BRRS_Q_LARADV_ReportService {
 	// =========================================================
 	// ROW MAPPERS
 	// =========================================================
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Summary_Entity
+	// =========================================================
+	public static class Q_LARADV_Summary_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Detail_Entity
+	// =========================================================
+	public static class Q_LARADV_Detail_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Archival_Summary_Entity
+	// =========================================================
+	public static class Q_LARADV_Archival_Summary_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Archival_Detail_Entity
+	// =========================================================
+	public static class Q_LARADV_Archival_Detail_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Resub_Summary_Entity
+	// =========================================================
+	public static class Q_LARADV_Resub_Summary_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
+	// =========================================================
+	// Inner entity: Q_LARADV_Resub_Detail_Entity
+	// =========================================================
+	public static class Q_LARADV_Resub_Detail_Entity {
+		private Long sno;
+		private String groupName;
+		private String customerGroupName;
+		private String sectorType;
+		private String facilityType;
+		private BigDecimal originalAmount;
+		private BigDecimal utilisationOutstandingBalance;
+		private Date effectiveDate;
+		private String repaymentPeriod;
+		private String performanceStatus;
+		private String securityDetails;
+		private String boardApproval;
+		private BigDecimal interestRate;
+		private BigDecimal outstandingBalancePercent;
+		private BigDecimal limitPercent;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubdate;
+
+		public Long getSno() { return sno; }
+		public void setSno(Long sno) { this.sno = sno; }
+		public String getGroupName() { return groupName; }
+		public void setGroupName(String groupName) { this.groupName = groupName; }
+		public String getCustomerGroupName() { return customerGroupName; }
+		public void setCustomerGroupName(String customerGroupName) { this.customerGroupName = customerGroupName; }
+		public String getSectorType() { return sectorType; }
+		public void setSectorType(String sectorType) { this.sectorType = sectorType; }
+		public String getFacilityType() { return facilityType; }
+		public void setFacilityType(String facilityType) { this.facilityType = facilityType; }
+		public BigDecimal getOriginalAmount() { return originalAmount; }
+		public void setOriginalAmount(BigDecimal originalAmount) { this.originalAmount = originalAmount; }
+		public BigDecimal getUtilisationOutstandingBalance() { return utilisationOutstandingBalance; }
+		public void setUtilisationOutstandingBalance(BigDecimal utilisationOutstandingBalance) { this.utilisationOutstandingBalance = utilisationOutstandingBalance; }
+		public Date getEffectiveDate() { return effectiveDate; }
+		public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+		public String getRepaymentPeriod() { return repaymentPeriod; }
+		public void setRepaymentPeriod(String repaymentPeriod) { this.repaymentPeriod = repaymentPeriod; }
+		public String getPerformanceStatus() { return performanceStatus; }
+		public void setPerformanceStatus(String performanceStatus) { this.performanceStatus = performanceStatus; }
+		public String getSecurityDetails() { return securityDetails; }
+		public void setSecurityDetails(String securityDetails) { this.securityDetails = securityDetails; }
+		public String getBoardApproval() { return boardApproval; }
+		public void setBoardApproval(String boardApproval) { this.boardApproval = boardApproval; }
+		public BigDecimal getInterestRate() { return interestRate; }
+		public void setInterestRate(BigDecimal interestRate) { this.interestRate = interestRate; }
+		public BigDecimal getOutstandingBalancePercent() { return outstandingBalancePercent; }
+		public void setOutstandingBalancePercent(BigDecimal outstandingBalancePercent) { this.outstandingBalancePercent = outstandingBalancePercent; }
+		public BigDecimal getLimitPercent() { return limitPercent; }
+		public void setLimitPercent(BigDecimal limitPercent) { this.limitPercent = limitPercent; }
+		public Date getReportDate() { return reportDate; }
+		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
+		public BigDecimal getReportVersion() { return reportVersion; }
+		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public String getReportFrequency() { return reportFrequency; }
+		public void setReportFrequency(String reportFrequency) { this.reportFrequency = reportFrequency; }
+		public String getReportCode() { return reportCode; }
+		public void setReportCode(String reportCode) { this.reportCode = reportCode; }
+		public String getReportDesc() { return reportDesc; }
+		public void setReportDesc(String reportDesc) { this.reportDesc = reportDesc; }
+		public String getEntityFlg() { return entityFlg; }
+		public void setEntityFlg(String entityFlg) { this.entityFlg = entityFlg; }
+		public String getModifyFlg() { return modifyFlg; }
+		public void setModifyFlg(String modifyFlg) { this.modifyFlg = modifyFlg; }
+		public String getDelFlg() { return delFlg; }
+		public void setDelFlg(String delFlg) { this.delFlg = delFlg; }
+		public Date getReportResubdate() { return reportResubdate; }
+		public void setReportResubdate(Date reportResubdate) { this.reportResubdate = reportResubdate; }
+	}
+
 
 	class Q_LARADVSummaryRowMapper implements RowMapper<Q_LARADV_Summary_Entity> {
 		@Override
