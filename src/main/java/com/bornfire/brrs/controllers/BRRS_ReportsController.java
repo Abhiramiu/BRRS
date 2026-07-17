@@ -150,7 +150,7 @@ import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService.M_SFINP2_Summary_E
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Resub_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
+//import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService.M_SRWA_12B_Summary_Entity1;
@@ -3155,51 +3155,51 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@Autowired
-	BRRS_M_SRWA_12A_New_ReportService brrs_M_SRWA_12A_New_reportservice;
-
-	@RequestMapping(value = "/M_SRWA_12ANEWupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_SRWA_12A_New_Summary_Entity1 request1,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity2 request2,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity3 request3,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity4 request4,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity5 request5,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity6 request6,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity7 request7,
-			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity8 request8) {
-		try {
-			System.out.println("Came to single controller");
-
-			// set date into all 3 entities
-			request1.setReport_date(asondate);
-			request2.setReport_date(asondate);
-			request3.setReport_date(asondate);
-			request4.setReport_date(asondate);
-			request5.setReport_date(asondate);
-			request6.setReport_date(asondate);
-			request7.setReport_date(asondate);
-			request8.setReport_date(asondate);
-
-			// call services
-			brrs_M_SRWA_12A_New_reportservice.updateReport1(request1);
-			brrs_M_SRWA_12A_New_reportservice.updateReport2(request2);
-			brrs_M_SRWA_12A_New_reportservice.updateReport3(request3);
-			brrs_M_SRWA_12A_New_reportservice.updateReport4(request4);
-			brrs_M_SRWA_12A_New_reportservice.updateReport5(request5);
-			brrs_M_SRWA_12A_New_reportservice.updateReport6(request6);
-			brrs_M_SRWA_12A_New_reportservice.updateReport7(request7);
-			brrs_M_SRWA_12A_New_reportservice.updateReport8(request8);
-
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+//	@Autowired
+//	BRRS_M_SRWA_12A_New_ReportService brrs_M_SRWA_12A_New_reportservice;
+//
+//	@RequestMapping(value = "/M_SRWA_12ANEWupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+//	@ResponseBody
+//	public ResponseEntity<String> updateAllReports(
+//			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+//
+//			@ModelAttribute M_SRWA_12A_New_Summary_Entity1 request1,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity2 request2,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity3 request3,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity4 request4,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity5 request5,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity6 request6,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity7 request7,
+//			@ModelAttribute M_SRWA_12A_NEW_Summary_Entity8 request8) {
+//		try {
+//			System.out.println("Came to single controller");
+//
+//			// set date into all 3 entities
+//			request1.setReport_date(asondate);
+//			request2.setReport_date(asondate);
+//			request3.setReport_date(asondate);
+//			request4.setReport_date(asondate);
+//			request5.setReport_date(asondate);
+//			request6.setReport_date(asondate);
+//			request7.setReport_date(asondate);
+//			request8.setReport_date(asondate);
+//
+//			// call services
+//			brrs_M_SRWA_12A_New_reportservice.updateReport1(request1);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport2(request2);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport3(request3);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport4(request4);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport5(request5);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport6(request6);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport7(request7);
+//			brrs_M_SRWA_12A_New_reportservice.updateReport8(request8);
+//
+//			return ResponseEntity.ok("Modified Successfully.");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+//		}
+//	}
 
 	@RequestMapping(value = "/{reportid}/Detailspage", method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView reportDetail(@PathVariable("reportid") String reportid,
