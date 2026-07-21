@@ -423,6 +423,12 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
 
+	@Autowired
+	BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportservice;
+
+	@Autowired
+	BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportservice;
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -1082,6 +1088,17 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version, req, md);
 			break;
+
+		case "IRRBB_BORROWINGS":
+			repsummary = BRRS_IRRBB_BORROWINGS_reportservice.getBRRS_IRRBB_BORROWINGS_View(
+					reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+			break;
+
+		case "IRRBB_DEPOSITS":
+			repsummary = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_View(
+					reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+			break;
+
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -2391,6 +2408,22 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "IRRBB_BORROWINGS":
+			try {
+				repfile = BRRS_IRRBB_BORROWINGS_reportservice.IRRBB_BORROWINGS_Excel(filename, todate);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+		case "IRRBB_DEPOSITS":
+			try {
+				repfile = BRRS_IRRBB_DEPOSITS_reportservice.IRRBB_DEPOSITS_Excel(filename, todate);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
 		case "M_SRWA_12H":
 			try {
 				repfile = BRRS_M_SRWA_12H_reportservice.BRRS_M_SRWA_12HExcel(filename, reportId, fromdate, todate,
@@ -3264,6 +3297,18 @@ public class RegulatoryReportServices {
 			List<Object[]> srwaList1 = BRRS_M_SRWA_12H_reportservice.getM_SRWA_12HArchival();
 			archivalData.addAll(srwaList1);
 			System.out.println("Fetched M_SRWA_12H archival data: " + srwaList1.size());
+			break;
+
+		case "IRRBB_BORROWINGS":
+			List<Object[]> irrbbBorrowingsArchivalList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Archival();
+			archivalData.addAll(irrbbBorrowingsArchivalList);
+			System.out.println("Fetched IRRBB_BORROWINGS archival data: " + irrbbBorrowingsArchivalList.size());
+			break;
+
+		case "IRRBB_DEPOSITS":
+			List<Object[]> irrbbDepositsArchivalList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITS_Archival();
+			archivalData.addAll(irrbbDepositsArchivalList);
+			System.out.println("Fetched IRRBB_DEPOSITS archival data: " + irrbbDepositsArchivalList.size());
 			break;
 
 		case "M_SRWA_12E":
@@ -4728,6 +4773,28 @@ public class RegulatoryReportServices {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
+
+		case "IRRBB_BORROWINGS":
+			try {
+				List<Object[]> resubList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for IRRBB_BORROWINGS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for IRRBB_BORROWINGS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "IRRBB_DEPOSITS":
+			try {
+				List<Object[]> resubList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITS_Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for IRRBB_DEPOSITS: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for IRRBB_DEPOSITS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 
 		case "M_SRWA_12H":
 			try {

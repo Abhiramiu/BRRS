@@ -193,6 +193,9 @@ import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
+import com.bornfire.brrs.services.Exceltopdfservice;
+import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -5786,6 +5789,665 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
 		}
 
+	}
+
+	@Autowired
+	private Exceltopdfservice exceltopdfservice;
+
+	@Autowired
+	private BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportService;
+
+	@Autowired
+	private BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportService;
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — ADD FORM
+	// URL: GET /Reports/IRRBB_BORROWINGS/add
+	// ─────────────────────────────────────────────────────────────────────────
+	@GetMapping("IRRBB_BORROWINGS/add")
+	public ModelAndView showIRRBB_BORROWINGSAddPage(
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_BORROWINGS add page by user={}", userId);
+
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
+		mv.addObject("displaymode",     "add");
+		mv.addObject("irrbbBorrowings", new BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity());
+		mv.addObject("reportid",        "IRRBB_BORROWINGS");
+		mv.addObject("asondate",        asondate);
+		mv.addObject("fromdate",        fromdate);
+		mv.addObject("todate",          todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — SAVE NEW SUMMARY RECORD
+	// URL: POST /Reports/IRRBB_BORROWINGS/save
+	// ─────────────────────────────────────────────────────────────────────────
+	@PostMapping("IRRBB_BORROWINGS/save")
+	public String saveIRRBB_BORROWINGSRecord(
+			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_BORROWINGS save new record by user={}", userId);
+
+		BRRS_IRRBB_BORROWINGS_reportService.saveRecord(entity);
+
+		return "redirect:/Reports/IRRBB_BORROWINGS/add"
+				+ "?asondate=" + asondate
+				+ "&fromdate=" + fromdate
+				+ "&todate="   + todate;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — MODIFY FORM
+	// URL: GET /Reports/IRRBB_BORROWINGS/modify/{id}
+	// ─────────────────────────────────────────────────────────────────────────
+	@GetMapping("IRRBB_BORROWINGS/modify/{id}")
+	public ModelAndView showIRRBB_BORROWINGSModifyPage(
+			@PathVariable("id") Long id,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_BORROWINGS modify page - id={} by user={}", id, userId);
+
+		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity =
+				BRRS_IRRBB_BORROWINGS_reportService.findById(id);
+
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
+		mv.addObject("displaymode",     "modify");
+		mv.addObject("irrbbBorrowings", entity);
+		mv.addObject("reportid",        "IRRBB_BORROWINGS");
+		mv.addObject("asondate",        asondate);
+		mv.addObject("fromdate",        fromdate);
+		mv.addObject("todate",          todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — UPDATE SUMMARY RECORD
+	// URL: POST /Reports/IRRBB_BORROWINGS/update
+	// ─────────────────────────────────────────────────────────────────────────
+	@PostMapping("IRRBB_BORROWINGS/update")
+	public String updateIRRBB_BORROWINGSRecord(
+			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_BORROWINGS update - sno={} by user={}", entity.getSno(), userId);
+
+		BRRS_IRRBB_BORROWINGS_reportService.updateRecord(entity);
+
+		return "redirect:/Reports/IRRBB_BORROWINGS"
+				+ "?asondate=" + asondate
+				+ "&fromdate=" + fromdate
+				+ "&todate="   + todate
+				+ "&dtltype=report";
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DETAIL VIEW
+	// URL: GET /Reports/IRRBB_BORROWINGS/detail
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/detail", method = RequestMethod.GET)
+	public ModelAndView irrbbBorrowingsDetail(
+			@RequestParam String fromdate,
+			@RequestParam String todate,
+			@RequestParam(defaultValue = "") String asondate) {
+		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, todate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DETAIL SAVE
+	// URL: POST /Reports/IRRBB_BORROWINGS/detail/save
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/detail/save", method = RequestMethod.POST)
+	public ModelAndView irrbbBorrowingsDetailSave(
+			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_BORROWINGS_reportService.saveDetailRecord(entity);
+		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, asondate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DETAIL MODIFY FORM
+	// URL: GET /Reports/IRRBB_BORROWINGS/detail/modify/{id}
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/detail/modify/{id}", method = RequestMethod.GET)
+	public ModelAndView irrbbBorrowingsDetailModifyForm(
+			@PathVariable Long id,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity =
+				BRRS_IRRBB_BORROWINGS_reportService.findDetailById(id);
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
+		mv.addObject("irrbbBorrowings", entity);
+		mv.addObject("displaymode", "detail-modify");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate",   todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DETAIL UPDATE
+	// URL: POST /Reports/IRRBB_BORROWINGS/detail/update
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/detail/update", method = RequestMethod.POST)
+	public ModelAndView irrbbBorrowingsDetailUpdate(
+			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_BORROWINGS_reportService.updateDetailRecord(entity);
+		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, asondate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DOWNLOAD SUMMARY EXCEL
+	// URL: GET /Reports/IRRBB_BORROWINGS/downloadSummary
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/downloadSummary", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsSummary(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		response.setContentType("application/octet-stream");
+		try {
+			byte[] data;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Archive_Summary.xlsx";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateResubSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Resub_Summary.xlsx";
+			} else {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Summary.xlsx";
+			}
+			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+			return ResponseEntity.ok().headers(headers).contentLength(data.length)
+				.contentType(MediaType.parseMediaType(
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				.body(new ByteArrayResource(data));
+		} catch (Exception e) {
+			logger.error("IRRBB_BORROWINGS downloadSummary ERROR", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DOWNLOAD DETAIL EXCEL
+	// URL: GET /Reports/IRRBB_BORROWINGS/downloadDetail
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/downloadDetail", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsDetail(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		response.setContentType("application/octet-stream");
+		try {
+			byte[] data;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Archive_Detail.xlsx";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateResubDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Resub_Detail.xlsx";
+			} else {
+				data = BRRS_IRRBB_BORROWINGS_reportService.generateDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Detail.xlsx";
+			}
+			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+			return ResponseEntity.ok().headers(headers).contentLength(data.length)
+				.contentType(MediaType.parseMediaType(
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				.body(new ByteArrayResource(data));
+		} catch (Exception e) {
+			logger.error("IRRBB_BORROWINGS downloadDetail ERROR", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DOWNLOAD SUMMARY PDF
+	// URL: GET /Reports/IRRBB_BORROWINGS/downloadSummaryPdf
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/downloadSummaryPdf", method = RequestMethod.GET)
+	public void downloadIrrbbBorrowingsSummaryPdf(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		try {
+			byte[] excelBytes;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Archive_Summary.pdf";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateResubSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Resub_Summary.pdf";
+			} else {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateSummaryExcel(todate);
+				filename = "IRRBB_BORROWINGS_Summary.pdf";
+			}
+			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			response.setContentLength(pdfBytes.length);
+			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+		} catch (Exception e) {
+			logger.error("IRRBB_BORROWINGS downloadSummaryPdf ERROR", e);
+			response.setStatus(500);
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — DOWNLOAD DETAIL PDF
+	// URL: GET /Reports/IRRBB_BORROWINGS/downloadDetailPdf
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_BORROWINGS/downloadDetailPdf", method = RequestMethod.GET)
+	public void downloadIrrbbBorrowingsDetailPdf(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		try {
+			byte[] excelBytes;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Archive_Detail.pdf";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateResubDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Resub_Detail.pdf";
+			} else {
+				excelBytes = BRRS_IRRBB_BORROWINGS_reportService.generateDetailExcel(todate);
+				filename = "IRRBB_BORROWINGS_Detail.pdf";
+			}
+			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			response.setContentLength(pdfBytes.length);
+			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+		} catch (Exception e) {
+			logger.error("IRRBB_BORROWINGS downloadDetailPdf ERROR", e);
+			response.setStatus(500);
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_BORROWINGS — RESUBMISSION (M_OB pattern: inserts new versioned row)
+	// URL: POST /Reports/UpdateIRRBB_BORROWINGS_ReSub
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "/UpdateIRRBB_BORROWINGS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateIRRBBBorrowingsReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity request,
+			HttpServletRequest req) {
+		try {
+			System.out.println("Came to IRRBB_BORROWINGS Resub Controller");
+			if (asondate != null) {
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+			BRRS_IRRBB_BORROWINGS_reportService.updateResubRecord(request);
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — ADD FORM
+	// URL: GET /Reports/IRRBB_DEPOSITS/add
+	// ─────────────────────────────────────────────────────────────────────────
+	@GetMapping("IRRBB_DEPOSITS/add")
+	public ModelAndView showIRRBB_DEPOSITSAddPage(
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_DEPOSITS add page by user={}", userId);
+
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
+		mv.addObject("displaymode",    "add");
+		mv.addObject("irrbbDeposits", new BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity());
+		mv.addObject("reportid",       "IRRBB_DEPOSITS");
+		mv.addObject("asondate",       asondate);
+		mv.addObject("fromdate",       fromdate);
+		mv.addObject("todate",         todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — SAVE NEW SUMMARY RECORD
+	// URL: POST /Reports/IRRBB_DEPOSITS/save
+	// ─────────────────────────────────────────────────────────────────────────
+	@PostMapping("IRRBB_DEPOSITS/save")
+	public String saveIRRBB_DEPOSITSRecord(
+			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_DEPOSITS save new record by user={}", userId);
+
+		BRRS_IRRBB_DEPOSITS_reportService.saveRecord(entity);
+
+		return "redirect:/Reports/IRRBB_DEPOSITS/add"
+				+ "?asondate=" + asondate
+				+ "&fromdate=" + fromdate
+				+ "&todate="   + todate;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — MODIFY FORM
+	// URL: GET /Reports/IRRBB_DEPOSITS/modify/{id}
+	// ─────────────────────────────────────────────────────────────────────────
+	@GetMapping("IRRBB_DEPOSITS/modify/{id}")
+	public ModelAndView showIRRBB_DEPOSITSModifyPage(
+			@PathVariable("id") Long id,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_DEPOSITS modify page - id={} by user={}", id, userId);
+
+		BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity =
+				BRRS_IRRBB_DEPOSITS_reportService.findById(id);
+
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
+		mv.addObject("displaymode",    "modify");
+		mv.addObject("irrbbDeposits", entity);
+		mv.addObject("reportid",       "IRRBB_DEPOSITS");
+		mv.addObject("asondate",       asondate);
+		mv.addObject("fromdate",       fromdate);
+		mv.addObject("todate",         todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — UPDATE SUMMARY RECORD
+	// URL: POST /Reports/IRRBB_DEPOSITS/update
+	// ─────────────────────────────────────────────────────────────────────────
+	@PostMapping("IRRBB_DEPOSITS/update")
+	public String updateIRRBB_DEPOSITSRecord(
+			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
+			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			HttpServletRequest req) {
+
+		String userId = (String) req.getSession().getAttribute("USERID");
+		logger.info("IRRBB_DEPOSITS update - sno={} by user={}", entity.getSno(), userId);
+
+		BRRS_IRRBB_DEPOSITS_reportService.updateRecord(entity);
+
+		return "redirect:/Reports/IRRBB_DEPOSITS"
+				+ "?asondate=" + asondate
+				+ "&fromdate=" + fromdate
+				+ "&todate="   + todate
+				+ "&dtltype=report";
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DETAIL VIEW
+	// URL: GET /Reports/IRRBB_DEPOSITS/detail
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/detail", method = RequestMethod.GET)
+	public ModelAndView irrbbDepositsDetail(
+			@RequestParam String fromdate,
+			@RequestParam String todate,
+			@RequestParam(defaultValue = "") String asondate) {
+		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, todate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DETAIL SAVE
+	// URL: POST /Reports/IRRBB_DEPOSITS/detail/save
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/detail/save", method = RequestMethod.POST)
+	public ModelAndView irrbbDepositsDetailSave(
+			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_DEPOSITS_reportService.saveDetailRecord(entity);
+		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, asondate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DETAIL MODIFY FORM
+	// URL: GET /Reports/IRRBB_DEPOSITS/detail/modify/{id}
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/detail/modify/{id}", method = RequestMethod.GET)
+	public ModelAndView irrbbDepositsDetailModifyForm(
+			@PathVariable Long id,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity =
+				BRRS_IRRBB_DEPOSITS_reportService.findDetailById(id);
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
+		mv.addObject("irrbbDeposits", entity);
+		mv.addObject("displaymode", "detail-modify");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate",   todate);
+		return mv;
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DETAIL UPDATE
+	// URL: POST /Reports/IRRBB_DEPOSITS/detail/update
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/detail/update", method = RequestMethod.POST)
+	public ModelAndView irrbbDepositsDetailUpdate(
+			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
+			@RequestParam String asondate,
+			@RequestParam String fromdate,
+			@RequestParam String todate) {
+		BRRS_IRRBB_DEPOSITS_reportService.updateDetailRecord(entity);
+		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, asondate);
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DOWNLOAD SUMMARY EXCEL
+	// URL: GET /Reports/IRRBB_DEPOSITS/downloadSummary
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/downloadSummary", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadIrrbbDepositsSummary(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		response.setContentType("application/octet-stream");
+		try {
+			byte[] data;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Archive_Summary.xlsx";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateResubSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Resub_Summary.xlsx";
+			} else {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Summary.xlsx";
+			}
+			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+			return ResponseEntity.ok().headers(headers).contentLength(data.length)
+				.contentType(MediaType.parseMediaType(
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				.body(new ByteArrayResource(data));
+		} catch (Exception e) {
+			logger.error("IRRBB_DEPOSITS downloadSummary ERROR", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DOWNLOAD DETAIL EXCEL
+	// URL: GET /Reports/IRRBB_DEPOSITS/downloadDetail
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/downloadDetail", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadIrrbbDepositsDetail(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		response.setContentType("application/octet-stream");
+		try {
+			byte[] data;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Archive_Detail.xlsx";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateResubDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Resub_Detail.xlsx";
+			} else {
+				data = BRRS_IRRBB_DEPOSITS_reportService.generateDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Detail.xlsx";
+			}
+			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+			return ResponseEntity.ok().headers(headers).contentLength(data.length)
+				.contentType(MediaType.parseMediaType(
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+				.body(new ByteArrayResource(data));
+		} catch (Exception e) {
+			logger.error("IRRBB_DEPOSITS downloadDetail ERROR", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DOWNLOAD SUMMARY PDF
+	// URL: GET /Reports/IRRBB_DEPOSITS/downloadSummaryPdf
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/downloadSummaryPdf", method = RequestMethod.GET)
+	public void downloadIrrbbDepositsSummaryPdf(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		try {
+			byte[] excelBytes;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Archive_Summary.pdf";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateResubSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Resub_Summary.pdf";
+			} else {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateSummaryExcel(todate);
+				filename = "IRRBB_DEPOSITS_Summary.pdf";
+			}
+			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			response.setContentLength(pdfBytes.length);
+			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+		} catch (Exception e) {
+			logger.error("IRRBB_DEPOSITS downloadSummaryPdf ERROR", e);
+			response.setStatus(500);
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — DOWNLOAD DETAIL PDF
+	// URL: GET /Reports/IRRBB_DEPOSITS/downloadDetailPdf
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "IRRBB_DEPOSITS/downloadDetailPdf", method = RequestMethod.GET)
+	public void downloadIrrbbDepositsDetailPdf(
+			@RequestParam String todate,
+			@RequestParam(required = false) String type,
+			HttpServletResponse response) {
+		try {
+			byte[] excelBytes;
+			String filename;
+			if ("ARCHIVAL".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Archive_Detail.pdf";
+			} else if ("RESUB".equalsIgnoreCase(type)) {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateResubDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Resub_Detail.pdf";
+			} else {
+				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateDetailExcel(todate);
+				filename = "IRRBB_DEPOSITS_Detail.pdf";
+			}
+			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+			response.setContentLength(pdfBytes.length);
+			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+		} catch (Exception e) {
+			logger.error("IRRBB_DEPOSITS downloadDetailPdf ERROR", e);
+			response.setStatus(500);
+		}
+	}
+
+	// ─────────────────────────────────────────────────────────────────────────
+	// IRRBB_DEPOSITS — RESUBMISSION (M_OB pattern: inserts new versioned rows)
+	// URL: POST /UpdateIRRBB_DEPOSITS_ReSub
+	// ─────────────────────────────────────────────────────────────────────────
+	@RequestMapping(value = "/UpdateIRRBB_DEPOSITS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateIRRBBDepositsReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity request,
+			HttpServletRequest req) {
+		try {
+			System.out.println("Came to IRRBB_DEPOSITS Resub Controller");
+			if (asondate != null) {
+				request.setReportDate(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			}
+			BRRS_IRRBB_DEPOSITS_reportService.updateResubRecord(request);
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}
 
 }
