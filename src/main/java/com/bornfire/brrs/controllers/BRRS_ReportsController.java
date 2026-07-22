@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 import com.bornfire.brrs.entities.*;
@@ -195,7 +196,7 @@ import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -260,7 +261,39 @@ public class BRRS_ReportsController {
 
 	DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	// To show the required report at the first stage
+	// ============================================================
+	// ✅ HELPER METHOD TO PARSE DATE IN MULTIPLE FORMATS
+	// ============================================================
+	private Date parseDate(String dateStr) {
+		if (dateStr == null || dateStr.trim().isEmpty()) {
+			return null;
+		}
+
+		String[] formats = { "dd/MM/yyyy", "dd-MM-yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", "dd MMM yyyy", "dd/MMM/yyyy" };
+
+		for (String format : formats) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(format);
+				sdf.setLenient(false);
+				return sdf.parse(dateStr.trim());
+			} catch (ParseException e) {
+				// Continue to next format
+			}
+		}
+		return null;
+	}
+
+	// ============================================================
+	// ✅ HELPER METHOD TO FORMAT DATE FOR REDIRECT
+	// ============================================================
+	private String formatDateForRedirect(String dateStr) {
+		Date date = parseDate(dateStr);
+		if (date != null) {
+			return new SimpleDateFormat("dd/MM/yyyy").format(date);
+		}
+		return dateStr;
+	}
+
 	@RequestMapping(value = "{reportid}", method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView reportView(@PathVariable("reportid") String reportid,
 			@RequestParam(value = "function", required = false) String function,
@@ -282,7 +315,6 @@ public class BRRS_ReportsController {
 
 		int currentPage = page.orElse(0);
 		int pageSize = size.orElse(Integer.parseInt(pagesize));
-		System.out.println("date" + fromdate);
 
 		// =====================================================
 		// ✅ CONVERT VERSION SAFELY WITH ARCHIVAL AUTO-DETECT
@@ -297,7 +329,6 @@ public class BRRS_ReportsController {
 
 				// Check which report service to use based on reportid
 				if ("M_SRWA_12D".equalsIgnoreCase(reportid)) {
-					// ✅ Use fully qualified inner class type
 					Optional<BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity> latest = SRWA12DreportService
 							.getSrw12dLatestArchivalSummaryVersionByDate(reportDate);
 					if (latest.isPresent()) {
@@ -306,10 +337,7 @@ public class BRRS_ReportsController {
 					} else {
 						System.out.println("⚠️ No archival data found for date: " + todate);
 					}
-				}
-				// Add other report types here if needed (12E, 12F, etc.)
-				else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
-					// ✅ Use fully qualified inner class type
+				} else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
 					Optional<BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Archival_Summary_Entity> latest = M_SRWA_12Eservice
 							.getLatestArchivalSummaryVersionByDate(reportDate);
 					if (latest.isPresent()) {
@@ -330,6 +358,37 @@ public class BRRS_ReportsController {
 				}
 			}
 		}
+
+		// =====================================================
+		// ✅ DATE CONVERSION - SAME AS BORROWINGS MODULE
+		// =====================================================
+		// The service layer expects dd-MMM-yyyy format
+		// If dates come in dd/MM/yyyy format, convert them
+		try {
+			SimpleDateFormat slashFormat = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
+
+			// Only convert if the date contains "/"
+			if (asondate != null && asondate.contains("/")) {
+				Date asonDate = slashFormat.parse(asondate);
+				asondate = outputFormat.format(asonDate);
+				System.out.println("✅ Converted asondate: " + asondate);
+			}
+			if (fromdate != null && fromdate.contains("/")) {
+				Date fromDate = slashFormat.parse(fromdate);
+				fromdate = outputFormat.format(fromDate);
+				System.out.println("✅ Converted fromdate: " + fromdate);
+			}
+			if (todate != null && todate.contains("/")) {
+				Date toDate = slashFormat.parse(todate);
+				todate = outputFormat.format(toDate);
+				System.out.println("✅ Converted todate: " + todate);
+			}
+		} catch (Exception e) {
+			// If conversion fails, dates are already in correct format (dd-MMM-yyyy)
+			System.out.println("✅ Dates already in dd-MMM-yyyy format");
+		}
+
 		// Assigning required Modal Attributes
 		md.addAttribute("UserId", userid);
 		md.addAttribute("RoleId", roleid);
@@ -343,22 +402,12 @@ public class BRRS_ReportsController {
 		md.addAttribute("type", type);
 		md.addAttribute("version", version);
 		md.addAttribute("reportingTime", reportingTime);
-		// md.addAttribute("reportTitle", reportServices.getReportName(reportid));
-
-		try {
-			asondate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(asondate));
-			fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
-			todate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 
 		ModelAndView mv = new ModelAndView();
 		mv = regreportServices.getReportView(reportid, asondate, fromdate, todate, currency, dtltype, subreportid,
 				secid, reportingTime, PageRequest.of(currentPage, pageSize), srl_no, userid, type, version, req, md);
 
 		return mv;
-
 	}
 
 	@RequestMapping(value = "{reportid}/Details", method = RequestMethod.GET)
@@ -5797,30 +5846,27 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportService;
 
-	@Autowired
-	private BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportService;
-
 	// ─────────────────────────────────────────────────────────────────────────
 	// IRRBB_BORROWINGS — ADD FORM
 	// URL: GET /Reports/IRRBB_BORROWINGS/add
 	// ─────────────────────────────────────────────────────────────────────────
 	@GetMapping("IRRBB_BORROWINGS/add")
 	public ModelAndView showIRRBB_BORROWINGSAddPage(
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
 		logger.info("IRRBB_BORROWINGS add page by user={}", userId);
 
 		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
-		mv.addObject("displaymode",     "add");
+		mv.addObject("displaymode", "add");
 		mv.addObject("irrbbBorrowings", new BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity());
-		mv.addObject("reportid",        "IRRBB_BORROWINGS");
-		mv.addObject("asondate",        asondate);
-		mv.addObject("fromdate",        fromdate);
-		mv.addObject("todate",          todate);
+		mv.addObject("reportid", "IRRBB_BORROWINGS");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
@@ -5831,9 +5877,9 @@ public class BRRS_ReportsController {
 	@PostMapping("IRRBB_BORROWINGS/save")
 	public String saveIRRBB_BORROWINGSRecord(
 			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
@@ -5841,10 +5887,8 @@ public class BRRS_ReportsController {
 
 		BRRS_IRRBB_BORROWINGS_reportService.saveRecord(entity);
 
-		return "redirect:/Reports/IRRBB_BORROWINGS/add"
-				+ "?asondate=" + asondate
-				+ "&fromdate=" + fromdate
-				+ "&todate="   + todate;
+		return "redirect:/Reports/IRRBB_BORROWINGS/add" + "?asondate=" + asondate + "&fromdate=" + fromdate + "&todate="
+				+ todate;
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -5852,26 +5896,25 @@ public class BRRS_ReportsController {
 	// URL: GET /Reports/IRRBB_BORROWINGS/modify/{id}
 	// ─────────────────────────────────────────────────────────────────────────
 	@GetMapping("IRRBB_BORROWINGS/modify/{id}")
-	public ModelAndView showIRRBB_BORROWINGSModifyPage(
-			@PathVariable("id") Long id,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+	public ModelAndView showIRRBB_BORROWINGSModifyPage(@PathVariable("id") Long id,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
 		logger.info("IRRBB_BORROWINGS modify page - id={} by user={}", id, userId);
 
-		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity =
-				BRRS_IRRBB_BORROWINGS_reportService.findById(id);
+		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity = BRRS_IRRBB_BORROWINGS_reportService
+				.findById(id);
 
 		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
-		mv.addObject("displaymode",     "modify");
+		mv.addObject("displaymode", "modify");
 		mv.addObject("irrbbBorrowings", entity);
-		mv.addObject("reportid",        "IRRBB_BORROWINGS");
-		mv.addObject("asondate",        asondate);
-		mv.addObject("fromdate",        fromdate);
-		mv.addObject("todate",          todate);
+		mv.addObject("reportid", "IRRBB_BORROWINGS");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
@@ -5882,9 +5925,9 @@ public class BRRS_ReportsController {
 	@PostMapping("IRRBB_BORROWINGS/update")
 	public String updateIRRBB_BORROWINGSRecord(
 			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
@@ -5892,11 +5935,8 @@ public class BRRS_ReportsController {
 
 		BRRS_IRRBB_BORROWINGS_reportService.updateRecord(entity);
 
-		return "redirect:/Reports/IRRBB_BORROWINGS"
-				+ "?asondate=" + asondate
-				+ "&fromdate=" + fromdate
-				+ "&todate="   + todate
-				+ "&dtltype=report";
+		return "redirect:/Reports/IRRBB_BORROWINGS" + "?asondate=" + asondate + "&fromdate=" + fromdate + "&todate="
+				+ todate + "&dtltype=report";
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -5904,9 +5944,7 @@ public class BRRS_ReportsController {
 	// URL: GET /Reports/IRRBB_BORROWINGS/detail
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/detail", method = RequestMethod.GET)
-	public ModelAndView irrbbBorrowingsDetail(
-			@RequestParam String fromdate,
-			@RequestParam String todate,
+	public ModelAndView irrbbBorrowingsDetail(@RequestParam String fromdate, @RequestParam String todate,
 			@RequestParam(defaultValue = "") String asondate) {
 		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, todate);
 	}
@@ -5918,9 +5956,7 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "IRRBB_BORROWINGS/detail/save", method = RequestMethod.POST)
 	public ModelAndView irrbbBorrowingsDetailSave(
 			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
+			@RequestParam String asondate, @RequestParam String fromdate, @RequestParam String todate) {
 		BRRS_IRRBB_BORROWINGS_reportService.saveDetailRecord(entity);
 		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, asondate);
 	}
@@ -5930,19 +5966,16 @@ public class BRRS_ReportsController {
 	// URL: GET /Reports/IRRBB_BORROWINGS/detail/modify/{id}
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/detail/modify/{id}", method = RequestMethod.GET)
-	public ModelAndView irrbbBorrowingsDetailModifyForm(
-			@PathVariable Long id,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
-		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity =
-				BRRS_IRRBB_BORROWINGS_reportService.findDetailById(id);
+	public ModelAndView irrbbBorrowingsDetailModifyForm(@PathVariable Long id, @RequestParam String asondate,
+			@RequestParam String fromdate, @RequestParam String todate) {
+		BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity = BRRS_IRRBB_BORROWINGS_reportService
+				.findDetailById(id);
 		ModelAndView mv = new ModelAndView("BRRS/IRRBB_BORROWINGS");
 		mv.addObject("irrbbBorrowings", entity);
 		mv.addObject("displaymode", "detail-modify");
 		mv.addObject("asondate", asondate);
 		mv.addObject("fromdate", fromdate);
-		mv.addObject("todate",   todate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
@@ -5953,9 +5986,7 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "IRRBB_BORROWINGS/detail/update", method = RequestMethod.POST)
 	public ModelAndView irrbbBorrowingsDetailUpdate(
 			@ModelAttribute("irrbbBorrowings") BRRS_IRRBB_BORROWINGS_ReportService.IRRBB_BORROWINGS_Summary_Entity entity,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
+			@RequestParam String asondate, @RequestParam String fromdate, @RequestParam String todate) {
 		BRRS_IRRBB_BORROWINGS_reportService.updateDetailRecord(entity);
 		return BRRS_IRRBB_BORROWINGS_reportService.getIRRBB_BORROWINGS_DetailView(fromdate, todate, asondate);
 	}
@@ -5966,10 +5997,8 @@ public class BRRS_ReportsController {
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/downloadSummary", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsSummary(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsSummary(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
@@ -5984,13 +6013,14 @@ public class BRRS_ReportsController {
 				data = BRRS_IRRBB_BORROWINGS_reportService.generateSummaryExcel(todate);
 				filename = "IRRBB_BORROWINGS_Summary.xlsx";
 			}
-			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			if (data == null || data.length == 0)
+				return ResponseEntity.noContent().build();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 			return ResponseEntity.ok().headers(headers).contentLength(data.length)
-				.contentType(MediaType.parseMediaType(
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-				.body(new ByteArrayResource(data));
+					.contentType(MediaType
+							.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+					.body(new ByteArrayResource(data));
 		} catch (Exception e) {
 			logger.error("IRRBB_BORROWINGS downloadSummary ERROR", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -6003,10 +6033,8 @@ public class BRRS_ReportsController {
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/downloadDetail", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsDetail(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public ResponseEntity<ByteArrayResource> downloadIrrbbBorrowingsDetail(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
@@ -6021,13 +6049,14 @@ public class BRRS_ReportsController {
 				data = BRRS_IRRBB_BORROWINGS_reportService.generateDetailExcel(todate);
 				filename = "IRRBB_BORROWINGS_Detail.xlsx";
 			}
-			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			if (data == null || data.length == 0)
+				return ResponseEntity.noContent().build();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 			return ResponseEntity.ok().headers(headers).contentLength(data.length)
-				.contentType(MediaType.parseMediaType(
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-				.body(new ByteArrayResource(data));
+					.contentType(MediaType
+							.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+					.body(new ByteArrayResource(data));
 		} catch (Exception e) {
 			logger.error("IRRBB_BORROWINGS downloadDetail ERROR", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -6039,10 +6068,8 @@ public class BRRS_ReportsController {
 	// URL: GET /Reports/IRRBB_BORROWINGS/downloadSummaryPdf
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/downloadSummaryPdf", method = RequestMethod.GET)
-	public void downloadIrrbbBorrowingsSummaryPdf(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public void downloadIrrbbBorrowingsSummaryPdf(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		try {
 			byte[] excelBytes;
 			String filename;
@@ -6060,7 +6087,10 @@ public class BRRS_ReportsController {
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			response.setContentLength(pdfBytes.length);
-			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
 		} catch (Exception e) {
 			logger.error("IRRBB_BORROWINGS downloadSummaryPdf ERROR", e);
 			response.setStatus(500);
@@ -6072,10 +6102,8 @@ public class BRRS_ReportsController {
 	// URL: GET /Reports/IRRBB_BORROWINGS/downloadDetailPdf
 	// ─────────────────────────────────────────────────────────────────────────
 	@RequestMapping(value = "IRRBB_BORROWINGS/downloadDetailPdf", method = RequestMethod.GET)
-	public void downloadIrrbbBorrowingsDetailPdf(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public void downloadIrrbbBorrowingsDetailPdf(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		try {
 			byte[] excelBytes;
 			String filename;
@@ -6093,7 +6121,10 @@ public class BRRS_ReportsController {
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			response.setContentLength(pdfBytes.length);
-			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
 		} catch (Exception e) {
 			logger.error("IRRBB_BORROWINGS downloadDetailPdf ERROR", e);
 			response.setStatus(500);
@@ -6125,323 +6156,366 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	@Autowired
+	private BRRS_IRRBB_PLACEMENTS_ReportService BRRS_IRRBB_PLACEMENTS_reportservice;
+
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — ADD FORM
-	// URL: GET /Reports/IRRBB_DEPOSITS/add
+	// IRRBB_PLACEMENTS — ADD FORM
+	// URL: GET /Reports/IRRBB_PLACEMENTS/add
 	// ─────────────────────────────────────────────────────────────────────────
-	@GetMapping("IRRBB_DEPOSITS/add")
-	public ModelAndView showIRRBB_DEPOSITSAddPage(
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+	@GetMapping("IRRBB_PLACEMENTS/add")
+	public ModelAndView showIRRBB_PLACEMENTSAddPage(
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_DEPOSITS add page by user={}", userId);
+		logger.info("IRRBB_PLACEMENTS add page by user={}", userId);
 
-		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
-		mv.addObject("displaymode",    "add");
-		mv.addObject("irrbbDeposits", new BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity());
-		mv.addObject("reportid",       "IRRBB_DEPOSITS");
-		mv.addObject("asondate",       asondate);
-		mv.addObject("fromdate",       fromdate);
-		mv.addObject("todate",         todate);
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_PLACEMENTS");
+		mv.addObject("displaymode", "add");
+		mv.addObject("irrbbPlacements", new BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity());
+		mv.addObject("reportid", "IRRBB_PLACEMENTS");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — SAVE NEW SUMMARY RECORD
-	// URL: POST /Reports/IRRBB_DEPOSITS/save
-	// ─────────────────────────────────────────────────────────────────────────
-	@PostMapping("IRRBB_DEPOSITS/save")
-	public String saveIRRBB_DEPOSITSRecord(
-			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
-			HttpServletRequest req) {
+	// ============================================================
+	// ✅ UPDATED SAVE METHOD WITH PROPER DATE FORMATTING
+	// ============================================================
+	@PostMapping("IRRBB_PLACEMENTS/save")
+	public String saveIRRBB_PLACEMENTSRecord(
+			@ModelAttribute("irrbbPlacements") BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
+			RedirectAttributes redirectAttributes, HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_DEPOSITS save new record by user={}", userId);
+		logger.info("IRRBB_PLACEMENTS save new record by user={}", userId);
 
-		BRRS_IRRBB_DEPOSITS_reportService.saveRecord(entity);
+		try {
+			BRRS_IRRBB_PLACEMENTS_reportservice.saveRecord(entity);
 
-		return "redirect:/Reports/IRRBB_DEPOSITS/add"
-				+ "?asondate=" + asondate
-				+ "&fromdate=" + fromdate
-				+ "&todate="   + todate;
+			// Format dates for redirect
+			String formattedAson = formatDateForRedirect(asondate);
+			String formattedFrom = formatDateForRedirect(fromdate);
+			String formattedTo = formatDateForRedirect(todate);
+
+			redirectAttributes.addFlashAttribute("successMessage", "✅ Record saved successfully!");
+			redirectAttributes.addFlashAttribute("successType", "success");
+
+			return "redirect:/Reports/IRRBB_PLACEMENTS" + "?asondate=" + formattedAson + "&fromdate=" + formattedFrom
+					+ "&todate=" + formattedTo + "&dtltype=report";
+		} catch (Exception e) {
+			logger.error("Error saving IRRBB_PLACEMENTS record", e);
+			redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to save record: " + e.getMessage());
+			redirectAttributes.addFlashAttribute("successType", "error");
+
+			return "redirect:/Reports/IRRBB_PLACEMENTS/add" + "?asondate=" + asondate + "&fromdate=" + fromdate
+					+ "&todate=" + todate;
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — MODIFY FORM
-	// URL: GET /Reports/IRRBB_DEPOSITS/modify/{id}
+	// IRRBB_PLACEMENTS — MODIFY FORM
+	// URL: GET /Reports/IRRBB_PLACEMENTS/modify/{id}
 	// ─────────────────────────────────────────────────────────────────────────
-	@GetMapping("IRRBB_DEPOSITS/modify/{id}")
-	public ModelAndView showIRRBB_DEPOSITSModifyPage(
-			@PathVariable("id") Long id,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
+	@GetMapping("IRRBB_PLACEMENTS/modify/{id}")
+	public ModelAndView showIRRBB_PLACEMENTSModifyPage(@PathVariable("id") Long id,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
 			HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_DEPOSITS modify page - id={} by user={}", id, userId);
+		logger.info("IRRBB_PLACEMENTS modify page - id={} by user={}", id, userId);
 
-		BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity =
-				BRRS_IRRBB_DEPOSITS_reportService.findById(id);
+		BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity = BRRS_IRRBB_PLACEMENTS_reportservice
+				.findById(id);
 
-		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
-		mv.addObject("displaymode",    "modify");
-		mv.addObject("irrbbDeposits", entity);
-		mv.addObject("reportid",       "IRRBB_DEPOSITS");
-		mv.addObject("asondate",       asondate);
-		mv.addObject("fromdate",       fromdate);
-		mv.addObject("todate",         todate);
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_PLACEMENTS");
+		mv.addObject("displaymode", "modify");
+		mv.addObject("irrbbPlacements", entity);
+		mv.addObject("reportid", "IRRBB_PLACEMENTS");
+		mv.addObject("asondate", asondate);
+		mv.addObject("fromdate", fromdate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
-	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — UPDATE SUMMARY RECORD
-	// URL: POST /Reports/IRRBB_DEPOSITS/update
-	// ─────────────────────────────────────────────────────────────────────────
-	@PostMapping("IRRBB_DEPOSITS/update")
-	public String updateIRRBB_DEPOSITSRecord(
-			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
-			@RequestParam(value = "asondate",  required = false, defaultValue = "") String asondate,
-			@RequestParam(value = "fromdate",  required = false, defaultValue = "") String fromdate,
-			@RequestParam(value = "todate",    required = false, defaultValue = "") String todate,
-			HttpServletRequest req) {
+	// ============================================================
+	// ✅ UPDATED UPDATE METHOD WITH PROPER DATE FORMATTING
+	// ============================================================
+	@PostMapping("IRRBB_PLACEMENTS/update")
+	public String updateIRRBB_PLACEMENTSRecord(
+			@ModelAttribute("irrbbPlacements") BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity,
+			@RequestParam(value = "asondate", required = false, defaultValue = "") String asondate,
+			@RequestParam(value = "fromdate", required = false, defaultValue = "") String fromdate,
+			@RequestParam(value = "todate", required = false, defaultValue = "") String todate,
+			RedirectAttributes redirectAttributes, HttpServletRequest req) {
 
 		String userId = (String) req.getSession().getAttribute("USERID");
-		logger.info("IRRBB_DEPOSITS update - sno={} by user={}", entity.getSno(), userId);
+		logger.info("IRRBB_PLACEMENTS update - sno={} by user={}", entity.getSno(), userId);
 
-		BRRS_IRRBB_DEPOSITS_reportService.updateRecord(entity);
+		try {
+			BRRS_IRRBB_PLACEMENTS_reportservice.updateRecord(entity);
 
-		return "redirect:/Reports/IRRBB_DEPOSITS"
-				+ "?asondate=" + asondate
-				+ "&fromdate=" + fromdate
-				+ "&todate="   + todate
-				+ "&dtltype=report";
+			// Format dates for redirect
+			String formattedAson = formatDateForRedirect(asondate);
+			String formattedFrom = formatDateForRedirect(fromdate);
+			String formattedTo = formatDateForRedirect(todate);
+
+			redirectAttributes.addFlashAttribute("successMessage", "✅ Record updated successfully!");
+			redirectAttributes.addFlashAttribute("successType", "success");
+
+			return "redirect:/Reports/IRRBB_PLACEMENTS" + "?asondate=" + formattedAson + "&fromdate=" + formattedFrom
+					+ "&todate=" + formattedTo + "&dtltype=report";
+		} catch (Exception e) {
+			logger.error("Error updating IRRBB_PLACEMENTS record", e);
+			redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to update record: " + e.getMessage());
+			redirectAttributes.addFlashAttribute("successType", "error");
+
+			return "redirect:/Reports/IRRBB_PLACEMENTS/modify/" + entity.getSno() + "?asondate=" + asondate
+					+ "&fromdate=" + fromdate + "&todate=" + todate;
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DETAIL VIEW
-	// URL: GET /Reports/IRRBB_DEPOSITS/detail
+	// IRRBB_PLACEMENTS — DETAIL VIEW
+	// URL: GET /Reports/IRRBB_PLACEMENTS/detail
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/detail", method = RequestMethod.GET)
-	public ModelAndView irrbbDepositsDetail(
-			@RequestParam String fromdate,
-			@RequestParam String todate,
+	@RequestMapping(value = "IRRBB_PLACEMENTS/detail", method = RequestMethod.GET)
+	public ModelAndView irrbbPlacementsDetail(@RequestParam String fromdate, @RequestParam String todate,
 			@RequestParam(defaultValue = "") String asondate) {
-		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, todate);
+		return BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(fromdate, todate, todate);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DETAIL SAVE
-	// URL: POST /Reports/IRRBB_DEPOSITS/detail/save
+	// IRRBB_PLACEMENTS — DETAIL SAVE
+	// URL: POST /Reports/IRRBB_PLACEMENTS/detail/save
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/detail/save", method = RequestMethod.POST)
-	public ModelAndView irrbbDepositsDetailSave(
-			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
-		BRRS_IRRBB_DEPOSITS_reportService.saveDetailRecord(entity);
-		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, asondate);
+	@RequestMapping(value = "IRRBB_PLACEMENTS/detail/save", method = RequestMethod.POST)
+	public ModelAndView irrbbPlacementsDetailSave(
+			@ModelAttribute("irrbbPlacements") BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity,
+			@RequestParam String asondate, @RequestParam String fromdate, @RequestParam String todate,
+			RedirectAttributes redirectAttributes) { // ✅ ADD THIS PARAMETER
+
+		try {
+			BRRS_IRRBB_PLACEMENTS_reportservice.saveDetailRecord(entity);
+			// ✅ ADD SUCCESS MESSAGE
+			redirectAttributes.addFlashAttribute("successMessage", "✅ Detail record saved successfully!");
+			redirectAttributes.addFlashAttribute("successType", "success");
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("successMessage", "❌ Failed to save detail record: " + e.getMessage());
+			redirectAttributes.addFlashAttribute("successType", "error");
+		}
+
+		return BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(fromdate, todate, asondate);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DETAIL MODIFY FORM
-	// URL: GET /Reports/IRRBB_DEPOSITS/detail/modify/{id}
+	// IRRBB_PLACEMENTS — DETAIL MODIFY FORM
+	// URL: GET /Reports/IRRBB_PLACEMENTS/detail/modify/{id}
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/detail/modify/{id}", method = RequestMethod.GET)
-	public ModelAndView irrbbDepositsDetailModifyForm(
-			@PathVariable Long id,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
-		BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity =
-				BRRS_IRRBB_DEPOSITS_reportService.findDetailById(id);
-		ModelAndView mv = new ModelAndView("BRRS/IRRBB_DEPOSITS");
-		mv.addObject("irrbbDeposits", entity);
+	@RequestMapping(value = "IRRBB_PLACEMENTS/detail/modify/{id}", method = RequestMethod.GET)
+	public ModelAndView irrbbPlacementsDetailModifyForm(@PathVariable Long id, @RequestParam String asondate,
+			@RequestParam String fromdate, @RequestParam String todate) {
+		BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity = BRRS_IRRBB_PLACEMENTS_reportservice
+				.findDetailById(id);
+		ModelAndView mv = new ModelAndView("BRRS/IRRBB_PLACEMENTS");
+		mv.addObject("irrbbPlacements", entity);
 		mv.addObject("displaymode", "detail-modify");
 		mv.addObject("asondate", asondate);
 		mv.addObject("fromdate", fromdate);
-		mv.addObject("todate",   todate);
+		mv.addObject("todate", todate);
 		return mv;
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DETAIL UPDATE
-	// URL: POST /Reports/IRRBB_DEPOSITS/detail/update
+	// IRRBB_PLACEMENTS — DETAIL UPDATE
+	// URL: POST /Reports/IRRBB_PLACEMENTS/detail/update
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/detail/update", method = RequestMethod.POST)
-	public ModelAndView irrbbDepositsDetailUpdate(
-			@ModelAttribute("irrbbDeposits") BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity entity,
-			@RequestParam String asondate,
-			@RequestParam String fromdate,
-			@RequestParam String todate) {
-		BRRS_IRRBB_DEPOSITS_reportService.updateDetailRecord(entity);
-		return BRRS_IRRBB_DEPOSITS_reportService.getIRRBB_DEPOSITS_DetailView(fromdate, todate, asondate);
+	@RequestMapping(value = "IRRBB_PLACEMENTS/detail/update", method = RequestMethod.POST)
+	public ModelAndView irrbbPlacementsDetailUpdate(
+			@ModelAttribute("irrbbPlacements") BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity entity,
+			@RequestParam String asondate, @RequestParam String fromdate, @RequestParam String todate,
+			RedirectAttributes redirectAttributes) { // ✅ ADD THIS PARAMETER
+
+		try {
+			BRRS_IRRBB_PLACEMENTS_reportservice.updateDetailRecord(entity);
+			// ✅ ADD SUCCESS MESSAGE
+			redirectAttributes.addFlashAttribute("successMessage", "✅ Detail record updated successfully!");
+			redirectAttributes.addFlashAttribute("successType", "success");
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("successMessage",
+					"❌ Failed to update detail record: " + e.getMessage());
+			redirectAttributes.addFlashAttribute("successType", "error");
+		}
+
+		return BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_DetailView(fromdate, todate, asondate);
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DOWNLOAD SUMMARY EXCEL
-	// URL: GET /Reports/IRRBB_DEPOSITS/downloadSummary
+	// IRRBB_PLACEMENTS — DOWNLOAD SUMMARY EXCEL
+	// URL: GET /Reports/IRRBB_PLACEMENTS/downloadSummary
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/downloadSummary", method = RequestMethod.GET)
+	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadSummary", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<ByteArrayResource> downloadIrrbbDepositsSummary(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public ResponseEntity<ByteArrayResource> downloadIrrbbPlacementsSummary(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
 			String filename;
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Archive_Summary.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Archive_Summary.xlsx";
 			} else if ("RESUB".equalsIgnoreCase(type)) {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateResubSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Resub_Summary.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateResubSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Resub_Summary.xlsx";
 			} else {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Summary.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Summary.xlsx";
 			}
-			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			if (data == null || data.length == 0)
+				return ResponseEntity.noContent().build();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 			return ResponseEntity.ok().headers(headers).contentLength(data.length)
-				.contentType(MediaType.parseMediaType(
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-				.body(new ByteArrayResource(data));
+					.contentType(MediaType
+							.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+					.body(new ByteArrayResource(data));
 		} catch (Exception e) {
-			logger.error("IRRBB_DEPOSITS downloadSummary ERROR", e);
+			logger.error("IRRBB_PLACEMENTS downloadSummary ERROR", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DOWNLOAD DETAIL EXCEL
-	// URL: GET /Reports/IRRBB_DEPOSITS/downloadDetail
+	// IRRBB_PLACEMENTS — DOWNLOAD DETAIL EXCEL
+	// URL: GET /Reports/IRRBB_PLACEMENTS/downloadDetail
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/downloadDetail", method = RequestMethod.GET)
+	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadDetail", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<ByteArrayResource> downloadIrrbbDepositsDetail(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	public ResponseEntity<ByteArrayResource> downloadIrrbbPlacementsDetail(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		response.setContentType("application/octet-stream");
 		try {
 			byte[] data;
 			String filename;
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Archive_Detail.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Archive_Detail.xlsx";
 			} else if ("RESUB".equalsIgnoreCase(type)) {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateResubDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Resub_Detail.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateResubDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Resub_Detail.xlsx";
 			} else {
-				data = BRRS_IRRBB_DEPOSITS_reportService.generateDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Detail.xlsx";
+				data = BRRS_IRRBB_PLACEMENTS_reportservice.generateDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Detail.xlsx";
 			}
-			if (data == null || data.length == 0) return ResponseEntity.noContent().build();
+			if (data == null || data.length == 0)
+				return ResponseEntity.noContent().build();
 			HttpHeaders headers = new HttpHeaders();
 			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
 			return ResponseEntity.ok().headers(headers).contentLength(data.length)
-				.contentType(MediaType.parseMediaType(
-					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-				.body(new ByteArrayResource(data));
+					.contentType(MediaType
+							.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+					.body(new ByteArrayResource(data));
 		} catch (Exception e) {
-			logger.error("IRRBB_DEPOSITS downloadDetail ERROR", e);
+			logger.error("IRRBB_PLACEMENTS downloadDetail ERROR", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DOWNLOAD SUMMARY PDF
-	// URL: GET /Reports/IRRBB_DEPOSITS/downloadSummaryPdf
+	// IRRBB_PLACEMENTS — DOWNLOAD SUMMARY PDF
+	// URL: GET /Reports/IRRBB_PLACEMENTS/downloadSummaryPdf
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/downloadSummaryPdf", method = RequestMethod.GET)
-	public void downloadIrrbbDepositsSummaryPdf(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadSummaryPdf", method = RequestMethod.GET)
+	public void downloadIrrbbPlacementsSummaryPdf(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		try {
 			byte[] excelBytes;
 			String filename;
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Archive_Summary.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateArchiveSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Archive_Summary.pdf";
 			} else if ("RESUB".equalsIgnoreCase(type)) {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateResubSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Resub_Summary.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateResubSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Resub_Summary.pdf";
 			} else {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateSummaryExcel(todate);
-				filename = "IRRBB_DEPOSITS_Summary.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateSummaryExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Summary.pdf";
 			}
 			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			response.setContentLength(pdfBytes.length);
-			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
 		} catch (Exception e) {
-			logger.error("IRRBB_DEPOSITS downloadSummaryPdf ERROR", e);
+			logger.error("IRRBB_PLACEMENTS downloadSummaryPdf ERROR", e);
 			response.setStatus(500);
 		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — DOWNLOAD DETAIL PDF
-	// URL: GET /Reports/IRRBB_DEPOSITS/downloadDetailPdf
+	// IRRBB_PLACEMENTS — DOWNLOAD DETAIL PDF
+	// URL: GET /Reports/IRRBB_PLACEMENTS/downloadDetailPdf
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "IRRBB_DEPOSITS/downloadDetailPdf", method = RequestMethod.GET)
-	public void downloadIrrbbDepositsDetailPdf(
-			@RequestParam String todate,
-			@RequestParam(required = false) String type,
-			HttpServletResponse response) {
+	@RequestMapping(value = "IRRBB_PLACEMENTS/downloadDetailPdf", method = RequestMethod.GET)
+	public void downloadIrrbbPlacementsDetailPdf(@RequestParam String todate,
+			@RequestParam(required = false) String type, HttpServletResponse response) {
 		try {
 			byte[] excelBytes;
 			String filename;
 			if ("ARCHIVAL".equalsIgnoreCase(type)) {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateArchiveDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Archive_Detail.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateArchiveDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Archive_Detail.pdf";
 			} else if ("RESUB".equalsIgnoreCase(type)) {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateResubDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Resub_Detail.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateResubDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Resub_Detail.pdf";
 			} else {
-				excelBytes = BRRS_IRRBB_DEPOSITS_reportService.generateDetailExcel(todate);
-				filename = "IRRBB_DEPOSITS_Detail.pdf";
+				excelBytes = BRRS_IRRBB_PLACEMENTS_reportservice.generateDetailExcel(todate);
+				filename = "IRRBB_PLACEMENTS_Detail.pdf";
 			}
 			byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 			response.setContentType("application/pdf");
 			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 			response.setContentLength(pdfBytes.length);
-			try (ServletOutputStream out = response.getOutputStream()) { out.write(pdfBytes); out.flush(); }
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
 		} catch (Exception e) {
-			logger.error("IRRBB_DEPOSITS downloadDetailPdf ERROR", e);
+			logger.error("IRRBB_PLACEMENTS downloadDetailPdf ERROR", e);
 			response.setStatus(500);
 		}
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
-	// IRRBB_DEPOSITS — RESUBMISSION (M_OB pattern: inserts new versioned rows)
-	// URL: POST /UpdateIRRBB_DEPOSITS_ReSub
+	// IRRBB_PLACEMENTS — RESUBMISSION (inserts new versioned row)
+	// URL: POST /Reports/UpdateIRRBB_PLACEMENTS_ReSub
 	// ─────────────────────────────────────────────────────────────────────────
-	@RequestMapping(value = "/UpdateIRRBB_DEPOSITS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/UpdateIRRBB_PLACEMENTS_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateIRRBBDepositsReSub(
+	public ResponseEntity<String> updateIRRBBPlacementsReSub(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Summary_Entity request,
+			@ModelAttribute BRRS_IRRBB_PLACEMENTS_ReportService.IRRBB_PLACEMENTS_Summary_Entity request,
 			HttpServletRequest req) {
 		try {
-			System.out.println("Came to IRRBB_DEPOSITS Resub Controller");
+			System.out.println("Came to IRRBB_PLACEMENTS Resub Controller");
 			if (asondate != null) {
 				request.setReportDate(asondate);
 				System.out.println("Set Report Date: " + asondate);
 			}
-			BRRS_IRRBB_DEPOSITS_reportService.updateResubRecord(request);
+			BRRS_IRRBB_PLACEMENTS_reportservice.updateResubRecord(request);
 			return ResponseEntity.ok("Resubmission Updated Successfully");
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -427,7 +427,7 @@ public class RegulatoryReportServices {
 	BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportservice;
 
 	@Autowired
-	BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportservice;
+	BRRS_IRRBB_PLACEMENTS_ReportService BRRS_IRRBB_PLACEMENTS_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1090,13 +1090,13 @@ public class RegulatoryReportServices {
 			break;
 
 		case "IRRBB_BORROWINGS":
-			repsummary = BRRS_IRRBB_BORROWINGS_reportservice.getBRRS_IRRBB_BORROWINGS_View(
-					reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+			repsummary = BRRS_IRRBB_BORROWINGS_reportservice.getBRRS_IRRBB_BORROWINGS_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
 			break;
 
-		case "IRRBB_DEPOSITS":
-			repsummary = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_View(
-					reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+		case "IRRBB_PLACEMENTS":
+			repsummary = BRRS_IRRBB_PLACEMENTS_reportservice.getBRRS_IRRBB_PLACEMENTS_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
 			break;
 
 		case "FSI":
@@ -1616,7 +1616,7 @@ public class RegulatoryReportServices {
 		case "Q_RLFA1":
 			try {
 				repfile = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
-						dtltype, type,format, version);
+						dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -2416,9 +2416,9 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "IRRBB_DEPOSITS":
+		case "IRRBB_PLACEMENTS":
 			try {
-				repfile = BRRS_IRRBB_DEPOSITS_reportservice.IRRBB_DEPOSITS_Excel(filename, todate);
+				repfile = BRRS_IRRBB_PLACEMENTS_reportservice.IRRBB_PLACEMENTS_Excel(filename, todate);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -2981,14 +2981,14 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_LA5 archival data: " + M_LA5List.size());
 			break;
 
-		case "M_DEP2":
-			try {
-				archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
+//		case "M_DEP2":
+//			try {
+//				archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 
 		case "M_PLL":
 			try {
@@ -3300,15 +3300,16 @@ public class RegulatoryReportServices {
 			break;
 
 		case "IRRBB_BORROWINGS":
-			List<Object[]> irrbbBorrowingsArchivalList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Archival();
+			List<Object[]> irrbbBorrowingsArchivalList = BRRS_IRRBB_BORROWINGS_reportservice
+					.getIRRBB_BORROWINGS_Archival();
 			archivalData.addAll(irrbbBorrowingsArchivalList);
 			System.out.println("Fetched IRRBB_BORROWINGS archival data: " + irrbbBorrowingsArchivalList.size());
 			break;
 
-		case "IRRBB_DEPOSITS":
-			List<Object[]> irrbbDepositsArchivalList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITS_Archival();
-			archivalData.addAll(irrbbDepositsArchivalList);
-			System.out.println("Fetched IRRBB_DEPOSITS archival data: " + irrbbDepositsArchivalList.size());
+		case "IRRBB_PLACEMENTS":
+			List<Object[]> placementsArchivalList = BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_Archival();
+			archivalData.addAll(placementsArchivalList);
+			System.out.println("Fetched IRRBB_PLACEMENTS archival data: " + placementsArchivalList.size());
 			break;
 
 		case "M_SRWA_12E":
@@ -4785,13 +4786,13 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "IRRBB_DEPOSITS":
+		case "IRRBB_PLACEMENTS":
 			try {
-				List<Object[]> resubList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITS_Resub();
+				List<Object[]> resubList = BRRS_IRRBB_PLACEMENTS_reportservice.getIRRBB_PLACEMENTS_Resub();
 				resubmissionData.addAll(resubList);
-				System.out.println("Resubmission data fetched for IRRBB_DEPOSITS: " + resubList.size());
+				System.out.println("Resubmission data fetched for IRRBB_PLACEMENTS: " + resubList.size());
 			} catch (Exception e) {
-				System.err.println("Error fetching resubmission data for IRRBB_DEPOSITS: " + e.getMessage());
+				System.err.println("Error fetching resubmission data for IRRBB_PLACEMENTS: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
@@ -5898,8 +5899,8 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, format, version);
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate,
+							todate, currency, dtltype, type, format, version);
 				case "Q_RLFA2":
 					return brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("EMAIL_Q_RLFA2.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
@@ -6147,7 +6148,7 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1.xlsx",  reportName, fromdate, todate,
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA2":
@@ -7958,8 +7959,7 @@ public class RegulatoryReportServices {
 			try {
 				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, null, // type
-						null ,
-						null// version
+						null, null// version
 				);
 
 				if (excelBytes == null || excelBytes.length == 0) {
@@ -10337,7 +10337,7 @@ public class RegulatoryReportServices {
 			try {
 
 				excelBytes = brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("EMAIL_Q_RLFA1.xlsx", reportId, fromdate,
-						todate, currency, dtltype, null, null,null);
+						todate, currency, dtltype, null, null, null);
 
 				// Excel validation
 				if (excelBytes == null || excelBytes.length == 0) {

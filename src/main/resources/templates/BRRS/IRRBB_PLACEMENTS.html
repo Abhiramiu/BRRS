@@ -1,0 +1,1469 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.custom-tab-btn {
+			background-color: transparent;
+			color: white;
+			border: 2px solid white;
+			border-radius: 20px;
+			padding: 6px 16px;
+			margin-left: 8px;
+			font-family: Arial;
+			font-weight: bold;
+			cursor: pointer;
+			transition: background-color 0.2s, color 0.2s;
+		}
+
+		.custom-tab-btn:hover,
+		.custom-tab-btn.active {
+			background-color: white;
+			color: #6b7a8f;
+		}
+
+		.left-arrow-circle {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			border: 2px solid white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			margin-right: 10px;
+			color: white;
+		}
+
+		.boards {
+			overflow: hidden;
+			width: 280px;
+			white-space: nowrap;
+			margin-left: 20px;
+		}
+
+		.scrolling-text {
+			display: inline-block;
+			animation: scroll-left 18s linear infinite;
+			color: white;
+			font-size: 13px;
+			margin: 0;
+		}
+
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+
+		div.dataTables_scrollBody {
+			border-bottom: 1px solid #dee2e6;
+		}
+
+		.add-form-scroll {
+			max-height: calc(100vh - 220px);
+			overflow-y: auto;
+			padding: 10px 5px;
+		}
+
+		div.dataTables_wrapper div.dataTables_paginate {
+			text-align: right !important;
+			float: right !important;
+			width: auto;
+			margin-top: 10px;
+		}
+
+		div.dataTables_wrapper div.dataTables_info {
+			float: left !important;
+			margin-top: 10px;
+		}
+
+		.pagination {
+			margin: 0;
+		}
+
+		.page-item.active .page-link {
+			background-color: #386276;
+			border-color: #386276;
+		}
+
+		.page-link {
+			color: #386276;
+		}
+
+		.page-link:hover {
+			color: #2a4a5c;
+		}
+
+		/* Download split button */
+		.dl-split-wrap {
+			position: relative;
+			display: inline-flex;
+			margin-left: 8px;
+		}
+
+		.dl-main-btn {
+			border-radius: 20px 0 0 20px !important;
+			margin-left: 0 !important;
+			border-right: none !important;
+		}
+
+		.dl-caret-btn {
+			background-color: transparent;
+			color: white;
+			border: 2px solid white;
+			border-radius: 0 20px 20px 0;
+			padding: 6px 10px;
+			font-weight: bold;
+			cursor: pointer;
+			transition: background-color 0.2s, color 0.2s;
+		}
+
+		.dl-caret-btn:hover {
+			background-color: white;
+			color: #6b7a8f;
+		}
+
+		.dl-dropdown-menu {
+			display: none;
+			position: absolute;
+			top: 110%;
+			right: 0;
+			background: white;
+			border: 1px solid #ccc;
+			border-radius: 6px;
+			min-width: 200px;
+			z-index: 999;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+			padding: 6px 0;
+		}
+
+		.dl-dropdown-menu a {
+			display: block;
+			padding: 8px 16px;
+			color: #333;
+			text-decoration: none;
+			font-size: 13px;
+			font-family: Arial;
+		}
+
+		.dl-dropdown-menu a:hover {
+			background-color: #f5f5f5;
+			color: #E77400;
+		}
+
+		.dl-divider {
+			margin: 4px 0;
+			border: none;
+			border-top: 1px solid #eee;
+		}
+
+		.floating-field {
+			display: none;
+		}
+
+		/* Alert animation */
+		.alert {
+			animation: slideDown 0.5s ease;
+		}
+
+		@keyframes slideDown {
+			from {
+				transform: translateY(-20px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+	</style>
+
+	<script>
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+		}
+		function goToDetail() {
+			var fromdate = document.getElementById('hdnFromdate').value;
+			var todate = document.getElementById('hdnTodate').value;
+			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS/detail'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
+		}
+		function backToSummary() {
+			var fromdate = document.getElementById('hdnFromdate').value;
+			var todate = document.getElementById('hdnTodate').value;
+			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS'
+				+ '?dtltype=report'
+				+ '&fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate)
+				+ '&asondate=' + encodeURIComponent(todate)
+				+ '&currency=AED';
+		}
+		function downloadSummaryExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummary?todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Summary.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed (HTTP ' + jqXHR.status + ').');}
+			});
+		}
+		function downloadDetailExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetail?todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Detail.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed (HTTP ' + jqXHR.status + ').');}
+			});
+		}
+		function downloadSummaryPdf(element) {
+			var todate = element.getAttribute('data-todate');
+			$('#loader').modal('show');
+			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummaryPdf?todate=' + encodeURIComponent(todate);
+			setTimeout(function () {$('#loader').modal('hide');}, 2000);
+		}
+		function downloadDetailPdf(element) {
+			var todate = element.getAttribute('data-todate');
+			$('#loader').modal('show');
+			window.location.href = '/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetailPdf?todate=' + encodeURIComponent(todate);
+			setTimeout(function () {$('#loader').modal('hide');}, 2000);
+		}
+		function downloadArchiveSummaryExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummary?type=ARCHIVAL&todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Archive_Summary.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed.');}
+			});
+		}
+		function downloadArchiveDetailExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetail?type=ARCHIVAL&todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Archive_Detail.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed.');}
+			});
+		}
+		function downloadResubSummaryExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummary?type=RESUB&todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Resub_Summary.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed.');}
+			});
+		}
+		function downloadResubDetailExcel() {
+			var todate = document.getElementById('hdnTodate').value;
+			$('#loader').modal('show');
+			jQuery.ajax({
+				url: '/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetail?type=RESUB&todate=' + encodeURIComponent(todate),
+				type: 'GET', xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						var a = document.createElement('a');
+						a.href = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+						a.download = 'IRRBB_PLACEMENTS_Resub_Detail.xlsx';
+						document.body.appendChild(a); a.click(); document.body.removeChild(a);
+					} else {alert('No data available.');}
+				},
+				error: function (jqXHR) {$('#loader').modal('hide'); alert('Download failed.');}
+			});
+		}
+		function toggleDlMenu(menuId) {
+			var menu = document.getElementById(menuId);
+			menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+		}
+		document.addEventListener('click', function (evt) {
+			['dlSumWrap', 'dlDetWrap', 'dlArchSumWrap', 'dlArchDetWrap', 'dlResubSumWrap', 'dlResubDetWrap'].forEach(function (id) {
+				var wrap = document.getElementById(id);
+				var menu = wrap ? wrap.querySelector('.dl-dropdown-menu') : null;
+				if (wrap && menu && !wrap.contains(evt.target)) menu.style.display = 'none';
+			});
+		});
+
+		// ============================================================
+		// TOGGLE FLOATING FIELDS VISIBILITY
+		// ============================================================
+		function toggleFloatingFields() {
+			var selectedValue = document.getElementById('floatingFixedSelect').value;
+			var floatingFields = document.querySelectorAll('.floating-field');
+
+			if (selectedValue === 'Floating') {
+				floatingFields.forEach(function (field) {
+					field.style.display = 'block';
+					// Enable any disabled inputs
+					var inputs = field.querySelectorAll('input, select, textarea');
+					inputs.forEach(function (input) {
+						input.disabled = false;
+					});
+				});
+			} else {
+				floatingFields.forEach(function (field) {
+					field.style.display = 'none';
+					// Disable inputs to prevent data submission
+					var inputs = field.querySelectorAll('input, select, textarea');
+					inputs.forEach(function (input) {
+						input.disabled = true;
+						// Clear values when hidden
+						if (input.type !== 'hidden') {
+							input.value = '';
+						}
+					});
+				});
+			}
+		}
+
+		// Initialize on page load
+		$(document).ready(function () {
+			toggleFloatingFields();
+		});
+	</script>
+
+	<title>IRRBB PLACEMENTS</title>
+</head>
+
+<body>
+	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card" style="width:100%;">
+
+				<!-- ===== CARD HEADER ===== -->
+				<div class="card-header"
+					style="background-color:rgb(107,122,143); display:flex; align-items:center; justify-content:space-between;">
+
+					<div style="display:flex; align-items:center;" onclick="back();">
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<h5 style="font-family:arial; font-size:20px; font-weight:bold; color:white; margin:0 10px;">
+							IRRBB - PLACEMENTS
+						</h5>
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
+					</div>
+
+					<div style="display:flex; color:white; align-items:center;">
+						<span style="color:white !important; font-size:16px; margin-right:20px;">
+							Report Date:
+							<span th:text="${#strings.replace(asondate,'/','-')}">2025-07-04</span>
+						</span>
+
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<input type="hidden" id="hdnFromdate" th:value="${fromdate}" />
+						<input type="hidden" id="hdnTodate" th:value="${todate}" />
+						<input type="hidden" id="hdnArchiveMode" th:value="${archiveMode}" />
+
+						<!-- Add New Record button — summary page only, hide in archive/resub mode -->
+						<a th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}"
+							th:href="@{/Reports/IRRBB_PLACEMENTS/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+							class="custom-tab-btn">
+							Add New Record
+						</a>
+
+						<!-- Detail button — visible on summary (live) -->
+						<button type="button" class="custom-tab-btn"
+							th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}"
+							onclick="goToDetail()">Detail</button>
+
+						<!-- Back to Summary button on detail views -->
+						<button type="button" class="custom-tab-btn"
+							th:if="${displaymode == 'detail' and archiveMode != true and resubMode != true}"
+							onclick="backToSummary()">&#8592; Summary</button>
+
+						<!-- Header Modify placeholder -->
+						<button type="button" class="custom-tab-btn"
+							th:if="${displaymode == 'summary' and archiveMode != true}" id="addRecord"
+							title="Use the Modify button on each row">Modify</button>
+
+						<!-- Download split button — live summary -->
+						<div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}"
+							class="dl-split-wrap" id="dlSumWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadSummaryExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlSumMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlSumMenu">
+								<a href="#" onclick="downloadSummaryExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Summary</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="downloadSummaryPdf(this); return false;"><i class="fa fa-file-pdf"></i> PDF
+									&#8212; Summary</a>
+							</div>
+						</div>
+
+						<!-- Download split button — live detail -->
+						<div th:if="${displaymode == 'detail' and archiveMode != true and resubMode != true}"
+							class="dl-split-wrap" id="dlDetWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadDetailExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlDetMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlDetMenu">
+								<a href="#" onclick="downloadDetailExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Detail</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="downloadDetailPdf(this); return false;"><i class="fa fa-file-pdf"></i> PDF
+									&#8212; Detail</a>
+							</div>
+						</div>
+
+						<!-- Download split button — archive summary -->
+						<div th:if="${archiveMode == true and displaymode == 'summary'}" class="dl-split-wrap"
+							id="dlArchSumWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveSummaryExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlArchSumMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlArchSumMenu">
+								<a href="#" onclick="downloadArchiveSummaryExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Archive Summary</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="(function(el){var t=el.getAttribute('data-todate');$('#loader').modal('show');window.location.href='/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummaryPdf?type=ARCHIVAL&todate='+encodeURIComponent(t);setTimeout(function(){$('#loader').modal('hide');},2000);})(this); return false;"><i
+										class="fa fa-file-pdf"></i> PDF &#8212; Archive Summary</a>
+							</div>
+						</div>
+
+						<!-- Download split button — archive detail -->
+						<div th:if="${archiveMode == true and displaymode == 'detail'}" class="dl-split-wrap"
+							id="dlArchDetWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveDetailExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlArchDetMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlArchDetMenu">
+								<a href="#" onclick="downloadArchiveDetailExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Archive Detail</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="(function(el){var t=el.getAttribute('data-todate');$('#loader').modal('show');window.location.href='/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetailPdf?type=ARCHIVAL&todate='+encodeURIComponent(t);setTimeout(function(){$('#loader').modal('hide');},2000);})(this); return false;"><i
+										class="fa fa-file-pdf"></i> PDF &#8212; Archive Detail</a>
+							</div>
+						</div>
+
+						<!-- Download split button — resub summary -->
+						<div th:if="${resubMode == true and displaymode == 'summary'}" class="dl-split-wrap"
+							id="dlResubSumWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadResubSummaryExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlResubSumMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlResubSumMenu">
+								<a href="#" onclick="downloadResubSummaryExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Resub Summary</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="(function(el){var t=el.getAttribute('data-todate');$('#loader').modal('show');window.location.href='/BRRS/Reports/IRRBB_PLACEMENTS/downloadSummaryPdf?type=RESUB&todate='+encodeURIComponent(t);setTimeout(function(){$('#loader').modal('hide');},2000);})(this); return false;"><i
+										class="fa fa-file-pdf"></i> PDF &#8212; Resub Summary</a>
+							</div>
+						</div>
+
+						<!-- Download split button — resub detail -->
+						<div th:if="${resubMode == true and displaymode == 'detail'}" class="dl-split-wrap"
+							id="dlResubDetWrap">
+							<button class="custom-tab-btn dl-main-btn" onclick="downloadResubDetailExcel()">
+								<i class="fa fa-download"></i> Download
+							</button>
+							<button class="dl-caret-btn" onclick="toggleDlMenu('dlResubDetMenu')">&#9662;</button>
+							<div class="dl-dropdown-menu" id="dlResubDetMenu">
+								<a href="#" onclick="downloadResubDetailExcel(); return false;"><i
+										class="fa fa-file-excel"></i> Excel &#8212; Resub Detail</a>
+								<hr class="dl-divider" />
+								<a href="#" th:attr="data-todate=${todate}"
+									onclick="(function(el){var t=el.getAttribute('data-todate');$('#loader').modal('show');window.location.href='/BRRS/Reports/IRRBB_PLACEMENTS/downloadDetailPdf?type=RESUB&todate='+encodeURIComponent(t);setTimeout(function(){$('#loader').modal('hide');},2000);})(this); return false;"><i
+										class="fa fa-file-pdf"></i> PDF &#8212; Resub Detail</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- ===== SECTION HEADINGS ===== -->
+				<h1 th:if="${displaymode == 'summary'}" style="text-align:left; font-family:arial; font-weight:bold; color:white; font-size:20px;
+                       background-color:rgb(107,122,143); margin-top:10px; margin-bottom:10px; padding:10px;">
+					Summary View - IRRBB PLACEMENTS
+				</h1>
+
+				<!-- ============================================================ -->
+				<!-- SUCCESS / ERROR ALERT                                         -->
+				<!-- ============================================================ -->
+				<div th:if="${successMessage != null}"
+					th:class="'alert alert-' + (${successType == 'success' ? 'success' : 'danger'}) + ' alert-dismissible fade show'"
+					role="alert" style="margin: 15px 20px 0 20px;">
+
+					<span th:text="${successMessage}"></span>
+
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<h1 th:if="${displaymode == 'add'}" style="text-align:left; font-family:arial; font-weight:bold; color:white; font-size:20px;
+                       background-color:rgb(107,122,143); margin-top:10px; margin-bottom:10px; padding:10px;">
+					Add New Record - IRRBB PLACEMENTS
+				</h1>
+				<h1 th:if="${displaymode == 'modify'}" style="text-align:left; font-family:arial; font-weight:bold; color:white; font-size:20px;
+                       background-color:rgb(107,122,143); margin-top:10px; margin-bottom:10px; padding:10px;">
+					Modify Record - IRRBB PLACEMENTS
+				</h1>
+				<h1 th:if="${displaymode == 'detail' or displaymode == 'detail-modify' or displaymode == 'detail-add'}"
+					style="text-align:left; font-family:arial; font-weight:bold; color:white; font-size:20px;
+                       background-color:rgb(107,122,143); margin-top:10px; margin-bottom:10px; padding:10px;">
+					Detail View - IRRBB PLACEMENTS
+				</h1>
+
+				<!-- ===================================================== -->
+				<!-- SUMMARY TABLE                                          -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'summary'}">
+					<div class="row">
+						<div class="col-sm-12">
+							<table class="table table-bordered table-hover table-sm" id="irrbbPlacementsTbl">
+								<thead>
+									<tr>
+										<th th:if="${archiveMode != true}"></th>
+										<th>S.No</th>
+										<th>Account Number</th>
+										<th>GL Code</th>
+										<th>GL Description</th>
+										<th>Account Currency</th>
+										<th>Account Opening Date</th>
+										<th>Maturity Date</th>
+										<th>Outstanding Balance (Acct CCY)</th>
+										<th>Outstanding Balance (INR)</th>
+										<th>Floating / Fixed</th>
+										<th>Existing Benchmark</th>
+										<th>Existing Repricing Frequency</th>
+										<th>Last Repricing Date</th>
+										<th>Next Repricing Date</th>
+										<th>Spread Over Benchmark</th>
+										<th>Final ROI %</th>
+										<th>Remarks</th>
+										<th>BACID</th>
+										<th>Report Date</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
+										<td th:if="${archiveMode != true}">
+											<a th:if="${resubMode != true}"
+												th:href="@{/Reports/IRRBB_PLACEMENTS/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+												class="btn btn-warning btn-sm">Modify</a>
+											<a th:if="${resubMode}"
+												th:href="@{/Reports/IRRBB_PLACEMENTS/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+												class="btn btn-warning btn-sm">Modify</a>
+										</td>
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.accountNumber}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.glDescription}"></td>
+										<td th:text="${data.accountCurrency}"></td>
+										<td
+											th:text="${data.accountOpeningDate != null ? #dates.format(data.accountOpeningDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td
+											th:text="${data.maturityDate != null ? #dates.format(data.maturityDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td th:text="${data.outBalAccCcy}"></td>
+										<td th:text="${data.outBalInr}"></td>
+										<td th:text="${data.floatingFixed}"></td>
+										<td th:text="${data.existingBenchmark}"></td>
+										<td th:text="${data.existingRepricingFrequency}"></td>
+										<td
+											th:text="${data.lastRepricingDate != null ? #dates.format(data.lastRepricingDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td
+											th:text="${data.nextRepricingDate != null ? #dates.format(data.nextRepricingDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td th:text="${data.spreadOverBenchmark}"></td>
+										<td th:text="${data.finalRoiPercent}"></td>
+										<td th:text="${data.remarks}"></td>
+										<td th:text="${data.bacid}"></td>
+										<td
+											th:text="${data.reportDate != null ? #dates.format(data.reportDate,'dd-MM-yyyy') : ''}">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+
+
+				<!-- ===================================================== -->
+				<!-- DETAIL TABLE                                           -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'detail'}">
+
+					<div th:if="${successMessage != null}"
+						th:class="'alert alert-' + (${successType == 'success' ? 'success' : 'danger'}) + ' alert-dismissible fade show'"
+						role="alert" style="margin: 15px 20px 0 20px;">
+						<span th:text="${successMessage}"></span>
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+
+					<div th:if="${archiveMode != true and resubMode != true}" style="padding:8px 15px;">
+						<a th:href="@{/Reports/IRRBB_PLACEMENTS/detail/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+							class="btn btn-primary btn-sm">Add New Record</a>
+					</div>
+					<div class="row">
+						<div class="col-sm-12">
+							<table class="table table-bordered table-hover table-sm" id="irrbbPlacementsDetailTbl">
+								<thead>
+									<tr>
+										<th th:if="${archiveMode != true}"></th>
+										<th>S.No</th>
+										<th>Account Number</th>
+										<th>GL Code</th>
+										<th>GL Description</th>
+										<th>Account Currency</th>
+										<th>Account Opening Date</th>
+										<th>Maturity Date</th>
+										<th>Outstanding Balance (Acct CCY)</th>
+										<th>Outstanding Balance (INR)</th>
+										<th>Floating / Fixed</th>
+										<th>Existing Benchmark</th>
+										<th>Existing Repricing Frequency</th>
+										<th>Last Repricing Date</th>
+										<th>Next Repricing Date</th>
+										<th>Spread Over Benchmark</th>
+										<th>Final ROI %</th>
+										<th>Remarks</th>
+										<th>BACID</th>
+										<th>Report Date</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportdetail}">
+										<td th:if="${archiveMode != true}">
+											<a th:if="${resubMode != true}"
+												th:href="@{/Reports/IRRBB_PLACEMENTS/detail/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+												class="btn btn-warning btn-sm">Modify</a>
+											<a th:if="${resubMode}"
+												th:href="@{/Reports/IRRBB_PLACEMENTS/detail/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
+												class="btn btn-warning btn-sm">Modify</a>
+										</td>
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.accountNumber}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.glDescription}"></td>
+										<td th:text="${data.accountCurrency}"></td>
+										<td
+											th:text="${data.accountOpeningDate != null ? #dates.format(data.accountOpeningDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td
+											th:text="${data.maturityDate != null ? #dates.format(data.maturityDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td th:text="${data.outBalAccCcy}"></td>
+										<td th:text="${data.outBalInr}"></td>
+										<td th:text="${data.floatingFixed}"></td>
+										<td th:text="${data.existingBenchmark}"></td>
+										<td th:text="${data.existingRepricingFrequency}"></td>
+										<td
+											th:text="${data.lastRepricingDate != null ? #dates.format(data.lastRepricingDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td
+											th:text="${data.nextRepricingDate != null ? #dates.format(data.nextRepricingDate,'dd-MM-yyyy') : ''}">
+										</td>
+										<td th:text="${data.spreadOverBenchmark}"></td>
+										<td th:text="${data.finalRoiPercent}"></td>
+										<td th:text="${data.remarks}"></td>
+										<td th:text="${data.bacid}"></td>
+										<td
+											th:text="${data.reportDate != null ? #dates.format(data.reportDate,'dd-MM-yyyy') : ''}">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+
+
+
+				<!-- ===================================================== -->
+				<!-- ADD SCREEN                                             -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'add'}" class="container-fluid">
+
+					<form th:action="@{/Reports/IRRBB_PLACEMENTS/save}" method="post" th:object="${irrbbPlacements}">
+
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
+						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+
+						<div class="card">
+							<div class="card-header bg-primary text-white">
+								<h4>Add IRRBB PLACEMENTS Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Date</label><input type="date"
+											th:field="*{reportDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Version</label><input type="number"
+											step="0.01" th:field="*{reportVersion}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Frequency</label><input type="text"
+											th:field="*{reportFrequency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Code</label><input type="text"
+											th:field="*{reportCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Description</label><input type="text"
+											th:field="*{reportDesc}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Entity Flag</label><input type="text"
+											th:field="*{entityFlg}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Modify Flag</label><input type="text"
+											th:field="*{modifyFlg}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Delete Flag</label><input type="text"
+											th:field="*{delFlg}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Resubmission Date</label><input type="date"
+											th:field="*{reportResubdate}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-primary"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Submit</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<!-- ===================================================== -->
+				<!-- DETAIL-ADD SCREEN                                      -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'detail-add'}" class="container-fluid">
+
+					<form th:action="@{/Reports/IRRBB_PLACEMENTS/detail/save}" method="post"
+						th:object="${irrbbPlacements}">
+
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
+						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+
+						<div class="card">
+							<div class="card-header bg-primary text-white">
+								<h4>Add IRRBB PLACEMENTS Detail Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Date</label><input type="date"
+											th:field="*{reportDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Version</label><input type="number"
+											step="0.01" th:field="*{reportVersion}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Frequency</label><input type="text"
+											th:field="*{reportFrequency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Code</label><input type="text"
+											th:field="*{reportCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Report Description</label><input type="text"
+											th:field="*{reportDesc}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Entity Flag</label><input type="text"
+											th:field="*{entityFlg}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Modify Flag</label><input type="text"
+											th:field="*{modifyFlg}" class="form-control" /></div>
+									<div class="col-md-2 mb-3"><label>Delete Flag</label><input type="text"
+											th:field="*{delFlg}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Resubmission Date</label><input type="date"
+											th:field="*{reportResubdate}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-primary"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Submit</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<!-- ===================================================== -->
+				<!-- MODIFY SCREEN                                          -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'modify'}" class="container-fluid">
+
+					<form th:if="${resubMode != true}" th:action="@{/Reports/IRRBB_PLACEMENTS/update}" method="post"
+						th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
+						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+						<input type="hidden" th:field="*{sno}" />
+						<input type="hidden" th:field="*{reportDate}" />
+						<input type="hidden" th:field="*{reportVersion}" />
+						<input type="hidden" th:field="*{reportFrequency}" />
+						<input type="hidden" th:field="*{reportCode}" />
+						<input type="hidden" th:field="*{reportDesc}" />
+						<input type="hidden" th:field="*{entityFlg}" />
+						<input type="hidden" th:field="*{modifyFlg}" />
+						<input type="hidden" th:field="*{delFlg}" />
+						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<div class="card">
+							<div class="card-header bg-warning text-dark">
+								<h4>Modify IRRBB PLACEMENTS Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-warning"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Update</button>
+							</div>
+						</div>
+					</form>
+
+					<form th:if="${resubMode}" th:action="@{/Reports/IRRBB_PLACEMENTS/update}" method="post"
+						th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+						<input type="hidden" th:field="*{sno}" />
+						<input type="hidden" th:field="*{reportDate}" />
+						<input type="hidden" th:field="*{reportVersion}" />
+						<input type="hidden" th:field="*{reportFrequency}" />
+						<input type="hidden" th:field="*{reportCode}" />
+						<input type="hidden" th:field="*{reportDesc}" />
+						<input type="hidden" th:field="*{entityFlg}" />
+						<input type="hidden" th:field="*{modifyFlg}" />
+						<input type="hidden" th:field="*{delFlg}" />
+						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<div class="card">
+							<div class="card-header bg-warning text-dark">
+								<h4>Modify IRRBB PLACEMENTS Resub Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-warning"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Update</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+				<!-- ===================================================== -->
+				<!-- DETAIL-MODIFY SCREEN                                   -->
+				<!-- ===================================================== -->
+				<div th:if="${displaymode == 'detail-modify'}" class="container-fluid">
+
+					<form th:if="${resubMode != true}" th:action="@{/Reports/IRRBB_PLACEMENTS/detail/update}"
+						method="post" th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="asondate" th:value="${asondate}" />
+						<input type="hidden" th:name="fromdate" th:value="${fromdate}" />
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+						<input type="hidden" th:field="*{sno}" />
+						<input type="hidden" th:field="*{reportDate}" />
+						<input type="hidden" th:field="*{reportVersion}" />
+						<input type="hidden" th:field="*{reportFrequency}" />
+						<input type="hidden" th:field="*{reportCode}" />
+						<input type="hidden" th:field="*{reportDesc}" />
+						<input type="hidden" th:field="*{entityFlg}" />
+						<input type="hidden" th:field="*{modifyFlg}" />
+						<input type="hidden" th:field="*{delFlg}" />
+						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<div class="card">
+							<div class="card-header bg-warning text-dark">
+								<h4>Modify IRRBB PLACEMENTS Detail Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-warning"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Update</button>
+							</div>
+						</div>
+					</form>
+
+					<form th:if="${resubMode}" th:action="@{/Reports/IRRBB_PLACEMENTS/detail/update}" method="post"
+						th:object="${irrbbPlacements}">
+						<input type="hidden" th:name="todate" th:value="${todate}" />
+						<input type="hidden" th:field="*{sno}" />
+						<input type="hidden" th:field="*{reportDate}" />
+						<input type="hidden" th:field="*{reportVersion}" />
+						<input type="hidden" th:field="*{reportFrequency}" />
+						<input type="hidden" th:field="*{reportCode}" />
+						<input type="hidden" th:field="*{reportDesc}" />
+						<input type="hidden" th:field="*{entityFlg}" />
+						<input type="hidden" th:field="*{modifyFlg}" />
+						<input type="hidden" th:field="*{delFlg}" />
+						<input type="hidden" th:if="*{reportResubdate != null}" th:field="*{reportResubdate}" />
+						<div class="card">
+							<div class="card-header bg-warning text-dark">
+								<h4>Modify IRRBB PLACEMENTS Resub Detail Record</h4>
+							</div>
+							<div class="card-body add-form-scroll">
+								<div class="row">
+									<div class="col-md-4 mb-3"><label>Account Number</label><input type="text"
+											th:field="*{accountNumber}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Code</label><input type="number"
+											th:field="*{glCode}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>GL Description</label><input type="text"
+											th:field="*{glDescription}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Currency</label><input type="text"
+											th:field="*{accountCurrency}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Account Opening Date</label><input type="date"
+											th:field="*{accountOpeningDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Maturity Date</label><input type="date"
+											th:field="*{maturityDate}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (Acct CCY)</label><input
+											type="number" step="0.01" th:field="*{outBalAccCcy}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3"><label>Outstanding Balance (INR)</label><input
+											type="number" step="0.01" th:field="*{outBalInr}" class="form-control" />
+									</div>
+									<div class="col-md-4 mb-3">
+										<label>Floating / Fixed</label>
+										<select th:field="*{floatingFixed}" class="form-control"
+											id="floatingFixedSelect" onchange="toggleFloatingFields()">
+											<option value="">-- Select --</option>
+											<option value="Fixed">Fixed</option>
+											<option value="Floating">Floating</option>
+										</select>
+									</div>
+
+									<!-- Floating-specific fields (shown only when Floating is selected) -->
+									<div class="floating-field">
+										<div class="row">
+											<div class="col-md-4 mb-3"><label>Existing Benchmark</label>
+												<input type="text" th:field="*{existingBenchmark}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Existing Repricing Frequency</label>
+												<input type="text" th:field="*{existingRepricingFrequency}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Last Repricing Date</label>
+												<input type="date" th:field="*{lastRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Next Repricing Date</label>
+												<input type="date" th:field="*{nextRepricingDate}"
+													class="form-control" />
+											</div>
+											<div class="col-md-4 mb-3"><label>Spread Over Benchmark</label>
+												<input type="text" th:field="*{spreadOverBenchmark}"
+													class="form-control" />
+											</div>
+										</div>
+									</div>
+
+									<div class="col-md-4 mb-3"><label>Final ROI %</label><input type="text"
+											th:field="*{finalRoiPercent}" class="form-control" /></div>
+
+									<div class="col-md-4 mb-3"><label>Remarks</label><input type="text"
+											th:field="*{remarks}" class="form-control" /></div>
+									<div class="col-md-4 mb-3"><label>BACID</label><input type="text"
+											th:field="*{bacid}" class="form-control" /></div>
+								</div>
+							</div>
+							<div class="card-footer text-center">
+								<button type="submit" class="btn btn-warning"
+									onclick="$('#loader').modal('show'); this.disabled=true; this.form.submit();">Update</button>
+							</div>
+						</div>
+					</form>
+				</div>
+
+			</div><!-- /.card -->
+		</div><!-- /.row -->
+	</div><!-- /.container-fluid -->
+
+	<!-- Loader modal -->
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background:transparent;">
+				<div class="modal-body" style="text-align:center;">
+					<div>
+						<img th:src="@{/images/loader.gif}" id="bfirelogo"
+							style="width:153px; height:auto; margin-left:18px; background-color:transparent; border-color:transparent;"
+							alt="Loading" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result modal -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align:center; color:white;"></div>
+				</div>
+				<div class="modal-body" style="text-align:center; font-size:1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			// DataTable initialization
+			if ($('#irrbbPlacementsTbl').length) {
+				$('#irrbbPlacementsTbl').DataTable({
+					"pageLength": 25, "order": [], "scrollX": true,
+					"scrollY": "calc(100vh - 280px)", "scrollCollapse": true,
+					"paging": true, "autoWidth": false
+				});
+			}
+			if ($('#irrbbPlacementsDetailTbl').length) {
+				$('#irrbbPlacementsDetailTbl').DataTable({
+					"pageLength": 25, "order": [], "scrollX": true,
+					"scrollY": "calc(100vh - 320px)", "scrollCollapse": true,
+					"paging": true, "autoWidth": false
+				});
+			}
+
+			// ✅ Auto-dismiss alert after 5 seconds
+			if ($('.alert').length) {
+				setTimeout(function () {
+					$('.alert').fadeOut('slow', function () {
+						$(this).remove();
+					});
+				}, 5000);
+			}
+		});
+	</script>
+
+</body>
+
+</html>
