@@ -4129,7 +4129,7 @@ public class RegulatoryReportServices {
 
 			case "M_DEP1":
 				modelAndView = BRRS_M_DEP1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_DEP2":
@@ -4775,6 +4775,7 @@ public class RegulatoryReportServices {
 
 		switch (rptcode) {
 
+
 		case "IRRBB_BORROWINGS":
 			try {
 				List<Object[]> resubList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Resub();
@@ -4793,6 +4794,17 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for IRRBB_PLACEMENTS: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for IRRBB_PLACEMENTS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_DEP1":
+			try {
+				List<Object[]> resubList = BRRS_M_DEP1_reportservice.getM_DEP1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_DEP1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_DEP1: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

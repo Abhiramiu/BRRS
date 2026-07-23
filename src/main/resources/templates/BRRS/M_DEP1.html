@@ -568,13 +568,39 @@ PURPOSE		: BRRSREPORT
 								        }
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&type=${type}`;
 		}
 	</script>
 
 	<script>
 		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let userAnswer = null;
+
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
+
+				$('#btnConfirmYes').off('click').on('click', function() {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function() {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
 
 			// ✅ Store the previous page URL
 			const previousUrl = document.referrer; // same as going back once in history
@@ -3263,7 +3289,7 @@ PURPOSE		: BRRSREPORT
              onclick="openDetail(this, 'edit')"></i>
 
            </a></td>
-           <td th:text="${srlno.index + 1}"></td>
+           <td th:text="${report.sno != null ? report.sno : '-'}"></td>
            <td th:text="${report.custId != null ? report.custId : '-'}"></td>
            <td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
            <td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
@@ -3294,6 +3320,7 @@ PURPOSE		: BRRSREPORT
    <div th:if="${formmode == 'edit'}" class="card">
     <div class="card-body">
      <form th:object="${Data}" method="post" id="DetailForm">
+      <input type="hidden" name="type" th:value="${type}" />
 
       <!-- Row 1 -->
       <div class="row formline" style="margin-top: 10px;">
@@ -3381,6 +3408,23 @@ PURPOSE		: BRRSREPORT
  </div>
 
 
+
+ <div class="modal fade" id="confirmModal">
+  <div class="modal-dialog modal-dialog-centered">
+   <div class="modal-content">
+    <div class="menu-title-header">
+     <div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">Confirmation</div>
+    </div>
+    <div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+     <p id="confirmModalBody">Would you like to make further modifications?</p>
+     <div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+      <button type="button" id="btnConfirmYes" class="custom-tab-btn" data-dismiss="modal">Modify</button>
+      <button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">Regenerate</button>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
 
  <!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
  <div class="modal fade" id="resultModal">

@@ -124,6 +124,12 @@ public class BRRS_M_DEP1_ReportService {
 		return rows.isEmpty() ? null : rows.get(0);
 	}
 
+	private M_DEP1_Archival_Detail_Entity findArchivalDetailByAcctNumber(String acctNumber) {
+		String sql = "SELECT * FROM " + TBL_ARCH_DETAIL + " WHERE ACCT_NUMBER = ?";
+		List<M_DEP1_Archival_Detail_Entity> rows = jdbcTemplate.query(sql, new M_DEP1ArchivalDetailRowMapper(), acctNumber);
+		return rows.isEmpty() ? null : rows.get(0);
+	}
+
 	private void saveDetailEntity(M_DEP1_Detail_Entity entity) {
 		String sql = "UPDATE " + TBL_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
 		jdbcTemplate.update(sql, entity.getAcctName(), entity.getAcctBalanceInpula(), entity.getAcctNumber());
@@ -168,6 +174,7 @@ public class BRRS_M_DEP1_ReportService {
 		obj.setEntityFlg(rs.getString("ENTITY_FLG"));
 		obj.setModifyFlg(rs.getString("MODIFY_FLG"));
 		obj.setDelFlg(rs.getString("DEL_FLG"));
+		obj.setSno(rs.getBigDecimal("SNO"));
 		return obj;
 	}
 
@@ -197,6 +204,7 @@ public class BRRS_M_DEP1_ReportService {
 		obj.setEntityFlg(rs.getString("ENTITY_FLG"));
 		obj.setModifyFlg(rs.getString("MODIFY_FLG"));
 		obj.setDelFlg(rs.getString("DEL_FLG"));
+		obj.setSno(rs.getBigDecimal("SNO"));
 		return obj;
 	}
 
@@ -231,7 +239,7 @@ public class BRRS_M_DEP1_ReportService {
 		 * startItem = currentPage * pageSize;
 		 */
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 			List<M_DEP1_Archival_Summary_Entity> T1Master = new ArrayList<M_DEP1_Archival_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
@@ -315,7 +323,7 @@ public class BRRS_M_DEP1_ReportService {
 				}
 			}
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 				System.out.println(type);
 				System.out.println(version);
 				// 🔹 Archival branch
@@ -376,7 +384,7 @@ public class BRRS_M_DEP1_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 			byte[] ARCHIVALreport = getExcelM_DEP1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype,
 					type, version);
 			return ARCHIVALreport;
@@ -5690,7 +5698,7 @@ public class BRRS_M_DEP1_ReportService {
 		try {
 			logger.info("Generating Excel for BRRS_M_DEP1 Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 						version);
 				return ARCHIVALreport;
@@ -5811,10 +5819,28 @@ public class BRRS_M_DEP1_ReportService {
 		return M_DEP1Archivallist;
 	}
 
+	public List<Object[]> getM_DEP1Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM " + TBL_ARCH_SUMMARY
+					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+					rs.getDate("REPORT_DATE"),
+					rs.getBigDecimal("REPORT_VERSION"),
+					rs.getDate("REPORT_RESUBDATE")
+			});
+			System.out.println("Fetched " + resubList.size() + " M_DEP1 Resub records");
+		} catch (Exception e) {
+			System.err.println("Error fetching M_DEP1 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
 	public byte[] getExcelM_DEP1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 		}
 		List<M_DEP1_Archival_Summary_Entity> dataList = getByDateAndVersion(TBL_ARCH_SUMMARY, dateformat.parse(todate),
@@ -11124,7 +11150,7 @@ public class BRRS_M_DEP1_ReportService {
 		try {
 			logger.info("Generating Excel for BRRS_M_DEP1 ARCHIVAL Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -11243,17 +11269,31 @@ public class BRRS_M_DEP1_ReportService {
 	}
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		return getViewOrEditPage(acctNo, formMode, null);
+	}
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type) {
 		ModelAndView mv = new ModelAndView("BRRS/M_DEP1"); // ✅ match the report name
-		System.out.println("Hello");
+		System.out.println("Hello type: " + type);
 		if (acctNo != null) {
-			M_DEP1_Detail_Entity la1Entity = findDetailByAcctNumber(acctNo);
-			if (la1Entity != null && la1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+			if ("RESUB".equals(type)) {
+				M_DEP1_Archival_Detail_Entity archivalEntity = findArchivalDetailByAcctNumber(acctNo);
+				if (archivalEntity != null && archivalEntity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(archivalEntity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("Data", archivalEntity);
+			} else {
+				M_DEP1_Detail_Entity la1Entity = findDetailByAcctNumber(acctNo);
+				if (la1Entity != null && la1Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("Data", la1Entity);
 			}
-			mv.addObject("Data", la1Entity);
 		}
 
+		mv.addObject("type", type);
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
 		return mv;
@@ -11286,99 +11326,193 @@ public class BRRS_M_DEP1_ReportService {
 			String provisionStr = request.getParameter("acctBalanceInpula");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+			logger.info("Received update for ACCT_NO: {} with type: {}, entry: {}", acctNo, type, entry);
 
-			M_DEP1_Detail_Entity existing = findDetailByAcctNumber(acctNo);
+			boolean isResub = "RESUB".equals(type);
+			Object existing = null;
+			Object oldcopy = null;
+
+			if (isResub) {
+				existing = findArchivalDetailByAcctNumber(acctNo);
+				if (existing != null) {
+					M_DEP1_Archival_Detail_Entity copy = new M_DEP1_Archival_Detail_Entity();
+					BeanUtils.copyProperties(existing, copy);
+					oldcopy = copy;
+				}
+			} else {
+				existing = findDetailByAcctNumber(acctNo);
+				if (existing != null) {
+					M_DEP1_Detail_Entity copy = new M_DEP1_Detail_Entity();
+					BeanUtils.copyProperties(existing, copy);
+					oldcopy = copy;
+				}
+			}
 
 			if (existing == null) {
-
 				logger.warn("No record found for ACCT_NO: {}", acctNo);
-
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
 
-			// Create old copy for audit comparison
-			M_DEP1_Detail_Entity oldcopy = new M_DEP1_Detail_Entity();
-			BeanUtils.copyProperties(existing, oldcopy);
-
 			boolean isChanged = false;
+			String currentAcctName = isResub ? ((M_DEP1_Archival_Detail_Entity) existing).getAcctName() : ((M_DEP1_Detail_Entity) existing).getAcctName();
+			BigDecimal currentBalance = isResub ? ((M_DEP1_Archival_Detail_Entity) existing).getAcctBalanceInpula() : ((M_DEP1_Detail_Entity) existing).getAcctBalanceInpula();
 
 			if (acctName != null && !acctName.isEmpty()) {
-
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-
-					existing.setAcctName(acctName);
+				if (currentAcctName == null || !currentAcctName.equals(acctName)) {
+					if (isResub) {
+						((M_DEP1_Archival_Detail_Entity) existing).setAcctName(acctName);
+					} else {
+						((M_DEP1_Detail_Entity) existing).setAcctName(acctName);
+					}
 					isChanged = true;
-
 					logger.info("Account name updated to {}", acctName);
 				}
 			}
 
 			if (provisionStr != null && !provisionStr.isEmpty()) {
-
 				BigDecimal newProvision = new BigDecimal(provisionStr);
-
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
-
-					existing.setAcctBalanceInpula(newProvision);
+				if (currentBalance == null || currentBalance.compareTo(newProvision) != 0) {
+					if (isResub) {
+						((M_DEP1_Archival_Detail_Entity) existing).setAcctBalanceInpula(newProvision);
+					} else {
+						((M_DEP1_Detail_Entity) existing).setAcctBalanceInpula(newProvision);
+					}
 					isChanged = true;
-
 					logger.info("Balance updated to {}", newProvision);
 				}
 			}
 
 			if (isChanged) {
-
-				saveDetailEntity(existing);
-
-				// Audit comparison
-				auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M DEP1 Detail Screen",
-						"BRRS_M_DEP1_DETAIL");
+				String sql;
+				if (isResub) {
+					sql = "UPDATE " + TBL_ARCH_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
+					jdbcTemplate.update(sql, 
+						((M_DEP1_Archival_Detail_Entity) existing).getAcctName(), 
+						((M_DEP1_Archival_Detail_Entity) existing).getAcctBalanceInpula(), 
+						acctNo);
+					auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M DEP1 Archival Detail Screen", TBL_ARCH_DETAIL);
+				} else {
+					sql = "UPDATE " + TBL_DETAIL + " SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?";
+					jdbcTemplate.update(sql, 
+						((M_DEP1_Detail_Entity) existing).getAcctName(), 
+						((M_DEP1_Detail_Entity) existing).getAcctBalanceInpula(), 
+						acctNo);
+					auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M DEP1 Detail Screen", TBL_DETAIL);
+				}
 
 				logger.info("Record updated successfully for account {}", acctNo);
 
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+				Run_M_DEP1_Procedure(reportDateStr, type, entry);
 
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					public void afterCommit() {
-
-						try {
-
-							logger.info("Transaction committed — calling BRRS_M_DEP1_SUMMARY_PROCEDURE({})",
-									formattedDate);
-
-							jdbcTemplate.update("BEGIN BRRS_M_DEP1_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							logger.info("Procedure executed successfully after commit.");
-
-						} catch (Exception e) {
-
-							logger.error("Error executing procedure after commit", e);
-						}
-					}
-				});
-
+				if (isResub && "NO".equals(entry)) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
 				return ResponseEntity.ok("Record updated successfully!");
 
 			} else {
-
 				logger.info("No changes detected for ACCT_NO: {}", acctNo);
 				return ResponseEntity.ok("No changes were made.");
 			}
 
 		} catch (Exception e) {
-
 			logger.error("Error updating M_DEP1 record", e);
-
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
+
+	private void Run_M_DEP1_Procedure(String reportDateStr, String type, String entry) {
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						String bdsql = "DELETE FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						String sqltransfer = "INSERT INTO " + TBL_DETAIL + " "
+								+ " (SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, REPORT_LABEL, REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, REPORT_DATE, REPORT_NAME, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, REPORT_LABEL, REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, REPORT_DATE, REPORT_NAME, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+								+ "FROM " + TBL_ARCH_DETAIL + " WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						jdbcTemplate.update("BEGIN BRRS_M_DEP1_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+						String adsql = "DELETE FROM " + TBL_DETAIL + " WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM " + TBL_ARCH_SUMMARY + " WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						StringBuilder columnsPart = new StringBuilder();
+						String[] tokens = {
+								"product",
+								"current",
+								"call",
+								"savings",
+								"0_31_notice_days",
+								"32_88_notice_days",
+								"91_day_deposit_fixed_deposit_months",
+								"1_2_fixed_deposits_months",
+								"4_6_fixed_deposits_months",
+								"7_12_fixed_deposits_months",
+								"13_18_fixed_deposits_months",
+								"19_24_fixed_deposits_months",
+								"over_24_fixed_deposits_months",
+								"certificates_of_deposit",
+								"total"
+						};
+						for (int i = 11; i <= 57; i++) {
+							for (String token : tokens) {
+								columnsPart.append("R").append(i).append("_").append(token).append(", ");
+							}
+						}
+
+						String finalsql = "INSERT INTO " + TBL_ARCH_SUMMARY + " (" + columnsPart.toString()
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT " + columnsPart.toString()
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM " + TBL_SUMMARY + " WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+
+						String adsumsql = "DELETE FROM " + TBL_SUMMARY + " WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
 
 	// M_DEP1 entity classes
 
@@ -18620,6 +18754,8 @@ public class BRRS_M_DEP1_ReportService {
 		private String entity_flg;
 		private String modify_flg;
 		private String del_flg;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
+		private Date report_resubdate;
 
 		public String getR11_product() {
 			return r11_product;
@@ -24325,6 +24461,14 @@ public class BRRS_M_DEP1_ReportService {
 			this.del_flg = del_flg;
 		}
 
+		public Date getReport_resubdate() {
+			return report_resubdate;
+		}
+
+		public void setReport_resubdate(Date report_resubdate) {
+			this.report_resubdate = report_resubdate;
+		}
+
 		public M_DEP1_Archival_Summary_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
@@ -24558,6 +24702,16 @@ public class BRRS_M_DEP1_ReportService {
 			this.sanctionLimit = sanctionLimit;
 		}
 
+		private BigDecimal sno;
+
+		public BigDecimal getSno() {
+			return sno;
+		}
+
+		public void setSno(BigDecimal sno) {
+			this.sno = sno;
+		}
+
 		public M_DEP1_Detail_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
@@ -24789,6 +24943,16 @@ public class BRRS_M_DEP1_ReportService {
 
 		public void setSanctionLimit(BigDecimal sanctionLimit) {
 			this.sanctionLimit = sanctionLimit;
+		}
+
+		private BigDecimal sno;
+
+		public BigDecimal getSno() {
+			return sno;
+		}
+
+		public void setSno(BigDecimal sno) {
+			this.sno = sno;
 		}
 
 		public M_DEP1_Archival_Detail_Entity() {
