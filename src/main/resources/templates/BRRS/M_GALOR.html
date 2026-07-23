@@ -1342,7 +1342,7 @@ PURPOSE		: BRRS REPORT
 				});
 				setCellValue("#r10_" + col, sum);
 			});
-
+		}
 	</script>
 
 
@@ -13109,7 +13109,7 @@ PURPOSE		: BRRS REPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									<button id="submitButton" type="button" class="custom-tab-btn"
 										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
@@ -13273,7 +13273,7 @@ PURPOSE		: BRRS REPORT
 
 
 		</div>
-
+</div>
 
 
 		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
@@ -13359,7 +13359,6 @@ PURPOSE		: BRRS REPORT
 			</div>
 		</div>
 
-</body>
 <!-- <script>
 																			  $(document).ready(function () {
 																			    $('#BRFvalidation').DataTable({
@@ -13519,4 +13518,5 @@ PURPOSE		: BRRS REPORT
 	}
 </style>
 
+</body>
 </html>
