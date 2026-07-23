@@ -87,6 +87,105 @@ public class BRRS_M_DEP2_ReportService {
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
+	// FIND BY SNO (DEP2_DETAIL)
+
+	public M_DEP2_Detail_Entity findBySno(String sno) {
+		String sql = "SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE SNO = ?";
+		List<M_DEP2_Detail_Entity> result = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), sno);
+		return result.isEmpty() ? null : result.get(0);
+	}
+
+	// FIND BY SNO (DEP2_ARCHIVAL_DETAIL)
+
+	public M_DEP2_Detail_Entity findBySnoArch(String sno) {
+		String sql = "SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
+		List<M_DEP2_Detail_Entity> result = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), sno);
+		return result.isEmpty() ? null : result.get(0);
+	}
+
+	// GET ARCHIVAL SUMMARY BY DATE + VERSION
+
+	public List<M_DEP2_Archival_Summary_Entity> getdatabydateListarchival(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class), REPORT_DATE,
+				REPORT_VERSION);
+	}
+
+	// GET ARCHIVAL DETAIL BY DATE
+
+	public List<M_DEP2_Archival_Detail_Entity> getArchivalDetaildatabydateList(Date reportdate) {
+		String sql = "SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), reportdate);
+	}
+
+	// GET ARCHIVAL DETAIL WITH FILTER
+
+	public List<M_DEP2_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(String reportLabel,
+			String reportAddlCriteria1, Date reportdate) {
+		String sql = "SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), reportLabel,
+				reportAddlCriteria1, reportdate);
+	}
+
+	// GET ALL ARCHIVAL WITH VERSION (FOR RESUB LIST)
+
+	public List<M_DEP2_Archival_Summary_Entity> getdatabydateListWithVersion() {
+		String sql = "SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class));
+	}
+
+	// GET HIGHEST VERSION CHECK
+
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+				+ "FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+	}
+
+	// GET ARCHIVAL LIST (for Archival view)
+
+	public List<Object[]> getM_DEP2Archival() {
+		List<Object[]> archivalList = new ArrayList<>();
+		try {
+			List<M_DEP2_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_DEP2_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getReport_resubdate() };
+					archivalList.add(row);
+				}
+				System.out.println("Fetched " + archivalList.size() + " archival records for DEP2");
+			}
+		} catch (Exception e) {
+			System.err.println("Error fetching DEP2 Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return archivalList;
+	}
+
+	// GET RESUBMISSION LIST
+
+	public List<Object[]> getM_DEP2Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			List<M_DEP2_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+			if (repoData != null && !repoData.isEmpty()) {
+				for (M_DEP2_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getReport_date(), entity.getReport_version(),
+							entity.getReport_resubdate() };
+					resubList.add(row);
+				}
+				System.out.println("Fetched " + resubList.size() + " Resub records for DEP2");
+			}
+		} catch (Exception e) {
+			System.err.println("Error fetching DEP2 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
+	}
+
 	// ------------------------------
 	// GET SUMMARY VIEW FOR M_DEP2
 	// ------------------------------
@@ -96,65 +195,51 @@ public class BRRS_M_DEP2_ReportService {
 		ModelAndView mv = new ModelAndView();
 
 		String userid = (String) req1.getSession().getAttribute("USERID");
-		System.out.println("User Id Maker and Checker: " + userid);
+		System.out.println("User Id: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
-//		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
-		int startItem = currentPage * pageSize;
+		System.out.println("DEP2 View Called");
+		System.out.println("Type = " + type);
+		System.out.println("Version = " + version);
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			List<M_DEP2_Archival_Summary_Entity> T1Master = new ArrayList<M_DEP2_Archival_Summary_Entity>();
+// ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
+			List<M_DEP2_Archival_Summary_Entity> T1Master = new ArrayList<>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = jdbcTemplate.query(
-						"SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
-						new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class), d1, version);
-
+				T1Master = getdatabydateListarchival(d1, version);
+				System.out.println(type + " Summary size = " + T1Master.size());
+				mv.addObject("REPORT_DATE", dateformat.format(d1));
+				mv.addObject("allowdetail", getishighestversion(d1, version));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
-
 		} else {
-
-			List<M_DEP2_Summary_Entity> T1Master = new ArrayList<M_DEP2_Summary_Entity>();
+// NORMAL MODE
+			List<M_DEP2_Summary_Entity> T1Master = new ArrayList<>();
 			try {
 				Date d1 = dateformat.parse(todate);
-				// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
-				// T1Master = hs.createQuery("from BRF1_REPORT_ENTITY a where a.report_date = ?1
-				// ", BRF1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = jdbcTemplate.query("select * from BRRS_M_DEP2_SUMMARYTABLE",
-						new BeanPropertyRowMapper<>(M_DEP2_Summary_Entity.class));
-
+				T1Master = jdbcTemplate.query("SELECT * FROM BRRS_M_DEP2_SUMMARYTABLE WHERE REPORT_DATE = ?",
+						new BeanPropertyRowMapper<>(M_DEP2_Summary_Entity.class), d1);
+				System.out.println("Summary size = " + T1Master.size());
+				mv.addObject("REPORT_DATE", dateformat.format(d1));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 			mv.addObject("reportsummary", T1Master);
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-
 		mv.setViewName("BRRS/M_DEP2");
-
-		// mv.addObject("reportmaster", T1Master);
 		mv.addObject("displaymode", "summary");
-		// mv.addObject("reportsflag", "reportsflag");
-		// mv.addObject("menu", reportId);
-		System.out.println("scv" + mv.getViewName());
+		mv.addObject("type", type);
+		mv.addObject("version", version);
+		mv.addObject("reportid", reportId);
 
+		System.out.println("View Loaded: " + mv.getViewName());
 		return mv;
-
 	}
 
 	// ------------------------------
@@ -172,12 +257,10 @@ public class BRRS_M_DEP2_ReportService {
 		ModelAndView mv = new ModelAndView();
 
 		String userid = (String) req1.getSession().getAttribute("USERID");
-		System.out.println("User Id Maker and Checker: " + userid);
+		System.out.println("User Id: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
-
-//		Session hs = sessionFactory.getCurrentSession();
 
 		try {
 			Date parsedDate = null;
@@ -188,7 +271,6 @@ public class BRRS_M_DEP2_ReportService {
 			String reportLabel = null;
 			String reportAddlCriteria1 = null;
 
-			// ✅ Split the filter string here
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
 				if (parts.length >= 2) {
@@ -197,86 +279,80 @@ public class BRRS_M_DEP2_ReportService {
 				}
 			}
 
-			if ("ARCHIVAL".equals(type) && version != null) {
-				System.out.println(type);
-				System.out.println(version);
-				// 🔹 Archival branch
-				List<M_DEP2_Archival_Detail_Entity> T1Dt1;
-				if (reportLabel != null && reportAddlCriteria1 != null) {
-					// Get total count first
-					Integer count = jdbcTemplate.queryForObject(
-							"select count(*) from BRRS_M_DEP2_ARCHIVALTABLE_DETAIL where REPORT_LABEL = ? and REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
-							Integer.class, reportLabel, reportAddlCriteria1, parsedDate, version);
-					totalRecords = count != null ? count : 0;
+// ========== ARCHIVAL / RESUB MODE ==========
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
+				System.out.println(type + " DETAIL MODE");
+				List<M_DEP2_Archival_Detail_Entity> detailList;
 
-					// ✅ Calculate total pages correctly
+				if (reportLabel != null && reportAddlCriteria1 != null) {
+// Get total count with filter
+					Integer count = jdbcTemplate.queryForObject(
+							"SELECT COUNT(*) FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?",
+							Integer.class, reportLabel, reportAddlCriteria1, parsedDate);
+					totalRecords = count != null ? count : 0;
 					totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-					// Fetch paginated data
-					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ? ORDER BY ACCT_NUMBER) a WHERE ROWNUM <= ?) WHERE rnum > ?";
+					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? ORDER BY SNO) a WHERE ROWNUM <= ?) WHERE rnum > ?";
 					int endRow = (currentPage + 1) * pageSize;
 					int startRow = currentPage * pageSize;
 
-					T1Dt1 = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class),
-							reportLabel, reportAddlCriteria1, parsedDate, version, endRow, startRow);
+					detailList = jdbcTemplate.query(sql,
+							new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), reportLabel,
+							reportAddlCriteria1, parsedDate, endRow, startRow);
 					mv.addObject("pagination", "YES");
 				} else {
-					// Get total count first
+// Get total count without filter
 					Integer count = jdbcTemplate.queryForObject(
-							"select count(*) from BRRS_M_DEP2_ARCHIVALTABLE_DETAIL where REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
-							Integer.class, parsedDate, version);
+							"SELECT COUNT(*) FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?",
+							Integer.class, parsedDate);
 					totalRecords = count != null ? count : 0;
-
-					// ✅ Calculate total pages correctly
 					totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-					// Fetch paginated data
-					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ? ORDER BY ACCT_NUMBER) a WHERE ROWNUM <= ?) WHERE rnum > ?";
+					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? ORDER BY SNO) a WHERE ROWNUM <= ?) WHERE rnum > ?";
 					int endRow = (currentPage + 1) * pageSize;
 					int startRow = currentPage * pageSize;
 
-					T1Dt1 = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class),
-							parsedDate, version, endRow, startRow);
-					System.out.println(T1Dt1.size());
+					detailList = jdbcTemplate.query(sql,
+							new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), parsedDate, endRow,
+							startRow);
 					mv.addObject("pagination", "YES");
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", detailList);
+				mv.addObject("reportmaster12", detailList);
+				System.out.println(type + " DETAIL COUNT: " + (detailList != null ? detailList.size() : 0));
 
 			} else {
-				System.out.println("Praveen");
-				// 🔹 Current branch
-				List<M_DEP2_Detail_Entity> T1Dt1;
+// ========== CURRENT MODE ==========
+				System.out.println("CURRENT DETAIL MODE");
+				List<M_DEP2_Detail_Entity> currentDetailList;
+
 				if (reportLabel != null && reportAddlCriteria1 != null) {
-					T1Dt1 = jdbcTemplate.query(
-							"select * from BRRS_M_DEP2_DETAILTABLE where REPORT_LABEL =? and REPORT_ADDL_CRITERIA_1=? AND REPORT_DATE=?",
+					currentDetailList = jdbcTemplate.query(
+							"SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?",
 							new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), reportLabel, reportAddlCriteria1,
 							parsedDate);
 				} else {
-					// Get total count first
+// Get total count
 					Integer count = jdbcTemplate.queryForObject(
-							"select count(*) from BRRS_M_DEP2_DETAILTABLE where REPORT_DATE = ?", Integer.class,
+							"SELECT COUNT(*) FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ?", Integer.class,
 							parsedDate);
 					totalRecords = count != null ? count : 0;
-
-					// ✅ Calculate total pages correctly
 					totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-					// Fetch paginated data
-					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ? ORDER BY ACCT_NUMBER) a WHERE ROWNUM <= ?) WHERE rnum > ?";
+					String sql = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ? ORDER BY SNO) a WHERE ROWNUM <= ?) WHERE rnum > ?";
 					int endRow = (currentPage + 1) * pageSize;
 					int startRow = currentPage * pageSize;
 
-					T1Dt1 = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), parsedDate,
-							endRow, startRow);
+					currentDetailList = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class),
+							parsedDate, endRow, startRow);
 					mv.addObject("pagination", "YES");
 				}
 
-				mv.addObject("reportdetails", T1Dt1);
-				mv.addObject("reportmaster12", T1Dt1);
-				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("reportdetails", currentDetailList);
+				mv.addObject("reportmaster12", currentDetailList);
+				System.out
+						.println("CURRENT DETAIL COUNT: " + (currentDetailList != null ? currentDetailList.size() : 0));
 			}
 
 		} catch (ParseException e) {
@@ -287,19 +363,547 @@ public class BRRS_M_DEP2_ReportService {
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// ✅ Common attributes
 		mv.setViewName("BRRS/M_DEP2");
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
-
-		// ✅ Now totalPages is already calculated correctly
-		System.out.println(
-				"Total records: " + totalRecords + ", Page size: " + pageSize + ", Total pages: " + totalPages);
 		mv.addObject("totalPages", totalPages);
-		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
+		mv.addObject("reportId", reportId);
+		mv.addObject("type", type);
+		mv.addObject("version", version);
 
 		return mv;
+	}
+
+	// --------------------------------------------------------
+	// GET VIEW/EDIT PAGE WITH SNo
+	// ---------------------------------------------------------
+
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
+		ModelAndView mv = new ModelAndView("BRRS/M_DEP2");
+
+		System.out.println("SNo is : " + SNO);
+		System.out.println("Type: " + type);
+
+		if (SNO != null) {
+			if (type != null && (type.equals("RESUB") || type.equals("ARCHIVAL"))) {
+				System.out.println("Inside RESUB/ARCHIVAL FETCH");
+				M_DEP2_Detail_Entity dep2Entity = findBySnoArch(SNO);
+				if (dep2Entity != null && dep2Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(dep2Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("dep2Data", dep2Entity);
+			} else {
+				M_DEP2_Detail_Entity dep2Entity = findBySno(SNO);
+				if (dep2Entity != null && dep2Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(dep2Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("dep2Data", dep2Entity);
+			}
+		}
+
+		mv.addObject("type", type);
+		mv.addObject("displaymode", "edit");
+		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		return mv;
+	}
+
+	// RUN PROCEDURE WITH TYPE AND ENTRY
+
+	private void Run_M_DEP2_Procedure(String reportDateStr, String type, String entry) {
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+			@Override
+			public void afterCommit() {
+				try {
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+
+					if (isResubNoEntry) {
+						// Delete from current detail
+						String bdsql = "DELETE FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						System.out.println("Deleted " + rowsDeleted + " rows before procedure.");
+
+						// Transfer from archival to current detail
+						String sqltransfer = "INSERT INTO BRRS_M_DEP2_DETAILTABLE "
+								+ "(SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						System.out.println("Transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+						// Call summary procedure
+						jdbcTemplate.update("BEGIN BRRS_M_DEP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						System.out.println("Procedure executed.");
+					}
+
+					if (isResubNoEntry) {
+						// Delete from current detail after procedure
+						String adsql = "DELETE FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Deleted " + rowsDeleted + " rows after procedure.");
+
+						// Get max version for new archival entry
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						// Insert into archival summary
+						String finalsql = "INSERT INTO BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY ("
+								+ "R12_CURRENT, R12_CALL, R12_SAVINGS, R12_0_31_NOTICE_DAYS, R12_32_88_NOTICE_DAYS, R12_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R12_1_2_FIXED_DEPOSITS_MONTHS, R12_4_6_FIXED_DEPOSITS_MONTHS, R12_7_12_FIXED_DEPOSITS_MONTHS, R12_13_18_FIXED_DEPOSITS_MONTHS, R12_19_24_FIXED_DEPOSITS_MONTHS, R12_OVER_24_FIXED_DEPOSITS_MONTHS, R12_CERTIFICATES_OF_DEPOSIT, "
+								+ "R13_CURRENT, R13_CALL, R13_SAVINGS, R13_0_31_NOTICE_DAYS, R13_32_88_NOTICE_DAYS, R13_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R13_1_2_FIXED_DEPOSITS_MONTHS, R13_4_6_FIXED_DEPOSITS_MONTHS, R13_7_12_FIXED_DEPOSITS_MONTHS, R13_13_18_FIXED_DEPOSITS_MONTHS, R13_19_24_FIXED_DEPOSITS_MONTHS, R13_OVER_24_FIXED_DEPOSITS_MONTHS, R13_CERTIFICATES_OF_DEPOSIT, "
+								+ "R14_CURRENT, R14_CALL, R14_SAVINGS, R14_0_31_NOTICE_DAYS, R14_32_88_NOTICE_DAYS, R14_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R14_1_2_FIXED_DEPOSITS_MONTHS, R14_4_6_FIXED_DEPOSITS_MONTHS, R14_7_12_FIXED_DEPOSITS_MONTHS, R14_13_18_FIXED_DEPOSITS_MONTHS, R14_19_24_FIXED_DEPOSITS_MONTHS, R14_OVER_24_FIXED_DEPOSITS_MONTHS, R14_CERTIFICATES_OF_DEPOSIT, "
+								+ "R16_CURRENT, R16_CALL, R16_SAVINGS, R16_0_31_NOTICE_DAYS, R16_32_88_NOTICE_DAYS, R16_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R16_1_2_FIXED_DEPOSITS_MONTHS, R16_4_6_FIXED_DEPOSITS_MONTHS, R16_7_12_FIXED_DEPOSITS_MONTHS, R16_13_18_FIXED_DEPOSITS_MONTHS, R16_19_24_FIXED_DEPOSITS_MONTHS, R16_OVER_24_FIXED_DEPOSITS_MONTHS, R16_CERTIFICATES_OF_DEPOSIT, "
+								+ "R17_CURRENT, R17_CALL, R17_SAVINGS, R17_0_31_NOTICE_DAYS, R17_32_88_NOTICE_DAYS, R17_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R17_1_2_FIXED_DEPOSITS_MONTHS, R17_4_6_FIXED_DEPOSITS_MONTHS, R17_7_12_FIXED_DEPOSITS_MONTHS, R17_13_18_FIXED_DEPOSITS_MONTHS, R17_19_24_FIXED_DEPOSITS_MONTHS, R17_OVER_24_FIXED_DEPOSITS_MONTHS, R17_CERTIFICATES_OF_DEPOSIT, "
+								+ "R18_CURRENT, R18_CALL, R18_SAVINGS, R18_0_31_NOTICE_DAYS, R18_32_88_NOTICE_DAYS, R18_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R18_1_2_FIXED_DEPOSITS_MONTHS, R18_4_6_FIXED_DEPOSITS_MONTHS, R18_7_12_FIXED_DEPOSITS_MONTHS, R18_13_18_FIXED_DEPOSITS_MONTHS, R18_19_24_FIXED_DEPOSITS_MONTHS, R18_OVER_24_FIXED_DEPOSITS_MONTHS, R18_CERTIFICATES_OF_DEPOSIT, "
+								+ "R19_CURRENT, R19_CALL, R19_SAVINGS, R19_0_31_NOTICE_DAYS, R19_32_88_NOTICE_DAYS, R19_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R19_1_2_FIXED_DEPOSITS_MONTHS, R19_4_6_FIXED_DEPOSITS_MONTHS, R19_7_12_FIXED_DEPOSITS_MONTHS, R19_13_18_FIXED_DEPOSITS_MONTHS, R19_19_24_FIXED_DEPOSITS_MONTHS, R19_OVER_24_FIXED_DEPOSITS_MONTHS, R19_CERTIFICATES_OF_DEPOSIT, "
+								+ "R20_CURRENT, R20_CALL, R20_SAVINGS, R20_0_31_NOTICE_DAYS, R20_32_88_NOTICE_DAYS, R20_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R20_1_2_FIXED_DEPOSITS_MONTHS, R20_4_6_FIXED_DEPOSITS_MONTHS, R20_7_12_FIXED_DEPOSITS_MONTHS, R20_13_18_FIXED_DEPOSITS_MONTHS, R20_19_24_FIXED_DEPOSITS_MONTHS, R20_OVER_24_FIXED_DEPOSITS_MONTHS, R20_CERTIFICATES_OF_DEPOSIT, "
+								+ "R21_CURRENT, R21_CALL, R21_SAVINGS, R21_0_31_NOTICE_DAYS, R21_32_88_NOTICE_DAYS, R21_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R21_1_2_FIXED_DEPOSITS_MONTHS, R21_4_6_FIXED_DEPOSITS_MONTHS, R21_7_12_FIXED_DEPOSITS_MONTHS, R21_13_18_FIXED_DEPOSITS_MONTHS, R21_19_24_FIXED_DEPOSITS_MONTHS, R21_OVER_24_FIXED_DEPOSITS_MONTHS, R21_CERTIFICATES_OF_DEPOSIT, "
+								+ "R22_CURRENT, R22_CALL, R22_SAVINGS, R22_0_31_NOTICE_DAYS, R22_32_88_NOTICE_DAYS, R22_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R22_1_2_FIXED_DEPOSITS_MONTHS, R22_4_6_FIXED_DEPOSITS_MONTHS, R22_7_12_FIXED_DEPOSITS_MONTHS, R22_13_18_FIXED_DEPOSITS_MONTHS, R22_19_24_FIXED_DEPOSITS_MONTHS, R22_OVER_24_FIXED_DEPOSITS_MONTHS, R22_CERTIFICATES_OF_DEPOSIT, "
+								+ "R23_CURRENT, R23_CALL, R23_SAVINGS, R23_0_31_NOTICE_DAYS, R23_32_88_NOTICE_DAYS, R23_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R23_1_2_FIXED_DEPOSITS_MONTHS, R23_4_6_FIXED_DEPOSITS_MONTHS, R23_7_12_FIXED_DEPOSITS_MONTHS, R23_13_18_FIXED_DEPOSITS_MONTHS, R23_19_24_FIXED_DEPOSITS_MONTHS, R23_OVER_24_FIXED_DEPOSITS_MONTHS, R23_CERTIFICATES_OF_DEPOSIT, "
+								+ "R24_CURRENT, R24_CALL, R24_SAVINGS, R24_0_31_NOTICE_DAYS, R24_32_88_NOTICE_DAYS, R24_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R24_1_2_FIXED_DEPOSITS_MONTHS, R24_4_6_FIXED_DEPOSITS_MONTHS, R24_7_12_FIXED_DEPOSITS_MONTHS, R24_13_18_FIXED_DEPOSITS_MONTHS, R24_19_24_FIXED_DEPOSITS_MONTHS, R24_OVER_24_FIXED_DEPOSITS_MONTHS, R24_CERTIFICATES_OF_DEPOSIT, "
+								+ "R25_CURRENT, R25_CALL, R25_SAVINGS, R25_0_31_NOTICE_DAYS, R25_32_88_NOTICE_DAYS, R25_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R25_1_2_FIXED_DEPOSITS_MONTHS, R25_4_6_FIXED_DEPOSITS_MONTHS, R25_7_12_FIXED_DEPOSITS_MONTHS, R25_13_18_FIXED_DEPOSITS_MONTHS, R25_19_24_FIXED_DEPOSITS_MONTHS, R25_OVER_24_FIXED_DEPOSITS_MONTHS, R25_CERTIFICATES_OF_DEPOSIT, "
+								+ "R26_CURRENT, R26_CALL, R26_SAVINGS, R26_0_31_NOTICE_DAYS, R26_32_88_NOTICE_DAYS, R26_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R26_1_2_FIXED_DEPOSITS_MONTHS, R26_4_6_FIXED_DEPOSITS_MONTHS, R26_7_12_FIXED_DEPOSITS_MONTHS, R26_13_18_FIXED_DEPOSITS_MONTHS, R26_19_24_FIXED_DEPOSITS_MONTHS, R26_OVER_24_FIXED_DEPOSITS_MONTHS, R26_CERTIFICATES_OF_DEPOSIT, "
+								+ "R27_CURRENT, R27_CALL, R27_SAVINGS, R27_0_31_NOTICE_DAYS, R27_32_88_NOTICE_DAYS, R27_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R27_1_2_FIXED_DEPOSITS_MONTHS, R27_4_6_FIXED_DEPOSITS_MONTHS, R27_7_12_FIXED_DEPOSITS_MONTHS, R27_13_18_FIXED_DEPOSITS_MONTHS, R27_19_24_FIXED_DEPOSITS_MONTHS, R27_OVER_24_FIXED_DEPOSITS_MONTHS, R27_CERTIFICATES_OF_DEPOSIT, "
+								+ "R28_CURRENT, R28_CALL, R28_SAVINGS, R28_0_31_NOTICE_DAYS, R28_32_88_NOTICE_DAYS, R28_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R28_1_2_FIXED_DEPOSITS_MONTHS, R28_4_6_FIXED_DEPOSITS_MONTHS, R28_7_12_FIXED_DEPOSITS_MONTHS, R28_13_18_FIXED_DEPOSITS_MONTHS, R28_19_24_FIXED_DEPOSITS_MONTHS, R28_OVER_24_FIXED_DEPOSITS_MONTHS, R28_CERTIFICATES_OF_DEPOSIT, "
+								+ "R29_CURRENT, R29_CALL, R29_SAVINGS, R29_0_31_NOTICE_DAYS, R29_32_88_NOTICE_DAYS, R29_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R29_1_2_FIXED_DEPOSITS_MONTHS, R29_4_6_FIXED_DEPOSITS_MONTHS, R29_7_12_FIXED_DEPOSITS_MONTHS, R29_13_18_FIXED_DEPOSITS_MONTHS, R29_19_24_FIXED_DEPOSITS_MONTHS, R29_OVER_24_FIXED_DEPOSITS_MONTHS, R29_CERTIFICATES_OF_DEPOSIT, "
+								+ "R31_CURRENT, R31_CALL, R31_SAVINGS, R31_0_31_NOTICE_DAYS, R31_32_88_NOTICE_DAYS, R31_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R31_1_2_FIXED_DEPOSITS_MONTHS, R31_4_6_FIXED_DEPOSITS_MONTHS, R31_7_12_FIXED_DEPOSITS_MONTHS, R31_13_18_FIXED_DEPOSITS_MONTHS, R31_19_24_FIXED_DEPOSITS_MONTHS, R31_OVER_24_FIXED_DEPOSITS_MONTHS, R31_CERTIFICATES_OF_DEPOSIT, "
+								+ "R32_CURRENT, R32_CALL, R32_SAVINGS, R32_0_31_NOTICE_DAYS, R32_32_88_NOTICE_DAYS, R32_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R32_1_2_FIXED_DEPOSITS_MONTHS, R32_4_6_FIXED_DEPOSITS_MONTHS, R32_7_12_FIXED_DEPOSITS_MONTHS, R32_13_18_FIXED_DEPOSITS_MONTHS, R32_19_24_FIXED_DEPOSITS_MONTHS, R32_OVER_24_FIXED_DEPOSITS_MONTHS, R32_CERTIFICATES_OF_DEPOSIT, "
+								+ "R34_CURRENT, R34_CALL, R34_SAVINGS, R34_0_31_NOTICE_DAYS, R34_32_88_NOTICE_DAYS, R34_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R34_1_2_FIXED_DEPOSITS_MONTHS, R34_4_6_FIXED_DEPOSITS_MONTHS, R34_7_12_FIXED_DEPOSITS_MONTHS, R34_13_18_FIXED_DEPOSITS_MONTHS, R34_19_24_FIXED_DEPOSITS_MONTHS, R34_OVER_24_FIXED_DEPOSITS_MONTHS, R34_CERTIFICATES_OF_DEPOSIT, "
+								+ "R35_CURRENT, R35_CALL, R35_SAVINGS, R35_0_31_NOTICE_DAYS, R35_32_88_NOTICE_DAYS, R35_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R35_1_2_FIXED_DEPOSITS_MONTHS, R35_4_6_FIXED_DEPOSITS_MONTHS, R35_7_12_FIXED_DEPOSITS_MONTHS, R35_13_18_FIXED_DEPOSITS_MONTHS, R35_19_24_FIXED_DEPOSITS_MONTHS, R35_OVER_24_FIXED_DEPOSITS_MONTHS, R35_CERTIFICATES_OF_DEPOSIT, "
+								+ "R37_CURRENT, R37_CALL, R37_SAVINGS, R37_0_31_NOTICE_DAYS, R37_32_88_NOTICE_DAYS, R37_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R37_1_2_FIXED_DEPOSITS_MONTHS, R37_4_6_FIXED_DEPOSITS_MONTHS, R37_7_12_FIXED_DEPOSITS_MONTHS, R37_13_18_FIXED_DEPOSITS_MONTHS, R37_19_24_FIXED_DEPOSITS_MONTHS, R37_OVER_24_FIXED_DEPOSITS_MONTHS, R37_CERTIFICATES_OF_DEPOSIT, "
+								+ "R38_CURRENT, R38_CALL, R38_SAVINGS, R38_0_31_NOTICE_DAYS, R38_32_88_NOTICE_DAYS, R38_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R38_1_2_FIXED_DEPOSITS_MONTHS, R38_4_6_FIXED_DEPOSITS_MONTHS, R38_7_12_FIXED_DEPOSITS_MONTHS, R38_13_18_FIXED_DEPOSITS_MONTHS, R38_19_24_FIXED_DEPOSITS_MONTHS, R38_OVER_24_FIXED_DEPOSITS_MONTHS, R38_CERTIFICATES_OF_DEPOSIT, "
+								+ "R39_CURRENT, R39_CALL, R39_SAVINGS, R39_0_31_NOTICE_DAYS, R39_32_88_NOTICE_DAYS, R39_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R39_1_2_FIXED_DEPOSITS_MONTHS, R39_4_6_FIXED_DEPOSITS_MONTHS, R39_7_12_FIXED_DEPOSITS_MONTHS, R39_13_18_FIXED_DEPOSITS_MONTHS, R39_19_24_FIXED_DEPOSITS_MONTHS, R39_OVER_24_FIXED_DEPOSITS_MONTHS, R39_CERTIFICATES_OF_DEPOSIT, "
+								+ "R40_CURRENT, R40_CALL, R40_SAVINGS, R40_0_31_NOTICE_DAYS, R40_32_88_NOTICE_DAYS, R40_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R40_1_2_FIXED_DEPOSITS_MONTHS, R40_4_6_FIXED_DEPOSITS_MONTHS, R40_7_12_FIXED_DEPOSITS_MONTHS, R40_13_18_FIXED_DEPOSITS_MONTHS, R40_19_24_FIXED_DEPOSITS_MONTHS, R40_OVER_24_FIXED_DEPOSITS_MONTHS, R40_CERTIFICATES_OF_DEPOSIT, "
+								+ "R42_CURRENT, R42_CALL, R42_SAVINGS, R42_0_31_NOTICE_DAYS, R42_32_88_NOTICE_DAYS, R42_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R42_1_2_FIXED_DEPOSITS_MONTHS, R42_4_6_FIXED_DEPOSITS_MONTHS, R42_7_12_FIXED_DEPOSITS_MONTHS, R42_13_18_FIXED_DEPOSITS_MONTHS, R42_19_24_FIXED_DEPOSITS_MONTHS, R42_OVER_24_FIXED_DEPOSITS_MONTHS, R42_CERTIFICATES_OF_DEPOSIT, "
+								+ "R43_CURRENT, R43_CALL, R43_SAVINGS, R43_0_31_NOTICE_DAYS, R43_32_88_NOTICE_DAYS, R43_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R43_1_2_FIXED_DEPOSITS_MONTHS, R43_4_6_FIXED_DEPOSITS_MONTHS, R43_7_12_FIXED_DEPOSITS_MONTHS, R43_13_18_FIXED_DEPOSITS_MONTHS, R43_19_24_FIXED_DEPOSITS_MONTHS, R43_OVER_24_FIXED_DEPOSITS_MONTHS, R43_CERTIFICATES_OF_DEPOSIT, "
+								+ "R44_CURRENT, R44_CALL, R44_SAVINGS, R44_0_31_NOTICE_DAYS, R44_32_88_NOTICE_DAYS, R44_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R44_1_2_FIXED_DEPOSITS_MONTHS, R44_4_6_FIXED_DEPOSITS_MONTHS, R44_7_12_FIXED_DEPOSITS_MONTHS, R44_13_18_FIXED_DEPOSITS_MONTHS, R44_19_24_FIXED_DEPOSITS_MONTHS, R44_OVER_24_FIXED_DEPOSITS_MONTHS, R44_CERTIFICATES_OF_DEPOSIT, "
+								+ "R46_CURRENT, R46_CALL, R46_SAVINGS, R46_0_31_NOTICE_DAYS, R46_32_88_NOTICE_DAYS, R46_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R46_1_2_FIXED_DEPOSITS_MONTHS, R46_4_6_FIXED_DEPOSITS_MONTHS, R46_7_12_FIXED_DEPOSITS_MONTHS, R46_13_18_FIXED_DEPOSITS_MONTHS, R46_19_24_FIXED_DEPOSITS_MONTHS, R46_OVER_24_FIXED_DEPOSITS_MONTHS, R46_CERTIFICATES_OF_DEPOSIT, "
+								+ "R47_CURRENT, R47_CALL, R47_SAVINGS, R47_0_31_NOTICE_DAYS, R47_32_88_NOTICE_DAYS, R47_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R47_1_2_FIXED_DEPOSITS_MONTHS, R47_4_6_FIXED_DEPOSITS_MONTHS, R47_7_12_FIXED_DEPOSITS_MONTHS, R47_13_18_FIXED_DEPOSITS_MONTHS, R47_19_24_FIXED_DEPOSITS_MONTHS, R47_OVER_24_FIXED_DEPOSITS_MONTHS, R47_CERTIFICATES_OF_DEPOSIT, "
+								+ "R48_CURRENT, R48_CALL, R48_SAVINGS, R48_0_31_NOTICE_DAYS, R48_32_88_NOTICE_DAYS, R48_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R48_1_2_FIXED_DEPOSITS_MONTHS, R48_4_6_FIXED_DEPOSITS_MONTHS, R48_7_12_FIXED_DEPOSITS_MONTHS, R48_13_18_FIXED_DEPOSITS_MONTHS, R48_19_24_FIXED_DEPOSITS_MONTHS, R48_OVER_24_FIXED_DEPOSITS_MONTHS, R48_CERTIFICATES_OF_DEPOSIT, "
+								+ "R50_CURRENT, R50_CALL, R50_SAVINGS, R50_0_31_NOTICE_DAYS, R50_32_88_NOTICE_DAYS, R50_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R50_1_2_FIXED_DEPOSITS_MONTHS, R50_4_6_FIXED_DEPOSITS_MONTHS, R50_7_12_FIXED_DEPOSITS_MONTHS, R50_13_18_FIXED_DEPOSITS_MONTHS, R50_19_24_FIXED_DEPOSITS_MONTHS, R50_OVER_24_FIXED_DEPOSITS_MONTHS, R50_CERTIFICATES_OF_DEPOSIT, "
+								+ "R51_CURRENT, R51_CALL, R51_SAVINGS, R51_0_31_NOTICE_DAYS, R51_32_88_NOTICE_DAYS, R51_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R51_1_2_FIXED_DEPOSITS_MONTHS, R51_4_6_FIXED_DEPOSITS_MONTHS, R51_7_12_FIXED_DEPOSITS_MONTHS, R51_13_18_FIXED_DEPOSITS_MONTHS, R51_19_24_FIXED_DEPOSITS_MONTHS, R51_OVER_24_FIXED_DEPOSITS_MONTHS, R51_CERTIFICATES_OF_DEPOSIT, "
+								+ "R52_CURRENT, R52_CALL, R52_SAVINGS, R52_0_31_NOTICE_DAYS, R52_32_88_NOTICE_DAYS, R52_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R52_1_2_FIXED_DEPOSITS_MONTHS, R52_4_6_FIXED_DEPOSITS_MONTHS, R52_7_12_FIXED_DEPOSITS_MONTHS, R52_13_18_FIXED_DEPOSITS_MONTHS, R52_19_24_FIXED_DEPOSITS_MONTHS, R52_OVER_24_FIXED_DEPOSITS_MONTHS, R52_CERTIFICATES_OF_DEPOSIT, "
+								+ "R53_CURRENT, R53_CALL, R53_SAVINGS, R53_0_31_NOTICE_DAYS, R53_32_88_NOTICE_DAYS, R53_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R53_1_2_FIXED_DEPOSITS_MONTHS, R53_4_6_FIXED_DEPOSITS_MONTHS, R53_7_12_FIXED_DEPOSITS_MONTHS, R53_13_18_FIXED_DEPOSITS_MONTHS, R53_19_24_FIXED_DEPOSITS_MONTHS, R53_OVER_24_FIXED_DEPOSITS_MONTHS, R53_CERTIFICATES_OF_DEPOSIT, "
+								+ "R54_CURRENT, R54_CALL, R54_SAVINGS, R54_0_31_NOTICE_DAYS, R54_32_88_NOTICE_DAYS, R54_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R54_1_2_FIXED_DEPOSITS_MONTHS, R54_4_6_FIXED_DEPOSITS_MONTHS, R54_7_12_FIXED_DEPOSITS_MONTHS, R54_13_18_FIXED_DEPOSITS_MONTHS, R54_19_24_FIXED_DEPOSITS_MONTHS, R54_OVER_24_FIXED_DEPOSITS_MONTHS, R54_CERTIFICATES_OF_DEPOSIT, "
+								+ "R55_CURRENT, R55_CALL, R55_SAVINGS, R55_0_31_NOTICE_DAYS, R55_32_88_NOTICE_DAYS, R55_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R55_1_2_FIXED_DEPOSITS_MONTHS, R55_4_6_FIXED_DEPOSITS_MONTHS, R55_7_12_FIXED_DEPOSITS_MONTHS, R55_13_18_FIXED_DEPOSITS_MONTHS, R55_19_24_FIXED_DEPOSITS_MONTHS, R55_OVER_24_FIXED_DEPOSITS_MONTHS, R55_CERTIFICATES_OF_DEPOSIT, "
+								+ "R57_CURRENT, R57_CALL, R57_SAVINGS, R57_0_31_NOTICE_DAYS, R57_32_88_NOTICE_DAYS, R57_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R57_1_2_FIXED_DEPOSITS_MONTHS, R57_4_6_FIXED_DEPOSITS_MONTHS, R57_7_12_FIXED_DEPOSITS_MONTHS, R57_13_18_FIXED_DEPOSITS_MONTHS, R57_19_24_FIXED_DEPOSITS_MONTHS, R57_OVER_24_FIXED_DEPOSITS_MONTHS, R57_CERTIFICATES_OF_DEPOSIT, "
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
+								+ "SELECT "
+								+ "R12_CURRENT, R12_CALL, R12_SAVINGS, R12_0_31_NOTICE_DAYS, R12_32_88_NOTICE_DAYS, R12_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R12_1_2_FIXED_DEPOSITS_MONTHS, R12_4_6_FIXED_DEPOSITS_MONTHS, R12_7_12_FIXED_DEPOSITS_MONTHS, R12_13_18_FIXED_DEPOSITS_MONTHS, R12_19_24_FIXED_DEPOSITS_MONTHS, R12_OVER_24_FIXED_DEPOSITS_MONTHS, R12_CERTIFICATES_OF_DEPOSIT, "
+								+ "R13_CURRENT, R13_CALL, R13_SAVINGS, R13_0_31_NOTICE_DAYS, R13_32_88_NOTICE_DAYS, R13_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R13_1_2_FIXED_DEPOSITS_MONTHS, R13_4_6_FIXED_DEPOSITS_MONTHS, R13_7_12_FIXED_DEPOSITS_MONTHS, R13_13_18_FIXED_DEPOSITS_MONTHS, R13_19_24_FIXED_DEPOSITS_MONTHS, R13_OVER_24_FIXED_DEPOSITS_MONTHS, R13_CERTIFICATES_OF_DEPOSIT, "
+								+ "R14_CURRENT, R14_CALL, R14_SAVINGS, R14_0_31_NOTICE_DAYS, R14_32_88_NOTICE_DAYS, R14_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R14_1_2_FIXED_DEPOSITS_MONTHS, R14_4_6_FIXED_DEPOSITS_MONTHS, R14_7_12_FIXED_DEPOSITS_MONTHS, R14_13_18_FIXED_DEPOSITS_MONTHS, R14_19_24_FIXED_DEPOSITS_MONTHS, R14_OVER_24_FIXED_DEPOSITS_MONTHS, R14_CERTIFICATES_OF_DEPOSIT, "
+								+ "R16_CURRENT, R16_CALL, R16_SAVINGS, R16_0_31_NOTICE_DAYS, R16_32_88_NOTICE_DAYS, R16_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R16_1_2_FIXED_DEPOSITS_MONTHS, R16_4_6_FIXED_DEPOSITS_MONTHS, R16_7_12_FIXED_DEPOSITS_MONTHS, R16_13_18_FIXED_DEPOSITS_MONTHS, R16_19_24_FIXED_DEPOSITS_MONTHS, R16_OVER_24_FIXED_DEPOSITS_MONTHS, R16_CERTIFICATES_OF_DEPOSIT, "
+								+ "R17_CURRENT, R17_CALL, R17_SAVINGS, R17_0_31_NOTICE_DAYS, R17_32_88_NOTICE_DAYS, R17_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R17_1_2_FIXED_DEPOSITS_MONTHS, R17_4_6_FIXED_DEPOSITS_MONTHS, R17_7_12_FIXED_DEPOSITS_MONTHS, R17_13_18_FIXED_DEPOSITS_MONTHS, R17_19_24_FIXED_DEPOSITS_MONTHS, R17_OVER_24_FIXED_DEPOSITS_MONTHS, R17_CERTIFICATES_OF_DEPOSIT, "
+								+ "R18_CURRENT, R18_CALL, R18_SAVINGS, R18_0_31_NOTICE_DAYS, R18_32_88_NOTICE_DAYS, R18_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R18_1_2_FIXED_DEPOSITS_MONTHS, R18_4_6_FIXED_DEPOSITS_MONTHS, R18_7_12_FIXED_DEPOSITS_MONTHS, R18_13_18_FIXED_DEPOSITS_MONTHS, R18_19_24_FIXED_DEPOSITS_MONTHS, R18_OVER_24_FIXED_DEPOSITS_MONTHS, R18_CERTIFICATES_OF_DEPOSIT, "
+								+ "R19_CURRENT, R19_CALL, R19_SAVINGS, R19_0_31_NOTICE_DAYS, R19_32_88_NOTICE_DAYS, R19_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R19_1_2_FIXED_DEPOSITS_MONTHS, R19_4_6_FIXED_DEPOSITS_MONTHS, R19_7_12_FIXED_DEPOSITS_MONTHS, R19_13_18_FIXED_DEPOSITS_MONTHS, R19_19_24_FIXED_DEPOSITS_MONTHS, R19_OVER_24_FIXED_DEPOSITS_MONTHS, R19_CERTIFICATES_OF_DEPOSIT, "
+								+ "R20_CURRENT, R20_CALL, R20_SAVINGS, R20_0_31_NOTICE_DAYS, R20_32_88_NOTICE_DAYS, R20_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R20_1_2_FIXED_DEPOSITS_MONTHS, R20_4_6_FIXED_DEPOSITS_MONTHS, R20_7_12_FIXED_DEPOSITS_MONTHS, R20_13_18_FIXED_DEPOSITS_MONTHS, R20_19_24_FIXED_DEPOSITS_MONTHS, R20_OVER_24_FIXED_DEPOSITS_MONTHS, R20_CERTIFICATES_OF_DEPOSIT, "
+								+ "R21_CURRENT, R21_CALL, R21_SAVINGS, R21_0_31_NOTICE_DAYS, R21_32_88_NOTICE_DAYS, R21_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R21_1_2_FIXED_DEPOSITS_MONTHS, R21_4_6_FIXED_DEPOSITS_MONTHS, R21_7_12_FIXED_DEPOSITS_MONTHS, R21_13_18_FIXED_DEPOSITS_MONTHS, R21_19_24_FIXED_DEPOSITS_MONTHS, R21_OVER_24_FIXED_DEPOSITS_MONTHS, R21_CERTIFICATES_OF_DEPOSIT, "
+								+ "R22_CURRENT, R22_CALL, R22_SAVINGS, R22_0_31_NOTICE_DAYS, R22_32_88_NOTICE_DAYS, R22_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R22_1_2_FIXED_DEPOSITS_MONTHS, R22_4_6_FIXED_DEPOSITS_MONTHS, R22_7_12_FIXED_DEPOSITS_MONTHS, R22_13_18_FIXED_DEPOSITS_MONTHS, R22_19_24_FIXED_DEPOSITS_MONTHS, R22_OVER_24_FIXED_DEPOSITS_MONTHS, R22_CERTIFICATES_OF_DEPOSIT, "
+								+ "R23_CURRENT, R23_CALL, R23_SAVINGS, R23_0_31_NOTICE_DAYS, R23_32_88_NOTICE_DAYS, R23_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R23_1_2_FIXED_DEPOSITS_MONTHS, R23_4_6_FIXED_DEPOSITS_MONTHS, R23_7_12_FIXED_DEPOSITS_MONTHS, R23_13_18_FIXED_DEPOSITS_MONTHS, R23_19_24_FIXED_DEPOSITS_MONTHS, R23_OVER_24_FIXED_DEPOSITS_MONTHS, R23_CERTIFICATES_OF_DEPOSIT, "
+								+ "R24_CURRENT, R24_CALL, R24_SAVINGS, R24_0_31_NOTICE_DAYS, R24_32_88_NOTICE_DAYS, R24_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R24_1_2_FIXED_DEPOSITS_MONTHS, R24_4_6_FIXED_DEPOSITS_MONTHS, R24_7_12_FIXED_DEPOSITS_MONTHS, R24_13_18_FIXED_DEPOSITS_MONTHS, R24_19_24_FIXED_DEPOSITS_MONTHS, R24_OVER_24_FIXED_DEPOSITS_MONTHS, R24_CERTIFICATES_OF_DEPOSIT, "
+								+ "R25_CURRENT, R25_CALL, R25_SAVINGS, R25_0_31_NOTICE_DAYS, R25_32_88_NOTICE_DAYS, R25_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R25_1_2_FIXED_DEPOSITS_MONTHS, R25_4_6_FIXED_DEPOSITS_MONTHS, R25_7_12_FIXED_DEPOSITS_MONTHS, R25_13_18_FIXED_DEPOSITS_MONTHS, R25_19_24_FIXED_DEPOSITS_MONTHS, R25_OVER_24_FIXED_DEPOSITS_MONTHS, R25_CERTIFICATES_OF_DEPOSIT, "
+								+ "R26_CURRENT, R26_CALL, R26_SAVINGS, R26_0_31_NOTICE_DAYS, R26_32_88_NOTICE_DAYS, R26_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R26_1_2_FIXED_DEPOSITS_MONTHS, R26_4_6_FIXED_DEPOSITS_MONTHS, R26_7_12_FIXED_DEPOSITS_MONTHS, R26_13_18_FIXED_DEPOSITS_MONTHS, R26_19_24_FIXED_DEPOSITS_MONTHS, R26_OVER_24_FIXED_DEPOSITS_MONTHS, R26_CERTIFICATES_OF_DEPOSIT, "
+								+ "R27_CURRENT, R27_CALL, R27_SAVINGS, R27_0_31_NOTICE_DAYS, R27_32_88_NOTICE_DAYS, R27_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R27_1_2_FIXED_DEPOSITS_MONTHS, R27_4_6_FIXED_DEPOSITS_MONTHS, R27_7_12_FIXED_DEPOSITS_MONTHS, R27_13_18_FIXED_DEPOSITS_MONTHS, R27_19_24_FIXED_DEPOSITS_MONTHS, R27_OVER_24_FIXED_DEPOSITS_MONTHS, R27_CERTIFICATES_OF_DEPOSIT, "
+								+ "R28_CURRENT, R28_CALL, R28_SAVINGS, R28_0_31_NOTICE_DAYS, R28_32_88_NOTICE_DAYS, R28_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R28_1_2_FIXED_DEPOSITS_MONTHS, R28_4_6_FIXED_DEPOSITS_MONTHS, R28_7_12_FIXED_DEPOSITS_MONTHS, R28_13_18_FIXED_DEPOSITS_MONTHS, R28_19_24_FIXED_DEPOSITS_MONTHS, R28_OVER_24_FIXED_DEPOSITS_MONTHS, R28_CERTIFICATES_OF_DEPOSIT, "
+								+ "R29_CURRENT, R29_CALL, R29_SAVINGS, R29_0_31_NOTICE_DAYS, R29_32_88_NOTICE_DAYS, R29_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R29_1_2_FIXED_DEPOSITS_MONTHS, R29_4_6_FIXED_DEPOSITS_MONTHS, R29_7_12_FIXED_DEPOSITS_MONTHS, R29_13_18_FIXED_DEPOSITS_MONTHS, R29_19_24_FIXED_DEPOSITS_MONTHS, R29_OVER_24_FIXED_DEPOSITS_MONTHS, R29_CERTIFICATES_OF_DEPOSIT, "
+								+ "R31_CURRENT, R31_CALL, R31_SAVINGS, R31_0_31_NOTICE_DAYS, R31_32_88_NOTICE_DAYS, R31_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R31_1_2_FIXED_DEPOSITS_MONTHS, R31_4_6_FIXED_DEPOSITS_MONTHS, R31_7_12_FIXED_DEPOSITS_MONTHS, R31_13_18_FIXED_DEPOSITS_MONTHS, R31_19_24_FIXED_DEPOSITS_MONTHS, R31_OVER_24_FIXED_DEPOSITS_MONTHS, R31_CERTIFICATES_OF_DEPOSIT, "
+								+ "R32_CURRENT, R32_CALL, R32_SAVINGS, R32_0_31_NOTICE_DAYS, R32_32_88_NOTICE_DAYS, R32_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R32_1_2_FIXED_DEPOSITS_MONTHS, R32_4_6_FIXED_DEPOSITS_MONTHS, R32_7_12_FIXED_DEPOSITS_MONTHS, R32_13_18_FIXED_DEPOSITS_MONTHS, R32_19_24_FIXED_DEPOSITS_MONTHS, R32_OVER_24_FIXED_DEPOSITS_MONTHS, R32_CERTIFICATES_OF_DEPOSIT, "
+								+ "R34_CURRENT, R34_CALL, R34_SAVINGS, R34_0_31_NOTICE_DAYS, R34_32_88_NOTICE_DAYS, R34_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R34_1_2_FIXED_DEPOSITS_MONTHS, R34_4_6_FIXED_DEPOSITS_MONTHS, R34_7_12_FIXED_DEPOSITS_MONTHS, R34_13_18_FIXED_DEPOSITS_MONTHS, R34_19_24_FIXED_DEPOSITS_MONTHS, R34_OVER_24_FIXED_DEPOSITS_MONTHS, R34_CERTIFICATES_OF_DEPOSIT, "
+								+ "R35_CURRENT, R35_CALL, R35_SAVINGS, R35_0_31_NOTICE_DAYS, R35_32_88_NOTICE_DAYS, R35_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R35_1_2_FIXED_DEPOSITS_MONTHS, R35_4_6_FIXED_DEPOSITS_MONTHS, R35_7_12_FIXED_DEPOSITS_MONTHS, R35_13_18_FIXED_DEPOSITS_MONTHS, R35_19_24_FIXED_DEPOSITS_MONTHS, R35_OVER_24_FIXED_DEPOSITS_MONTHS, R35_CERTIFICATES_OF_DEPOSIT, "
+								+ "R37_CURRENT, R37_CALL, R37_SAVINGS, R37_0_31_NOTICE_DAYS, R37_32_88_NOTICE_DAYS, R37_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R37_1_2_FIXED_DEPOSITS_MONTHS, R37_4_6_FIXED_DEPOSITS_MONTHS, R37_7_12_FIXED_DEPOSITS_MONTHS, R37_13_18_FIXED_DEPOSITS_MONTHS, R37_19_24_FIXED_DEPOSITS_MONTHS, R37_OVER_24_FIXED_DEPOSITS_MONTHS, R37_CERTIFICATES_OF_DEPOSIT, "
+								+ "R38_CURRENT, R38_CALL, R38_SAVINGS, R38_0_31_NOTICE_DAYS, R38_32_88_NOTICE_DAYS, R38_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R38_1_2_FIXED_DEPOSITS_MONTHS, R38_4_6_FIXED_DEPOSITS_MONTHS, R38_7_12_FIXED_DEPOSITS_MONTHS, R38_13_18_FIXED_DEPOSITS_MONTHS, R38_19_24_FIXED_DEPOSITS_MONTHS, R38_OVER_24_FIXED_DEPOSITS_MONTHS, R38_CERTIFICATES_OF_DEPOSIT, "
+								+ "R39_CURRENT, R39_CALL, R39_SAVINGS, R39_0_31_NOTICE_DAYS, R39_32_88_NOTICE_DAYS, R39_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R39_1_2_FIXED_DEPOSITS_MONTHS, R39_4_6_FIXED_DEPOSITS_MONTHS, R39_7_12_FIXED_DEPOSITS_MONTHS, R39_13_18_FIXED_DEPOSITS_MONTHS, R39_19_24_FIXED_DEPOSITS_MONTHS, R39_OVER_24_FIXED_DEPOSITS_MONTHS, R39_CERTIFICATES_OF_DEPOSIT, "
+								+ "R40_CURRENT, R40_CALL, R40_SAVINGS, R40_0_31_NOTICE_DAYS, R40_32_88_NOTICE_DAYS, R40_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R40_1_2_FIXED_DEPOSITS_MONTHS, R40_4_6_FIXED_DEPOSITS_MONTHS, R40_7_12_FIXED_DEPOSITS_MONTHS, R40_13_18_FIXED_DEPOSITS_MONTHS, R40_19_24_FIXED_DEPOSITS_MONTHS, R40_OVER_24_FIXED_DEPOSITS_MONTHS, R40_CERTIFICATES_OF_DEPOSIT, "
+								+ "R42_CURRENT, R42_CALL, R42_SAVINGS, R42_0_31_NOTICE_DAYS, R42_32_88_NOTICE_DAYS, R42_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R42_1_2_FIXED_DEPOSITS_MONTHS, R42_4_6_FIXED_DEPOSITS_MONTHS, R42_7_12_FIXED_DEPOSITS_MONTHS, R42_13_18_FIXED_DEPOSITS_MONTHS, R42_19_24_FIXED_DEPOSITS_MONTHS, R42_OVER_24_FIXED_DEPOSITS_MONTHS, R42_CERTIFICATES_OF_DEPOSIT, "
+								+ "R43_CURRENT, R43_CALL, R43_SAVINGS, R43_0_31_NOTICE_DAYS, R43_32_88_NOTICE_DAYS, R43_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R43_1_2_FIXED_DEPOSITS_MONTHS, R43_4_6_FIXED_DEPOSITS_MONTHS, R43_7_12_FIXED_DEPOSITS_MONTHS, R43_13_18_FIXED_DEPOSITS_MONTHS, R43_19_24_FIXED_DEPOSITS_MONTHS, R43_OVER_24_FIXED_DEPOSITS_MONTHS, R43_CERTIFICATES_OF_DEPOSIT, "
+								+ "R44_CURRENT, R44_CALL, R44_SAVINGS, R44_0_31_NOTICE_DAYS, R44_32_88_NOTICE_DAYS, R44_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R44_1_2_FIXED_DEPOSITS_MONTHS, R44_4_6_FIXED_DEPOSITS_MONTHS, R44_7_12_FIXED_DEPOSITS_MONTHS, R44_13_18_FIXED_DEPOSITS_MONTHS, R44_19_24_FIXED_DEPOSITS_MONTHS, R44_OVER_24_FIXED_DEPOSITS_MONTHS, R44_CERTIFICATES_OF_DEPOSIT, "
+								+ "R46_CURRENT, R46_CALL, R46_SAVINGS, R46_0_31_NOTICE_DAYS, R46_32_88_NOTICE_DAYS, R46_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R46_1_2_FIXED_DEPOSITS_MONTHS, R46_4_6_FIXED_DEPOSITS_MONTHS, R46_7_12_FIXED_DEPOSITS_MONTHS, R46_13_18_FIXED_DEPOSITS_MONTHS, R46_19_24_FIXED_DEPOSITS_MONTHS, R46_OVER_24_FIXED_DEPOSITS_MONTHS, R46_CERTIFICATES_OF_DEPOSIT, "
+								+ "R47_CURRENT, R47_CALL, R47_SAVINGS, R47_0_31_NOTICE_DAYS, R47_32_88_NOTICE_DAYS, R47_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R47_1_2_FIXED_DEPOSITS_MONTHS, R47_4_6_FIXED_DEPOSITS_MONTHS, R47_7_12_FIXED_DEPOSITS_MONTHS, R47_13_18_FIXED_DEPOSITS_MONTHS, R47_19_24_FIXED_DEPOSITS_MONTHS, R47_OVER_24_FIXED_DEPOSITS_MONTHS, R47_CERTIFICATES_OF_DEPOSIT, "
+								+ "R48_CURRENT, R48_CALL, R48_SAVINGS, R48_0_31_NOTICE_DAYS, R48_32_88_NOTICE_DAYS, R48_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R48_1_2_FIXED_DEPOSITS_MONTHS, R48_4_6_FIXED_DEPOSITS_MONTHS, R48_7_12_FIXED_DEPOSITS_MONTHS, R48_13_18_FIXED_DEPOSITS_MONTHS, R48_19_24_FIXED_DEPOSITS_MONTHS, R48_OVER_24_FIXED_DEPOSITS_MONTHS, R48_CERTIFICATES_OF_DEPOSIT, "
+								+ "R50_CURRENT, R50_CALL, R50_SAVINGS, R50_0_31_NOTICE_DAYS, R50_32_88_NOTICE_DAYS, R50_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R50_1_2_FIXED_DEPOSITS_MONTHS, R50_4_6_FIXED_DEPOSITS_MONTHS, R50_7_12_FIXED_DEPOSITS_MONTHS, R50_13_18_FIXED_DEPOSITS_MONTHS, R50_19_24_FIXED_DEPOSITS_MONTHS, R50_OVER_24_FIXED_DEPOSITS_MONTHS, R50_CERTIFICATES_OF_DEPOSIT, "
+								+ "R51_CURRENT, R51_CALL, R51_SAVINGS, R51_0_31_NOTICE_DAYS, R51_32_88_NOTICE_DAYS, R51_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R51_1_2_FIXED_DEPOSITS_MONTHS, R51_4_6_FIXED_DEPOSITS_MONTHS, R51_7_12_FIXED_DEPOSITS_MONTHS, R51_13_18_FIXED_DEPOSITS_MONTHS, R51_19_24_FIXED_DEPOSITS_MONTHS, R51_OVER_24_FIXED_DEPOSITS_MONTHS, R51_CERTIFICATES_OF_DEPOSIT, "
+								+ "R52_CURRENT, R52_CALL, R52_SAVINGS, R52_0_31_NOTICE_DAYS, R52_32_88_NOTICE_DAYS, R52_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R52_1_2_FIXED_DEPOSITS_MONTHS, R52_4_6_FIXED_DEPOSITS_MONTHS, R52_7_12_FIXED_DEPOSITS_MONTHS, R52_13_18_FIXED_DEPOSITS_MONTHS, R52_19_24_FIXED_DEPOSITS_MONTHS, R52_OVER_24_FIXED_DEPOSITS_MONTHS, R52_CERTIFICATES_OF_DEPOSIT, "
+								+ "R53_CURRENT, R53_CALL, R53_SAVINGS, R53_0_31_NOTICE_DAYS, R53_32_88_NOTICE_DAYS, R53_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R53_1_2_FIXED_DEPOSITS_MONTHS, R53_4_6_FIXED_DEPOSITS_MONTHS, R53_7_12_FIXED_DEPOSITS_MONTHS, R53_13_18_FIXED_DEPOSITS_MONTHS, R53_19_24_FIXED_DEPOSITS_MONTHS, R53_OVER_24_FIXED_DEPOSITS_MONTHS, R53_CERTIFICATES_OF_DEPOSIT, "
+								+ "R54_CURRENT, R54_CALL, R54_SAVINGS, R54_0_31_NOTICE_DAYS, R54_32_88_NOTICE_DAYS, R54_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R54_1_2_FIXED_DEPOSITS_MONTHS, R54_4_6_FIXED_DEPOSITS_MONTHS, R54_7_12_FIXED_DEPOSITS_MONTHS, R54_13_18_FIXED_DEPOSITS_MONTHS, R54_19_24_FIXED_DEPOSITS_MONTHS, R54_OVER_24_FIXED_DEPOSITS_MONTHS, R54_CERTIFICATES_OF_DEPOSIT, "
+								+ "R55_CURRENT, R55_CALL, R55_SAVINGS, R55_0_31_NOTICE_DAYS, R55_32_88_NOTICE_DAYS, R55_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R55_1_2_FIXED_DEPOSITS_MONTHS, R55_4_6_FIXED_DEPOSITS_MONTHS, R55_7_12_FIXED_DEPOSITS_MONTHS, R55_13_18_FIXED_DEPOSITS_MONTHS, R55_19_24_FIXED_DEPOSITS_MONTHS, R55_OVER_24_FIXED_DEPOSITS_MONTHS, R55_CERTIFICATES_OF_DEPOSIT, "
+								+ "R57_CURRENT, R57_CALL, R57_SAVINGS, R57_0_31_NOTICE_DAYS, R57_32_88_NOTICE_DAYS, R57_91_DAY_DEPOSIT_FIXED_DEPOSIT_MONTHS, R57_1_2_FIXED_DEPOSITS_MONTHS, R57_4_6_FIXED_DEPOSITS_MONTHS, R57_7_12_FIXED_DEPOSITS_MONTHS, R57_13_18_FIXED_DEPOSITS_MONTHS, R57_19_24_FIXED_DEPOSITS_MONTHS, R57_OVER_24_FIXED_DEPOSITS_MONTHS, R57_CERTIFICATES_OF_DEPOSIT, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_M_DEP2_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						System.out.println("Transferred " + rowsInsertedSum + " rows to archival summary.");
+
+						// Delete from summary table
+						String adsumsql = "DELETE FROM BRRS_M_DEP2_SUMMARYTABLE WHERE REPORT_DATE = ?";
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						System.out.println("Deleted " + rowsDeletedSum + " rows from summary.");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	// UPDATE DETAIL WITH TYPE AWARENESS
+
+	@Transactional
+	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
+		try {
+			String Sno = request.getParameter("sno");
+			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String acctName = request.getParameter("acctName");
+			String reportDateStr = request.getParameter("reportDate");
+
+			System.out.println("Sno is : " + Sno);
+			String type = request.getParameter("type");
+			String entry = (request.getParameter("entry") != null) ? request.getParameter("entry") : "YES";
+
+			// Load Existing Record
+			M_DEP2_Detail_Entity existing = null;
+			System.out.println("type is : " + type);
+
+			if (type != null && (type.equals("RESUB") || type.equals("ARCHIVAL"))) {
+				existing = findBySnoArch(Sno);
+			} else {
+				existing = findBySno(Sno);
+			}
+
+			if (existing == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			}
+
+			M_DEP2_Detail_Entity oldcopy = new M_DEP2_Detail_Entity();
+			BeanUtils.copyProperties(existing, oldcopy);
+
+			boolean isChanged = false;
+
+			// Update Name
+			if (acctName != null && !acctName.isEmpty()) {
+				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+				}
+			}
+
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula);
+				if (existing.getAcctBalanceInpula() == null
+						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
+					existing.setAcctBalanceInpula(newBalance);
+					isChanged = true;
+				}
+			}
+
+			// Save using JDBC
+			if (isChanged) {
+				String sql;
+				System.out.println("Type in update block : " + type);
+				if (type != null && (type.equals("RESUB") || type.equals("ARCHIVAL"))) {
+					System.out.println("Inside RESUB/ARCHIVAL UPDATE");
+					sql = "UPDATE BRRS_M_DEP2_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE SNO = ?";
+				} else {
+					sql = "UPDATE BRRS_M_DEP2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE SNO = ?";
+				}
+				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), Sno);
+
+				if (type != null && (type.equals("RESUB") || type.equals("ARCHIVAL"))) {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "DEP2 Archival Screen",
+							"BRRS_M_DEP2_ARCHIVALTABLE_DETAIL");
+				} else {
+					auditService.compareEntitiesmanual(oldcopy, existing, Sno, "DEP2 Screen",
+							"BRRS_M_DEP2_DETAILTABLE");
+				}
+
+				System.out.println("Record updated using JDBC");
+
+				// Run procedure after commit
+				Run_M_DEP2_Procedure(reportDateStr, type, entry);
+
+				if (type != null && type.equals("RESUB") && (entry == "NO" || entry.equals("NO"))) {
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+				}
+				return ResponseEntity.ok("Record updated successfully!");
+			} else {
+				return ResponseEntity.ok("No changes were made.");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error updating record: " + e.getMessage());
+		}
+	}
+
+	// CALL REGEN PROCEDURE
+
+	@Transactional
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			Run_M_DEP2_Procedure(request.getParameter("reportDate"), request.getParameter("type"),
+					request.getParameter("entry"));
+			return ResponseEntity.ok("Resubmitted successfully!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error processing request: " + e.getMessage());
+		}
+	}
+
+	// DETAIL EXCEL DOWNLOAD (CURRENT)
+
+	public byte[] getM_DEP2DetailExcel(String filename, String fromdate, String todate, String currency, String dtltype,
+			String type, String version) {
+		try {
+			logger.info("Generating Excel for DEP2 Details...");
+			System.out.println("came to Detail download service");
+
+// ARCHIVAL or RESUB mode
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
+				return getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type, version);
+			}
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("DEP2 Details");
+
+// Common border style
+			BorderStyle border = BorderStyle.THIN;
+
+// Header style
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+// Right-aligned header style
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+// Data style
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+// Balance style
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+// Header row with SNo
+			String[] headers = { "S.No", "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+				if (i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+				sheet.setColumnWidth(i, 5000);
+			}
+
+// Get data
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<M_DEP2_Detail_Entity> reportData = jdbcTemplate.query(
+					"SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE REPORT_DATE = ? ORDER BY SNO",
+					new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), parsedToDate);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_DEP2_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(rowIndex - 1);
+					row.createCell(1).setCellValue(item.getCustId());
+					row.createCell(2).setCellValue(item.getAcctNumber());
+					row.createCell(3).setCellValue(item.getAcctName());
+
+					Cell balanceCell = row.createCell(4);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					for (int j = 0; j < 8; j++) {
+						if (j != 4) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for DEP2");
+			}
+
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating DEP2 Excel", e);
+			return new byte[0];
+		}
+	}
+
+	// ARCHIVAL DETAIL EXCEL DOWNLOAD
+
+	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
+			String dtltype, String type, String version) {
+		try {
+			logger.info("Generating Excel for DEP2 ARCHIVAL Details...");
+			System.out.println("came to ARCHIVAL Detail download service");
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("DEP2 Archival Details");
+
+// Style setup (same as above)
+			BorderStyle border = BorderStyle.THIN;
+
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font headerFont = workbook.createFont();
+			headerFont.setBold(true);
+			headerFont.setFontHeightInPoints((short) 10);
+			headerStyle.setFont(headerFont);
+			headerStyle.setAlignment(HorizontalAlignment.LEFT);
+			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			headerStyle.setBorderTop(border);
+			headerStyle.setBorderBottom(border);
+			headerStyle.setBorderLeft(border);
+			headerStyle.setBorderRight(border);
+
+			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
+			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
+			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
+
+			CellStyle dataStyle = workbook.createCellStyle();
+			dataStyle.setAlignment(HorizontalAlignment.LEFT);
+			dataStyle.setBorderTop(border);
+			dataStyle.setBorderBottom(border);
+			dataStyle.setBorderLeft(border);
+			dataStyle.setBorderRight(border);
+
+			CellStyle balanceStyle = workbook.createCellStyle();
+			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
+			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,##0"));
+			balanceStyle.setBorderTop(border);
+			balanceStyle.setBorderBottom(border);
+			balanceStyle.setBorderLeft(border);
+			balanceStyle.setBorderRight(border);
+
+			String[] headers = { "S.No", "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT LABEL",
+					"REPORT ADDL CRITERIA1", "REPORT_DATE" };
+
+			XSSFRow headerRow = sheet.createRow(0);
+			for (int i = 0; i < headers.length; i++) {
+				Cell cell = headerRow.createCell(i);
+				cell.setCellValue(headers[i]);
+				if (i == 4) {
+					cell.setCellStyle(rightAlignedHeaderStyle);
+				} else {
+					cell.setCellStyle(headerStyle);
+				}
+				sheet.setColumnWidth(i, 5000);
+			}
+
+			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			List<M_DEP2_Archival_Detail_Entity> reportData = jdbcTemplate.query(
+					"SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? ORDER BY SNO",
+					new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), parsedToDate);
+
+			if (reportData != null && !reportData.isEmpty()) {
+				int rowIndex = 1;
+				for (M_DEP2_Archival_Detail_Entity item : reportData) {
+					XSSFRow row = sheet.createRow(rowIndex++);
+
+					row.createCell(0).setCellValue(rowIndex - 1);
+					row.createCell(1).setCellValue(item.getCustId());
+					row.createCell(2).setCellValue(item.getAcctNumber());
+					row.createCell(3).setCellValue(item.getAcctName());
+
+					Cell balanceCell = row.createCell(4);
+					if (item.getAcctBalanceInpula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					} else {
+						balanceCell.setCellValue(0);
+					}
+					balanceCell.setCellStyle(balanceStyle);
+
+					row.createCell(5).setCellValue(item.getReportLabel());
+					row.createCell(6).setCellValue(item.getReportAddlCriteria1());
+					row.createCell(7)
+							.setCellValue(item.getReportDate() != null
+									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
+									: "");
+
+					for (int j = 0; j < 8; j++) {
+						if (j != 4) {
+							row.getCell(j).setCellStyle(dataStyle);
+						}
+					}
+				}
+			} else {
+				logger.info("No data found for DEP2 Archival");
+			}
+
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			workbook.write(bos);
+			workbook.close();
+
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			logger.error("Error generating DEP2 Archival Excel", e);
+			return new byte[0];
+		}
 	}
 
 	// ------------------------------
@@ -310,43 +914,39 @@ public class BRRS_M_DEP2_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.");
 		System.out.println(type);
 		System.out.println(version);
-		if (type.equals("ARCHIVAL") & version != null) {
+
+		if (type != null && type.equals("ARCHIVAL") && version != null) {
 			byte[] ARCHIVALreport = getExcelM_DEP2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype,
 					type, version);
 			return ARCHIVALreport;
 		}
 
-		List<M_DEP2_Summary_Entity> dataList = jdbcTemplate.query("select * from BRRS_M_DEP2_SUMMARYTABLE",
-				new BeanPropertyRowMapper<>(M_DEP2_Summary_Entity.class));
+		Date d1 = dateformat.parse(todate);
+		List<M_DEP2_Summary_Entity> dataList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_DEP2_SUMMARYTABLE WHERE REPORT_DATE = ?",
+				new BeanPropertyRowMapper<>(M_DEP2_Summary_Entity.class), d1);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for BRF2.4 report. Returning empty result.");
+			logger.warn("Service: No data found for DEP2 report. Returning empty result.");
 			return new byte[0];
 		}
 
 		String templateDir = env.getProperty("output.exportpathtemp");
 		String templateFileName = filename;
-		System.out.println(filename);
 		Path templatePath = Paths.get(templateDir, templateFileName);
-		System.out.println(templatePath);
-
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
 
 		if (!Files.exists(templatePath)) {
-			// This specific exception will be caught by the controller.
 			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
 		}
 		if (!Files.isReadable(templatePath)) {
-			// A specific exception for permission errors.
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			throw new SecurityException("Template file exists but is not readable: " + templatePath.toAbsolutePath());
 		}
 
-		// This try-with-resources block is perfect. It guarantees all resources are
-		// closed automatically.
 		try (InputStream templateInputStream = Files.newInputStream(templatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+//populating DEP2 summary Excel
 
 			Sheet sheet = workbook.getSheetAt(0);
 
@@ -5738,38 +6338,19 @@ public class BRRS_M_DEP2_ReportService {
 	}
 
 	// ------------------------------
-	// GET ARCHIVAL LIST DATA
-	// ------------------------------
-	public List<Object> getM_DEP2Archival() {
-		List<Object> M_DEP2Archivallist = new ArrayList<>();
-		try {
-			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_DATE from BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY order by REPORT_VERSION";
-			M_DEP2Archivallist = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
-					rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_DATE") // This is the 3rd element (index 2)
-			});
-			System.out.println("countser" + M_DEP2Archivallist.size());
-		} catch (Exception e) {
-			System.err.println("Error fetching M_DEP2 Archival data: " + e.getMessage());
-			e.printStackTrace();
-		}
-		return M_DEP2Archivallist;
-	}
-
-	// ------------------------------
 	// EXPORT ARCHIVAL SUMMARY TO EXCEL
 	// ------------------------------
 	public byte[] getExcelM_DEP2ARCHIVAL(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
-		if (type.equals("ARCHIVAL") & version != null) {
 
-		}
+		Date d1 = dateformat.parse(todate);
 		List<M_DEP2_Archival_Summary_Entity> dataList = jdbcTemplate.query(
 				"SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
-				new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class), dateformat.parse(todate), version);
+				new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class), d1, version);
 
 		if (dataList.isEmpty()) {
-			logger.warn("Service: No data found for M_DEP2 report. Returning empty result.");
+			logger.warn("Service: No data found for DEP2 Archival report.");
 			return new byte[0];
 		}
 
@@ -11069,270 +11650,9666 @@ public class BRRS_M_DEP2_ReportService {
 		}
 	}
 
-	// ------------------------------
-	// EXPORT ARCHIVAL DETAILS TO EXCEL
-	// ------------------------------
-	public byte[] getDetailExcelARCHIVAL(String filename, String fromdate, String todate, String currency,
-			String dtltype, String type, String version) {
-		try {
-			logger.info("Generating Excel for BRRS_M_DEP2 ARCHIVAL Details...");
-			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
-
-			}
-			XSSFWorkbook workbook = new XSSFWorkbook();
-			XSSFSheet sheet = workbook.createSheet("MDEP2Detail");
-
-			// Common border style
-			BorderStyle border = BorderStyle.THIN;
-
-			// Header style (left aligned)
-			CellStyle headerStyle = workbook.createCellStyle();
-			Font headerFont = workbook.createFont();
-			headerFont.setBold(true);
-			headerFont.setFontHeightInPoints((short) 10);
-			headerStyle.setFont(headerFont);
-			headerStyle.setAlignment(HorizontalAlignment.LEFT);
-			headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			headerStyle.setBorderTop(border);
-			headerStyle.setBorderBottom(border);
-			headerStyle.setBorderLeft(border);
-			headerStyle.setBorderRight(border);
-
-			// Right-aligned header style for ACCT BALANCE
-			CellStyle rightAlignedHeaderStyle = workbook.createCellStyle();
-			rightAlignedHeaderStyle.cloneStyleFrom(headerStyle);
-			rightAlignedHeaderStyle.setAlignment(HorizontalAlignment.RIGHT);
-
-			// Default data style (left aligned)
-			CellStyle dataStyle = workbook.createCellStyle();
-			dataStyle.setAlignment(HorizontalAlignment.LEFT);
-			dataStyle.setBorderTop(border);
-			dataStyle.setBorderBottom(border);
-			dataStyle.setBorderLeft(border);
-			dataStyle.setBorderRight(border);
-
-			// ACCT BALANCE style (right aligned with 3 decimals)
-			CellStyle balanceStyle = workbook.createCellStyle();
-			balanceStyle.setAlignment(HorizontalAlignment.RIGHT);
-			balanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#,###"));
-			balanceStyle.setBorderTop(border);
-			balanceStyle.setBorderBottom(border);
-			balanceStyle.setBorderLeft(border);
-			balanceStyle.setBorderRight(border);
-
-			// Header row
-			String[] headers = { "CUST ID", "ACCT NO", "ACCT NAME", "ACCT BALANCE", "REPORT_LABEL",
-					"REPORT_ADDL_CRITERIA_1", "REPORT_DATE" };
-
-			XSSFRow headerRow = sheet.createRow(0);
-			for (int i = 0; i < headers.length; i++) {
-				Cell cell = headerRow.createCell(i);
-				cell.setCellValue(headers[i]);
-
-				if (i == 3) { // ACCT BALANCE
-					cell.setCellStyle(rightAlignedHeaderStyle);
-				} else {
-					cell.setCellStyle(headerStyle);
-				}
-
-				sheet.setColumnWidth(i, 5000);
-			}
-
-			// Get data
-			Date parsedToDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
-			List<M_DEP2_Archival_Detail_Entity> reportData = jdbcTemplate.query(
-					"select * from BRRS_M_DEP2_ARCHIVALTABLE_DETAIL where REPORT_DATE=? AND DATA_ENTRY_VERSION=?",
-					new BeanPropertyRowMapper<>(M_DEP2_Archival_Detail_Entity.class), parsedToDate, version);
-			System.out.println("Size");
-			System.out.println(reportData.size());
-			if (reportData != null && !reportData.isEmpty()) {
-				int rowIndex = 1;
-				for (M_DEP2_Archival_Detail_Entity item : reportData) {
-					XSSFRow row = sheet.createRow(rowIndex++);
-
-					row.createCell(0).setCellValue(item.getCustId());
-					row.createCell(1).setCellValue(item.getAcctNumber());
-					row.createCell(2).setCellValue(item.getAcctName());
-
-					// ACCT BALANCE (right aligned, 3 decimal places)
-					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
-					} else {
-						balanceCell.setCellValue(0);
-					}
-					balanceCell.setCellStyle(balanceStyle);
-
-					row.createCell(4).setCellValue(item.getReportLabel());
-					row.createCell(5).setCellValue(item.getReportAddlCriteria1());
-					row.createCell(6)
-							.setCellValue(item.getReportDate() != null
-									? new SimpleDateFormat("dd-MM-yyyy").format(item.getReportDate())
-									: "");
-
-					// Apply data style for all other cells
-					for (int j = 0; j < 7; j++) {
-						if (j != 3) {
-							row.getCell(j).setCellStyle(dataStyle);
-						}
-					}
-				}
-			} else {
-				logger.info("No data found for BRRS_M_DEP2 — only header will be written.");
-			}
-
-			// Write to byte[]
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			workbook.write(bos);
-			workbook.close();
-
-			logger.info("Excel generation completed with {} row(s).", reportData != null ? reportData.size() : 0);
-			return bos.toByteArray();
-
-		} catch (Exception e) {
-			logger.error("Error generating BRRS_M_DEP2Excel", e);
-			return new byte[0];
-		}
-	}
-
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	// ------------------------------
-	// VIEW OR EDIT SINGLE RECORD PAGE
-	// ------------------------------
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_DEP2"); // ✅ match the report name
-		System.out.println("Hello");
-		if (acctNo != null) {
-			List<M_DEP2_Detail_Entity> la1List = jdbcTemplate.query(
-					"SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE ACCT_NUMBER = ?",
-					new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), acctNo);
-			M_DEP2_Detail_Entity la1Entity = la1List.isEmpty() ? null : la1List.get(0);
-			if (la1Entity != null && la1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
-			}
-			mv.addObject("Data", la1Entity);
+	// =========================================================
+	// SUMMARY EXCEL - WITH ARCHIVAL/RESUB SUPPORT
+	// =========================================================
+	public byte[] getM_DEP2Excel(String filename, String reportId, String fromdate, String todate, String currency,
+			String dtltype, String type, String format, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory.");
+		System.out.println("Type = " + type);
+		System.out.println("Version = " + version);
+
+		// ✅ ARCHIVAL + RESUB MODE
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
+			logger.info("Service: Generating ARCHIVAL report for version {}", version);
+			return getSummaryExcelARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
 
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
-	}
+		// ✅ NORMAL MODE (Current data)
+		Date d1 = dateformat.parse(todate);
+		List<M_DEP2_Summary_Entity> dataList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_DEP2_SUMMARYTABLE WHERE REPORT_DATE = ? ORDER BY REPORT_VERSION",
+				new BeanPropertyRowMapper<>(M_DEP2_Summary_Entity.class), d1);
 
-	// ------------------------------
-	// RETRIEVE DETAIL EDIT PAGE
-	// ------------------------------
-	public ModelAndView updateDetailEdit(String acctNo, String formMode) {
-		ModelAndView mv = new ModelAndView("BRRS/M_DEP2"); // ✅ match the report name
-
-		if (acctNo != null) {
-			List<M_DEP2_Detail_Entity> la1List = jdbcTemplate.query(
-					"SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE ACCT_NUMBER = ?",
-					new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), acctNo);
-			M_DEP2_Detail_Entity la1Entity = la1List.isEmpty() ? null : la1List.get(0);
-			if (la1Entity != null && la1Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(la1Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
-				System.out.println(formattedDate);
-			}
-			mv.addObject("Data", la1Entity);
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for DEP2 report. Returning empty result.");
+			return new byte[0];
 		}
 
-		mv.addObject("displaymode", "edit");
-		mv.addObject("formmode", formMode != null ? formMode : "edit");
-		return mv;
-	}
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		Path templatePath = Paths.get(templateDir, templateFileName);
 
-	@Transactional
-	// ------------------------------
-	// UPDATE SINGLE DETAIL RECORD
-	// ------------------------------
-	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
-		try {
-			String acctNo = request.getParameter("acctNumber");
-			String provisionStr = request.getParameter("acctBalanceInpula");
-			String acctName = request.getParameter("acctName");
-			String reportDateStr = request.getParameter("reportDate");
+		if (!Files.exists(templatePath)) {
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			throw new SecurityException("Template file exists but is not readable: " + templatePath.toAbsolutePath());
+		}
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			List<M_DEP2_Detail_Entity> existingList = jdbcTemplate.query(
-					"SELECT * FROM BRRS_M_DEP2_DETAILTABLE WHERE ACCT_NUMBER = ?",
-					new BeanPropertyRowMapper<>(M_DEP2_Detail_Entity.class), acctNo);
-			M_DEP2_Detail_Entity existing = existingList.isEmpty() ? null : existingList.get(0);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
-			}
+			Sheet sheet = workbook.getSheetAt(0);
 
-			// Create old copy for audit comparison
-			M_DEP2_Detail_Entity oldcopy = new M_DEP2_Detail_Entity();
-			BeanUtils.copyProperties(existing, oldcopy);
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
 
-			boolean isChanged = false;
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
-					existing.setAcctName(acctName);
-					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
-				}
-			}
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
 
-			if (provisionStr != null && !provisionStr.isEmpty()) {
-				BigDecimal newProvision = new BigDecimal(provisionStr);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newProvision) != 0) {
-					existing.setAcctBalanceInpula(newProvision);
-					isChanged = true;
-					logger.info("Balance updated to {}", newProvision);
-				}
-			}
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8);
+			font.setFontName("Arial");
 
-			if (isChanged) {
-				jdbcTemplate.update(
-						"UPDATE BRRS_M_DEP2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?",
-						existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getAcctNumber());
+			CellStyle numberStyle = workbook.createCellStyle();
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
 
-				// Audit comparison
-				auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M_DEP2 Detail Screen",
-						"BRRS_M_DEP2_DETAIL");
+			CellStyle percentStyle = workbook.createCellStyle();
+			percentStyle.cloneStyleFrom(numberStyle);
+			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// --- End of Style Definitions ---
 
-				logger.info("Record updated successfully for account {}", acctNo);
+			int startRow = 6;
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-					@Override
-					public void afterCommit() {
-						try {
-							logger.info("Transaction committed — calling BRRS_M_DEP2_SUMMARY_PROCEDURE({})",
-									formattedDate);
-							jdbcTemplate.update("BEGIN BRRS_M_DEP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_DEP2_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
 					}
-				});
 
-				return ResponseEntity.ok("Record updated successfully!");
-			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
+					// Row 7 - Column B (Date)
+					Cell cellBdate = row.createCell(1);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 12
+					// =============================================
+					row = sheet.getRow(11);
+
+					// Column B
+					Cell cell1 = row.getCell(1);
+					if (record.getR12_current() != null) {
+						cell1.setCellValue(record.getR12_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					// Column C
+					Cell cell2 = row.createCell(2);
+					if (record.getR12_call() != null) {
+						cell2.setCellValue(record.getR12_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					// Column D
+					Cell cell3 = row.createCell(3);
+					if (record.getR12_savings() != null) {
+						cell3.setCellValue(record.getR12_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// Column E
+					Cell cell4 = row.createCell(4);
+					if (record.getR12_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR12_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// Column F
+					Cell cell5 = row.createCell(5);
+					if (record.getR12_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR12_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// Column G
+					Cell cell6 = row.createCell(6);
+					if (record.getR12_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR12_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// Column H
+					Cell cell7 = row.createCell(7);
+					if (record.getR12_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR12_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// Column I
+					Cell cell8 = row.createCell(8);
+					if (record.getR12_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR12_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// Column J
+					Cell cell9 = row.createCell(9);
+					if (record.getR12_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR12_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					// Column K
+					Cell cell10 = row.createCell(10);
+					if (record.getR12_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR12_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					// Column L
+					Cell cell11 = row.createCell(11);
+					if (record.getR12_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR12_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					// Column M
+					Cell cell12 = row.createCell(12);
+					if (record.getR12_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR12_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					// ✅ FIXED: Column N - using cell13 correctly
+					Cell cell13 = row.createCell(13);
+					if (record.getR12_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR12_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 13
+					// =============================================
+					row = sheet.getRow(12);
+
+					cell1 = row.getCell(1);
+					if (record.getR13_current() != null) {
+						cell1.setCellValue(record.getR13_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR13_call() != null) {
+						cell2.setCellValue(record.getR13_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR13_savings() != null) {
+						cell3.setCellValue(record.getR13_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR13_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR13_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR13_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR13_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR13_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR13_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR13_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR13_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR13_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR13_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR13_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR13_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR13_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR13_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR13_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR13_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR13_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR13_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					// ✅ FIXED: Column N - using cell13 correctly
+					cell13 = row.createCell(13);
+					if (record.getR13_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR13_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 14
+					// =============================================
+					row = sheet.getRow(13);
+
+					cell1 = row.getCell(1);
+					if (record.getR14_current() != null) {
+						cell1.setCellValue(record.getR14_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR14_call() != null) {
+						cell2.setCellValue(record.getR14_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR14_savings() != null) {
+						cell3.setCellValue(record.getR14_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR14_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR14_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR14_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR14_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR14_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR14_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR14_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR14_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR14_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR14_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR14_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR14_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR14_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR14_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR14_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR14_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR14_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR14_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					// ✅ FIXED: Column N - using cell13 correctly
+					cell13 = row.createCell(13);
+					if (record.getR14_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR14_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 15
+					// =============================================
+					row = sheet.getRow(14);
+
+					cell1 = row.getCell(1);
+					if (record.getR15_current() != null) {
+						cell1.setCellValue(record.getR15_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR15_call() != null) {
+						cell2.setCellValue(record.getR15_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR15_savings() != null) {
+						cell3.setCellValue(record.getR15_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR15_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR15_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR15_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR15_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR15_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR15_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR15_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR15_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR15_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR15_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR15_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR15_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR15_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR15_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR15_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR15_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR15_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR15_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					// Column N - Certificates of Deposit
+					cell13 = row.createCell(13);
+					if (record.getR15_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR15_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 16
+					// =============================================
+					row = sheet.getRow(15);
+
+					cell1 = row.getCell(1);
+					if (record.getR16_current() != null) {
+						cell1.setCellValue(record.getR16_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR16_call() != null) {
+						cell2.setCellValue(record.getR16_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR16_savings() != null) {
+						cell3.setCellValue(record.getR16_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR16_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR16_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR16_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR16_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR16_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR16_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR16_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR16_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR16_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR16_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR16_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR16_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR16_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR16_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR16_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR16_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR16_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR16_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR16_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR16_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 17
+					// =============================================
+					row = sheet.getRow(16);
+
+					cell1 = row.getCell(1);
+					if (record.getR17_current() != null) {
+						cell1.setCellValue(record.getR17_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR17_call() != null) {
+						cell2.setCellValue(record.getR17_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR17_savings() != null) {
+						cell3.setCellValue(record.getR17_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR17_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR17_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR17_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR17_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR17_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR17_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR17_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR17_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR17_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR17_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR17_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR17_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR17_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR17_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR17_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR17_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR17_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR17_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR17_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR17_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 18
+					// =============================================
+					row = sheet.getRow(17);
+
+					cell1 = row.getCell(1);
+					if (record.getR18_current() != null) {
+						cell1.setCellValue(record.getR18_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR18_call() != null) {
+						cell2.setCellValue(record.getR18_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR18_savings() != null) {
+						cell3.setCellValue(record.getR18_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR18_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR18_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR18_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR18_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR18_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR18_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR18_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR18_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR18_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR18_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR18_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR18_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR18_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR18_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR18_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR18_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR18_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR18_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR18_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR18_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 19
+					// =============================================
+					row = sheet.getRow(18);
+
+					cell1 = row.getCell(1);
+					if (record.getR19_current() != null) {
+						cell1.setCellValue(record.getR19_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR19_call() != null) {
+						cell2.setCellValue(record.getR19_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR19_savings() != null) {
+						cell3.setCellValue(record.getR19_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR19_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR19_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR19_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR19_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR19_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR19_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR19_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR19_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR19_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR19_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR19_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR19_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR19_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR19_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR19_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR19_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR19_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR19_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR19_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR19_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 20
+					// =============================================
+					row = sheet.getRow(19);
+
+					cell1 = row.getCell(1);
+					if (record.getR20_current() != null) {
+						cell1.setCellValue(record.getR20_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR20_call() != null) {
+						cell2.setCellValue(record.getR20_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR20_savings() != null) {
+						cell3.setCellValue(record.getR20_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR20_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR20_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR20_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR20_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR20_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR20_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR20_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR20_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR20_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR20_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR20_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR20_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR20_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR20_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR20_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR20_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR20_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR20_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR20_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR20_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 21
+					// =============================================
+					row = sheet.getRow(20);
+
+					cell1 = row.getCell(1);
+					if (record.getR21_current() != null) {
+						cell1.setCellValue(record.getR21_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR21_call() != null) {
+						cell2.setCellValue(record.getR21_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR21_savings() != null) {
+						cell3.setCellValue(record.getR21_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR21_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR21_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR21_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR21_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR21_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR21_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR21_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR21_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR21_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR21_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR21_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR21_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR21_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR21_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR21_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR21_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR21_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR21_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR21_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR21_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 22
+					// =============================================
+					row = sheet.getRow(21);
+
+					cell1 = row.getCell(1);
+					if (record.getR22_current() != null) {
+						cell1.setCellValue(record.getR22_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR22_call() != null) {
+						cell2.setCellValue(record.getR22_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR22_savings() != null) {
+						cell3.setCellValue(record.getR22_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR22_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR22_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR22_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR22_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR22_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR22_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR22_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR22_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR22_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR22_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR22_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR22_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR22_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR22_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR22_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR22_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR22_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR22_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR22_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR22_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 23
+					// =============================================
+					row = sheet.getRow(22);
+
+					cell1 = row.getCell(1);
+					if (record.getR23_current() != null) {
+						cell1.setCellValue(record.getR23_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR23_call() != null) {
+						cell2.setCellValue(record.getR23_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR23_savings() != null) {
+						cell3.setCellValue(record.getR23_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR23_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR23_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR23_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR23_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR23_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR23_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR23_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR23_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR23_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR23_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR23_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR23_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR23_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR23_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR23_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR23_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR23_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR23_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR23_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR23_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 24
+					// =============================================
+					row = sheet.getRow(23);
+
+					cell1 = row.getCell(1);
+					if (record.getR24_current() != null) {
+						cell1.setCellValue(record.getR24_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR24_call() != null) {
+						cell2.setCellValue(record.getR24_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR24_savings() != null) {
+						cell3.setCellValue(record.getR24_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR24_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR24_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR24_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR24_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR24_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR24_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR24_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR24_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR24_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR24_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR24_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR24_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR24_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR24_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR24_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR24_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR24_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR24_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR24_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR24_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 25
+					// =============================================
+					row = sheet.getRow(24);
+
+					cell1 = row.getCell(1);
+					if (record.getR25_current() != null) {
+						cell1.setCellValue(record.getR25_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR25_call() != null) {
+						cell2.setCellValue(record.getR25_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR25_savings() != null) {
+						cell3.setCellValue(record.getR25_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR25_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR25_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR25_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR25_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR25_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR25_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR25_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR25_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR25_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR25_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR25_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR25_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR25_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR25_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR25_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR25_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR25_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR25_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR25_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR25_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 26
+					// =============================================
+					row = sheet.getRow(25);
+
+					cell1 = row.getCell(1);
+					if (record.getR26_current() != null) {
+						cell1.setCellValue(record.getR26_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR26_call() != null) {
+						cell2.setCellValue(record.getR26_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR26_savings() != null) {
+						cell3.setCellValue(record.getR26_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR26_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR26_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR26_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR26_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR26_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR26_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR26_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR26_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR26_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR26_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR26_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR26_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR26_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR26_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR26_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR26_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR26_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR26_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR26_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR26_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 27
+					// =============================================
+					row = sheet.getRow(26);
+
+					cell1 = row.getCell(1);
+					if (record.getR27_current() != null) {
+						cell1.setCellValue(record.getR27_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR27_call() != null) {
+						cell2.setCellValue(record.getR27_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR27_savings() != null) {
+						cell3.setCellValue(record.getR27_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR27_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR27_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR27_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR27_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR27_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR27_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR27_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR27_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR27_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR27_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR27_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR27_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR27_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR27_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR27_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR27_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR27_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR27_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR27_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR27_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 28
+					// =============================================
+					row = sheet.getRow(27);
+
+					cell1 = row.getCell(1);
+					if (record.getR28_current() != null) {
+						cell1.setCellValue(record.getR28_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR28_call() != null) {
+						cell2.setCellValue(record.getR28_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR28_savings() != null) {
+						cell3.setCellValue(record.getR28_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR28_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR28_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR28_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR28_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR28_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR28_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR28_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR28_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR28_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR28_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR28_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR28_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR28_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR28_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR28_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR28_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR28_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR28_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR28_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR28_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 29
+					// =============================================
+					row = sheet.getRow(28);
+
+					cell1 = row.getCell(1);
+					if (record.getR29_current() != null) {
+						cell1.setCellValue(record.getR29_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR29_call() != null) {
+						cell2.setCellValue(record.getR29_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR29_savings() != null) {
+						cell3.setCellValue(record.getR29_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR29_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR29_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR29_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR29_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR29_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR29_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR29_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR29_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR29_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR29_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR29_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR29_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR29_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR29_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR29_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR29_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR29_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR29_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR29_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR29_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 31
+					// =============================================
+					row = sheet.getRow(30);
+
+					cell1 = row.getCell(1);
+					if (record.getR31_current() != null) {
+						cell1.setCellValue(record.getR31_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR31_call() != null) {
+						cell2.setCellValue(record.getR31_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR31_savings() != null) {
+						cell3.setCellValue(record.getR31_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR31_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR31_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR31_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR31_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR31_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR31_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR31_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR31_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR31_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR31_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR31_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR31_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR31_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR31_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR31_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR31_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR31_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR31_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR31_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR31_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 32
+					// =============================================
+					row = sheet.getRow(31);
+
+					cell1 = row.getCell(1);
+					if (record.getR32_current() != null) {
+						cell1.setCellValue(record.getR32_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR32_call() != null) {
+						cell2.setCellValue(record.getR32_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR32_savings() != null) {
+						cell3.setCellValue(record.getR32_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR32_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR32_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR32_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR32_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR32_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR32_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR32_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR32_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR32_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR32_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR32_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR32_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR32_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR32_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR32_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR32_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR32_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR32_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR32_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR32_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 34
+					// =============================================
+					row = sheet.getRow(33);
+
+					cell1 = row.getCell(1);
+					if (record.getR34_current() != null) {
+						cell1.setCellValue(record.getR34_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR34_call() != null) {
+						cell2.setCellValue(record.getR34_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR34_savings() != null) {
+						cell3.setCellValue(record.getR34_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR34_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR34_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR34_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR34_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR34_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR34_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR34_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR34_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR34_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR34_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR34_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR34_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR34_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR34_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR34_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR34_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR34_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR34_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR34_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR34_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 35
+					// =============================================
+					row = sheet.getRow(34);
+
+					cell1 = row.getCell(1);
+					if (record.getR35_current() != null) {
+						cell1.setCellValue(record.getR35_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR35_call() != null) {
+						cell2.setCellValue(record.getR35_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR35_savings() != null) {
+						cell3.setCellValue(record.getR35_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR35_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR35_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR35_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR35_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR35_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR35_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR35_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR35_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR35_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR35_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR35_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR35_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR35_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR35_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR35_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR35_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR35_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR35_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR35_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR35_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 37
+					// =============================================
+					row = sheet.getRow(36);
+
+					cell1 = row.getCell(1);
+					if (record.getR37_current() != null) {
+						cell1.setCellValue(record.getR37_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR37_call() != null) {
+						cell2.setCellValue(record.getR37_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR37_savings() != null) {
+						cell3.setCellValue(record.getR37_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR37_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR37_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR37_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR37_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR37_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR37_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR37_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR37_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR37_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR37_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR37_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR37_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR37_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR37_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR37_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR37_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR37_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR37_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR37_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR37_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 38
+					// =============================================
+					row = sheet.getRow(37);
+
+					cell1 = row.getCell(1);
+					if (record.getR38_current() != null) {
+						cell1.setCellValue(record.getR38_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR38_call() != null) {
+						cell2.setCellValue(record.getR38_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR38_savings() != null) {
+						cell3.setCellValue(record.getR38_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR38_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR38_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR38_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR38_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR38_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR38_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR38_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR38_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR38_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR38_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR38_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR38_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR38_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR38_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR38_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR38_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR38_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR38_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR38_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR38_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 39
+					// =============================================
+					row = sheet.getRow(38);
+
+					cell1 = row.getCell(1);
+					if (record.getR39_current() != null) {
+						cell1.setCellValue(record.getR39_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR39_call() != null) {
+						cell2.setCellValue(record.getR39_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR39_savings() != null) {
+						cell3.setCellValue(record.getR39_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR39_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR39_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR39_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR39_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR39_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR39_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR39_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR39_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR39_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR39_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR39_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR39_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR39_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR39_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR39_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR39_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR39_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR39_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR39_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR39_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 40
+					// =============================================
+					row = sheet.getRow(39);
+
+					cell1 = row.getCell(1);
+					if (record.getR40_current() != null) {
+						cell1.setCellValue(record.getR40_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR40_call() != null) {
+						cell2.setCellValue(record.getR40_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR40_savings() != null) {
+						cell3.setCellValue(record.getR40_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR40_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR40_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR40_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR40_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR40_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR40_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR40_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR40_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR40_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR40_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR40_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR40_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR40_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR40_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR40_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR40_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR40_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR40_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR40_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR40_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 42
+					// =============================================
+					row = sheet.getRow(41);
+
+					cell1 = row.getCell(1);
+					if (record.getR42_current() != null) {
+						cell1.setCellValue(record.getR42_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR42_call() != null) {
+						cell2.setCellValue(record.getR42_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR42_savings() != null) {
+						cell3.setCellValue(record.getR42_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR42_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR42_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR42_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR42_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR42_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR42_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR42_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR42_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR42_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR42_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR42_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR42_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR42_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR42_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR42_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR42_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR42_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR42_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR42_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR42_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 43
+					// =============================================
+					row = sheet.getRow(42);
+
+					cell1 = row.getCell(1);
+					if (record.getR43_current() != null) {
+						cell1.setCellValue(record.getR43_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR43_call() != null) {
+						cell2.setCellValue(record.getR43_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR43_savings() != null) {
+						cell3.setCellValue(record.getR43_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR43_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR43_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR43_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR43_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR43_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR43_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR43_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR43_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR43_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR43_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR43_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR43_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR43_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR43_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR43_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR43_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR43_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR43_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR43_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR43_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 44
+					// =============================================
+					row = sheet.getRow(43);
+
+					cell1 = row.getCell(1);
+					if (record.getR44_current() != null) {
+						cell1.setCellValue(record.getR44_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR44_call() != null) {
+						cell2.setCellValue(record.getR44_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR44_savings() != null) {
+						cell3.setCellValue(record.getR44_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR44_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR44_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR44_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR44_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR44_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR44_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR44_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR44_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR44_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR44_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR44_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR44_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR44_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR44_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR44_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR44_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR44_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR44_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR44_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR44_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 46
+					// =============================================
+					row = sheet.getRow(45);
+
+					cell1 = row.getCell(1);
+					if (record.getR46_current() != null) {
+						cell1.setCellValue(record.getR46_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR46_call() != null) {
+						cell2.setCellValue(record.getR46_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR46_savings() != null) {
+						cell3.setCellValue(record.getR46_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR46_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR46_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR46_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR46_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR46_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR46_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR46_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR46_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR46_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR46_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR46_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR46_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR46_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR46_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR46_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR46_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR46_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR46_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR46_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR46_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 47
+					// =============================================
+					row = sheet.getRow(46);
+
+					cell1 = row.getCell(1);
+					if (record.getR47_current() != null) {
+						cell1.setCellValue(record.getR47_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR47_call() != null) {
+						cell2.setCellValue(record.getR47_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR47_savings() != null) {
+						cell3.setCellValue(record.getR47_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR47_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR47_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR47_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR47_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR47_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR47_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR47_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR47_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR47_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR47_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR47_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR47_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR47_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR47_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR47_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR47_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR47_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR47_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR47_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR47_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 48
+					// =============================================
+					row = sheet.getRow(47);
+
+					cell1 = row.getCell(1);
+					if (record.getR48_current() != null) {
+						cell1.setCellValue(record.getR48_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR48_call() != null) {
+						cell2.setCellValue(record.getR48_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR48_savings() != null) {
+						cell3.setCellValue(record.getR48_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR48_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR48_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR48_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR48_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR48_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR48_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR48_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR48_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR48_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR48_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR48_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR48_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR48_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR48_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR48_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR48_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR48_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR48_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR48_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR48_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 50
+					// =============================================
+					row = sheet.getRow(49);
+
+					cell1 = row.getCell(1);
+					if (record.getR50_current() != null) {
+						cell1.setCellValue(record.getR50_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR50_call() != null) {
+						cell2.setCellValue(record.getR50_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR50_savings() != null) {
+						cell3.setCellValue(record.getR50_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR50_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR50_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR50_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR50_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR50_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR50_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR50_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR50_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR50_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR50_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR50_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR50_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR50_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR50_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR50_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR50_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR50_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR50_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR50_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR50_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 51
+					// =============================================
+					row = sheet.getRow(50);
+
+					cell1 = row.getCell(1);
+					if (record.getR51_current() != null) {
+						cell1.setCellValue(record.getR51_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR51_call() != null) {
+						cell2.setCellValue(record.getR51_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR51_savings() != null) {
+						cell3.setCellValue(record.getR51_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR51_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR51_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR51_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR51_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR51_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR51_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR51_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR51_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR51_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR51_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR51_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR51_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR51_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR51_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR51_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR51_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR51_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR51_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR51_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR51_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 52
+					// =============================================
+					row = sheet.getRow(51);
+
+					cell1 = row.getCell(1);
+					if (record.getR52_current() != null) {
+						cell1.setCellValue(record.getR52_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR52_call() != null) {
+						cell2.setCellValue(record.getR52_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR52_savings() != null) {
+						cell3.setCellValue(record.getR52_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR52_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR52_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR52_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR52_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR52_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR52_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR52_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR52_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR52_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR52_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR52_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR52_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR52_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR52_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR52_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR52_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR52_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR52_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR52_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR52_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 53
+					// =============================================
+					row = sheet.getRow(52);
+
+					cell1 = row.getCell(1);
+					if (record.getR53_current() != null) {
+						cell1.setCellValue(record.getR53_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR53_call() != null) {
+						cell2.setCellValue(record.getR53_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR53_savings() != null) {
+						cell3.setCellValue(record.getR53_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR53_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR53_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR53_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR53_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR53_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR53_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR53_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR53_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR53_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR53_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR53_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR53_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR53_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR53_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR53_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR53_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR53_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR53_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR53_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR53_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 54
+					// =============================================
+					row = sheet.getRow(53);
+
+					cell1 = row.getCell(1);
+					if (record.getR54_current() != null) {
+						cell1.setCellValue(record.getR54_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR54_call() != null) {
+						cell2.setCellValue(record.getR54_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR54_savings() != null) {
+						cell3.setCellValue(record.getR54_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR54_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR54_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR54_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR54_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR54_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR54_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR54_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR54_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR54_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR54_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR54_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR54_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR54_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR54_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR54_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR54_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR54_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR54_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR54_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR54_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 55
+					// =============================================
+					row = sheet.getRow(54);
+
+					cell1 = row.getCell(1);
+					if (record.getR55_current() != null) {
+						cell1.setCellValue(record.getR55_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR55_call() != null) {
+						cell2.setCellValue(record.getR55_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR55_savings() != null) {
+						cell3.setCellValue(record.getR55_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR55_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR55_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR55_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR55_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR55_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR55_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR55_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR55_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR55_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR55_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR55_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR55_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR55_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR55_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR55_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR55_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR55_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR55_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR55_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR55_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 57
+					// =============================================
+					row = sheet.getRow(56);
+
+					cell1 = row.getCell(1);
+					if (record.getR57_current() != null) {
+						cell1.setCellValue(record.getR57_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR57_call() != null) {
+						cell2.setCellValue(record.getR57_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR57_savings() != null) {
+						cell3.setCellValue(record.getR57_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR57_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR57_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR57_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR57_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR57_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR57_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR57_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR57_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR57_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR57_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR57_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR57_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR57_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR57_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR57_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR57_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR57_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR57_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR57_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR57_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// End of all rows
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
 			}
 
-		} catch (Exception e) {
-			logger.error("Error updating M_DEP2 record", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error updating record: " + e.getMessage());
+			workbook.write(out);
+			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
+
+			// Audit service summary format
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP2 SUMMARY", null,
+						"BRRS_M_DEP2_SUMMARYTABLE");
+			}
+
+			return out.toByteArray();
+		}
+	}
+
+	// =========================================================
+	// SUMMARY EXCEL - ARCHIVAL/RESUB VERSION
+	// =========================================================
+	public byte[] getSummaryExcelARCHIVAL(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, BigDecimal version) throws Exception {
+
+		logger.info("Service: Starting Excel generation process in memory for ARCHIVAL.");
+		System.out.println("Archival Summary Excel - Type: " + type + ", Version: " + version);
+
+		Date d1 = dateformat.parse(todate);
+		List<M_DEP2_Archival_Summary_Entity> dataList = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+				new BeanPropertyRowMapper<>(M_DEP2_Archival_Summary_Entity.class), d1, version);
+
+		if (dataList.isEmpty()) {
+			logger.warn("Service: No data found for DEP2 Archival report.");
+			return new byte[0];
+		}
+
+		String templateDir = env.getProperty("output.exportpathtemp");
+		String templateFileName = filename;
+		System.out.println("Template File: " + filename);
+		Path templatePath = Paths.get(templateDir, templateFileName);
+		System.out.println("Template Path: " + templatePath);
+
+		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+
+		if (!Files.exists(templatePath)) {
+			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		}
+		if (!Files.isReadable(templatePath)) {
+			throw new SecurityException("Template file exists but is not readable: " + templatePath.toAbsolutePath());
+		}
+
+		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+				Workbook workbook = WorkbookFactory.create(templateInputStream);
+				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			// --- Style Definitions ---
+			CreationHelper createHelper = workbook.getCreationHelper();
+
+			CellStyle dateStyle = workbook.createCellStyle();
+			dateStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
+			dateStyle.setBorderBottom(BorderStyle.THIN);
+			dateStyle.setBorderTop(BorderStyle.THIN);
+			dateStyle.setBorderLeft(BorderStyle.THIN);
+			dateStyle.setBorderRight(BorderStyle.THIN);
+
+			CellStyle textStyle = workbook.createCellStyle();
+			textStyle.setBorderBottom(BorderStyle.THIN);
+			textStyle.setBorderTop(BorderStyle.THIN);
+			textStyle.setBorderLeft(BorderStyle.THIN);
+			textStyle.setBorderRight(BorderStyle.THIN);
+
+			// Create the font
+			Font font = workbook.createFont();
+			font.setFontHeightInPoints((short) 8);
+			font.setFontName("Arial");
+
+			CellStyle numberStyle = workbook.createCellStyle();
+			numberStyle.setBorderBottom(BorderStyle.THIN);
+			numberStyle.setBorderTop(BorderStyle.THIN);
+			numberStyle.setBorderLeft(BorderStyle.THIN);
+			numberStyle.setBorderRight(BorderStyle.THIN);
+			numberStyle.setFont(font);
+
+			CellStyle percentStyle = workbook.createCellStyle();
+			percentStyle.cloneStyleFrom(numberStyle);
+			percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			percentStyle.setAlignment(HorizontalAlignment.RIGHT);
+			// --- End of Style Definitions ---
+
+			int startRow = 6;
+
+			if (!dataList.isEmpty()) {
+				for (int i = 0; i < dataList.size(); i++) {
+					M_DEP2_Archival_Summary_Entity record = dataList.get(i);
+					System.out.println("rownumber=" + startRow + i);
+					Row row = sheet.getRow(startRow + i);
+					if (row == null) {
+						row = sheet.createRow(startRow + i);
+					}
+
+					// row7 - Column B (Date)
+					Cell cellBdate = row.createCell(1);
+					if (record.getReport_date() != null) {
+						cellBdate.setCellValue(record.getReport_date());
+						cellBdate.setCellStyle(dateStyle);
+					} else {
+						cellBdate.setCellValue("");
+						cellBdate.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 12
+					// =============================================
+					row = sheet.getRow(11);
+
+					// Column B
+					Cell cell1 = row.getCell(1);
+					if (record.getR12_current() != null) {
+						cell1.setCellValue(record.getR12_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					// Column C
+					Cell cell2 = row.createCell(2);
+					if (record.getR12_call() != null) {
+						cell2.setCellValue(record.getR12_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					// Column D
+					Cell cell3 = row.createCell(3);
+					if (record.getR12_savings() != null) {
+						cell3.setCellValue(record.getR12_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					// Column E
+					Cell cell4 = row.createCell(4);
+					if (record.getR12_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR12_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					// Column F
+					Cell cell5 = row.createCell(5);
+					if (record.getR12_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR12_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					// Column G
+					Cell cell6 = row.createCell(6);
+					if (record.getR12_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR12_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					// Column H
+					Cell cell7 = row.createCell(7);
+					if (record.getR12_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR12_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					// Column I
+					Cell cell8 = row.createCell(8);
+					if (record.getR12_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR12_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					// Column J
+					Cell cell9 = row.createCell(9);
+					if (record.getR12_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR12_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					// Column K
+					Cell cell10 = row.createCell(10);
+					if (record.getR12_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR12_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					// Column L
+					Cell cell11 = row.createCell(11);
+					if (record.getR12_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR12_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					// Column M
+					Cell cell12 = row.createCell(12);
+					if (record.getR12_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR12_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					// Column N
+					Cell cell13 = row.createCell(13);
+					if (record.getR12_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR12_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 13
+					// =============================================
+					row = sheet.getRow(12);
+
+					cell1 = row.getCell(1);
+					if (record.getR13_current() != null) {
+						cell1.setCellValue(record.getR13_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR13_call() != null) {
+						cell2.setCellValue(record.getR13_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR13_savings() != null) {
+						cell3.setCellValue(record.getR13_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR13_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR13_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR13_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR13_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR13_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR13_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR13_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR13_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR13_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR13_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR13_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR13_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR13_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR13_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR13_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR13_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR13_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR13_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR13_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR13_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 14
+					// =============================================
+					row = sheet.getRow(13);
+
+					cell1 = row.getCell(1);
+					if (record.getR14_current() != null) {
+						cell1.setCellValue(record.getR14_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR14_call() != null) {
+						cell2.setCellValue(record.getR14_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR14_savings() != null) {
+						cell3.setCellValue(record.getR14_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR14_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR14_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR14_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR14_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR14_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR14_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR14_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR14_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR14_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR14_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR14_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR14_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR14_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR14_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR14_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR14_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR14_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR14_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR14_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR14_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 16
+					// =============================================
+					row = sheet.getRow(15);
+
+					cell1 = row.getCell(1);
+					if (record.getR16_current() != null) {
+						cell1.setCellValue(record.getR16_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR16_call() != null) {
+						cell2.setCellValue(record.getR16_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR16_savings() != null) {
+						cell3.setCellValue(record.getR16_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR16_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR16_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR16_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR16_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR16_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR16_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR16_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR16_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR16_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR16_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR16_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR16_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR16_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR16_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR16_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR16_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR16_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR16_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR16_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR16_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 17
+					// =============================================
+					row = sheet.getRow(16);
+
+					cell1 = row.getCell(1);
+					if (record.getR17_current() != null) {
+						cell1.setCellValue(record.getR17_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR17_call() != null) {
+						cell2.setCellValue(record.getR17_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR17_savings() != null) {
+						cell3.setCellValue(record.getR17_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR17_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR17_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR17_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR17_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR17_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR17_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR17_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR17_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR17_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR17_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR17_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR17_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR17_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR17_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR17_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR17_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR17_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR17_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR17_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR17_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 18
+					// =============================================
+					row = sheet.getRow(17);
+
+					cell1 = row.getCell(1);
+					if (record.getR18_current() != null) {
+						cell1.setCellValue(record.getR18_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR18_call() != null) {
+						cell2.setCellValue(record.getR18_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR18_savings() != null) {
+						cell3.setCellValue(record.getR18_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR18_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR18_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR18_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR18_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR18_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR18_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR18_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR18_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR18_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR18_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR18_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR18_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR18_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR18_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR18_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR18_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR18_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR18_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR18_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR18_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 19
+					// =============================================
+					row = sheet.getRow(18);
+
+					cell1 = row.getCell(1);
+					if (record.getR19_current() != null) {
+						cell1.setCellValue(record.getR19_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR19_call() != null) {
+						cell2.setCellValue(record.getR19_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR19_savings() != null) {
+						cell3.setCellValue(record.getR19_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR19_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR19_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR19_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR19_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR19_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR19_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR19_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR19_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR19_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR19_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR19_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR19_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR19_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR19_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR19_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR19_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR19_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR19_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR19_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR19_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 20
+					// =============================================
+					row = sheet.getRow(19);
+
+					cell1 = row.getCell(1);
+					if (record.getR20_current() != null) {
+						cell1.setCellValue(record.getR20_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR20_call() != null) {
+						cell2.setCellValue(record.getR20_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR20_savings() != null) {
+						cell3.setCellValue(record.getR20_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR20_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR20_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR20_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR20_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR20_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR20_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR20_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR20_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR20_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR20_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR20_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR20_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR20_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR20_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR20_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR20_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR20_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR20_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR20_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR20_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 21
+					// =============================================
+					row = sheet.getRow(20);
+
+					cell1 = row.getCell(1);
+					if (record.getR21_current() != null) {
+						cell1.setCellValue(record.getR21_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR21_call() != null) {
+						cell2.setCellValue(record.getR21_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR21_savings() != null) {
+						cell3.setCellValue(record.getR21_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR21_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR21_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR21_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR21_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR21_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR21_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR21_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR21_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR21_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR21_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR21_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR21_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR21_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR21_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR21_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR21_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR21_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR21_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR21_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR21_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 22
+					// =============================================
+					row = sheet.getRow(21);
+
+					cell1 = row.getCell(1);
+					if (record.getR22_current() != null) {
+						cell1.setCellValue(record.getR22_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR22_call() != null) {
+						cell2.setCellValue(record.getR22_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR22_savings() != null) {
+						cell3.setCellValue(record.getR22_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR22_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR22_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR22_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR22_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR22_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR22_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR22_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR22_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR22_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR22_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR22_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR22_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR22_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR22_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR22_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR22_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR22_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR22_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR22_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR22_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 23
+					// =============================================
+					row = sheet.getRow(22);
+
+					cell1 = row.getCell(1);
+					if (record.getR23_current() != null) {
+						cell1.setCellValue(record.getR23_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR23_call() != null) {
+						cell2.setCellValue(record.getR23_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR23_savings() != null) {
+						cell3.setCellValue(record.getR23_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR23_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR23_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR23_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR23_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR23_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR23_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR23_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR23_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR23_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR23_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR23_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR23_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR23_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR23_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR23_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR23_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR23_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR23_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR23_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR23_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 24
+					// =============================================
+					row = sheet.getRow(23);
+
+					cell1 = row.getCell(1);
+					if (record.getR24_current() != null) {
+						cell1.setCellValue(record.getR24_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR24_call() != null) {
+						cell2.setCellValue(record.getR24_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR24_savings() != null) {
+						cell3.setCellValue(record.getR24_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR24_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR24_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR24_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR24_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR24_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR24_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR24_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR24_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR24_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR24_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR24_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR24_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR24_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR24_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR24_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR24_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR24_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR24_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR24_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR24_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 25
+					// =============================================
+					row = sheet.getRow(24);
+
+					cell1 = row.getCell(1);
+					if (record.getR25_current() != null) {
+						cell1.setCellValue(record.getR25_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR25_call() != null) {
+						cell2.setCellValue(record.getR25_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR25_savings() != null) {
+						cell3.setCellValue(record.getR25_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR25_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR25_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR25_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR25_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR25_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR25_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR25_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR25_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR25_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR25_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR25_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR25_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR25_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR25_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR25_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR25_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR25_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR25_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR25_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR25_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 26
+					// =============================================
+					row = sheet.getRow(25);
+
+					cell1 = row.getCell(1);
+					if (record.getR26_current() != null) {
+						cell1.setCellValue(record.getR26_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR26_call() != null) {
+						cell2.setCellValue(record.getR26_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR26_savings() != null) {
+						cell3.setCellValue(record.getR26_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR26_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR26_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR26_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR26_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR26_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR26_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR26_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR26_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR26_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR26_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR26_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR26_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR26_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR26_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR26_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR26_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR26_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR26_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR26_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR26_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 27
+					// =============================================
+					row = sheet.getRow(26);
+
+					cell1 = row.getCell(1);
+					if (record.getR27_current() != null) {
+						cell1.setCellValue(record.getR27_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR27_call() != null) {
+						cell2.setCellValue(record.getR27_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR27_savings() != null) {
+						cell3.setCellValue(record.getR27_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR27_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR27_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR27_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR27_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR27_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR27_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR27_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR27_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR27_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR27_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR27_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR27_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR27_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR27_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR27_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR27_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR27_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR27_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR27_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR27_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 28
+					// =============================================
+					row = sheet.getRow(27);
+
+					cell1 = row.getCell(1);
+					if (record.getR28_current() != null) {
+						cell1.setCellValue(record.getR28_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR28_call() != null) {
+						cell2.setCellValue(record.getR28_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR28_savings() != null) {
+						cell3.setCellValue(record.getR28_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR28_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR28_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR28_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR28_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR28_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR28_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR28_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR28_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR28_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR28_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR28_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR28_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR28_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR28_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR28_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR28_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR28_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR28_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR28_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR28_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 29
+					// =============================================
+					row = sheet.getRow(28);
+
+					cell1 = row.getCell(1);
+					if (record.getR29_current() != null) {
+						cell1.setCellValue(record.getR29_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR29_call() != null) {
+						cell2.setCellValue(record.getR29_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR29_savings() != null) {
+						cell3.setCellValue(record.getR29_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR29_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR29_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR29_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR29_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR29_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR29_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR29_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR29_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR29_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR29_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR29_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR29_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR29_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR29_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR29_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR29_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR29_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR29_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR29_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR29_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 31
+					// =============================================
+					row = sheet.getRow(30);
+
+					cell1 = row.getCell(1);
+					if (record.getR31_current() != null) {
+						cell1.setCellValue(record.getR31_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR31_call() != null) {
+						cell2.setCellValue(record.getR31_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR31_savings() != null) {
+						cell3.setCellValue(record.getR31_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR31_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR31_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR31_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR31_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR31_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR31_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR31_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR31_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR31_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR31_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR31_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR31_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR31_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR31_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR31_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR31_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR31_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR31_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR31_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR31_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 32
+					// =============================================
+					row = sheet.getRow(31);
+
+					cell1 = row.getCell(1);
+					if (record.getR32_current() != null) {
+						cell1.setCellValue(record.getR32_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR32_call() != null) {
+						cell2.setCellValue(record.getR32_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR32_savings() != null) {
+						cell3.setCellValue(record.getR32_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR32_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR32_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR32_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR32_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR32_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR32_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR32_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR32_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR32_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR32_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR32_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR32_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR32_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR32_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR32_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR32_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR32_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR32_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR32_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR32_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 34
+					// =============================================
+					row = sheet.getRow(33);
+
+					cell1 = row.getCell(1);
+					if (record.getR34_current() != null) {
+						cell1.setCellValue(record.getR34_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR34_call() != null) {
+						cell2.setCellValue(record.getR34_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR34_savings() != null) {
+						cell3.setCellValue(record.getR34_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR34_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR34_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR34_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR34_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR34_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR34_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR34_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR34_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR34_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR34_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR34_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR34_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR34_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR34_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR34_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR34_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR34_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR34_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR34_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR34_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 35
+					// =============================================
+					row = sheet.getRow(34);
+
+					cell1 = row.getCell(1);
+					if (record.getR35_current() != null) {
+						cell1.setCellValue(record.getR35_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR35_call() != null) {
+						cell2.setCellValue(record.getR35_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR35_savings() != null) {
+						cell3.setCellValue(record.getR35_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR35_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR35_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR35_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR35_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR35_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR35_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR35_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR35_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR35_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR35_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR35_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR35_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR35_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR35_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR35_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR35_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR35_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR35_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR35_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR35_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 37
+					// =============================================
+					row = sheet.getRow(36);
+
+					cell1 = row.getCell(1);
+					if (record.getR37_current() != null) {
+						cell1.setCellValue(record.getR37_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR37_call() != null) {
+						cell2.setCellValue(record.getR37_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR37_savings() != null) {
+						cell3.setCellValue(record.getR37_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR37_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR37_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR37_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR37_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR37_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR37_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR37_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR37_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR37_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR37_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR37_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR37_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR37_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR37_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR37_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR37_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR37_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR37_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR37_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR37_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 38
+					// =============================================
+					row = sheet.getRow(37);
+
+					cell1 = row.getCell(1);
+					if (record.getR38_current() != null) {
+						cell1.setCellValue(record.getR38_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR38_call() != null) {
+						cell2.setCellValue(record.getR38_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR38_savings() != null) {
+						cell3.setCellValue(record.getR38_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR38_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR38_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR38_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR38_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR38_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR38_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR38_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR38_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR38_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR38_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR38_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR38_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR38_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR38_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR38_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR38_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR38_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR38_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR38_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR38_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 39
+					// =============================================
+					row = sheet.getRow(38);
+
+					cell1 = row.getCell(1);
+					if (record.getR39_current() != null) {
+						cell1.setCellValue(record.getR39_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR39_call() != null) {
+						cell2.setCellValue(record.getR39_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR39_savings() != null) {
+						cell3.setCellValue(record.getR39_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR39_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR39_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR39_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR39_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR39_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR39_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR39_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR39_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR39_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR39_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR39_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR39_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR39_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR39_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR39_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR39_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR39_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR39_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR39_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR39_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 40
+					// =============================================
+					row = sheet.getRow(39);
+
+					cell1 = row.getCell(1);
+					if (record.getR40_current() != null) {
+						cell1.setCellValue(record.getR40_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR40_call() != null) {
+						cell2.setCellValue(record.getR40_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR40_savings() != null) {
+						cell3.setCellValue(record.getR40_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR40_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR40_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR40_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR40_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR40_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR40_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR40_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR40_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR40_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR40_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR40_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR40_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR40_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR40_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR40_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR40_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR40_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR40_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR40_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR40_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 42
+					// =============================================
+					row = sheet.getRow(41);
+
+					cell1 = row.getCell(1);
+					if (record.getR42_current() != null) {
+						cell1.setCellValue(record.getR42_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR42_call() != null) {
+						cell2.setCellValue(record.getR42_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR42_savings() != null) {
+						cell3.setCellValue(record.getR42_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR42_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR42_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR42_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR42_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR42_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR42_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR42_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR42_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR42_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR42_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR42_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR42_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR42_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR42_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR42_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR42_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR42_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR42_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR42_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR42_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 43
+					// =============================================
+					row = sheet.getRow(42);
+
+					cell1 = row.getCell(1);
+					if (record.getR43_current() != null) {
+						cell1.setCellValue(record.getR43_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR43_call() != null) {
+						cell2.setCellValue(record.getR43_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR43_savings() != null) {
+						cell3.setCellValue(record.getR43_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR43_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR43_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR43_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR43_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR43_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR43_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR43_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR43_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR43_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR43_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR43_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR43_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR43_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR43_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR43_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR43_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR43_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR43_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR43_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR43_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 44
+					// =============================================
+					row = sheet.getRow(43);
+
+					cell1 = row.getCell(1);
+					if (record.getR44_current() != null) {
+						cell1.setCellValue(record.getR44_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR44_call() != null) {
+						cell2.setCellValue(record.getR44_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR44_savings() != null) {
+						cell3.setCellValue(record.getR44_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR44_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR44_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR44_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR44_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR44_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR44_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR44_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR44_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR44_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR44_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR44_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR44_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR44_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR44_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR44_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR44_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR44_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR44_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR44_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR44_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 46
+					// =============================================
+					row = sheet.getRow(45);
+
+					cell1 = row.getCell(1);
+					if (record.getR46_current() != null) {
+						cell1.setCellValue(record.getR46_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR46_call() != null) {
+						cell2.setCellValue(record.getR46_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR46_savings() != null) {
+						cell3.setCellValue(record.getR46_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR46_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR46_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR46_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR46_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR46_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR46_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR46_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR46_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR46_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR46_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR46_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR46_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR46_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR46_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR46_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR46_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR46_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR46_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR46_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR46_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 47
+					// =============================================
+					row = sheet.getRow(46);
+
+					cell1 = row.getCell(1);
+					if (record.getR47_current() != null) {
+						cell1.setCellValue(record.getR47_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR47_call() != null) {
+						cell2.setCellValue(record.getR47_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR47_savings() != null) {
+						cell3.setCellValue(record.getR47_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR47_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR47_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR47_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR47_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR47_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR47_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR47_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR47_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR47_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR47_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR47_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR47_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR47_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR47_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR47_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR47_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR47_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR47_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR47_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR47_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 48
+					// =============================================
+					row = sheet.getRow(47);
+
+					cell1 = row.getCell(1);
+					if (record.getR48_current() != null) {
+						cell1.setCellValue(record.getR48_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR48_call() != null) {
+						cell2.setCellValue(record.getR48_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR48_savings() != null) {
+						cell3.setCellValue(record.getR48_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR48_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR48_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR48_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR48_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR48_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR48_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR48_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR48_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR48_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR48_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR48_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR48_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR48_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR48_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR48_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR48_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR48_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR48_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR48_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR48_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 50
+					// =============================================
+					row = sheet.getRow(49);
+
+					cell1 = row.getCell(1);
+					if (record.getR50_current() != null) {
+						cell1.setCellValue(record.getR50_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR50_call() != null) {
+						cell2.setCellValue(record.getR50_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR50_savings() != null) {
+						cell3.setCellValue(record.getR50_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR50_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR50_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR50_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR50_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR50_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR50_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR50_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR50_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR50_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR50_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR50_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR50_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR50_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR50_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR50_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR50_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR50_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR50_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR50_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR50_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 51
+					// =============================================
+					row = sheet.getRow(50);
+
+					cell1 = row.getCell(1);
+					if (record.getR51_current() != null) {
+						cell1.setCellValue(record.getR51_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR51_call() != null) {
+						cell2.setCellValue(record.getR51_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR51_savings() != null) {
+						cell3.setCellValue(record.getR51_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR51_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR51_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR51_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR51_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR51_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR51_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR51_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR51_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR51_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR51_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR51_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR51_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR51_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR51_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR51_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR51_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR51_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR51_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR51_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR51_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 52
+					// =============================================
+					row = sheet.getRow(51);
+
+					cell1 = row.getCell(1);
+					if (record.getR52_current() != null) {
+						cell1.setCellValue(record.getR52_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR52_call() != null) {
+						cell2.setCellValue(record.getR52_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR52_savings() != null) {
+						cell3.setCellValue(record.getR52_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR52_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR52_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR52_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR52_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR52_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR52_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR52_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR52_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR52_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR52_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR52_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR52_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR52_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR52_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR52_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR52_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR52_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR52_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR52_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR52_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 53
+					// =============================================
+					row = sheet.getRow(52);
+
+					cell1 = row.getCell(1);
+					if (record.getR53_current() != null) {
+						cell1.setCellValue(record.getR53_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR53_call() != null) {
+						cell2.setCellValue(record.getR53_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR53_savings() != null) {
+						cell3.setCellValue(record.getR53_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR53_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR53_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR53_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR53_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR53_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR53_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR53_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR53_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR53_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR53_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR53_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR53_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR53_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR53_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR53_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR53_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR53_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR53_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR53_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR53_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 54
+					// =============================================
+					row = sheet.getRow(53);
+
+					cell1 = row.getCell(1);
+					if (record.getR54_current() != null) {
+						cell1.setCellValue(record.getR54_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR54_call() != null) {
+						cell2.setCellValue(record.getR54_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR54_savings() != null) {
+						cell3.setCellValue(record.getR54_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR54_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR54_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR54_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR54_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR54_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR54_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR54_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR54_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR54_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR54_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR54_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR54_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR54_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR54_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR54_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR54_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR54_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR54_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR54_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR54_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 55
+					// =============================================
+					row = sheet.getRow(54);
+
+					cell1 = row.getCell(1);
+					if (record.getR55_current() != null) {
+						cell1.setCellValue(record.getR55_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR55_call() != null) {
+						cell2.setCellValue(record.getR55_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR55_savings() != null) {
+						cell3.setCellValue(record.getR55_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR55_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR55_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR55_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR55_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR55_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR55_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR55_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR55_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR55_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR55_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR55_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR55_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR55_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR55_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR55_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR55_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR55_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR55_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR55_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR55_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// =============================================
+					// ROW 57
+					// =============================================
+					row = sheet.getRow(56);
+
+					cell1 = row.getCell(1);
+					if (record.getR57_current() != null) {
+						cell1.setCellValue(record.getR57_current().doubleValue());
+						cell1.setCellStyle(numberStyle);
+					} else {
+						cell1.setCellValue("");
+						cell1.setCellStyle(textStyle);
+					}
+
+					cell2 = row.createCell(2);
+					if (record.getR57_call() != null) {
+						cell2.setCellValue(record.getR57_call().doubleValue());
+						cell2.setCellStyle(numberStyle);
+					} else {
+						cell2.setCellValue("");
+						cell2.setCellStyle(textStyle);
+					}
+
+					cell3 = row.createCell(3);
+					if (record.getR57_savings() != null) {
+						cell3.setCellValue(record.getR57_savings().doubleValue());
+						cell3.setCellStyle(numberStyle);
+					} else {
+						cell3.setCellValue("");
+						cell3.setCellStyle(textStyle);
+					}
+
+					cell4 = row.createCell(4);
+					if (record.getR57_0_31_notice_days() != null) {
+						cell4.setCellValue(record.getR57_0_31_notice_days().doubleValue());
+						cell4.setCellStyle(numberStyle);
+					} else {
+						cell4.setCellValue("");
+						cell4.setCellStyle(textStyle);
+					}
+
+					cell5 = row.createCell(5);
+					if (record.getR57_32_88_notice_days() != null) {
+						cell5.setCellValue(record.getR57_32_88_notice_days().doubleValue());
+						cell5.setCellStyle(numberStyle);
+					} else {
+						cell5.setCellValue("");
+						cell5.setCellStyle(textStyle);
+					}
+
+					cell6 = row.createCell(6);
+					if (record.getR57_91_day_deposit_fixed_deposit_months() != null) {
+						cell6.setCellValue(record.getR57_91_day_deposit_fixed_deposit_months().doubleValue());
+						cell6.setCellStyle(numberStyle);
+					} else {
+						cell6.setCellValue("");
+						cell6.setCellStyle(textStyle);
+					}
+
+					cell7 = row.createCell(7);
+					if (record.getR57_1_2_fixed_deposits_months() != null) {
+						cell7.setCellValue(record.getR57_1_2_fixed_deposits_months().doubleValue());
+						cell7.setCellStyle(numberStyle);
+					} else {
+						cell7.setCellValue("");
+						cell7.setCellStyle(textStyle);
+					}
+
+					cell8 = row.createCell(8);
+					if (record.getR57_4_6_fixed_deposits_months() != null) {
+						cell8.setCellValue(record.getR57_4_6_fixed_deposits_months().doubleValue());
+						cell8.setCellStyle(numberStyle);
+					} else {
+						cell8.setCellValue("");
+						cell8.setCellStyle(textStyle);
+					}
+
+					cell9 = row.createCell(9);
+					if (record.getR57_7_12_fixed_deposits_months() != null) {
+						cell9.setCellValue(record.getR57_7_12_fixed_deposits_months().doubleValue());
+						cell9.setCellStyle(numberStyle);
+					} else {
+						cell9.setCellValue("");
+						cell9.setCellStyle(textStyle);
+					}
+
+					cell10 = row.createCell(10);
+					if (record.getR57_13_18_fixed_deposits_months() != null) {
+						cell10.setCellValue(record.getR57_13_18_fixed_deposits_months().doubleValue());
+						cell10.setCellStyle(numberStyle);
+					} else {
+						cell10.setCellValue("");
+						cell10.setCellStyle(textStyle);
+					}
+
+					cell11 = row.createCell(11);
+					if (record.getR57_19_24_fixed_deposits_months() != null) {
+						cell11.setCellValue(record.getR57_19_24_fixed_deposits_months().doubleValue());
+						cell11.setCellStyle(numberStyle);
+					} else {
+						cell11.setCellValue("");
+						cell11.setCellStyle(textStyle);
+					}
+
+					cell12 = row.createCell(12);
+					if (record.getR57_over_24_fixed_deposits_months() != null) {
+						cell12.setCellValue(record.getR57_over_24_fixed_deposits_months().doubleValue());
+						cell12.setCellStyle(numberStyle);
+					} else {
+						cell12.setCellValue("");
+						cell12.setCellStyle(textStyle);
+					}
+
+					cell13 = row.createCell(13);
+					if (record.getR57_certificates_of_deposit() != null) {
+						cell13.setCellValue(record.getR57_certificates_of_deposit().doubleValue());
+						cell13.setCellStyle(numberStyle);
+					} else {
+						cell13.setCellValue("");
+						cell13.setCellStyle(textStyle);
+					}
+
+					// End of all rows
+				}
+				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			}
+
+			workbook.write(out);
+			logger.info("Service: Archival Excel data successfully written ({} bytes).", out.size());
+
+			// Audit for archival
+			ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			if (attrs != null) {
+				HttpServletRequest request = attrs.getRequest();
+				String userid = (String) request.getSession().getAttribute("USERID");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "M_DEP2 ARCHIVAL SUMMARY", null,
+						"BRRS_M_DEP2_ARCHIVALTABLE_SUMMARY");
+			}
+
+			return out.toByteArray();
 		}
 	}
 
@@ -17825,9 +27802,13 @@ public class BRRS_M_DEP2_ReportService {
 	// ------------------------------
 	public static class M_DEP2_Detail_Entity {
 
+		@Id
+		@Column(name = "SNO")
+		private Long sno;
+
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -17881,6 +27862,14 @@ public class BRRS_M_DEP2_ReportService {
 
 		@Column(name = "DEL_FLG", length = 1)
 		private String delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;
@@ -18851,6 +28840,7 @@ public class BRRS_M_DEP2_ReportService {
 		private String entity_flg;
 		private String modify_flg;
 		private String del_flg;
+		private Date report_resubdate;
 
 		public String getR11_product() {
 			return r11_product;
@@ -24556,6 +34546,14 @@ public class BRRS_M_DEP2_ReportService {
 			this.del_flg = del_flg;
 		}
 
+		public Date getReport_resubdate() {
+			return report_resubdate;
+		}
+
+		public void setReport_resubdate(Date report_resubdate) {
+			this.report_resubdate = report_resubdate;
+		}
+
 		public M_DEP2_Archival_Summary_Entity() {
 			super();
 			// TODO Auto-generated constructor stub
@@ -24570,9 +34568,13 @@ public class BRRS_M_DEP2_ReportService {
 	// ------------------------------
 	public static class M_DEP2_Archival_Detail_Entity {
 
+		@Id
+		@Column(name = "SNO")
+		private Long sno;
+
 		@Column(name = "CUST_ID")
 		private String custId;
-		@Id
+
 		@Column(name = "ACCT_NUMBER")
 		private String acctNumber;
 		@Column(name = "ACCT_NAME")
@@ -24626,6 +34628,14 @@ public class BRRS_M_DEP2_ReportService {
 
 		@Column(name = "DEL_FLG", length = 1)
 		private String delFlg;
+
+		public Long getSno() {
+			return sno;
+		}
+
+		public void setSno(Long sno) {
+			this.sno = sno;
+		}
 
 		public String getCustId() {
 			return custId;

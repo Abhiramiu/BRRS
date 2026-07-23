@@ -2896,6 +2896,7 @@ public class RegulatoryReportServices {
 			List<Object[]> ca2List = BRRS_M_CA2_reportservice.getM_CA2Archival();
 			archivalData.addAll(ca2List);
 			System.out.println("Fetched M_SFINP2 archival data: " + ca2List.size());
+			break;
 
 		case "M_FAS":
 			List<Object[]> FASList = BRRS_M_FAS_reportservice.getM_FASArchival();
@@ -2981,14 +2982,11 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched M_LA5 archival data: " + M_LA5List.size());
 			break;
 
-//		case "M_DEP2":
-//			try {
-//				archivalData = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			break;
+		case "M_DEP2":
+			List<Object[]> M_DEP2List = BRRS_M_DEP2_reportservice.getM_DEP2Archival();
+			archivalData.addAll(M_DEP2List);
+			System.out.println("Fetched M_DEP2 archival data: " + M_DEP2List.size());
+			break;
 
 		case "M_PLL":
 			try {
@@ -4133,8 +4131,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "M_DEP2":
-				modelAndView = BRRS_M_DEP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_M_DEP2_reportservice.getViewOrEditPage(request.getParameter("sno"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "M_SRWA_12A":
@@ -4416,6 +4414,7 @@ public class RegulatoryReportServices {
 			case "COMMON_DISCLOSURE":
 				response = BRRS_Common_Disclosure_Reportservice.callregenprocedure(request);
 				break;
+
 			case "Recon_Of_FS":
 				response = BRRS_RECON_OF_FS_ReportService.callregenprocedure(request);
 				break;
@@ -4452,6 +4451,10 @@ public class RegulatoryReportServices {
 				break;
 			case "Q_ATF":
 				response = brrs_q_atf_reportservice.callregenprocedure(request);
+				break;
+
+			case "M_DEP2":
+				response = BRRS_M_DEP2_reportservice.callregenprocedure(request);
 				break;
 
 			default:
@@ -4769,12 +4772,12 @@ public class RegulatoryReportServices {
 		return response;
 	}
 
-	// Resubmission Add Ur Case Here
+	// Add the Resubmission Use Case Here
+
 	public List<Object[]> getResub(String rptcode) {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
-
 
 		case "IRRBB_BORROWINGS":
 			try {
@@ -5391,6 +5394,17 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for M_SFINP1: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for M_SFINP1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "M_DEP2":
+			try {
+				List<Object[]> resubList = BRRS_M_DEP2_reportservice.getM_DEP2Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_DEP2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_DEP2: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
