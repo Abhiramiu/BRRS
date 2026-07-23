@@ -5587,6 +5587,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "AS_11":
+			try {
+				List<Object[]> resubList = BRRS_AS_11_Reportservice.getAS_11Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for AS_11: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for AS_11: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}

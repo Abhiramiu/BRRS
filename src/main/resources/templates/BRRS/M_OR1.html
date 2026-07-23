@@ -75,13 +75,13 @@ PURPOSE		: BRRS_M_CA2REPORT
 	border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+/*.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
 	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
 	background-color: #cc000000;
 	border-color: #161617;
-}
+}*/
 
 #finusertb {
 	width: 460px;
@@ -560,7 +560,7 @@ $(window).on('beforeunload', function() {
 	
 	function showsummary() {
 		$('#loader').modal('show');
-		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/;								
+		var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/							
 		location.href = Callurl;
 
 	}
@@ -1541,7 +1541,7 @@ for (let i = 10; i <= 56; i++) {
                     				 data-filename='M_OR1.xlsx',
 					 				 data-type=${type},
 					    			 data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i> FORMAT
+							<i class="fa fa-download"></i> Format
 						</button>
 
 					<button type="button" class="custom-tab-btn "

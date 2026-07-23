@@ -71,7 +71,7 @@ public class BRRS_AS_11_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	AuditService auditService;
 
@@ -24195,7 +24195,7 @@ public class BRRS_AS_11_ReportService {
 		// ARCHIVAL MODE
 		// =====================================================
 
-		if ("ARCHIVAL".equals(type) && version != null) {
+		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<AS_11_Archival_Summary_Entity1> T1Master = new ArrayList<>();
 			List<AS_11_Archival_Summary_Entity2> T2Master = new ArrayList<>();
@@ -24298,7 +24298,7 @@ public class BRRS_AS_11_ReportService {
 
 			// ARCHIVAL MODE
 
-			if ("ARCHIVAL".equals(type) && version != null) {
+			if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 				System.out.println("ARCHIVAL DETAIL MODE");
 
@@ -24524,7 +24524,7 @@ public class BRRS_AS_11_ReportService {
 			logger.info("Generating Excel for  AS_11 Details...");
 			System.out.println("came to Detail download service");
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 				byte[] ARCHIVALreport = getAS_11DetailNewExcelARCHIVAL(filename, fromdate, todate, currency, dtltype,
 						type, version);
 				return ARCHIVALreport;
@@ -24660,7 +24660,7 @@ public class BRRS_AS_11_ReportService {
 		try {
 			logger.info("Generating Excel for AS_11 ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -24762,7 +24762,7 @@ public class BRRS_AS_11_ReportService {
 
 					// Apply data style for all other cells
 					for (int j = 0; j < 8; j++) {
-						if (j != 3) {
+						if (j != 3 && j != 4) {
 							row.getCell(j).setCellStyle(dataStyle);
 						}
 					}
@@ -24790,7 +24790,8 @@ public class BRRS_AS_11_ReportService {
 		logger.info("Service: Starting Excel generation process in memory.AS_11");
 
 		// ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version.compareTo(BigDecimal.ZERO) >= 0) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+				&& version.compareTo(BigDecimal.ZERO) >= 0) {
 			logger.info("Service: Generating ARCHIVAL report for version {}", version);
 			return getExcelAS_11ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 		}
@@ -32764,10 +32765,9 @@ public class BRRS_AS_11_ReportService {
 
 		logger.info("Service: Starting Excel generation process in memory.");
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 
 		}
-
 		List<AS_11_Archival_Summary_Entity1> dataList = getdatabydateListarchival1(dateformat.parse(todate), version);
 		List<AS_11_Archival_Summary_Entity2> dataList1 = getdatabydateListarchival2(dateformat.parse(todate), version);
 		if (dataList.isEmpty()) {
@@ -40721,7 +40721,8 @@ public class BRRS_AS_11_ReportService {
 			if (attrs != null) {
 				HttpServletRequest request = attrs.getRequest();
 				String userid = (String) request.getSession().getAttribute("USERID");
-				auditService.createBusinessAudit(userid, "DOWNLOAD", "AS_11 ARCHIVAL SUMMARY", null, "BRRS_AS_11_ARCHIVALTABLE_SUMMARY");
+				auditService.createBusinessAudit(userid, "DOWNLOAD", "AS_11 ARCHIVAL SUMMARY", null,
+						"BRRS_AS_11_ARCHIVALTABLE_SUMMARY");
 			}
 			return out.toByteArray();
 		}
@@ -40788,4 +40789,33 @@ public class BRRS_AS_11_ReportService {
 		}
 	}
 
+	// Resubmission
+	public List<Object[]> getAS_11Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+
+		try {
+
+			List<AS_11_Archival_Summary_Entity1> repoData = getdatabydateListWithVersion1();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (AS_11_Archival_Summary_Entity1 entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					resubList.add(row);
+				}
+
+				System.out.println("Fetched " + resubList.size() + " Resub records");
+				AS_11_Archival_Summary_Entity1 first = repoData.get(0);
+				System.out.println("Latest Resub version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No Resub data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  AS_11  Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return resubList;
+	}
 }

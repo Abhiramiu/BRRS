@@ -262,7 +262,6 @@ public class BRRS_ReportsController {
 	DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	// To show the required report at the first stage
-
 	@RequestMapping(value = "{reportid}", method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView reportView(@PathVariable("reportid") String reportid,
 			@RequestParam(value = "function", required = false) String function,
@@ -272,7 +271,7 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "secid", required = false) String secid,
 			@RequestParam(value = "dtltype", required = false) String dtltype,
 			@RequestParam(value = "type", required = false) String type,
-			@RequestParam(value = "version", required = false) String versionStr,
+			@RequestParam(value = "version", required = false) BigDecimal version,
 			@RequestParam(value = "page", required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size,
 			@RequestParam(value = "reportingTime", required = false) String reportingTime, Model md,
@@ -285,49 +284,6 @@ public class BRRS_ReportsController {
 		int currentPage = page.orElse(0);
 		int pageSize = size.orElse(Integer.parseInt(pagesize));
 		System.out.println("date" + fromdate);
-		// =====================================================
-		// ✅ CONVERT VERSION SAFELY WITH ARCHIVAL AUTO-DETECT
-		// =====================================================
-		BigDecimal version = null;
-
-		// If type is ARCHIVAL, auto-fetch the latest version
-		if ("ARCHIVAL".equalsIgnoreCase(type)) {
-			try {
-				// Parse the date for archival lookup
-				Date reportDate = dateFormat.parse(todate);
-
-				// Check which report service to use based on reportid
-				if ("M_SRWA_12D".equalsIgnoreCase(reportid)) {
-					Optional<BRRS_M_SRWA_12D_ReportService.M_SRWA_12D_Archival_Summary_Entity> latest = SRWA12DreportService
-							.getSrw12dLatestArchivalSummaryVersionByDate(reportDate);
-					if (latest.isPresent()) {
-						version = latest.get().getReport_version();
-						System.out.println("✅ Auto-detected Archival Version: " + version + " for date: " + todate);
-					} else {
-						System.out.println("⚠️ No archival data found for date: " + todate);
-					}
-				} else if ("M_SRWA_12E".equalsIgnoreCase(reportid)) {
-					Optional<BRRS_M_SRWA_12E_ReportService.M_SRWA_12E_LTV_Archival_Summary_Entity> latest = M_SRWA_12Eservice
-							.getLatestArchivalSummaryVersionByDate(reportDate);
-					if (latest.isPresent()) {
-						version = latest.get().getReport_version();
-						System.out.println("✅ Auto-detected 12E Archival Version: " + version);
-					}
-				}
-			} catch (Exception e) {
-				System.out.println("⚠️ Error fetching archival version: " + e.getMessage());
-			}
-		} else {
-			// For non-ARCHIVAL types, parse version normally
-			if (versionStr != null && !versionStr.trim().isEmpty() && !"null".equalsIgnoreCase(versionStr.trim())) {
-				try {
-					version = new BigDecimal(versionStr.trim());
-				} catch (NumberFormatException e) {
-					logger.warn("Invalid version format for {}: {}", reportid, versionStr);
-				}
-			}
-		}
-
 		// Assigning required Modal Attributes
 		md.addAttribute("UserId", userid);
 		md.addAttribute("RoleId", roleid);
@@ -341,18 +297,22 @@ public class BRRS_ReportsController {
 		md.addAttribute("type", type);
 		md.addAttribute("version", version);
 		md.addAttribute("reportingTime", reportingTime);
-
 		// md.addAttribute("reportTitle", reportServices.getReportName(reportid));
 
-		asondate = formatDateForRedirect(asondate);
-		fromdate = formatDateForRedirect(fromdate);
-		todate = formatDateForRedirect(todate);
+		try {
+			asondate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(asondate));
+			fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+			todate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 
 		ModelAndView mv = new ModelAndView();
 		mv = regreportServices.getReportView(reportid, asondate, fromdate, todate, currency, dtltype, subreportid,
 				secid, reportingTime, PageRequest.of(currentPage, pageSize), srl_no, userid, type, version, req, md);
 
 		return mv;
+
 	}
 
 	@RequestMapping(value = "{reportid}/Details", method = RequestMethod.GET)
