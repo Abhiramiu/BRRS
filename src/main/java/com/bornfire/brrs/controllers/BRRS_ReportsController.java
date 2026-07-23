@@ -261,38 +261,7 @@ public class BRRS_ReportsController {
 
 	DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 
-	// ============================================================
-	// ✅ HELPER METHOD TO PARSE DATE IN MULTIPLE FORMATS
-	// ============================================================
-	private Date parseDate(String dateStr) {
-		if (dateStr == null || dateStr.trim().isEmpty()) {
-			return null;
-		}
-
-		String[] formats = { "dd/MM/yyyy", "dd-MM-yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", "dd MMM yyyy", "dd/MMM/yyyy" };
-
-		for (String format : formats) {
-			try {
-				SimpleDateFormat sdf = new SimpleDateFormat(format);
-				sdf.setLenient(false);
-				return sdf.parse(dateStr.trim());
-			} catch (ParseException e) {
-				// Continue to next format
-			}
-		}
-		return null;
-	}
-
-	// ============================================================
-	// ✅ HELPER METHOD TO FORMAT DATE FOR REDIRECT
-	// ============================================================
-	private String formatDateForRedirect(String dateStr) {
-		Date date = parseDate(dateStr);
-		if (date != null) {
-			return new SimpleDateFormat("dd/MM/yyyy").format(date);
-		}
-		return dateStr;
-	}
+	// To show the required report at the first stage
 
 	@RequestMapping(value = "{reportid}", method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView reportView(@PathVariable("reportid") String reportid,
@@ -315,7 +284,7 @@ public class BRRS_ReportsController {
 
 		int currentPage = page.orElse(0);
 		int pageSize = size.orElse(Integer.parseInt(pagesize));
-
+		System.out.println("date" + fromdate);
 		// =====================================================
 		// ✅ CONVERT VERSION SAFELY WITH ARCHIVAL AUTO-DETECT
 		// =====================================================
@@ -359,36 +328,6 @@ public class BRRS_ReportsController {
 			}
 		}
 
-		// =====================================================
-		// ✅ DATE CONVERSION - SAME AS BORROWINGS MODULE
-		// =====================================================
-		// The service layer expects dd-MMM-yyyy format
-		// If dates come in dd/MM/yyyy format, convert them
-		try {
-			SimpleDateFormat slashFormat = new SimpleDateFormat("dd/MM/yyyy");
-			SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy");
-
-			// Only convert if the date contains "/"
-			if (asondate != null && asondate.contains("/")) {
-				Date asonDate = slashFormat.parse(asondate);
-				asondate = outputFormat.format(asonDate);
-				System.out.println("✅ Converted asondate: " + asondate);
-			}
-			if (fromdate != null && fromdate.contains("/")) {
-				Date fromDate = slashFormat.parse(fromdate);
-				fromdate = outputFormat.format(fromDate);
-				System.out.println("✅ Converted fromdate: " + fromdate);
-			}
-			if (todate != null && todate.contains("/")) {
-				Date toDate = slashFormat.parse(todate);
-				todate = outputFormat.format(toDate);
-				System.out.println("✅ Converted todate: " + todate);
-			}
-		} catch (Exception e) {
-			// If conversion fails, dates are already in correct format (dd-MMM-yyyy)
-			System.out.println("✅ Dates already in dd-MMM-yyyy format");
-		}
-
 		// Assigning required Modal Attributes
 		md.addAttribute("UserId", userid);
 		md.addAttribute("RoleId", roleid);
@@ -402,6 +341,12 @@ public class BRRS_ReportsController {
 		md.addAttribute("type", type);
 		md.addAttribute("version", version);
 		md.addAttribute("reportingTime", reportingTime);
+
+		// md.addAttribute("reportTitle", reportServices.getReportName(reportid));
+
+		asondate = formatDateForRedirect(asondate);
+		fromdate = formatDateForRedirect(fromdate);
+		todate = formatDateForRedirect(todate);
 
 		ModelAndView mv = new ModelAndView();
 		mv = regreportServices.getReportView(reportid, asondate, fromdate, todate, currency, dtltype, subreportid,
@@ -6158,6 +6103,31 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	private BRRS_IRRBB_PLACEMENTS_ReportService BRRS_IRRBB_PLACEMENTS_reportservice;
+
+	// ============================================================
+	// Helper: safely format a date string for use in a redirect URL.
+	// Accepts "dd/MM/yyyy" (raw form input) or already-formatted
+	// "dd-MMM-yyyy" values, and always returns dd-MMM-yyyy (or "" if blank).
+	// ============================================================
+	private String formatDateForRedirect(String dateStr) {
+		if (dateStr == null || dateStr.trim().isEmpty()) {
+			return "";
+		}
+		try {
+			// Case 1: incoming value is dd/MM/yyyy -> reformat to dd-MMM-yyyy
+			return dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(dateStr));
+		} catch (ParseException e1) {
+			try {
+				// Case 2: already dd-MMM-yyyy -> just validate and pass through
+				dateFormat.parse(dateStr);
+				return dateStr;
+			} catch (ParseException e2) {
+				// Case 3: unrecognized format -> don't fail the redirect, just pass through raw
+				logger.warn("formatDateForRedirect: unable to parse date '{}', returning as-is", dateStr);
+				return dateStr;
+			}
+		}
+	}
 
 	// ─────────────────────────────────────────────────────────────────────────
 	// IRRBB_PLACEMENTS — ADD FORM
