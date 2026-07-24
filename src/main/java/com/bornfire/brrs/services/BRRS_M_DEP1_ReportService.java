@@ -222,6 +222,14 @@ public class BRRS_M_DEP1_ReportService {
 		}
 	}
 
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest " +
+				 "FROM " + TBL_ARCH_SUMMARY +
+				 " WHERE REPORT_DATE = ?";
+		return jdbcTemplate.queryForObject(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+	}
+
+
 	public ModelAndView getM_DEP1View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version,HttpServletRequest req1,Model md) {
 
@@ -250,6 +258,8 @@ public class BRRS_M_DEP1_ReportService {
 				// .setParameter(1, df.parse(todate)).getResultList();
 				T1Master = getByDateAndVersion(TBL_ARCH_SUMMARY, dateformat.parse(todate), version,
 						M_DEP1_Archival_Summary_Entity.class);
+				
+				mv.addObject("allowdetail", getishighestversion(d1, version));
 
 			} catch (ParseException e) {
 				e.printStackTrace();
@@ -340,6 +350,7 @@ public class BRRS_M_DEP1_ReportService {
 
 				mv.addObject("reportdetails", T1Dt1);
 				mv.addObject("reportmaster12", T1Dt1);
+				mv.addObject("allowdetail", getishighestversion(parsedDate, version != null ? new BigDecimal(version) : null));
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
 
 			} else {

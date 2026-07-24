@@ -5744,6 +5744,23 @@ public class BRRS_ReportsController {
 		}
 
 	}
+	
+	@RequestMapping(value = "Rate/updateInrRate", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate) {
+		return regreportServices.updateInrRate(inrRate);
+	}
+
+	@RequestMapping(value = "Rate/getInrRate", method = RequestMethod.GET)
+	@ResponseBody
+	public String getDtaxInrRate() {
+		try {
+			BigDecimal rate = regreportServices.getInrRate();
+			return rate != null ? rate.toPlainString() : "Enter INR Rate";
+		} catch (Exception e) {
+			return "Enter INR Rate";
+		}
+	}
 
 	@Autowired
 	private Exceltopdfservice exceltopdfservice;

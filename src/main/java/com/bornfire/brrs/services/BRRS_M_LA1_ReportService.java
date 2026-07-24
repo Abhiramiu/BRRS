@@ -257,10 +257,21 @@ public class BRRS_M_LA1_ReportService {
 	}
 
 	public M_LA1_Detail_Entity findBySnoArch(String sno) {
+		return findBySnoArch(sno, null);
+	}
 
-		String sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL WHERE SNO = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { sno }, new M_LA1DetaillRowMapper());
+	public M_LA1_Detail_Entity findBySnoArch(String sno, String version) {
+		String sql;
+		Object[] args;
+		if (version != null && !version.trim().isEmpty()) {
+			sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL WHERE SNO = ? AND DATA_ENTRY_VERSION = ?";
+			args = new Object[] { sno, version };
+		} else {
+			sql = "SELECT * FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL WHERE SNO = ? ORDER BY DATA_ENTRY_VERSION DESC";
+			args = new Object[] { sno };
+		}
+		List<M_LA1_Detail_Entity> list = jdbcTemplate.query(sql, args, new M_LA1DetaillRowMapper());
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 	// ROW MAPPER
@@ -5823,6 +5834,7 @@ public class BRRS_M_LA1_ReportService {
 
 				mv.addObject("reportdetails", detailList);
 				mv.addObject("reportmaster12", detailList);
+				mv.addObject("allowdetail", getishighestversion(parsedDate, version != null ? new BigDecimal(version) : null));
 				System.out.println(type + " DETAIL COUNT: " + detailList.size());
 			}
 
@@ -7753,6 +7765,25 @@ public class BRRS_M_LA1_ReportService {
 	    }
 
 	    return archivalList;
+	}
+
+	// Resubmission View
+	public List<Object[]> getM_LA1Resub() {
+		List<Object[]> resubList = new ArrayList<>();
+		try {
+			String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY"
+					+ " WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			resubList = jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] {
+					rs.getDate("REPORT_DATE"),
+					rs.getBigDecimal("REPORT_VERSION"),
+					rs.getDate("REPORT_RESUBDATE")
+			});
+			System.out.println("Fetched " + resubList.size() + " M_LA1 Resub records");
+		} catch (Exception e) {
+			System.err.println("Error fetching M_LA1 Resub data: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return resubList;
 	}
 
 	public byte[] getExcelM_LA1ARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -9727,11 +9758,16 @@ public class BRRS_M_LA1_ReportService {
 
 
 	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type) {
+		return getViewOrEditPage(SNO, formMode, type, null);
+	}
+
+	public ModelAndView getViewOrEditPage(String SNO, String formMode, String type, String version) {
 
 	    ModelAndView mv = new ModelAndView("BRRS/M_LA1");
 
 	    System.out.println("SNO : " + SNO);
 	    System.out.println("Type : " + type);
+	    System.out.println("Version : " + version);
 
 	    if (SNO != null) {
 
@@ -9739,7 +9775,7 @@ public class BRRS_M_LA1_ReportService {
 
 	            System.out.println("Inside RESUB FETCH");
 
-	            M_LA1_Detail_Entity la1Entity = findBySnoArch(SNO);
+	            M_LA1_Detail_Entity la1Entity = findBySnoArch(SNO, version);
 
 	            if (la1Entity == null) {
 	                System.out.println("RESUB Data is NULL");
@@ -9778,6 +9814,7 @@ public class BRRS_M_LA1_ReportService {
 	    }
 
 	    mv.addObject("type", type);
+	    mv.addObject("version", version);
 	    mv.addObject("displaymode", "edit");
 	    mv.addObject("formmode", formMode != null ? formMode : "edit");
 
@@ -9791,23 +9828,31 @@ public class BRRS_M_LA1_ReportService {
 
 	        String Sno = request.getParameter("sno");
 	        String acctBalanceInpula = request.getParameter("acct_balance_in_pula");
-	        String sanctionLimitStr = request.getParameter("sanction_limit");
 	        String acctName = request.getParameter("acct_name");
+	        String sanctionLimitStr = request.getParameter("sanction_limit");
 	        String reportDateStr = request.getParameter("report_date");
+	        if (reportDateStr == null) {
+	            reportDateStr = request.getParameter("report_Date");
+	        }
+	        if (reportDateStr == null) {
+	            reportDateStr = request.getParameter("reportDate");
+	        }
 
 	        String type = request.getParameter("type");
+	        String version = request.getParameter("version");
 	        String entry = (request.getParameter("entry") != null)
 	                ? request.getParameter("entry")
 	                : "YES";
 
 	        System.out.println("SNO : " + Sno);
 	        System.out.println("Type : " + type);
+	        System.out.println("Version : " + version);
 
 	        // Load Existing Record
 	        M_LA1_Detail_Entity existing = null;
 
 	        if ("RESUB".equals(type)) {
-	            existing = findBySnoArch(Sno);
+	            existing = findBySnoArch(Sno, version);
 	        } else {
 	            existing = findBySno(Sno);
 	        }
@@ -9870,7 +9915,14 @@ public class BRRS_M_LA1_ReportService {
 	                        + "SET ACCT_NAME = ?, "
 	                        + "ACCT_BALANCE_IN_PULA = ?, "
 	                        + "SANCTION_LIMIT = ? "
-	                        + "WHERE SNO = ?";
+	                        + "WHERE SNO = ? AND DATA_ENTRY_VERSION = ?";
+
+	                jdbcTemplate.update(sql,
+	                        existing.getAcct_name(),
+	                        existing.getAcct_balance_in_pula(),
+	                        existing.getSanction_limit(),
+	                        Sno,
+	                        version);
 
 	            } else {
 
@@ -9879,13 +9931,13 @@ public class BRRS_M_LA1_ReportService {
 	                        + "ACCT_BALANCE_IN_PULA = ?, "
 	                        + "SANCTION_LIMIT = ? "
 	                        + "WHERE SNO = ?";
-	            }
 
-	            jdbcTemplate.update(sql,
-	                    existing.getAcct_name(),
-	                    existing.getAcct_balance_in_pula(),
-	                    existing.getSanction_limit(),
-	                    Sno);
+	                jdbcTemplate.update(sql,
+	                        existing.getAcct_name(),
+	                        existing.getAcct_balance_in_pula(),
+	                        existing.getSanction_limit(),
+	                        Sno);
+	            }
 
 	            // Audit
 	            if ("RESUB".equals(type)) {
@@ -9978,6 +10030,10 @@ public class BRRS_M_LA1_ReportService {
 						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
+						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
+						Integer maxVersionVal = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						int maxVersion = (maxVersionVal != null) ? maxVersionVal : 1;
+
 						String sqltransfer = "INSERT INTO BRRS_M_LA1_DETAILTABLE ("
 						        + "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, "
 						        + "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, SEGMENT, SCHM_DESC, "
@@ -9989,10 +10045,10 @@ public class BRRS_M_LA1_ReportService {
 						        + "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
 						        + "MODIFICATION_REMARKS, REPORT_REMARKS, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
 						        + "FROM BRRS_M_LA1_ARCHIVALTABLE_DETAIL "
-						        + "WHERE REPORT_DATE = ?";
+						        + "WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
 						
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
-						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate, String.valueOf(maxVersion));
+						System.out.println("Successfully transferred " + rowsInserted + " rows from version " + maxVersion);
 					}
 
 					if (shouldExecuteProcedure) {
@@ -10001,21 +10057,41 @@ public class BRRS_M_LA1_ReportService {
 					}
 
 					if (isResubNoEntry) {
-						String adsql = "DELETE FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
-						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
-
 						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_LA1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
 						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
+						// Copy modified detail records back to ARCHIVALTABLE_DETAIL with new version
+						String ins_dtl_sql = "INSERT INTO BRRS_M_LA1_ARCHIVALTABLE_DETAIL ("
+								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_REMARKS, MODIFICATION_REMARKS, "
+								+ "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, SEGMENT, SCHM_DESC, "
+								+ "REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
+								+ "REPORT_NAME, REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, "
+								+ "VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, DATA_ENTRY_VERSION) "
+								+ "SELECT "
+								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, "
+								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_REMARKS, MODIFICATION_REMARKS, "
+								+ "ACCT_BALANCE_IN_PULA, SANCTION_LIMIT, SEGMENT, SCHM_DESC, "
+								+ "REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
+								+ "REPORT_NAME, REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, "
+								+ "VERIFY_USER, VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, ? "
+								+ "FROM BRRS_M_LA1_DETAILTABLE "
+								+ "WHERE REPORT_DATE = ?";
+						int rowsInsertedDtl = jdbcTemplate.update(ins_dtl_sql, String.valueOf(highestValue), formattedDate);
+						System.out.println("Successfully inserted " + rowsInsertedDtl + " detail rows into ARCHIVAL for version " + highestValue);
+
+						String adsql = "DELETE FROM BRRS_M_LA1_DETAILTABLE WHERE REPORT_DATE = ?";
+						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
 						StringBuilder columnsPart = new StringBuilder();
-						  String[] tokens = {
-						            "product",
-						            "approved_limit",
-						            "balance_outstanding",
-						            "no_of_acct"
-						    };
+						String[] tokens = {
+								"product",
+								"approved_limit",
+								"balance_outstanding",
+								"no_of_acct"
+						};
 						// Dynamically generate R6 to R62 columns
 						for (int i = 11; i <= 64; i++) {
 							for (String token : tokens) {
@@ -10023,8 +10099,7 @@ public class BRRS_M_LA1_ReportService {
 							}
 						}
 
-						// Build the final query cleanly - Notice the '?' replacing REPORT_VERSION in
-						// SELECT
+						// Build the final query cleanly
 						String finalsql = "INSERT INTO BRRS_M_LA1_ARCHIVALTABLE_SUMMARY (" + columnsPart.toString()
 								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
 								+ "SELECT " + columnsPart.toString()
@@ -10032,7 +10107,7 @@ public class BRRS_M_LA1_ReportService {
 								+ "FROM BRRS_M_LA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
 						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
-						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+						System.out.println("Successfully transferred summary " + rowsInsertedSum + " rows.");
 
 						String adsumsql = "DELETE FROM BRRS_M_LA1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);

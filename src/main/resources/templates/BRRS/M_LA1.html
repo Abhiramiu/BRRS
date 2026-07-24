@@ -555,6 +555,9 @@ PURPOSE		: BRRSREPORT
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
+		const version = /*[[${version}]]*/ '';
 		/*]]>*/
 	</script>
 
@@ -577,7 +580,7 @@ PURPOSE		: BRRSREPORT
 
 		let previousUrl = document.referrer;
 		function submitUpdate() {
-			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#DetailForm').serialize(); // Ensure correct form ID
 			let userAnswer = null;
 
 			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
@@ -685,6 +688,13 @@ PURPOSE		: BRRSREPORT
 		function redirecttoarchlist() {
 			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
 		}
+		function redirectBack() {
+			if (previousUrl) {
+				window.location.href = previousUrl;
+			} else {
+				window.history.back();
+			}
+		}
 		function showResultModalDU(title, message) {
 			document.getElementById('resultModalLabel1').innerText = title;
 			document.getElementById('resultModalBody1').innerText = message;
@@ -781,11 +791,13 @@ PURPOSE		: BRRSREPORT
 					const acctNo = elem.getAttribute("data-acctNo");
 					const SNO = elem.getAttribute("data-SNo");
 					const asondate = elem.getAttribute("data-asondate");
+					const version = elem.getAttribute("data-version");
 
-					location.href =
-						`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
-
-
+					let url = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+					if (version) {
+						url += `&version=${encodeURIComponent(version)}`;
+					}
+					location.href = url;
 				}
 
 		function downloadDetailfile(jobId, filename) {
@@ -915,27 +927,27 @@ PURPOSE		: BRRSREPORT
 			text-align: left !important;
 		}
 
-		/* Right-align header (6th column = ACCT BALANCE) */
-		table.dataTable th.dt-type-numeric:nth-child(6) {
-			text-align: right !important;
-		}
-
-
-		/* Right-align header (6th column = ACCT BALANCE) */
+		/* Right-align header (7th column = ACCT BALANCE) */
 		table.dataTable th.dt-type-numeric:nth-child(7) {
 			text-align: right !important;
 		}
 
-		/* Right-align data (6th column = ACCT BALANCE) */
-		#reportdetails td:nth-child(6),
-		.dataTables_scrollHeadInner table th:nth-child(6) {
+
+		/* Right-align header (8th column = APPROVED LIMIT) */
+		table.dataTable th.dt-type-numeric:nth-child(8) {
+			text-align: right !important;
+		}
+
+		/* Right-align data (7th column = ACCT BALANCE) */
+		#reportdetails td:nth-child(7),
+		.dataTables_scrollHeadInner table th:nth-child(7) {
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
 
-		/* Right-align data (6th column = ACCT BALANCE) */
-		#reportdetails td:nth-child(7),
-		.dataTables_scrollHeadInner table th:nth-child(6) {
+		/* Right-align data (8th column = APPROVED LIMIT) */
+		#reportdetails td:nth-child(8),
+		.dataTables_scrollHeadInner table th:nth-child(8) {
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
@@ -956,8 +968,9 @@ PURPOSE		: BRRSREPORT
 				// ✅ Column width settings
 				columnDefs: [
 					{width: "60px", targets: 0},   // Edit icon column
-					{width: "100px", targets: 1},  // S No column
-					{width: "113px", targets: 7}    // S No column
+					{width: "100px", targets: 1},  // SNO column
+					{width: "100px", targets: 2},  // S No column
+					{width: "113px", targets: 8}    // REPORT LABEL column
 
 				],
 
@@ -2159,7 +2172,7 @@ PURPOSE		: BRRSREPORT
 									<thead class="thead-light">
 										<tr>
 											<th></th>
-											<th>S No</th>
+											<th>SNO</th>
 											<th>CUST ID</th>
 											<th style="text-align:left;">ACCT NUMBER</th>
 											<th>SCHM DESC</th>
@@ -2177,15 +2190,17 @@ PURPOSE		: BRRSREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
+													title="Click to Edit this Record"
+													th:if="${allowdetail != 'NO'}">
 													<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
-																																		            data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
-																																		            data-type=${type}" onclick="openm_la1Detail(this, 'edit')">
+														data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
+														data-version=${version != null ? version : (report.data_entry_version != null ? report.data_entry_version : '')},
+														data-type=${type}" onclick="openm_la1Detail(this, 'edit')">
 													</i>
 												</a>
 											</td>
 
-											<td th:text="${srlno.index + 1}"></td>
+											<td th:text="${report.sno != null ? report.sno : '-'}"></td>
 
 											<td th:text="${report.cust_id != null ? report.cust_id : '-'}"></td>
 
@@ -2343,6 +2358,8 @@ PURPOSE		: BRRSREPORT
 																	class="form-control form-control-sm" readonly />
 														<input type="hidden" th:value="${type}" name="type"
 																	class="form-control form-control-sm" readonly />
+														<input type="hidden" th:value="${version}" name="version"
+																	class="form-control form-control-sm" readonly />
 
 
 							<!-- Update Button -->
@@ -2425,6 +2442,56 @@ PURPOSE		: BRRSREPORT
 							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
 							Yes
 						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="confirmModal">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="confirmModalLabel"
+							style="text-align: center; color: white;">Confirmation</div>
+					</div>
+					<div class="modal-body"
+						style="text-align: center; font-size: 1.1rem;">
+						<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+								data-dismiss="modal">Modify</button>
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn"
+								data-dismiss="modal">Regenerate</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="resultModal1" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;"></div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody1"></p>
+						<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="resultModal2" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="resultModalLabel2" style="text-align: center; color: white;"></div>
+					</div>
+					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+						<p id="resultModalBody2"></p>
+						<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
 					</div>
 				</div>
 			</div>

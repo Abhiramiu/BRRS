@@ -370,6 +370,10 @@ PURPOSE		: BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -554,6 +558,8 @@ PURPOSE		: BRRSREPORT
 	<script th:inline="javascript">
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
 		/*]]>*/
 	</script>
 
@@ -564,6 +570,10 @@ PURPOSE		: BRRSREPORT
 
 								        if (type === "ARCHIVAL") {
 								            showResultModal('BRRS',"Archived Data cannot be modified");
+								            return;
+								        }
+								        if (type === "RESUB" && allowdetail === "NO") {
+								            showResultModal('BRRS',"This version is not the highest version and cannot be modified");
 								            return;
 								        }
 			const acctNo = elem.getAttribute("data-acctNo");
@@ -775,6 +785,10 @@ PURPOSE		: BRRSREPORT
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 			var rowId = a.getAttribute('RowId') || "";
 			var columnId = a.getAttribute('ColumnId') || "";
 			var columnId1 = a.getAttribute('ColumnId1') || "";

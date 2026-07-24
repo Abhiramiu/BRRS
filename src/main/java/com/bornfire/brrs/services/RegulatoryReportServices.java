@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -422,6 +423,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
+	
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportservice;
@@ -4052,12 +4056,12 @@ public class RegulatoryReportServices {
 
 			case "M_LA1":
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"), request.getParameter("type"));
+						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"));
 				break;
 
 			case "M_LA1_NEW":
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"), request.getParameter("type"));
+						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"));
 				break;
 
 			case "M_LA3":
@@ -5481,6 +5485,26 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for COMMON_DISCLOSURE: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for COMMON_DISCLOSURE: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "M_LA1":
+			try {
+				List<Object[]> resubList = BRRS_M_LA1_reportservice.getM_LA1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_LA1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_LA1: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "M_LA1_NEW":
+			try {
+				List<Object[]> resubList = BRRS_M_LA1_reportservice.getM_LA1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_LA1_NEW: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_LA1_NEW: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
@@ -11550,6 +11574,30 @@ public class RegulatoryReportServices {
 		} catch (Exception e) {
 
 			return dateStr;
+		}
+	}
+	
+	public String updateInrRate(BigDecimal inrRate) {
+		try {
+			String sql = "{ call BRRS_UPDATE_ALL_INR_RATES(?) }";
+			jdbcTemplate.update(connection -> {
+				java.sql.CallableStatement cs = connection.prepareCall(sql);
+				cs.setBigDecimal(1, inrRate);
+				return cs;
+			});
+
+			return "Successfully triggered stored procedure BRRS_UPDATE_ALL_INR_RATES with INR rate: " + inrRate;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error executing BRRS_UPDATE_ALL_INR_RATES: " + e.getMessage();
+		}
+	}
+
+	public BigDecimal getInrRate() {
+		try {
+			return jdbcTemplate.queryForObject("SELECT EXCHANGE_RATE FROM BRRS_INR_RATE_CONFIG", BigDecimal.class);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
