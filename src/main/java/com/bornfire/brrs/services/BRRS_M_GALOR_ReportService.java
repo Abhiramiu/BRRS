@@ -168,11 +168,13 @@ public class BRRS_M_GALOR_ReportService {
 		jdbcTemplate.update(sql, e.getAcctName(), e.getAcctBalanceInpula(), e.getAcctNumber());
 	}
 
-	public void saveManualSummaryEntity(M_GALOR_Manual_Summary_Entity entity) {
+	public void saveManualSummaryEntity(M_GALOR_Manual_Summary_Entity entity,String newRecordflag) {
 		int[] specialRows = { 22, 23, 57, 58, 60, 61, 64, 65, 67, 68, 111, 112, 113, 114 };
 		String[] fullFields = { "product", "botswana", "south_africa", "sadc", "usa", "uk",
 				"europe", "india", "sydney", "uganda", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "total" };
-		StringBuilder sb = new StringBuilder("UPDATE BRRS_M_GALOR_MANUAL_SUMMARYTABLE SET ");
+		boolean isInsert = "Y".equalsIgnoreCase(newRecordflag);
+		StringBuilder sb = new StringBuilder(isInsert ? "INSERT INTO BRRS_M_GALOR_MANUAL_SUMMARYTABLE (" : "UPDATE BRRS_M_GALOR_MANUAL_SUMMARYTABLE SET ");
+		StringBuilder insertValues = new StringBuilder();
 		List<Object> params = new ArrayList<>();
 		boolean first = true;
 		for (int row : specialRows) {
@@ -183,15 +185,28 @@ public class BRRS_M_GALOR_ReportService {
 				try {
 					Method getter = M_GALOR_Manual_Summary_Entity.class.getMethod(getterName);
 					Object value = getter.invoke(entity);
-					if (!first) sb.append(", ");
-					sb.append(prefix.toUpperCase()).append(field.toUpperCase()).append(" = ?");
+					if (!first) {
+						sb.append(", ");
+						if (isInsert)
+							insertValues.append(", ");
+					}
+					if (isInsert) {
+						sb.append(prefix.toUpperCase()).append(field.toUpperCase());
+						insertValues.append("?");
+					} else {
+						sb.append(prefix.toUpperCase()).append(field.toUpperCase()).append(" = ?");
+					}
 					params.add(value);
 					first = false;
 				} catch (Exception ignored) {
 				}
 			}
 		}
-		sb.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+		if (isInsert) {
+		    sb.append(", REPORT_DATE) VALUES (").append(insertValues).append(", ?)");
+		} else {
+		    sb.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+		}
 		params.add(entity.getReport_date());
 		jdbcTemplate.update(sb.toString(), params.toArray());
 	}
@@ -232,6 +247,10 @@ public class BRRS_M_GALOR_ReportService {
 				T1Master = getSummary1ByDate(dateformat.parse(todate));
 				T1Master1 = getSummary2ByDate(dateformat.parse(todate));
 				T1Master2 = getManualSummaryByDate(dateformat.parse(todate));
+				if(T1Master2.equals(null)|| T1Master2.isEmpty()) {
+					M_GALOR_Manual_Summary_Entity data = new M_GALOR_Manual_Summary_Entity();
+					T1Master2.add(data);
+				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -31221,12 +31240,20 @@ public class BRRS_M_GALOR_ReportService {
 	    List<M_GALOR_Manual_Summary_Entity> list =
 	            getManualSummaryByDate(updatedEntity.getReport_date());
 
+	    String newRecordflag = "N";
 	    if (list.isEmpty()) {
-	        throw new RuntimeException(
-	                "Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+	    	newRecordflag ="Y";
+	    	System.out.println("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+	        //throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 	    }
 
-	    M_GALOR_Manual_Summary_Entity existing = list.get(0);
+	    M_GALOR_Manual_Summary_Entity existing;
+	    if (list != null && !list.isEmpty()) {
+	        existing = list.get(0);
+	    } else {
+	        existing = new M_GALOR_Manual_Summary_Entity();
+	        existing.setReport_date(updatedEntity.getReport_date());
+	    }
 
 	    // Audit old copy
 	    M_GALOR_Manual_Summary_Entity oldcopy = new M_GALOR_Manual_Summary_Entity();
@@ -31304,7 +31331,7 @@ public class BRRS_M_GALOR_ReportService {
 	    // Audit & Save only if changes exist
 	    String changes = auditService.getChanges(oldcopy, existing);
 
-	    saveManualSummaryEntity(existing);
+	    saveManualSummaryEntity(existing,newRecordflag);
 
 
 	    if (!changes.isEmpty()) {
