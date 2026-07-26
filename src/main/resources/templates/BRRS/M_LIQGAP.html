@@ -1380,8 +1380,7 @@ rowCodes.forEach(code => {
 						
             </tr>
 	</thead>
-	
-	<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+	<tbody th:each="report: ${reportsummary}" th:with="rep1=${#lists.isEmpty(reportsummary1) ? null : reportsummary1[0]}" style="font-family: Arial;">
 	
 <tr>
 	<td style="text-align: left;font-weight:bold;" th:attr="reportLable='R10', reportAddlCriteria1='C1'"  th:text="${report.r10_product}"></td>
@@ -1883,7 +1882,7 @@ rowCodes.forEach(code => {
     <!-- NON INTEREST BEARING COLUMN -->
     <td style="text-align:right;">
         <input class="display-input Show_input"
-               type="text"
+               type="text" name="r21_non_interest_bearing"
                th:value="${rep1 != null && rep1.r21_non_interest_bearing != null 
                          ? #numbers.formatDecimal(rep1.r21_non_interest_bearing,1,'COMMA',0,'POINT') 
                          : '0'}"
@@ -2347,7 +2346,7 @@ rowCodes.forEach(code => {
 	<!-- NON INTEREST BEARING COLUMN -->
 	   <td style="text-align:right;">
 	       <input class="display-input Show_input"
-	              type="text"
+	              type="text"  name="r32_non_interest_bearing"
 	              th:value="${rep1 != null && rep1.r32_non_interest_bearing != null 
 	                        ? #numbers.formatDecimal(rep1.r32_non_interest_bearing,1,'COMMA',0,'POINT') 
 	                        : '0'}"
@@ -2363,7 +2362,7 @@ rowCodes.forEach(code => {
 </tr>
 
 
-<tr th:each="report : ${reportsummary}" th:with="rep1=${#lists.isEmpty(reportsummary1) ? null : reportsummary1[0]}">
+<tr >
 
 <td style="text-align: left;"
     th:attr="reportLable='R33', reportAddlCriteria1='C1'"
@@ -2378,7 +2377,7 @@ rowCodes.forEach(code => {
 
 <td style="text-align:right;">
 <input class="display-input Show_input"
-       type="text"
+       type="text" name="r33_third_month"
        th:value="${rep1 != null && rep1.r33_third_month != null ? #numbers.formatDecimal(rep1.r33_third_month,1,'COMMA',0,'POINT') : '0'}"
        style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
        readonly />
@@ -2386,7 +2385,7 @@ rowCodes.forEach(code => {
 
 <td style="text-align:right;">
 <input class="display-input Show_input"
-       type="text"
+       type="text" name="r33_last_month"
        th:value="${rep1 != null && rep1.r33_last_month != null ? #numbers.formatDecimal(rep1.r33_last_month,1,'COMMA',0,'POINT') : '0'}"
        style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
        readonly />
@@ -2394,7 +2393,7 @@ rowCodes.forEach(code => {
 
 <td style="text-align:right;">
 <input class="display-input Show_input"
-       type="text"
+       type="text" name="r33_first_year"
        th:value="${rep1 != null && rep1.r33_first_year != null ? #numbers.formatDecimal(rep1.r33_first_year,1,'COMMA',0,'POINT') : '0'}"
        style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
        readonly />
@@ -2402,7 +2401,7 @@ rowCodes.forEach(code => {
 
 <td style="text-align:right;">
 <input class="display-input Show_input"
-       type="text"
+       type="text" name="r33_fifth_year"
        th:value="${rep1 != null && rep1.r33_fifth_year != null ? #numbers.formatDecimal(rep1.r33_fifth_year,1,'COMMA',0,'POINT') : '0'}"
        style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
        readonly />
@@ -2410,7 +2409,7 @@ rowCodes.forEach(code => {
 
 <td style="text-align:right;">
 <input class="display-input Show_input"
-       type="text"
+       type="text" name="r33_non_interest_bearing"
        th:value="${rep1 != null && rep1.r33_non_interest_bearing != null ? #numbers.formatDecimal(rep1.r33_non_interest_bearing,1,'COMMA',0,'POINT') : '0'}"
        style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"
        readonly />
@@ -2431,7 +2430,7 @@ rowCodes.forEach(code => {
     
 	<td style="text-align:right;">
 	<input class="display-input Show_input"
-	       type="text"
+	       type="text" name="r34_first_month"
 	       th:value="${rep1 != null && rep1.r34_first_month != null ? 
 	                 #numbers.formatDecimal(rep1.r34_first_month,1,'COMMA',0,'POINT') : '0'}"
 	       style="background-color:#FFFFFF;width:90%;height:28px;border-color:transparent;text-align:right;"

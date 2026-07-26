@@ -8453,7 +8453,7 @@ public class BRRS_M_LIQGAP_ReportService {
 
 			for (int row : rows) {
 
-				String prefix = "r" + row + "_";
+				String prefix = "R" + row + "_";
 
 				String[] fields;
 
