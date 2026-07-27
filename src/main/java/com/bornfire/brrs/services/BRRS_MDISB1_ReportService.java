@@ -22605,7 +22605,7 @@ public class BRRS_MDISB1_ReportService {
 	public ModelAndView getMDISB1View(String reportId, String fromdate, String todate, String currency, String dtltype,
 			Pageable pageable, String type, BigDecimal version) {
 		ModelAndView mv = new ModelAndView();
-		System.out.println("OFF_BS_ITEMS View Called");
+		System.out.println("MDISB1 View Called");
 	    System.out.println("Type = " + type);
 	    System.out.println("Version = " + version);
 

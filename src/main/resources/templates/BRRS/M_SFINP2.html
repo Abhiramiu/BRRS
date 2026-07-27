@@ -949,6 +949,7 @@ PURPOSE		: BWRBRREPORT
 				"#R43_MONTH_END",
 				"#R47_MONTH_END",
 				"#R48_MONTH_END",
+				"#R79_MONTH_END",
 
 				// R51 to R58
 				"#R51_MONTH_END",
@@ -2406,10 +2407,19 @@ PURPOSE		: BWRBRREPORT
 												<td style="padding-left: 20px;" th:text="${report.R79_PRODUCT}"></td>
 												<td style="text-align: right;" th:text="${report.R79_CROSS_REFERENCE}">
 												</td>
-												<td id="R79_MONTH_END" style="text-align: right;"
+												<!--<td id="R79_MONTH_END" style="text-align: right;"
 													th:attr="RowId='R79', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"
-													th:text="${report.R79_MONTH_END}"></td>
+													th:text="${report.R79_MONTH_END}"></td>-->
+													
+													<td id="ROW79" style="font-weight: bold; text-align: right; padding-right: 10px; padding-left: 20px; width: 200px;">
+														<input class="display-input Show_input" type="text"
+															th:value="${report.R79_MONTH_END != null ? #numbers.formatDecimal(report.R79_MONTH_END, 1, 'COMMA', 0, 'POINT') : '0'}"
+															id="R79_MONTH_END" name="R79_MONTH_END"
+															style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+															readonly />
+													</td>
+
 												<td style="text-align: right;" 
 													th:text="${report.R79_AVERAGE}"></td>
 											</tr>

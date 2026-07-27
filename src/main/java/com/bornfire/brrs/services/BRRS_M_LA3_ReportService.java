@@ -3833,7 +3833,12 @@ public class BRRS_M_LA3_ReportService {
 			return getExcelM_LA3ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
 					version);
 		}
-
+		if ("email".equalsIgnoreCase(format) && version == null) {
+			logger.info("Got format as Email");
+			logger.info("Service: Generating Email report for version {}", version);
+			return BRRS_M_LA3EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+		} else {
+			
 		// Fetch data
 		List<M_LA3_Summary_Entity1> dataList = getDataByDate1(dateformat.parse(todate));
 		List<M_LA3_Summary_Entity2> dataList1 = getDataByDate2(dateformat.parse(todate));
@@ -4587,6 +4592,7 @@ public class BRRS_M_LA3_ReportService {
 			}
 			return out.toByteArray();
 		}
+	}
 	}
 
 	public byte[] BRRS_M_LA3DetailExcel(String filename, String fromdate, String todate, String currency,
@@ -6109,7 +6115,7 @@ public class BRRS_M_LA3_ReportService {
 	public byte[] BRRS_M_LA3EmailExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, BigDecimal version) throws Exception {
 
-		logger.info("Service: Starting Excel generation process in memory.");
+		logger.info("Service: Starting EMAIL Excel generation process in memory.");
 
 		// ARCHIVAL check
 		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null && version != null) {
