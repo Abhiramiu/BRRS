@@ -5966,10 +5966,10 @@ public class RegulatoryReportServices {
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_LA":
-					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
+					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("EMAIL_Q_SMME_LA.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME_DEP":
@@ -6216,12 +6216,12 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, format, version);
+return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
+fromdate, todate, currency, dtltype, type, format, version);
 
-				case "Q_SMME_LA":
-					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LOANS.xlsx", reportName,
-							fromdate, todate, currency, dtltype, type, format, version);
+case "Q_SMME_LA":
+return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LA.xlsx", reportName,
+fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
