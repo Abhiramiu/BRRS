@@ -188,28 +188,57 @@ public class BRRS_M_GMIRT_ReportService {
 		return mv;
 	}
 
+	
+	public BigDecimal getR9TotCapReq(Date reportDate) {
+
+		String sql = "SELECT NVL(SUM(R29_CAPITAL_CHARGE),0) "
+				+ "FROM BRRS_M_FXR_SUMMARYTABLE "
+				+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+
+		BigDecimal value = jdbcTemplate.queryForObject(
+				sql,
+				new Object[] { reportDate },
+				BigDecimal.class);
+
+		return value == null ? BigDecimal.ZERO : value;
+	}
 
 	// ------------------------------
 	// Method to update summary report fields
 	// ------------------------------
 	public void updateReport(M_GMIRT_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		M_GMIRT_Summary_Entity existing = findSummaryById(updatedEntity.getReport_date());
+		System.out.println("Came to services");
+		System.out.println("Report Date : " + updatedEntity.getReport_date());
+
+		M_GMIRT_Summary_Entity existing =
+				findSummaryById(updatedEntity.getReport_date());
+
 		if (existing == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+			throw new RuntimeException(
+					"Record not found for REPORT_DATE : "
+					+ updatedEntity.getReport_date());
 		}
 
 		try {
-			// 1️⃣ Loop from R11 to R23 and copy fields
 
 			for (int i = 9; i <= 12; i++) {
 
 				String prefix = "R" + i + "_";
 
-				String[] fields = { "currency", "pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi",
-						"other", "tot_cap_req" };
+				String[] fields = {
+						"currency",
+						"pula",
+						"usd",
+						"zar",
+						"gbp",
+						"euro",
+						"jpy",
+						"rupee",
+						"renminbi",
+						"other",
+						"tot_cap_req"
+				};
 
 				for (String field : fields) {
 
@@ -217,23 +246,44 @@ public class BRRS_M_GMIRT_ReportService {
 					String setterName = "set" + prefix + field;
 
 					try {
-						Method getter = M_GMIRT_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_GMIRT_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
-						Object newValue = getter.invoke(updatedEntity);
+						Method getter =
+								M_GMIRT_Summary_Entity.class
+								.getMethod(getterName);
+
+						Method setter =
+								M_GMIRT_Summary_Entity.class
+								.getMethod(setterName,
+										getter.getReturnType());
+
+						Object newValue =
+								getter.invoke(updatedEntity);
+
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						continue; // skip field that does not exist
+						continue;
 					}
 				}
 			}
 
+			//Fetch R9 value from DB
+			BigDecimal r9Value =
+					getR9TotCapReq(updatedEntity.getReport_date());
+
+			//set the value
+			existing.setR9_tot_cap_req(r9Value);
+
+			//if R12 total should also be equal to R9
+			existing.setR12_tot_cap_req(r9Value);
+
+			System.out.println("R9 Value = " + r9Value);
+
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+			throw new RuntimeException(
+					"Error while updating report fields", e);
 		}
 
-		// 3️⃣ Save updated entity
 		saveEntity(existing, "BRRS_M_GMIRT_SUMMARYTABLE");
 	}
 

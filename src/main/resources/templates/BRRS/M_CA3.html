@@ -65,8 +65,8 @@ PURPOSE		: BRRS MANUAL REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
@@ -203,7 +203,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
+		.form-control:not(:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -216,7 +216,7 @@ PURPOSE		: BRRS MANUAL REPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
+		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
@@ -412,7 +412,7 @@ PURPOSE		: BRRS MANUAL REPORT
 	        asondate=${asondate},
 	        version=${version}
 	    )}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 
 		}
 
@@ -424,7 +424,7 @@ PURPOSE		: BRRS MANUAL REPORT
 					todate=${todate}, 
 					type=${type}, 
 					asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showsummaryResub() {
@@ -435,7 +435,7 @@ PURPOSE		: BRRS MANUAL REPORT
 					todate=${todate}, 
 					type='RESUB', 
 					asondate=${asondate},
-					version=${version})}]]*/;
+					version=${version})}]]*/
 			location.href = Callurl;
 		}
 
@@ -524,41 +524,41 @@ PURPOSE		: BRRS MANUAL REPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -936,108 +936,108 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-</script>
-		
-	   
-	   <script>
-	   	function fileuploads(btn) {
+	</script>
 
-	   	    try {
 
-	   	        const asondate = btn.getAttribute("data-todate");
+	<script>
+		function fileuploads(btn) {
 
-	   	        $('#loader').modal('show');
+			try {
 
-	   	        if (typeof calculateTotals === "function") {
-	   	            calculateTotals();
-	   	        }
+				const asondate = btn.getAttribute("data-todate");
 
-	   	        // Remove commas
-	   	        $("#fileupload input[type='text']").each(function () {
-	   	            const val = $(this).val();
-	   	            if (val && val.includes(",")) {
-	   	                $(this).val(val.replace(/,/g, ''));
-	   	            }
-	   	        });
+				$('#loader').modal('show');
 
-	   	        if (!$("#fileupload").valid()) {
-	   	            $('#loader').modal('hide');
-	   	            return;
-	   	        }
+				if (typeof calculateTotals === "function") {
+					calculateTotals();
+				}
 
-	   	        // Get type from URL
-	   	        const urlParams = new URLSearchParams(window.location.search);
-	   	        const urlType = urlParams.get("type");
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-	   	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-	   	        // Use SERIALIZE
-	   	        const formData =
-	   	            $('#fileupload').serialize()
-	   	            + '&asondate=' + encodeURIComponent(asondate)
-	   	            + '&type=' + encodeURIComponent(urlType || '');
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
 
-	   	        console.log("Form data prepared");
-	   	        console.log("URL TYPE:", urlType);
-	   	        console.log("IS RESUB:", isResub);
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-	   	        let apiUrl = './M_CA3update';
-	   	        if (isResub) {
-	   	            apiUrl = './UpdateM_CA3_ReSub';
-	   	        }
+				// Use SERIALIZE
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-	   	        $.ajax({
-	   	            url: apiUrl,
-	   	            type: 'POST',
-	   	            data: formData,
-	   	            dataType: 'text',
+				console.log("Form data prepared");
+				console.log("URL TYPE:", urlType);
+				console.log("IS RESUB:", isResub);
 
-	   	            success: function (response) {
+				let apiUrl = './M_CA3update';
+				if (isResub) {
+					apiUrl = './UpdateM_CA3_ReSub';
+				}
 
-	   	                $("#resultModalLabel").text("BRRS");
-	   	                $("#resultModalBody").text(response);
-	   	                $("#resultModal").modal("show");
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
 
-	   	                // Properly bind modal hidden event
-	   	                $("#resultModal")
-	   	                    .off("hidden.bs.modal")
-	   	                    .on("hidden.bs.modal", function () {
+					success: function (response) {
 
-	   	                        if (isResub) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
 
-	   	                            if (window.previousUrl && window.previousUrl !== "") {
-	   	                         
-	   	                                window.location.href = window.previousUrl;
-	   	                            } else {
-	   	                                window.location.href = "/BRRS/Resubmission?rptcode=M_CA3"; // ✅ removed space
-	   	                            }
-	   	                        }
-	   	                    });
-	   	            },
+						// Properly bind modal hidden event
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
 
-	   	            error: function (jqXHR) {
+								if (isResub) {
 
-	   	                console.log("Error response:", jqXHR.responseText);
+									if (window.previousUrl && window.previousUrl !== "") {
 
-	   	                $("#resultModalLabel").text("Error");
-	   	                $("#resultModalBody").text(
-	   	                    "Update failed: " +
-	   	                    (jqXHR.responseText || "Unknown error")
-	   	                );
-	   	                $("#resultModal").modal("show");
-	   	            },
+										window.location.href = window.previousUrl;
+									} else {
+										window.location.href = "/BRRS/Resubmission?rptcode=M_CA3"; // ✅ removed space
+									}
+								}
+							});
+					},
 
-	   	            complete: function () {
-	   	                $('#loader').modal('hide');
-	   	            }
-	   	        });
+					error: function (jqXHR) {
 
-	   	    } catch (error) {
-	   	        $('#loader').modal('hide');
-	   	        console.error("Error during file upload:", error);
-	   	    }
-	   	}
-	   	</script>
+						console.log("Error response:", jqXHR.responseText);
+
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
+
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
+		}
+	</script>
 
 
 </head>
@@ -1065,7 +1065,7 @@ PURPOSE		: BRRS MANUAL REPORT
 						<h5
 							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(8) MONTHLY SCHEDULE: M-CA3: REGULATORY ADJUSTMENTS  <br> APPLIED IN THECALCULATION OF CET1
+							(8) MONTHLY SCHEDULE: M-CA3: REGULATORY ADJUSTMENTS <br> APPLIED IN THECALCULATION OF CET1
 							CAPITAL
 
 
@@ -1090,10 +1090,8 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">
-							Report Date: <span
-							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span> <input type="hidden" id="selectedTab" th:value="${dtltype}">
 
 						<!-- Buttons -->
@@ -1108,7 +1106,8 @@ PURPOSE		: BRRS MANUAL REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1147,17 +1146,15 @@ PURPOSE		: BRRS MANUAL REPORT
             data-filename='EMAIL_M_CA3.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						
-						
+
+
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${role != 'M' and displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid}, 
+							th:if="${role != 'M' and displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1171,9 +1168,7 @@ PURPOSE		: BRRS MANUAL REPORT
 						</button>
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${role != 'M' and displaymode == 'Details'}"
-							th:attr="data-reportid=${reportid},
+							onclick="downloadfile(this)" th:if="${role != 'M' and displaymode == 'Details'}" th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
             data-todate=${todate},
@@ -1182,34 +1177,27 @@ PURPOSE		: BRRS MANUAL REPORT
             data-filename='EMAIL_M_CA3.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -1287,8 +1275,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											<tr>
 
 												<td style="text-align: center; font-weight:  bold; ">22</td>
-												<td style="text-align: left;font-weight:  normal;"
-													th:text="${report.R10_PRODUCT}"></td>
+												<td style="text-align: left;font-weight:  normal;"> Goodwill and other intangible assets</td>
 												<td id="ROW10" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_AMOUNT != null ? #numbers.formatDecimal(report.R10_AMOUNT, 0, 'COMMA', 0, 'POINT') : '0'}"
@@ -1301,8 +1288,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											<tr>
 
 												<td style="text-align: center; font-weight:  bold; ">23</td>
-												<td style="text-align: left;font-weight:  normal;"
-													th:text="${report.R11_PRODUCT}"></td>
+												<td style="text-align: left;font-weight:  normal;">Advances of a capital nature granted to connected persons</td>
 												<td id="ROW11" style="text-align: right; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R11_AMOUNT != null ? #numbers.formatDecimal(report.R11_AMOUNT, 0, 'COMMA', 0, 'POINT') : '0'}"

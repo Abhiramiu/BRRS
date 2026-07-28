@@ -81,8 +81,9 @@ PURPOSE		: BRRS REPORT
 	border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+.btn-primary:not(:disabled ):not(.disabled ).active, 
+.btn-primary:not(:disabled ):not(.disabled ):active, 
+.show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
 	background-color: #cc000000;
@@ -268,7 +269,7 @@ td {
 }
 
 /* When input or select is focused or has a value, move the label up */
-.form-control:focus ~ .form-legend, .form-control:not (:placeholder-shown
+.form-control:focus ~ .form-legend, .form-control:not(:placeholder-shown
 	) ~ .form-legend {
 	top: -8px;
 	font-size: 1rem;
@@ -281,7 +282,7 @@ td {
 }
 
 /* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus ) ~ .form-legend {
+.form-control:not(:focus ) ~ .form-legend {
 	color: #aaa; /* Normal label color */
 }
 
@@ -394,14 +395,14 @@ $(window).on('beforeunload', function() {
 			        type=${type},
 			        asondate=${asondate},
 			        version=${version}
-			    )}]]*/;
+			    )}]]*/
 			    location.href = Callurl;
 
 }
 		
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 			location.href = Callurl;
 		}
 		function showsummaryResub() {
@@ -412,7 +413,7 @@ $(window).on('beforeunload', function() {
 					todate=${todate}, 
 					type='RESUB', 
 					asondate=${asondate},
-					version=${version})}]]*/;
+					version=${version})}]]*/
 			location.href = Callurl;
 		}
     </script>
@@ -1420,21 +1421,17 @@ function fileuploads(btn) {
            readonly />
 </td>
 
-<!-- <td id="ROW9" style="font-weight: bold; text-align: right; padding-left:20px;" >
-    <input class="display-input Show_input " type="text"
-           th:value="${report.r9_tot_cap_req != null ? #numbers.formatDecimal(report.r9_tot_cap_req,0,'COMMA',0,'POINT') : '0'}"
-           id="r9_tot_cap_req" name="r9_tot_cap_req"
-           style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
-           readonly />
-</td> -->
 
- <td id="ROW9" style="font-weight: bold; text-align: right; padding-left:20px;" >
+ <!--<td id="ROW9" style="font-weight: bold; text-align: right; padding-left:20px;" >
         <input class="display-input Show_input " type="text"
                th:value="${report.r9_tot_cap_req != null ? #numbers.formatDecimal(report.r9_tot_cap_req,0,'COMMA',0,'POINT') : '0'}"
                id="r9_tot_cap_req" name="r9_tot_cap_req"
                style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
-    </td>
+    </td>-->
+	
+	<td style="background-color: #FFFFFF; width: 150px; height: 28px; border-color: transparent; text-align: right;"  
+				 th:text="${#numbers.formatDecimal(report.r9_tot_cap_req,1,'COMMA',0,'POINT')}"></td>
 
 	</tr>
 
@@ -1674,12 +1671,15 @@ function fileuploads(btn) {
                style="background-color: #FFFFFF; width: 150px; height: 28px; border-color: transparent; text-align: right;"
                readonly />
     </td>
-    <td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
+    <!--<td id="ROW12" style="font-weight: bold; text-align: right;" class="green-cell">
         <input class="display-input Show_input green-cell" type="text"
                th:value="${report.r12_tot_cap_req }"
                id="r12_tot_cap_req" name="r12_tot_cap_req"
                style="background-color: #FFFFFF; width: 150px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
+               readonly />-->
+			   
+			   <td style="background-color: #FFFFFF; width: 150px; height: 28px; border-color: transparent; text-align: right;"  class="green-cell"
+			 th:text="${#numbers.formatDecimal(report.r12_tot_cap_req,1,'COMMA',0,'POINT')}"></td>
     </td>
 </tr>
 

@@ -1070,7 +1070,7 @@ function calculateR48_GrossIncome() {
     let total = 0;
 
     // r36 → r47
-    for (let i = 36; i <= 46; i++) {
+    for (let i = 36; i <= 47; i++) {
         total += getVal("r" + i + "_gross_income");
     }
 
@@ -2181,13 +2181,21 @@ for (let i = 10; i <= 56; i++) {
     </tr>
 
 <tr>
-    <td id="ROW46">
+    <td id="ROW47">
    M12
 </td>
-    <td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C3'"
+    <!--<td style="text-align: right;" th:attr="reportLable='R47', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)"
         th:text="${report.r47_gross_income != null ? #numbers.formatDecimal(report.r47_gross_income, 1, 'COMMA', 0, 'POINT') : '0'}">
-    </td>
+    </td>-->
+	<td id="ROW47" style="text-align: right; background-color:#FFFFFF; font-weight: bold;">
+	   <input class="display-input Show_input"
+	          type="text"
+	          th:value="${report.r47_gross_income != null ? #numbers.formatDecimal(report.r47_gross_income, 1, 'COMMA', 0, 'POINT') : '0'}"
+	          id="r47_gross_income"
+	          name="r47_gross_income"
+	         style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;" readonly/>
+	   </tr>
 </tr>
 
 <tr>

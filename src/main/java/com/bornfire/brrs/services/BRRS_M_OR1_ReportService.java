@@ -435,20 +435,24 @@ public class BRRS_M_OR1_ReportService {
 		System.out.println("report_date: " + updatedEntity.getReport_date());
 
 		List<M_OR1_Summary_Entity> existingList = getSummaryByDate(updatedEntity.getReport_date());
+
 		if (existingList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+			throw new RuntimeException(
+					"Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
 		}
+
 		M_OR1_Summary_Entity existing = existingList.get(0);
 
 		try {
-			// Loop from R11 to R50 and copy fields
-			int[] rows = new int[56];
+
+			// Loop from R10 to R22
+			int[] rows = new int[13];
 			for (int k = 0, r = 10; r <= 22; r++, k++) {
 				rows[k] = r;
 			}
 
 			for (int i : rows) {
-				String prefix = "R" + i + "_"; // Use capital R (same as your working code)
+				String prefix = "R" + i + "_";
 				String[] fields = { "gross_income" };
 
 				for (String field : fields) {
@@ -457,27 +461,26 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
-			// Loop from R17 to R30 and copy fields
-			// Loop from R23 to R34 and copy fields
+			// Loop from R23 to R34
 			int[] rows2 = new int[12];
 			for (int k = 0, r = 23; r <= 34; r++, k++) {
 				rows2[k] = r;
 			}
 
 			for (int i : rows2) {
-				String prefix = "R" + i + "_"; // FIX: Capital R (same as your working model)
+				String prefix = "R" + i + "_";
 				String[] fields = { "gross_income" };
 
 				for (String field : fields) {
@@ -486,26 +489,26 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
-			// Loop from R36 to R46 and copy fields
-			int[] rows3 = new int[11];
-			for (int k = 0, r = 36; r <= 46; r++, k++) {
+			// Loop from R36 to R47
+			int[] rows3 = new int[12];
+			for (int k = 0, r = 36; r <= 47; r++, k++) {
 				rows3[k] = r;
 			}
 
 			for (int i : rows3) {
-				String prefix = "R" + i + "_"; // FIXED: Capital 'R'
+				String prefix = "R" + i + "_";
 				String[] fields = { "gross_income" };
 
 				for (String field : fields) {
@@ -514,19 +517,21 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
+			// R22, R35 and R48
 			int[] Rows = { 22, 35, 48 };
+
 			for (int i : Rows) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "gross_income" };
@@ -537,19 +542,21 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
+			// R50 to R54
 			int[] Rows1 = { 50, 51, 52, 53, 54 };
+
 			for (int i : Rows1) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "aggregate_gross_income" };
@@ -560,19 +567,21 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
+			// R55 and R56
 			int[] Rows2 = { 55, 56 };
+
 			for (int i : Rows2) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "risk_weight_factor" };
@@ -583,26 +592,29 @@ public class BRRS_M_OR1_ReportService {
 						String setterName = "set" + prefix + field;
 
 						Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						Method setter = M_OR1_Summary_Entity.class.getMethod(setterName,
+								getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						setter.invoke(existing, newValue);
 
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
 						continue;
 					}
 				}
 			}
 
+			System.out.println("R47 Value Before Save : "
+					+ existing.getR47_gross_income());
+
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Save updated entity
-		System.out.println("abc");
+		System.out.println("Updating Summary Record.....");
 		updateSummaryRecord(existing);
 	}
+	
 
 	public byte[] BRRS_M_OR1Excel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, String format, BigDecimal version) throws Exception {
