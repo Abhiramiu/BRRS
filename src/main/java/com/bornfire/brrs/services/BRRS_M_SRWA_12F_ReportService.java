@@ -11660,269 +11660,687 @@ public class BRRS_M_SRWA_12F_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_SRWA_12F_Summary_Entity updatedEntity) {
-		System.out.println("Came to M_SRWA_12F Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-		Date reportDate = updatedEntity.getReport_date();
-
-		// 🔹 Fetch existing SUMMARY using JDBC
-		String selectSummarySql = "SELECT * FROM BRRS_M_SRWA_12F_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		List<M_SRWA_12F_Summary_Entity> existingSummaryList = jdbcTemplate.query(selectSummarySql,
-				new Object[] { reportDate }, new M_SRWA_12F_Summary_RowMapper());
-
-		if (existingSummaryList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + reportDate);
-		}
-
-		M_SRWA_12F_Summary_Entity existingSummary = existingSummaryList.get(0);
-
-		// 🔹 Create Audit Copy before editing
-		M_SRWA_12F_Summary_Entity oldcopy = new M_SRWA_12F_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		// 🔹 Fetch or create DETAIL using JDBC
-		String selectDetailSql = "SELECT * FROM BRRS_M_SRWA_12F_DETAILTABLE WHERE REPORT_DATE = ?";
-		List<M_SRWA_12F_Detail_Entity> existingDetailList = jdbcTemplate.query(selectDetailSql,
-				new Object[] { reportDate }, new M_SRWA_12F_Detail_RowMapper());
-
-		M_SRWA_12F_Detail_Entity detailEntity;
-		if (existingDetailList.isEmpty()) {
-			detailEntity = new M_SRWA_12F_Detail_Entity();
-			detailEntity.setReport_date(reportDate);
-		} else {
-			detailEntity = existingDetailList.get(0);
-		}
+	public void updateReport(M_SRWA_12F_Summary_Entity request) {
 
 		try {
-			// 🔁 Loop R11 to R37
-			for (int i = 11; i <= 37; i++) {
-				String prefix = "R" + i + "_";
 
-				String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT",
-						"RISK_WEIGHT", "RISK_WEIGHTED_AMT" };
+			System.out.println("Came to M_SRWA_12F Service");
+			System.out.println("Report Date : " + request.getReport_date());
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+			// Fetch Existing Summary Record
+			String selectSql = "SELECT * FROM BRRS_M_SRWA_12F_SUMMARYTABLE WHERE REPORT_DATE=?";
 
-					try {
-						// Getter from UPDATED entity
-						Method getter = M_SRWA_12F_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+			List<M_SRWA_12F_Summary_Entity> records = jdbcTemplate.query(selectSql,
+					new Object[] { request.getReport_date() },
+					new M_SRWA_12F_Summary_RowMapper());
 
-						// Get current value from existing record to compare
-						Object existingValue = getter.invoke(existingSummary);
+			if (records == null || records.isEmpty()) {
 
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+				throw new RuntimeException(
+						"Record not found for REPORT_DATE : "
+								+ request.getReport_date());
+			}
 
-						// If values are functionally identical, skip updating to avoid dirtying fields
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
+			M_SRWA_12F_Summary_Entity existing = records.get(0);
 
-						// SUMMARY setter
-						Method summarySetter = M_SRWA_12F_Summary_Entity.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
+			// Audit Old Copy
+			M_SRWA_12F_Summary_Entity oldcopy =
+					new M_SRWA_12F_Summary_Entity();
 
-						// DETAIL setter
-						Method detailSetter = M_SRWA_12F_Detail_Entity.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
+			BeanUtils.copyProperties(existing, oldcopy);
 
-					} catch (NoSuchMethodException e) {
-						// Field not present in entity – skip safely
-						continue;
-					}
+			String changes =
+					auditService.getChanges(oldcopy, request);
+
+			if (!changes.isEmpty()) {
+
+				// UPDATE SUMMARY TABLE
+				String sql = "UPDATE BRRS_M_SRWA_12F_SUMMARYTABLE SET "
+
++ "R11_NAME_OF_CORPORATE=?,"
++ "R11_CREDIT_RATING=?,"
++ "R11_RATING_AGENCY=?,"
++ "R11_EXPOSURE_AMT=?,"
++ "R11_RISK_WEIGHT=?,"
++ "R11_RISK_WEIGHTED_AMT=?,"
+
++ "R12_NAME_OF_CORPORATE=?,"
++ "R12_CREDIT_RATING=?,"
++ "R12_RATING_AGENCY=?,"
++ "R12_EXPOSURE_AMT=?,"
++ "R12_RISK_WEIGHT=?,"
++ "R12_RISK_WEIGHTED_AMT=?,"
+
++ "R13_NAME_OF_CORPORATE=?,"
++ "R13_CREDIT_RATING=?,"
++ "R13_RATING_AGENCY=?,"
++ "R13_EXPOSURE_AMT=?,"
++ "R13_RISK_WEIGHT=?,"
++ "R13_RISK_WEIGHTED_AMT=?,"
+
++ "R14_NAME_OF_CORPORATE=?,"
++ "R14_CREDIT_RATING=?,"
++ "R14_RATING_AGENCY=?,"
++ "R14_EXPOSURE_AMT=?,"
++ "R14_RISK_WEIGHT=?,"
++ "R14_RISK_WEIGHTED_AMT=?,"
+
++ "R15_NAME_OF_CORPORATE=?,"
++ "R15_CREDIT_RATING=?,"
++ "R15_RATING_AGENCY=?,"
++ "R15_EXPOSURE_AMT=?,"
++ "R15_RISK_WEIGHT=?,"
++ "R15_RISK_WEIGHTED_AMT=?,"
+
++ "R16_NAME_OF_CORPORATE=?,"
++ "R16_CREDIT_RATING=?,"
++ "R16_RATING_AGENCY=?,"
++ "R16_EXPOSURE_AMT=?,"
++ "R16_RISK_WEIGHT=?,"
++ "R16_RISK_WEIGHTED_AMT=?,"
+
++ "R17_NAME_OF_CORPORATE=?,"
++ "R17_CREDIT_RATING=?,"
++ "R17_RATING_AGENCY=?,"
++ "R17_EXPOSURE_AMT=?,"
++ "R17_RISK_WEIGHT=?,"
++ "R17_RISK_WEIGHTED_AMT=?,"
+
++ "R18_NAME_OF_CORPORATE=?,"
++ "R18_CREDIT_RATING=?,"
++ "R18_RATING_AGENCY=?,"
++ "R18_EXPOSURE_AMT=?,"
++ "R18_RISK_WEIGHT=?,"
++ "R18_RISK_WEIGHTED_AMT=?,"
+
++ "R19_NAME_OF_CORPORATE=?,"
++ "R19_CREDIT_RATING=?,"
++ "R19_RATING_AGENCY=?,"
++ "R19_EXPOSURE_AMT=?,"
++ "R19_RISK_WEIGHT=?,"
++ "R19_RISK_WEIGHTED_AMT=?,"
+
++ "R20_NAME_OF_CORPORATE=?,"
++ "R20_CREDIT_RATING=?,"
++ "R20_RATING_AGENCY=?,"
++ "R20_EXPOSURE_AMT=?,"
++ "R20_RISK_WEIGHT=?,"
++ "R20_RISK_WEIGHTED_AMT=?,"
+
++ "R21_NAME_OF_CORPORATE=?,"
++ "R21_CREDIT_RATING=?,"
++ "R21_RATING_AGENCY=?,"
++ "R21_EXPOSURE_AMT=?,"
++ "R21_RISK_WEIGHT=?,"
++ "R21_RISK_WEIGHTED_AMT=?,"
+
++ "R22_NAME_OF_CORPORATE=?,"
++ "R22_CREDIT_RATING=?,"
++ "R22_RATING_AGENCY=?,"
++ "R22_EXPOSURE_AMT=?,"
++ "R22_RISK_WEIGHT=?,"
++ "R22_RISK_WEIGHTED_AMT=?,"
+
++ "R23_NAME_OF_CORPORATE=?,"
++ "R23_CREDIT_RATING=?,"
++ "R23_RATING_AGENCY=?,"
++ "R23_EXPOSURE_AMT=?,"
++ "R23_RISK_WEIGHT=?,"
++ "R23_RISK_WEIGHTED_AMT=?,"
+
++ "R24_NAME_OF_CORPORATE=?,"
++ "R24_CREDIT_RATING=?,"
++ "R24_RATING_AGENCY=?,"
++ "R24_EXPOSURE_AMT=?,"
++ "R24_RISK_WEIGHT=?,"
++ "R24_RISK_WEIGHTED_AMT=?,"
+
++ "R25_NAME_OF_CORPORATE=?,"
++ "R25_CREDIT_RATING=?,"
++ "R25_RATING_AGENCY=?,"
++ "R25_EXPOSURE_AMT=?,"
++ "R25_RISK_WEIGHT=?,"
++ "R25_RISK_WEIGHTED_AMT=?,"
+
++ "R26_NAME_OF_CORPORATE=?,"
++ "R26_CREDIT_RATING=?,"
++ "R26_RATING_AGENCY=?,"
++ "R26_EXPOSURE_AMT=?,"
++ "R26_RISK_WEIGHT=?,"
++ "R26_RISK_WEIGHTED_AMT=?,"
+
++ "R27_NAME_OF_CORPORATE=?,"
++ "R27_CREDIT_RATING=?,"
++ "R27_RATING_AGENCY=?,"
++ "R27_EXPOSURE_AMT=?,"
++ "R27_RISK_WEIGHT=?,"
++ "R27_RISK_WEIGHTED_AMT=?,"
+
++ "R28_NAME_OF_CORPORATE=?,"
++ "R28_CREDIT_RATING=?,"
++ "R28_RATING_AGENCY=?,"
++ "R28_EXPOSURE_AMT=?,"
++ "R28_RISK_WEIGHT=?,"
++ "R28_RISK_WEIGHTED_AMT=?,"
+
++ "R29_NAME_OF_CORPORATE=?,"
++ "R29_CREDIT_RATING=?,"
++ "R29_RATING_AGENCY=?,"
++ "R29_EXPOSURE_AMT=?,"
++ "R29_RISK_WEIGHT=?,"
++ "R29_RISK_WEIGHTED_AMT=?,"
+
++ "R30_NAME_OF_CORPORATE=?,"
++ "R30_CREDIT_RATING=?,"
++ "R30_RATING_AGENCY=?,"
++ "R30_EXPOSURE_AMT=?,"
++ "R30_RISK_WEIGHT=?,"
++ "R30_RISK_WEIGHTED_AMT=?,"
+
++ "R31_NAME_OF_CORPORATE=?,"
++ "R31_CREDIT_RATING=?,"
++ "R31_RATING_AGENCY=?,"
++ "R31_EXPOSURE_AMT=?,"
++ "R31_RISK_WEIGHT=?,"
++ "R31_RISK_WEIGHTED_AMT=?,"
+
++ "R32_NAME_OF_CORPORATE=?,"
++ "R32_CREDIT_RATING=?,"
++ "R32_RATING_AGENCY=?,"
++ "R32_EXPOSURE_AMT=?,"
++ "R32_RISK_WEIGHT=?,"
++ "R32_RISK_WEIGHTED_AMT=?,"
+
++ "R33_NAME_OF_CORPORATE=?,"
++ "R33_CREDIT_RATING=?,"
++ "R33_RATING_AGENCY=?,"
++ "R33_EXPOSURE_AMT=?,"
++ "R33_RISK_WEIGHT=?,"
++ "R33_RISK_WEIGHTED_AMT=?,"
+
++ "R34_NAME_OF_CORPORATE=?,"
++ "R34_CREDIT_RATING=?,"
++ "R34_RATING_AGENCY=?,"
++ "R34_EXPOSURE_AMT=?,"
++ "R34_RISK_WEIGHT=?,"
++ "R34_RISK_WEIGHTED_AMT=?,"
+
++ "R35_NAME_OF_CORPORATE=?,"
++ "R35_CREDIT_RATING=?,"
++ "R35_RATING_AGENCY=?,"
++ "R35_EXPOSURE_AMT=?,"
++ "R35_RISK_WEIGHT=?,"
++ "R35_RISK_WEIGHTED_AMT=?,"
+
++ "R36_NAME_OF_CORPORATE=?,"
++ "R36_CREDIT_RATING=?,"
++ "R36_RATING_AGENCY=?,"
++ "R36_EXPOSURE_AMT=?,"
++ "R36_RISK_WEIGHT=?,"
++ "R36_RISK_WEIGHTED_AMT=?,"
+
++ "R37_NAME_OF_CORPORATE=?,"
++ "R37_CREDIT_RATING=?,"
++ "R37_RATING_AGENCY=?,"
++ "R37_EXPOSURE_AMT=?,"
++ "R37_RISK_WEIGHT=?,"
++ "R37_RISK_WEIGHTED_AMT=?"
+
+	
+
+						+ "WHERE REPORT_DATE=?";
+
+
+				int count = jdbcTemplate.update(
+
+						sql,
+
+						// -----------------
+						// R11
+						// -----------------
+
+						request.getR11_NAME_OF_CORPORATE(),
+						request.getR11_CREDIT_RATING(),
+						request.getR11_RATING_AGENCY(),
+						request.getR11_EXPOSURE_AMT(),
+						request.getR11_RISK_WEIGHT(),
+						request.getR11_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R12
+						// -----------------
+
+						request.getR12_NAME_OF_CORPORATE(),
+						request.getR12_CREDIT_RATING(),
+						request.getR12_RATING_AGENCY(),
+						request.getR12_EXPOSURE_AMT(),
+						request.getR12_RISK_WEIGHT(),
+						request.getR12_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R13
+						// -----------------
+
+						request.getR13_NAME_OF_CORPORATE(),
+						request.getR13_CREDIT_RATING(),
+						request.getR13_RATING_AGENCY(),
+						request.getR13_EXPOSURE_AMT(),
+						request.getR13_RISK_WEIGHT(),
+						request.getR13_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R14
+						// -----------------
+
+						request.getR14_NAME_OF_CORPORATE(),
+						request.getR14_CREDIT_RATING(),
+						request.getR14_RATING_AGENCY(),
+						request.getR14_EXPOSURE_AMT(),
+						request.getR14_RISK_WEIGHT(),
+						request.getR14_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R15
+						// -----------------
+
+						request.getR15_NAME_OF_CORPORATE(),
+						request.getR15_CREDIT_RATING(),
+						request.getR15_RATING_AGENCY(),
+						request.getR15_EXPOSURE_AMT(),
+						request.getR15_RISK_WEIGHT(),
+						request.getR15_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R16
+						// -----------------
+
+						request.getR16_NAME_OF_CORPORATE(),
+						request.getR16_CREDIT_RATING(),
+						request.getR16_RATING_AGENCY(),
+						request.getR16_EXPOSURE_AMT(),
+						request.getR16_RISK_WEIGHT(),
+						request.getR16_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R17
+						// -----------------
+
+						request.getR17_NAME_OF_CORPORATE(),
+						request.getR17_CREDIT_RATING(),
+						request.getR17_RATING_AGENCY(),
+						request.getR17_EXPOSURE_AMT(),
+						request.getR17_RISK_WEIGHT(),
+						request.getR17_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R18
+						// -----------------
+
+						request.getR18_NAME_OF_CORPORATE(),
+						request.getR18_CREDIT_RATING(),
+						request.getR18_RATING_AGENCY(),
+						request.getR18_EXPOSURE_AMT(),
+						request.getR18_RISK_WEIGHT(),
+						request.getR18_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R19
+						// -----------------
+
+						request.getR19_NAME_OF_CORPORATE(),
+						request.getR19_CREDIT_RATING(),
+						request.getR19_RATING_AGENCY(),
+						request.getR19_EXPOSURE_AMT(),
+						request.getR19_RISK_WEIGHT(),
+						request.getR19_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R20
+						// -----------------
+
+						request.getR20_NAME_OF_CORPORATE(),
+						request.getR20_CREDIT_RATING(),
+						request.getR20_RATING_AGENCY(),
+						request.getR20_EXPOSURE_AMT(),
+						request.getR20_RISK_WEIGHT(),
+						request.getR20_RISK_WEIGHTED_AMT(),
+						
+						// -----------------
+						// R21
+						// -----------------
+
+						request.getR21_NAME_OF_CORPORATE(),
+						request.getR21_CREDIT_RATING(),
+						request.getR21_RATING_AGENCY(),
+						request.getR21_EXPOSURE_AMT(),
+						request.getR21_RISK_WEIGHT(),
+						request.getR21_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R22
+						// -----------------
+
+						request.getR22_NAME_OF_CORPORATE(),
+						request.getR22_CREDIT_RATING(),
+						request.getR22_RATING_AGENCY(),
+						request.getR22_EXPOSURE_AMT(),
+						request.getR22_RISK_WEIGHT(),
+						request.getR22_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R23
+						// -----------------
+
+						request.getR23_NAME_OF_CORPORATE(),
+						request.getR23_CREDIT_RATING(),
+						request.getR23_RATING_AGENCY(),
+						request.getR23_EXPOSURE_AMT(),
+						request.getR23_RISK_WEIGHT(),
+						request.getR23_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R24
+						// -----------------
+
+						request.getR24_NAME_OF_CORPORATE(),
+						request.getR24_CREDIT_RATING(),
+						request.getR24_RATING_AGENCY(),
+						request.getR24_EXPOSURE_AMT(),
+						request.getR24_RISK_WEIGHT(),
+						request.getR24_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R25
+						// -----------------
+
+						request.getR25_NAME_OF_CORPORATE(),
+						request.getR25_CREDIT_RATING(),
+						request.getR25_RATING_AGENCY(),
+						request.getR25_EXPOSURE_AMT(),
+						request.getR25_RISK_WEIGHT(),
+						request.getR25_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R26
+						// -----------------
+
+						request.getR26_NAME_OF_CORPORATE(),
+						request.getR26_CREDIT_RATING(),
+						request.getR26_RATING_AGENCY(),
+						request.getR26_EXPOSURE_AMT(),
+						request.getR26_RISK_WEIGHT(),
+						request.getR26_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R27
+						// -----------------
+
+						request.getR27_NAME_OF_CORPORATE(),
+						request.getR27_CREDIT_RATING(),
+						request.getR27_RATING_AGENCY(),
+						request.getR27_EXPOSURE_AMT(),
+						request.getR27_RISK_WEIGHT(),
+						request.getR27_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R28
+						// -----------------
+
+						request.getR28_NAME_OF_CORPORATE(),
+						request.getR28_CREDIT_RATING(),
+						request.getR28_RATING_AGENCY(),
+						request.getR28_EXPOSURE_AMT(),
+						request.getR28_RISK_WEIGHT(),
+						request.getR28_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R29
+						// -----------------
+
+						request.getR29_NAME_OF_CORPORATE(),
+						request.getR29_CREDIT_RATING(),
+						request.getR29_RATING_AGENCY(),
+						request.getR29_EXPOSURE_AMT(),
+						request.getR29_RISK_WEIGHT(),
+						request.getR29_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R30
+						// -----------------
+
+						request.getR30_NAME_OF_CORPORATE(),
+						request.getR30_CREDIT_RATING(),
+						request.getR30_RATING_AGENCY(),
+						request.getR30_EXPOSURE_AMT(),
+						request.getR30_RISK_WEIGHT(),
+						request.getR30_RISK_WEIGHTED_AMT(),
+
+						
+						// -----------------
+						// R31
+						// -----------------
+
+						request.getR31_NAME_OF_CORPORATE(),
+						request.getR31_CREDIT_RATING(),
+						request.getR31_RATING_AGENCY(),
+						request.getR31_EXPOSURE_AMT(),
+						request.getR31_RISK_WEIGHT(),
+						request.getR31_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R32
+						// -----------------
+
+						request.getR32_NAME_OF_CORPORATE(),
+						request.getR32_CREDIT_RATING(),
+						request.getR32_RATING_AGENCY(),
+						request.getR32_EXPOSURE_AMT(),
+						request.getR32_RISK_WEIGHT(),
+						request.getR32_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R33
+						// -----------------
+
+						request.getR33_NAME_OF_CORPORATE(),
+						request.getR33_CREDIT_RATING(),
+						request.getR33_RATING_AGENCY(),
+						request.getR33_EXPOSURE_AMT(),
+						request.getR33_RISK_WEIGHT(),
+						request.getR33_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R34
+						// -----------------
+
+						request.getR34_NAME_OF_CORPORATE(),
+						request.getR34_CREDIT_RATING(),
+						request.getR34_RATING_AGENCY(),
+						request.getR34_EXPOSURE_AMT(),
+						request.getR34_RISK_WEIGHT(),
+						request.getR34_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R35
+						// -----------------
+
+						request.getR35_NAME_OF_CORPORATE(),
+						request.getR35_CREDIT_RATING(),
+						request.getR35_RATING_AGENCY(),
+						request.getR35_EXPOSURE_AMT(),
+						request.getR35_RISK_WEIGHT(),
+						request.getR35_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R36
+						// -----------------
+
+						request.getR36_NAME_OF_CORPORATE(),
+						request.getR36_CREDIT_RATING(),
+						request.getR36_RATING_AGENCY(),
+						request.getR36_EXPOSURE_AMT(),
+						request.getR36_RISK_WEIGHT(),
+						request.getR36_RISK_WEIGHTED_AMT(),
+
+						// -----------------
+						// R37
+						// -----------------
+
+						request.getR37_NAME_OF_CORPORATE(),
+						request.getR37_CREDIT_RATING(),
+						request.getR37_RATING_AGENCY(),
+						request.getR37_EXPOSURE_AMT(),
+						request.getR37_RISK_WEIGHT(),
+						request.getR37_RISK_WEIGHTED_AMT(),
+
+						request.getReport_date()
+
+				);
+
+
+				if (count > 0) {
+
+					auditService.compareEntitiesmanual(
+
+							oldcopy,
+							request,
+							request.getReport_date().toString(),
+							"M SRWA 12F Summary Screen",
+							"BRRS_M_SRWA_12F_SUMMARYTABLE"
+
+					);
+
+					System.out.println(
+							"M_SRWA_12F Summary Updated Successfully");
 				}
+
+			} else {
+
+				System.out.println(
+						"No changes detected for REPORT_DATE : "
+								+ request.getReport_date());
 			}
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_SRWA_12F Changes Length = " + changes.length());
+			e.printStackTrace();
 
-		System.out.println("Saving Summary & Detail tables");
-
-		// 💾 UPDATE SUMMARY TABLE using JDBC
-		String updateSummarySql = buildUpdateSummaryQuery(existingSummary, reportDate);
-		jdbcTemplate.update(updateSummarySql);
-
-		// 💾 UPDATE/INSERT DETAIL TABLE using JDBC
-		String updateDetailSql = buildUpdateDetailQuery(detailEntity, reportDate);
-		jdbcTemplate.update(updateDetailSql);
-
-		// Audit
-		String changes1 = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_SRWA_12F Changes Length = " + changes1.length());
-
-		if (changes1 != null && !changes1.isEmpty() && changes1.length() < 1800) {
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-					"M_SRWA_12F Summary Screen", "BRRS_M_SRWA_12F_SUMMARYTABLE");
-		}
-
-		System.out.println("Update completed successfully");
-	}
-
-	// =====================================================
-	// BUILD UPDATE SUMMARY QUERY
-	// =====================================================
-
-	private String buildUpdateSummaryQuery(M_SRWA_12F_Summary_Entity entity, Date reportDate) {
-		StringBuilder sql = new StringBuilder("UPDATE BRRS_M_SRWA_12F_SUMMARYTABLE SET ");
-
-		// Common fields
-		sql.append("REPORT_VERSION = ?, ");
-		sql.append("REPORT_FREQUENCY = ?, ");
-		sql.append("REPORT_CODE = ?, ");
-		sql.append("REPORT_DESC = ?, ");
-		sql.append("ENTITY_FLG = ?, ");
-		sql.append("MODIFY_FLG = ?, ");
-		sql.append("DEL_FLG = ? ");
-
-		// Add R11 to R37 fields
-		for (int i = 11; i <= 37; i++) {
-			String prefix = "R" + i + "_";
-			String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT",
-					"RISK_WEIGHTED_AMT" };
-			for (String field : fields) {
-				sql.append(", ").append(prefix).append(field).append(" = ? ");
-			}
-		}
-
-		sql.append("WHERE REPORT_DATE = ?");
-
-		// Build parameters list
-		List<Object> params = new ArrayList<>();
-
-		// Common fields
-		params.add(entity.getReport_version());
-		params.add(entity.getReport_frequency());
-		params.add(entity.getReport_code());
-		params.add(entity.getReport_desc());
-		params.add(entity.getEntity_flg());
-		params.add(entity.getModify_flg());
-		params.add(entity.getDel_flg());
-
-		// Add R11 to R37 fields
-		for (int i = 11; i <= 37; i++) {
-			String prefix = "R" + i + "_";
-			// Use reflection to get values
-			try {
-				params.add(getFieldValue(entity, prefix + "NAME_OF_CORPORATE"));
-				params.add(getFieldValue(entity, prefix + "CREDIT_RATING"));
-				params.add(getFieldValue(entity, prefix + "RATING_AGENCY"));
-				params.add(getFieldValue(entity, prefix + "EXPOSURE_AMT"));
-				params.add(getFieldValue(entity, prefix + "RISK_WEIGHT"));
-				params.add(getFieldValue(entity, prefix + "RISK_WEIGHTED_AMT"));
-			} catch (Exception e) {
-				// Skip if field not found
-			}
-		}
-
-		params.add(reportDate);
-
-		return sql.toString();
-	}
-
-	// =====================================================
-	// BUILD UPDATE DETAIL QUERY
-	// =====================================================
-
-	private String buildUpdateDetailQuery(M_SRWA_12F_Detail_Entity entity, Date reportDate) {
-		// First check if record exists
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12F_DETAILTABLE WHERE REPORT_DATE = ?";
-		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { reportDate }, Integer.class);
-
-		if (count > 0) {
-			// UPDATE existing record
-			return buildUpdateDetailSql(entity, reportDate);
-		} else {
-			// INSERT new record
-			return buildInsertDetailSql(entity, reportDate);
+			throw new RuntimeException(
+					"Error while updating BRRS_M_SRWA_12F Report",
+					e);
 		}
 	}
 
-	// =====================================================
-	// BUILD UPDATE DETAIL SQL
-	// =====================================================
-
-	private String buildUpdateDetailSql(M_SRWA_12F_Detail_Entity entity, Date reportDate) {
-		StringBuilder sql = new StringBuilder("UPDATE BRRS_M_SRWA_12F_DETAILTABLE SET ");
-
-		// Common fields
-		sql.append("REPORT_VERSION = ?, ");
-		sql.append("REPORT_FREQUENCY = ?, ");
-		sql.append("REPORT_CODE = ?, ");
-		sql.append("REPORT_DESC = ?, ");
-		sql.append("ENTITY_FLG = ?, ");
-		sql.append("MODIFY_FLG = ?, ");
-		sql.append("DEL_FLG = ? ");
-
-		// Add R11 to R37 fields
-		for (int i = 11; i <= 37; i++) {
-			String prefix = "R" + i + "_";
-			String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT",
-					"RISK_WEIGHTED_AMT" };
-			for (String field : fields) {
-				sql.append(", ").append(prefix).append(field).append(" = ? ");
-			}
-		}
-
-		sql.append("WHERE REPORT_DATE = ?");
-		return sql.toString();
-	}
-
-	// =====================================================
-	// BUILD INSERT DETAIL SQL
-	// =====================================================
-
-	private String buildInsertDetailSql(M_SRWA_12F_Detail_Entity entity, Date reportDate) {
-		StringBuilder sql = new StringBuilder("INSERT INTO BRRS_M_SRWA_12F_DETAILTABLE (");
-		StringBuilder values = new StringBuilder(" VALUES (");
-
-		// Common fields
-		String[] commonFields = { "REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC",
-				"ENTITY_FLG", "MODIFY_FLG", "DEL_FLG" };
-
-		for (String field : commonFields) {
-			sql.append(field).append(", ");
-			values.append("?, ");
-		}
-
-		// Add R11 to R37 fields
-		for (int i = 11; i <= 37; i++) {
-			String prefix = "R" + i + "_";
-			String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING", "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT",
-					"RISK_WEIGHTED_AMT" };
-			for (String field : fields) {
-				sql.append(prefix).append(field).append(", ");
-				values.append("?, ");
-			}
-		}
-
-		// Remove trailing comma and space
-		String sqlStr = sql.toString().replaceAll(", $", ")");
-		String valuesStr = values.toString().replaceAll(", $", ")");
-
-		return sqlStr + valuesStr;
-	}
-
-	// =====================================================
-	// GET FIELD VALUE USING REFLECTION
-	// =====================================================
-
-	private Object getFieldValue(Object entity, String fieldName) throws Exception {
-		String getterName = "get" + fieldName;
-		Method getter = entity.getClass().getMethod(getterName);
-		return getter.invoke(entity);
-	}
+	/*
+	 * // ===================================================== // BUILD UPDATE
+	 * SUMMARY QUERY // =====================================================
+	 * 
+	 * private String buildUpdateSummaryQuery(M_SRWA_12F_Summary_Entity entity, Date
+	 * reportDate) { StringBuilder sql = new
+	 * StringBuilder("UPDATE BRRS_M_SRWA_12F_SUMMARYTABLE SET ");
+	 * 
+	 * // Common fields sql.append("REPORT_VERSION = ?, ");
+	 * sql.append("REPORT_FREQUENCY = ?, "); sql.append("REPORT_CODE = ?, ");
+	 * sql.append("REPORT_DESC = ?, "); sql.append("ENTITY_FLG = ?, ");
+	 * sql.append("MODIFY_FLG = ?, "); sql.append("DEL_FLG = ? ");
+	 * 
+	 * // Add R11 to R37 fields for (int i = 11; i <= 37; i++) { String prefix = "R"
+	 * + i + "_"; String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING",
+	 * "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT", "RISK_WEIGHTED_AMT" }; for
+	 * (String field : fields) {
+	 * sql.append(", ").append(prefix).append(field).append(" = ? "); } }
+	 * 
+	 * sql.append("WHERE REPORT_DATE = ?");
+	 * 
+	 * // Build parameters list List<Object> params = new ArrayList<>();
+	 * 
+	 * // Common fields params.add(entity.getReport_version());
+	 * params.add(entity.getReport_frequency());
+	 * params.add(entity.getReport_code()); params.add(entity.getReport_desc());
+	 * params.add(entity.getEntity_flg()); params.add(entity.getModify_flg());
+	 * params.add(entity.getDel_flg());
+	 * 
+	 * // Add R11 to R37 fields for (int i = 11; i <= 37; i++) { String prefix = "R"
+	 * + i + "_"; // Use reflection to get values try {
+	 * params.add(getFieldValue(entity, prefix + "NAME_OF_CORPORATE"));
+	 * params.add(getFieldValue(entity, prefix + "CREDIT_RATING"));
+	 * params.add(getFieldValue(entity, prefix + "RATING_AGENCY"));
+	 * params.add(getFieldValue(entity, prefix + "EXPOSURE_AMT"));
+	 * params.add(getFieldValue(entity, prefix + "RISK_WEIGHT"));
+	 * params.add(getFieldValue(entity, prefix + "RISK_WEIGHTED_AMT")); } catch
+	 * (Exception e) { // Skip if field not found } }
+	 * 
+	 * params.add(reportDate);
+	 * 
+	 * return sql.toString(); }
+	 * 
+	 * // ===================================================== // BUILD UPDATE
+	 * DETAIL QUERY // =====================================================
+	 * 
+	 * private String buildUpdateDetailQuery(M_SRWA_12F_Detail_Entity entity, Date
+	 * reportDate) { // First check if record exists String checkSql =
+	 * "SELECT COUNT(*) FROM BRRS_M_SRWA_12F_DETAILTABLE WHERE REPORT_DATE = ?";
+	 * Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] {
+	 * reportDate }, Integer.class);
+	 * 
+	 * if (count > 0) { // UPDATE existing record return
+	 * buildUpdateDetailSql(entity, reportDate); } else { // INSERT new record
+	 * return buildInsertDetailSql(entity, reportDate); } }
+	 * 
+	 * // ===================================================== // BUILD UPDATE
+	 * DETAIL SQL // =====================================================
+	 * 
+	 * private String buildUpdateDetailSql(M_SRWA_12F_Detail_Entity entity, Date
+	 * reportDate) { StringBuilder sql = new
+	 * StringBuilder("UPDATE BRRS_M_SRWA_12F_DETAILTABLE SET ");
+	 * 
+	 * // Common fields sql.append("REPORT_VERSION = ?, ");
+	 * sql.append("REPORT_FREQUENCY = ?, "); sql.append("REPORT_CODE = ?, ");
+	 * sql.append("REPORT_DESC = ?, "); sql.append("ENTITY_FLG = ?, ");
+	 * sql.append("MODIFY_FLG = ?, "); sql.append("DEL_FLG = ? ");
+	 * 
+	 * // Add R11 to R37 fields for (int i = 11; i <= 37; i++) { String prefix = "R"
+	 * + i + "_"; String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING",
+	 * "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT", "RISK_WEIGHTED_AMT" }; for
+	 * (String field : fields) {
+	 * sql.append(", ").append(prefix).append(field).append(" = ? "); } }
+	 * 
+	 * sql.append("WHERE REPORT_DATE = ?"); return sql.toString(); }
+	 * 
+	 * // ===================================================== // BUILD INSERT
+	 * DETAIL SQL // =====================================================
+	 * 
+	 * private String buildInsertDetailSql(M_SRWA_12F_Detail_Entity entity, Date
+	 * reportDate) { StringBuilder sql = new
+	 * StringBuilder("INSERT INTO BRRS_M_SRWA_12F_DETAILTABLE ("); StringBuilder
+	 * values = new StringBuilder(" VALUES (");
+	 * 
+	 * // Common fields String[] commonFields = { "REPORT_DATE", "REPORT_VERSION",
+	 * "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG",
+	 * "DEL_FLG" };
+	 * 
+	 * for (String field : commonFields) { sql.append(field).append(", ");
+	 * values.append("?, "); }
+	 * 
+	 * // Add R11 to R37 fields for (int i = 11; i <= 37; i++) { String prefix = "R"
+	 * + i + "_"; String[] fields = { "NAME_OF_CORPORATE", "CREDIT_RATING",
+	 * "RATING_AGENCY", "EXPOSURE_AMT", "RISK_WEIGHT", "RISK_WEIGHTED_AMT" }; for
+	 * (String field : fields) { sql.append(prefix).append(field).append(", ");
+	 * values.append("?, "); } }
+	 * 
+	 * // Remove trailing comma and space String sqlStr =
+	 * sql.toString().replaceAll(", $", ")"); String valuesStr =
+	 * values.toString().replaceAll(", $", ")");
+	 * 
+	 * return sqlStr + valuesStr; }
+	 * 
+	 * // ===================================================== // GET FIELD VALUE
+	 * USING REFLECTION // =====================================================
+	 * 
+	 * private Object getFieldValue(Object entity, String fieldName) throws
+	 * Exception { String getterName = "get" + fieldName; Method getter =
+	 * entity.getClass().getMethod(getterName); return getter.invoke(entity); }
+	 */
 
 	@Transactional
 	public void updateResubReport(M_SRWA_12F_Resub_Summary_Entity updatedEntity) {
