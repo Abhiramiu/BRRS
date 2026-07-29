@@ -4137,25 +4137,294 @@ public class BRRS_M_SRWA_12E_ReportService {
 	// ============================
 
 	private void saveOrUpdateSummary(M_SRWA_12E_LTV_Summary_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12E_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
+
+		String checkSql =
+				"SELECT COUNT(*) FROM BRRS_M_SRWA_12E_SUMMARYTABLE WHERE REPORT_DATE=?";
+
+		Integer count = jdbcTemplate.queryForObject(
+				checkSql,
+				new Object[] { entity.getReport_date() },
+				Integer.class);
 
 		if (count > 0) {
-			String sql = "UPDATE BRRS_M_SRWA_12E_SUMMARYTABLE SET "
-					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
-					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHERE REPORT_DATE = ?";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
-					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
-					entity.getReport_date());
-			System.out.println("✅ Summary updated for date: " + entity.getReport_date());
+
+			String sql =
+
+					"UPDATE BRRS_M_SRWA_12E_SUMMARYTABLE SET "
+
+					//R13
+					+ "R13_PRODUCT=?,"
+					+ "R13_PERFORMING_EXPOSURE=?,"
+					+ "R13_NON_PERFORMING=?,"
+					+ "R13_SPECIFIC_PROV=?,"
+					+ "R13_UNSECURED_PORTION_NPL=?,"
+					+ "R13_TOTAL=?,"
+
+					//R14
+					+ "R14_PRODUCT=?,"
+					+ "R14_PERFORMING_EXPOSURE=?,"
+					+ "R14_NON_PERFORMING=?,"
+					+ "R14_SPECIFIC_PROV=?,"
+					+ "R14_UNSECURED_PORTION_NPL=?,"
+					+ "R14_TOTAL=?,"
+
+					//R15
+					+ "R15_PRODUCT=?,"
+					+ "R15_PERFORMING_EXPOSURE=?,"
+					+ "R15_NON_PERFORMING=?,"
+					+ "R15_SPECIFIC_PROV=?,"
+					+ "R15_UNSECURED_PORTION_NPL=?,"
+					+ "R15_TOTAL=?,"
+
+					//R16
+					+ "R16_PRODUCT=?,"
+					+ "R16_PERFORMING_EXPOSURE=?,"
+					+ "R16_NON_PERFORMING=?,"
+					+ "R16_SPECIFIC_PROV=?,"
+					+ "R16_UNSECURED_PORTION_NPL=?,"
+					+ "R16_TOTAL=?,"
+
+					//R17
+					+ "R17_PRODUCT=?,"
+					+ "R17_PERFORMING_EXPOSURE=?,"
+					+ "R17_NON_PERFORMING=?,"
+					+ "R17_SPECIFIC_PROV=?,"
+					+ "R17_UNSECURED_PORTION_NPL=?,"
+					+ "R17_TOTAL=?,"
+
+					//R18
+					+ "R18_PRODUCT=?,"
+					+ "R18_PERFORMING_EXPOSURE=?,"
+					+ "R18_NON_PERFORMING=?,"
+					+ "R18_SPECIFIC_PROV=?,"
+					+ "R18_UNSECURED_PORTION_NPL=?,"
+					+ "R18_TOTAL=?,"
+
+					//R19
+					+ "R19_PRODUCT=?,"
+					+ "R19_PERFORMING_EXPOSURE=?,"
+					+ "R19_NON_PERFORMING=?,"
+					+ "R19_SPECIFIC_PROV=?,"
+					+ "R19_UNSECURED_PORTION_NPL=?,"
+					+ "R19_TOTAL=?,"
+
+					//Metadata
+					+ "REPORT_VERSION=?,"
+					+ "REPORT_FREQUENCY=?,"
+					+ "REPORT_CODE=?,"
+					+ "REPORT_DESC=?,"
+					+ "ENTITY_FLG=?,"
+					+ "MODIFY_FLG=?,"
+					+ "DEL_FLG=? "
+
+					+ "WHERE REPORT_DATE=?";
+
+
+			jdbcTemplate.update(
+
+					sql,
+
+					//R13
+					entity.getR13_PRODUCT(),
+					entity.getR13_PERFORMING_EXPOSURE(),
+					entity.getR13_NON_PERFORMING(),
+					entity.getR13_SPECIFIC_PROV(),
+					entity.getR13_UNSECURED_PORTION_NPL(),
+					entity.getR13_TOTAL(),
+
+					//R14
+					entity.getR14_PRODUCT(),
+					entity.getR14_PERFORMING_EXPOSURE(),
+					entity.getR14_NON_PERFORMING(),
+					entity.getR14_SPECIFIC_PROV(),
+					entity.getR14_UNSECURED_PORTION_NPL(),
+					entity.getR14_TOTAL(),
+
+					//R15
+					entity.getR15_PRODUCT(),
+					entity.getR15_PERFORMING_EXPOSURE(),
+					entity.getR15_NON_PERFORMING(),
+					entity.getR15_SPECIFIC_PROV(),
+					entity.getR15_UNSECURED_PORTION_NPL(),
+					entity.getR15_TOTAL(),
+
+					//R16
+					entity.getR16_PRODUCT(),
+					entity.getR16_PERFORMING_EXPOSURE(),
+					entity.getR16_NON_PERFORMING(),
+					entity.getR16_SPECIFIC_PROV(),
+					entity.getR16_UNSECURED_PORTION_NPL(),
+					entity.getR16_TOTAL(),
+
+					//R17
+					entity.getR17_PRODUCT(),
+					entity.getR17_PERFORMING_EXPOSURE(),
+					entity.getR17_NON_PERFORMING(),
+					entity.getR17_SPECIFIC_PROV(),
+					entity.getR17_UNSECURED_PORTION_NPL(),
+					entity.getR17_TOTAL(),
+
+					//R18
+					entity.getR18_PRODUCT(),
+					entity.getR18_PERFORMING_EXPOSURE(),
+					entity.getR18_NON_PERFORMING(),
+					entity.getR18_SPECIFIC_PROV(),
+					entity.getR18_UNSECURED_PORTION_NPL(),
+					entity.getR18_TOTAL(),
+
+					//R19
+					entity.getR19_PRODUCT(),
+					entity.getR19_PERFORMING_EXPOSURE(),
+					entity.getR19_NON_PERFORMING(),
+					entity.getR19_SPECIFIC_PROV(),
+					entity.getR19_UNSECURED_PORTION_NPL(),
+					entity.getR19_TOTAL(),
+
+					//Metadata
+					entity.getReport_version(),
+					entity.getReport_frequency(),
+					entity.getReport_code(),
+					entity.getReport_desc(),
+					entity.getEntity_flg(),
+					entity.getModify_flg(),
+					entity.getDel_flg(),
+
+					entity.getReport_date()
+
+			);
+
 		} else {
-			String sql = "INSERT INTO BRRS_M_SRWA_12E_SUMMARYTABLE "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
-			System.out.println("✅ Summary inserted for date: " + entity.getReport_date());
+
+			String sql =
+
+					"INSERT INTO BRRS_M_SRWA_12E_SUMMARYTABLE ("
+
+					+ "REPORT_DATE,"
+
+					//R13
+					+ "R13_PRODUCT,R13_PERFORMING_EXPOSURE,R13_NON_PERFORMING,"
+					+ "R13_SPECIFIC_PROV,R13_UNSECURED_PORTION_NPL,R13_TOTAL,"
+
+					//R14
+					+ "R14_PRODUCT,R14_PERFORMING_EXPOSURE,R14_NON_PERFORMING,"
+					+ "R14_SPECIFIC_PROV,R14_UNSECURED_PORTION_NPL,R14_TOTAL,"
+
+					//R15
+					+ "R15_PRODUCT,R15_PERFORMING_EXPOSURE,R15_NON_PERFORMING,"
+					+ "R15_SPECIFIC_PROV,R15_UNSECURED_PORTION_NPL,R15_TOTAL,"
+
+					//R16
+					+ "R16_PRODUCT,R16_PERFORMING_EXPOSURE,R16_NON_PERFORMING,"
+					+ "R16_SPECIFIC_PROV,R16_UNSECURED_PORTION_NPL,R16_TOTAL,"
+
+					//R17
+					+ "R17_PRODUCT,R17_PERFORMING_EXPOSURE,R17_NON_PERFORMING,"
+					+ "R17_SPECIFIC_PROV,R17_UNSECURED_PORTION_NPL,R17_TOTAL,"
+
+					//R18
+					+ "R18_PRODUCT,R18_PERFORMING_EXPOSURE,R18_NON_PERFORMING,"
+					+ "R18_SPECIFIC_PROV,R18_UNSECURED_PORTION_NPL,R18_TOTAL,"
+
+					//R19
+					+ "R19_PRODUCT,R19_PERFORMING_EXPOSURE,R19_NON_PERFORMING,"
+					+ "R19_SPECIFIC_PROV,R19_UNSECURED_PORTION_NPL,R19_TOTAL,"
+
+					//Metadata
+					+ "REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,"
+					+ "REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG"
+
+					+ ") VALUES ("
+
+					+ "?,"
+
+					//R13-R19
+					+ "?,?,?,?,?,?," //R13
+					+ "?,?,?,?,?,?," //R14
+					+ "?,?,?,?,?,?," //R15
+					+ "?,?,?,?,?,?," //R16
+					+ "?,?,?,?,?,?," //R17
+					+ "?,?,?,?,?,?," //R18
+					+ "?,?,?,?,?,?," //R19
+
+					//Metadata
+					+ "?,?,?,?,?,?,?"
+
+					+ ")";
+
+
+			jdbcTemplate.update(
+
+					sql,
+
+					entity.getReport_date(),
+
+					//R13
+					entity.getR13_PRODUCT(),
+					entity.getR13_PERFORMING_EXPOSURE(),
+					entity.getR13_NON_PERFORMING(),
+					entity.getR13_SPECIFIC_PROV(),
+					entity.getR13_UNSECURED_PORTION_NPL(),
+					entity.getR13_TOTAL(),
+
+					//R14
+					entity.getR14_PRODUCT(),
+					entity.getR14_PERFORMING_EXPOSURE(),
+					entity.getR14_NON_PERFORMING(),
+					entity.getR14_SPECIFIC_PROV(),
+					entity.getR14_UNSECURED_PORTION_NPL(),
+					entity.getR14_TOTAL(),
+
+					//R15
+					entity.getR15_PRODUCT(),
+					entity.getR15_PERFORMING_EXPOSURE(),
+					entity.getR15_NON_PERFORMING(),
+					entity.getR15_SPECIFIC_PROV(),
+					entity.getR15_UNSECURED_PORTION_NPL(),
+					entity.getR15_TOTAL(),
+
+					//R16
+					entity.getR16_PRODUCT(),
+					entity.getR16_PERFORMING_EXPOSURE(),
+					entity.getR16_NON_PERFORMING(),
+					entity.getR16_SPECIFIC_PROV(),
+					entity.getR16_UNSECURED_PORTION_NPL(),
+					entity.getR16_TOTAL(),
+
+					//R17
+					entity.getR17_PRODUCT(),
+					entity.getR17_PERFORMING_EXPOSURE(),
+					entity.getR17_NON_PERFORMING(),
+					entity.getR17_SPECIFIC_PROV(),
+					entity.getR17_UNSECURED_PORTION_NPL(),
+					entity.getR17_TOTAL(),
+
+					//R18
+					entity.getR18_PRODUCT(),
+					entity.getR18_PERFORMING_EXPOSURE(),
+					entity.getR18_NON_PERFORMING(),
+					entity.getR18_SPECIFIC_PROV(),
+					entity.getR18_UNSECURED_PORTION_NPL(),
+					entity.getR18_TOTAL(),
+
+					//R19
+					entity.getR19_PRODUCT(),
+					entity.getR19_PERFORMING_EXPOSURE(),
+					entity.getR19_NON_PERFORMING(),
+					entity.getR19_SPECIFIC_PROV(),
+					entity.getR19_UNSECURED_PORTION_NPL(),
+					entity.getR19_TOTAL(),
+
+					//Metadata
+					entity.getReport_version(),
+					entity.getReport_frequency(),
+					entity.getReport_code(),
+					entity.getReport_desc(),
+					entity.getEntity_flg(),
+					entity.getModify_flg(),
+					entity.getDel_flg()
+
+			);
+
 		}
 	}
 
@@ -4164,28 +4433,303 @@ public class BRRS_M_SRWA_12E_ReportService {
 	// ============================
 
 	private void saveOrUpdateDetail(M_SRWA_12E_LTV_Detail_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12E_DETAILTABLE WHERE REPORT_DATE = ?";
-		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
+
+		String checkSql =
+				"SELECT COUNT(*) FROM BRRS_M_SRWA_12E_DETAILTABLE WHERE REPORT_DATE=?";
+
+		Integer count = jdbcTemplate.queryForObject(
+				checkSql,
+				new Object[] { entity.getReport_date() },
+				Integer.class);
 
 		if (count > 0) {
-			String sql = "UPDATE BRRS_M_SRWA_12E_DETAILTABLE SET "
-					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
-					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHERE REPORT_DATE = ?";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
-					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
-					entity.getReport_date());
-			System.out.println("✅ Detail updated for date: " + entity.getReport_date());
+
+			String sql =
+
+					"UPDATE BRRS_M_SRWA_12E_DETAILTABLE SET "
+
+					//R13
+					+ "R13_PRODUCT=?,"
+					+ "R13_PERFORMING_EXPOSURE=?,"
+					+ "R13_NON_PERFORMING=?,"
+					+ "R13_SPECIFIC_PROV=?,"
+					+ "R13_UNSECURED_PORTION_NPL=?,"
+					+ "R13_TOTAL=?,"
+
+					//R14
+					+ "R14_PRODUCT=?,"
+					+ "R14_PERFORMING_EXPOSURE=?,"
+					+ "R14_NON_PERFORMING=?,"
+					+ "R14_SPECIFIC_PROV=?,"
+					+ "R14_UNSECURED_PORTION_NPL=?,"
+					+ "R14_TOTAL=?,"
+
+					//R15
+					+ "R15_PRODUCT=?,"
+					+ "R15_PERFORMING_EXPOSURE=?,"
+					+ "R15_NON_PERFORMING=?,"
+					+ "R15_SPECIFIC_PROV=?,"
+					+ "R15_UNSECURED_PORTION_NPL=?,"
+					+ "R15_TOTAL=?,"
+
+					//R16
+					+ "R16_PRODUCT=?,"
+					+ "R16_PERFORMING_EXPOSURE=?,"
+					+ "R16_NON_PERFORMING=?,"
+					+ "R16_SPECIFIC_PROV=?,"
+					+ "R16_UNSECURED_PORTION_NPL=?,"
+					+ "R16_TOTAL=?,"
+
+					//R17
+					+ "R17_PRODUCT=?,"
+					+ "R17_PERFORMING_EXPOSURE=?,"
+					+ "R17_NON_PERFORMING=?,"
+					+ "R17_SPECIFIC_PROV=?,"
+					+ "R17_UNSECURED_PORTION_NPL=?,"
+					+ "R17_TOTAL=?,"
+
+					//R18
+					+ "R18_PRODUCT=?,"
+					+ "R18_PERFORMING_EXPOSURE=?,"
+					+ "R18_NON_PERFORMING=?,"
+					+ "R18_SPECIFIC_PROV=?,"
+					+ "R18_UNSECURED_PORTION_NPL=?,"
+					+ "R18_TOTAL=?,"
+
+					//R19
+					+ "R19_PRODUCT=?,"
+					+ "R19_PERFORMING_EXPOSURE=?,"
+					+ "R19_NON_PERFORMING=?,"
+					+ "R19_SPECIFIC_PROV=?,"
+					+ "R19_UNSECURED_PORTION_NPL=?,"
+					+ "R19_TOTAL=?,"
+
+					//Metadata
+					+ "REPORT_VERSION=?,"
+					+ "REPORT_FREQUENCY=?,"
+					+ "REPORT_CODE=?,"
+					+ "REPORT_DESC=?,"
+					+ "ENTITY_FLG=?,"
+					+ "MODIFY_FLG=?,"
+					+ "DEL_FLG=? "
+
+					+ "WHERE REPORT_DATE=?";
+
+
+			jdbcTemplate.update(
+
+					sql,
+
+					//R13
+					entity.getR13_PRODUCT(),
+					entity.getR13_PERFORMING_EXPOSURE(),
+					entity.getR13_NON_PERFORMING(),
+					entity.getR13_SPECIFIC_PROV(),
+					entity.getR13_UNSECURED_PORTION_NPL(),
+					entity.getR13_TOTAL(),
+
+					//R14
+					entity.getR14_PRODUCT(),
+					entity.getR14_PERFORMING_EXPOSURE(),
+					entity.getR14_NON_PERFORMING(),
+					entity.getR14_SPECIFIC_PROV(),
+					entity.getR14_UNSECURED_PORTION_NPL(),
+					entity.getR14_TOTAL(),
+
+					//R15
+					entity.getR15_PRODUCT(),
+					entity.getR15_PERFORMING_EXPOSURE(),
+					entity.getR15_NON_PERFORMING(),
+					entity.getR15_SPECIFIC_PROV(),
+					entity.getR15_UNSECURED_PORTION_NPL(),
+					entity.getR15_TOTAL(),
+
+					//R16
+					entity.getR16_PRODUCT(),
+					entity.getR16_PERFORMING_EXPOSURE(),
+					entity.getR16_NON_PERFORMING(),
+					entity.getR16_SPECIFIC_PROV(),
+					entity.getR16_UNSECURED_PORTION_NPL(),
+					entity.getR16_TOTAL(),
+
+					//R17
+					entity.getR17_PRODUCT(),
+					entity.getR17_PERFORMING_EXPOSURE(),
+					entity.getR17_NON_PERFORMING(),
+					entity.getR17_SPECIFIC_PROV(),
+					entity.getR17_UNSECURED_PORTION_NPL(),
+					entity.getR17_TOTAL(),
+
+					//R18
+					entity.getR18_PRODUCT(),
+					entity.getR18_PERFORMING_EXPOSURE(),
+					entity.getR18_NON_PERFORMING(),
+					entity.getR18_SPECIFIC_PROV(),
+					entity.getR18_UNSECURED_PORTION_NPL(),
+					entity.getR18_TOTAL(),
+
+					//R19
+					entity.getR19_PRODUCT(),
+					entity.getR19_PERFORMING_EXPOSURE(),
+					entity.getR19_NON_PERFORMING(),
+					entity.getR19_SPECIFIC_PROV(),
+					entity.getR19_UNSECURED_PORTION_NPL(),
+					entity.getR19_TOTAL(),
+
+					//Metadata
+					entity.getReport_version(),
+					entity.getReport_frequency(),
+					entity.getReport_code(),
+					entity.getReport_desc(),
+					entity.getEntity_flg(),
+					entity.getModify_flg(),
+					entity.getDel_flg(),
+
+					entity.getReport_date()
+
+			);
+
+			System.out.println(
+					"✅ Detail updated for date : "
+					+ entity.getReport_date());
+
 		} else {
-			String sql = "INSERT INTO BRRS_M_SRWA_12E_DETAILTABLE "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
-			System.out.println("✅ Detail inserted for date: " + entity.getReport_date());
+
+			String sql =
+
+					"INSERT INTO BRRS_M_SRWA_12E_DETAILTABLE ("
+
+					+ "REPORT_DATE,"
+
+					//R13
+					+ "R13_PRODUCT,R13_PERFORMING_EXPOSURE,R13_NON_PERFORMING,"
+					+ "R13_SPECIFIC_PROV,R13_UNSECURED_PORTION_NPL,R13_TOTAL,"
+
+					//R14
+					+ "R14_PRODUCT,R14_PERFORMING_EXPOSURE,R14_NON_PERFORMING,"
+					+ "R14_SPECIFIC_PROV,R14_UNSECURED_PORTION_NPL,R14_TOTAL,"
+
+					//R15
+					+ "R15_PRODUCT,R15_PERFORMING_EXPOSURE,R15_NON_PERFORMING,"
+					+ "R15_SPECIFIC_PROV,R15_UNSECURED_PORTION_NPL,R15_TOTAL,"
+
+					//R16
+					+ "R16_PRODUCT,R16_PERFORMING_EXPOSURE,R16_NON_PERFORMING,"
+					+ "R16_SPECIFIC_PROV,R16_UNSECURED_PORTION_NPL,R16_TOTAL,"
+
+					//R17
+					+ "R17_PRODUCT,R17_PERFORMING_EXPOSURE,R17_NON_PERFORMING,"
+					+ "R17_SPECIFIC_PROV,R17_UNSECURED_PORTION_NPL,R17_TOTAL,"
+
+					//R18
+					+ "R18_PRODUCT,R18_PERFORMING_EXPOSURE,R18_NON_PERFORMING,"
+					+ "R18_SPECIFIC_PROV,R18_UNSECURED_PORTION_NPL,R18_TOTAL,"
+
+					//R19
+					+ "R19_PRODUCT,R19_PERFORMING_EXPOSURE,R19_NON_PERFORMING,"
+					+ "R19_SPECIFIC_PROV,R19_UNSECURED_PORTION_NPL,R19_TOTAL,"
+
+					//Metadata
+					+ "REPORT_VERSION,REPORT_FREQUENCY,REPORT_CODE,"
+					+ "REPORT_DESC,ENTITY_FLG,MODIFY_FLG,DEL_FLG"
+
+					+ ") VALUES ("
+
+					+ "?,"
+
+					//R13-R19
+					+ "?,?,?,?,?,?," //R13
+					+ "?,?,?,?,?,?," //R14
+					+ "?,?,?,?,?,?," //R15
+					+ "?,?,?,?,?,?," //R16
+					+ "?,?,?,?,?,?," //R17
+					+ "?,?,?,?,?,?," //R18
+					+ "?,?,?,?,?,?," //R19
+
+					//Metadata
+					+ "?,?,?,?,?,?,?"
+
+					+ ")";
+
+
+			jdbcTemplate.update(
+
+					sql,
+
+					entity.getReport_date(),
+
+					//R13
+					entity.getR13_PRODUCT(),
+					entity.getR13_PERFORMING_EXPOSURE(),
+					entity.getR13_NON_PERFORMING(),
+					entity.getR13_SPECIFIC_PROV(),
+					entity.getR13_UNSECURED_PORTION_NPL(),
+					entity.getR13_TOTAL(),
+
+					//R14
+					entity.getR14_PRODUCT(),
+					entity.getR14_PERFORMING_EXPOSURE(),
+					entity.getR14_NON_PERFORMING(),
+					entity.getR14_SPECIFIC_PROV(),
+					entity.getR14_UNSECURED_PORTION_NPL(),
+					entity.getR14_TOTAL(),
+
+					//R15
+					entity.getR15_PRODUCT(),
+					entity.getR15_PERFORMING_EXPOSURE(),
+					entity.getR15_NON_PERFORMING(),
+					entity.getR15_SPECIFIC_PROV(),
+					entity.getR15_UNSECURED_PORTION_NPL(),
+					entity.getR15_TOTAL(),
+
+					//R16
+					entity.getR16_PRODUCT(),
+					entity.getR16_PERFORMING_EXPOSURE(),
+					entity.getR16_NON_PERFORMING(),
+					entity.getR16_SPECIFIC_PROV(),
+					entity.getR16_UNSECURED_PORTION_NPL(),
+					entity.getR16_TOTAL(),
+
+					//R17
+					entity.getR17_PRODUCT(),
+					entity.getR17_PERFORMING_EXPOSURE(),
+					entity.getR17_NON_PERFORMING(),
+					entity.getR17_SPECIFIC_PROV(),
+					entity.getR17_UNSECURED_PORTION_NPL(),
+					entity.getR17_TOTAL(),
+
+					//R18
+					entity.getR18_PRODUCT(),
+					entity.getR18_PERFORMING_EXPOSURE(),
+					entity.getR18_NON_PERFORMING(),
+					entity.getR18_SPECIFIC_PROV(),
+					entity.getR18_UNSECURED_PORTION_NPL(),
+					entity.getR18_TOTAL(),
+
+					//R19
+					entity.getR19_PRODUCT(),
+					entity.getR19_PERFORMING_EXPOSURE(),
+					entity.getR19_NON_PERFORMING(),
+					entity.getR19_SPECIFIC_PROV(),
+					entity.getR19_UNSECURED_PORTION_NPL(),
+					entity.getR19_TOTAL(),
+
+					//Metadata
+					entity.getReport_version(),
+					entity.getReport_frequency(),
+					entity.getReport_code(),
+					entity.getReport_desc(),
+					entity.getEntity_flg(),
+					entity.getModify_flg(),
+					entity.getDel_flg()
+
+			);
+
+			System.out.println(
+					"✅ Detail inserted for date : "
+					+ entity.getReport_date());
 		}
 	}
-
 	// ========================================
 	// UPDATE RESUB REPORT METHOD - JDBC VERSION
 	// ========================================
