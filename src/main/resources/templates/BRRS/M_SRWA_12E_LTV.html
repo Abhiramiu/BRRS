@@ -542,7 +542,7 @@ PURPOSE		: BWRBRREPORT
 				"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
 				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL",
 				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT",
-				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL"
+				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL","R16_TOTAL","R16_SPECIFIC_PROV","R16_NON_PERFORMING","R16_PERFORMING_EXPOSURE","R16_UNSECURED_PORTION_NPL"
 			];
 			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
 
@@ -1244,19 +1244,39 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE,1,'COMMA',0,'POINT')}">
+													>
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R16_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R16_PERFORMING_EXPOSURE" name="R16_PERFORMING_EXPOSURE"
+														style=" width: 290px; height: 28px; border:none; outline:none; background:transparent; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_NON_PERFORMING,1,'COMMA',0,'POINT')}">
+													>
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R16_NON_PERFORMING != null ? #numbers.formatDecimal(report.R16_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R16_NON_PERFORMING" name="R16_NON_PERFORMING"
+														style="background:transparent; width: 290px; height: 28px; border:none; outline:none; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
 												<td style="text-align: right; font-weight: normal;"
-													th:text="${#numbers.formatDecimal(report.R16_SPECIFIC_PROV,1,'COMMA',0,'POINT')}">
+													>
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R16_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R16_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R16_SPECIFIC_PROV" name="R16_SPECIFIC_PROV"
+														style="background:transparent; width: 290px; height: 28px; border:none; outline:none; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
-												<td style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;text-align: right;"
-													th:text="${#numbers.formatDecimal(report.R16_UNSECURED_PORTION_NPL,1,'COMMA',0,'POINT')}">
+												<td style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;"
+													>
+													<input class="display-input Show_input" type="text"
+														th:value="${report.R16_UNSECURED_PORTION_NPL != null ? #numbers.formatDecimal(R16_UNSECURED_PORTION_NPL, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="R16_UNSECURED_PORTION_NPL" name="R16_UNSECURED_PORTION_NPL"
+														style="background-color: rgb(107, 122, 143);font-weight: bold;color: white; width: 290px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
 
@@ -1264,7 +1284,7 @@ PURPOSE		: BWRBRREPORT
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R16_TOTAL" name="R16_TOTAL"
-														style="background-color: #FFFFFF; width: 290px; height: 28px; border-color: transparent; text-align: right;"
+														style="background:transparent; width: 290px; height: 28px; border:none; outline:none; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 											</tr>
