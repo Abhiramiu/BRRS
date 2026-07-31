@@ -13328,72 +13328,148 @@ public class BRRS_M_LA5_ReportService {
 		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
 			@Override
-			public void afterCommit() {
-				try {
-					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
-					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+public void afterCommit() {
+    try {
 
-					if (isResubNoEntry) {
-						String bdsql = "DELETE FROM BRRS_M_LA5_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
-						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+        boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+        boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
 
-						String sqltransfer = "INSERT INTO BRRS_M_LA5_DETAILTABLE ("
-								+ "SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
-								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
-								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
-								+ "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
-								+ "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
-								+ "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
-								+ "FROM BRRS_M_LA5_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
+        // Convert String date to SQL Date once
+        java.sql.Date sqlDate = new java.sql.Date(
+                new SimpleDateFormat("dd-MM-yyyy")
+                        .parse(formattedDate)
+                        .getTime());
 
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
-						System.out.println("Successfully transferred " + rowsInserted + " rows.");
-					}
+        System.out.println("formattedDate = " + formattedDate);
+        System.out.println("sqlDate = " + sqlDate);
 
-					if (shouldExecuteProcedure) {
-						jdbcTemplate.update("BEGIN BRRS_M_LA5_SUMMARY_PROCEDURE(?); END;", formattedDate);
-						System.out.println("Procedure executed");
-					}
+        if (isResubNoEntry) {
 
-					if (isResubNoEntry) {
-						String adsql = "DELETE FROM BRRS_M_LA5_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
-						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+            String bdsql =
+                    "DELETE FROM BRRS_M_LA5_DETAILTABLE " +
+                    "WHERE REPORT_DATE = ?";
 
-						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_M_LA5_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
-						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+            int rowsDeleted = jdbcTemplate.update(bdsql, sqlDate);
 
-						StringBuilder columnsPart = new StringBuilder();
-						String[] tokens = { "PRODUCT", "USD", "ZAR", "GBP", "EURO", "YEN", "C6", "C7", "C8", "TOTAL" };
+            System.out.println(
+                    "Successfully deleted before executing procedure "
+                            + rowsDeleted + " rows.");
 
-						// Dynamically generate R6 to R62 columns
-						for (int i = 6; i <= 62; i++) {
-							for (String token : tokens) {
-								columnsPart.append("R").append(i).append("_").append(token).append(", ");
-							}
-						}
+            String sqltransfer =
+                    "INSERT INTO BRRS_M_LA5_DETAILTABLE ("
+                            + "SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+                            + "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+                            + "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+                            + "SELECT SNO, CUST_ID, ACCT_NUMBER, ACCT_BALANCE_IN_PULA, "
+                            + "REPORT_LABEL, REPORT_ADDL_CRITERIA_1, MODIFICATION_REMARKS, REPORT_REMARKS, "
+                            + "REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+                            + "FROM BRRS_M_LA5_ARCHIVALTABLE_DETAIL "
+                            + "WHERE REPORT_DATE = ?";
 
-						// Build the final query cleanly - Notice the '?' replacing REPORT_VERSION in
-						// SELECT
-						String finalsql = "INSERT INTO BRRS_M_LA5_ARCHIVALTABLE_SUMMARY (" + columnsPart.toString()
-								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
-								+ "SELECT " + columnsPart.toString()
-								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
-								+ "FROM BRRS_M_LA5_SUMMARYTABLE WHERE REPORT_DATE = ?";
+            int rowsInserted =
+                    jdbcTemplate.update(sqltransfer, sqlDate);
 
-						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
-						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+            System.out.println(
+                    "Successfully transferred "
+                            + rowsInserted + " rows.");
+        }
 
-						String adsumsql = "DELETE FROM BRRS_M_LA5_SUMMARYTABLE WHERE REPORT_DATE = ?";
-						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
-						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+        if (shouldExecuteProcedure) {
+
+            // Keep formattedDate if procedure expects VARCHAR2
+            jdbcTemplate.update(
+                    "BEGIN BRRS_M_LA5_SUMMARY_PROCEDURE(?); END;",
+                    formattedDate);
+
+            System.out.println("Procedure executed");
+        }
+
+        if (isResubNoEntry) {
+
+            String adsql =
+                    "DELETE FROM BRRS_M_LA5_DETAILTABLE " +
+                    "WHERE REPORT_DATE = ?";
+
+            int rowsDeleted =
+                    jdbcTemplate.update(adsql, sqlDate);
+
+            System.out.println(
+                    "Successfully deleted after executing procedure "
+                            + rowsDeleted + " rows.");
+
+            String ins_sum_sql =
+                    "SELECT MAX(REPORT_VERSION) "
+                            + "FROM BRRS_M_LA5_ARCHIVALTABLE_SUMMARY "
+                            + "WHERE REPORT_DATE = ?";
+
+            Integer maxVersion =
+                    jdbcTemplate.queryForObject(
+                            ins_sum_sql,
+                            Integer.class,
+                            sqlDate);
+
+            int highestValue =
+                    (maxVersion != null ? maxVersion : 0) + 1;
+
+            StringBuilder columnsPart = new StringBuilder();
+
+            String[] tokens = {
+                    "PRODUCT", "USD", "ZAR", "GBP", "EURO",
+                    "YEN", "C6", "C7", "C8", "TOTAL"
+            };
+
+            for (int i = 6; i <= 62; i++) {
+                for (String token : tokens) {
+                    columnsPart.append("R")
+                            .append(i)
+                            .append("_")
+                            .append(token)
+                            .append(", ");
+                }
+            }
+
+            String finalsql =
+                    "INSERT INTO BRRS_M_LA5_ARCHIVALTABLE_SUMMARY ("
+                            + columnsPart
+                            + "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+                            + "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, "
+                            + "DEL_FLG, REPORT_RESUBDATE) "
+                            + "SELECT "
+                            + columnsPart
+                            + "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, "
+                            + "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+                            + "FROM BRRS_M_LA5_SUMMARYTABLE "
+                            + "WHERE REPORT_DATE = ?";
+
+            int rowsInsertedSum =
+                    jdbcTemplate.update(
+                            finalsql,
+                            highestValue,
+                            sqlDate);
+
+            System.out.println(
+                    "Successfully transferred "
+                            + rowsInsertedSum + " rows.");
+
+            String adsumsql =
+                    "DELETE FROM BRRS_M_LA5_SUMMARYTABLE "
+                            + "WHERE REPORT_DATE = ?";
+
+            int rowsDeletedSum =
+                    jdbcTemplate.update(
+                            adsumsql,
+                            sqlDate);
+
+            System.out.println(
+                    "Deleted from summary "
+                            + rowsDeletedSum
+                            + " rows after transferring.");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 		});
 	}
 

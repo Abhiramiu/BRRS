@@ -2861,70 +2861,124 @@ public class BRRS_Common_Disclosure_ReportService {
 		}
 	}
 	private void Run_Common_Disclosure_Procudure(String reportDateStr, String type, String entry) {
-	    
-	    String formattedDate;
-	    try {
-	        formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-	                .format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-	    } catch (Exception e) {
-	        System.out.println("Error parsing date. Post-commit logic aborted.");
-	        e.printStackTrace();
-	        return;
-	    }
 
-	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-	        
-	        @Override
-	        public void afterCommit() {
-	            try {
-	                boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
-	                boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+		String formattedDate;
+		try {
+			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
+					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+		} catch (Exception e) {
+			System.out.println("Error parsing date. Post-commit logic aborted.");
+			e.printStackTrace();
+			return;
+		}
 
-	                if (isResubNoEntry) {
-	                    String bdsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE REPORT_DATE = ?";
-	                    int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
-	                    System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
-	                    String sqltransfer = "INSERT INTO BRRS_COMMON_DISCLOSURE_DETAILTABLE "
-	                            + " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
-	                            + "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
-	                            + "FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
-	                    int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
-	                    System.out.println("Successfully transferred " + rowsInserted + " rows.");
-	                }
+			@Override
+			public void afterCommit() {
 
-	                if (shouldExecuteProcedure) {
-	                    jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
-	                    System.out.println("Procedure executed");
-	                }
+				try {
 
-	                if (isResubNoEntry) {
-	                    String adsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE WHERE REPORT_DATE = ?";
-	                    int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
-	                    System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
+					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
 
-	                    String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-	                    Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
-	                    int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+					// Convert String date to SQL Date once
+					java.sql.Date sqlDate = new java.sql.Date(
+							new SimpleDateFormat("dd-MM-yyyy").parse(formattedDate).getTime());
 
-	                    String finalsql = "INSERT INTO BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY (R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,"
-	                            + "R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,"
-	                            + "R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,REPORT_DATE , REPORT_VERSION ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,REPORT_RESUBDATE) "
-	                            + "SELECT R7_PRODUCT , R7_COMPONENT_OF_REGU ,R7_SOURCE_REF ,R8_PRODUCT ,R8_COMPONENT_OF_REGU ,R8_SOURCE_REF ,R9_PRODUCT ,R9_COMPONENT_OF_REGU ,R9_SOURCE_REF ,R10_PRODUCT , R10_COMPONENT_OF_REGU ,R10_SOURCE_REF ,"
-	                            + "R11_PRODUCT , R11_COMPONENT_OF_REGU ,R11_SOURCE_REF ,R12_PRODUCT ,R12_COMPONENT_OF_REGU ,R12_SOURCE_REF ,R13_PRODUCT ,R13_COMPONENT_OF_REGU ,R13_SOURCE_REF ,R14_PRODUCT ,R14_COMPONENT_OF_REGU , R14_SOURCE_REF ,"
-	                            + "REPORT_DATE, ? ,REPORT_FREQUENCY ,REPORT_CODE ,REPORT_DESC ,ENTITY_FLG ,MODIFY_FLG ,DEL_FLG ,SYSDATE FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE WHERE REPORT_DATE = ?";
-	                    int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
-	                    System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
+					System.out.println("formattedDate = " + formattedDate);
+					System.out.println("sqlDate = " + sqlDate);
 
-	                    String adsumsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE WHERE REPORT_DATE = ?";
-	                    int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
-	                    System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
-	                }
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
-	        }
-	    });
+					if (isResubNoEntry) {
+
+						// Delete existing detail records
+						String bdsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsDeleted = jdbcTemplate.update(bdsql, sqlDate);
+
+						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
+
+						// Restore archival detail records
+						String sqltransfer = "INSERT INTO BRRS_COMMON_DISCLOSURE_DETAILTABLE "
+								+ "(SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, "
+								+ "ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, "
+								+ "REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
+								+ "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, "
+								+ "ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, "
+								+ "REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
+								+ "FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_DETAIL " + "WHERE REPORT_DATE = ?";
+
+						int rowsInserted = jdbcTemplate.update(sqltransfer, sqlDate);
+
+						System.out.println("Successfully transferred " + rowsInserted + " rows.");
+					}
+
+					if (shouldExecuteProcedure) {
+
+						jdbcTemplate.update("BEGIN BRRS_COMMON_DISCLOSURE_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+						System.out.println("Procedure executed");
+					}
+
+					if (isResubNoEntry) {
+
+						// Delete detail records after procedure
+						String adsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_DETAILTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsDeleted = jdbcTemplate.update(adsql, sqlDate);
+
+						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
+
+						// Get max version
+						String ins_sum_sql = "SELECT NVL(MAX(REPORT_VERSION),0) "
+								+ "FROM BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ?";
+
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, sqlDate);
+
+						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
+
+						// Archive summary
+						String finalsql = "INSERT INTO BRRS_COMMON_DISCLOSURE_ARCHIVALTABLE_SUMMARY ( "
+								+ "R7_PRODUCT, R7_COMPONENT_OF_REGU, R7_SOURCE_REF, "
+								+ "R8_PRODUCT, R8_COMPONENT_OF_REGU, R8_SOURCE_REF, "
+								+ "R9_PRODUCT, R9_COMPONENT_OF_REGU, R9_SOURCE_REF, "
+								+ "R10_PRODUCT, R10_COMPONENT_OF_REGU, R10_SOURCE_REF, "
+								+ "R11_PRODUCT, R11_COMPONENT_OF_REGU, R11_SOURCE_REF, "
+								+ "R12_PRODUCT, R12_COMPONENT_OF_REGU, R12_SOURCE_REF, "
+								+ "R13_PRODUCT, R13_COMPONENT_OF_REGU, R13_SOURCE_REF, "
+								+ "R14_PRODUCT, R14_COMPONENT_OF_REGU, R14_SOURCE_REF, "
+								+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+								+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE ) " +
+
+								"SELECT " + "R7_PRODUCT, R7_COMPONENT_OF_REGU, R7_SOURCE_REF, "
+								+ "R8_PRODUCT, R8_COMPONENT_OF_REGU, R8_SOURCE_REF, "
+								+ "R9_PRODUCT, R9_COMPONENT_OF_REGU, R9_SOURCE_REF, "
+								+ "R10_PRODUCT, R10_COMPONENT_OF_REGU, R10_SOURCE_REF, "
+								+ "R11_PRODUCT, R11_COMPONENT_OF_REGU, R11_SOURCE_REF, "
+								+ "R12_PRODUCT, R12_COMPONENT_OF_REGU, R12_SOURCE_REF, "
+								+ "R13_PRODUCT, R13_COMPONENT_OF_REGU, R13_SOURCE_REF, "
+								+ "R14_PRODUCT, R14_COMPONENT_OF_REGU, R14_SOURCE_REF, "
+								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, "
+								+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+								+ "FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, sqlDate);
+
+						System.out.println("Successfully transferred " + rowsInsertedSum + " summary rows.");
+
+						// Delete summary records
+						String adsumsql = "DELETE FROM BRRS_COMMON_DISCLOSURE_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
+
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, sqlDate);
+
+						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transferring.");
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	public byte[] getCommon_DisclosureDetailExcel(String filename, String fromdate, String todate, String currency,
 			String dtltype, String type, String version) {

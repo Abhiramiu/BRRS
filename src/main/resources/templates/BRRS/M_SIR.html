@@ -460,43 +460,43 @@ PURPOSE		: BRFREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
-		
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -1226,7 +1226,8 @@ PURPOSE		: BRFREPORT
 		</button>-->
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records"
+							th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -1265,29 +1266,23 @@ PURPOSE		: BRFREPORT
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -1450,7 +1445,7 @@ PURPOSE		: BRFREPORT
 															class="display-input Show_input " type="text"
 															th:value="'Corporate Firms, Securities Firms and Foreign Public Sector Entities'"
 															id="r12_product" name="r12_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly /></td>
 
 													<td style="text-align: center; 
@@ -1460,7 +1455,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r12_amt_6m != null ? #numbers.formatDecimal(report.r12_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r12_amt_6m" name="r12_amt_6m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -1487,7 +1482,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r12_amt_6to24m != null ? #numbers.formatDecimal(report.r12_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r12_amt_6to24m" name="r12_amt_6to24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -1515,7 +1510,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r12_amt_gt24m != null ? #numbers.formatDecimal(report.r12_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r12_amt_gt24m" name="r12_amt_gt24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -1545,8 +1540,8 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW13" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Banks and Financial Institutions'"
-															id="r13_product" name="r13_product"
+															th:value="'  AAA to AA-'" id="r13_product"
+															name="r13_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -1632,8 +1627,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW14" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Insurance Companies and Pension Funds'"
-															id="r14_product" name="r14_product"
+															th:value="'  A+ - A-'" id="r14_product" name="r14_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -1720,8 +1714,8 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW15" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Non-Banking Financial Companies (NBFCs)'"
-															id="r15_product" name="r15_product"
+															th:value="'  BBB+ to BB-'" id="r15_product"
+															name="r15_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -1807,8 +1801,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW16" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Other Regulated Financial Entities'"
-															id="r16_product" name="r16_product"
+															th:value="'  Below B-'" id="r16_product" name="r16_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -1893,8 +1886,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW17" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Micro Finance Institutions'" id="r17_product"
-															name="r17_product"
+															th:value="'  Unrated'" id="r17_product" name="r17_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -1979,9 +1971,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW18" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Housing Finance Companies'" id="r18_product"
+															th:value="'Foreign Banking institutions1'" id="r18_product"
 															name="r18_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight:bold"
 															readonly />
 													</td>
 
@@ -1991,7 +1983,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r18_amt_6m != null ? #numbers.formatDecimal(report.r18_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r18_amt_6m" name="r18_amt_6m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2011,7 +2003,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r18_amt_6to24m != null ? #numbers.formatDecimal(report.r18_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r18_amt_6to24m" name="r18_amt_6to24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2030,7 +2022,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r18_amt_gt24m != null ? #numbers.formatDecimal(report.r18_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r18_amt_gt24m" name="r18_amt_gt24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:28px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2054,8 +2046,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW19" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Primary Dealers'" id="r19_product"
-															name="r19_product"
+															th:value="'  AAA to A-'" id="r19_product" name="r19_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -2142,7 +2133,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW20" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Asset Reconstruction Companies'" id="r20_product"
+															th:value="'  BBB+ to BBB-'" id="r20_product"
 															name="r20_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
@@ -2229,8 +2220,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW21" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Payment Banks'" id="r21_product"
-															name="r21_product"
+															th:value="'  BB+ to B-'" id="r21_product" name="r21_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -2317,8 +2307,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW22" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Small Finance Banks'" id="r22_product"
-															name="r22_product"
+															th:value="'  Below B-'" id="r22_product" name="r22_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -2405,8 +2394,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW23" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Co-operative Banks'" id="r23_product"
-															name="r23_product"
+															th:value="'  Unrated'" id="r23_product" name="r23_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -2491,9 +2479,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW24" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Regional Rural Banks'" id="r24_product"
-															name="r24_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															th:value="'Domestic Public Sector Entities (PSE)2'"
+															id="r24_product" name="r24_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly />
 													</td>
 
@@ -2503,7 +2491,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r24_amt_6m != null ? #numbers.formatDecimal(report.r24_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r24_amt_6m" name="r24_amt_6m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2528,7 +2516,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r24_amt_6to24m != null ? #numbers.formatDecimal(report.r24_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r24_amt_6to24m" name="r24_amt_6to24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2553,7 +2541,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r24_amt_gt24m != null ? #numbers.formatDecimal(report.r24_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r24_amt_gt24m" name="r24_amt_gt24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2583,9 +2571,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW25" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Mutual Funds'" id="r25_product"
+															th:value="'Domestic Banking Institutions'" id="r25_product"
 															name="r25_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly />
 													</td>
 
@@ -2596,7 +2584,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r25_amt_6m != null ? #numbers.formatDecimal(report.r25_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r25_amt_6m" name="r25_amt_6m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2621,7 +2609,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r25_amt_6to24m != null ? #numbers.formatDecimal(report.r25_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r25_amt_6to24m" name="r25_amt_6to24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2646,7 +2634,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r25_amt_gt24m != null ? #numbers.formatDecimal(report.r25_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r25_amt_gt24m" name="r25_amt_gt24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2675,9 +2663,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW26" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Alternative Investment Funds'" id="r26_product"
+															th:value="'Government  of Botswana3'" id="r26_product"
 															name="r26_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly />
 													</td>
 
@@ -2688,7 +2676,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r26_amt_6m != null ? #numbers.formatDecimal(report.r26_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r26_amt_6m" name="r26_amt_6m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2713,7 +2701,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r26_amt_6to24m != null ? #numbers.formatDecimal(report.r26_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r26_amt_6to24m" name="r26_amt_6to24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2738,7 +2726,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r26_amt_gt24m != null ? #numbers.formatDecimal(report.r26_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r26_amt_gt24m" name="r26_amt_gt24m"
-															style="background-color:#FFFFFF;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:#FFFFFF;width:200px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2769,9 +2757,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW27" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Portfolio Managers'" id="r27_product"
+															th:value="'Foreign Sovereigns '" id="r27_product"
 															name="r27_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly />
 													</td>
 
@@ -2782,7 +2770,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r27_amt_6m != null ? #numbers.formatDecimal(report.r27_amt_6m,0,'COMMA',0,'POINT'):'0'}"
 															id="r27_amt_6m" name="r27_amt_6m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2802,7 +2790,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r27_amt_6to24m != null ? #numbers.formatDecimal(report.r27_amt_6to24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r27_amt_6to24m" name="r27_amt_6to24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2822,7 +2810,7 @@ PURPOSE		: BRFREPORT
 														<input class="display-input show_input" type="text"
 															th:value="${report.r27_amt_gt24m != null ? #numbers.formatDecimal(report.r27_amt_gt24m,0,'COMMA',0,'POINT'):'0'}"
 															id="r27_amt_gt24m" name="r27_amt_gt24m"
-															style="background-color:rgb(107, 122, 143);color: white;width:200px;height:38px;border-color:transparent;text-align:right;"
+															style="background-color:rgb(107, 122, 143);color: white;width:216px;height:28px;border-color:transparent;text-align:right;"
 															readonly />
 													</td>
 
@@ -2849,7 +2837,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW28" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Stock Brokers'" id="r28_product"
+															th:value="'  AAA to AA-4'" id="r28_product"
 															name="r28_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
@@ -2937,7 +2925,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW29" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Credit Rating Agencies'" id="r29_product"
+															th:value="'  A+ to BBB-'" id="r29_product"
 															name="r29_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
@@ -3024,8 +3012,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW30" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Depositories'" id="r30_product"
-															name="r30_product"
+															th:value="'  BB+ to B-'" id="r30_product" name="r30_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -3111,8 +3098,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW31" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Clearing Corporations'" id="r31_product"
-															name="r31_product"
+															th:value="'  Below B-'" id="r31_product" name="r31_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -3200,8 +3186,7 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW32" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Financial Market Infrastructure Institutions'"
-															id="r32_product" name="r32_product"
+															th:value="'  Unrated'" id="r32_product" name="r32_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
 															readonly />
 													</td>
@@ -3288,9 +3273,9 @@ PURPOSE		: BRFREPORT
 
 													<td id="ROW33" style="font-weight: bold;">
 														<input class="display-input Show_input" type="text"
-															th:value="'Other Financial Sector Entities'"
-															id="r33_product" name="r33_product"
-															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;"
+															th:value="'Specific Risk Capital Charge'" id="r33_product"
+															name="r33_product"
+															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
 															readonly />
 													</td>
 

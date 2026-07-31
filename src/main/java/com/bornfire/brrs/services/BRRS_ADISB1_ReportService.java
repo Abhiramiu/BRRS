@@ -2551,17 +2551,22 @@ public class BRRS_ADISB1_ReportService {
 				try {
 					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
 					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+					// Convert String date to SQL Date once
+					java.sql.Date sqlDate = new java.sql.Date(
+							new SimpleDateFormat("dd-MM-yyyy").parse(formattedDate).getTime());
 
+					System.out.println("formattedDate = " + formattedDate);
+					System.out.println("sqlDate = " + sqlDate);
 					if (isResubNoEntry) {
 						String bdsql = "DELETE FROM BRRS_ADISB1_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(bdsql, sqlDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
 						String sqltransfer = "INSERT INTO BRRS_ADISB1_DETAILTABLE "
 								+ " (SNO,  ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABLE, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
 								+ "SELECT SNO,  ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABLE, REPORT_ADDL_CRITERIA_1, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
 								+ "FROM BRRS_ADISB1_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						int rowsInserted = jdbcTemplate.update(sqltransfer, sqlDate);
 						System.out.println("Successfully transferred " + rowsInserted + " rows.");
 					}
 
@@ -2572,12 +2577,12 @@ public class BRRS_ADISB1_ReportService {
 
 					if (isResubNoEntry) {
 						String adsql = "DELETE FROM BRRS_ADISB1_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(adsql, sqlDate);
 						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
 
 						// 1. Handle Archival Summary Table (System Generated)
 						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_ADISB1_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, sqlDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
 						String finalsql = "INSERT INTO BRRS_ADISB1_ARCHIVALTABLE_SUMMARY ("
@@ -2595,14 +2600,13 @@ public class BRRS_ADISB1_ReportService {
 								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
 								+ "FROM BRRS_ADISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, sqlDate);
 						System.out.println("Successfully transferred system summary " + rowsInsertedSum + " rows.");
 
 						// 2. Handle Manual Archival Summary Table (User Edited - Carry Forward updated
 						// fields)
 						String insManualSql = "SELECT MAX(REPORT_VERSION) FROM BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-						Integer maxManualVersion = jdbcTemplate.queryForObject(insManualSql, Integer.class,
-								formattedDate);
+						Integer maxManualVersion = jdbcTemplate.queryForObject(insManualSql, Integer.class, sqlDate);
 
 						// Calculate the new version number
 						int manualVersion = (maxManualVersion != null ? maxManualVersion : 0) + 1;
@@ -2633,7 +2637,7 @@ public class BRRS_ADISB1_ReportService {
 									+ "FROM BRRS_ADISB1_MANUAL_ARCHIVALTABLE_SUMMARY "
 									+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
-							manualRowsInserted = jdbcTemplate.update(manualFinalSql, manualVersion, formattedDate,
+							manualRowsInserted = jdbcTemplate.update(manualFinalSql, manualVersion, sqlDate,
 									maxManualVersion);
 						} else {
 							// Fallback option: If no previous version row exists in archival yet, fetch
@@ -2659,14 +2663,14 @@ public class BRRS_ADISB1_ReportService {
 									+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
 									+ "FROM BRRS_ADISB1_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-							manualRowsInserted = jdbcTemplate.update(manualFallbackSql, manualVersion, formattedDate);
+							manualRowsInserted = jdbcTemplate.update(manualFallbackSql, manualVersion, sqlDate);
 						}
 
 						System.out.println("Manual summary archived successfully into version (" + manualVersion + "): "
 								+ manualRowsInserted + " rows.");
 
 						String adsumsql = "DELETE FROM BRRS_ADISB1_SUMMARYTABLE WHERE REPORT_DATE = ?";
-						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, sqlDate);
 						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
 					}
 				} catch (Exception e) {

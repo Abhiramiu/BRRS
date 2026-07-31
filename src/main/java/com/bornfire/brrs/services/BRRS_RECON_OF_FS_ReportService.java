@@ -3943,17 +3943,23 @@ public class BRRS_RECON_OF_FS_ReportService {
 				try {
 					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
 					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+					java.sql.Date sqlDate = new java.sql.Date(
+					        new SimpleDateFormat("dd-MM-yyyy")
+					                .parse(formattedDate)
+					                .getTime());
 
+					System.out.println("formattedDate = " + formattedDate);
+					System.out.println("sqlDate = " + sqlDate);
 					if (isResubNoEntry) {
 						String bdsql = "DELETE FROM BRRS_RECON_OF_FS_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(bdsql, sqlDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
 						String sqltransfer = "INSERT INTO BRRS_RECON_OF_FS_DETAILTABLE "
 								+ " (SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1,REPORT_LABEL_1,REPORT_ADDL_CRITERIA_2, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION) "
 								+ "SELECT SNO, GL_CODE, GLSH_CODE, ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA, AVERAGE, REPORT_LABEL, REPORT_ADDL_CRITERIA_1,REPORT_LABEL_1,REPORT_ADDL_CRITERIA_2, REPORT_NAME, REPORT_DATE, DATA_ENTRY_VERSION "
 								+ "FROM BRRS_RECON_OF_FS_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						int rowsInserted = jdbcTemplate.update(sqltransfer, sqlDate);
 						System.out.println("Successfully transferred " + rowsInserted + " rows.");
 					}
 
@@ -3964,11 +3970,15 @@ public class BRRS_RECON_OF_FS_ReportService {
 
 					if (isResubNoEntry) {
 						String adsql = "DELETE FROM BRRS_RECON_OF_FS_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(adsql, sqlDate);
 						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
 
 						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_RECON_OF_FS_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						Integer maxVersion =
+						        jdbcTemplate.queryForObject(
+						                ins_sum_sql,
+						                Integer.class,
+						                sqlDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
 						String finalsql = "INSERT INTO BRRS_RECON_OF_FS_ARCHIVALTABLE_SUMMARY ( "
@@ -4045,11 +4055,18 @@ public class BRRS_RECON_OF_FS_ReportService {
 								+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE " + "FROM BRRS_RECON_OF_FS_SUMMARYTABLE "
 								+ "WHERE REPORT_DATE = ?";
 
-						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						int rowsInsertedSum =
+						        jdbcTemplate.update(
+						                finalsql,
+						                highestValue,
+						                sqlDate);
 						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
 
 						String adsumsql = "DELETE FROM BRRS_RECON_OF_FS_SUMMARYTABLE WHERE REPORT_DATE = ?";
-						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						int rowsDeletedSum =
+						        jdbcTemplate.update(
+						                adsumsql,
+						                sqlDate);
 						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
 					}
 				} catch (Exception e) {

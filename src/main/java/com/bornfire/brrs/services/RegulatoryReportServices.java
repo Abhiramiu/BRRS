@@ -7702,7 +7702,7 @@ fromdate, todate, currency, dtltype, type, format, version);
 			try {
 				if ("EMAIL_M_LA4.xlsx".equals(filename)) {
 					excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
-							todate, currency, dtltype, null, // type
+							todate, currency, dtltype, null,null, // type
 							null // version
 					);
 				} else {
@@ -10069,7 +10069,7 @@ fromdate, todate, currency, dtltype, type, format, version);
 			try {
 
 				excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
-						todate, currency, dtltype, null, null);
+						todate, currency, dtltype, null, null,null);
 
 				// Excel validation
 				if (excelBytes == null || excelBytes.length == 0) {
