@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -88,6 +89,20 @@ public class BRRS_CASH_FLOW_ReportService {
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new CashFlowRowMapper());
 	}
 
+	// Fetch data by report date
+	public List<CASH_FLOW_Manual_Summary_Entity> getDataByDateManual(Date reportDate) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new CashFlowManualRowMapper());
+	}
+
+	public List<CASH_FLOW_Manual_Summary_Entity> getManualDataByDate(Date reportDate) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE WHERE REPORT_DATE = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { reportDate }, new CashFlowManualRowMapper());
+	}
 	// GET REPORT_DATE + REPORT_VERSION
 
 	public List<Object[]> getCASH_FLOWArchival1() {
@@ -108,6 +123,16 @@ public class BRRS_CASH_FLOW_ReportService {
 				+ "AND REPORT_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION }, new CashFlowRowArchivalMapper());
+	}
+
+	public List<CASH_FLOW_Manual_Archival_Summary_Entity> getdatabydateListarchivalManual(Date REPORT_DATE,
+			BigDecimal REPORT_VERSION) {
+
+		String sql = "SELECT * FROM BRRS_CASH_FLOW_MANUAL_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_DATE = ? "
+				+ "AND REPORT_VERSION = ?";
+
+		return jdbcTemplate.query(sql, new Object[] { REPORT_DATE, REPORT_VERSION },
+				new ADISB1ManualArchivalRowMapper());
 	}
 //GET ALL WITH VERSION
 
@@ -1916,6 +1941,483 @@ public class BRRS_CASH_FLOW_ReportService {
 
 	}
 
+//MANUAL 
+	class CashFlowManualRowMapper implements RowMapper<CASH_FLOW_Manual_Summary_Entity> {
+
+		@Override
+		public CASH_FLOW_Manual_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			CASH_FLOW_Manual_Summary_Entity obj = new CASH_FLOW_Manual_Summary_Entity();
+
+			obj.setR12_lc_as_on_mar(rs.getBigDecimal("R12_LC_AS_ON_MAR"));
+			obj.setR12_lc_as_on_sep(rs.getBigDecimal("R12_LC_AS_ON_SEP"));
+
+			obj.setR14_lc_as_on_mar(rs.getBigDecimal("R14_LC_AS_ON_MAR"));
+			obj.setR14_lc_as_on_sep(rs.getBigDecimal("R14_LC_AS_ON_SEP"));
+
+			obj.setR15_lc_as_on_mar(rs.getBigDecimal("R15_LC_AS_ON_MAR"));
+			obj.setR15_lc_as_on_sep(rs.getBigDecimal("R15_LC_AS_ON_SEP"));
+
+			obj.setR16_lc_as_on_mar(rs.getBigDecimal("R16_LC_AS_ON_MAR"));
+			obj.setR16_lc_as_on_sep(rs.getBigDecimal("R16_LC_AS_ON_SEP"));
+
+			obj.setR19_lc_as_on_mar(rs.getBigDecimal("R19_LC_AS_ON_MAR"));
+			obj.setR19_lc_as_on_sep(rs.getBigDecimal("R19_LC_AS_ON_SEP"));
+
+			obj.setR21_lc_as_on_mar(rs.getBigDecimal("R21_LC_AS_ON_MAR"));
+			obj.setR21_lc_as_on_sep(rs.getBigDecimal("R21_LC_AS_ON_SEP"));
+
+			obj.setR22_lc_as_on_mar(rs.getBigDecimal("R22_LC_AS_ON_MAR"));
+			obj.setR22_lc_as_on_sep(rs.getBigDecimal("R22_LC_AS_ON_SEP"));
+
+			obj.setR31_lc_as_on_mar(rs.getBigDecimal("R31_LC_AS_ON_MAR"));
+			obj.setR31_lc_as_on_sep(rs.getBigDecimal("R31_LC_AS_ON_SEP"));
+
+			obj.setR36_lc_as_on_mar(rs.getBigDecimal("R36_LC_AS_ON_MAR"));
+			obj.setR36_lc_as_on_sep(rs.getBigDecimal("R36_LC_AS_ON_SEP"));
+
+			obj.setR37_lc_as_on_mar(rs.getBigDecimal("R37_LC_AS_ON_MAR"));
+			obj.setR37_lc_as_on_sep(rs.getBigDecimal("R37_LC_AS_ON_SEP"));
+
+			obj.setR40_lc_as_on_mar(rs.getBigDecimal("R40_LC_AS_ON_MAR"));
+			obj.setR40_lc_as_on_sep(rs.getBigDecimal("R40_LC_AS_ON_SEP"));
+
+			obj.setR41_lc_as_on_mar(rs.getBigDecimal("R41_LC_AS_ON_MAR"));
+			obj.setR41_lc_as_on_sep(rs.getBigDecimal("R41_LC_AS_ON_SEP"));
+
+			obj.setR42_lc_as_on_mar(rs.getBigDecimal("R42_LC_AS_ON_MAR"));
+			obj.setR42_lc_as_on_sep(rs.getBigDecimal("R42_LC_AS_ON_SEP"));
+
+			obj.setR43_lc_as_on_mar(rs.getBigDecimal("R43_LC_AS_ON_MAR"));
+			obj.setR43_lc_as_on_sep(rs.getBigDecimal("R43_LC_AS_ON_SEP"));
+
+			obj.setR44_lc_as_on_mar(rs.getBigDecimal("R44_LC_AS_ON_MAR"));
+			obj.setR44_lc_as_on_sep(rs.getBigDecimal("R44_LC_AS_ON_SEP"));
+
+			// COMMON FIELDS
+			obj.setREPORT_DATE(rs.getDate("REPORT_DATE"));
+			obj.setREPORT_VERSION(rs.getBigDecimal("REPORT_VERSION"));
+			obj.setREPORT_FREQUENCY(rs.getString("REPORT_FREQUENCY"));
+			obj.setREPORT_CODE(rs.getString("REPORT_CODE"));
+			obj.setREPORT_DESC(rs.getString("REPORT_DESC"));
+			obj.setENTITY_FLG(rs.getString("ENTITY_FLG"));
+			obj.setMODIFY_FLG(rs.getString("MODIFY_FLG"));
+			obj.setDEL_FLG(rs.getString("DEL_FLG"));
+
+			return obj;
+		}
+
+	}
+
+	public static class CASH_FLOW_Manual_Summary_Entity {
+
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
+		private Date REPORT_DATE;
+
+		@Column(name = "R12_LC_AS_ON_MAR")
+		private BigDecimal r12_lc_as_on_mar;
+		@Column(name = "R12_LC_AS_ON_SEP")
+		private BigDecimal r12_lc_as_on_sep;
+
+		@Column(name = "R14_LC_AS_ON_MAR")
+		private BigDecimal r14_lc_as_on_mar;
+		@Column(name = "R14_LC_AS_ON_SEP")
+		private BigDecimal r14_lc_as_on_sep;
+
+		@Column(name = "R15_LC_AS_ON_MAR")
+		private BigDecimal r15_lc_as_on_mar;
+		@Column(name = "R15_LC_AS_ON_SEP")
+		private BigDecimal r15_lc_as_on_sep;
+
+		@Column(name = "R16_LC_AS_ON_MAR")
+		private BigDecimal r16_lc_as_on_mar;
+		@Column(name = "R16_LC_AS_ON_SEP")
+		private BigDecimal r16_lc_as_on_sep;
+
+		@Column(name = "R19_LC_AS_ON_MAR")
+		private BigDecimal r19_lc_as_on_mar;
+		@Column(name = "R19_LC_AS_ON_SEP")
+		private BigDecimal r19_lc_as_on_sep;
+
+		@Column(name = "R21_LC_AS_ON_MAR")
+		private BigDecimal r21_lc_as_on_mar;
+		@Column(name = "R21_LC_AS_ON_SEP")
+		private BigDecimal r21_lc_as_on_sep;
+
+		@Column(name = "R22_LC_AS_ON_MAR")
+		private BigDecimal r22_lc_as_on_mar;
+		@Column(name = "R22_LC_AS_ON_SEP")
+		private BigDecimal r22_lc_as_on_sep;
+
+		@Column(name = "R31_LC_AS_ON_MAR")
+		private BigDecimal r31_lc_as_on_mar;
+		@Column(name = "R31_LC_AS_ON_SEP")
+		private BigDecimal r31_lc_as_on_sep;
+
+		@Column(name = "R36_LC_AS_ON_MAR")
+		private BigDecimal r36_lc_as_on_mar;
+		@Column(name = "R36_LC_AS_ON_SEP")
+		private BigDecimal r36_lc_as_on_sep;
+
+		@Column(name = "R37_LC_AS_ON_MAR")
+		private BigDecimal r37_lc_as_on_mar;
+		@Column(name = "R37_LC_AS_ON_SEP")
+		private BigDecimal r37_lc_as_on_sep;
+
+		@Column(name = "R40_LC_AS_ON_MAR")
+		private BigDecimal r40_lc_as_on_mar;
+		@Column(name = "R40_LC_AS_ON_SEP")
+		private BigDecimal r40_lc_as_on_sep;
+
+		@Column(name = "R41_LC_AS_ON_MAR")
+		private BigDecimal r41_lc_as_on_mar;
+		@Column(name = "R41_LC_AS_ON_SEP")
+		private BigDecimal r41_lc_as_on_sep;
+
+		@Column(name = "R42_LC_AS_ON_MAR")
+		private BigDecimal r42_lc_as_on_mar;
+		@Column(name = "R42_LC_AS_ON_SEP")
+		private BigDecimal r42_lc_as_on_sep;
+
+		@Column(name = "R43_LC_AS_ON_MAR")
+		private BigDecimal r43_lc_as_on_mar;
+		@Column(name = "R43_LC_AS_ON_SEP")
+		private BigDecimal r43_lc_as_on_sep;
+
+		@Column(name = "R44_LC_AS_ON_MAR")
+		private BigDecimal r44_lc_as_on_mar;
+		@Column(name = "R44_LC_AS_ON_SEP")
+		private BigDecimal r44_lc_as_on_sep;
+
+		@Column(name = "REPORT_VERSION", length = 100)
+		private BigDecimal REPORT_VERSION;
+
+		@Column(name = "REPORT_FREQUENCY", length = 100)
+		private String REPORT_FREQUENCY;
+
+		@Column(name = "REPORT_CODE", length = 100)
+		private String REPORT_CODE;
+
+		@Column(name = "REPORT_DESC", length = 100)
+		private String REPORT_DESC;
+
+		@Column(name = "ENTITY_FLG", length = 1)
+		private String ENTITY_FLG;
+
+		@Column(name = "MODIFY_FLG", length = 1)
+		private String MODIFY_FLG;
+
+		@Column(name = "DEL_FLG", length = 1)
+		private String DEL_FLG;
+
+		public Date getREPORT_DATE() {
+			return REPORT_DATE;
+		}
+
+		public void setREPORT_DATE(Date REPORT_DATE) {
+			this.REPORT_DATE = REPORT_DATE;
+		}
+
+		public BigDecimal getR12_lc_as_on_mar() {
+			return r12_lc_as_on_mar;
+		}
+
+		public void setR12_lc_as_on_mar(BigDecimal r12_lc_as_on_mar) {
+			this.r12_lc_as_on_mar = r12_lc_as_on_mar;
+		}
+
+		public BigDecimal getR12_lc_as_on_sep() {
+			return r12_lc_as_on_sep;
+		}
+
+		public void setR12_lc_as_on_sep(BigDecimal r12_lc_as_on_sep) {
+			this.r12_lc_as_on_sep = r12_lc_as_on_sep;
+		}
+
+		public BigDecimal getR14_lc_as_on_mar() {
+			return r14_lc_as_on_mar;
+		}
+
+		public void setR14_lc_as_on_mar(BigDecimal r14_lc_as_on_mar) {
+			this.r14_lc_as_on_mar = r14_lc_as_on_mar;
+		}
+
+		public BigDecimal getR14_lc_as_on_sep() {
+			return r14_lc_as_on_sep;
+		}
+
+		public void setR14_lc_as_on_sep(BigDecimal r14_lc_as_on_sep) {
+			this.r14_lc_as_on_sep = r14_lc_as_on_sep;
+		}
+
+		public BigDecimal getR15_lc_as_on_mar() {
+			return r15_lc_as_on_mar;
+		}
+
+		public void setR15_lc_as_on_mar(BigDecimal r15_lc_as_on_mar) {
+			this.r15_lc_as_on_mar = r15_lc_as_on_mar;
+		}
+
+		public BigDecimal getR15_lc_as_on_sep() {
+			return r15_lc_as_on_sep;
+		}
+
+		public void setR15_lc_as_on_sep(BigDecimal r15_lc_as_on_sep) {
+			this.r15_lc_as_on_sep = r15_lc_as_on_sep;
+		}
+
+		public BigDecimal getR16_lc_as_on_mar() {
+			return r16_lc_as_on_mar;
+		}
+
+		public void setR16_lc_as_on_mar(BigDecimal r16_lc_as_on_mar) {
+			this.r16_lc_as_on_mar = r16_lc_as_on_mar;
+		}
+
+		public BigDecimal getR16_lc_as_on_sep() {
+			return r16_lc_as_on_sep;
+		}
+
+		public void setR16_lc_as_on_sep(BigDecimal r16_lc_as_on_sep) {
+			this.r16_lc_as_on_sep = r16_lc_as_on_sep;
+		}
+
+		public BigDecimal getR19_lc_as_on_mar() {
+			return r19_lc_as_on_mar;
+		}
+
+		public void setR19_lc_as_on_mar(BigDecimal r19_lc_as_on_mar) {
+			this.r19_lc_as_on_mar = r19_lc_as_on_mar;
+		}
+
+		public BigDecimal getR19_lc_as_on_sep() {
+			return r19_lc_as_on_sep;
+		}
+
+		public void setR19_lc_as_on_sep(BigDecimal r19_lc_as_on_sep) {
+			this.r19_lc_as_on_sep = r19_lc_as_on_sep;
+		}
+
+		public BigDecimal getR21_lc_as_on_mar() {
+			return r21_lc_as_on_mar;
+		}
+
+		public void setR21_lc_as_on_mar(BigDecimal r21_lc_as_on_mar) {
+			this.r21_lc_as_on_mar = r21_lc_as_on_mar;
+		}
+
+		public BigDecimal getR21_lc_as_on_sep() {
+			return r21_lc_as_on_sep;
+		}
+
+		public void setR21_lc_as_on_sep(BigDecimal r21_lc_as_on_sep) {
+			this.r21_lc_as_on_sep = r21_lc_as_on_sep;
+		}
+
+		public BigDecimal getR22_lc_as_on_mar() {
+			return r22_lc_as_on_mar;
+		}
+
+		public void setR22_lc_as_on_mar(BigDecimal r22_lc_as_on_mar) {
+			this.r22_lc_as_on_mar = r22_lc_as_on_mar;
+		}
+
+		public BigDecimal getR22_lc_as_on_sep() {
+			return r22_lc_as_on_sep;
+		}
+
+		public void setR22_lc_as_on_sep(BigDecimal r22_lc_as_on_sep) {
+			this.r22_lc_as_on_sep = r22_lc_as_on_sep;
+		}
+
+		public BigDecimal getR31_lc_as_on_mar() {
+			return r31_lc_as_on_mar;
+		}
+
+		public void setR31_lc_as_on_mar(BigDecimal r31_lc_as_on_mar) {
+			this.r31_lc_as_on_mar = r31_lc_as_on_mar;
+		}
+
+		public BigDecimal getR31_lc_as_on_sep() {
+			return r31_lc_as_on_sep;
+		}
+
+		public void setR31_lc_as_on_sep(BigDecimal r31_lc_as_on_sep) {
+			this.r31_lc_as_on_sep = r31_lc_as_on_sep;
+		}
+
+		public BigDecimal getR36_lc_as_on_mar() {
+			return r36_lc_as_on_mar;
+		}
+
+		public void setR36_lc_as_on_mar(BigDecimal r36_lc_as_on_mar) {
+			this.r36_lc_as_on_mar = r36_lc_as_on_mar;
+		}
+
+		public BigDecimal getR36_lc_as_on_sep() {
+			return r36_lc_as_on_sep;
+		}
+
+		public void setR36_lc_as_on_sep(BigDecimal r36_lc_as_on_sep) {
+			this.r36_lc_as_on_sep = r36_lc_as_on_sep;
+		}
+
+		public BigDecimal getR37_lc_as_on_mar() {
+			return r37_lc_as_on_mar;
+		}
+
+		public void setR37_lc_as_on_mar(BigDecimal r37_lc_as_on_mar) {
+			this.r37_lc_as_on_mar = r37_lc_as_on_mar;
+		}
+
+		public BigDecimal getR37_lc_as_on_sep() {
+			return r37_lc_as_on_sep;
+		}
+
+		public void setR37_lc_as_on_sep(BigDecimal r37_lc_as_on_sep) {
+			this.r37_lc_as_on_sep = r37_lc_as_on_sep;
+		}
+
+		public BigDecimal getR40_lc_as_on_mar() {
+			return r40_lc_as_on_mar;
+		}
+
+		public void setR40_lc_as_on_mar(BigDecimal r40_lc_as_on_mar) {
+			this.r40_lc_as_on_mar = r40_lc_as_on_mar;
+		}
+
+		public BigDecimal getR40_lc_as_on_sep() {
+			return r40_lc_as_on_sep;
+		}
+
+		public void setR40_lc_as_on_sep(BigDecimal r40_lc_as_on_sep) {
+			this.r40_lc_as_on_sep = r40_lc_as_on_sep;
+		}
+
+		public BigDecimal getR41_lc_as_on_mar() {
+			return r41_lc_as_on_mar;
+		}
+
+		public void setR41_lc_as_on_mar(BigDecimal r41_lc_as_on_mar) {
+			this.r41_lc_as_on_mar = r41_lc_as_on_mar;
+		}
+
+		public BigDecimal getR41_lc_as_on_sep() {
+			return r41_lc_as_on_sep;
+		}
+
+		public void setR41_lc_as_on_sep(BigDecimal r41_lc_as_on_sep) {
+			this.r41_lc_as_on_sep = r41_lc_as_on_sep;
+		}
+
+		public BigDecimal getR42_lc_as_on_mar() {
+			return r42_lc_as_on_mar;
+		}
+
+		public void setR42_lc_as_on_mar(BigDecimal r42_lc_as_on_mar) {
+			this.r42_lc_as_on_mar = r42_lc_as_on_mar;
+		}
+
+		public BigDecimal getR42_lc_as_on_sep() {
+			return r42_lc_as_on_sep;
+		}
+
+		public void setR42_lc_as_on_sep(BigDecimal r42_lc_as_on_sep) {
+			this.r42_lc_as_on_sep = r42_lc_as_on_sep;
+		}
+
+		public BigDecimal getR43_lc_as_on_mar() {
+			return r43_lc_as_on_mar;
+		}
+
+		public void setR43_lc_as_on_mar(BigDecimal r43_lc_as_on_mar) {
+			this.r43_lc_as_on_mar = r43_lc_as_on_mar;
+		}
+
+		public BigDecimal getR43_lc_as_on_sep() {
+			return r43_lc_as_on_sep;
+		}
+
+		public void setR43_lc_as_on_sep(BigDecimal r43_lc_as_on_sep) {
+			this.r43_lc_as_on_sep = r43_lc_as_on_sep;
+		}
+
+		public BigDecimal getR44_lc_as_on_mar() {
+			return r44_lc_as_on_mar;
+		}
+
+		public void setR44_lc_as_on_mar(BigDecimal r44_lc_as_on_mar) {
+			this.r44_lc_as_on_mar = r44_lc_as_on_mar;
+		}
+
+		public BigDecimal getR44_lc_as_on_sep() {
+			return r44_lc_as_on_sep;
+		}
+
+		public void setR44_lc_as_on_sep(BigDecimal r44_lc_as_on_sep) {
+			this.r44_lc_as_on_sep = r44_lc_as_on_sep;
+		}
+
+		public BigDecimal getREPORT_VERSION() {
+			return REPORT_VERSION;
+		}
+
+		public void setREPORT_VERSION(BigDecimal REPORT_VERSION) {
+			this.REPORT_VERSION = REPORT_VERSION;
+		}
+
+		public String getREPORT_FREQUENCY() {
+			return REPORT_FREQUENCY;
+		}
+
+		public void setREPORT_FREQUENCY(String rEPORT_FREQUENCY) {
+			REPORT_FREQUENCY = rEPORT_FREQUENCY;
+		}
+
+		public String getREPORT_CODE() {
+			return REPORT_CODE;
+		}
+
+		public void setREPORT_CODE(String rEPORT_CODE) {
+			REPORT_CODE = rEPORT_CODE;
+		}
+
+		public String getREPORT_DESC() {
+			return REPORT_DESC;
+		}
+
+		public void setREPORT_DESC(String rEPORT_DESC) {
+			REPORT_DESC = rEPORT_DESC;
+		}
+
+		public String getENTITY_FLG() {
+			return ENTITY_FLG;
+		}
+
+		public void setENTITY_FLG(String eNTITY_FLG) {
+			ENTITY_FLG = eNTITY_FLG;
+		}
+
+		public String getMODIFY_FLG() {
+			return MODIFY_FLG;
+		}
+
+		public void setMODIFY_FLG(String mODIFY_FLG) {
+			MODIFY_FLG = mODIFY_FLG;
+		}
+
+		public String getDEL_FLG() {
+			return DEL_FLG;
+		}
+
+		public void setDEL_FLG(String dEL_FLG) {
+			DEL_FLG = dEL_FLG;
+		}
+
+	}
+
 //ARCHIVAL ROW MAPPER
 
 	class CashFlowRowArchivalMapper implements RowMapper<CASH_FLOW_Archival_Summary_Entity> {
@@ -3639,6 +4141,329 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 	}
 
+	class ADISB1ManualArchivalRowMapper implements RowMapper<CASH_FLOW_Manual_Archival_Summary_Entity> {
+
+		@Override
+		public CASH_FLOW_Manual_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+			CASH_FLOW_Manual_Archival_Summary_Entity obj = new CASH_FLOW_Manual_Archival_Summary_Entity();
+
+			obj.setR23_total_no_of_acct(rs.getBigDecimal("r23_total_no_of_acct"));
+			obj.setR23_total_value(rs.getBigDecimal("r23_total_value"));
+
+			obj.setR25_total_no_of_acct(rs.getBigDecimal("r25_total_no_of_acct"));
+			obj.setR25_total_value(rs.getBigDecimal("r25_total_value"));
+
+			obj.setR26_total_no_of_acct(rs.getBigDecimal("r26_total_no_of_acct"));
+			obj.setR26_total_value(rs.getBigDecimal("r26_total_value"));
+
+			obj.setR30_total_no_of_acct(rs.getBigDecimal("r30_total_no_of_acct"));
+			obj.setR30_total_value(rs.getBigDecimal("r30_total_value"));
+
+			obj.setR35_total_no_of_acct(rs.getBigDecimal("r35_total_no_of_acct"));
+			obj.setR35_total_value(rs.getBigDecimal("r35_total_value"));
+
+			obj.setR42_total_no_of_acct(rs.getBigDecimal("r42_total_no_of_acct"));
+			obj.setR42_total_value(rs.getBigDecimal("r42_total_value"));
+
+			obj.setR43_total_no_of_acct(rs.getBigDecimal("r43_total_no_of_acct"));
+			obj.setR43_total_value(rs.getBigDecimal("r43_total_value"));
+
+			obj.setR44_total_no_of_acct(rs.getBigDecimal("r44_total_no_of_acct"));
+			obj.setR44_total_value(rs.getBigDecimal("r44_total_value"));
+
+			obj.setR46_total_no_of_acct(rs.getBigDecimal("r46_total_no_of_acct"));
+			obj.setR46_total_value(rs.getBigDecimal("r46_total_value"));
+			obj.setR38_total_no_of_acct(rs.getBigDecimal("r38_total_no_of_acct"));
+
+			obj.setR39_total_no_of_acct(rs.getBigDecimal("r39_total_no_of_acct"));
+			// ================= COMMON =================
+			obj.setReport_date(rs.getDate("report_date"));
+			obj.setReport_version(rs.getBigDecimal("report_version"));
+			obj.setReport_frequency(rs.getString("report_frequency"));
+			obj.setReport_code(rs.getString("report_code"));
+			obj.setReport_desc(rs.getString("report_desc"));
+			obj.setEntity_flg(rs.getString("entity_flg"));
+			obj.setModify_flg(rs.getString("modify_flg"));
+			obj.setDel_flg(rs.getString("del_flg"));
+
+			return obj;
+		}
+	}
+
+	public static class CASH_FLOW_Manual_Archival_Summary_Entity {
+
+		private BigDecimal r23_total_no_of_acct;
+		private BigDecimal r23_total_value;
+		private BigDecimal r25_total_no_of_acct;
+		private BigDecimal r25_total_value;
+		private BigDecimal r26_total_no_of_acct;
+		private BigDecimal r26_total_value;
+		private BigDecimal r30_total_no_of_acct;
+		private BigDecimal r30_total_value;
+
+		private BigDecimal r35_total_no_of_acct;
+		private BigDecimal r35_total_value;
+
+		private BigDecimal r42_total_no_of_acct;
+		private BigDecimal r42_total_value;
+		private BigDecimal r43_total_no_of_acct;
+		private BigDecimal r43_total_value;
+		private BigDecimal r44_total_no_of_acct;
+		private BigDecimal r44_total_value;
+		private BigDecimal r46_total_no_of_acct;
+		private BigDecimal r46_total_value;
+		private BigDecimal r38_total_no_of_acct;
+		private BigDecimal r39_total_no_of_acct;
+
+		// ================= COMMON =================
+		@Temporal(TemporalType.DATE)
+		@DateTimeFormat(pattern = "dd/MM/yyyy")
+		@Id
+		private Date report_date;
+		private Date REPORT_RESUBDATE;
+		private BigDecimal report_version;
+		private String report_frequency;
+		private String report_code;
+		private String report_desc;
+		private String entity_flg;
+		private String modify_flg;
+		private String del_flg;
+
+		public Date getREPORT_RESUBDATE() {
+			return REPORT_RESUBDATE;
+		}
+
+		public void setREPORT_RESUBDATE(Date rEPORT_RESUBDATE) {
+			REPORT_RESUBDATE = rEPORT_RESUBDATE;
+		}
+
+		public BigDecimal getR23_total_no_of_acct() {
+			return r23_total_no_of_acct;
+		}
+
+		public void setR23_total_no_of_acct(BigDecimal r23_total_no_of_acct) {
+			this.r23_total_no_of_acct = r23_total_no_of_acct;
+		}
+
+		public BigDecimal getR23_total_value() {
+			return r23_total_value;
+		}
+
+		public void setR23_total_value(BigDecimal r23_total_value) {
+			this.r23_total_value = r23_total_value;
+		}
+
+		public BigDecimal getR25_total_no_of_acct() {
+			return r25_total_no_of_acct;
+		}
+
+		public void setR25_total_no_of_acct(BigDecimal r25_total_no_of_acct) {
+			this.r25_total_no_of_acct = r25_total_no_of_acct;
+		}
+
+		public BigDecimal getR25_total_value() {
+			return r25_total_value;
+		}
+
+		public void setR25_total_value(BigDecimal r25_total_value) {
+			this.r25_total_value = r25_total_value;
+		}
+
+		public BigDecimal getR26_total_no_of_acct() {
+			return r26_total_no_of_acct;
+		}
+
+		public void setR26_total_no_of_acct(BigDecimal r26_total_no_of_acct) {
+			this.r26_total_no_of_acct = r26_total_no_of_acct;
+		}
+
+		public BigDecimal getR26_total_value() {
+			return r26_total_value;
+		}
+
+		public void setR26_total_value(BigDecimal r26_total_value) {
+			this.r26_total_value = r26_total_value;
+		}
+
+		public BigDecimal getR30_total_no_of_acct() {
+			return r30_total_no_of_acct;
+		}
+
+		public void setR30_total_no_of_acct(BigDecimal r30_total_no_of_acct) {
+			this.r30_total_no_of_acct = r30_total_no_of_acct;
+		}
+
+		public BigDecimal getR30_total_value() {
+			return r30_total_value;
+		}
+
+		public void setR30_total_value(BigDecimal r30_total_value) {
+			this.r30_total_value = r30_total_value;
+		}
+
+		public BigDecimal getR35_total_no_of_acct() {
+			return r35_total_no_of_acct;
+		}
+
+		public void setR35_total_no_of_acct(BigDecimal r35_total_no_of_acct) {
+			this.r35_total_no_of_acct = r35_total_no_of_acct;
+		}
+
+		public BigDecimal getR35_total_value() {
+			return r35_total_value;
+		}
+
+		public void setR35_total_value(BigDecimal r35_total_value) {
+			this.r35_total_value = r35_total_value;
+		}
+
+		public BigDecimal getR42_total_no_of_acct() {
+			return r42_total_no_of_acct;
+		}
+
+		public void setR42_total_no_of_acct(BigDecimal r42_total_no_of_acct) {
+			this.r42_total_no_of_acct = r42_total_no_of_acct;
+		}
+
+		public BigDecimal getR42_total_value() {
+			return r42_total_value;
+		}
+
+		public void setR42_total_value(BigDecimal r42_total_value) {
+			this.r42_total_value = r42_total_value;
+		}
+
+		public BigDecimal getR43_total_no_of_acct() {
+			return r43_total_no_of_acct;
+		}
+
+		public void setR43_total_no_of_acct(BigDecimal r43_total_no_of_acct) {
+			this.r43_total_no_of_acct = r43_total_no_of_acct;
+		}
+
+		public BigDecimal getR43_total_value() {
+			return r43_total_value;
+		}
+
+		public void setR43_total_value(BigDecimal r43_total_value) {
+			this.r43_total_value = r43_total_value;
+		}
+
+		public BigDecimal getR44_total_no_of_acct() {
+			return r44_total_no_of_acct;
+		}
+
+		public void setR44_total_no_of_acct(BigDecimal r44_total_no_of_acct) {
+			this.r44_total_no_of_acct = r44_total_no_of_acct;
+		}
+
+		public BigDecimal getR44_total_value() {
+			return r44_total_value;
+		}
+
+		public void setR44_total_value(BigDecimal r44_total_value) {
+			this.r44_total_value = r44_total_value;
+		}
+
+		public BigDecimal getR46_total_no_of_acct() {
+			return r46_total_no_of_acct;
+		}
+
+		public void setR46_total_no_of_acct(BigDecimal r46_total_no_of_acct) {
+			this.r46_total_no_of_acct = r46_total_no_of_acct;
+		}
+
+		public BigDecimal getR46_total_value() {
+			return r46_total_value;
+		}
+
+		public void setR46_total_value(BigDecimal r46_total_value) {
+			this.r46_total_value = r46_total_value;
+		}
+
+		public BigDecimal getR38_total_no_of_acct() {
+			return r38_total_no_of_acct;
+		}
+
+		public void setR38_total_no_of_acct(BigDecimal r38_total_no_of_acct) {
+			this.r38_total_no_of_acct = r38_total_no_of_acct;
+		}
+
+		public BigDecimal getR39_total_no_of_acct() {
+			return r39_total_no_of_acct;
+		}
+
+		public void setR39_total_no_of_acct(BigDecimal r39_total_no_of_acct) {
+			this.r39_total_no_of_acct = r39_total_no_of_acct;
+		}
+
+		public Date getReport_date() {
+			return report_date;
+		}
+
+		public void setReport_date(Date report_date) {
+			this.report_date = report_date;
+		}
+
+		public BigDecimal getReport_version() {
+			return report_version;
+		}
+
+		public void setReport_version(BigDecimal report_version) {
+			this.report_version = report_version;
+		}
+
+		public String getReport_frequency() {
+			return report_frequency;
+		}
+
+		public void setReport_frequency(String report_frequency) {
+			this.report_frequency = report_frequency;
+		}
+
+		public String getReport_code() {
+			return report_code;
+		}
+
+		public void setReport_code(String report_code) {
+			this.report_code = report_code;
+		}
+
+		public String getReport_desc() {
+			return report_desc;
+		}
+
+		public void setReport_desc(String report_desc) {
+			this.report_desc = report_desc;
+		}
+
+		public String getEntity_flg() {
+			return entity_flg;
+		}
+
+		public void setEntity_flg(String entity_flg) {
+			this.entity_flg = entity_flg;
+		}
+
+		public String getModify_flg() {
+			return modify_flg;
+		}
+
+		public void setModify_flg(String modify_flg) {
+			this.modify_flg = modify_flg;
+		}
+
+		public String getDel_flg() {
+			return del_flg;
+		}
+
+		public void setDel_flg(String del_flg) {
+			this.del_flg = del_flg;
+		}
+
+	}
+
 	public class CASH_FLOW_Detail_Entity {
 		private Long sno;
 		@Column(name = "CUST_ID")
@@ -4269,14 +5094,15 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		else {
 			List<CASH_FLOW_Summary_Entity> T1Master = new ArrayList<>();
+			List<CASH_FLOW_Manual_Summary_Entity> T2Master = new ArrayList<>();
 			try {
 				Date dt = dateformat.parse(todate);
 
 				// SUMMARY NORMAL
 				T1Master = getDataByDate(dt);
-
+				T2Master = getDataByDateManual(dt);
 				System.out.println("Summary size = " + T1Master.size());
-
+				System.out.println("Manual Summary size = " + T2Master.size());
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
 
 			} catch (Exception e) {
@@ -4284,6 +5110,7 @@ public class BRRS_CASH_FLOW_ReportService {
 			}
 
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T2Master);
 		}
 
 		// VIEW SETTINGS
@@ -4581,6 +5408,7 @@ public class BRRS_CASH_FLOW_ReportService {
 	private void Run_CASH_FLOW_Procudure(String reportDateStr, String type, String entry) {
 
 		String formattedDate;
+
 		try {
 			formattedDate = new SimpleDateFormat("dd-MM-yyyy")
 					.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
@@ -4597,17 +5425,22 @@ public class BRRS_CASH_FLOW_ReportService {
 				try {
 					boolean isResubNoEntry = "RESUB".equals(type) && "NO".equals(entry);
 					boolean shouldExecuteProcedure = !"RESUB".equals(type) || isResubNoEntry;
+					// Convert String date to SQL Date once
+					java.sql.Date sqlDate = new java.sql.Date(
+							new SimpleDateFormat("dd-MM-yyyy").parse(formattedDate).getTime());
 
+					System.out.println("formattedDate = " + formattedDate);
+					System.out.println("sqlDate = " + sqlDate);
 					if (isResubNoEntry) {
 						String bdsql = "DELETE FROM BRRS_CASH_FLOW_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(bdsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(bdsql, sqlDate);
 						System.out.println("Successfully deleted before executing procedure " + rowsDeleted + " rows.");
 
 						String sqltransfer = "INSERT INTO BRRS_CASH_FLOW_DETAILTABLE "
 								+ " (SNO,ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA,REPORT_LABEL, REPORT_ADDL_CRITERIA_1,REPORT_NAME, REPORT_DATE,DATA_ENTRY_VERSION, REPORT_REMARKS,ENTITY_FLG,MODIFY_FLG,DEL_FLG) "
 								+ "SELECT SNO,ACCT_NUMBER, CUST_ID, ACCT_BALANCE_IN_PULA,REPORT_LABEL, REPORT_ADDL_CRITERIA_1,REPORT_NAME, REPORT_DATE,DATA_ENTRY_VERSION, REPORT_REMARKS,ENTITY_FLG,MODIFY_FLG,DEL_FLG "
 								+ "FROM BRRS_CASH_FLOW_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?";
-						int rowsInserted = jdbcTemplate.update(sqltransfer, formattedDate);
+						int rowsInserted = jdbcTemplate.update(sqltransfer, sqlDate);
 						System.out.println("Successfully transferred " + rowsInserted + " rows.");
 					}
 
@@ -4618,11 +5451,11 @@ public class BRRS_CASH_FLOW_ReportService {
 
 					if (isResubNoEntry) {
 						String adsql = "DELETE FROM BRRS_CASH_FLOW_DETAILTABLE WHERE REPORT_DATE = ?";
-						int rowsDeleted = jdbcTemplate.update(adsql, formattedDate);
+						int rowsDeleted = jdbcTemplate.update(adsql, sqlDate);
 						System.out.println("Successfully deleted after executing procedure " + rowsDeleted + " rows.");
 
 						String ins_sum_sql = "SELECT MAX(REPORT_VERSION) FROM BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ?";
-						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, formattedDate);
+						Integer maxVersion = jdbcTemplate.queryForObject(ins_sum_sql, Integer.class, sqlDate);
 						int highestValue = (maxVersion != null ? maxVersion : 0) + 1;
 
 						String finalsql = "INSERT INTO BRRS_CASH_FLOW_ARCHIVALTABLE_SUMMARY ( "
@@ -4675,11 +5508,11 @@ public class BRRS_CASH_FLOW_ReportService {
 								+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
 								+ "FROM BRRS_CASH_FLOW_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
-						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, formattedDate);
+						int rowsInsertedSum = jdbcTemplate.update(finalsql, highestValue, sqlDate);
 						System.out.println("Successfully transferred " + rowsInsertedSum + " rows.");
 
 						String adsumsql = "DELETE FROM BRRS_CASH_FLOW_SUMMARYTABLE WHERE REPORT_DATE = ?";
-						int rowsDeletedSum = jdbcTemplate.update(adsumsql, formattedDate);
+						int rowsDeletedSum = jdbcTemplate.update(adsumsql, sqlDate);
 						System.out.println("Deleted from summary " + rowsDeletedSum + " rows after transfering.");
 					}
 				} catch (Exception e) {
@@ -4695,7 +5528,7 @@ public class BRRS_CASH_FLOW_ReportService {
 			logger.info("Generating Excel for  CASH_FLOW Details...");
 			System.out.println("came to Detail download service");
 
-			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)))  {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 				byte[] ARCHIVALreport = getCASH_FLOWDetailNewExcelARCHIVAL(filename, fromdate, todate, currency,
 						dtltype, type, version);
 				return ARCHIVALreport;
@@ -4831,7 +5664,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		try {
 			logger.info("Generating Excel for CASH_FLOW ARCHIVAL Details...");
 			System.out.println("came to ARCHIVAL Detail download service");
-			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)))  {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
 
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook();
@@ -4970,6 +5803,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		// Fetch data
 
 		List<CASH_FLOW_Summary_Entity> dataList = getDataByDate(dateformat.parse(todate));
+		List<CASH_FLOW_Manual_Summary_Entity> dataList1 = getDataByDateManual(dateformat.parse(todate));
 
 		System.out.println("DATA SIZE IS : " + dataList.size());
 		if (dataList.isEmpty()) {
@@ -5038,6 +5872,7 @@ public class BRRS_CASH_FLOW_ReportService {
 				for (int i = 0; i < dataList.size(); i++) {
 
 					CASH_FLOW_Summary_Entity record = dataList.get(i);
+					CASH_FLOW_Manual_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {
@@ -5120,8 +5955,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R12
 					row = sheet.getRow(11);
 					Cell R12Cell1 = row.createCell(2);
-					if (record.getR12_lc_as_on_mar() != null) {
-						R12Cell1.setCellValue(record.getR12_lc_as_on_mar().doubleValue());
+					if (record1.getR12_lc_as_on_mar() != null) {
+						R12Cell1.setCellValue(record1.getR12_lc_as_on_mar().doubleValue());
 						R12Cell1.setCellStyle(numberStyle);
 					} else {
 						R12Cell1.setCellValue("");
@@ -5129,8 +5964,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R12Cell2 = row.createCell(3);
-					if (record.getR12_lc_as_on_sep() != null) {
-						R12Cell2.setCellValue(record.getR12_lc_as_on_sep().doubleValue());
+					if (record1.getR12_lc_as_on_sep() != null) {
+						R12Cell2.setCellValue(record1.getR12_lc_as_on_sep().doubleValue());
 						R12Cell2.setCellStyle(numberStyle);
 					} else {
 						R12Cell2.setCellValue("");
@@ -5160,8 +5995,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R14
 					row = sheet.getRow(13);
 					Cell R14Cell1 = row.createCell(2);
-					if (record.getR14_lc_as_on_mar() != null) {
-						R14Cell1.setCellValue(record.getR14_lc_as_on_mar().doubleValue());
+					if (record1.getR14_lc_as_on_mar() != null) {
+						R14Cell1.setCellValue(record1.getR14_lc_as_on_mar().doubleValue());
 						R14Cell1.setCellStyle(numberStyle);
 					} else {
 						R14Cell1.setCellValue("");
@@ -5169,8 +6004,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R14Cell2 = row.createCell(3);
-					if (record.getR14_lc_as_on_sep() != null) {
-						R14Cell2.setCellValue(record.getR14_lc_as_on_sep().doubleValue());
+					if (record1.getR14_lc_as_on_sep() != null) {
+						R14Cell2.setCellValue(record1.getR14_lc_as_on_sep().doubleValue());
 						R14Cell2.setCellStyle(numberStyle);
 					} else {
 						R14Cell2.setCellValue("");
@@ -5180,8 +6015,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R15
 					row = sheet.getRow(14);
 					Cell R15Cell1 = row.createCell(2);
-					if (record.getR15_lc_as_on_mar() != null) {
-						R15Cell1.setCellValue(record.getR15_lc_as_on_mar().doubleValue());
+					if (record1.getR15_lc_as_on_mar() != null) {
+						R15Cell1.setCellValue(record1.getR15_lc_as_on_mar().doubleValue());
 						R15Cell1.setCellStyle(numberStyle);
 					} else {
 						R15Cell1.setCellValue("");
@@ -5189,8 +6024,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R15Cell2 = row.createCell(3);
-					if (record.getR15_lc_as_on_sep() != null) {
-						R15Cell2.setCellValue(record.getR15_lc_as_on_sep().doubleValue());
+					if (record1.getR15_lc_as_on_sep() != null) {
+						R15Cell2.setCellValue(record1.getR15_lc_as_on_sep().doubleValue());
 						R15Cell2.setCellStyle(numberStyle);
 					} else {
 						R15Cell2.setCellValue("");
@@ -5200,8 +6035,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R16
 					row = sheet.getRow(15);
 					Cell R16Cell1 = row.createCell(2);
-					if (record.getR16_lc_as_on_mar() != null) {
-						R16Cell1.setCellValue(record.getR16_lc_as_on_mar().doubleValue());
+					if (record1.getR16_lc_as_on_mar() != null) {
+						R16Cell1.setCellValue(record1.getR16_lc_as_on_mar().doubleValue());
 						R16Cell1.setCellStyle(numberStyle);
 					} else {
 						R16Cell1.setCellValue("");
@@ -5209,8 +6044,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R16Cell2 = row.createCell(3);
-					if (record.getR16_lc_as_on_sep() != null) {
-						R16Cell2.setCellValue(record.getR16_lc_as_on_sep().doubleValue());
+					if (record1.getR16_lc_as_on_sep() != null) {
+						R16Cell2.setCellValue(record1.getR16_lc_as_on_sep().doubleValue());
 						R16Cell2.setCellStyle(numberStyle);
 					} else {
 						R16Cell2.setCellValue("");
@@ -5260,8 +6095,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R19
 					row = sheet.getRow(18);
 					Cell R19Cell1 = row.createCell(2);
-					if (record.getR19_lc_as_on_mar() != null) {
-						R19Cell1.setCellValue(record.getR19_lc_as_on_mar().doubleValue());
+					if (record1.getR19_lc_as_on_mar() != null) {
+						R19Cell1.setCellValue(record1.getR19_lc_as_on_mar().doubleValue());
 						R19Cell1.setCellStyle(numberStyle);
 					} else {
 						R19Cell1.setCellValue("");
@@ -5269,8 +6104,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R19Cell2 = row.createCell(3);
-					if (record.getR19_lc_as_on_sep() != null) {
-						R19Cell2.setCellValue(record.getR19_lc_as_on_sep().doubleValue());
+					if (record1.getR19_lc_as_on_sep() != null) {
+						R19Cell2.setCellValue(record1.getR19_lc_as_on_sep().doubleValue());
 						R19Cell2.setCellStyle(numberStyle);
 					} else {
 						R19Cell2.setCellValue("");
@@ -5300,8 +6135,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R21
 					row = sheet.getRow(20);
 					Cell R21Cell1 = row.createCell(2);
-					if (record.getR21_lc_as_on_mar() != null) {
-						R21Cell1.setCellValue(record.getR21_lc_as_on_mar().doubleValue());
+					if (record1.getR21_lc_as_on_mar() != null) {
+						R21Cell1.setCellValue(record1.getR21_lc_as_on_mar().doubleValue());
 						R21Cell1.setCellStyle(numberStyle);
 					} else {
 						R21Cell1.setCellValue("");
@@ -5309,8 +6144,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R21Cell2 = row.createCell(3);
-					if (record.getR21_lc_as_on_sep() != null) {
-						R21Cell2.setCellValue(record.getR21_lc_as_on_sep().doubleValue());
+					if (record1.getR21_lc_as_on_sep() != null) {
+						R21Cell2.setCellValue(record1.getR21_lc_as_on_sep().doubleValue());
 						R21Cell2.setCellStyle(numberStyle);
 					} else {
 						R21Cell2.setCellValue("");
@@ -5320,8 +6155,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R22
 					row = sheet.getRow(21);
 					Cell R22Cell1 = row.createCell(2);
-					if (record.getR22_lc_as_on_mar() != null) {
-						R22Cell1.setCellValue(record.getR22_lc_as_on_mar().doubleValue());
+					if (record1.getR22_lc_as_on_mar() != null) {
+						R22Cell1.setCellValue(record1.getR22_lc_as_on_mar().doubleValue());
 						R22Cell1.setCellStyle(numberStyle);
 					} else {
 						R22Cell1.setCellValue("");
@@ -5329,8 +6164,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R22Cell2 = row.createCell(3);
-					if (record.getR22_lc_as_on_sep() != null) {
-						R22Cell2.setCellValue(record.getR22_lc_as_on_sep().doubleValue());
+					if (record1.getR22_lc_as_on_sep() != null) {
+						R22Cell2.setCellValue(record1.getR22_lc_as_on_sep().doubleValue());
 						R22Cell2.setCellStyle(numberStyle);
 					} else {
 						R22Cell2.setCellValue("");
@@ -5499,8 +6334,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R31
 					row = sheet.getRow(30);
 					Cell R31Cell1 = row.createCell(2);
-					if (record.getR31_lc_as_on_mar() != null) {
-						R31Cell1.setCellValue(record.getR31_lc_as_on_mar().doubleValue());
+					if (record1.getR31_lc_as_on_mar() != null) {
+						R31Cell1.setCellValue(record1.getR31_lc_as_on_mar().doubleValue());
 						R31Cell1.setCellStyle(numberStyle);
 					} else {
 						R31Cell1.setCellValue("");
@@ -5508,8 +6343,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R31Cell2 = row.createCell(3);
-					if (record.getR31_lc_as_on_sep() != null) {
-						R31Cell2.setCellValue(record.getR31_lc_as_on_sep().doubleValue());
+					if (record1.getR31_lc_as_on_sep() != null) {
+						R31Cell2.setCellValue(record1.getR31_lc_as_on_sep().doubleValue());
 						R31Cell2.setCellStyle(numberStyle);
 					} else {
 						R31Cell2.setCellValue("");
@@ -5599,8 +6434,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R36
 					row = sheet.getRow(35);
 					Cell R36Cell1 = row.createCell(2);
-					if (record.getR36_lc_as_on_mar() != null) {
-						R36Cell1.setCellValue(record.getR36_lc_as_on_mar().doubleValue());
+					if (record1.getR36_lc_as_on_mar() != null) {
+						R36Cell1.setCellValue(record1.getR36_lc_as_on_mar().doubleValue());
 						R36Cell1.setCellStyle(numberStyle);
 					} else {
 						R36Cell1.setCellValue("");
@@ -5608,8 +6443,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R36Cell2 = row.createCell(3);
-					if (record.getR36_lc_as_on_sep() != null) {
-						R36Cell2.setCellValue(record.getR36_lc_as_on_sep().doubleValue());
+					if (record1.getR36_lc_as_on_sep() != null) {
+						R36Cell2.setCellValue(record1.getR36_lc_as_on_sep().doubleValue());
 						R36Cell2.setCellStyle(numberStyle);
 					} else {
 						R36Cell2.setCellValue("");
@@ -5619,8 +6454,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R37
 					row = sheet.getRow(36);
 					Cell R37Cell1 = row.createCell(2);
-					if (record.getR37_lc_as_on_mar() != null) {
-						R37Cell1.setCellValue(record.getR37_lc_as_on_mar().doubleValue());
+					if (record1.getR37_lc_as_on_mar() != null) {
+						R37Cell1.setCellValue(record1.getR37_lc_as_on_mar().doubleValue());
 						R37Cell1.setCellStyle(numberStyle);
 					} else {
 						R37Cell1.setCellValue("");
@@ -5628,8 +6463,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R37Cell2 = row.createCell(3);
-					if (record.getR37_lc_as_on_sep() != null) {
-						R37Cell2.setCellValue(record.getR37_lc_as_on_sep().doubleValue());
+					if (record1.getR37_lc_as_on_sep() != null) {
+						R37Cell2.setCellValue(record1.getR37_lc_as_on_sep().doubleValue());
 						R37Cell2.setCellStyle(numberStyle);
 					} else {
 						R37Cell2.setCellValue("");
@@ -5679,8 +6514,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R40
 					row = sheet.getRow(39);
 					Cell R40Cell1 = row.createCell(2);
-					if (record.getR40_lc_as_on_mar() != null) {
-						R40Cell1.setCellValue(record.getR40_lc_as_on_mar().doubleValue());
+					if (record1.getR40_lc_as_on_mar() != null) {
+						R40Cell1.setCellValue(record1.getR40_lc_as_on_mar().doubleValue());
 						R40Cell1.setCellStyle(numberStyle);
 					} else {
 						R40Cell1.setCellValue("");
@@ -5688,8 +6523,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R40Cell2 = row.createCell(3);
-					if (record.getR40_lc_as_on_sep() != null) {
-						R40Cell2.setCellValue(record.getR40_lc_as_on_sep().doubleValue());
+					if (record1.getR40_lc_as_on_sep() != null) {
+						R40Cell2.setCellValue(record1.getR40_lc_as_on_sep().doubleValue());
 						R40Cell2.setCellStyle(numberStyle);
 					} else {
 						R40Cell2.setCellValue("");
@@ -5699,8 +6534,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R41
 					row = sheet.getRow(40);
 					Cell R41Cell1 = row.createCell(2);
-					if (record.getR41_lc_as_on_mar() != null) {
-						R41Cell1.setCellValue(record.getR41_lc_as_on_mar().doubleValue());
+					if (record1.getR41_lc_as_on_mar() != null) {
+						R41Cell1.setCellValue(record1.getR41_lc_as_on_mar().doubleValue());
 						R41Cell1.setCellStyle(numberStyle);
 					} else {
 						R41Cell1.setCellValue("");
@@ -5708,8 +6543,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R41Cell2 = row.createCell(3);
-					if (record.getR41_lc_as_on_sep() != null) {
-						R41Cell2.setCellValue(record.getR41_lc_as_on_sep().doubleValue());
+					if (record1.getR41_lc_as_on_sep() != null) {
+						R41Cell2.setCellValue(record1.getR41_lc_as_on_sep().doubleValue());
 						R41Cell2.setCellStyle(numberStyle);
 					} else {
 						R41Cell2.setCellValue("");
@@ -5719,8 +6554,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R42
 					row = sheet.getRow(41);
 					Cell R42Cell1 = row.createCell(2);
-					if (record.getR42_lc_as_on_mar() != null) {
-						R42Cell1.setCellValue(record.getR42_lc_as_on_mar().doubleValue());
+					if (record1.getR42_lc_as_on_mar() != null) {
+						R42Cell1.setCellValue(record1.getR42_lc_as_on_mar().doubleValue());
 						R42Cell1.setCellStyle(numberStyle);
 					} else {
 						R42Cell1.setCellValue("");
@@ -5728,8 +6563,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R42Cell2 = row.createCell(3);
-					if (record.getR42_lc_as_on_sep() != null) {
-						R42Cell2.setCellValue(record.getR42_lc_as_on_sep().doubleValue());
+					if (record1.getR42_lc_as_on_sep() != null) {
+						R42Cell2.setCellValue(record1.getR42_lc_as_on_sep().doubleValue());
 						R42Cell2.setCellStyle(numberStyle);
 					} else {
 						R42Cell2.setCellValue("");
@@ -5739,8 +6574,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R43
 					row = sheet.getRow(42);
 					Cell R43Cell1 = row.createCell(2);
-					if (record.getR43_lc_as_on_mar() != null) {
-						R43Cell1.setCellValue(record.getR43_lc_as_on_mar().doubleValue());
+					if (record1.getR43_lc_as_on_mar() != null) {
+						R43Cell1.setCellValue(record1.getR43_lc_as_on_mar().doubleValue());
 						R43Cell1.setCellStyle(numberStyle);
 					} else {
 						R43Cell1.setCellValue("");
@@ -5748,8 +6583,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R43Cell2 = row.createCell(3);
-					if (record.getR43_lc_as_on_sep() != null) {
-						R43Cell2.setCellValue(record.getR43_lc_as_on_sep().doubleValue());
+					if (record1.getR43_lc_as_on_sep() != null) {
+						R43Cell2.setCellValue(record1.getR43_lc_as_on_sep().doubleValue());
 						R43Cell2.setCellStyle(numberStyle);
 					} else {
 						R43Cell2.setCellValue("");
@@ -5758,8 +6593,8 @@ public class BRRS_CASH_FLOW_ReportService {
 // R44
 					row = sheet.getRow(43);
 					Cell R44Cell1 = row.createCell(2);
-					if (record.getR44_lc_as_on_mar() != null) {
-						R44Cell1.setCellValue(record.getR44_lc_as_on_mar().doubleValue());
+					if (record1.getR44_lc_as_on_mar() != null) {
+						R44Cell1.setCellValue(record1.getR44_lc_as_on_mar().doubleValue());
 						R44Cell1.setCellStyle(numberStyle);
 					} else {
 						R44Cell1.setCellValue("");
@@ -5767,8 +6602,8 @@ public class BRRS_CASH_FLOW_ReportService {
 					}
 
 					Cell R44Cell2 = row.createCell(3);
-					if (record.getR44_lc_as_on_sep() != null) {
-						R44Cell2.setCellValue(record.getR44_lc_as_on_sep().doubleValue());
+					if (record1.getR44_lc_as_on_sep() != null) {
+						R44Cell2.setCellValue(record1.getR44_lc_as_on_sep().doubleValue());
 						R44Cell2.setCellStyle(numberStyle);
 					} else {
 						R44Cell2.setCellValue("");
@@ -6930,4 +7765,137 @@ public class BRRS_CASH_FLOW_ReportService {
 
 		return resubList;
 	}
+	@Transactional
+	public void updateReport(Object entity, String type) {
+
+		boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+		System.out.println("Came to CASH_FLOW Manual Update. Type: " + (isResub ? "RESUB" : "NORMAL"));
+
+		String tableName = isResub ? "BRRS_CASH_FLOW_MANUAL_ARCHIVALTABLE_SUMMARY" : "BRRS_CASH_FLOW_MANUAL_SUMMARYTABLE";
+
+		int[] rows = { 12,14,15,16,19,21,22,23,31,33,36,37,38,40,41,42,43,44,45,46,48,49,51};
+
+		try {
+			// Use the actual runtime class
+			Class<?> entityClass = entity.getClass();
+
+			// Get report date
+			Method getDateMethod = entityClass.getMethod("getREPORT_DATE");
+			Object reportDateObj = getDateMethod.invoke(entity);
+
+			if (reportDateObj == null) {
+				throw new RuntimeException("Report Date is NULL");
+			}
+
+			Date reportDate = (Date) reportDateObj;
+
+			System.out.println("Report Date : " + reportDate);
+			System.out.println("Entity Class : " + entityClass.getName());
+
+			// =====================================================
+			// 🔹 AUDIT TRAIL SETUP (DYNAMIC LOG PAYLOAD PREPARATION)
+			// =====================================================
+			StringBuilder changesBuilder = new StringBuilder();
+			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
+
+			for (int r : rows) {
+
+				String[] cols = { "lc_as_on_mar", "lc_as_on_sep" };
+
+				for (String col : cols) {
+
+					String getterName = "getR" + r + "_" + col;
+					String columnName = "R" + r + "_" + col;
+
+					try {
+						Method getter = entityClass.getMethod(getterName);
+						Object newValueObj = getter.invoke(entity);
+
+						System.out.println("Processing -> " + getterName + " = " + newValueObj);
+
+						// Skip processing if the web input value completely lacks data
+						if (newValueObj == null) {
+							continue;
+						}
+
+						// 1. Fetch current value directly from the targeted DB Table before updating
+						String selectSql = "SELECT " + columnName + " FROM " + tableName + " WHERE REPORT_DATE = ?";
+						Object dbValueObj = null;
+						try {
+							dbValueObj = jdbcTemplate.queryForObject(selectSql, Object.class, sqlReportDate);
+						} catch (Exception e) {
+							// Handle if row doesn't exist yet gracefully
+							dbValueObj = null;
+						}
+
+						// 2. Normalize comparison strings to prevent audit bloat
+						String currentValStr = (dbValueObj == null) ? "" : dbValueObj.toString().trim();
+						String newValStr = newValueObj.toString().trim();
+
+						// Skip update if value hasn't actually changed
+						if (currentValStr.equals(newValStr)) {
+							continue;
+						}
+
+						// 3. Track changes manually for JDBC tracking
+						if (changesBuilder.length() > 0) {
+							changesBuilder.append("|||");
+						}
+						changesBuilder.append(columnName.toUpperCase()).append(": OldValue: ")
+								.append(currentValStr.isEmpty() ? "null" : currentValStr).append(", NewValue: ")
+								.append(newValStr);
+
+						// 4. Perform live database update
+						String updateSql = "UPDATE " + tableName + " SET " + columnName + " = ? WHERE REPORT_DATE = ?";
+						int count = jdbcTemplate.update(updateSql, newValueObj, sqlReportDate);
+
+						System.out.println("Updated Column : " + columnName + " Rows Affected : " + count);
+
+					} catch (NoSuchMethodException ex) {
+						System.out.println("Method not found : " + getterName + " - Skipping");
+					}
+				}
+			}
+
+			// =====================================================
+			// 🔹 EXECUTE MANUAL AUDIT LOG INSERTION
+			// =====================================================
+			String changes = changesBuilder.toString();
+			System.out.println("CASH_FLOW Manual Changes Length = " + changes.length());
+
+			if (!changes.isEmpty()) {
+				// Enforce character protection thresholds against database column bounds
+				if (changes.length() > 1900) {
+					changes = changes.substring(0, 1900);
+				}
+
+				// Call custom manual audit execution to save directly into your Audit table
+				auditService.compareEntitiesmanual(entity, // Old copy placeholder (We pass entity to satisfy signature)
+						entity, // Existing copy placeholder
+						reportDate.toString(), "CASH_FLOW Manual Screen", tableName);
+
+				// Optional: If your audit trail system relies strictly on a pre-generated
+				// string instead of recalculating, you can write a short jdbcTemplate insert
+				// here
+				// to insert the `changes` string directly into "BRRS_AUDIT"."MODI_DETAILS".
+			}
+
+			System.out.println("CASH_FLOW Manual Update Completed Successfully for Type : " + type);
+
+		} catch (Exception e) {
+			System.err.println("===== CASH_FLOW UPDATE ERROR =====");
+			e.printStackTrace();
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			System.err.println("ROOT CAUSE : " + root.getMessage());
+
+			throw new RuntimeException("Error while updating CASH_FLOW Manual fields for type: " + type, e);
+		}
+	}
+
 }

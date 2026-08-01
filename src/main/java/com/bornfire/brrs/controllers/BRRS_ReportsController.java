@@ -1,7 +1,6 @@
 package com.bornfire.brrs.controllers;
 
 import java.io.FileNotFoundException;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -47,7 +46,19 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
-import com.bornfire.brrs.entities.*;
+import com.bornfire.brrs.entities.M_INT_RATES_NEW_Summary_Entity;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Resub_Summary_Entity5;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity1;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity2;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity3;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity4;
+import com.bornfire.brrs.entities.M_LARADV_Summary_Entity5;
+import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Manual_Summary_Entity1;
+import com.bornfire.brrs.entities.M_TOP_100_BORROWER_Manual_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_ADISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_AS_11_ReportService;
 import com.bornfire.brrs.services.BRRS_AS_11_ReportService.AS_11_Summary_Entity1;
@@ -56,8 +67,11 @@ import com.bornfire.brrs.services.BRRS_BDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
 import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
+import com.bornfire.brrs.services.BRRS_CASH_FLOW_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB3_ReportService;
@@ -67,11 +81,11 @@ import com.bornfire.brrs.services.BRRS_M_BOP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA2_ReportService.M_CA2_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_CA3_ReportService.M_CA3_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService;
-import com.bornfire.brrs.services.BRRS_M_CA4_ReportService.M_CA4_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA4_ReportService.M_CA4_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_CA4_ReportService.M_CA4_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_CA5_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA6_ReportService;
 import com.bornfire.brrs.services.BRRS_M_CA7_ReportService;
@@ -86,21 +100,21 @@ import com.bornfire.brrs.services.BRRS_M_EPR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService;
 import com.bornfire.brrs.services.BRRS_M_FAS_ReportService.M_FAS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_FXR_ReportService.M_FXR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GALOR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService;
-import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Detail_Entity;
 import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_RESUB_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_GMIRT_ReportService.M_GMIRT_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_GP_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService.M_INT_RATES_FCA_RESUB_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_RESUB_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_FCA_ReportService.M_INT_RATES_FCA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_NEW_ReportService;
 import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService;
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_RESUB_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_INT_RATES_ReportService.M_INT_RATES_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_IRB_ReportService;
 import com.bornfire.brrs.services.BRRS_M_IRB_ReportService.M_IRB_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_IS_ReportService;
@@ -138,19 +152,19 @@ import com.bornfire.brrs.services.BRRS_M_RPD_ReportService.M_RPD_Summary_Entity9
 import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SCI_E_ReportService.M_SCI_E_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SECA_ReportService.M_SECA_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService.M_SFINP1_Summary_Manual_Entity;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService.M_SFINP2_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SIR_ReportService.M_SIR_Summary_Entity;
 //import com.bornfire.brrs.services.BRRS_M_SRWA_12A_New_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12A_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12B_ReportService;
@@ -168,19 +182,18 @@ import com.bornfire.brrs.services.BRRS_M_SRWA_12E_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12F_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12G_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService;
-import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService.M_SRWA_12H_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService.M_SRWA_12H_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_SRWA_12H_ReportService.M_SRWA_12H_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService;
-import com.bornfire.brrs.services.BRRS_M_TBS_ReportService.M_TBS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_TBS_ReportService.M_TBS_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_TBS_ReportService.M_TBS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_TOP_100_BORROWER_ReportService;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService;
-import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService.M_UNCONS_INVEST_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService.M_UNCONS_INVEST_Resub_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_M_UNCONS_INVEST_ReportService.M_UNCONS_INVEST_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService;
 import com.bornfire.brrs.services.BRRS_PL_SCHS_ReportService.PL_SCHS_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService;
-import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Resub_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_BRANCHNET_ReportService.Q_BRANCHNET_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService;
 import com.bornfire.brrs.services.BRRS_Q_LARADV_ReportService.Q_LARADV_Summary_Entity;
@@ -192,11 +205,9 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_En
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
+import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
-import com.bornfire.brrs.services.Exceltopdfservice;
-import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -6470,5 +6481,48 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+	@Autowired
+	BRRS_CASH_FLOW_ReportService BRRS_CASH_FLOW_ReportService;
 
+	@PostMapping("/CASH_FLOWupdateAll")
+	public ResponseEntity<String> updateReportS(
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("type") String type, HttpServletRequest request) {
+
+		try {
+
+			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
+
+			boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+			Object entityInstance = isResub ? new BRRS_CASH_FLOW_ReportService.CASH_FLOW_Manual_Archival_Summary_Entity()
+					: new BRRS_CASH_FLOW_ReportService.CASH_FLOW_Manual_Summary_Entity();
+
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+
+			binder.bind(request);
+
+			// Set report date
+			Method setDateMethod = entityInstance.getClass().getMethod("setREPORT_DATE", Date.class);
+
+			setDateMethod.invoke(entityInstance, asondate);
+
+			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
+
+			BRRS_CASH_FLOW_ReportService.updateReport(entityInstance, type);
+
+			return ResponseEntity.ok("Modified Successfully.");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
+		}
+	}
 }

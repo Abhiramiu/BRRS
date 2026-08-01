@@ -913,7 +913,34 @@ PURPOSE		: BRRSREPORT
 
 
 	<script>
+		function showmodify(btn) {
 
+			// Enable editable fields
+			$(".Show_input").not(".nonEditable")
+				.removeAttr("readonly")
+				.removeAttr("disabled");
+
+			// ===== GROUP 1 =====
+			let rows1 = [12, 14, 15, 16, 19, 21, 22, 31, 36, 37, 40, 41, 42, 43, 44];
+			let fields1 = ["lc_as_on_mar", "lc_as_on_sep"];
+
+			rows1.forEach(r => {
+				fields1.forEach(f => {
+					const selector = `#r${r}_${f}`;
+
+					if ($(selector).length) {
+						$(selector).css("background-color", "#d3d3d3");
+					}
+				});
+			});
+
+			// Show buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+
+			// Hide clicked modify button
+			$(btn).hide();
+		}
 		// Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
@@ -934,8 +961,275 @@ PURPOSE		: BRRSREPORT
 			// ❌ If user clicks CANCEL, nothing happens
 		}
 	</script>
+	<script>
 
 
+
+		$(document).ready(function () {
+
+			// Initial calculation for DB values
+			calculateAll();
+
+			// Recalculate whenever any field changes
+			$("#fileupload").on("input change", "input", function () {
+				calculateAll();
+			});
+
+		});
+
+		function getValue(id) {
+
+		    const el = $("#" + id);
+
+		    let value = "";
+
+		    if (el.is("input")) {
+		        value = el.val();
+		    } else {
+		        value = el.text();
+		    }
+
+		    return parseFloat((value || "0").replace(/,/g, "")) || 0;
+		}
+
+		function setValue(id, value) {
+
+		    const formatted = Number(value || 0).toLocaleString('en-US', {
+		        maximumFractionDigits: 0
+		    });
+
+		    const el = $("#" + id);
+
+		    if (el.is("input")) {
+		        el.val(formatted);
+		    } else {
+		        el.text(formatted);
+		    }
+		}
+		// ===================== R23 =====================
+		function calculateR23() {
+
+			setValue("r23_lc_as_on_mar",
+				getValue("r11_lc_as_on_mar") +
+				getValue("r12_lc_as_on_mar") +
+				getValue("r13_lc_as_on_mar") +
+				getValue("r14_lc_as_on_mar") +
+				getValue("r15_lc_as_on_mar") +
+				getValue("r16_lc_as_on_mar") +
+				getValue("r17_lc_as_on_mar") +
+				getValue("r18_lc_as_on_mar") +
+				getValue("r19_lc_as_on_mar") +
+				getValue("r20_lc_as_on_mar") +
+				getValue("r21_lc_as_on_mar") +
+				getValue("r22_lc_as_on_mar")
+			);
+
+			setValue("r23_lc_as_on_sep",
+				getValue("r11_lc_as_on_sep") +
+				getValue("r12_lc_as_on_sep") +
+				getValue("r13_lc_as_on_sep") +
+				getValue("r14_lc_as_on_sep") +
+				getValue("r15_lc_as_on_sep") +
+				getValue("r16_lc_as_on_sep") +
+				getValue("r17_lc_as_on_sep") +
+				getValue("r18_lc_as_on_sep") +
+				getValue("r19_lc_as_on_sep") +
+				getValue("r20_lc_as_on_sep") +
+				getValue("r21_lc_as_on_sep") +
+				getValue("r22_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R33 =====================
+		function calculateR33() {
+
+			setValue("r33_lc_as_on_mar",
+				getValue("r23_lc_as_on_mar") +
+				getValue("r24_lc_as_on_mar") +
+				getValue("r25_lc_as_on_mar") +
+				getValue("r26_lc_as_on_mar") +
+				getValue("r27_lc_as_on_mar") +
+				getValue("r28_lc_as_on_mar") +
+				getValue("r29_lc_as_on_mar") +
+				getValue("r30_lc_as_on_mar") +
+				getValue("r31_lc_as_on_mar") +
+				getValue("r32_lc_as_on_mar")
+			);
+
+			setValue("r33_lc_as_on_sep",
+				getValue("r23_lc_as_on_sep") +
+				getValue("r24_lc_as_on_sep") +
+				getValue("r25_lc_as_on_sep") +
+				getValue("r26_lc_as_on_sep") +
+				getValue("r27_lc_as_on_sep") +
+				getValue("r28_lc_as_on_sep") +
+				getValue("r29_lc_as_on_sep") +
+				getValue("r30_lc_as_on_sep") +
+				getValue("r31_lc_as_on_sep") +
+				getValue("r32_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R38 =====================
+		function calculateR38() {
+
+			setValue("r38_lc_as_on_mar",
+				getValue("r35_lc_as_on_mar") +
+				getValue("r36_lc_as_on_mar") +
+				getValue("r37_lc_as_on_mar")
+			);
+
+			setValue("r38_lc_as_on_sep",
+				getValue("r35_lc_as_on_sep") +
+				getValue("r36_lc_as_on_sep") +
+				getValue("r37_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R45 =====================
+		function calculateR45() {
+
+			setValue("r45_lc_as_on_mar",
+				getValue("r40_lc_as_on_mar") +
+				getValue("r41_lc_as_on_mar") +
+				getValue("r42_lc_as_on_mar") +
+				getValue("r43_lc_as_on_mar") +
+				getValue("r44_lc_as_on_mar")
+			);
+
+			setValue("r45_lc_as_on_sep",
+				getValue("r40_lc_as_on_sep") +
+				getValue("r41_lc_as_on_sep") +
+				getValue("r42_lc_as_on_sep") +
+				getValue("r43_lc_as_on_sep") +
+				getValue("r44_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R46 =====================
+		function calculateR46() {
+
+			setValue("r46_lc_as_on_mar",
+				getValue("r33_lc_as_on_mar") +
+				getValue("r38_lc_as_on_mar") +
+				getValue("r45_lc_as_on_mar")
+			);
+
+			setValue("r46_lc_as_on_sep",
+				getValue("r33_lc_as_on_sep") +
+				getValue("r38_lc_as_on_sep") +
+				getValue("r45_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R48 =====================
+		function calculateR48() {
+
+			setValue("r48_lc_as_on_sep",
+				getValue("r50_lc_as_on_mar")
+			);
+		}
+
+		// ===================== R49 =====================
+		function calculateR49() {
+
+			setValue("r49_lc_as_on_sep",
+				getValue("r46_lc_as_on_sep") +
+				getValue("r48_lc_as_on_sep")
+			);
+		}
+
+		// ===================== R51 =====================
+		function calculateR51() {
+
+			setValue("r51_lc_as_on_sep",
+				getValue("r49_lc_as_on_sep") -
+				getValue("r50_lc_as_on_sep")
+			);
+		}
+
+		// ===================== MASTER =====================
+		function calculateAll() {
+
+			calculateR23();
+			calculateR33();
+			calculateR38();
+			calculateR45();
+			calculateR46();
+			calculateR48();
+			calculateR49();
+			calculateR51();
+		}
+
+		function fileuploads(btn) {
+			
+			calculateAll();
+
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
+
+			// Show loader
+			$('#loader').modal('show');
+
+			try {
+				// ✅ Step 1: Calculate totals (Custom logic if any)
+
+				// ✅ Step 2: Remove commas from all text inputs
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
+
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+
+				// ✅ Step 4: Build FormData
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+				formData.append("type", type); // Sent to Spring controller
+
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('id'); // Ensure elements have matching 'id' attributes or use 'name'
+					if (name) {
+						formData.append(name, $(this).val());
+					}
+				});
+
+				// ✅ Step 5: AJAX submission
+				$.ajax({
+					url: './CASH_FLOWupdateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text("Updated Successfully.");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				console.error("Error in fileuploads function:", error);
+				$('#loader').modal('hide');
+				$("#resultModalLabel").text("Error");
+				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModal").modal("show");
+			}
+		}	
+	</script>
 
 	<style>
 		table {
@@ -1095,13 +1389,13 @@ PURPOSE		: BRRSREPORT
 							Details
 						</button>
 						<!-- Modify button -->
-						<!--  <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-                            title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
                 and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
-                            th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
-                            id="addRecord">
-                            Modify
-                        </button>-->
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+							id="addRecord">
+							Modify
+						</button>
 
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
@@ -1222,18 +1516,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r12_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r12_lc_as_on_mar" name="r12_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r12_lc_as_on_mar" th:attr="RowId='R12', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r12_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r12_lc_as_on_sep" name="r12_lc_as_on_sep"
-													class="r12_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R12', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r23"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r12_lc_as_on_mar != null ? #numbers.formatDecimal(report.r12_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_lc_as_on_mar" name="r12_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r23"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r12_lc_as_on_sep != null ? #numbers.formatDecimal(report.r12_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r12_lc_as_on_sep" name="r12_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R13 -->
@@ -1262,18 +1560,23 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r14_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r14_lc_as_on_mar" name="r14_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r14_lc_as_on_mar" th:attr="RowId='R14', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r14_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r14_lc_as_on_sep" name="r14_lc_as_on_sep"
-													class="r14_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R14', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<!-- R14 -->
+												<td th:each="report: ${reportsummary1}" id="r14"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r14_lc_as_on_mar != null ? #numbers.formatDecimal(report.r14_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_lc_as_on_mar" name="r14_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r14"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r14_lc_as_on_sep != null ? #numbers.formatDecimal(report.r14_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r14_lc_as_on_sep" name="r14_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R15 -->
@@ -1282,18 +1585,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r15_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r15_lc_as_on_mar" name="r15_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r15_lc_as_on_mar" th:attr="RowId='R15', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r15_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r15_lc_as_on_sep" name="r15_lc_as_on_sep"
-													class="r15_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R15', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r15"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r15_lc_as_on_mar != null ? #numbers.formatDecimal(report.r15_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_lc_as_on_mar" name="r15_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r15"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r15_lc_as_on_sep != null ? #numbers.formatDecimal(report.r15_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r15_lc_as_on_sep" name="r15_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<!-- R16 -->
 											<tr>
@@ -1301,18 +1608,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r16_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r16_lc_as_on_mar" name="r16_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r16_lc_as_on_mar" th:attr="RowId='R16', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r16_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r16_lc_as_on_sep" name="r16_lc_as_on_sep"
-													class="r16_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R16', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r16"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r16_lc_as_on_mar != null ? #numbers.formatDecimal(report.r16_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_lc_as_on_mar" name="r16_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r16"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r16_lc_as_on_sep != null ? #numbers.formatDecimal(report.r16_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r16_lc_as_on_sep" name="r16_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R17 -->
@@ -1361,18 +1672,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r19_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r19_lc_as_on_mar" name="r19_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r19_lc_as_on_mar" th:attr="RowId='R19', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r19_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r19_lc_as_on_sep" name="r19_lc_as_on_sep"
-													class="r19_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R19', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r19"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r19_lc_as_on_mar != null ? #numbers.formatDecimal(report.r19_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r19_lc_as_on_mar" name="r19_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r19"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r19_lc_as_on_sep != null ? #numbers.formatDecimal(report.r19_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r19_lc_as_on_sep" name="r19_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R20 -->
@@ -1401,18 +1716,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r21_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r21_lc_as_on_mar" name="r21_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r21_lc_as_on_mar" th:attr="RowId='R21', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r21_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r21_lc_as_on_sep" name="r21_lc_as_on_sep"
-													class="r21_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R21', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r21"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r21_lc_as_on_mar != null ? #numbers.formatDecimal(report.r21_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r21_lc_as_on_mar" name="r21_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r21"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r21_lc_as_on_sep != null ? #numbers.formatDecimal(report.r21_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r21_lc_as_on_sep" name="r21_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 
 											<!-- R22 -->
@@ -1421,18 +1740,22 @@ PURPOSE		: BRRSREPORT
 													style="min-width: 150px; white-space: normal; text-align: left;">
 												</td>
 
-												<td th:text="${#numbers.formatDecimal(reportsummary.r22_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r22_lc_as_on_mar" name="r22_lc_as_on_mar"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													class="r22_lc_as_on_mar" th:attr="RowId='R22', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td th:text="${#numbers.formatDecimal(reportsummary.r22_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r22_lc_as_on_sep" name="r22_lc_as_on_sep"
-													class="r22_lc_as_on_sep"
-													style="text-align:right;width:390px;padding-right: 8px;"
-													th:attr="RowId='R22', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r22"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r22_lc_as_on_mar != null ? #numbers.formatDecimal(report.r22_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r22_lc_as_on_mar" name="r22_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r22"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r22_lc_as_on_sep != null ? #numbers.formatDecimal(report.r22_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r22_lc_as_on_sep" name="r22_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r23_product}"
@@ -1572,18 +1895,22 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r31_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r31_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r31_lc_as_on_mar" name="r31_lc_as_on_mar"
-													class="r31_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R31', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r31_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r31_lc_as_on_sep" name="r31_lc_as_on_sep"
-													class="r31_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R31', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r31"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r31_lc_as_on_mar != null ? #numbers.formatDecimal(report.r31_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r31_lc_as_on_mar" name="r31_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r31"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r31_lc_as_on_sep != null ? #numbers.formatDecimal(report.r31_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r31_lc_as_on_sep" name="r31_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r32_product}"
@@ -1655,35 +1982,43 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r36_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r36_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r36_lc_as_on_mar" name="r36_lc_as_on_mar"
-													class="r36_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R36', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r36_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r36_lc_as_on_sep" name="r36_lc_as_on_sep"
-													class="r36_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R36', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r36"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r36_lc_as_on_mar != null ? #numbers.formatDecimal(report.r36_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r36_lc_as_on_mar" name="r36_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r36"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r36_lc_as_on_sep != null ? #numbers.formatDecimal(report.r36_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r36_lc_as_on_sep" name="r36_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r37_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r37_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r37_lc_as_on_mar" name="r37_lc_as_on_mar"
-													class="r37_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R37', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r37_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r37_lc_as_on_sep" name="r37_lc_as_on_sep"
-													class="r37_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R37', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r37"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r37_lc_as_on_mar != null ? #numbers.formatDecimal(report.r37_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r37_lc_as_on_mar" name="r37_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r37"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r37_lc_as_on_sep != null ? #numbers.formatDecimal(report.r37_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r37_lc_as_on_sep" name="r37_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r38_product}"
@@ -1721,86 +2056,106 @@ PURPOSE		: BRRSREPORT
 												<td th:text="${reportsummary.r40_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r40_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r40_lc_as_on_mar" name="r40_lc_as_on_mar"
-													class="r40_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R40', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r40_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r40_lc_as_on_sep" name="r40_lc_as_on_sep"
-													class="r40_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R40', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r40"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r40_lc_as_on_mar != null ? #numbers.formatDecimal(report.r40_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r40_lc_as_on_mar" name="r40_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r40"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r40_lc_as_on_sep != null ? #numbers.formatDecimal(report.r40_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r40_lc_as_on_sep" name="r40_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r41_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r41_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r41_lc_as_on_mar" name="r41_lc_as_on_mar"
-													class="r41_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R41', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r41_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r41_lc_as_on_sep" name="r41_lc_as_on_sep"
-													class="r41_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R41', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r41"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r41_lc_as_on_mar != null ? #numbers.formatDecimal(report.r41_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r41_lc_as_on_mar" name="r41_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r41"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r41_lc_as_on_sep != null ? #numbers.formatDecimal(report.r41_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r41_lc_as_on_sep" name="r41_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r42_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r42_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r42_lc_as_on_mar" name="r42_lc_as_on_mar"
-													class="r42_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R42', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r42_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r42_lc_as_on_sep" name="r42_lc_as_on_sep"
-													class="r42_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R42', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r42"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r42_lc_as_on_mar != null ? #numbers.formatDecimal(report.r42_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r42_lc_as_on_mar" name="r42_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r42"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r42_lc_as_on_sep != null ? #numbers.formatDecimal(report.r42_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r42_lc_as_on_sep" name="r42_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r43_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r43_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r43_lc_as_on_mar" name="r43_lc_as_on_mar"
-													class="r43_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R43', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r43_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r43_lc_as_on_sep" name="r43_lc_as_on_sep"
-													class="r43_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R43', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r43"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r43_lc_as_on_mar != null ? #numbers.formatDecimal(report.r43_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r43_lc_as_on_mar" name="r43_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r43"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r43_lc_as_on_sep != null ? #numbers.formatDecimal(report.r43_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r43_lc_as_on_sep" name="r43_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r44_product}"
 													style="min-width: 150px; white-space: normal; text-align: left; vertical-align: middle; ">
 												</td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r44_lc_as_on_mar, 0, 'COMMA', 0, 'POINT')}"
-													id="r44_lc_as_on_mar" name="r44_lc_as_on_mar"
-													class="r44_lc_as_on_mar"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R44', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
-												<td th:text="${#numbers.formatDecimal(reportsummary.r44_lc_as_on_sep, 0, 'COMMA', 0, 'POINT')}"
-													id="r44_lc_as_on_sep" name="r44_lc_as_on_sep"
-													class="r44_lc_as_on_sep"
-													style="text-align:right; width:390px; padding-right: 12px;"
-													th:attr="RowId='R44', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td th:each="report: ${reportsummary1}" id="r44"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r44_lc_as_on_mar != null ? #numbers.formatDecimal(report.r44_lc_as_on_mar, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r44_lc_as_on_mar" name="r44_lc_as_on_mar"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
+												<td th:each="report: ${reportsummary1}" id="r44"
+													style="text-align: right; width: 200px; padding-left:10px; ">
+													<input class="display-input Show_input " type="text"
+														th:value="${report.r44_lc_as_on_sep != null ? #numbers.formatDecimal(report.r44_lc_as_on_sep, 1, 'COMMA', 0, 'POINT') : '0'}"
+														id="r44_lc_as_on_sep" name="r44_lc_as_on_sep"
+														style="background-color: #FFFFFF; width: 180px;margin-left:10px; height: 28px; border-color: transparent; text-align: right; "
+														readonly />
+												</td>
 											</tr>
 											<tr>
 												<td th:text="${reportsummary.r45_product}"
