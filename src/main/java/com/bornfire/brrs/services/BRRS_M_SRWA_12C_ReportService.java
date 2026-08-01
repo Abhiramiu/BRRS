@@ -6575,56 +6575,80 @@ public class BRRS_M_SRWA_12C_ReportService {
 	}
 
 	// ============================
-	// SAVE/UPDATE METHODS FOR SUMMARY
+	// GENERIC SAVE/UPDATE
 	// ============================
 
 	private void saveOrUpdateSummary(M_SRWA_12C_Summary_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12C_SUMMARYTABLE WHERE REPORT_DATE = ?";
-		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
-
-		if (count > 0) {
-			String sql = "UPDATE BRRS_M_SRWA_12C_SUMMARYTABLE SET "
-					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
-					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHERE REPORT_DATE = ?";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
-					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
-					entity.getReport_date());
-			System.out.println("✅ Summary updated for date: " + entity.getReport_date());
-		} else {
-			String sql = "INSERT INTO BRRS_M_SRWA_12C_SUMMARYTABLE "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
-			System.out.println("✅ Summary inserted for date: " + entity.getReport_date());
-		}
+		saveOrUpdateGeneric(entity, "BRRS_M_SRWA_12C_SUMMARYTABLE", "Summary");
 	}
 
-	// ============================
-	// SAVE/UPDATE METHODS FOR DETAIL
-	// ============================
-
 	private void saveOrUpdateDetail(M_SRWA_12C_Detail_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12C_DETAILTABLE WHERE REPORT_DATE = ?";
-		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
+		saveOrUpdateGeneric(entity, "BRRS_M_SRWA_12C_DETAILTABLE", "Detail");
+	}
+
+	private void saveOrUpdateGeneric(Object entity, String tableName, String label) {
+		Class<?> clazz = entity.getClass();
+
+		// Collect every persistable field except the PK (report_date is handled
+		// separately)
+		List<java.lang.reflect.Field> fields = new ArrayList<>();
+		for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
+			if (!"report_date".equals(f.getName()) && !f.isSynthetic()) {
+				fields.add(f);
+			}
+		}
+
+		Date reportDate;
+		try {
+			Method getDate = clazz.getMethod("getReport_date");
+			reportDate = (Date) getDate.invoke(entity);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to read report_date from " + label + " entity", e);
+		}
+
+		String checkSql = "SELECT COUNT(*) FROM " + tableName + " WHERE REPORT_DATE = ?";
+		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { reportDate }, Integer.class);
+
+		List<Object> values = new ArrayList<>();
+		StringBuilder setClause = new StringBuilder();
+		StringBuilder insertCols = new StringBuilder("REPORT_DATE");
+		StringBuilder insertPlaceholders = new StringBuilder("?");
+
+		for (java.lang.reflect.Field f : fields) {
+			String name = f.getName();
+			String getterName = "get" + name.substring(0, 1).toUpperCase() + name.substring(1);
+
+			Object value;
+			try {
+				Method getter = clazz.getMethod(getterName);
+				value = getter.invoke(entity);
+			} catch (Exception e) {
+				continue; // no matching getter for this field, skip it
+			}
+
+			if (setClause.length() > 0) {
+				setClause.append(", ");
+			}
+			setClause.append(name).append(" = ?");
+			values.add(value);
+
+			insertCols.append(", ").append(name);
+			insertPlaceholders.append(", ?");
+		}
 
 		if (count > 0) {
-			String sql = "UPDATE BRRS_M_SRWA_12C_DETAILTABLE SET "
-					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
-					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHERE REPORT_DATE = ?";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
-					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
-					entity.getReport_date());
-			System.out.println("✅ Detail updated for date: " + entity.getReport_date());
+			String sql = "UPDATE " + tableName + " SET " + setClause + " WHERE REPORT_DATE = ?";
+			List<Object> updateValues = new ArrayList<>(values);
+			updateValues.add(reportDate);
+			jdbcTemplate.update(sql, updateValues.toArray());
+			System.out.println("✅ " + label + " updated for date: " + reportDate);
 		} else {
-			String sql = "INSERT INTO BRRS_M_SRWA_12C_DETAILTABLE "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
-			System.out.println("✅ Detail inserted for date: " + entity.getReport_date());
+			String sql = "INSERT INTO " + tableName + " (" + insertCols + ") VALUES (" + insertPlaceholders + ")";
+			List<Object> insertValues = new ArrayList<>();
+			insertValues.add(reportDate);
+			insertValues.addAll(values);
+			jdbcTemplate.update(sql, insertValues.toArray());
+			System.out.println("✅ " + label + " inserted for date: " + reportDate);
 		}
 	}
 
