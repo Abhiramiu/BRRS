@@ -334,18 +334,14 @@ PURPOSE		: BRRS MANUAL REPORT
 		}
 
 		/* Animation keyframes */
-		@ keyframes scroll-left {
-			0% {
-				transform: translateX(100%);
-			}
+		@keyframes scroll-left {
+		    0% {
+		        transform: translateX(100%);
+		    }
 
-			100% {
-				transform:
-
-					translateX (-100%);
-
-
-			}
+		    100% {
+		        transform: translateX(-100%);
+		    }
 		}
 	</style>
 	<script th:inline="javascript">
@@ -414,7 +410,7 @@ PURPOSE		: BRRS MANUAL REPORT
 	        type=${type},
 	        asondate=${asondate},
 	        version=${version}
-	    )}]]*/;
+	    )}]]*/
 			location.href = Callurl;
 
 		}
@@ -1396,11 +1392,7 @@ PURPOSE		: BRRS MANUAL REPORT
 										<tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
 											<tr>
 												<td style="width:5%; text-align:right;">2</td>
-												<td id="ROW11" style="
-															  text-align: r;
-															  vertical-align: middle;
-															  font-weight: bold;
-														    " th:title="${report.R11_PRODUCT}" th:text="${report.R11_PRODUCT}">
+												<th style="padding-left: 4px; font-weight:bold;">Interest rate securities </th>
 												</td>
 												<td style="text-align: right; 
 															 vertical-align: middle; 
