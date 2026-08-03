@@ -335,13 +335,13 @@ PURPOSE		: BRRS MANUAL REPORT
 
 		/* Animation keyframes */
 		@keyframes scroll-left {
-		    0% {
-		        transform: translateX(100%);
-		    }
+			0% {
+				transform: translateX(100%);
+			}
 
-		    100% {
-		        transform: translateX(-100%);
-		    }
+			100% {
+				transform: translateX(-100%);
+			}
 		}
 	</style>
 	<script th:inline="javascript">
@@ -411,14 +411,14 @@ PURPOSE		: BRRS MANUAL REPORT
 	        asondate=${asondate},
 	        version=${version}
 	    )}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 
 		}
 
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -506,41 +506,41 @@ PURPOSE		: BRRS MANUAL REPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -983,8 +983,8 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-</script>
-		<!--// This is the main function that orchestrates the entire form submission process.
+	</script>
+	<!--// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="fileuploads(this)" can see it
 		window.fileuploads = function (btn) {
@@ -1096,101 +1096,101 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 	</script>-->
-	
+
 	<script>
 		function fileuploads(btn) {
 
-		    try {
+			try {
 
-		        const asondate = btn.getAttribute("data-todate");
+				const asondate = btn.getAttribute("data-todate");
 
-		        $('#loader').modal('show');
+				$('#loader').modal('show');
 
-		        if (typeof calculateTotals === "function") {
-		            calculateTotals();
-		        }
+				if (typeof calculateTotals === "function") {
+					calculateTotals();
+				}
 
-		        // Remove commas
-		        $("#fileupload input[type='text']").each(function () {
-		            const val = $(this).val();
-		            if (val && val.includes(",")) {
-		                $(this).val(val.replace(/,/g, ''));
-		            }
-		        });
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-		        if (!$("#fileupload").valid()) {
-		            $('#loader').modal('hide');
-		            return;
-		        }
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-		        // Get type from URL
-		        const urlParams = new URLSearchParams(window.location.search);
-		        const urlType = urlParams.get("type");
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
 
-		        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-		        // ✅ Use SERIALIZE (NOT FormData)
-		        const formData =
-		            $('#fileupload').serialize()
-		            + '&asondate=' + encodeURIComponent(asondate)
-		            + '&type=' + encodeURIComponent(urlType || '');
+				// ✅ Use SERIALIZE (NOT FormData)
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-		        console.log("✅ Form data prepared");
+				console.log("✅ Form data prepared");
 
-		        let apiUrl = './M_TBSupdate';
-		        if (isResub) {
-		            apiUrl = './UpdateM_TBS_ReSub';
-		        }
+				let apiUrl = './M_TBSupdate';
+				if (isResub) {
+					apiUrl = './UpdateM_TBS_ReSub';
+				}
 
-		        $.ajax({
-		            url: apiUrl,
-		            type: 'POST',
-		            data: formData,
-		            dataType: 'text',
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
 
-		            success: function (response) {
-		                $("#resultModalLabel").text("BRRS");
-		                $("#resultModalBody").text(response);
-		                $("#resultModal").modal("show");
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
 
-		                $("#resultModal")
-		                    .off("hidden.bs.modal")
-		                    .on("hidden.bs.modal", function () {
-		                        if (isResub) {
-		                            window.location.href =
-		                                window.previousUrl
-		                                    ? window.previousUrl
-		                                    : "/BRRS/Resubmission?rptcode= M_TBS";
-		                        }
-		                    });
-		            },
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
+									window.location.href =
+										window.previousUrl
+											? window.previousUrl
+											: "/BRRS/Resubmission?rptcode= M_TBS";
+								}
+							});
+					},
 
-		            error: function (jqXHR) {
-		                console.log("Error response:", jqXHR.responseText);
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
 
-		                $("#resultModalLabel").text("Error");
-		                $("#resultModalBody").text(
-		                    "Update failed: " +
-		                    (jqXHR.responseText || "Unknown error")
-		                );
-		                $("#resultModal").modal("show");
-		            },
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
 
-		            complete: function () {
-		                $('#loader').modal('hide');
-		            }
-		        });
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
 
-		    } catch (error) {
-		        $('#loader').modal('hide');
-		        console.error("Error during file upload:", error);
-		    }
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
 		}
 
 
 
 
-			</script>
+	</script>
 </head>
 
 
@@ -1214,9 +1214,9 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<!-- Title -->
 						<h5
-							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
 
-							(33) MONTHLY SCHEDULE: M-TBS:TRADING BOOK STATEMENT
+							(33) MONTHLY SCHEDULE: M-TBS:TRADING <br> BOOK STATEMENT
 
 
 						</h5>
@@ -1240,8 +1240,9 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<span class="white-text" style="color: white !important; font-size: 13px; margin-right: 20px;">
-							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						<span class="white-text"
+							style="color: white !important; font-size: 16px;margin-left: 10px; margin-right: 20px;">Report
+							Date:<span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
 						</span>
 
 						<!-- Buttons -->
@@ -1256,7 +1257,8 @@ PURPOSE		: BRRS MANUAL REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1266,60 +1268,47 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_TBS.xlsx',
-                     data-type=${type},
-					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
-							style="font-family: Arial; font-weight: bold;font-size: 14px;">
-							<i class="fa fa-download"></i> Format
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
+						                   				 data-asondate=${asondate},
+						                   				 data-fromdate=${fromdate},
+						                    				 data-todate=${todate},
+						                    				 data-currency=${currency}, 
+						                    				 data-dtltype=${dtltype},
+						                    				 data-filename='M_TBS.xlsx',
+											 				 data-type=${type},
+											    			 data-version=${version}" onclick="downloadfile(this);">Format
+							<i class="fa fa-download"></i>
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='EMAIL_M_TBS.xlsx',
-            data-type=${type},
-            data-format='email',
-            data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;font-size: 14px;">
-							<i class="fa fa-download"></i> Email
-
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
+												                   				 data-asondate=${asondate},
+												                   				 data-fromdate=${fromdate},
+												                    				 data-todate=${todate},
+												                    				 data-currency=${currency}, 
+												                    				 data-dtltype='email',
+												                    				 data-filename='EMAIL_M_TBS.xlsx',
+																	 				 data-type=${type},
+																					 data-format='email',
+																	    			 data-version=${version}" onclick="downloadfile(this);">Email
+							<i class="fa fa-download"></i>
 						</button>
-
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -1392,7 +1381,13 @@ PURPOSE		: BRRS MANUAL REPORT
 										<tbody th:each="report : ${reportsummary}" style="font-family: Arial;">
 											<tr>
 												<td style="width:5%; text-align:right;">2</td>
-												<th style="padding-left: 4px; font-weight:bold;">Interest rate securities </th>
+												<!--	<th
+													style="padding-left: 4px; font-weight:bold;">Interest rate
+													securities </th>-->
+
+												<td id="R11_PRODUCT" style="vertical-align: middle; font-weight: bold;"
+													th:text="'Interest rate securities'">
+
 												</td>
 												<td style="text-align: right; 
 															 vertical-align: middle; 
@@ -1449,7 +1444,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">3</td>
-												<td id="ROW11" style="
+												<td id="R11_PRODUCT" style="
 																white-space: normal;
 																  word-wrap: break-word;
 																  max-width: 220px;
@@ -1458,7 +1453,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																  vertical-align: middle;
 																  font-weight: normal;
 																  padding-left:1%;
-																" th:title="${report.R12_PRODUCT}" th:text="${report.R12_PRODUCT}">
+																" th:text="'   i. Bonds'">
 												</td>
 												<td style="text-align: right; 
 																	 vertical-align: middle; 
@@ -1516,7 +1511,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">4</td>
-												<td id="ROW11" style="
+												<td id="R13_PRODUCT" style="
 																				white-space: normal;
 																				  word-wrap: break-word;
 																				  max-width: 220px;
@@ -1525,7 +1520,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																				  vertical-align: middle;
 																				  font-weight: normal;
 																				  padding-left:1%;
-																				" th:title="${report.R13_PRODUCT}" th:text="${report.R13_PRODUCT}">
+																				" th:text="'   ii. Convertible bonds'">
 												</td>
 												<td style="text-align: right; 
 																					 vertical-align: middle; 
@@ -1583,7 +1578,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">5</td>
-												<td id="ROW11" style="
+												<td id="R14_PRODUCT" style="
 																								white-space: normal;
 																								  word-wrap: break-word;
 																								  max-width: 220px;
@@ -1592,7 +1587,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																								  vertical-align: middle;
 																								  font-weight: normal;
 																								  padding-left:1%;
-																								" th:title="${report.R14_PRODUCT}" th:text="${report.R14_PRODUCT}">
+																								" th:text="'   iii. Non-convertible preference shares'">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -1650,7 +1645,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">6</td>
-												<td id="ROW11" style="
+												<td id="R15_PRODUCT" style="
 																												white-space: normal;
 																												  word-wrap: break-word;
 																												  max-width: 220px;
@@ -1659,7 +1654,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																												  vertical-align: middle;
 																												  font-weight: normal;
 																												  padding-left:1%;
-																												" th:title="${report.R15_PRODUCT}" th:text="${report.R15_PRODUCT}">
+																												" th:text="'   iv. Interest rate indices'">
 												</td>
 												<td style="text-align: right; 
 																													 vertical-align: middle; 
@@ -1718,7 +1713,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">7</td>
-												<td id="ROW11" style="
+												<td id="R16_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -1727,7 +1722,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1%;
-																								    " th:title="${report.R16_PRODUCT}" th:text="${report.R16_PRODUCT}">
+																								    " th:text="'   v. Interest rate derivatives:'">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -1784,7 +1779,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">8</td>
-												<td id="ROW11" style="
+												<td id="R17_PRODUCT" style="
 																										white-space: normal;
 																										  word-wrap: break-word;
 																										  max-width: 220px;
@@ -1793,7 +1788,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																										  vertical-align: middle;
 																										  font-weight: normal;
 																										  padding-left:1.5%;
-																										" th:title="${report.R17_PRODUCT}" th:text="${report.R17_PRODUCT}">
+																										" th:text="'     a. Forward rate agreements'">
 												</td>
 												<td style="text-align: right; 
 																											 vertical-align: middle; 
@@ -1851,7 +1846,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">9</td>
-												<td id="ROW11" style="
+												<td id="R18_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -1860,7 +1855,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1.5%;
-																									" th:title="${report.R18_PRODUCT}" th:text="${report.R18_PRODUCT}">
+																									" th:text="'     b. Swaps'">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -1918,7 +1913,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">10</td>
-												<td id="ROW11" style="
+												<td id="R19_PRODUCT" style="
 																												white-space: normal;
 																												  word-wrap: break-word;
 																												  max-width: 220px;
@@ -1927,7 +1922,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																												  vertical-align: middle;
 																												  font-weight: normal;
 																												  padding-left:1.5%;
-																												" th:title="${report.R19_PRODUCT}" th:text="${report.R19_PRODUCT}">
+																												" th:text="'   c. Interest rate options'">
 												</td>
 												<td style="text-align: right; 
 																													 vertical-align: middle; 
@@ -1985,7 +1980,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">11</td>
-												<td id="ROW11" style="
+												<td id="R20_PRODUCT" style="
 											white-space: normal;
 											  word-wrap: break-word;
 											  max-width: 220px;
@@ -1994,7 +1989,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											  vertical-align: middle;
 											  font-weight: normal;
 											  padding-left:1.5%;
-											" th:title="${report.R20_PRODUCT}" th:text="${report.R20_PRODUCT}">
+											" th:text="'    d. Futures'">
 												</td>
 												<td style="text-align: right; 
 												 vertical-align: middle; 
@@ -2053,7 +2048,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">12</td>
-												<td id="ROW11" style="
+												<td id="R21_PRODUCT" style="
 																white-space: normal;
 																  word-wrap: break-word;
 																  max-width: 220px;
@@ -2062,7 +2057,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																  vertical-align: middle;
 																  font-weight: normal;
 																  padding-left:1%;
-																" th:title="${report.R21_PRODUCT}" th:text="${report.R21_PRODUCT}">
+																" th:text="'vi. Other (SPECIFY) '">
 												</td>
 												<td style="text-align: right; 
 																	 vertical-align: middle; 
@@ -2120,11 +2115,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">13</td>
-												<td id="ROW22" style="
+												<td id="R22_PRODUCT" style="
 																			  text-align: r;
 																			  vertical-align: middle;
 																			  font-weight: bold;
-																		    " th:title="${report.R22_PRODUCT}" th:text="${report.R22_PRODUCT}">
+																		    " th:text="'Equity securities '">
 												</td>
 												<td style="text-align: right; 
 																			 vertical-align: middle; 
@@ -2181,7 +2176,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">14</td>
-												<td id="ROW11" style="
+												<td id="R23_PRODUCT" style="
 																				white-space: normal;
 																				  word-wrap: break-word;
 																				  max-width: 220px;
@@ -2190,7 +2185,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																				  vertical-align: middle;
 																				  font-weight: normal;
 																				  padding-left:1%;
-																				" th:title="${report.R23_PRODUCT}" th:text="${report.R23_PRODUCT}">
+																				" th:text="'   i. Shares '">
 												</td>
 												<td style="text-align: right; 
 																					 vertical-align: middle; 
@@ -2244,13 +2239,12 @@ PURPOSE		: BRRS MANUAL REPORT
 												</td>
 
 
-
 											</tr>
 
 
 											<tr>
 												<td style="width:5%; text-align:right;">15</td>
-												<td id="ROW11" style="
+												<td id="R24_PRODUCT" style="
 																					white-space: normal;
 																					  word-wrap: break-word;
 																					  max-width: 220px;
@@ -2259,7 +2253,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																					  vertical-align: middle;
 																					  font-weight: normal;
 																					  padding-left:1%;
-																					" th:title="${report.R24_PRODUCT}" th:text="${report.R24_PRODUCT}">
+																					" th:text="'   ii. Convertible securities '">
 												</td>
 												<td style="text-align: right; 
 																						 vertical-align: middle; 
@@ -2317,7 +2311,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">16</td>
-												<td id="ROW11" style="
+												<td id="R25_PRODUCT" style="
 																		white-space: normal;
 																		  word-wrap: break-word;
 																		  max-width: 220px;
@@ -2326,7 +2320,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																		  vertical-align: middle;
 																		  font-weight: normal;
 																		  padding-left:1%;
-																		" th:title="${report.R25_PRODUCT}" th:text="${report.R25_PRODUCT}">
+																		" th:text="'     iii. Warrant '">
 												</td>
 												<td style="text-align: right; 
 																			 vertical-align: middle; 
@@ -2384,7 +2378,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">17</td>
-												<td id="ROW11" style="
+												<td id="R26_PRODUCT" style="
 																			white-space: normal;
 																			  word-wrap: break-word;
 																			  max-width: 220px;
@@ -2393,7 +2387,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																			  vertical-align: middle;
 																			  font-weight: normal;
 																			  padding-left:1%;
-																			" th:title="${report.R26_PRODUCT}" th:text="${report.R26_PRODUCT}">
+																			" th:text="'     iv. Equity indices '">
 												</td>
 												<td style="text-align: right; 
 																				 vertical-align: middle; 
@@ -2452,11 +2446,11 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">18</td>
-												<td id="ROW11" style="
+												<td id="R27_PRODUCT" style="
 																											  text-align: r;
 																											  vertical-align: middle;
 																											  font-weight: normal;  padding-left:1%;
-																										    " th:title="${report.R27_PRODUCT}" th:text="${report.R27_PRODUCT}">
+																										    " th:text="'    v. Equity derivatives:  '">
 												</td>
 												<td style="text-align: right; 
 																											 vertical-align: middle; 
@@ -2513,7 +2507,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">19</td>
-												<td id="ROW11" style="
+												<td id="R28_PRODUCT" style="
 																						white-space: normal;
 																						  word-wrap: break-word;
 																						  max-width: 220px;
@@ -2522,7 +2516,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																						  vertical-align: middle;
 																						  font-weight: normal;
 																						  padding-left:1.5%;
-																						" th:title="${report.R28_PRODUCT}" th:text="${report.R28_PRODUCT}">
+																						" th:text="'      a. Forwards relating to individual securities'">
 												</td>
 												<td style="text-align: right; 
 																							 vertical-align: middle; 
@@ -2580,7 +2574,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">20</td>
-												<td id="ROW11" style="
+												<td id="R29_PRODUCT" style="
 																		white-space: normal;
 																		  word-wrap: break-word;
 																		  max-width: 220px;
@@ -2589,7 +2583,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																		  vertical-align: middle;
 																		  font-weight: normal;
 																		  padding-left:1.5%;
-																		" th:title="${report.R29_PRODUCT}" th:text="${report.R29_PRODUCT}">
+																		" th:text="'     c. Futures relating to individual securities '">
 												</td>
 												<td style="text-align: right; 
 																			 vertical-align: middle; 
@@ -2647,7 +2641,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">21</td>
-												<td id="ROW11" style="
+												<td id="R30_PRODUCT" style="
 																				white-space: normal;
 																				  word-wrap: break-word;
 																				  max-width: 220px;
@@ -2656,7 +2650,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																				  vertical-align: middle;
 																				  font-weight: normal;
 																				  padding-left:1.5%;
-																				" th:title="${report.R30_PRODUCT}" th:text="${report.R30_PRODUCT}">
+																				" th:text="'     d. Futures relating to stock indices '">
 												</td>
 												<td style="text-align: right; 
 																					 vertical-align: middle; 
@@ -2715,7 +2709,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">22</td>
-												<td id="ROW11" style="
+												<td id="R31_PRODUCT" style="
 																					white-space: normal;
 																					  word-wrap: break-word;
 																					  max-width: 220px;
@@ -2724,7 +2718,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																					  vertical-align: middle;
 																					  font-weight: normal;
 																					  padding-left:1.5%;
-																					" th:title="${report.R31_PRODUCT}" th:text="${report.R31_PRODUCT}">
+																					" th:text="'   e. Equity and stock index options   '">
 												</td>
 												<td style="text-align: right; 
 																						 vertical-align: middle; 
@@ -2782,7 +2776,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">23</td>
-												<td id="ROW11" style="
+												<td id="R32_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -2791,7 +2785,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1.5%;
-																									" th:title="${report.R32_PRODUCT}" th:text="${report.R32_PRODUCT}">
+																									" th:text="'    f. Equity swap   '">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -2849,7 +2843,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">24</td>
-												<td id="ROW11" style="
+												<td id="R33_PRODUCT" style="
 																		white-space: normal;
 																		  word-wrap: break-word;
 																		  max-width: 220px;
@@ -2858,7 +2852,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																		  vertical-align: middle;
 																		  font-weight: normal;
 																		  padding-left:1%;
-																		" th:title="${report.R33_PRODUCT}" th:text="${report.R33_PRODUCT}">
+																		" th:text="'   vi. Others (SPECIFY) '">
 												</td>
 												<td style="text-align: right; 
 																			 vertical-align: middle; 
@@ -2917,11 +2911,11 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">25</td>
-												<td id="ROW11" style="
+												<td id="R34_PRODUCT" style="
 																			  text-align: r;
 																			  vertical-align: middle;
 																			  font-weight: bold;
-																			" th:title="${report.R34_PRODUCT}" th:text="${report.R34_PRODUCT}">
+																			" th:text="' Foreign currencies  '">
 												</td>
 												<td style="text-align: right; 
 																			 vertical-align: middle; 
@@ -2978,7 +2972,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">26</td>
-												<td id="ROW11" style="
+												<td id="R35_PRODUCT" style="
 																				white-space: normal;
 																				  word-wrap: break-word;
 																				  max-width: 220px;
@@ -2987,7 +2981,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																				  vertical-align: middle;
 																				  font-weight: normal;
 																				  padding-left:1%;
-																				" th:title="${report.R35_PRODUCT}" th:text="${report.R35_PRODUCT}">
+																				" th:text="'    i. Gold  '">
 												</td>
 												<td style="text-align: right; 
 																					 vertical-align: middle; 
@@ -3045,11 +3039,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">27</td>
-												<td id="ROW11" style="
+												<td id="R36_PRODUCT" style="
 																					  text-align: r;
 																					  vertical-align: middle;
 																					  font-weight: normal;padding-left:1%;
-																					" th:title="${report.R36_PRODUCT}" th:text="${report.R36_PRODUCT}">
+																					" th:text="'    ii. Foreign currency derivatives:  '">
 												</td>
 												<td style="text-align: right; 
 																					 vertical-align: middle; 
@@ -3106,7 +3100,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">28</td>
-												<td id="ROW11" style="
+												<td id="R37_PRODUCT" style="
 																						white-space: normal;
 																						  word-wrap: break-word;
 																						  max-width: 220px;
@@ -3115,7 +3109,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																						  vertical-align: middle;
 																						  font-weight: normal;
 																						  padding-left:1.5%;
-																						" th:title="${report.R37_PRODUCT}" th:text="${report.R37_PRODUCT}">
+																						" th:text="'   a. Forward rate agreements   '">
 												</td>
 												<td style="text-align: right; 
 																							 vertical-align: middle; 
@@ -3173,11 +3167,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">29</td>
-												<td id="ROW11" style="
+												<td id="R38_PRODUCT" style="
 																							  text-align: r;
 																							  vertical-align: middle;
 																							  font-weight: normal; padding-left:1%;
-																							" th:title="${report.R38_PRODUCT}" th:text="${report.R38_PRODUCT}">
+																							" th:text="' FXSwap  '">
 												</td>
 												<td style="text-align: right; 
 																							 vertical-align: middle; 
@@ -3234,7 +3228,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">30</td>
-												<td id="ROW11" style="
+												<td id="R39_PRODUCT" style="
 																								white-space: normal;
 																								  word-wrap: break-word;
 																								  max-width: 220px;
@@ -3243,7 +3237,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																								  vertical-align: middle;
 																								  font-weight: normal;
 																								  padding-left:1%;
-																								" th:title="${report.R39_PRODUCT}" th:text="${report.R39_PRODUCT}">
+																								" th:text="' FXForward  '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3301,11 +3295,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">31</td>
-												<td id="ROW11" style="
+												<td id="R40_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight:normal; padding-left:1%;
-																									" th:title="${report.R40_PRODUCT}" th:text="${report.R40_PRODUCT}">
+																									" th:text="'iii. Others (SPECIFY)   '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3361,11 +3355,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">32</td>
-												<td id="ROW11" style="
+												<td id="R41_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight: bold;
-																									" th:title="${report.R41_PRODUCT}" th:text="${report.R41_PRODUCT}">
+																									" th:text="' Commodities  '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3422,7 +3416,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">33</td>
-												<td id="ROW11" style="
+												<td id="R42_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -3431,7 +3425,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1%;
-																									" th:title="${report.R42_PRODUCT}" th:text="${report.R42_PRODUCT}">
+																									" th:text="'    i. Metals (eg silver, copper, aluminium)  '">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -3489,11 +3483,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">34</td>
-												<td id="ROW11" style="
+												<td id="R43_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight: normal; padding-left:1%;
-																									" th:title="${report.R43_PRODUCT}" th:text="${report.R43_PRODUCT}">
+																									" th:text="'    ii. Agriculture (eg maize, pork, soya etc)  '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3549,11 +3543,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">35</td>
-												<td id="ROW11" style="
+												<td id="R44_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight: normal; padding-left:1%;
-																									" th:title="${report.R44_PRODUCT}" th:text="${report.R44_PRODUCT}">
+																									" th:text="'   iii. Commodity derivatives:   '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3610,7 +3604,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">36</td>
-												<td id="ROW11" style="
+												<td id="R45_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -3619,7 +3613,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1.5%;
-																									" th:title="${report.R45_PRODUCT}" th:text="${report.R45_PRODUCT}">
+																									" th:text="'       a. Futures relating to individual commodities '">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -3677,11 +3671,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">37</td>
-												<td id="ROW11" style="
+												<td id="R46_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight:normal; padding-left:1.5%;
-																									" th:title="${report.R46_PRODUCT}" th:text="${report.R46_PRODUCT}">
+																									" th:text="'     b. Forwards relating to individual commodities   '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3739,7 +3733,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">38</td>
-												<td id="ROW11" style="
+												<td id="R47_PRODUCT" style="
 																									white-space: normal;
 																									  word-wrap: break-word;
 																									  max-width: 220px;
@@ -3748,7 +3742,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																									  vertical-align: middle;
 																									  font-weight: normal;
 																									  padding-left:1.5%;
-																									" th:title="${report.R47_PRODUCT}" th:text="${report.R47_PRODUCT}">
+																									" th:text="'      c. Commodity swap  '">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -3806,11 +3800,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">39</td>
-												<td id="ROW11" style="
+												<td id="R48_PRODUCT" style="
 																									  text-align: r;
 																									  vertical-align: middle;
 																									  font-weight:normal; padding-left:1.5%;
-																									" th:title="${report.R48_PRODUCT}" th:text="${report.R48_PRODUCT}">
+																									" th:text="'      d. Commodity options  '">
 												</td>
 												<td style="text-align: right; 
 																									 vertical-align: middle; 
@@ -3866,11 +3860,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">40</td>
-												<td id="ROW11" style="
+												<td id="R49_PRODUCT" style="
 																											  text-align: r;
 																											  vertical-align: middle;
 																											  font-weight: normal; padding-left:1%;
-																											" th:title="${report.R49_PRODUCT}" th:text="${report.R49_PRODUCT}">
+																											" th:text="'   iv. Other (SPECIFY)   '">
 												</td>
 												<td style="text-align: right; 
 																											 vertical-align: middle; 
@@ -3926,11 +3920,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">41</td>
-												<td id="ROW11" style="
+												<td id="R50_PRODUCT" style="
 																										  text-align: r;
 																										  vertical-align: middle;
 																										  font-weight: bold;
-																										" th:title="${report.R50_PRODUCT}" th:text="${report.R50_PRODUCT}">
+																										" th:text="' Other Derivatives   '">
 												</td>
 												<td style="text-align: right; 
 																										 vertical-align: middle; 
@@ -3987,7 +3981,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 											<tr>
 												<td style="width:5%; text-align:right;">42</td>
-												<td id="ROW11" style="
+												<td id="R51_PRODUCT" style="
 																											white-space: normal;
 																											  word-wrap: break-word;
 																											  max-width: 220px;
@@ -3996,7 +3990,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																											  vertical-align: middle;
 																											  font-weight: normal;
 																											  padding-left:1%;
-																											" th:title="${report.R51_PRODUCT}" th:text="${report.R51_PRODUCT}">
+																											" th:text="'     i. Credit default swap '">
 												</td>
 												<td style="text-align: right; 
 																												 vertical-align: middle; 
@@ -4054,7 +4048,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">43</td>
-												<td id="ROW11" style="
+												<td id="R52_PRODUCT" style="
 																															white-space: normal;
 																															  word-wrap: break-word;
 																															  max-width: 220px;
@@ -4063,7 +4057,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																															  vertical-align: middle;
 																															  font-weight: normal;
 																															  padding-left:1%;
-																															" th:title="${report.R52_PRODUCT}" th:text="${report.R52_PRODUCT}">
+																															" th:text="'    ii. Credit spread option  '">
 												</td>
 												<td style="text-align: right; 
 																																 vertical-align: middle; 
@@ -4121,7 +4115,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">44</td>
-												<td id="ROW11" style="
+												<td id="R53_PRODUCT" style="
 																														white-space: normal;
 																														  word-wrap: break-word;
 																														  max-width: 220px;
@@ -4130,7 +4124,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																														  vertical-align: middle;
 																														  font-weight: normal;
 																														  padding-left:1%;
-																														" th:title="${report.R53_PRODUCT}" th:text="${report.R53_PRODUCT}">
+																														" th:text="'    iii. Total return swap  '">
 												</td>
 												<td style="text-align: right; 
 																															 vertical-align: middle; 
@@ -4188,7 +4182,7 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">45</td>
-												<td id="ROW11" style="
+												<td id="R54_PRODUCT" style="
 																														white-space: normal;
 																														  word-wrap: break-word;
 																														  max-width: 220px;
@@ -4197,7 +4191,7 @@ PURPOSE		: BRRS MANUAL REPORT
 																														  vertical-align: middle;
 																														  font-weight: normal;
 																														  padding-left:1%;
-																														" th:title="${report.R54_PRODUCT}" th:text="${report.R54_PRODUCT}">
+																														" th:text="'   iv. Other derivatives (SPECIFY)   '">
 												</td>
 												<td style="text-align: right; 
 																															 vertical-align: middle; 
@@ -4255,11 +4249,11 @@ PURPOSE		: BRRS MANUAL REPORT
 											</tr>
 											<tr>
 												<td style="width:5%; text-align:right;">46</td>
-												<td id="ROW11" style="
+												<td id="R55_PRODUCT" style="
 																													  text-align: r;
 																													  vertical-align: middle;
 																													  font-weight: bold;
-																													" th:title="${report.R55_PRODUCT}" th:text="${report.R55_PRODUCT}">
+																													" th:text="'TOTAL    '">
 												</td>
 												<td style="text-align: right; 
 																													 vertical-align: middle; 

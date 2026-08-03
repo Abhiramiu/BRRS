@@ -327,101 +327,101 @@ PURPOSE		: BWRBRREPORT
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-						    var reportid = button.getAttribute('data-reportid');
-						    var asondate = button.getAttribute('data-asondate');
-						    var fromdate = button.getAttribute('data-fromdate');
-						    var todate = button.getAttribute('data-todate');
-						    var currency = button.getAttribute('data-currency');
-						    var subreportid = button.getAttribute('data-subreportid');
-						    var secid = button.getAttribute('data-secid');
-						    var dtltype = button.getAttribute('data-dtltype');
-						    var filename = button.getAttribute('data-filename');
-						    var type = button.getAttribute('data-type');
-						    var version = button.getAttribute('data-version');
-						    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-						    if (format === null) {
-						        format = '';   // treat as null
-						    }
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-						    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-						    $.ajax({
-						        url: './downloadExcel?reportid=' + reportid +
-						             '&fromdate=' + fromdate +
-						             '&asondate=' + asondate +
-						             '&todate=' + todate +
-						             '&currency=' + currency +
-						             '&subreportid=' + subreportid +
-						             '&secid=' + secid +
-						             '&filename=' + filename +
-						             '&type=' + type +
-						             '&version=' + version +
-						             '&format=' + format,
-						        type: 'GET',
-						        xhrFields: {
-						            responseType: 'blob'
-						        },
-						        success: function (data) {
-						            $('#loader').modal('hide');
-						            if (data && data.size > 100) {
-						                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-						                const url = window.URL.createObjectURL(blob);
-						                const a = document.createElement('a');
-						                a.style.display = 'none';
-						                a.href = url;
-						                a.download = filename;
-						                document.body.appendChild(a);
-						                a.click();
-						                window.URL.revokeObjectURL(url);
-						                document.body.removeChild(a);
-						                showResultModal('BRRS', filename + ' downloaded successfully.');
-						            } else {
-						                showResultModal('Information', 'No data was available to create a download.');
-						            }
-						        },
-						        error: function () {
-						            $('#loader').modal('hide');
-						            showResultModal('Error', 'An error occurred while downloading the file.');
-						        }
-						    });
-						}
-		
-		
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 
@@ -495,7 +495,7 @@ PURPOSE		: BWRBRREPORT
 				"R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS", "R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
 				"R12_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "R13_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
 				"R14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "R15_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
-				"R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS","R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS" , "R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS",
+				"R12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS", "R13_CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "R14_CREDIT_EQUIVALENT_INTEREST_CONTRACTS",
 				"R15_CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "R15_APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS", "R12_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
 				"R13_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS", "R14_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS", "R15_RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
 				"R24_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "R24_TOTAL_CURRENT_EQUITY_CONTRACTS",
@@ -934,7 +934,7 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculate_R13_PFCE_EXCHANGE);
 		});
 
-			
+
 		function calculate_R14_PFCE_EXCHANGE() {
 
 			function getVal(id) {
@@ -1055,7 +1055,7 @@ PURPOSE		: BWRBRREPORT
 
 		});
 
-	
+
 		function calculateR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS() {
 
 			function getVal(id) {
@@ -1384,8 +1384,8 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR14_POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS);
 		});
 
-		
-//---------------------------------		R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
+
+		//---------------------------------		R21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1415,9 +1415,9 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR21_CREDIT_EQUIVALENT_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//---------------------------------		R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
+		//---------------------------------		R22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1447,9 +1447,9 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR22_CREDIT_EQUIVALENT_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//---------------------------------		R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
+		//---------------------------------		R23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1479,11 +1479,11 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR23_CREDIT_EQUIVALENT_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
 
 
-//---------------------------------		R21RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
+		//---------------------------------		R21RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR21RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1513,8 +1513,8 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR21RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
-//---------------------------------		R22RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
+		//-------------------------------------------------------------
+		//---------------------------------		R22RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR22RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1544,9 +1544,9 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR22RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//---------------------------------		R23RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
+		//---------------------------------		R23RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS   - ---------------------------------
 		function calculateR23RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS() {
 
 			function getVal(id) {
@@ -1576,14 +1576,14 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR23RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS);
 		});
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//-----------------------------------------------RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS----------------------------------------------------
-		
+		//-----------------------------------------------RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS----------------------------------------------------
+
 		[21, 22, 23].forEach(function (num) {
-			
+
 			// 1️⃣ CREDIT EQUIVALENT = TOTAL_CURRENT + PFCE
-			 function calcCreditEquivalents() {
+			function calcCreditEquivalents() {
 				let total =
 					getVal(`R${num}_TOTAL_CURRENT_PRECIOUS_CONTRACTS`) +
 					getVal(`R${num}_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS`);
@@ -1591,7 +1591,7 @@ PURPOSE		: BWRBRREPORT
 				$(`#R${num}_CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS`).val(
 					total.toLocaleString("en-IN", {maximumFractionDigits: 0})
 				);
-			} 
+			}
 
 			// 2️⃣ RISK WEIGHTED ASSET = CREDIT_EQUIVALENT * APPLICABLE_COUNTERPARTY
 			function calcRiskWeightedAssets() {
@@ -1620,10 +1620,10 @@ PURPOSE		: BWRBRREPORT
 			});
 
 		});
-//---------------------------------------------------------------------------------------------------
+		//---------------------------------------------------------------------------------------------------
 
-	//---------------------------------		R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
-	
+		//---------------------------------		R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
+
 		function calculateR21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
 
 			function getVal(id) {
@@ -1658,10 +1658,10 @@ PURPOSE		: BWRBRREPORT
 		});
 
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//---------------------------------		R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
-	
+		//---------------------------------		R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
+
 		function calculateR22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
 
 			function getVal(id) {
@@ -1696,10 +1696,10 @@ PURPOSE		: BWRBRREPORT
 		});
 
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
-//---------------------------------		R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
-	
+		//---------------------------------		R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS   -----------------------------------
+
 		function calculateR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS() {
 
 			function getVal(id) {
@@ -1734,7 +1734,7 @@ PURPOSE		: BWRBRREPORT
 		});
 
 
-//-------------------------------------------------------------
+		//-------------------------------------------------------------
 
 		function calculateR24POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS() {
 
@@ -1829,9 +1829,9 @@ PURPOSE		: BWRBRREPORT
 				.on("input", calculateR24RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS);
 		});
 
-//-----------------------------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------------------------
 
-	function calculateR24POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
+		function calculateR24POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -1842,7 +1842,7 @@ PURPOSE		: BWRBRREPORT
 				let val = el.val() || el.text();
 				return parseFloat((val || "0").replace(/,/g, "")) || 0;
 			}
-		//	R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE
+			//	R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE
 			let TOTAL =
 				getVal("R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS") +
 				getVal("R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS") +
@@ -1859,7 +1859,7 @@ PURPOSE		: BWRBRREPORT
 			$("#R21_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS, #R22_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS, #R23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS")
 				.on("input", calculateR24POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS);
 		});
-//-----------------------------------------------
+		//-----------------------------------------------
 		function calculateR24CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS() {
 
 			function getVal(id) {
@@ -1921,11 +1921,11 @@ PURPOSE		: BWRBRREPORT
 	       #R23_RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS")
 				.on("input", calculateR24RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS);
 		});
-		
-//--------------------------------------------------------------------------------------------------------------------		
-//------------------------------------------DEBT_CONTRACTS----------------------------------------------------------------------------
 
-function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
+		//--------------------------------------------------------------------------------------------------------------------		
+		//------------------------------------------DEBT_CONTRACTS----------------------------------------------------------------------------
+
+		function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -1957,8 +1957,8 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 			$("#R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
 				.on("input", calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS);
 		});
-		
-//----------------------------------------		
+
+		//----------------------------------------		
 		function calculateR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 
 			function getVal(id) {
@@ -1991,7 +1991,7 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 			$("#R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
 				.on("input", calculateR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS);
 		});
-//----------------------------------------			
+		//----------------------------------------			
 		function calculateR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 
 			function getVal(id) {
@@ -2024,12 +2024,12 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 			$("#R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
 				.on("input", calculateR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS);
 		});
-//---------------------------------------
+		//---------------------------------------
 
-[30, 31, 32].forEach(function (num) {
-			
+		[30, 31, 32].forEach(function (num) {
+
 			// 1️⃣ CREDIT EQUIVALENT = TOTAL_CURRENT + PFCE
-			 function calcCreditEquivalentss() {
+			function calcCreditEquivalentss() {
 				let total =
 					getVal(`R${num}_TOTAL_CURRENT_DEBT_CONTRACTS`) +
 					getVal(`R${num}_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS`);
@@ -2037,7 +2037,7 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 				$(`#R${num}_CREDIT_EQUIVALENT_DEBT_CONTRACTS`).val(
 					total.toLocaleString("en-IN", {maximumFractionDigits: 0})
 				);
-			} 
+			}
 
 			// 2️⃣ RISK WEIGHTED ASSET = CREDIT_EQUIVALENT * APPLICABLE_COUNTERPARTY
 			function calcRiskWeightedAssetss() {
@@ -2066,9 +2066,9 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS() {
 			});
 
 		});
-//---------------------------------------------------------------
+		//---------------------------------------------------------------
 
-function calculateAllR33DEBTCONTRACTS() {
+		function calculateAllR33DEBTCONTRACTS() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -2116,10 +2116,10 @@ function calculateAllR33DEBTCONTRACTS() {
 			$("[id^='R30_'], [id^='R31_'], [id^='R32_']")
 				.on("input", calculateAllR33DEBTCONTRACTS);
 		});
-//----------------------------------------
+		//----------------------------------------
 
-	function calculateR33PRINCIPALAMOUNTDEBTCONTRACTS() {
-	
+		function calculateR33PRINCIPALAMOUNTDEBTCONTRACTS() {
+
 			function getVal(id) {
 				let el = $("#" + id);
 				if (el.length === 0) {
@@ -2145,11 +2145,11 @@ function calculateAllR33DEBTCONTRACTS() {
 				.on("input", calculateR33PRINCIPALAMOUNTDEBTCONTRACTS);
 		});
 
-//--------------------------------------------------------------END---------------------------------------------------------
+		//--------------------------------------------------------------END---------------------------------------------------------
 
-//------------------------------------------CREDIT_CONTRACTS----------------------------------------------------------------------------
+		//------------------------------------------CREDIT_CONTRACTS----------------------------------------------------------------------------
 
-function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
+		function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -2181,8 +2181,8 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 			$("#R30_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS")
 				.on("input", calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS);
 		});
-		
-//----------------------------------------		
+
+		//----------------------------------------		
 		function calculateR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 
 			function getVal(id) {
@@ -2215,7 +2215,7 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 			$("#R31_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS")
 				.on("input", calculateR31_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS);
 		});
-//----------------------------------------			
+		//----------------------------------------			
 		function calculateR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 
 			function getVal(id) {
@@ -2248,12 +2248,12 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 			$("#R32_PRINCIPAL_AMOUNT_CREDIT_CONTRACTS")
 				.on("input", calculateR32_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS);
 		});
-//---------------------------------------
+		//---------------------------------------
 
-[30, 31, 32].forEach(function (num) {
-			
+		[30, 31, 32].forEach(function (num) {
+
 			// 1️⃣ CREDIT EQUIVALENT = TOTAL_CURRENT + PFCE
-			 function calcCreditEquivalentss() {
+			function calcCreditEquivalentss() {
 				let total =
 					getVal(`R${num}_TOTAL_CURRENT_CREDIT_CONTRACTS`) +
 					getVal(`R${num}_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS`);
@@ -2261,7 +2261,7 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 				$(`#R${num}_CREDIT_EQUIVALENT_CREDIT_CONTRACTS`).val(
 					total.toLocaleString("en-IN", {maximumFractionDigits: 0})
 				);
-			} 
+			}
 
 			// 2️⃣ RISK WEIGHTED ASSET = CREDIT_EQUIVALENT * APPLICABLE_COUNTERPARTY
 			function calcRiskWeightedAssetss() {
@@ -2290,9 +2290,9 @@ function calculateR30_POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS() {
 			});
 
 		});
-//---------------------------------------------------------------
+		//---------------------------------------------------------------
 
-function calculateAllR33() {
+		function calculateAllR33() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -2340,10 +2340,38 @@ function calculateAllR33() {
 			$("[id^='R30_'], [id^='R31_'], [id^='R32_']")
 				.on("input", calculateAllR33);
 		});
-//----------------------------------------
+		//----------------------------------------
 
-/* 	function calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS() {
-	
+		/* 	function calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS() {
+			
+					function getVal(id) {
+						let el = $("#" + id);
+						if (el.length === 0) {
+							console.warn("Missing element:", id);
+							return 0;
+						}
+						let val = el.val() || el.text();
+						return parseFloat(val.replace(/,/g, "")) || 0;
+					}
+		
+					let TOTAL = getVal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
+						getVal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
+						getVal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS");
+		
+					$("#R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS").val(
+						TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 0})
+					);
+				}
+		
+				$(document).ready(function () {
+					calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
+					$("#R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
+						.on("input", calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS);
+				});
+		 */
+		//--------------------------------------------------------------END---------------------------------------------------------
+		//------------------------------------------DERIVATIVE_CONTRACTS----------------------------------------------------------------------------
+		function valCreditEquivalentAmt43() {
 			function getVal(id) {
 				let el = $("#" + id);
 				if (el.length === 0) {
@@ -2353,43 +2381,12 @@ function calculateAllR33() {
 				let val = el.val() || el.text();
 				return parseFloat(val.replace(/,/g, "")) || 0;
 			}
+			var Positive_Net_Relacement = getVal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS");
+			var AddonfortheNettedTransactions = getVal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
 
-			let TOTAL = getVal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
-				getVal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
-				getVal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS");
+			let TOTAL = Positive_Net_Relacement + AddonfortheNettedTransactions;
 
-			$("#R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS").val(
-				TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 0})
-			);
-		}
-
-		$(document).ready(function () {
-			calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
-			$("#R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
-				.on("input", calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS);
-		});
- */
-//--------------------------------------------------------------END---------------------------------------------------------
-//------------------------------------------DERIVATIVE_CONTRACTS----------------------------------------------------------------------------
-function valCreditEquivalentAmt43()
- {
-	 function getVal(id)
-	 {
-		let el = $("#" + id);
-		if(el.length === 0)
-			{
-			console.warn("Missing element:", id);
-			   return 0;
-			}
-		let val = el.val() || el.text();
-		return parseFloat(val.replace(/,/g, "")) || 0;
-	 }
-	 var Positive_Net_Relacement = getVal("R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS");
-	 var AddonfortheNettedTransactions = getVal("R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
-	
-	 let TOTAL = Positive_Net_Relacement + AddonfortheNettedTransactions ;
-	
-	 $("#R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS").val(
+			$("#R43_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS").val(
 				TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 2})
 			);
 		}
@@ -2400,26 +2397,23 @@ function valCreditEquivalentAmt43()
 			$("#R43_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS , #R43_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
 				.on("input", valCreditEquivalentAmt43);
 		});
-//--------------------------------------------------------------------
-function valCreditEquivalentAmt44()
- {
-	 function getVal(id)
-	 {
-		let el = $("#" + id);
-		if(el.length === 0)
-			{
-			console.warn("Missing element:", id);
-			   return 0;
+		//--------------------------------------------------------------------
+		function valCreditEquivalentAmt44() {
+			function getVal(id) {
+				let el = $("#" + id);
+				if (el.length === 0) {
+					console.warn("Missing element:", id);
+					return 0;
+				}
+				let val = el.val() || el.text();
+				return parseFloat(val.replace(/,/g, "")) || 0;
 			}
-		let val = el.val() || el.text();
-		return parseFloat(val.replace(/,/g, "")) || 0;
-	 }
-	 var Positive_Net_Relacement = getVal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS");
-	 var AddonfortheNettedTransactions = getVal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
-	
-	 let TOTAL = Positive_Net_Relacement + AddonfortheNettedTransactions ;
-	
-	 $("#R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS").val(
+			var Positive_Net_Relacement = getVal("R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS");
+			var AddonfortheNettedTransactions = getVal("R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
+
+			let TOTAL = Positive_Net_Relacement + AddonfortheNettedTransactions;
+
+			$("#R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS").val(
 				TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 2})
 			);
 		}
@@ -2430,12 +2424,12 @@ function valCreditEquivalentAmt44()
 			$("#R44_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS , #R44_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS")
 				.on("input", valCreditEquivalentAmt44);
 		});
-//---------------------------------------------------------------------
+		//---------------------------------------------------------------------
 
-[43,44].forEach(function (num) {
-			
+		[43, 44].forEach(function (num) {
+
 			// 1️⃣ CREDIT EQUIVALENT = TOTAL_CURRENT + PFCE
-			 function calcCreditEquivalentss() {
+			function calcCreditEquivalentss() {
 				let total =
 					getVal(`R${num}_POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS`) +
 					getVal(`R${num}_ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS`);
@@ -2443,7 +2437,7 @@ function valCreditEquivalentAmt44()
 				$(`#R${num}_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS`).val(
 					total.toLocaleString("en-IN", {maximumFractionDigits: 0})
 				);
-			} 
+			}
 
 			// 2️⃣ RISK WEIGHTED ASSET = CREDIT_EQUIVALENT * APPLICABLE_COUNTERPARTY
 			function calcRiskWeightedAssetss() {
@@ -2473,8 +2467,8 @@ function valCreditEquivalentAmt44()
 
 		});
 
-//---------------------------------------------------------------------
-function calculateAllR45() {
+		//---------------------------------------------------------------------
+		function calculateAllR45() {
 
 			function getVal(id) {
 				let el = $("#" + id);
@@ -2493,7 +2487,7 @@ function calculateAllR45() {
 
 			// FIELDS TO CALCULATE
 			const FIELDS = [
-				"POSITIVE_NET_REPLACEMENT", 
+				"POSITIVE_NET_REPLACEMENT",
 				"ADDON_FOR_NETTED",
 				"CREDIT_EQUIVALENT",
 				"APPLICABLE_COUNTERPARTY",
@@ -2505,9 +2499,9 @@ function calculateAllR45() {
 
 					let R43 = getVal("R43_" + field + "_" + contractType);
 					let R44 = getVal("R44_" + field + "_" + contractType);
-					
 
-					let TOTAL = R43 + R44 ; 
+
+					let TOTAL = R43 + R44;
 
 					$("#R45_" + field + "_" + contractType).val(
 						TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 0})
@@ -2524,36 +2518,36 @@ function calculateAllR45() {
 			$("[id^='R43_'], [id^='R44_']")
 				.on("input", calculateAllR45);
 		});
-//----------------------------------------
+		//----------------------------------------
 
-/* 	function calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS() {
-	
-			function getVal(id) {
-				let el = $("#" + id);
-				if (el.length === 0) {
-					console.warn("Missing element:", id);
-					return 0;
+		/* 	function calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS() {
+			
+					function getVal(id) {
+						let el = $("#" + id);
+						if (el.length === 0) {
+							console.warn("Missing element:", id);
+							return 0;
+						}
+						let val = el.val() || el.text();
+						return parseFloat(val.replace(/,/g, "")) || 0;
+					}
+		
+					let TOTAL = getVal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
+						getVal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
+						getVal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS");
+		
+					$("#R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS").val(
+						TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 0})
+					);
 				}
-				let val = el.val() || el.text();
-				return parseFloat(val.replace(/,/g, "")) || 0;
-			}
-
-			let TOTAL = getVal("R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
-				getVal("R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS") +
-				getVal("R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS");
-
-			$("#R33_PRINCIPAL_AMOUNT_DEBT_CONTRACTS").val(
-				TOTAL.toLocaleString("en-IN", {maximumFractionDigits: 0})
-			);
-		}
-
-		$(document).ready(function () {
-			calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
-			$("#R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
-				.on("input", calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS);
-		});
- */
-//--------------------------------------------------------------END---------------------------------------------------------
+		
+				$(document).ready(function () {
+					calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
+					$("#R30_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R31_PRINCIPAL_AMOUNT_DEBT_CONTRACTS, #R32_PRINCIPAL_AMOUNT_DEBT_CONTRACTS")
+						.on("input", calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS);
+				});
+		 */
+		//--------------------------------------------------------------END---------------------------------------------------------
 
 
 
@@ -2605,7 +2599,7 @@ function calculateAllR45() {
 
 			// PRINCIPAL
 			let principal = getVal("R21_PRINCIPAL_AMOUNT_EQUITY_CONTRACTS");
-          
+
 			// FIXED MULTIPLIER = 6.0
 			let multiplier = 6.0;
 
@@ -2690,7 +2684,7 @@ function calculateAllR45() {
 				.on("input", calculateR23_POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS);
 		});
 
-		
+
 
 
 	</SCRIPT>
@@ -2723,7 +2717,7 @@ function calculateAllR45() {
 			calculateR15PRINCIPALAMOUNTINTERESTCONTRACTS();
 			calculateR24PRINCIPALAMOUNTEXCHANGECONTRACTS();
 			calculateR24PRINCIPALAMOUNTINTERESTCONTRACTS();
-		//	calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
+			//	calculateR33PRINCIPALAMOUNTEXCHANGECONTRACTS();
 			calculateR33PRINCIPALAMOUNTINTERESTCONTRACTS();
 			calculateR45_PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS();
 			calculate_R12_PFCE_EXCHANGE();
@@ -2731,10 +2725,10 @@ function calculateAllR45() {
 			calculate_R14_PFCE_EXCHANGE();
 			calculateR12_CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS();
 			calculateR12_CREDIT_EQUIVALENT_INTEREST_CONTRACTS();
-			
+
 			var value = $("#R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS").val();
 			alert("R15 Value: " + value);
-			
+
 			// Step 2: Remove commas AND percentage signs
 			$("#fileupload input[type='text']").each(function () {
 				let v = $(this).val();
@@ -2962,7 +2956,7 @@ function calculateAllR45() {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin-right: 10px; margin: 0 10px;">
-							Monthly Schedule M-SRWA 12d: Counterparty Exposures - OTC Derivative Contracts </h5>
+							Monthly Schedule M-SRWA 12d: Counterparty <br> Exposures - OTC Derivative Contracts </h5>
 					</div>
 					<!-- Moving bus-board text -->
 					<div class="boards">
@@ -2984,8 +2978,8 @@ function calculateAllR45() {
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and displaymode == 'summary' and type != 'ARCHIVAL'}"
-							id="addRecord">
+							title="Click to EDIT Records"
+							th:if="${role == 'M' and displaymode == 'summary' and type != 'ARCHIVAL'}" id="addRecord">
 							Modify
 						</button>
 
@@ -3021,29 +3015,23 @@ function calculateAllR45() {
 											    			 data-version=${version}" onclick="downloadfile(this);">Email
 							<i class="fa fa-download"></i>
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -3068,7 +3056,7 @@ function calculateAllR45() {
 					</div>
 
 				</div>
-				
+
 				<p th:if="${displaymode == 'summary'and type != 'ARCHIVAL' and type != 'RESUB'}" style="text-align: left; font-weight: bold; 
 						color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
 						margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M SRWA 12D</p>
@@ -3105,10 +3093,10 @@ function calculateAllR45() {
 						          margin-top:10px; margin-bottom:10px; padding: 5px;">
 					Resubmission Detail View - M SRWA 12D
 				</p>
-				
-				
-				
-				
+
+
+
+
 				<div th:if="${displaymode == 'summary' || displaymode == 'detail'}">
 					<div class="row">
 						<div class="col-sm-12">
@@ -3253,7 +3241,7 @@ function calculateAllR45() {
 														th:value="${report.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS != null ? #numbers.formatDecimal(report.R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS, 1, 0, 'POINT') : '1%'}"
 														id="R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
 														name="R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
-														style="background-color:#FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: center;"
+														style="background-color:#FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 
 												</td>
@@ -3354,7 +3342,7 @@ function calculateAllR45() {
                      #numbers.formatDecimal(report.R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS, 1, 0, 'POINT') : '0'}"
 														id="R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
 														name="R12_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
-														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: center;"
+														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
 
@@ -3460,7 +3448,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '5%'}"
 														id="R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
 														name="R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -3565,7 +3553,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS,1, 'COMMA', 0, 'POINT') : '0.5'}"
 														id="R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
 														name="R13_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -3668,7 +3656,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '8%'}"
 														id="R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
 														name="R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -3770,7 +3758,7 @@ function calculateAllR45() {
                        #numbers.formatDecimal(report.R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '1.5'}"
 														id="R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
 														name="R14_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -3979,7 +3967,7 @@ function calculateAllR45() {
                        #numbers.formatDecimal(report.R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
 														name="R15_POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -4165,7 +4153,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '6.0'}"
 														id="R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
 														name="R21_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS" style="background-color:#FFFFFF; height:28px; 
-                      border-color:transparent; text-align:center;" readonly />
+                      border-color:transparent; text-align:right;" readonly />
 												</td>
 
 												<!-- PFCE VALUE -->
@@ -4262,7 +4250,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '7.0'}"
 														id="R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
 														name="R21_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS" style="background-color:#FFFFFF; height:28px; border-color:transparent; 
-                      text-align:center;" readonly />
+                      text-align:right;" readonly />
 												</td>
 
 												<!-- PFCE VALUE -->
@@ -4363,7 +4351,7 @@ function calculateAllR45() {
                          #numbers.formatDecimal(report.R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '8.0'}"
 														id="R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
 														name="R22_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS" style="background-color:#FFFFFF; height:28px; 
-                      border-color:transparent; text-align:center;" readonly />
+                      border-color:transparent; text-align:right;" readonly />
 												</td>
 
 												<!-- PFCE VALUE -->
@@ -4461,7 +4449,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '7.0'}"
 														id="R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
 														name="R22_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -4561,7 +4549,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '10.0'}"
 														id="R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
 														name="R23_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -4657,7 +4645,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '8.0'}"
 														id="R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
 														name="R23_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -4757,7 +4745,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
 														name="R24_POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -4855,7 +4843,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
 														name="R24_POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5039,7 +5027,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
 														name="R30_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5136,7 +5124,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '10.0'}"
 														id="R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
 														name="R30_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5236,7 +5224,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
 														name="R31_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5333,7 +5321,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS, 1, 'COMMA', 0, 'POINT') : '12.0'}"
 														id="R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
 														name="R31_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5435,7 +5423,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS,1,'COMMA',0,'POINT') : '0'}"
 														id="R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
 														name="R32_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5531,7 +5519,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS,1,'COMMA',0,'POINT') : '15.0'}"
 														id="R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
 														name="R32_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5630,7 +5618,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS,1,'COMMA',0,'POINT') : '0'}"
 														id="R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
 														name="R33_POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5726,7 +5714,7 @@ function calculateAllR45() {
                       #numbers.formatDecimal(report.R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS,1,0,'POINT') : '0'}"
 														id="R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
 														name="R33_POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:center;"
+														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:right;"
 														readonly />
 												</td>
 
@@ -5776,10 +5764,13 @@ function calculateAllR45() {
 											</tr>
 
 										</tbody>
-
+									</table>
+									<table
+										class="sticky-header-table table table-bordered table-hover table-sm table-condensed"
+										id="reports">
 										<thead class="thead-light">
 											<tr>
-												<th colspan="9"
+												<th colspan="8"
 													style="text-align: left; padding-left: 20px; width: 900px;">
 													OTC Derivatives Transactions and Credit Derivative Contracts subject
 													to Bilateral Netting</th>
