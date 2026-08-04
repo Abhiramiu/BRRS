@@ -518,9 +518,9 @@ public class BRRS_M_SFINP2_ReportService {
 
 			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
 				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInpula(newacctBalanceInpula);
+				if (existing.getAcctBalanceInPula() == null
+						|| existing.getAcctBalanceInPula().compareTo(newacctBalanceInpula) != 0) {
+					existing.setAcctBalanceInPula(newacctBalanceInpula);
 					isChanged = true;
 					logger.info("Balance updated to {}", newacctBalanceInpula);
 				}
@@ -732,8 +732,8 @@ public class BRRS_M_SFINP2_ReportService {
 					row.createCell(2).setCellValue(item.getAcctName());
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
@@ -864,8 +864,8 @@ public class BRRS_M_SFINP2_ReportService {
 
 					// ACCT BALANCE (right aligned, 3 decimal places)
 					Cell balanceCell = row.createCell(3);
-					if (item.getAcctBalanceInpula() != null) {
-						balanceCell.setCellValue(item.getAcctBalanceInpula().doubleValue());
+					if (item.getAcctBalanceInPula() != null) {
+						balanceCell.setCellValue(item.getAcctBalanceInPula().doubleValue());
 					} else {
 						balanceCell.setCellValue(0);
 					}
@@ -11849,7 +11849,7 @@ public class BRRS_M_SFINP2_ReportService {
 		private String dataEntryVersion;
 
 		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
+		private BigDecimal acctBalanceInPula;
 
 		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -12009,12 +12009,12 @@ public class BRRS_M_SFINP2_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public Date getReportDate() {
@@ -14911,7 +14911,7 @@ public class BRRS_M_SFINP2_ReportService {
 		private String reportVersion;
 
 		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
+		private BigDecimal acctBalanceInPula;
 
 		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -15040,12 +15040,12 @@ public class BRRS_M_SFINP2_ReportService {
 			this.reportVersion = reportVersion;
 		}
 
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public Date getReportDate() {
@@ -17844,7 +17844,7 @@ public class BRRS_M_SFINP2_ReportService {
 		private String dataEntryVersion;
 
 		@Column(name = "ACCT_BALANCE_IN_PULA", precision = 24, scale = 3)
-		private BigDecimal acctBalanceInpula;
+		private BigDecimal acctBalanceInPula;
 
 		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
@@ -17968,12 +17968,12 @@ public class BRRS_M_SFINP2_ReportService {
 			this.dataEntryVersion = dataEntryVersion;
 		}
 
-		public BigDecimal getAcctBalanceInpula() {
-			return acctBalanceInpula;
+		public BigDecimal getAcctBalanceInPula() {
+			return acctBalanceInPula;
 		}
 
-		public void setAcctBalanceInpula(BigDecimal acctBalanceInpula) {
-			this.acctBalanceInpula = acctBalanceInpula;
+		public void setAcctBalanceInPula(BigDecimal acctBalanceInPula) {
+			this.acctBalanceInPula = acctBalanceInPula;
 		}
 
 		public Date getReportDate() {
