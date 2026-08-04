@@ -566,23 +566,23 @@ PURPOSE  : BRRSREPORT
 		}
 
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
-		
+
 		function closemodel() {
 			// Hide the modals
 			$('#alert').modal('hide');
@@ -1141,37 +1141,34 @@ PURPOSE  : BRRSREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-		                     data-asondate=${asondate}, 
-		                     data-fromdate=${fromdate}, 
-		                     data-todate=${todate}, 
-		                     data-currency=${currency},  
-		                     data-dtltype=${dtltype}, 
-		                     data-filename='ADISB2.xlsx',
-		                     data-type=${type},
-		                     data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+						                     data-asondate=${asondate}, 
+						                     data-fromdate=${fromdate}, 
+						                     data-todate=${todate}, 
+						                     data-currency=${currency},  
+						                     data-dtltype=${dtltype}, 
+						                     data-filename='ADISB2.xlsx',
+						                     data-type=${type},
+						                     data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i> Format
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 							</div>
 						</div>
-						
+
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 										    data-fromdate=${fromdate},
@@ -1808,7 +1805,7 @@ PURPOSE  : BRRSREPORT
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">ok</button>
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>

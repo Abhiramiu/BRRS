@@ -1220,7 +1220,7 @@ function fileuploads(btn) {
 
 						<!-- Modify -->
 						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary' and type=='RESUB'}"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">Modify</button>
 
@@ -1240,7 +1240,7 @@ function fileuploads(btn) {
                      data-filename='ADISB1.xlsx',
                      data-type=${type},
                      data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i>
+							<i class="fa fa-download"></i> Format
 						</button>
 						
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
@@ -1968,7 +1968,7 @@ function fileuploads(btn) {
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodels()"
-						data-dismiss="modal">ok</button>
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>

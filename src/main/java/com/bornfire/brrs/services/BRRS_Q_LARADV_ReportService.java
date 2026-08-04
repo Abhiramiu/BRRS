@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
@@ -763,6 +764,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -771,6 +773,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -842,6 +845,8 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -850,6 +855,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -921,6 +927,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -929,6 +936,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -1000,6 +1008,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -1008,6 +1017,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -1079,6 +1089,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -1087,6 +1098,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -1158,6 +1170,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private String facilityType;
 		private BigDecimal originalAmount;
 		private BigDecimal utilisationOutstandingBalance;
+		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date effectiveDate;
 		private String repaymentPeriod;
 		private String performanceStatus;
@@ -1166,6 +1179,7 @@ public class BRRS_Q_LARADV_ReportService {
 		private BigDecimal interestRate;
 		private BigDecimal outstandingBalancePercent;
 		private BigDecimal limitPercent;
+		@DateTimeFormat(pattern = "yyyy-MM-dd")
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;

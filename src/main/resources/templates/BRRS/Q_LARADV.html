@@ -4,330 +4,306 @@ CREATED BY	: KRISHNAPANDI MG
 CREATED ON	: 18.05.2026
 PURPOSE		: BRRS MANUAL REPORT
 -->
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- CSS -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
 
 
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-<link rel="stylesheet" type="text/css"
-	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
-<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
-<!-- JavaScript -->
-<!-- jQuery core (required first) -->
-<!-- ✅ Your manually placed jQuery validation
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+	<!-- ✅ Your manually placed jQuery validation
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	 <script th:src="/jquery/jquery.validate.min.js"></script>
 	 -->
-<!-- jQuery (required first) -->
-<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
-<!-- ✅ jQuery Validation -->
-<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
-<!-- Bootstrap + Others -->
-<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
-<script
-	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-<style>
-.btns {
-	float: right;
-	margin: 5px;
-}
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
 
-.col-sm-5 {
-	padding-bottom: 15px;
-}
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
 
-.list-body {
-	padding: 0px;
-}
+		.list-body {
+			padding: 0px;
+		}
 
-.error {
-	color: red;
-	padding-left: 10px;
-}
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
 
-.formline {
-	padding-bottom: 15px;
-}
+		.formline {
+			padding-bottom: 15px;
+		}
 
-.btn-primary {
-	background-color: #E77400;
-	border-color: #0c0c0c;
-}
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
+		/*.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
 	(:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
 	{
 	color: #fff;
 	background-color: #cc000000;
 	border-color: #161617;
-}
+}*/
 
-#finusertb {
-	width: 460px;
-}
+		#finusertb {
+			width: 460px;
+		}
 
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-	padding: 0px;
-}
-</style>
-<style>
-div span {
-	font-weight: bold;
-	color: white !important;
-}
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
 
-.card {
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-}
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
 
-.card-header h5 {
-	font-size: 22px;
-	color: #fff;
-	font-weight: 600;
-}
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
 
-.nav-tabs .nav-link {
-	font-weight: 500;
-	border: 1px solid #dee2e6;
-	border-bottom: none;
-	border-radius: 4px 4px 0 0;
-	background-color: #f1f1f1;
-	margin-right: 5px;
-}
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
 
-.nav-tabs .nav-link.active {
-	background-color: #ffffff;
-	border-color: #dee2e6 #dee2e6 #ffffff;
-}
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
 
-.table-responsive {
-	border: 1px solid #dee2e6;
-	border-radius: 4px;
-}
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
 
-.table-hover tbody tr:hover {
-	background-color: #f3f6f9;
-}
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
 
-thead th {
-	position: sticky;
-	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
-}
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
 
-.table td {
-	background-color: #FFFFFF;
-}
+		.table td {
+			background-color: #FFFFFF;
+		}
 
-.card-footer {
-	padding: 10px;
-	border-top: 1px solid #ccc;
-}
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
 
-.btn-xs {
-	padding: 4px 12px;
-	font-size: 14px;
-	border-radius: 4px;
-}
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
 
-#BRRSvalidation th, #usertable td {
-	vertical-align: middle;
-	text-align: left;
-	font-size: 16px;
-	font-family: Arial;
-}
+		#BRRSvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
 
-.fa-edit:hover {
-	color: #28a745;
-	transform: scale(1.1);
-}
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
 
-td {
-	border: 1px solid rgb(0, 164, 166);
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-</style>
-<style>
-.form-group {
-	position: relative;
-	margin-bottom: 1.5rem;
-}
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
 
-.form-control {
-	width: 100%;
-	border: 2px solid #ccc;
-	border-radius: 8px;
-	font-size: 1rem;
-	outline: none;
-	background: transparent;
-	transition: border-color 0.3s ease, padding-top 0.3s ease;
-}
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
 
-.error {
-	color: red;
-	padding-top: 15px;
-}
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
 
-.form-control:focus {
-	border-color: #007bff;
-}
+		.form-control:focus {
+			border-color: #007bff;
+		}
 
-.form-legend {
-	position: absolute;
-	top: 50%;
-	left: 15px;
-	transform: translateY(-50%);
-	font-size: 1rem;
-	color: #aaa;
-	background: white;
-	padding: 0 5px;
-	pointer-events: none;
-	transition: 0.3s ease;
-}
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
 
-/* When input or select is focused or has a value, move the label up */
-.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
-	)
-	 ~.form-legend {
-	top: -8px;
-	font-size: 1rem;
-	color: #007bff;
-}
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
 
-/* Hover effect when the input/select is focused */
-.form-control:focus:hover ~.form-legend {
-	color: #0056b3;
-	/* Darker shade of blue on hover */
-}
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
 
-/* Ensure the label returns to the normal color after focus or hover is removed */
-.form-control:not (:focus ) ~.form-legend {
-	color: #aaa;
-	/* Normal label color */
-}
-</style>
-<style>
-/* Red border for invalid inputs */
-input.error, select.error {
-	border: 2px solid red !important;
-}
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
 
-/* Error message style */
-label.error {
-	color: red;
-	font-size: 0.85em;
-	margin-top: 5px;
-	display: block;
-}
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
 
-.underline {
-	text-decoration: underline;
-	color: #08a6f1;
-	cursor: pointer;
-}
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
 
-.left-arrow-circle {
-	width: 35px;
-	height: 35px;
-	border-radius: 50%;
-	background-color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 10px;
-	transition: background-color 0.3s, transform 0.2s;
-}
+		.left-arrow-circle:hover i {
+			color: white;
+		}
 
-.left-arrow-circle i {
-	color: rgb(107, 122, 143);
-}
+		.white-text span {
+			color: white !important;
+		}
 
-.left-arrow-circle:hover {
-	background-color: rgb(107, 122, 143);
-	cursor: pointer;
-	transform: scale(1.05);
-	border: 2px solid white;
-}
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
 
-.left-arrow-circle:hover i {
-	color: white;
-}
+		.table-bordered td,
+		.table-bordered th {
+			border: 1px solid #000 !important;
+		}
 
-.white-text span {
-	color: white !important;
-}
+		.gray-cell {
+			background-color: rgb(107, 122, 143) !important;
+			color: white !important;
+		}
 
-.table-cell tbody td:hover {
-	background-color: #f0f0f0;
-	/* Hover color for cell */
-	cursor: pointer;
-	/* Optional: pointer cursor */
-}
-
-.table-bordered td, .table-bordered th {
-	border: 1px solid #000 !important;
-}
-
-.gray-cell {
-	background-color: rgb(107, 122, 143) !important;
-	color: white !important;
-}
-
-.graybox {
-	background-color: #BFBFBF !important;
-	color: black !important;
-}
-</style>
+		.graybox {
+			background-color: #BFBFBF !important;
+			color: black !important;
+		}
+	</style>
 
 
-<style>
-.left-arrow-circle {
-	background-color: white;
-	color: #007bff;
-	border-radius: 50%;
-	padding: 8px;
-	margin-right: 10px;
-	cursor: pointer;
-}
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
 
-/* 🚌 Bus display style box */
-/* 🚌 Bus display style box */
-/* 🚌 Bus display style box */
-					.boards {
-						transform: translateY(6px);
-					  background-color: rgb(107, 122, 143);
-					  color: white;
-					  padding: 5px 5px;
-					  border-radius: 8px;
-					  overflow: hidden;
-					  white-space: nowrap;
-					  flex: 1; /* ✅ makes it take available space dynamically */
-					  min-width: 200px;
-					  box-shadow: 0 0 10px rgb(107, 122, 143);
-					  position: relative;
-					}
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
 
 		/* ✨ Scrolling animation */
 		.scrolling-text {
@@ -348,10 +324,22 @@ label.error {
 				transform: translateX(-100%);
 			}
 		}
-</style>
-<script th:inline="javascript">
 
-let isDetailsModal = false;
+		.btn-botswana-orange {
+			background-color: #E98300 !important;
+			border-color: #E98300 !important;
+			color: white !important;
+		}
+
+		.btn-botswana-orange:hover {
+			background-color: #D67600 !important;
+			border-color: #D67600 !important;
+			color: white !important;
+		}
+	</style>
+	<script th:inline="javascript">
+
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -365,34 +353,34 @@ let isDetailsModal = false;
 			$('#loader').modal('hide');
 		});
 
-				
-		$(document).ready(function() {
-			Maker_Checker_Function(); 
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
 		});
 
 		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
 		function Maker_Checker_Function() {
 			$.ajax({
-				url: "/BRRS/getUserRole",    
+				url: "/BRRS/getUserRole",
 				type: "GET",
-				success: function(roleId) {
+				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
-				
-					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-								const button = document.getElementById("custom-tab-btnAdd");
-								if (button) button.style.display = "none";
-							}
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
 
 				},
-				error: function(err) {
+				error: function (err) {
 					console.error("Error fetching role:", err);
-		     }
-		    });
+				}
+			});
 		}
 
 
@@ -405,20 +393,20 @@ let isDetailsModal = false;
 			window.history.back();
 		}
 
-		
-function showdetails() {
-	 $('#loader').modal('show');
-	    var Callurl = /*[[@{'/Reports/' + ${reportid}(
+
+		function showdetails() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(
 	        dtltype='detail',
 	        fromdate=${fromdate},
 	        todate=${todate},
 	        type=${type},
 	        asondate=${asondate},
 	        version=${version}
-	    )}]]*/;
-	    location.href = Callurl;
+	    )}]]*/
+				location.href = Callurl;
 
-}
+		}
 
 		function showsummary() {
 			$('#loader').modal('show');
@@ -427,10 +415,10 @@ function showdetails() {
 					fromdate=${fromdate}, 
 					todate=${todate}, 
 					type=${type}, 
-					asondate=${asondate})}]]*/;
-			location.href = Callurl;
+					asondate=${asondate})}]]*/
+				location.href = Callurl;
 		}
-		
+
 		function showsummaryResub() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (
@@ -439,13 +427,13 @@ function showdetails() {
 					todate=${todate}, 
 					type='RESUB', 
 					asondate=${asondate},
-					version=${version})}]]*/;
-			location.href = Callurl;
+					version=${version})}]]*/
+				location.href = Callurl;
 		}
 
 
 	</script>
-<script>
+	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
@@ -469,82 +457,82 @@ function showdetails() {
 			activateTab(selectedTab);
 		};
 		function downloadfile(button) {
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
-		    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-		    if (format === null) {
-		        format = '';   // treat as null
-		    }
+			if (format === null) {
+				format = '';   // treat as null
+			}
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		             '&fromdate=' + fromdate +
-		             '&asondate=' + asondate +
-		             '&todate=' + todate +
-		             '&currency=' + currency +
-		             '&subreportid=' + subreportid +
-		             '&secid=' + secid +
-		             '&filename=' + filename +
-		             '&type=' + type +
-		             '&version=' + version +
-		             '&format=' + format,
-		        type: 'GET',
-		        xhrFields: {
-		            responseType: 'blob'
-		        },
-		        success: function (data) {
-		            $('#loader').modal('hide');
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-		                document.body.appendChild(a);
-		                a.click();
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModal('Error', 'An error occurred while downloading the file.');
-		        }
-		    });
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -572,188 +560,202 @@ function showdetails() {
 
 
 
-<script>
-	
+	<script>
 
-	// This function is for closing the modal after an action is complete.
-	// It hides the result and loader modals and reloads the page.
-	function closemodel() {
-    $("#resultModal").modal("hide");
-    $('#loader').modal('hide');
 
-    // Only reload if not from Details modal
-    if (!isDetailsModal) {
-        setTimeout(function () {
-            location.reload();
-        }, 300);
-    } else {
-        // reset flag for next modal usage
-        isDetailsModal = false;
-    }
-}
+		// This function is for closing the modal after an action is complete.
+		// It hides the result and loader modals and reloads the page.
+		function closemodel() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			// Only reload if not from Details modal
+			if (!isDetailsModal) {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			} else {
+				// reset flag for next modal usage
+				isDetailsModal = false;
+			}
+		}
 
 
 
 	</script>
 	<script>
 		function edit_btn_submit(a) {
-		    var srlno = a.getAttribute("id");
+			var srlno = a.getAttribute("id");
 
-		    var url = '/BRRS/Reports/BRRS_Q_LARADV/modify/' + srlno;
-		    //alert(url);
+			var url = '/BRRS/Reports/BRRS_Q_LARADV/modify/' + srlno;
+			//alert(url);
 
-		    location.href = url;
+			location.href = url;
 		}
 	</script>
-	
+
 	<script>
-		
+
 		function formatDate(dateStr) {
-		    const p = dateStr.split("-");
-		    return p[2] + "-" + p[1] + "-" + p[0];
+			const p = dateStr.split("-");
+			return p[2] + "-" + p[1] + "-" + p[0];
 		}
 
 		function saveQlaradv() {
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    $.ajax({
-		        url: './saveBRRSQlaradv',
-		        type: 'POST',
-		        data: $("#qLaradvForm").serialize(),
+			$.ajax({
+				url: './saveBRRSQlaradv',
+				type: 'POST',
+				data: $("#qLaradvForm").serialize(),
 
-		        success: function(response) {
+				success: function (response) {
 
-		            $('#loader').modal('hide');
+					$('#loader').modal('hide');
 
-		            if (response && response.toLowerCase().includes('success')) {
-		                showResultModal('BRRS', response);
-		            } else {
-		                showResultModal('Information', response || 'No data saved.');
-		            }
+					if (response && response.toLowerCase().includes('success')) {
 
-		            setTimeout(function() {
-		                window.location.reload();
-		            }, 3500);
-		        },
+						showSuccessPopup(
+							'BRRS',
+							response
+						);
 
-		        error: function(xhr, status, error) {
+					} else {
 
-		            $('#loader').modal('hide');
+						showSuccessPopup(
+							'Information',
+							response || 'No data saved.'
+						);
+					}
+				},
 
-		            console.error("Save error:", error);
+				error: function (xhr, status, error) {
 
-		            showResultModal(
-		                'Error',
-		                xhr.responseText || 'Failed to save record. Please try again.'
-		            );
+					$('#loader').modal('hide');
 
-		            setTimeout(function() {
-		                window.location.reload();
-		            }, 3500);
-		        }
-		    });
+					console.error("Save error:", error);
+
+					showSuccessPopup(
+						'Error',
+						xhr.responseText || 'Failed to save record. Please try again.'
+					);
+				}
+			});
 		}
+
 		$(function () {
 
-	/*	    $("#reportDate").datepicker({
-		        dateFormat: "dd-mm-yy"
-		    });*/
-
-		    $("#effectiveDate").datepicker({
-		        dateFormat: "dd-mm-yy"
-		    });
+			$("#effectiveDate").datepicker({
+				dateFormat: "dd-mm-yy"
+			});
 
 		});
-		
-		</script>
-<script>
-	function updateQlaradv() {
 
-	    const previousUrl = document.referrer;
+		function showSuccessPopup(title, message) {
 
-	    // Show loader
-	    $('#loader').modal('show');
+			$('#successModalLabel').text(title);
+			$('#successModalBody').text(message);
 
-	    $.ajax({
-	        url: '/BRRS/Reports/updateBRRSQlaradv',
-	        type: 'POST',
-	        data: $("#modifyQlaradvForm").serialize(),
+			$('#successModal').modal('show');
+		}
 
-	        success: function(response) {
+		function closeSuccessModal() {
 
-	            $('#loader').modal('hide');
+			$('#successModal').modal('hide');
 
-	            // Show result in modal
-	            if (response && response.toLowerCase().includes('success')) {
-	                showResultModal('BRRS', response);
-	            } else {
-	                showResultModal('Information', response || 'No data updated.');
-	            }
+			setTimeout(function () {
+				history.back(); // go to previous page
+			}, 300);
+		}
+	</script>
+	<script>
+		function updateQlaradv() {
 
-	            // Redirect after delay
-	            setTimeout(function() {
+			const previousUrl = document.referrer;
 
-	                if (previousUrl) {
-	                    window.location.href = previousUrl;
-	                } else {
-	                   window.location.reload();
-	                }
+			// Show loader
+			$('#loader').modal('show');
 
-	            }, 3500);
-	        },
+			$.ajax({
+				url: '/BRRS/Reports/updateBRRSQlaradv',
+				type: 'POST',
+				data: $("#modifyQlaradvForm").serialize(),
 
-	        error: function(xhr, status, error) {
+				success: function (response) {
 
-	            $('#loader').modal('hide');
+					$('#loader').modal('hide');
 
-	            console.error("Update error:", error);
-
-	            showResultModal(
-	                'Error',
-	                xhr.responseText || 'Failed to update record. Please try again.'
-	            );
-
-	            // Redirect after delay
-	            setTimeout(function() {
-
-	                if (previousUrl) {
-	                    window.location.href = previousUrl;
-	                } else {
-					    window.location.reload();
+					// Show result in modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal('BRRS', response);
+					} else {
+						showResultModal('Information', response || 'No data updated.');
 					}
 
-	            }, 3500);
-	        }
-	    });
-	}
+					// Redirect after delay
+					setTimeout(function () {
+
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.location.reload();
+						}
+
+					}, 3500);
+				},
+
+				error: function (xhr, status, error) {
+
+					$('#loader').modal('hide');
+
+					console.error("Update error:", error);
+
+					showResultModal(
+						'Error',
+						xhr.responseText || 'Failed to update record. Please try again.'
+					);
+
+					// Redirect after delay
+					setTimeout(function () {
+
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.location.reload();
+						}
+
+					}, 3500);
+				}
+			});
+		}
 	</script>
-		
+
 	<script>
 		function closemodel() {
-					$('#alert').modal('hide');
-					$('#resultModal').modal('hide');
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
 
-				}
+		}
 
 		function showResultModal(title, message) {
-					// Set the text for the modal elements
-					$('#resultModalLabel').text(title);
-					$('#resultModalBody').text(message);
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
 
-					// Show the modal
-					$('#resultModal').modal('show');
-				}
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
 	</script>
-		
+
 </head>
 
 
 
 <title>Q_LARADV</title>
+
 <body>
-	<div class="container-fluid"
-		style="padding-left: 0px; padding-right: 0px;">
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
 		<div class="row">
 
 			<div th:insert="HeaderMenu :: header"></div>
@@ -771,7 +773,8 @@ function showdetails() {
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							(9) QUARTERLY SCHEDULE: Q-LARADV: LARGEST ADVANCES 10% AND ABOVE OF UNIMPAIRED CAPITAL
+							(9) QUARTERLY SCHEDULE: Q-LARADV: <br>LARGEST ADVANCES 10% AND ABOVE <br> OF UNIMPAIRED
+							CAPITAL
 
 						</h5>
 
@@ -794,32 +797,32 @@ function showdetails() {
 
 
 
-						<span class="white-text"
-							style="color: white !important; font-size: 16px; margin-right: 20px;">
-							Report Date: <span
-							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;"
+							th:if="${displaymode != 'add' and displaymode != 'modify'}">
+
+							Report Date:
+							<span th:text="${#strings.replace(asondate, '/', '-')}">
+								2025-07-04
+							</span>
+
 						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummary();"
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
-						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnSummary" onclick="showsummaryResub();"
-							th:if="${displaymode == 'resubDetail'}">Summary</button>
-						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btnDetails" onclick="showdetails();"
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary"
+							onclick="showsummaryResub();" th:if="${displaymode == 'resubDetail'}">Summary</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
 
 
-						
 
-						
-						<button type="button" class="custom-tab-btn"
-							id="custom-tab-btn" onclick="downloadfile(this)"
+
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btn" onclick="downloadfile(this)"
 							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != '') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
@@ -830,133 +833,127 @@ function showdetails() {
             data-filename='EMAIL_Q_LARADV.xlsx',
             data-type=${type},
             data-format='email',
-            data-version=${version != null ? version : ''}"
-							style="font-family: Arial; font-weight: bold;">
+            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
 						</div>
 
-						<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
-						   class="custom-tab-btn"
-						   th:href="@{/Reports/BRRS_Q_LARADV/add(asondate=${asondate})}">
-						    Add New Record
+						<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" class="custom-tab-btn"
+							th:href="@{/Reports/BRRS_Q_LARADV/add(asondate=${asondate})}">
+							Add New Record
 						</a>
-									</div>
+					</div>
 				</div>
-				
+
 				<h1 th:if="${displaymode == 'summary'and type != 'ARCHIVAL'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
+					Summary
 					View - Q-LARADV</h1>
 				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
+					Detail
 					View - Q-LARADV</h1>
 
-				<h1
-					th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+				<h1 th:if="${displaymode == 'summary' and type == 'ARCHIVAL' and displaymode != 'Details'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
 					Archival Summary View - Q-LARADV</h1>
 
-				<h1
-					th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}"
-					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+				<h1 th:if="${displaymode == 'Details' and type == 'ARCHIVAL' and displaymode != 'summary'}" style="text-align: left; font-family: arial; font-weight: bold; color: white; 
+					font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px;
+					 margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
 					Archival Detail View - Q-LARADV</h1>
-					
-				<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-weight: bold; 
-				          color: white; font-size: 20px;
-				          background-color: rgb(107, 122, 143); 
-				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Summary View - Q-LARADV
+
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubSummary'}" style="text-align: left; font-family: arial; font-weight: bold; color: white; 
+										font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px;
+										 margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
+					Resubmission Summary View - Q-LARADV
 				</h1>
 
-				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-weight: bold;
-				          color: white; font-size: 20px;
-				          background-color: rgb(107, 122, 143); 
-				          margin-top:10px; margin-bottom:10px; padding: 5px;">
-					Re-submission Detail View - Q-LARADV
+				<h1 th:if="${type == 'RESUB' and displaymode == 'resubDetail'}" style="text-align: left; font-family: arial; font-weight: bold; color: white; 
+									font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px;
+									 margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;padding-left: 10px;">
+					Resubmission Detail View - Q-LARADV
 				</h1>
 
-				<div th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'resubSummary'or displaymode == 'resubDetail'}">
 					<div class="row">
 						<div class="col-sm-12">
 
 							<!-- BRRS/Q_LARADV.html -->
 
-							<table id="laradvTable"
-							       class="table table-bordered table-hover table-sm">
-								      <thead>
-							        <tr>
+							<table id="laradvTable" class="table table-bordered table-hover table-sm">
+								<thead>
+									<tr>
 										<th></th>
-							            <th>S.No</th>
-							            <th>Customer / Group Borrowers</th>
-							            <th>Facility Type</th>
-							            <th>Original Amount</th>
-							            <th>Outstanding Balance</th>
-							            <th>Effective Date</th>
-							            <th>Repayment Period</th>
-							            <th>Performance Status</th>
-							            <th>Type of Security</th>
-							            <th>Board Approval</th>
-							            <th>Interest Rate</th>
-							            <th>Outstanding %</th>
-							            <th>Limit %</th>
-							        </tr>
-							    </thead>
+										<th>S.No</th>
+										<th>Customer / Group Borrowers</th>
+										<th>Facility Type</th>
+										<th>Original Amount</th>
+										<th>Outstanding Balance</th>
+										<th>Effective Date</th>
+										<th>Repayment Period</th>
+										<th>Performance Status</th>
+										<th>Type of Security</th>
+										<th>Board Approval</th>
+										<th>Interest Rate</th>
+										<th>Outstanding %</th>
+										<th>Limit %</th>
+									</tr>
+								</thead>
 
-							    <tbody>
-							        <tr th:each="data : ${reportsummary}">
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
 										<!-- MODIFY BUTTON INSIDE TABLE -->
 
-										<td >
+										<td>
 
-										    <a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" th:attr="id=${data?.sno}" 
-										       class="btn btn-warning btn-sm"
-											   onclick="edit_btn_submit(this)">
+											<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+												th:attr="id=${data?.sno}" class="btn btn-sm btn-botswana-orange"
+												onclick="edit_btn_submit(this)">
 
-										        Modify
+												Modify
 
-										    </a>
+											</a>
 
 										</td>
-							            <td th:text="${data.sno}"></td>
-							            <td th:text="${data.customerGroupName}"></td>
-							            <td th:text="${data.facilityType}"></td>
-							            <td th:text="${data.originalAmount}"></td>
-							            <td th:text="${data.utilisationOutstandingBalance}"></td>
-							            <td th:text="${#dates.format(data.effectiveDate,'dd-MM-yyyy')}"></td>
-							            <td th:text="${data.repaymentPeriod}"></td>
-							            <td th:text="${data.performanceStatus}"></td>
-							            <td th:text="${data.securityDetails}"></td>
-							            <td th:text="${data.boardApproval}"></td>
-							            <td th:text="${data.interestRate}"></td>
-							            <td th:text="${data.outstandingBalancePercent}"></td>
-							            <td th:text="${data.limitPercent}"></td>
-							        </tr>
-							    </tbody>
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.customerGroupName}"></td>
+										<td th:text="${data.facilityType}"></td>
+										<td th:text="${data.originalAmount}"></td>
+										<td th:text="${data.utilisationOutstandingBalance}"></td>
+										<td th:text="${#dates.format(data.effectiveDate,'dd-MM-yyyy')}"></td>
+										<td th:text="${data.repaymentPeriod}"></td>
+										<td th:text="${data.performanceStatus}"></td>
+										<td th:text="${data.securityDetails}"></td>
+										<td th:text="${data.boardApproval}"></td>
+										<td th:text="${data.interestRate}"></td>
+										<td th:text="${data.outstandingBalancePercent}"></td>
+										<td th:text="${data.limitPercent}"></td>
+									</tr>
+								</tbody>
 								<tfoot>
-								<tr style="font-weight:bold;background:#f8f9fa;">
-								    <th colspan="4" class="text-right">TOTAL</th>
-								    <th id="totalOriginalAmount"></th>
-								    <th id="totalOutstandingBalance"></th>
-								    <th colspan="8"></th>
-								</tr>
+									<tr style="font-weight:bold;background:#f8f9fa;">
+										<th colspan="4" class="text-right">TOTAL</th>
+										<th id="totalOriginalAmount"></th>
+										<th id="totalOutstandingBalance"></th>
+										<th colspan="8"></th>
+									</tr>
 								</tfoot>
 							</table>
 
@@ -964,239 +961,223 @@ function showdetails() {
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- ================= ADD SCREEN ================= -->
 
-				<div th:if="${displaymode == 'add'}" class="container-fluid">
+				<div th:if="${displaymode == 'add'}" class="container-fluid" style="padding-top: 10px;">
 
-				  <form id="qLaradvForm"
-					      th:object="${qLaradv}"> 
+					<form id="qLaradvForm" th:object="${qLaradv}">
 
-				        <div class="card">
-				            <div class="card-header bg-primary text-white">
-				                <h4>Add BRRS Q LARADV</h4>
-				            </div>
+						<div class="card">
+							<div class="card-header bg-primary text-white">
+								<h4 style="font-size: 18px;font-weight: bold;">Add BRRS Q LARADV</h4>
+							</div>
 
-				            <div class="card-body">
+							<div class="card-body">
 
-				                <div class="row">
+								<div class="row">
 
-				                    
 
-				                    <div class="col-md-4 mb-3">
-				                        <label>Customer Group Name</label>
-				                        <input type="text" th:field="*{customerGroupName}" class="form-control"/>
-				                    </div>
-
-				                  
-				                    <div class="col-md-4 mb-3">
-				                        <label>Facility Type</label>
-				                        <input type="text" th:field="*{facilityType}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Original Amount</label>
-				                        <input type="number" step="0.01" th:field="*{originalAmount}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Outstanding Balance</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{utilisationOutstandingBalance}"
-				                               class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Effective Date</label>
-				                        <input type="text" id="effectiveDate" 
-										th:field="*{effectiveDate}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Repayment Period</label>
-				                        <input type="text" th:field="*{repaymentPeriod}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Performance Status</label>
-				                        <input type="text" th:field="*{performanceStatus}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Type of Security</label>
-				                        <input type="text" th:field="*{securityDetails}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Board Approval</label>
-				                        <input type="text" th:field="*{boardApproval}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Interest Rate</label>
-				                        <input type="number" step="0.01" th:field="*{interestRate}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Outstanding Balance %</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{outstandingBalancePercent}"
-				                               class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Limit %</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{limitPercent}"
-				                               class="form-control"/>
-				                    </div>
 
 									<div class="col-md-4 mb-3">
-									    <label>Report Date</label>
-									    <input type="text"
-									           th:field="*{reportDate}"
-											   class="form-control"
-									           readonly />
+										<label>Customer Group Name</label>
+										<input type="text" th:field="*{customerGroupName}" class="form-control" />
 									</div>
 
-				                    
 
-				                </div>
+									<div class="col-md-4 mb-3">
+										<label>Facility Type</label>
+										<input type="text" th:field="*{facilityType}" class="form-control" />
+									</div>
 
-				            </div>
+									<div class="col-md-4 mb-3">
+										<label>Original Amount</label>
+										<input type="number" step="0.01" th:field="*{originalAmount}"
+											class="form-control" />
+									</div>
 
-							<div class="card-footer text-center">
+									<div class="col-md-4 mb-3">
+										<label>Outstanding Balance</label>
+										<input type="number" step="0.01" th:field="*{utilisationOutstandingBalance}"
+											class="form-control" />
+									</div>
 
-							    <button type="button"
-							            class="custom-tab-btn"
-							            onclick="saveQlaradv()">
+									<div class="col-md-4 mb-3">
+										<label>Effective Date</label>
+										<input type="text" id="effectiveDate" th:field="*{effectiveDate}"
+											class="form-control" />
+									</div>
 
-							        Submit
+									<div class="col-md-4 mb-3">
+										<label>Repayment Period</label>
+										<input type="text" th:field="*{repaymentPeriod}" class="form-control" />
+									</div>
 
-							    </button>
+									<div class="col-md-4 mb-3">
+										<label>Performance Status</label>
+										<input type="text" th:field="*{performanceStatus}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Type of Security</label>
+										<input type="text" th:field="*{securityDetails}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Board Approval</label>
+										<input type="text" th:field="*{boardApproval}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Interest Rate</label>
+										<input type="number" step="0.01" th:field="*{interestRate}"
+											class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Outstanding Balance %</label>
+										<input type="number" step="0.01" th:field="*{outstandingBalancePercent}"
+											class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Limit %</label>
+										<input type="number" step="0.01" th:field="*{limitPercent}"
+											class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Report Date</label>
+										<input type="text" th:field="*{reportDate}" class="form-control" readonly />
+									</div>
+
+
+
+								</div>
 
 							</div>
 
-				        </div>
+							<div class="card-footer text-center">
 
-				    </form>
+								<button type="button" class="custom-tab-btn" onclick="saveQlaradv()">
+
+									Submit
+
+								</button>
+
+							</div>
+
+						</div>
+
+					</form>
 
 				</div>
 
 
 				<!-- ================= MODIFY SCREEN ================= -->
 
-				<div th:if="${displaymode == 'modify'}" class="container-fluid">
+				<div th:if="${displaymode == 'modify'}" class="container-fluid" style="padding-top: 10px;">
 
-				    	<form id="modifyQlaradvForm"
-						      th:object="${qLaradv}">
-				        <!-- Hidden SNO -->
-				        <input type="hidden" th:field="*{sno}"/>
+					<form id="modifyQlaradvForm" th:object="${qLaradv}">
+						<!-- Hidden SNO -->
+						<input type="hidden" th:field="*{sno}" />
 
-				        <div class="card">
+						<div class="card">
 
-				            <div class="card-header bg-warning text-dark">
-				                <h4>Modify BRRS Q LARADV Record</h4>
-				            </div>
+							<div class="card-header bg-primary text-white">
+								<h4 style="font-size: 18px;font-weight: bold;">Modify BRRS Q LARADV Record</h4>
+							</div>
 
-				            <div class="card-body">
+							<div class="card-body">
 
-				                <div class="row">
+								<div class="row">
 
-									<input type="hidden" th:field="*{sno}"/>
-									
-				                  
-				                    <div class="col-md-4 mb-3">
-				                        <label>Customer Group Name</label>
-				                        <input type="text" th:field="*{customerGroupName}" class="form-control"/>
-				                    </div>
+									<input type="hidden" th:field="*{sno}" />
 
-				                    
 
-				                    <div class="col-md-4 mb-3">
-				                        <label>Facility Type</label>
-				                        <input type="text" th:field="*{facilityType}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Original Amount</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{originalAmount}"
-				                               class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Outstanding Balance</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{utilisationOutstandingBalance}"
-				                               class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Effective Date</label>
-				                        <input type="text"
-										 th:field="*{effectiveDate}"  id="effectiveDate"
-										 class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Repayment Period</label>
-				                        <input type="text" th:field="*{repaymentPeriod}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Performance Status</label>
-				                        <input type="text" th:field="*{performanceStatus}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Type of Security</label>
-				                        <input type="text" th:field="*{securityDetails}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Board Approval</label>
-				                        <input type="text" th:field="*{boardApproval}" class="form-control"/>
-				                    </div>
-
-				                    <div class="col-md-4 mb-3">
-				                        <label>Interest Rate</label>
-				                        <input type="number" step="0.01"
-				                               th:field="*{interestRate}"
-				                               class="form-control"/>
-				                    </div>
-									
 									<div class="col-md-4 mb-3">
-									 <label>Outstanding Balance %</label>
-								    <input type="number" step="0.01"
-												                               th:field="*{outstandingBalancePercent}"
-												                               class="form-control"/>
-												                    </div>
+										<label>Customer Group Name</label>
+										<input type="text" th:field="*{customerGroupName}" class="form-control" />
+									</div>
 
-												                    <div class="col-md-4 mb-3">
-												                        <label>Limit %</label>
-												                        <input type="number" step="0.01"
-												                               th:field="*{limitPercent}"
-												                               class="form-control"/>
-												                    </div>
 
-				                </div>
 
-				            </div>
+									<div class="col-md-4 mb-3">
+										<label>Facility Type</label>
+										<input type="text" th:field="*{facilityType}" class="form-control" />
+									</div>
 
-				            <div class="card-footer text-center">
+									<div class="col-md-4 mb-3">
+										<label>Original Amount</label>
+										<input type="number" step="0.01" th:field="*{originalAmount}"
+											class="form-control" />
+									</div>
 
-								<button type="button"
-								               class="custom-tab-btn"
-								               onclick="updateQlaradv()">
-								           Update
-								       </button>
+									<div class="col-md-4 mb-3">
+										<label>Outstanding Balance</label>
+										<input type="number" step="0.01" th:field="*{utilisationOutstandingBalance}"
+											class="form-control" />
+									</div>
 
-				            </div>
+									<div class="col-md-4 mb-3">
+										<label>Effective Date</label>
+										<input type="text" th:field="*{effectiveDate}" id="effectiveDate"
+											class="form-control" />
+									</div>
 
-				        </div>
+									<div class="col-md-4 mb-3">
+										<label>Repayment Period</label>
+										<input type="text" th:field="*{repaymentPeriod}" class="form-control" />
+									</div>
 
-				    </form>
+									<div class="col-md-4 mb-3">
+										<label>Performance Status</label>
+										<input type="text" th:field="*{performanceStatus}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Type of Security</label>
+										<input type="text" th:field="*{securityDetails}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Board Approval</label>
+										<input type="text" th:field="*{boardApproval}" class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Interest Rate</label>
+										<input type="number" step="0.01" th:field="*{interestRate}"
+											class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Outstanding Balance %</label>
+										<input type="number" step="0.01" th:field="*{outstandingBalancePercent}"
+											class="form-control" />
+									</div>
+
+									<div class="col-md-4 mb-3">
+										<label>Limit %</label>
+										<input type="number" step="0.01" th:field="*{limitPercent}"
+											class="form-control" />
+									</div>
+
+								</div>
+
+							</div>
+
+							<div class="card-footer text-center">
+
+								<button type="button" class="custom-tab-btn" onclick="updateQlaradv()">
+									Update
+								</button>
+
+							</div>
+
+						</div>
+
+					</form>
 
 				</div>
 
@@ -1214,10 +1195,8 @@ function showdetails() {
 
 
 
-	<div class="modal fade" id="loader" data-backdrop="static"
-		data-keyboard="false">
-		<div
-			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
 				<div class="modal-body" style="text-align: center">
 					<div>
@@ -1238,17 +1217,14 @@ function showdetails() {
 			<div class="modal-content">
 				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel"
-						style="text-align: center; color: white;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
 						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()"
-						data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
@@ -1263,15 +1239,13 @@ function showdetails() {
 				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-					<div class="modal-title" id="cellresultModalLabel"
-						style="text-align: center; color: white;">Do you want to
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
 						open the report?</div>
 				</div>
 
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn"
-						data-bs-dismiss="modal"
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
 						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
 						Cancel</button>
 					<button type="button" class="custom-tab-btn yes-btn"
@@ -1281,7 +1255,28 @@ function showdetails() {
 			</div>
 		</div>
 	</div>
+	<div class="modal fade" id="successModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
 
+				<div class="menu-title-header">
+					<div class="modal-title" id="successModalLabel" style="text-align:center;color:white;">
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align:center;font-size:1.1rem;">
+
+					<p id="successModalBody"></p>
+
+					<button type="button" class="custom-tab-btn" onclick="closeSuccessModal()">
+						OK
+					</button>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
 </body>
 <!-- <script>
 															  $(document).ready(function () {
@@ -1312,102 +1307,108 @@ function showdetails() {
 
 
 <style>
-/* Your existing CSS - this is the correct approach */
-.scrollable-table-container {
-	/* This is the key: it creates the scroll context */
-	max-height: 510px;
-	/* Or a suitable height like 80vh for responsive design */
-	overflow-y: auto;
-	border: 1px solid #ccc;
-}
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 510px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-/* Your existing sticky header CSS, targeting the tr elements within the thead */
-.scrollable-table-container thead tr:nth-child(1) {
-	position: sticky;
-	top: 0;
-	background-color: #b3b6b9;
-	z-index: 5;
-}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-.scrollable-table-container thead tr:nth-child(2) {
-	position: sticky;
-	top: 36px; /* adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 4;
-}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-.scrollable-table-container thead tr:nth-child(3) {
-	position: sticky;
-	top: 72px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 3;
-}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-.scrollable-table-container thead tr:nth-child(4) {
-	position: sticky;
-	top: 100px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 2;
-}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-.scrollable-table-container thead tr:nth-child(5) {
-	position: sticky;
-	top: 135px; /* Adjust based on row height */
-	background-color: #b3b6b9;
-	z-index: 1;
-}
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
 </style>
 
 
 <style>
-.inner {
-	max-height: 600px; /* Adjust height as needed */
-	overflow: auto;
-	border: 1px solid #dee2e6;
-}
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
 
-/* Sticky thead */
-#reports thead th {
-	position: sticky;
-	top: 0;
-	background-color: #f8f9fa; /* Match Bootstrap thead-light */
-	z-index: 2;
-}
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
 
-div.dataTables_wrapper div.dataTables_paginate {
-	text-align: right !important;
-	float: right !important;
-	width: auto;
-	margin-top: 10px;
-}
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
 
-/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-div.dataTables_wrapper div.dataTables_info {
-	float: left !important;
-	margin-top: 10px;
-}
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
 
-.pagination {
-	margin: 0;
-}
+	.pagination {
+		margin: 0;
+	}
 
-.page-item.active .page-link {
-	background-color: #386276;
-	border-color: #386276;
-}
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
 
-.page-link {
-	color: #386276;
-}
+	.page-link {
+		color: #386276;
+	}
 
-.page-link:hover {
-	color: #2a4a5c;
-}
+	.page-link:hover {
+		color: #2a4a5c;
+	}
 
-.form-select {
-	display: inline-block;
-	width: auto;
-}
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
 </style>
 
 

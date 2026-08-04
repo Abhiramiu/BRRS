@@ -1181,7 +1181,16 @@ function showmodify(btn) {
 	letter-spacing: 1px;
 	animation: scroll-left 10s linear infinite;
 }
+/* Animation keyframes */
+@keyframes scroll-left {
+	0% {
+		transform: translateX(100%);
+	}
 
+	100% {
+		transform: translateX(-100%);
+	}
+}
 /* Animation keyframes */
 /*@
 keyframes scroll-left { 0% {
@@ -1294,7 +1303,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 
 
-<title>BRRS</title>
+<title>M_IRB</title>
 
 <body>
 	<div class="container-fluid"
@@ -1315,7 +1324,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 16px; font-weight: bold; color: white; margin: 0 10px;">
-							(18) MONTHLY SCHEDULE : M-IRB: INTEREST RATE RISK: BANKING BOOK</h5>
+							(18) MONTHLY SCHEDULE : M-IRB: <br>INTEREST RATE RISK: BANKING BOOK</h5>
 
 
 						<!-- Moving bus-board text -->
@@ -4372,7 +4381,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r96_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r96_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R96_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="R96_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4388,7 +4397,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r96_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r96_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R96_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="R96_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4404,7 +4413,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r96_moreThan5YearsTo10Years != null ? #numbers.formatDecimal(report.r96_moreThan5YearsTo10Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R96_MORE_THAN_5_YEARS_TO_10_YEARS"
 													name="R96_moreThan5YearsTo10Years"
-													style="background-color: #FFFFFF; height: 28px; width: 208px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4553,7 +4562,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													class="display-input Show_input" type="text"
 													th:value="${report.r100_upTo1Month != null ? #numbers.formatDecimal(report.r100_upTo1Month,1,'COMMA',0,'POINT') : '0'}"
 													id="R100_UP_TO_1_MONTH" name="R100_upTo1Month"
-													style="background-color: #FFFFFF; height: 28px; width: 209px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 210px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4569,7 +4578,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r100_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r100_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R100_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="R100_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4577,7 +4586,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r100_moreThan6MonthTo12Months != null ? #numbers.formatDecimal(report.r100_moreThan6MonthTo12Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R100_MORE_THAN_6_MONTH_TO_12_MONTHS"
 													name="R100_moreThan6MonthTo12Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 240px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4585,7 +4594,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r100_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r100_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R100_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="R100_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4630,13 +4639,13 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 											</tr>
 											<tr>
 												<td>92</td>
-												<td>of which: pay fixed and receive floating</td>
+												<td>    of which: receive fixed and pay floating</td>
 
 												<td style="padding-left: 20px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r101_upTo1Month != null ? #numbers.formatDecimal(report.r101_upTo1Month,1,'COMMA',0,'POINT') : '0'}"
 													id="R101_UP_TO_1_MONTH" name="r101_upTo1Month"
-													style="background-color: #FFFFFF; height: 28px; width: 209px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 210px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4652,7 +4661,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r101_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r101_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R101_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="r101_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4660,7 +4669,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r101_moreThan6MonthTo12Months != null ? #numbers.formatDecimal(report.r101_moreThan6MonthTo12Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R101_MORE_THAN_6_MONTH_TO_12_MONTHS"
 													name="r101_moreThan6MonthTo12Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 240px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4668,7 +4677,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r101_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r101_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R101_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="r101_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4713,13 +4722,13 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 											</tr>
 											<tr>
 												<td>93</td>
-												<td>of which: pay fixed and receive floating</td>
+												<td>  FRAs and futures</td>
 
 												<td style="padding-left: 20px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r102_upTo1Month != null ? #numbers.formatDecimal(report.r102_upTo1Month,1,'COMMA',0,'POINT') : '0'}"
 													id="R102_UP_TO_1_MONTH" name="r102_upTo1Month"
-													style="background-color: #FFFFFF; height: 28px; width: 209px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 210px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4735,7 +4744,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r102_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r102_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R102_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="r102_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4743,7 +4752,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r102_moreThan6MonthTo12Months != null ? #numbers.formatDecimal(report.r102_moreThan6MonthTo12Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R102_MORE_THAN_6_MONTH_TO_12_MONTHS"
 													name="r102_moreThan6MonthTo12Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 240px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4751,7 +4760,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r102_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r102_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R102_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="r102_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4796,13 +4805,13 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 											</tr>
 											<tr>
 												<td>94</td>
-												<td>of which: pay fixed and receive floating</td>
+												<td>  Options</td>
 
 												<td style="padding-left: 20px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r103_upTo1Month != null ? #numbers.formatDecimal(report.r103_upTo1Month,1,'COMMA',0,'POINT') : '0'}"
 													id="R103_UP_TO_1_MONTH" name="r103_upTo1Month"
-													style="background-color: #FFFFFF; height: 28px; width: 209px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 210px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4818,7 +4827,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r103_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r103_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R103_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="r103_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4826,7 +4835,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r103_moreThan6MonthTo12Months != null ? #numbers.formatDecimal(report.r103_moreThan6MonthTo12Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R103_MORE_THAN_6_MONTH_TO_12_MONTHS"
 													name="r103_moreThan6MonthTo12Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 240px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4834,7 +4843,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r103_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r103_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R103_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="r103_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4880,13 +4889,13 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 											<tr>
 												<td>95</td>
-												<td>of which: pay fixed and receive floating</td>
+												<td>  Other (specify)</td>
 
 												<td style="padding-left: 20px;"><input
 													class="display-input Show_input" type="text"
 													th:value="${report.r104_upTo1Month != null ? #numbers.formatDecimal(report.r104_upTo1Month,1,'COMMA',0,'POINT') : '0'}"
 													id="R104_UP_TO_1_MONTH" name="r104_upTo1Month"
-													style="background-color: #FFFFFF; height: 28px; width: 209px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 210px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4902,7 +4911,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r104_moreThan3MonthTo6Months != null ? #numbers.formatDecimal(report.r104_moreThan3MonthTo6Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R104_MORE_THAN_3_MONTH_TO_6_MONTHS"
 													name="r104_moreThan3MonthTo6Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 231px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4910,7 +4919,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r104_moreThan6MonthTo12Months != null ? #numbers.formatDecimal(report.r104_moreThan6MonthTo12Months,1,'COMMA',0,'POINT') : '0'}"
 													id="R104_MORE_THAN_6_MONTH_TO_12_MONTHS"
 													name="r104_moreThan6MonthTo12Months"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 240px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -4918,7 +4927,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:value="${report.r104_moreThan12MonthTo3Years != null ? #numbers.formatDecimal(report.r104_moreThan12MonthTo3Years,1,'COMMA',0,'POINT') : '0'}"
 													id="R104_MORE_THAN_12_MONTH_TO_3_YEARS"
 													name="r104_moreThan12MonthTo3Years"
-													style="background-color: #FFFFFF; height: 28px; width: 222px; border-color: transparent; text-align: right;"
+													style="background-color: #FFFFFF; height: 28px; width: 224px; border-color: transparent; text-align: right;"
 													readonly /></td>
 
 												<td style="padding-left: 20px;"><input
@@ -5002,8 +5011,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 											<tr style="background-color: #b3b6b9">
 												<td>97</td>
 
-												<td style="font-weight: bold;">Cumulative static gap
-													including derivative instruments</td>
+												<td style="font-weight: bold;">Cumulative static gap including derivative instruments</td>
 												<td style="text-align: right; background-color: #30bf30"
 													th:text="${#numbers.formatDecimal(report.r106_upTo1Month == null ? 0 : report.r106_upTo1Month,1,'COMMA',0,'POINT')}"></td>
 
