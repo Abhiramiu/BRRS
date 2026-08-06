@@ -2081,7 +2081,7 @@ public class RegulatoryReportServices {
 
 		case "Q_LARADV":
 			try {
-				repfile = brrs_m_laradv_reportservice.getM_LARADVExcel(filename, reportId, fromdate, todate, currency,
+				repfile = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
 			} catch (Exception e) {
 			}

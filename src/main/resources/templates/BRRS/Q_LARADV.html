@@ -747,7 +747,36 @@ PURPOSE		: BRRS MANUAL REPORT
 			$('#resultModal').modal('show');
 		}
 	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
 
+			let totalOriginalAmount = 0;
+			let totalOutstandingBalance = 0;
+
+			document.querySelectorAll(".originalAmount").forEach(function (cell) {
+				let value = parseFloat(cell.textContent.replace(/,/g, '')) || 0;
+				totalOriginalAmount += value;
+			});
+
+			document.querySelectorAll(".outstandingBalance").forEach(function (cell) {
+				let value = parseFloat(cell.textContent.replace(/,/g, '')) || 0;
+				totalOutstandingBalance += value;
+			});
+
+			document.getElementById("totalOriginalAmount").innerText =
+				totalOriginalAmount.toLocaleString('en-US', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+
+			document.getElementById("totalOutstandingBalance").innerText =
+				totalOutstandingBalance.toLocaleString('en-US', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+
+		});
+	</script>
 </head>
 
 
@@ -935,8 +964,9 @@ PURPOSE		: BRRS MANUAL REPORT
 										<td th:text="${data.sno}"></td>
 										<td th:text="${data.customerGroupName}"></td>
 										<td th:text="${data.facilityType}"></td>
-										<td th:text="${data.originalAmount}"></td>
-										<td th:text="${data.utilisationOutstandingBalance}"></td>
+										<td class="originalAmount" th:text="${data.originalAmount}"></td>
+										<td class="outstandingBalance" th:text="${data.utilisationOutstandingBalance}">
+										</td>
 										<td th:text="${#dates.format(data.effectiveDate,'dd-MM-yyyy')}"></td>
 										<td th:text="${data.repaymentPeriod}"></td>
 										<td th:text="${data.performanceStatus}"></td>
