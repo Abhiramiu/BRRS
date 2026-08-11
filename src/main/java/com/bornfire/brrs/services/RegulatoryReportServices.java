@@ -432,6 +432,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_IRRBB_PLACEMENTS_ReportService BRRS_IRRBB_PLACEMENTS_reportservice;
+	
+	@Autowired
+	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
@@ -1102,6 +1105,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_IRRBB_PLACEMENTS_reportservice.getBRRS_IRRBB_PLACEMENTS_View(reportId, fromdate, todate,
 					currency, dtltype, pageable, type, version);
 			break;
+			
+		case "IRRBB_ADV":
+		    repsummary = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_View(
+		        reportId, fromdate, todate, currency, dtltype, pageable, type, version);
+		    break;
 
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
@@ -1547,6 +1555,15 @@ public class RegulatoryReportServices {
 		byte[] repfile = null;
 
 		switch (reportId) {
+		
+		case "IRRBB_ADV":
+		    try {		        
+		            repfile = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(
+		                filename, reportId, fromdate, todate, currency, dtltype, type, format, version);		        
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		    break;
 
 		case "SCH_17":
 			try {
@@ -2839,6 +2856,12 @@ public class RegulatoryReportServices {
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
+		
+		case "IRRBB_ADV":
+		    List<Object[]> irrbbAdvList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESArchival();
+		    archivalData.addAll(irrbbAdvList);
+		    System.out.println("Fetched IRRBB_ADVANCES archival data: " + irrbbAdvList.size());
+		    break;
 
 		case "M_SFINP2":
 
@@ -4782,6 +4805,17 @@ public class RegulatoryReportServices {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
+		
+		case "IRRBB_ADV":
+			try {
+				List<Object[]> resubList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESResubList();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for IRRBB_ADVANCES: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for IRRBB_ADVANCES: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 
 		case "IRRBB_BORROWINGS":
 			try {
@@ -11577,16 +11611,23 @@ fromdate, todate, currency, dtltype, type, format, version);
 		}
 	}
 	
-	public String updateInrRate(BigDecimal inrRate) {
+	public String updateInrRate(BigDecimal inrRate, String reportDate) {
+		if (inrRate == null || inrRate.compareTo(BigDecimal.ZERO) <= 0) {
+			return "Error: Exchange rate must be greater than 0.";
+		}
+		if (reportDate == null || reportDate.isEmpty()) {
+			return "Error: Report date must be specified.";
+		}
 		try {
-			String sql = "{ call BRRS_UPDATE_ALL_INR_RATES(?) }";
+			String sql = "{ call BRRS_UPDATE_ALL_INR_RATES(?, ?) }";
 			jdbcTemplate.update(connection -> {
 				java.sql.CallableStatement cs = connection.prepareCall(sql);
 				cs.setBigDecimal(1, inrRate);
+				cs.setString(2, reportDate);
 				return cs;
 			});
 
-			return "Successfully triggered stored procedure BRRS_UPDATE_ALL_INR_RATES with INR rate: " + inrRate;
+			return "Successfully updated INR rate: " + inrRate + " for date: " + reportDate;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "Error executing BRRS_UPDATE_ALL_INR_RATES: " + e.getMessage();
@@ -11598,6 +11639,14 @@ fromdate, todate, currency, dtltype, type, format, version);
 			return jdbcTemplate.queryForObject("SELECT EXCHANGE_RATE FROM BRRS_INR_RATE_CONFIG", BigDecimal.class);
 		} catch (Exception e) {
 			return null;
+		}
+	}
+
+	public Map<String, Object> getInrRateDetails() {
+		try {
+			return jdbcTemplate.queryForMap("SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG");
+		} catch (Exception e) {
+			return new HashMap<String, Object>();
 		}
 	}
 

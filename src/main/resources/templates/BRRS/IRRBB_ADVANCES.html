@@ -1,0 +1,1999 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: LOKESH KANNA S
+CREATED ON	: 28.06.2026
+PURPOSE		: BRRS IRRBB ADVANCES REPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+
+
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not 
+	(:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+#BRRSvalidation th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 16px;
+	font-family: Arial;
+}
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~.form-legend, .form-control:not (:placeholder-shown
+	)
+	 ~.form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~.form-legend {
+	color: #0056b3;
+	/* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not (:focus ) ~.form-legend {
+	color: #aaa;
+	/* Normal label color */
+}
+</style>
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+
+.underline {
+	text-decoration: underline;
+	color: #08a6f1;
+	cursor: pointer;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	/* Hover color for cell */
+	cursor: pointer;
+	/* Optional: pointer cursor */
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
+
+.gray-cell {
+	background-color: rgb(107, 122, 143) !important;
+	color: white !important;
+}
+
+.graybox {
+	background-color: #BFBFBF !important;
+	color: black !important;
+}
+</style>
+
+
+<style>
+.left-arrow-circle {
+	background-color: white;
+	color: #007bff;
+	border-radius: 50%;
+	padding: 8px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+/* 🚌 Bus display style box */
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1; /* ✅ makes it take available space dynamically */
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
+
+/* ✨ Scrolling animation */
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
+
+/* Animation keyframes */
+@keyframes scroll-left {
+	0% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+</style>
+<script th:inline="javascript">
+
+let isDetailsModal = false;
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+				
+		$(document).ready(function() {
+			Maker_Checker_Function(); 
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",    
+				type: "GET",
+				success: function(roleId) {
+					// console.log("User Role ID:", roleId);
+				
+					if (roleId === "ADM-C" || roleId === "USR-C"  || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+								const button = document.getElementById("custom-tab-btnAdd");
+								if (button) button.style.display = "none";
+							}
+
+				},
+				error: function(err) {
+					console.error("Error fetching role:", err);
+		     }
+		    });
+		}
+
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		
+function showdetails() {
+	 $('#loader').modal('show');
+	    var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+	    location.href = Callurl;
+
+}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+			location.href = Callurl;
+		}
+		
+		function showsummaryResub() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='report', fromdate=${fromdate}, todate=${todate}, type='RESUB', asondate=${asondate}, version=${version})}]]*/;
+			location.href = Callurl;
+		}
+		
+		// ==================== ARCHIVAL FUNCTIONS ====================
+
+		function showArchival() {
+		    $('#loader').modal('show');
+		    var fromdate = document.getElementById('fromdate') ? document.getElementById('fromdate').value : '';
+		    var todate = document.getElementById('todate') ? document.getElementById('todate').value : '';
+		    var asondate = document.getElementById('asondate') ? document.getElementById('asondate').value : '';
+		    var version = document.getElementById('version') ? document.getElementById('version').value : '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=ARCHIVAL';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+		
+		function showArchivalDetail() {
+		    $('#loader').modal('show');
+		    var fromdate = document.getElementById('fromdate') ? document.getElementById('fromdate').value : '';
+		    var todate = document.getElementById('todate') ? document.getElementById('todate').value : '';
+		    var asondate = document.getElementById('asondate') ? document.getElementById('asondate').value : '';
+		    var version = document.getElementById('version') ? document.getElementById('version').value : '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=ARCHIVAL&dtltype=detail';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+
+		function showResub() {
+		    $('#loader').modal('show');
+		    var fromdate = document.getElementById('fromdate') ? document.getElementById('fromdate').value : '';
+		    var todate = document.getElementById('todate') ? document.getElementById('todate').value : '';
+		    var asondate = document.getElementById('asondate') ? document.getElementById('asondate').value : '';
+		    var version = document.getElementById('version') ? document.getElementById('version').value : '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=RESUB';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+
+		function showResubDetail() {
+		    $('#loader').modal('show');
+		    var fromdate = document.getElementById('fromdate') ? document.getElementById('fromdate').value : '';
+		    var todate = document.getElementById('todate') ? document.getElementById('todate').value : '';
+		    var asondate = document.getElementById('asondate') ? document.getElementById('asondate').value : '';
+		    var version = document.getElementById('version') ? document.getElementById('version').value : '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=RESUB&dtltype=detail';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+
+		function goToResubSummary() {
+		    $('#loader').modal('show');
+		    var fromdate = document.querySelector('[onclick="goToResubSummary()"]')?.getAttribute('data-fromdate') || '';
+		    var todate = document.querySelector('[onclick="goToResubSummary()"]')?.getAttribute('data-todate') || '';
+		    var asondate = document.querySelector('[onclick="goToResubSummary()"]')?.getAttribute('data-asondate') || '';
+		    var version = document.querySelector('[onclick="goToResubSummary()"]')?.getAttribute('data-version') || '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=RESUB';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+
+		function goToArchivalSummary() {
+		    $('#loader').modal('show');
+		    var fromdate = document.querySelector('[onclick="goToArchivalSummary()"]')?.getAttribute('data-fromdate') || '';
+		    var todate = document.querySelector('[onclick="goToArchivalSummary()"]')?.getAttribute('data-todate') || '';
+		    var asondate = document.querySelector('[onclick="goToArchivalSummary()"]')?.getAttribute('data-asondate') || '';
+		    var version = document.querySelector('[onclick="goToArchivalSummary()"]')?.getAttribute('data-version') || '';
+		    
+		    var url = '/Reports/' + reportid + '?fromdate=' + fromdate + 
+		              '&todate=' + todate + '&asondate=' + asondate + '&type=ARCHIVAL';
+		    if (version) {
+		        url += '&version=' + version;
+		    }
+		    location.href = url;
+		}
+
+		function goToResubSummaryFromForm() {
+		    $('#loader').modal('show');
+		    var todate = document.querySelector('input[name="reportDate"]')?.value || '';
+		    window.location.href = '/Reports/' + reportid + '?todate=' + todate + '&type=RESUB';
+		}
+
+	</script>
+<script>
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+		window.onload = function () {
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+		function downloadfile(button) {
+		    var reportid = button.getAttribute('data-reportid');
+		    var asondate = button.getAttribute('data-asondate');
+		    var fromdate = button.getAttribute('data-fromdate');
+		    var todate = button.getAttribute('data-todate');
+		    var currency = button.getAttribute('data-currency');
+		    var subreportid = button.getAttribute('data-subreportid');
+		    var secid = button.getAttribute('data-secid');
+		    var dtltype = button.getAttribute('data-dtltype');
+		    var filename = button.getAttribute('data-filename');
+		    var type = button.getAttribute('data-type');
+		    var version = button.getAttribute('data-version');
+		    var format = button.getAttribute('data-format');
+
+		    if (format === null) {
+		        format = '';   // treat as null
+		    }
+
+		    $('#loader').modal('show');
+
+		    $.ajax({
+		        url: '/BRRS/Reports/downloadExcel?reportid=' + reportid +
+		             '&fromdate=' + fromdate +
+		             '&asondate=' + asondate +
+		             '&todate=' + todate +
+		             '&currency=' + currency +
+		             '&subreportid=' + subreportid +
+		             '&secid=' + secid +
+		             '&filename=' + filename +
+		             '&type=' + type +
+		             '&version=' + version +
+		             '&format=' + format,
+		        type: 'GET',
+		        xhrFields: {
+		            responseType: 'blob'
+		        },
+		        success: function (data) {
+		            $('#loader').modal('hide');
+		            if (data && data.size > 100) {
+		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+		                const url = window.URL.createObjectURL(blob);
+		                const a = document.createElement('a');
+		                a.style.display = 'none';
+		                a.href = url;
+		                a.download = filename;
+		                document.body.appendChild(a);
+		                a.click();
+		                window.URL.revokeObjectURL(url);
+		                document.body.removeChild(a);
+		                showResultModal('BRRS', filename + ' downloaded successfully.');
+		            } else {
+		                showResultModal('Information', 'No data was available to create a download.');
+		            }
+		        },
+		        error: function () {
+		            $('#loader').modal('hide');
+		            showResultModal('Error', 'An error occurred while downloading the file.');
+		        }
+		    });
+		}
+
+		function editRecord() {
+			showResultModal('Alert', 'Development in progress');
+
+		}
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+		
+		// ==================== REUSED SAVE/UPDATE FUNCTIONS FOR NORMAL & RESUB ====================
+
+		function saveRecord() {
+		    $('#loader').modal('show');
+		    
+		    // Determine which form and endpoint based on type
+		    var reportType = document.querySelector('input[name="reportType"]')?.value;
+		    var formId = (reportType === 'RESUB') ? 'resubIrradvForm' : 'irradvForm';
+		    var url = (reportType === 'RESUB') 
+		        ? '/BRRS/Reports/BRRS_IRRBB_ADVANCES/saveResubIrradv'
+		        : '/BRRS/Reports/BRRS_IRRBB_ADVANCES/saveBRRSIrradv';
+		    
+		    $.ajax({
+		        url: url,
+		        type: 'POST',
+		        data: $("#" + formId).serialize(),
+		        success: function(response) {
+		            $('#loader').modal('hide');
+		            if (response && response.toLowerCase().includes('success')) {
+		                showResultModal('BRRS', response);
+						} else {
+								                showResultModal('Information', response || 'No data saved.');
+								            }
+								            setTimeout(function() {
+								                window.location.reload();
+								            }, 3500);
+								        },
+								        error: function(xhr, status, error) {
+								            $('#loader').modal('hide');
+								            console.error("Save error:", error);
+								            showResultModal('Error', xhr.responseText || 'Failed to save record. Please try again.');
+								            setTimeout(function() {
+								                window.location.reload();
+								            }, 3500);
+								        }
+								    });
+								}
+
+		function updateRecord() {
+		    const previousUrl = document.referrer;
+		    $('#loader').modal('show');
+		    
+		    var reportType = document.querySelector('input[name="reportType"]')?.value;
+		    var formId = (reportType === 'RESUB') ? 'modifyResubIrradvForm' : 'modifyIrradvForm';
+		    var url = (reportType === 'RESUB') 
+		        ? '/BRRS/Reports/updateResubIrradv'
+		        : '/BRRS/Reports/updateBRRSIrradv';
+		    
+		    $.ajax({
+		        url: url,
+		        type: 'POST',
+		        data: $("#" + formId).serialize(),
+		        success: function(response) {
+		            $('#loader').modal('hide');
+		            if (response && response.toLowerCase().includes('success')) {
+		                showResultModal('BRRS', response);
+		            } else {
+		                showResultModal('Information', response || 'No data updated.');
+		            }
+		            setTimeout(function() {
+		                if (previousUrl) {
+		                    window.location.href = previousUrl;
+		                } else {
+		                    window.location.reload();
+		                }
+		            }, 3500);
+		        },
+		        error: function(xhr, status, error) {
+		            $('#loader').modal('hide');
+		            console.error("Update error:", error);
+		            showResultModal('Error', xhr.responseText || 'Failed to update record. Please try again.');
+		        }
+		    });
+		}
+	</script>
+	
+	<script>
+		function edit_btn_submit(a) {
+		    var srlno = a.getAttribute("id");
+		    var url = '/BRRS/Reports/BRRS_IRRBB_ADVANCES/modify/' + srlno;
+		    location.href = url;
+		}
+		
+		function editResubBtnSubmit(a) {
+		    var srlno = a.getAttribute("id");
+		    var url = '/BRRS/Reports/BRRS_IRRBB_ADVANCES/resubModify/' + srlno;
+		    location.href = url;
+		}
+	</script>
+	
+	<script>
+		$(function () {
+		    $("#accountOpeningDate, #maturityDate, #lastRepricingDate, #nextRepricingDate").datepicker({
+		        dateFormat: "dd/mm/yy"
+		    });
+		});
+	</script>
+		
+	<script>
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+			location.reload();
+		}
+
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
+	</script>
+</head>
+
+<title>IRRBB_ADVANCES</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+
+							IRRBB ADVANCES - INTEREST RATE RISK IN BANKING BOOK
+
+						</h5>
+
+						<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text">Bank of Baroda(Botswana)Ltd </p>
+						</div>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span
+							th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						
+						<!-- Summary/Detail toggle for Normal -->
+						<button type="button" class="custom-tab-btn" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						
+						<!-- Summary/Detail toggle for Archival -->
+						<button type="button" class="custom-tab-btn" onclick="goToArchivalSummary();"
+							th:if="${displaymode == 'archivalDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showArchivalDetail();"
+							th:if="${displaymode == 'archivalSummary'}">Details</button>
+						
+						<!-- Summary/Detail toggle for Resub -->
+						<button type="button" class="custom-tab-btn" onclick="goToResubSummary();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
+							th:if="${displaymode == 'resubSummary'}">Details</button>
+
+						<!-- FORMAT Download Button -->
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetail' or displaymode == 'resubSummary' or displaymode == 'resubDetail'}"
+							th:attr="data-reportid=${reportid},
+            data-asondate=${asondate},
+            data-fromdate=${fromdate},
+            data-todate=${todate},
+            data-currency=${currency}, 
+            data-dtltype=${dtltype},
+            data-filename='IRRBB_ADVANCES.xlsx',
+            data-type=${type},
+            data-format='email',
+            data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> FORMAT
+						</button>
+
+						<!-- MODIFY / CANCEL BUTTONS (M_SIR STYLE) -->
+						<button type="button" class="custom-tab-btn" id="modifyBtn"
+							onclick="enableInlineEdit();"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							title="Click to EDIT Records">
+							Modify
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="cancelRecord"
+							onclick="cancelInlineEdit();" style="display: none;"
+							title="Cancel editing">
+							Cancel
+						</button>
+
+
+						
+
+					</div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- HEADER TITLES FOR EACH VIEW MODE -->
+				<!-- =========================================================== -->
+				
+				<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
+					View - IRRBB ADVANCES</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
+					View - IRRBB ADVANCES</h1>
+
+				<h1 th:if="${displaymode == 'archivalSummary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival Summary View - IRRBB ADVANCES (Read Only)</h1>
+
+				<h1 th:if="${displaymode == 'archivalDetail'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
+					Archival Detail View - IRRBB ADVANCES (Read Only)</h1>
+					
+				<h1 th:if="${displaymode == 'resubSummary'}" style="text-align: left; font-family: arial; font-weight: bold; 
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143); 
+				          margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Summary View - IRRBB ADVANCES
+				</h1>
+
+				<h1 th:if="${displaymode == 'resubDetail'}" style="text-align: left; font-family: arial; font-weight: bold;
+				          color: white; font-size: 20px;
+				          background-color: rgb(107, 122, 143)28a745; 
+				          margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;">
+					Resubmission Detail View - IRRBB ADVANCES
+				</h1>
+
+				<!-- =========================================================== -->
+				<!-- NORMAL SUMMARY TABLE -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'summary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+
+							<table id="irradvTable"
+							       class="table table-bordered table-cell table-hover table-sm">
+								   <thead>
+								       <tr>
+								           <th>S.No</th>
+								           <th>Customer ID</th>
+								           <th>Account Number</th>
+								           <th>Scheme Code</th>
+								           <th>GL Code</th>
+								           <th>GL Description</th>
+								           <th>Type of Loan</th>           
+								           <th>Name</th>                    
+								           <th>Account Currency</th>
+								           <th>Outstanding Balance (ACCT CCY)</th>
+								           <th>Outstanding Balance (INR)</th>
+								           <th>Account Opening Date</th>
+								           <th>Maturity Date</th>
+								           <th>Tenor in Months</th>
+								           <th>EMI of Loan</th>
+								           <th>Floating/Fixed</th>
+								           <th>Existing Benchmark</th>
+								           <th>Repricing Frequency</th>
+								           <th>Last Repricing Date</th>
+								           <th>Next Repricing Date</th>
+								           <th>Spread Over Benchmark</th>
+								           <th>Final ROI</th>
+								           <th>Cap/Floor Rate</th>
+								           <th>Asset Status</th>
+								        </tr>
+								   </thead>
+								   <tbody>
+								       <tr th:each="data : ${reportsummary}">
+								           <td>
+								               <input type="hidden" class="row-sno" th:value="${data.sno}"/>
+								               <span th:text="${data.sno}"></span>
+								           </td>
+								           <td th:text="${data.customerId}"></td>
+								           <td th:text="${data.accountNumber}"></td>
+								           <td th:text="${data.schemeCode}"></td>
+								           <td th:text="${data.glCode}"></td>
+								           <td th:text="${data.glDescription}"></td>
+								           <td th:text="${data.typeOfLoan}"></td>      
+								           <td th:text="${data.name}"></td>             
+								           <td th:text="${data.accountCurrency}"></td>
+								           <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+								           <td th:text="${data.outstandingBalanceInr}"></td>
+								           <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${data.tenorMonth}"></td>
+								           <td th:text="${data.emiOfLoan}"></td>
+								           <td>
+								               <select name="floatingFixed" disabled class="form-control form-control-sm cell-select editable-cell"
+								                       style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+								                   <option value="Floating" th:selected="${data.floatingFixed == null or data.floatingFixed == '' or data.floatingFixed == 'Floating'}">Floating</option>
+								                   <option value="Fixed" th:selected="${data.floatingFixed == 'Fixed'}">Fixed</option>
+								               </select>
+								           </td>
+								           <td>
+								               <select name="existingBenchmark" disabled class="form-control form-control-sm cell-select editable-cell"
+								                       style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 130px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+								                   <option value="BPLR" th:selected="${data.existingBenchmark == null or data.existingBenchmark == '' or data.existingBenchmark == 'BPLR'}">BPLR</option>
+								                   <option value="SOFR" th:selected="${data.existingBenchmark == 'SOFR'}">SOFR</option>
+								                   <option value="FD LINKED" th:selected="${data.existingBenchmark == 'FD LINKED'}">FD LINKED</option>
+								               </select>
+								           </td>
+								           <td>
+								               <select name="existingRepricingFrequency" disabled class="form-control form-control-sm cell-select editable-cell"
+								                       style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 200px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+								                   <option value="On resetting of MoPR" th:selected="${data.existingRepricingFrequency == null or data.existingRepricingFrequency == '' or data.existingRepricingFrequency == 'On resetting of MoPR'}">On resetting of MoPR</option>
+								                   <option value="1 Month" th:selected="${data.existingRepricingFrequency == '1 Month'}">1 Month</option>
+								                   <option value="3 Months" th:selected="${data.existingRepricingFrequency == '3 Months'}">3 Months</option>
+								                   <option value="6 Months" th:selected="${data.existingRepricingFrequency == '6 Months'}">6 Months</option>
+								                   <option value="9 Months" th:selected="${data.existingRepricingFrequency == '9 Months'}">9 Months</option>
+								                   <option value="12 Months" th:selected="${data.existingRepricingFrequency == '12 Months'}">12 Months</option>
+								               </select>
+								           </td>
+								           <td>
+								               <input type="text" class="form-control form-control-sm cell-input editable-cell datepicker"
+								                      name="lastRepricingDate" th:value="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}" readonly
+								                      style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+								           </td>
+								           <td>
+								               <input type="text" class="form-control form-control-sm cell-input editable-cell datepicker"
+								                      name="nextRepricingDate" th:value="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}" readonly
+								                      style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+								           </td>
+								           <td>
+								               <input type="text" class="form-control form-control-sm cell-input editable-cell"
+								                      name="spreadOverBenchmark" th:value="${data.spreadOverBenchmark}" readonly
+								                      style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+								           </td>
+								           <td th:text="${data.finalRoi}"></td>
+								           <td>
+								               <input type="text" class="form-control form-control-sm cell-input editable-cell"
+								                      name="capFloorRateOfInterest" th:value="${data.capFloorRateOfInterest}" readonly
+								                      style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 130px;"/>
+								           </td>
+								           <td th:text="${data.assetStatus}"></td>
+								        </tr>
+								   </tbody>
+								</table>
+						</div>
+					</div>
+					<div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
+						<button type="button" class="custom-tab-btn submit-btn-bottom"
+							onclick="saveInlineEdits();" style="display: none;"
+							title="Submit changes">
+							Submit
+						</button>
+					</div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- NORMAL DETAIL TABLE -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'Details'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="irradvDetailTable" class="table table-bordered table-cell table-hover table-sm">
+								   <thead>
+								       <tr>
+								           <th>S.No</th>
+								           <th>Customer ID</th>
+								           <th>Account Number</th>
+								           <th>Scheme Code</th>
+								           <th>GL Code</th>
+								           <th>GL Description</th>
+								           <th>Type of Loan</th>           
+								           <th>Name</th>                    
+								           <th>Account Currency</th>
+								           <th>Outstanding Balance (ACCT CCY)</th>
+								           <th>Outstanding Balance (INR)</th>
+								           <th>Account Opening Date</th>
+								           <th>Maturity Date</th>
+								           <th>Tenor in Months</th>
+								           <th>EMI of Loan</th>
+								           <th>Floating/Fixed</th>
+								           <th>Existing Benchmark</th>
+								           <th>Repricing Frequency</th>
+								           <th>Last Repricing Date</th>
+								           <th>Next Repricing Date</th>
+								           <th>Spread Over Benchmark</th>
+								           <th>Final ROI</th>
+								           <th>Cap/Floor Rate</th>
+								           <th>Asset Status</th>
+								        </tr>
+								   </thead>
+								   <tbody>
+								       <tr th:each="data : ${reportsummary}">
+								           <td th:text="${data.sno}"></td>
+								           <td th:text="${data.customerId}"></td>
+								           <td th:text="${data.accountNumber}"></td>
+								           <td th:text="${data.schemeCode}"></td>
+								           <td th:text="${data.glCode}"></td>
+								           <td th:text="${data.glDescription}"></td>
+								           <td th:text="${data.typeOfLoan}"></td>      
+								           <td th:text="${data.name}"></td>             
+								           <td th:text="${data.accountCurrency}"></td>
+								           <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+								           <td th:text="${data.outstandingBalanceInr}"></td>
+								           <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${data.tenorMonth}"></td>
+								           <td th:text="${data.emiOfLoan}"></td>
+								           <td th:text="${data.floatingFixed}"></td>
+								           <td th:text="${data.existingBenchmark}"></td>
+								           <td th:text="${data.existingRepricingFrequency}"></td>
+								           <td th:text="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}"></td>
+								           <td th:text="${data.spreadOverBenchmark}"></td>
+								           <td th:text="${data.finalRoi}"></td>
+								           <td th:text="${data.capFloorRateOfInterest}"></td>
+								           <td th:text="${data.assetStatus}"></td>
+								        </tr>
+								   </tbody>
+								</table>
+						</div>
+					</div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- ARCHIVAL SUMMARY TABLE (Read Only - No Modify Button) -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'archivalSummary'}" class="container-fluid">
+				    <div class="row">
+				        <div class="col-sm-12" style="overflow-x: auto;">
+				            <table id="archivalTable" class="table table-bordered table-cell table-hover table-sm">
+				                <thead>
+				                    <tr>
+				                        <th>S.No</th>
+				                        <th>Customer ID</th>
+				                        <th>Account Number</th>
+				                        <th>Scheme Code</th>
+				                        <th>GL Code</th>
+				                        <th>GL Description</th>
+				                        <th>Type of Loan</th>           
+				                        <th>Name</th>                    
+				                        <th>Account Currency</th>
+				                        <th>Outstanding Balance (ACCT CCY)</th>
+				                        <th>Outstanding Balance (INR)</th>
+				                        <th>Account Opening Date</th>
+				                        <th>Maturity Date</th>
+				                        <th>Tenor in Months</th>
+				                        <th>EMI of Loan</th>
+				                        <th>Floating/Fixed</th>
+				                        <th>Existing Benchmark</th>
+				                        <th>Repricing Frequency</th>
+				                        <th>Last Repricing Date</th>
+				                        <th>Next Repricing Date</th>
+				                        <th>Spread Over Benchmark</th>
+				                        <th>Final ROI</th>
+				                        <th>Cap/Floor Rate</th>
+				                        <th>Asset Status</th>
+				                    </tr>
+				                </thead>
+				                <tbody>
+				                    <tr th:each="data : ${reportsummary}">
+				                        <td th:text="${data.sno}"></td>
+				                        <td th:text="${data.customerId}"></td>
+				                        <td th:text="${data.accountNumber}"></td>
+				                        <td th:text="${data.schemeCode}"></td>
+				                        <td th:text="${data.glCode}"></td>
+				                        <td th:text="${data.glDescription}"></td>
+				                        <td th:text="${data.typeOfLoan}"></td>
+				                        <td th:text="${data.name}"></td>             
+				                        <td th:text="${data.accountCurrency}"></td>
+				                        <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+				                        <td th:text="${data.outstandingBalanceInr}"></td>
+				                        <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.tenorMonth}"></td>
+				                        <td th:text="${data.emiOfLoan}"></td>
+				                        <td th:text="${data.floatingFixed}"></td>
+				                        <td th:text="${data.existingBenchmark}"></td>
+				                        <td th:text="${data.existingRepricingFrequency}"></td>
+				                        <td th:text="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.spreadOverBenchmark}"></td>
+				                        <td th:text="${data.finalRoi}"></td>
+				                        <td th:text="${data.capFloorRateOfInterest}"></td>
+				                        <td th:text="${data.assetStatus}"></td>
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+				    </div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- ARCHIVAL DETAIL TABLE (Read Only) -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'archivalDetail'}" class="container-fluid">
+				    <div class="row">
+				        <div class="col-sm-12" style="overflow-x: auto;">
+				            <table id="archivalDetailTable" class="table table-bordered table-cell table-hover table-sm">
+				                <thead>
+				                    <tr>
+				                        <th>S.No</th>
+				                        <th>Customer ID</th>
+				                        <th>Account Number</th>
+				                        <th>Scheme Code</th>
+				                        <th>GL Code</th>
+				                        <th>GL Description</th>
+				                        <th>Type of Loan</th>           
+				                        <th>Name</th>                    
+				                        <th>Account Currency</th>
+				                        <th>Outstanding Balance (ACCT CCY)</th>
+				                        <th>Outstanding Balance (INR)</th>
+				                        <th>Account Opening Date</th>
+				                        <th>Maturity Date</th>
+				                        <th>Tenor in Months</th>
+				                        <th>EMI of Loan</th>
+				                        <th>Floating/Fixed</th>
+				                        <th>Existing Benchmark</th>
+				                        <th>Repricing Frequency</th>
+				                        <th>Last Repricing Date</th>
+				                        <th>Next Repricing Date</th>
+				                        <th>Spread Over Benchmark</th>
+				                        <th>Final ROI</th>
+				                        <th>Cap/Floor Rate</th>
+				                        <th>Asset Status</th>
+				                    </tr>
+				                </thead>
+				                <tbody>
+				                    <tr th:each="data : ${reportsummary}">
+				                        <td th:text="${data.sno}"></td>
+				                        <td th:text="${data.customerId}"></td>
+				                        <td th:text="${data.accountNumber}"></td>
+				                        <td th:text="${data.schemeCode}"></td>
+				                        <td th:text="${data.glCode}"></td>
+				                        <td th:text="${data.glDescription}"></td>
+				                        <td th:text="${data.typeOfLoan}"></td>
+				                        <td th:text="${data.name}"></td>             
+				                        <td th:text="${data.accountCurrency}"></td>
+				                        <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+				                        <td th:text="${data.outstandingBalanceInr}"></td>
+				                        <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.tenorMonth}"></td>
+				                        <td th:text="${data.emiOfLoan}"></td>
+				                        <td th:text="${data.floatingFixed}"></td>
+				                        <td th:text="${data.existingBenchmark}"></td>
+				                        <td th:text="${data.existingRepricingFrequency}"></td>
+				                        <td th:text="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.spreadOverBenchmark}"></td>
+				                        <td th:text="${data.finalRoi}"></td>
+				                        <td th:text="${data.capFloorRateOfInterest}"></td>
+				                        <td th:text="${data.assetStatus}"></td>
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+				    </div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- RESUB SUMMARY TABLE (With Modify Button) -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'resubSummary'}" class="container-fluid">
+				    <div class="row">
+				        <div class="col-sm-12" style="overflow-x: auto;">
+				            <table id="resubTable" class="table table-bordered table-cell table-hover table-sm">
+				                <thead>
+				                    <tr>
+				                        <th>S.No</th>
+				                        <th>Customer ID</th>
+				                        <th>Account Number</th>
+				                        <th>Scheme Code</th>
+				                        <th>GL Code</th>
+				                        <th>GL Description</th>
+				                        <th>Type of Loan</th>           
+				                        <th>Name</th>                    
+				                        <th>Account Currency</th>
+				                        <th>Outstanding Balance (ACCT CCY)</th>
+				                        <th>Outstanding Balance (INR)</th>
+				                        <th>Account Opening Date</th>
+				                        <th>Maturity Date</th>
+				                        <th>Tenor in Months</th>
+				                        <th>EMI of Loan</th>
+				                        <th>Floating/Fixed</th>
+				                        <th>Existing Benchmark</th>
+				                        <th>Repricing Frequency</th>
+				                        <th>Last Repricing Date</th>
+				                        <th>Next Repricing Date</th>
+				                        <th>Spread Over Benchmark</th>
+				                        <th>Final ROI</th>
+				                        <th>Cap/Floor Rate</th>
+				                        <th>Asset Status</th>
+				                    </tr>
+				                </thead>
+				                <tbody>
+				                    <tr th:each="data : ${reportsummary}">
+				                        <td>
+				                            <input type="hidden" class="row-sno" th:value="${data.sno}"/>
+				                            <span th:text="${data.sno}"></span>
+				                        </td>
+				                        <td th:text="${data.customerId}"></td>
+				                        <td th:text="${data.accountNumber}"></td>
+				                        <td th:text="${data.schemeCode}"></td>
+				                        <td th:text="${data.glCode}"></td>
+				                        <td th:text="${data.glDescription}"></td>
+				                        <td th:text="${data.typeOfLoan}"></td>
+				                        <td th:text="${data.name}"></td>             
+				                        <td th:text="${data.accountCurrency}"></td>
+				                        <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+				                        <td th:text="${data.outstandingBalanceInr}"></td>
+				                        <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.tenorMonth}"></td>
+				                        <td th:text="${data.emiOfLoan}"></td>
+				                        <td>
+				                            <select name="floatingFixed" disabled class="form-control form-control-sm cell-select editable-cell"
+				                                    style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+				                                <option value="Floating" th:selected="${data.floatingFixed == null or data.floatingFixed == '' or data.floatingFixed == 'Floating'}">Floating</option>
+				                                <option value="Fixed" th:selected="${data.floatingFixed == 'Fixed'}">Fixed</option>
+				                            </select>
+				                        </td>
+				                        <td>
+				                            <select name="existingBenchmark" disabled class="form-control form-control-sm cell-select editable-cell"
+				                                    style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 130px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+				                                <option value="BPLR" th:selected="${data.existingBenchmark == null or data.existingBenchmark == '' or data.existingBenchmark == 'BPLR'}">BPLR</option>
+				                                <option value="SOFR" th:selected="${data.existingBenchmark == 'SOFR'}">SOFR</option>
+				                                <option value="FD LINKED" th:selected="${data.existingBenchmark == 'FD LINKED'}">FD LINKED</option>
+				                            </select>
+				                        </td>
+				                        <td>
+				                            <select name="existingRepricingFrequency" disabled class="form-control form-control-sm cell-select editable-cell"
+				                                    style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 200px; -webkit-appearance: none; -moz-appearance: none; appearance: none; color: inherit; padding: 0;">
+				                                <option value="On resetting of MoPR" th:selected="${data.existingRepricingFrequency == null or data.existingRepricingFrequency == '' or data.existingRepricingFrequency == 'On resetting of MoPR'}">On resetting of MoPR</option>
+				                                <option value="1 Month" th:selected="${data.existingRepricingFrequency == '1 Month'}">1 Month</option>
+				                                <option value="3 Months" th:selected="${data.existingRepricingFrequency == '3 Months'}">3 Months</option>
+				                                <option value="6 Months" th:selected="${data.existingRepricingFrequency == '6 Months'}">6 Months</option>
+				                                <option value="9 Months" th:selected="${data.existingRepricingFrequency == '9 Months'}">9 Months</option>
+				                                <option value="12 Months" th:selected="${data.existingRepricingFrequency == '12 Months'}">12 Months</option>
+				                            </select>
+				                        </td>
+				                        <td>
+				                            <input type="text" class="form-control form-control-sm cell-input editable-cell datepicker"
+				                                   name="lastRepricingDate" th:value="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}" readonly
+				                                   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+				                        </td>
+				                        <td>
+				                            <input type="text" class="form-control form-control-sm cell-input editable-cell datepicker"
+				                                   name="nextRepricingDate" th:value="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}" readonly
+				                                   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+				                        </td>
+				                        <td>
+				                            <input type="text" class="form-control form-control-sm cell-input editable-cell"
+				                                   name="spreadOverBenchmark" th:value="${data.spreadOverBenchmark}" readonly
+				                                   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px;"/>
+				                        </td>
+				                        <td th:text="${data.finalRoi}"></td>
+				                        <td>
+				                            <input type="text" class="form-control form-control-sm cell-input editable-cell"
+				                                   name="capFloorRateOfInterest" th:value="${data.capFloorRateOfInterest}" readonly
+				                                   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 130px;"/>
+				                        </td>
+				                        <td th:text="${data.assetStatus}"></td>			                        
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+				    </div>
+					<div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
+						<button type="button" class="custom-tab-btn submit-btn-bottom"
+							onclick="saveInlineEdits();" style="display: none;"
+							title="Submit changes">
+							Submit
+						</button>
+					</div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- RESUB DETAIL TABLE -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'resubDetail'}" class="container-fluid">
+				    <div class="row">
+				        <div class="col-sm-12" style="overflow-x: auto;">
+				            <table id="resubDetailTable" class="table table-bordered table-cell table-hover table-sm">
+				                <thead>
+				                    <tr>
+				                        <th>S.No</th>
+				                        <th>Customer ID</th>
+				                        <th>Account Number</th>
+				                        <th>Scheme Code</th>
+				                        <th>GL Code</th>
+				                        <th>GL Description</th>
+				                        <th>Type of Loan</th>           
+				                        <th>Name</th>                    
+				                        <th>Account Currency</th>
+				                        <th>Outstanding Balance (ACCT CCY)</th>
+				                        <th>Outstanding Balance (INR)</th>
+				                        <th>Account Opening Date</th>
+				                        <th>Maturity Date</th>
+				                        <th>Tenor in Months</th>
+				                        <th>EMI of Loan</th>
+				                        <th>Floating/Fixed</th>
+				                        <th>Existing Benchmark</th>
+				                        <th>Repricing Frequency</th>
+				                        <th>Last Repricing Date</th>
+				                        <th>Next Repricing Date</th>
+				                        <th>Spread Over Benchmark</th>
+				                        <th>Final ROI</th>
+				                        <th>Cap/Floor Rate</th>
+				                        <th>Asset Status</th>
+				                        <th>Version</th>
+				                        <th>Resub Date</th>
+				                    </tr>
+				                </thead>
+				                <tbody>
+				                    <tr th:each="data : ${reportsummary}">
+				                        <td th:text="${data.sno}"></td>
+				                        <td th:text="${data.customerId}"></td>
+				                        <td th:text="${data.accountNumber}"></td>
+				                        <td th:text="${data.schemeCode}"></td>
+				                        <td th:text="${data.glCode}"></td>
+				                        <td th:text="${data.glDescription}"></td>
+				                        <td th:text="${data.typeOfLoan}"></td>
+				                        <td th:text="${data.name}"></td>             
+				                        <td th:text="${data.accountCurrency}"></td>
+				                        <td th:text="${data.outstandingBalanceAcctCcy}"></td>
+				                        <td th:text="${data.outstandingBalanceInr}"></td>
+				                        <td th:text="${#dates.format(data.accountOpeningDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.maturityDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.tenorMonth}"></td>
+				                        <td th:text="${data.emiOfLoan}"></td>
+				                        <td th:text="${data.floatingFixed}"></td>
+				                        <td th:text="${data.existingBenchmark}"></td>
+				                        <td th:text="${data.existingRepricingFrequency}"></td>
+				                        <td th:text="${#dates.format(data.lastRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${#dates.format(data.nextRepricingDate,'dd-MM-yyyy')}"></td>
+				                        <td th:text="${data.spreadOverBenchmark}"></td>
+				                        <td th:text="${data.finalRoi}"></td>
+				                        <td th:text="${data.capFloorRateOfInterest}"></td>
+				                        <td th:text="${data.assetStatus}"></td>
+				                        <td th:text="${data.reportVersion}"></td>
+				                        <td th:text="${#dates.format(data.reportResubdate,'dd-MM-yyyy')}"></td>
+				                    </tr>
+				                </tbody>
+				            </table>
+				        </div>
+				    </div>
+				</div>
+				
+				<!-- =========================================================== -->
+				<!-- ADD SCREEN (NORMAL) -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'add'}" class="container-fluid">
+				    <form th:id="${type == 'RESUB' ? 'resubIrradvForm' : 'irradvForm'}" th:object="${irradv}">
+				        <!-- Add hidden field to identify type -->
+				        <input type="hidden" name="reportType" th:value="${type}"/>
+				        
+				        <div class="card">
+				            <div class="card-header text-white" th:classappend="${type == 'RESUB' ? 'bg-success' : 'bg-primary'}">
+				                <h4 th:text="${type == 'RESUB'} ? 'Add Resubmission Record - IRRBB ADVANCES' : 'Add IRRBB ADVANCES Record'"></h4>
+				            </div>
+				            <div class="card-body add-form-scroll">
+				                <div class="row">
+				                    <div class="col-md-4 mb-3">
+				                        <label>Customer ID</label>
+				                        <input type="text" th:field="*{customerId}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Account Number</label>
+				                        <input type="text" th:field="*{accountNumber}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Scheme Code</label>
+				                        <input type="text" th:field="*{schemeCode}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>GL Code</label>
+				                        <input type="text" th:field="*{glCode}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>GL Description</label>
+				                        <input type="text" th:field="*{glDescription}" class="form-control"/>
+				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Type of Loan</label>
+									    <input type="text" th:field="*{typeOfLoan}" class="form-control"/>
+									</div>
+									<div class="col-md-4 mb-3">
+									    <label>Name</label>
+									    <input type="text" th:field="*{name}" class="form-control"/>
+									</div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Account Currency</label>
+				                        <input type="text" th:field="*{accountCurrency}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Outstanding Balance (Account Currency)</label>
+				                        <input type="number" step="0.01" th:field="*{outstandingBalanceAcctCcy}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Outstanding Balance (INR)</label>
+				                        <input type="number" step="0.01" th:field="*{outstandingBalanceInr}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Account Opening Date</label>
+				                        <input type="text" id="accountOpeningDate" th:field="*{accountOpeningDate}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Maturity Date</label>
+				                        <input type="text" id="maturityDate" th:field="*{maturityDate}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Tenor in Months</label>
+				                        <input type="number" step="0.01" th:field="*{tenorMonth}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>EMI of Loan</label>
+				                        <input type="number" step="0.01" th:field="*{emiOfLoan}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Floating/Fixed</label>
+				                        <input type="text" th:field="*{floatingFixed}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Existing Benchmark</label>
+				                        <input type="text" th:field="*{existingBenchmark}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Existing Repricing Frequency</label>
+				                        <input type="text" th:field="*{existingRepricingFrequency}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Last Repricing Date</label>
+				                        <input type="text" id="lastRepricingDate" th:field="*{lastRepricingDate}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Next Repricing Date</label>
+				                        <input type="text" id="nextRepricingDate" th:field="*{nextRepricingDate}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Spread Over Benchmark</label>
+				                        <input type="text" th:field="*{spreadOverBenchmark}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Final ROI</label>
+				                        <input type="text" th:field="*{finalRoi}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Cap/Floor Rate of Interest</label>
+				                        <input type="text" th:field="*{capFloorRateOfInterest}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Asset Status</label>
+				                        <input type="text" th:field="*{assetStatus}" class="form-control"/>
+				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Report Date</label>
+									    <input type="text" th:field="*{reportDate}" class="form-control" readonly/>
+									</div>
+				                </div>
+				            </div>
+							<div class="card-footer text-center">
+							    <button type="button" class="custom-tab-btn" onclick="saveRecord()">Submit</button>
+							</div>
+				        </div>
+				    </form>
+				</div>
+
+				<!-- =========================================================== -->
+				<!-- MODIFY SCREEN (Reused for both NORMAL and RESUB) -->
+				<!-- =========================================================== -->
+				<div th:if="${displaymode == 'modify'}" class="container-fluid">
+				    <form th:id="${type == 'RESUB' ? 'modifyResubIrradvForm' : 'modifyIrradvForm'}" th:object="${irradv}">
+				        <input type="hidden" th:field="*{sno}"/>
+				        <input type="hidden" name="reportType" th:value="${type}"/>
+				        
+				        <div class="card">
+				            <div class="card-header bg-warning text-dark">
+				                <h4 th:text="${type == 'RESUB'} ? 'Modify Resubmission Record - IRRBB ADVANCES' : 'Modify IRRBB ADVANCES Record'"></h4>
+				            </div>
+				            <div class="card-body add-form-scroll">
+				                <div class="row">
+				                    <div class="col-md-4 mb-3">
+				                        <label>Customer ID</label>
+				                        <input type="text" th:field="*{customerId}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Account Number</label>
+				                        <input type="text" th:field="*{accountNumber}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Scheme Code</label>
+				                        <input type="text" th:field="*{schemeCode}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>GL Code</label>
+				                        <input type="text" th:field="*{glCode}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>GL Description</label>
+				                        <input type="text" th:field="*{glDescription}" class="form-control"/>
+				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Type of Loan</label>
+									    <input type="text" th:field="*{typeOfLoan}" class="form-control"/>
+									</div>
+									<div class="col-md-4 mb-3">
+									    <label>Name</label>
+									    <input type="text" th:field="*{name}" class="form-control"/>
+									</div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Account Currency</label>
+				                        <input type="text" th:field="*{accountCurrency}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Outstanding Balance (Account Currency)</label>
+				                        <input type="number" step="0.01" th:field="*{outstandingBalanceAcctCcy}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Outstanding Balance (INR)</label>
+				                        <input type="number" step="0.01" th:field="*{outstandingBalanceInr}" class="form-control"/>
+				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Account Opening Date</label>
+									    <input type="text" class="form-control datepicker" th:field="*{accountOpeningDate}" placeholder="dd/MM/yyyy"/>
+									</div>
+									<div class="col-md-4 mb-3">
+									    <label>Maturity Date</label>
+									    <input type="text" class="form-control datepicker" th:field="*{maturityDate}" placeholder="dd/MM/yyyy"/>
+									</div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Tenor in Months</label>
+				                        <input type="number" step="0.01" th:field="*{tenorMonth}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>EMI of Loan</label>
+				                        <input type="number" step="0.01" th:field="*{emiOfLoan}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Floating/Fixed</label>
+				                        <input type="text" th:field="*{floatingFixed}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Existing Benchmark</label>
+				                        <input type="text" th:field="*{existingBenchmark}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Existing Repricing Frequency</label>
+				                        <input type="text" th:field="*{existingRepricingFrequency}" class="form-control"/>
+				                    </div>
+									<div class="col-md-4 mb-3">
+									    <label>Last Repricing Date</label>
+									    <input type="text" class="form-control datepicker" th:field="*{lastRepricingDate}" placeholder="dd/MM/yyyy"/>
+									</div>
+									<div class="col-md-4 mb-3">
+									    <label>Next Repricing Date</label>
+									    <input type="text" class="form-control datepicker" th:field="*{nextRepricingDate}" placeholder="dd/MM/yyyy"/>
+									</div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Spread Over Benchmark</label>
+				                        <input type="text" th:field="*{spreadOverBenchmark}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Final ROI</label>
+				                        <input type="text" th:field="*{finalRoi}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Cap/Floor Rate of Interest</label>
+				                        <input type="text" th:field="*{capFloorRateOfInterest}" class="form-control"/>
+				                    </div>
+				                    <div class="col-md-4 mb-3">
+				                        <label>Asset Status</label>
+				                        <input type="text" th:field="*{assetStatus}" class="form-control"/>
+				                    </div>
+				                </div>
+				            </div>
+				            <div class="card-footer text-center">
+								<button type="button" class="custom-tab-btn" onclick="updateRecord()">Update</button>
+				            </div>
+				        </div>
+				    </form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- =========================================================== -->
+	<!-- LOADER MODAL -->
+	<!-- =========================================================== -->
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- =========================================================== -->
+	<!-- CUSTOM ALERT/RESULT MODAL -->
+	<!-- =========================================================== -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel"
+						style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- =========================================================== -->
+	<!-- CUSTOM CELL RESULT MODAL -->
+	<!-- =========================================================== -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel"
+						style="text-align: center; color: white;">Do you want to
+						open the report?</div>
+				</div>
+				<div class="modal-body"
+					style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn"
+						data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	<script>
+		$(document).ready(function () {
+			var tableIds = ['#irradvTable', '#irradvDetailTable', '#archivalTable', '#archivalDetailTable', '#resubTable', '#resubDetailTable'];
+			tableIds.forEach(function (id) {
+				if ($(id).length) {
+					var table = $(id).DataTable({
+						"pageLength": 25,
+						"order": [],
+						"scrollX": true,
+						"scrollY": "calc(100vh - 280px)",
+						"scrollCollapse": true,
+						"paging": true,
+						"autoWidth": true,
+						"language": {
+							"lengthMenu": "_MENU_ &nbsp;Entries per page"
+						}
+					});
+					setTimeout(function() {
+						table.columns.adjust().draw(false);
+					}, 200);
+				}
+			});
+		});
+
+		function enableInlineEdit() {
+			$('#modifyBtn').hide();
+			$('.submit-btn-bottom').show();
+			$('#cancelRecord').show();
+
+			$('input.editable-cell').each(function() {
+				$(this).removeAttr('readonly');
+				$(this).css({
+					'background-color': '#d3d3d3',
+					'border': 'none',
+					'outline': 'none',
+					'padding': '2px 5px'
+				});
+			});
+
+			$('select.editable-cell').each(function() {
+				$(this).removeAttr('disabled');
+				$(this).css({
+					'background-color': '#d3d3d3',
+					'border': 'none',
+					'outline': 'none',
+					'padding': '2px 5px',
+					'-webkit-appearance': 'menulist',
+					'-moz-appearance': 'menulist',
+					'appearance': 'menulist',
+					'cursor': 'pointer'
+				});
+			});
+
+			// Attach jQuery UI datepicker to LAST_REPRICING_DATE & NEXT_REPRICING_DATE
+			$('input.datepicker').datepicker({
+				dateFormat: 'dd-mm-yy',
+				changeMonth: true,
+				changeYear: true
+			});
+		}
+
+		function cancelInlineEdit() {
+			$('.submit-btn-bottom').hide();
+			$('#cancelRecord').hide();
+			$('#modifyBtn').show();
+
+			try {
+				$('input.datepicker').datepicker('destroy');
+			} catch (e) {}
+
+			$('input.editable-cell').each(function() {
+				$(this).attr('readonly', 'readonly');
+				$(this).css({
+					'background-color': 'transparent',
+					'border': 'none',
+					'padding': '0'
+				});
+			});
+
+			$('select.editable-cell').each(function() {
+				$(this).attr('disabled', 'disabled');
+				$(this).css({
+					'background-color': 'transparent',
+					'border': 'none',
+					'padding': '0',
+					'-webkit-appearance': 'none',
+					'-moz-appearance': 'none',
+					'appearance': 'none',
+					'cursor': 'default'
+				});
+			});
+		}
+
+		function saveInlineEdits() {
+			var rowsData = [];
+			var targetTable = $('#irradvTable').length && $('#irradvTable').is(':visible') ? $('#irradvTable') : $('#resubTable');
+
+			if (!targetTable.length) {
+				showResultModal('Information', 'No table found to save.');
+				return;
+			}
+
+			targetTable.find('tbody tr').each(function() {
+				var row = $(this);
+				var sno = row.find('input.row-sno').val();
+				if (sno) {
+					rowsData.push({
+						sno: parseInt(sno),
+						floatingFixed: row.find('select[name="floatingFixed"]').val() || 'Floating',
+						existingBenchmark: row.find('select[name="existingBenchmark"]').val() || 'BPLR',
+						existingRepricingFrequency: row.find('select[name="existingRepricingFrequency"]').val() || 'On resetting of MoPR',
+						lastRepricingDate: row.find('input[name="lastRepricingDate"]').val() || '',
+						nextRepricingDate: row.find('input[name="nextRepricingDate"]').val() || '',
+						spreadOverBenchmark: row.find('input[name="spreadOverBenchmark"]').val() || '',
+						capFloorRateOfInterest: row.find('input[name="capFloorRateOfInterest"]').val() || ''
+					});
+				}
+			});
+
+			if (rowsData.length === 0) {
+				showResultModal('Information', 'No records found to update.');
+				return;
+			}
+
+			var urlParams = new URLSearchParams(window.location.search);
+			var type = urlParams.get('type') || ($('#resubTable').length && $('#resubTable').is(':visible') ? 'RESUB' : '');
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/updateAllBRRSIrradv?type=' + encodeURIComponent(type),
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify(rowsData),
+				success: function(response) {
+					$('#loader').modal('hide');
+					setTimeout(function() {
+						showResultModal('BRRS', 'Modified Successfully.');
+					}, 300);
+				},
+				error: function(xhr) {
+					$('#loader').modal('hide');
+					setTimeout(function() {
+						showResultModal('Error', xhr.responseText || 'Error updating records');
+					}, 300);
+				}
+			});
+		}
+
+	</script>
+</body>
+
+<style>
+/* Table Hover & Cell Styling from M_SIR */
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9 !important;
+}
+
+.table-cell tbody td:hover,
+tbody td:hover,
+tbody td:hover input,
+tbody td:hover select,
+tbody td:hover span {
+	background-color: #f0f0f0 !important;
+	cursor: pointer;
+}
+
+.table-bordered td,
+.table-bordered th {
+	border: 1px solid #000 !important;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #b3b6b9 !important;
+	color: #000 !important;
+	font-weight: bold;
+	z-index: 1;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+/* Column Auto-Sizing based on tbody td data content (thead th wraps to fit) */
+.dataTables_scrollHeadInner,
+.dataTables_scrollBody table {
+	width: 100% !important;
+}
+
+.dataTables_scrollHeadInner table {
+	width: 100% !important;
+}
+
+/* Data cells in tbody define column widths naturally */
+table.dataTable tbody td {
+	white-space: nowrap !important;
+	padding: 6px 10px !important;
+	vertical-align: middle !important;
+}
+
+/* Header th text wraps to fit tbody column width */
+table.dataTable thead th {
+	white-space: normal !important;
+	word-wrap: break-word !important;
+	overflow-wrap: break-word !important;
+	padding: 6px 8px !important;
+	vertical-align: bottom !important;
+	text-align: center !important;
+}
+
+table.dataTable input.cell-input,
+table.dataTable select.cell-select {
+	width: 100% !important;
+	box-sizing: border-box;
+}
+
+/* Ensure editable cell inputs and select dropdowns never clip data */
+select[name="floatingFixed"] {
+	min-width: 120px !important;
+}
+select[name="existingBenchmark"] {
+	min-width: 130px !important;
+}
+select[name="existingRepricingFrequency"] {
+	min-width: 200px !important;
+}
+input[name="lastRepricingDate"],
+input[name="nextRepricingDate"] {
+	min-width: 120px !important;
+}
+input[name="spreadOverBenchmark"] {
+	min-width: 120px !important;
+}
+input[name="capFloorRateOfInterest"] {
+	min-width: 130px !important;
+}
+
+/* Editable Cell Styling matching M_SIR (#d3d3d3 background color, seamless inner cell border) */
+input.editable-cell:not([readonly]) {
+	background-color: #d3d3d3 !important;
+	border: none !important;
+	outline: none !important;
+	padding: 2px 5px !important;
+}
+
+select.editable-cell:disabled {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background: transparent;
+	border: none;
+	outline: none;
+	color: inherit;
+	padding: 0;
+	cursor: default;
+}
+
+select.editable-cell:not(:disabled) {
+	background-color: #d3d3d3 !important;
+	border: none !important;
+	outline: none !important;
+	padding: 2px 5px !important;
+	cursor: pointer;
+}
+
+.dataTables_length select {
+	margin-right: 8px;
+	margin-left: 4px;
+}
+div.dataTables_scrollBody {
+	border-bottom: 1px solid #dee2e6;
+}
+.add-form-scroll {
+	max-height: calc(100vh - 220px);
+	overflow-y: auto;
+	padding: 10px 5px;
+}
+.scrollable-table-container {
+	max-height: 510px;
+	overflow-y: auto;
+	border: 1px solid #ccc;
+}
+
+.inner {
+	max-height: 600px;
+	overflow: auto;
+	border: 1px solid #dee2e6;
+}
+
+#reports thead th {
+	position: sticky;
+	top: 0;
+	background-color: #f8f9fa;
+	z-index: 2;
+}
+
+div.dataTables_wrapper div.dataTables_paginate {
+	text-align: right !important;
+	float: right !important;
+	width: auto;
+	margin-top: 10px;
+}
+
+div.dataTables_wrapper div.dataTables_info {
+	float: left !important;
+	margin-top: 10px;
+}
+
+.pagination {
+	margin: 0;
+}
+
+.page-item.active .page-link {
+	background-color: #386276;
+	border-color: #386276;
+}
+
+.page-link {
+	color: #386276;
+}
+
+.page-link:hover {
+	color: #2a4a5c;
+}
+
+.form-select {
+	display: inline-block;
+	width: auto;
+}
+</style>
+
+</html>

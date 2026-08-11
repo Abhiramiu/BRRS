@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -205,6 +206,10 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_En
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Detail_Entity;
+import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Archival_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Summary_Entity;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
@@ -259,6 +264,9 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
+	
+	@Autowired
+	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
 
 	private String pagesize;
 
@@ -5758,18 +5766,18 @@ public class BRRS_ReportsController {
 	
 	@RequestMapping(value = "Rate/updateInrRate", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate) {
-		return regreportServices.updateInrRate(inrRate);
+	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate, @RequestParam("reportDate") String reportDate) {
+		return regreportServices.updateInrRate(inrRate, reportDate);
 	}
 
 	@RequestMapping(value = "Rate/getInrRate", method = RequestMethod.GET)
 	@ResponseBody
-	public String getDtaxInrRate() {
+	public ResponseEntity<Map<String, Object>> getDtaxInrRate() {
 		try {
-			BigDecimal rate = regreportServices.getInrRate();
-			return rate != null ? rate.toPlainString() : "Enter INR Rate";
+			Map<String, Object> details = regreportServices.getInrRateDetails();
+			return ResponseEntity.ok(details);
 		} catch (Exception e) {
-			return "Enter INR Rate";
+			return ResponseEntity.ok(Collections.emptyMap());
 		}
 	}
 
@@ -6525,4 +6533,20 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
 	}
+	
+	// BATCH UPDATE METHOD FOR INLINE CELL EDITS
+	@RequestMapping(value = "/updateAllBRRSIrradv", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllBRRSIrradv(
+			@RequestBody List<BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Update_Row> rows,
+			@RequestParam(value = "type", required = false) String type) {
+		try {
+			BRRS_IRRBB_ADVANCES_reportservice.updateAllIrradvRows(rows, type);
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
 }
