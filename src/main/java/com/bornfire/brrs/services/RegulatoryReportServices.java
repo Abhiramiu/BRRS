@@ -423,16 +423,16 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
-	
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	BRRS_IRRBB_BORROWINGS_ReportService BRRS_IRRBB_BORROWINGS_reportservice;
 
 	@Autowired
 	BRRS_IRRBB_PLACEMENTS_ReportService BRRS_IRRBB_PLACEMENTS_reportservice;
-	
+
 	@Autowired
 	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
 
@@ -1105,11 +1105,11 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_IRRBB_PLACEMENTS_reportservice.getBRRS_IRRBB_PLACEMENTS_View(reportId, fromdate, todate,
 					currency, dtltype, pageable, type, version);
 			break;
-			
+
 		case "IRRBB_ADV":
-		    repsummary = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_View(
-		        reportId, fromdate, todate, currency, dtltype, pageable, type, version);
-		    break;
+			repsummary = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
 
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
@@ -1555,15 +1555,15 @@ public class RegulatoryReportServices {
 		byte[] repfile = null;
 
 		switch (reportId) {
-		
+
 		case "IRRBB_ADV":
-		    try {		        
-		            repfile = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(
-		                filename, reportId, fromdate, todate, currency, dtltype, type, format, version);		        
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		    break;
+			try {
+				repfile = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
 		case "SCH_17":
 			try {
@@ -2098,8 +2098,8 @@ public class RegulatoryReportServices {
 
 		case "Q_LARADV":
 			try {
-				repfile = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, format, version);
+				repfile = BRRS_Q_LARADV_reportservice.getBRRS_Q_LARADV_EmailExcel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 			} catch (Exception e) {
 			}
 			break;
@@ -2856,12 +2856,12 @@ public class RegulatoryReportServices {
 
 		List<Object> archivalData = new ArrayList<>();
 		switch (rptcode) {
-		
+
 		case "IRRBB_ADV":
-		    List<Object[]> irrbbAdvList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESArchival();
-		    archivalData.addAll(irrbbAdvList);
-		    System.out.println("Fetched IRRBB_ADVANCES archival data: " + irrbbAdvList.size());
-		    break;
+			List<Object[]> irrbbAdvList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESArchival();
+			archivalData.addAll(irrbbAdvList);
+			System.out.println("Fetched IRRBB_ADVANCES archival data: " + irrbbAdvList.size());
+			break;
 
 		case "M_SFINP2":
 
@@ -3046,7 +3046,6 @@ public class RegulatoryReportServices {
 			try {
 				archivalData = BRRS_M_LCR_reportservice.getM_LCRArchival();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -4079,12 +4078,14 @@ public class RegulatoryReportServices {
 
 			case "M_LA1":
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"));
+						request.getParameter("formmode"), request.getParameter("type"),
+						request.getParameter("version"));
 				break;
 
 			case "M_LA1_NEW":
 				modelAndView = BRRS_M_LA1_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"), request.getParameter("type"), request.getParameter("version"));
+						request.getParameter("formmode"), request.getParameter("type"),
+						request.getParameter("version"));
 				break;
 
 			case "M_LA3":
@@ -4805,7 +4806,7 @@ public class RegulatoryReportServices {
 		List<Object[]> resubmissionData = new ArrayList<>();
 
 		switch (rptcode) {
-		
+
 		case "IRRBB_ADV":
 			try {
 				List<Object[]> resubList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESResubList();
@@ -6250,12 +6251,12 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
-fromdate, todate, currency, dtltype, type, format, version);
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type, format, version);
 
-case "Q_SMME_LA":
-return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LA.xlsx", reportName,
-fromdate, todate, currency, dtltype, type, format, version);
+				case "Q_SMME_LA":
+					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("Q_SMME_LA.xlsx", reportName,
+							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_DEP":
 					return BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPExcel("Q_SMME_DEP.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
@@ -7736,7 +7737,7 @@ fromdate, todate, currency, dtltype, type, format, version);
 			try {
 				if ("EMAIL_M_LA4.xlsx".equals(filename)) {
 					excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
-							todate, currency, dtltype, null,null, // type
+							todate, currency, dtltype, null, null, // type
 							null // version
 					);
 				} else {
@@ -10103,7 +10104,7 @@ fromdate, todate, currency, dtltype, type, format, version);
 			try {
 
 				excelBytes = BRRS_M_LA4_reportservice.BRRS_M_LA4EmailExcel("EMAIL_M_LA4.xlsx", reportId, fromdate,
-						todate, currency, dtltype, null, null,null);
+						todate, currency, dtltype, null, null, null);
 
 				// Excel validation
 				if (excelBytes == null || excelBytes.length == 0) {
@@ -11610,7 +11611,7 @@ fromdate, todate, currency, dtltype, type, format, version);
 			return dateStr;
 		}
 	}
-	
+
 	public String updateInrRate(BigDecimal inrRate, String reportDate) {
 		if (inrRate == null || inrRate.compareTo(BigDecimal.ZERO) <= 0) {
 			return "Error: Exchange rate must be greater than 0.";
@@ -11644,7 +11645,8 @@ fromdate, todate, currency, dtltype, type, format, version);
 
 	public Map<String, Object> getInrRateDetails() {
 		try {
-			return jdbcTemplate.queryForMap("SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG");
+			return jdbcTemplate.queryForMap(
+					"SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG");
 		} catch (Exception e) {
 			return new HashMap<String, Object>();
 		}
