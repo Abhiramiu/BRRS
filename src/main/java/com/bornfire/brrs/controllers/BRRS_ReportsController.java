@@ -71,6 +71,8 @@ import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
 import com.bornfire.brrs.services.BRRS_CASH_FLOW_ReportService;
 import com.bornfire.brrs.services.BRRS_DBS10_FINCON_II_1A_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService;
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
@@ -6588,6 +6590,30 @@ public class BRRS_ReportsController {
 			}
 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
+		}
+	}
+	
+	
+	@Autowired
+	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
+
+	@RequestMapping(value = "/FNCupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute FORMAT_NEW_CPR_Summary_Entity request) {
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+			// call services
+			BRRS_FORMAT_NEW_CPR_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
 }
