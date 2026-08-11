@@ -623,6 +623,57 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 
 
 	</script>
+	<script>
+		function showmodify(btn) {
+
+			// Enable editable fields
+			$(".Show_input").not(".nonEditable")
+				.removeAttr("readonly")
+				.removeAttr("disabled");
+
+			// ===== GROUP 1 =====
+			let rows1 = [8, 12, 14, 22, 23, 25, 26, 27, 28, 31, 32, 35, 36, 37, 41, 42];
+			let fields1 = ["AMOUNT_X010"];
+
+			rows1.forEach(r => {
+				fields1.forEach(f => {
+					const selector = `#R${r}_${f}`;
+
+					if ($(selector).length) {
+						$(selector).css("background-color", "#d3d3d3");
+					}
+				});
+			});
+
+			// Show buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+
+			// Hide clicked modify button
+			$(btn).hide();
+		}
+		// Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
+
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
+	</script>
+
+
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
@@ -894,12 +945,193 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 		}
 
 	</script>
+	<script>
 
+		$(document).ready(function () {
+
+			// Initial calculation for DB values
+			calculateAll();
+
+			// Recalculate whenever any field changes
+			$("#fileupload").on("input change", "input", function () {
+				calculateAll();
+			});
+
+		});
+
+		// ===================== GET VALUE =====================
+		function getValue(id) {
+
+			const el = $("#" + id);
+
+			if (el.length === 0) {
+				return 0;
+			}
+
+			let value = "";
+
+			if (el.is("input")) {
+				value = el.val();
+			} else {
+				value = el.text();
+			}
+
+			return parseFloat((value || "0").replace(/,/g, "")) || 0;
+		}
+
+		// ===================== SET VALUE =====================
+		function setValue(id, value) {
+
+			const formatted = Number(value || 0).toLocaleString('en-US', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			});
+
+			const el = $("#" + id);
+
+			if (el.is("input")) {
+				el.val(formatted);
+			} else {
+				el.text(formatted);
+			}
+		}
+
+		// ===================== R30 =====================
+		// R30 = R31 + R32
+		function calculateR30() {
+
+			const total =
+				getValue("R31_AMOUNT_X010") +
+				getValue("R32_AMOUNT_X010");
+
+			setValue("R30_AMOUNT_X010", total);
+		}
+
+		// ===================== R33 =====================
+		// R33 = ROUND(R34 + R35, 2)
+		function calculateR33() {
+
+			const total = Math.round(
+				(
+					getValue("R34_AMOUNT_X010") +
+					getValue("R35_AMOUNT_X010")
+				) * 100
+			) / 100;
+
+			setValue("R33_AMOUNT_X010", total);
+		}
+
+		// ===================== R29 =====================
+		// R29 = ROUND(R30 + R33, 2)
+		function calculateR29() {
+
+			const total = Math.round(
+				(
+					getValue("R30_AMOUNT_X010") +
+					getValue("R33_AMOUNT_X010")
+				) * 100
+			) / 100;
+
+			setValue("R29_AMOUNT_X010", total);
+		}
+
+		// ===================== MASTER =====================
+		function calculateAll() {
+
+			// Child calculations
+			calculateR30();
+			calculateR33();
+
+			// Parent calculation
+			calculateR29();
+
+			// Debug (optional)
+			console.log("R30 =", getValue("R30_AMOUNT_X010"));
+			console.log("R33 =", getValue("R33_AMOUNT_X010"));
+			console.log("R29 =", getValue("R29_AMOUNT_X010"));
+		}
+
+		// ===================== SAVE =====================
+		function fileuploads(btn) {
+
+			// Recalculate before submit
+			calculateAll();
+
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
+
+			$('#loader').modal('show');
+
+			try {
+
+				// Remove commas before submit
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
+
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+				formData.append("type", type);
+
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('id');
+					if (name) {
+						formData.append(name, $(this).val());
+					}
+				});
+
+				$.ajax({
+					url: './DBS10_FINCON_II_1AupdateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+
+					success: function () {
+
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text("Updated Successfully.");
+						$("#resultModal").modal("show");
+					},
+
+					error: function (jqXHR) {
+
+						console.error("Error response:", jqXHR.responseText);
+
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+
+				console.error("Error in fileuploads function:", error);
+
+				$('#loader').modal('hide');
+
+				$("#resultModalLabel").text("Error");
+				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModal").modal("show");
+			}
+		}
+
+	</script>
 </head>
 
 
 
-<title>BRRS</title>
+<title>DBS10_FINCON_II_1A</title>
 
 <body>
 	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
@@ -919,7 +1151,7 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 						<!-- Title -->
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
-							(1) (a) Important financial information of SFIs <br> (On Balance Sheet Items)  
+							(1) (a) Important financial information of SFIs <br> (On Balance Sheet Items)
 						</h5>
 
 						<!-- Moving bus-board text -->
@@ -943,6 +1175,15 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
+							                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+							id="addRecord">
+							Modify
+						</button>
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
@@ -972,552 +1213,678 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 
 			<div th:if="${displaymode == 'summary'}">
 				<div class="row">
-					<div class="col-sm-12">
-						
-						<div class="table-wrapper table-responsive scrollable-table-container"
-							style="border-right: 1px solid #dee2e6;max-height:600px; overflow-y: auto;">
-							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-								id="reports">
+					<form action="#" method="POST" id="fileupload">
+						<div class="col-sm-12">
 
-								<thead border="1" cellspacing="0" cellpadding="6"
-																	style="border-collapse: collapse; text-align:center; font-family: Arial;">
-																	
-																	
-																	<tr>
-																		<th style="background-color:rgb(255, 255, 255);"> </th>
-																		<th colspan="3" style="background-color:#D8D8D8; text-align: left;">(1) (a) Important financial information of SFIs (On Balance Sheet Items)  </th>
-																	</tr>
-																	
-																	<tr>
-																		<th style="background-color:rgb(255, 255, 255); border-left: none !important; border-color: transparent;"> </th>
-																		<th rowspan="2" style="background-color:#D8D8D8; width:60%; text-align: center; vertical-align: middle;"> Particulars</th>
-																		<th rowspan="2" style="background-color:#D8D8D8; width:200px; text-align: center;"></th>
-																		<th style="background-color:#D8D8D8;  text-align: right;">Amount</th>
-																	</tr>
-																	
-																	<tr>
-																		<th style="background-color:#D8D8D8; text-align: center;">Entity</th>
-																		<th style="background-color:#D8D8D8; text-align: right;">X010</th>
-																	</tr>
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;max-height:600px; overflow-y: auto;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+
+									<thead border="1" cellspacing="0" cellpadding="6"
+										style="border-collapse: collapse; text-align:center; font-family: Arial;">
 
 
-								</thead>
+										<tr>
+											<th style="background-color:rgb(255, 255, 255);"> </th>
+											<th colspan="3" style="background-color:#D8D8D8; text-align: left;">(1) (a)
+												Important financial information of SFIs (On Balance Sheet Items) </th>
+										</tr>
+
+										<tr>
+											<th
+												style="background-color:rgb(255, 255, 255); border-left: none !important; border-color: transparent;">
+											</th>
+											<th rowspan="2"
+												style="background-color:#D8D8D8; width:60%; text-align: center; vertical-align: middle;">
+												Particulars</th>
+											<th rowspan="2"
+												style="background-color:#D8D8D8; width:200px; text-align: center;"></th>
+											<th style="background-color:#D8D8D8;  text-align: right;">Amount</th>
+										</tr>
+
+										<tr>
+											<th style="background-color:#D8D8D8; text-align: center;">Entity</th>
+											<th style="background-color:#D8D8D8; text-align: right;">X010</th>
+										</tr>
 
 
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">								
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R5_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R5_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R5_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R5', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R6_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R6_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R6_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R6', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R7_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R7_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R7_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R7', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R8_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R8_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R8_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R8', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R9_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R9_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R9_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R9', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R10_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R10_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R10_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R10', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R11_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R11_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R11_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R11', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R12_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R12_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R12_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R12', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R13_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R13_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right; background-color:rgb(192, 192, 192);"></td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R14_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R14_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R14_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R14', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R15_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R15_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R15_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R15', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R16_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R16_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R16_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R16', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R17_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R17_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R17_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R17', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R18_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R18_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R18_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R18', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R19_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R19_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R19_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R19', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R20_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R20_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R20_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R20', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R21_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R21_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R21_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R21', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-											
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R22_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R22_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R22_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R22', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R23_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R23_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R23_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R23', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-																												
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R24_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R24_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R24_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R24', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R25_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R25_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R25_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R25', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R26_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R26_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R26_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R26', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R27_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R27_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R27_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R27', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R28_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R28_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R28_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R28', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R29_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R29_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R29_AMOUNT_X010,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R30_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R30_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R30_AMOUNT_X010,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R31_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R31_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R31_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R31', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R32_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R32_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R32_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R32', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-											
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R33_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R33_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;  background-color: rgb(107, 122, 143); color: white;" th:text="${#numbers.formatDecimal(report.R33_AMOUNT_X010,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R34_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R34_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R34_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R34', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 45px;" th:text="${report.R35_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R35_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R35_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R35', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R36_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R36_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R36_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R36', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold; padding-left: 25px;" th:text="${report.R37_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R37_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R37_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R37', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R38_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R38_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R38_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R38', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R39_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R39_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R39_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R39', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R40_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R40_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R40_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R40', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R41_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R41_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R41_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R41', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-									<tr>
-										<td> </td>
-										<td style=" font-weight: bold;" th:text="${report.R42_PARTICULARS}"></td>
-										<td style=" font-weight: bold; text-align: center;" th:text="${report.R42_Y_SERIES_COLUMN}"></td>
-										<td style=" text-align: right;" th:text="${#numbers.formatDecimal(report.R42_AMOUNT_X010,1,'COMMA',0,'POINT')}"
-										th:attr="reportLable='R42', reportAddlCriteria1='C4'"
-										onclick="showdetailsbyRowAndColumn(this)">
-										</td>
-									</tr>
-									
-								</tbody>
-
-							</table>
-						</div>
-
-
-					</div>
-				</div>
-			</div>
-
-			<div th:if="${displaymode == 'Details'}">
-
-				<div class="row">
-					<div class="col-sm-12">
-						<div class="table-container" style="border-right: 1px solid #dee2e6;">
-							<table class="table table-striped table-bordered table-hover" id="reportdetails">
-								<thead class="thead-light">
-									<tr>
-										<th></th>
-										<th>S No</th>
-										<th>CUST ID</th>
-										<th style="text-align:left;">ACCT NO</th>
-										<th>ACCT NAME</th>
-										<th style="text-align:right;">ACCOUNT BALANCE IN PULA</th>
-										<th style="text-align:left;"> REPORT LABEL</th>
-										<th>REPORT ADDL CRITERIA</th>
-										<th>REPORT DATE</th>
-									</tr>
-								</thead>
-
-								<tbody style="font-family: Arial;">
-									<tr th:each="report, srlno : ${reportdetails}">
-										<td>
-											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
-											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
-													onclick="openDBS10_FINCON_II_1ADetail(this, 'edit')">
-												</i>
-											</a>
-										</td>
+									</thead>
 
 
 
-										<td th:text="${srlno.index + 1}"></td>
-										<td th:text="${report.custId}"></td>
-										<td style="text-align:left;" th:text="${report.acctNumber}"></td>
-										<td th:text="${report.acctName}"></td>
-										<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:left;" th:text="${report.reportLable}"></td>
-										<td th:text="${report.reportAddlCriteria1}"></td>
-										<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R5_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R5_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R5_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R5', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
 
-									</tr>
-								</tbody>
-							</table>
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R6_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R6_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R6_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R6', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
 
-						</div>
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R7_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R7_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R7_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R7', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
 
-						<!-- Submit Button -->
-						<div style="text-align: center; margin-top: 15px; background-color: white;">
-							<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-								onclick="updateform();" style="display: none;">
-								Submit
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R8_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R8_Y_SERIES_COLUMN}"></td>
+											<td th:each="report: ${reportsummary1}"><input type="text"
+													th:value="${#numbers.formatDecimal(report.R8_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R8_AMOUNT_X010" name="R8_AMOUNT_X010" /></td>
+										</tr>
 
-			<!-- Detail Form Screen -->
-			<div th:if="${formmode == 'edit'}" class="card">
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R9_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R9_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R9_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R9', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R10_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R10_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R10_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R10', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R11_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R11_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R11_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R11', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R12_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R12_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R12_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R12_AMOUNT_X010" name="R12_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R13_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R13_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right; background-color:rgb(192, 192, 192);"></td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R14_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R14_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R14_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R14_AMOUNT_X010" name="R14_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R15_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R15_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R15_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R15', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R16_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R16_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R16_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R16', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R17_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R17_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R17_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R17', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R18_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R18_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R18_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R18', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
 
 
-				<div class="card-body">
-					<form th:object="${Data}" method="post" id="DetailForm">
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Customer ID</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R19_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R19_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R19_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R19', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R20_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R20_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;"
+												th:text="${#numbers.formatDecimal(report.R20_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												id="R20_AMOUNT_X010" name="R20_AMOUNT_X010">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R21_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R21_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R21_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R21', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R22_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R22_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R22_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R22_AMOUNT_X010" name="R22_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R23_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R23_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R23_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R23_AMOUNT_X010" name="R23_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R24_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R24_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;text-align: right; background-color: rgb(107, 122, 143); color: white;"
+												id="R24_AMOUNT_X010" name="R24_AMOUNT_X010"
+												th:text="${#numbers.formatDecimal(report.R24_AMOUNT_X010,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R25_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R25_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R25_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R25_AMOUNT_X010" name="R25_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R26_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R26_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R26_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R26_AMOUNT_X010" name="R26_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R27_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R27_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R27_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R27_AMOUNT_X010" name="R27_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R28_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R28_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R28_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R28_AMOUNT_X010" name="R28_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R29_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R29_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;"
+												th:text="${#numbers.formatDecimal(report.R29_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												id="R29_AMOUNT_X010" name="R29_AMOUNT_X010">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R30_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R30_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right; background-color: rgb(107, 122, 143); color: white;"
+												th:text="${#numbers.formatDecimal(report.R30_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												id="R30_AMOUNT_X010" name="R30_AMOUNT_X010">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 45px;"
+												th:text="${report.R31_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R31_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R31_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R31_AMOUNT_X010" name="R31_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 45px;"
+												th:text="${report.R32_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R32_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R32_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R32_AMOUNT_X010" name="R32_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R33_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R33_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;  background-color: rgb(107, 122, 143); color: white;"
+												th:text="${#numbers.formatDecimal(report.R33_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												id="R33_AMOUNT_X010" name="R33_AMOUNT_X010">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 45px;"
+												th:text="${report.R34_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R34_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R34_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R34', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)" id="R34_AMOUNT_X010" name="R34_AMOUNT_X010">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 45px;"
+												th:text="${report.R35_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R35_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R35_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R35_AMOUNT_X010" name="R35_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R36_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R36_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R36_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R36_AMOUNT_X010" name="R36_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold; padding-left: 25px;"
+												th:text="${report.R37_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R37_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R37_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R37_AMOUNT_X010" name="R37_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R38_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R38_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R38_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R38', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R39_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R39_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R39_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R39', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R40_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R40_Y_SERIES_COLUMN}"></td>
+											<td style=" text-align: right;"
+												th:text="${#numbers.formatDecimal(report.R40_AMOUNT_X010,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R40', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R41_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R41_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R41_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R41_AMOUNT_X010" name="R41_AMOUNT_X010" />
+											</td>
+										</tr>
+
+										<tr>
+											<td> </td>
+											<td style=" font-weight: bold;" th:text="${report.R42_PARTICULARS}"></td>
+											<td style=" font-weight: bold; text-align: center;"
+												th:text="${report.R42_Y_SERIES_COLUMN}"></td>
+											<td th:each="report : ${reportsummary1}">
+												<input type="text"
+													th:value="${#numbers.formatDecimal(report.R42_AMOUNT_X010, 1, 'COMMA', 0, 'POINT')}"
+													style="text-align: right; width: 100%; box-sizing: border-box; border: 0px;"
+													id="R42_AMOUNT_X010" name="R42_AMOUNT_X010" />
+											</td>
+										</tr>
+
+									</tbody>
+
+								</table>
+
 							</div>
+							<div style="text-align: center;background-color: white;padding: 10px;">
 
-							<div class="col-sm-1"></div>
 
-							<label class="col-sm-2">Account Number</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctNumber}" name="acctNumber"
-									class="form-control form-control-sm" readonly />
+
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+									onclick="fileuploads(this);" style="display: none;">
+									Submit
+								</button>
 							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Account Name</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{acctName}" class="form-control form-control-sm"
-									readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Account Balance in Pula</label>
-							<div class="col-sm-3">
-								<input type="number" step="0.01" name="acctBalanceInPula"
-									th:field="*{acctBalanceInPula}" class="form-control form-control-sm"
-									style="text-align:right;" />
-							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Row ID</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportLable}" class="form-control form-control-sm" readonly />
-							</div>
-
-							<div class="col-sm-1"></div>
-
-							<label class="col-sm-2">Column ID</label>
-							<div class="col-sm-3">
-								<input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm"
-									readonly />
-							</div>
-						</div>
-
-						<div class="row formline" style="margin-top:10px;">
-							<label class="col-sm-2">Report Date</label>
-							<div class="col-sm-3">
-								<input type="date" name="reportDate" class="form-control form-control-sm" readonly
-									th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
-							</div>
-						</div>
-
-						<div style="text-align:center; margin-top:20px;">
-							<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
-								onclick="submitDBS10_FINCON_II_1AUpdate()">Update</button>
-
-						</div>
 					</form>
 				</div>
 			</div>
-
-
-
-
 		</div>
+
+		<div th:if="${displaymode == 'Details'}">
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="table-container" style="border-right: 1px solid #dee2e6;">
+						<table class="table table-striped table-bordered table-hover" id="reportdetails">
+							<thead class="thead-light">
+								<tr>
+									<th></th>
+									<th>S No</th>
+									<th>CUST ID</th>
+									<th style="text-align:left;">ACCT NO</th>
+									<th>ACCT NAME</th>
+									<th style="text-align:right;">ACCOUNT BALANCE IN PULA</th>
+									<th style="text-align:left;"> REPORT LABEL</th>
+									<th>REPORT ADDL CRITERIA</th>
+									<th>REPORT DATE</th>
+								</tr>
+							</thead>
+
+							<tbody style="font-family: Arial;">
+								<tr th:each="report, srlno : ${reportdetails}">
+									<td>
+										<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+											<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
+											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+												onclick="openDBS10_FINCON_II_1ADetail(this, 'edit')">
+											</i>
+										</a>
+									</td>
+
+
+
+									<td th:text="${srlno.index + 1}"></td>
+									<td th:text="${report.custId}"></td>
+									<td style="text-align:left;" th:text="${report.acctNumber}"></td>
+									<td th:text="${report.acctName}"></td>
+									<td style="text-align:right;"
+										th:text="${#numbers.formatDecimal(report.acctBalanceInPula,1,'COMMA',0,'POINT')}">
+									</td>
+									<td style="text-align:left;" th:text="${report.reportLable}"></td>
+									<td th:text="${report.reportAddlCriteria1}"></td>
+									<td th:text="${#dates.format(report.reportDate,'dd-MM-yyyy')}"></td>
+
+								</tr>
+							</tbody>
+						</table>
+
+					</div>
+
+					<!-- Submit Button -->
+					<div style="text-align: center; margin-top: 15px; background-color: white;">
+						<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+							onclick="updateform();" style="display: none;">
+							Submit
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Detail Form Screen -->
+		<div th:if="${formmode == 'edit'}" class="card">
+
+
+			<div class="card-body">
+				<form th:object="${Data}" method="post" id="DetailForm">
+					<div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Customer ID</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{custId}" class="form-control form-control-sm" readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Account Number</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{acctNumber}" name="acctNumber"
+								class="form-control form-control-sm" readonly />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Account Name</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{acctName}" class="form-control form-control-sm" readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Account Balance in Pula</label>
+						<div class="col-sm-3">
+							<input type="number" step="0.01" name="acctBalanceInPula" th:field="*{acctBalanceInPula}"
+								class="form-control form-control-sm" style="text-align:right;" />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Row ID</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{reportLable}" class="form-control form-control-sm"
+								readonly />
+						</div>
+
+						<div class="col-sm-1"></div>
+
+						<label class="col-sm-2">Column ID</label>
+						<div class="col-sm-3">
+							<input type="text" th:field="*{reportAddlCriteria1}" class="form-control form-control-sm"
+								readonly />
+						</div>
+					</div>
+
+					<div class="row formline" style="margin-top:10px;">
+						<label class="col-sm-2">Report Date</label>
+						<div class="col-sm-3">
+							<input type="date" name="reportDate" class="form-control form-control-sm" readonly
+								th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" />
+						</div>
+					</div>
+
+					<div style="text-align:center; margin-top:20px;">
+						<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
+							onclick="submitDBS10_FINCON_II_1AUpdate()">Update</button>
+
+					</div>
+				</form>
+			</div>
+		</div>
+
+
+
+
+	</div>
 
 
 
@@ -1544,7 +1911,8 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 
 
 
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+
+	<!-- Custom Alert/Result Modal (Matches your existing style) For Modify in Summary -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -1557,11 +1925,28 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
 					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">Ok</button>
 				</div>
 			</div>
 		</div>
 	</div>
+	<!-- For Edit in Detail page -->
+	<div class="modal fade" id="resultModal1" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel1" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">
@@ -1589,6 +1974,45 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+								data-dismiss="modal">Modify</button>
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+								Regenerate</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title " id="resultModalLabel2" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 </body>
 
@@ -1632,8 +2056,6 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 		background-color: #b3b6b9;
 		z-index: 3;
 	}
-
-
 </style>
 
 
@@ -1689,5 +2111,46 @@ PURPOSE		: BRRS_DBS10_FINCON_II_1AREPORT
 		width: auto;
 	}
 </style>
+<script>
+
+	function closemodels() {
+		$("#resultModal").modal("hide");
+		$('#loader').modal('hide');
+
+		// Reload the page after a short delay to ensure the modal animation completes smoothly.
+		setTimeout(function () {
+			location.reload();
+		}, 300);
+	}
+	function closemodel() {
+		$('#alert').modal('hide');
+		$('#resultModal').modal('hide');
+
+	}
+	function showResultModal(title, message) {
+		// Set the text for the modal elements
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
+
+		// Show the modal
+		$('#resultModal').modal('show');
+	}
+
+	function showResultModalDU(title, message) {
+		document.getElementById('resultModalLabel1').innerText = title;
+		document.getElementById('resultModalBody1').innerText = message;
+
+		const modal = new bootstrap.Modal(document.getElementById('resultModal1'));
+		modal.show();
+	}
+
+	function redirectBack() {
+		if (previousUrl) {
+			window.location.href = previousUrl;
+		} else {
+			window.history.back();
+		}
+	}
+</script>
 
 </html>

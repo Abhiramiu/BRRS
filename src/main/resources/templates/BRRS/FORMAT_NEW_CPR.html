@@ -447,15 +447,21 @@ label.error {
   }
 
   //to fetch summary from the database - called from the summary button
+  
   function showdetails() {
+  			isDetailsModal = true; // mark that this modal is from Details
+  			showResultModal('BRRS', 'Interlinking Values Not Available Detail Page');
+  		}
+  
+/*  function showdetails() {
 
    var Callurl;
    $('#loader').modal('show');
-   Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+   Callurl = [[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]
     location.href = Callurl;
    console.log(Callurl);
 
-  }
+  }*/
 
   function showsummary() {
    $('#loader').modal('show');
@@ -726,9 +732,118 @@ label.error {
    }
   }
  </script>
+ 
+ <script>
+	let originalR16 = 0;
+	let originalR20 = 0;
+
+	$(document).ready(function () {
+
+	    originalR16 = getValue("R16_AMOUNT");
+	    originalR20 = getValue("R20_AMOUNT");
+
+	    calculateAll();
+
+	    $("#fileupload").on("input change", "input", function () {
+	        calculateAll();
+	    });
+
+	});
+
+	function getValue(id) {
+
+	    const el = $("#" + id);
+	    let value = "";
+
+	    if (el.is("input")) {
+	        value = el.val();
+	    } else {
+	        value = el.text();
+	    }
+
+	    return parseFloat((value || "0").replace(/,/g, "")) || 0;
+	}
+
+	function setValue(id, value) {
+
+	    const formatted = Number(value || 0).toLocaleString('en-US', {
+	        maximumFractionDigits: 0
+	    });
+
+	    const el = $("#" + id);
+
+	    if (el.is("input")) {
+	        el.val(formatted);
+	    } else {
+	        el.text(formatted);
+	    }
+		
+		
+	}
+	function calculateR20() {
+	    setValue(
+	        "R20_AMOUNT",
+	        getValue("R16_AMOUNT")
+	    );
+	}
+
+	function calculateAll() {
+
+	    calculateR20();
+
+	}
+ </script>
 
 
-  
+ <script>
+ 	function showmodify(btn) {
+
+ 		// Enable editable fields
+ 		$(".Show_input").not(".nonEditable")
+ 			.removeAttr("readonly")
+ 			.removeAttr("disabled");
+
+ 		// ===== GROUP 1 =====
+ 		let rows1 = [10, 16, 19, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49];
+ 		let fields1 = ["AMOUNT"];
+
+ 		rows1.forEach(r => {
+ 			fields1.forEach(f => {
+ 				const selector = `#R${r}_${f}`;
+
+ 				if ($(selector).length) {
+ 					$(selector).css("background-color", "#d3d3d3");
+ 				}
+ 			});
+ 		});
+
+ 		// Show buttons
+ 		$("#submitButton").show();
+ 		$("#cancelRecord").show();
+
+ 		// Hide clicked modify button
+ 		$(btn).hide();
+ 	}
+ 	// Cancel / Reset function
+ 	function cancelModify() {
+ 		if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+ 			// ✅ Only when user clicks YES
+ 			location.reload();
+
+ 			$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+ 			$("#submitButton, #btnBack_edit").hide();
+ 			$("#btnBack").show();
+
+ 			// Hide Cancel button again
+ 			$("#cancelRecord").hide();
+
+ 			// Show all Modify buttons
+ 			$("#addRecord").show();
+ 		}
+ 		// ❌ If user clicks CANCEL, nothing happens
+ 	}
+ </script>
 
  <!-- 
 <script>
@@ -781,7 +896,7 @@ function cancelModify() {
 </script>
 
  -->
-
+ 
 
 
 <script>
@@ -799,7 +914,7 @@ function cancelModify() {
       }, 300);
  }
 
- <!-- 
+
  function fileuploads(btn) {
      const asondate = btn.getAttribute("data-todate");
      const type = btn.getAttribute("data-type");
@@ -809,7 +924,7 @@ function cancelModify() {
 
      try {
          // ✅ Step 1: Calculate totals
-
+		calculateAll();
          // ✅ Step 2: Remove commas from all text inputs
          $("#fileupload input[type='text']").each(function () {
              $(this).val($(this).val().replace(/,/g, ''));
@@ -827,12 +942,13 @@ function cancelModify() {
          formData.append("type", type);
 
          $('#fileupload').find(':input').each(function () {
-             const name = $(this).attr('name');
+             const name = $(this).attr('id');
              if (name) {
                  formData.append(name, $(this).val());
              }
          });
 
+		 formData.append("R20_AMOUNT", getValue("R20_AMOUNT"));
          // ✅ Step 5: AJAX submission
          $.ajax({
              url: './FNCupdateAll',
@@ -843,7 +959,7 @@ function cancelModify() {
              dataType: 'text',
              success: function () {
                  $("#resultModalLabel").text("BRRS");
-                 $("#resultModalBody").text(" Updated Successfully.");
+                 $("#resultModalBody").text(" Modified Successfully.");
                  $("#resultModal").modal("show");
              },
              error: function (jqXHR) {
@@ -1033,7 +1149,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>FORMAT_NEW_CPR</title>
 <body> 
 <div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
@@ -1074,26 +1190,28 @@ function cancelModify() {
             Summary
         </button>
 
-        <button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
-            Details
-        </button>
+
 
        <!-- Modify -->
-   <!--      <button class="custom-tab-btn"
+      <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
                 th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
-        Cancel
+         <!--  Cancel -->
         <button class="custom-tab-btn"
                 style="display:none;"
                 title="Cancel editing"
                 id="cancelRecord"
                 onclick="cancelModify();">
             Cancel
-        </button> -->
+        </button> 
+		
+		<button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+		    Details
+		</button>
  
         <!-- Download button - Summary -->
         <button type="button" class="custom-tab-btn"
@@ -1193,12 +1311,25 @@ function cancelModify() {
     <td style="text-align:right; padding-left:10px;">3</td>
     <td style="text-align:left; padding-left:10px;"> Regulatory Capital (Actual/Notional)-after Netting for Consolidation 
     </td>
-    <td id="R10_AMOUNT"
+	
+	<td id="R10_AMOUNT_INPUT"
+	    style="text-align: right; width: 200px; padding-left: 10px;">
+	    <input class="display-input Show_input"
+	           type="text"
+	           th:value="${reportsummary.R10_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R10_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+	           id="R10_AMOUNT"
+	           name="R10_AMOUNT"
+	           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+	           readonly />
+	</td>
+	
+	
+  <!--  <td id="R10_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R10_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R10', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1262,12 +1393,23 @@ function cancelModify() {
 <tr>
     <td style="text-align:right; padding-left:10px;">9</td>
     <td style="text-align:left; padding-left:10px;"> Total Non Performing Advances (Gross) </td>
-    <td id="R16_AMOUNT"
+	
+	<td id="R16_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R16_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R16_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R16_AMOUNT"
+		           name="R16_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R16_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R16_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R16', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1296,12 +1438,24 @@ function cancelModify() {
 <tr>
     <td style="text-align:right; padding-left:10px;">12</td>
     <td style="text-align:left; padding-left:10px;"> Total Non-Performing Investments </td>
-    <td id="R19_AMOUNT"
+	
+	<td id="R19_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R19_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R19_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R19_AMOUNT"
+		           name="R19_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+	
+   <!-- <td id="R19_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R19_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R19', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1309,12 +1463,20 @@ function cancelModify() {
     <td style="text-align:left; padding-left:10px;"> Total Non Performing Assets
     (Incl. Advances&Investments which are Non Performing) (Items 9 & 12) 
     </td>
-    <td id="R20_AMOUNT"
-        th:text="${#numbers.formatDecimal(reportsummary.R20_AMOUNT,1,'COMMA',0,'POINT')}"
-        style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
-        th:attr="reportLable='R20', reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+	<td id="R20_AMOUNT_DISPLAY"
+	    th:text="${#numbers.formatDecimal(reportsummary.R20_AMOUNT,1,'COMMA',0,'POINT')}"
+	    style="background-color: rgb(107, 122, 143);
+	           color: white;
+	           text-align: right;
+	           width: 200px;"
+	    th:attr="reportLable='R20', reportAddlCriteria1='C3'"
+	    onclick="showdetailsbyRowAndColumn(this)">
+	</td>
+
+	<input type="hidden"
+	       id="R20_AMOUNT"
+	       name="R20_AMOUNT"
+	       th:value="${reportsummary.R20_AMOUNT != null ? reportsummary.R20_AMOUNT : 0}">
 </tr>
 
 <tr>
@@ -1333,12 +1495,23 @@ function cancelModify() {
     <td style="text-align:right; padding-left:10px;">15</td>
     <td style="text-align:left; padding-left:10px;"> Provision held for Non Performing Investments 
     </td>
-    <td id="R22_AMOUNT"
+	
+	<td id="R22_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R22_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R22_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R22_AMOUNT"
+		           name="R22_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R22_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R22_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R22', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1369,28 +1542,48 @@ function cancelModify() {
     <td style="text-align:right; padding-left:10px;">18</td>
     <td style="text-align:left; padding-left:10px;"> Return on Assets (for the period ended  September-2024) 
     </td>
-    <td id="R25_AMOUNT"
+	<td id="R25_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R25_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R25_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R25_AMOUNT"
+		           name="R25_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R25_AMOUNT"
     th:text="${reportsummary.R25_AMOUNT == 0 
               ? '0%' 
               : #numbers.formatDecimal(reportsummary.R25_AMOUNT,1,'COMMA',2,'POINT') + '%'}"
     style="background-color: rgb(107, 122, 143); color: white; text-align: right; width: 200px;"
     th:attr="reportLable='R25', reportAddlCriteria1='C3'"
     onclick="showdetailsbyRowAndColumn(this)">
-</td>
+</td>-->
 </tr>
 
 <tr>
     <td style="text-align:right; padding-left:10px;">19</td>
     <td style="text-align:left; padding-left:10px;"> Return on Equity(for the period ended  September-2024) 
     </td>
-    <td id="R26_AMOUNT"
+	<td id="R26_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R26_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R26_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R26_AMOUNT"
+		           name="R26_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R26_AMOUNT"
     th:text="${reportsummary.R26_AMOUNT == 0 
               ? '0%' 
               : #numbers.formatDecimal(reportsummary.R26_AMOUNT,1,'COMMA',2,'POINT') + '%'}"
     style="background-color: rgb(107, 122, 143); color: white; text-align: right; width: 200px;"
     th:attr="reportLable='R26', reportAddlCriteria1='C3'"
     onclick="showdetailsbyRowAndColumn(this)">
-</td>
+</td>-->
 </tr>
 
 <tr>
@@ -1409,12 +1602,24 @@ function cancelModify() {
     <td style="text-align:right; padding-left:10px;">21</td>
     <td style="text-align:left; padding-left:10px;"> Total Dividends Paid (for the period ended September-2024) 
     </td>
-    <td id="R28_AMOUNT"
+	
+	<td id="R28_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R28_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R28_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R28_AMOUNT"
+		           name="R28_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+	
+   <!-- <td id="R28_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R28_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R28', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr style="height:30px;">
@@ -1447,12 +1652,23 @@ function cancelModify() {
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> Total of Overnight Open Position Limit  for the Bank * 
     </td>
-    <td id="R33_AMOUNT"
+	
+	<td id="R33_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R33_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R33_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R33_AMOUNT"
+		           name="R33_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R33_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R33_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R33', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1487,64 +1703,117 @@ function cancelModify() {
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> Cash Funds eligible for CRR purposes 
     </td>
-    <td id="R38_AMOUNT"
+	
+	<td id="R38_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R38_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R38_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R38_AMOUNT"
+		           name="R38_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R38_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R38_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R38', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> Liquid assets eligible for SLR purposes 
     </td>
-    <td id="R39_AMOUNT"
+	
+	<td id="R39_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R39_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R39_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R39_AMOUNT"
+			           name="R39_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+   <!-- <td id="R39_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R39_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R39', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> Net Demand and Time Liabilities 
     </td>
-    <td id="R40_AMOUNT"
+	<td id="R40_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R40_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R40_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R40_AMOUNT"
+			           name="R40_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+   <!-- <td id="R40_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R40_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R40', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> CRR  (%) 
     </td>
-    <td id="R41_AMOUNT"
+	<td id="R41_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R41_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R41_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R41_AMOUNT"
+			           name="R41_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+    <!--<td id="R41_AMOUNT"
     th:text="${reportsummary.R41_AMOUNT == 0 
               ? '0%' 
               : #numbers.formatDecimal(reportsummary.R41_AMOUNT,1,'COMMA',2,'POINT') + '%'}"
     style="background-color: rgb(107, 122, 143); color: white; text-align: right; width: 200px;"
     th:attr="reportLable='R41', reportAddlCriteria1='C3'"
     onclick="showdetailsbyRowAndColumn(this)">
-</td>
+</td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;"> SLR   (%) 
     </td>
-    <td id="R42_AMOUNT"
+	
+	<td id="R42_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R42_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R42_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R42_AMOUNT"
+			           name="R42_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+  <!--  <td id="R42_AMOUNT"
     th:text="${reportsummary.R42_AMOUNT == 0 
               ? '0%' 
               : #numbers.formatDecimal(reportsummary.R42_AMOUNT,1,'COMMA',2,'POINT') + '%'}"
     style="background-color: rgb(107, 122, 143); color: white; text-align: right; width: 200px;"
     th:attr="reportLable='R42', reportAddlCriteria1='C3'"
     onclick="showdetailsbyRowAndColumn(this)">
-</td>
+</td>-->
 </tr>
 
 <tr style="height:30px;">
@@ -1564,55 +1833,106 @@ function cancelModify() {
     </td>
     <td style="text-align:left; padding-left:10px;">  Advance to Capital Market 
     </td>
-    <td id="R45_AMOUNT"
+	<td id="R45_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R45_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R45_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R45_AMOUNT"
+			           name="R45_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+   <!-- <td id="R45_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R45_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R45', reportAddlCriteria1='C3'">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;">  a.  Fund Based  </td>
-    <td id="R46_AMOUNT"
+	<td id="R46_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R46_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R46_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R46_AMOUNT"
+			           name="R46_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+   <!-- <td id="R46_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R46_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R46', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left; padding-left:10px;">  b.  Non Fund Based
     </td>
-    <td id="R47_AMOUNT"
+	<td id="R47_AMOUNT_INPUT"
+		    style="text-align: right; width: 200px; padding-left: 10px;">
+		    <input class="display-input Show_input"
+		           type="text"
+		           th:value="${reportsummary.R47_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R47_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+		           id="R47_AMOUNT"
+		           name="R47_AMOUNT"
+		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+		           readonly />
+		</td>
+   <!-- <td id="R47_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R47_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R47', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:right; padding-left:10px;">2</td>
     <td style="text-align:left; padding-left:10px;">  Equity Investment in Capital Market  </td>
-    <td id="R48_AMOUNT"
+	
+	<td id="R48_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R48_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R48_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R48_AMOUNT"
+			           name="R48_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+    <!--<td id="R48_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R48_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R48', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
     <td style="text-align:left; padding-left:10px;"></td>
     <td style="text-align:left;font-weight: bold; padding-left:10px;"> Total Capital Market Exposures ( 1 + 2 ) </td>
-    <td id="R49_AMOUNT"
+	<td id="R49_AMOUNT_INPUT"
+			    style="text-align: right; width: 200px; padding-left: 10px;">
+			    <input class="display-input Show_input"
+			           type="text"
+			           th:value="${reportsummary.R49_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R49_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+			           id="R49_AMOUNT"
+			           name="R49_AMOUNT"
+			           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+			           readonly />
+			</td>
+   <!-- <td id="R49_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R49_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R49', reportAddlCriteria1='C3'">
-    </td>
+    </td>-->
 </tr>
 
 <tr style="height:30px;">
@@ -1624,15 +1944,17 @@ function cancelModify() {
   </tbody>
 </table>
 
-       </div>
-       </div>
-  <!--     <div style="text-align: center;  background-color: white;  padding:15px;">
 
-        <button id="submitButton" type="button"
-         class="custom-tab-btn Show_input" form="fileupload"
-         th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-         style="display: none;">Submit</button>
-       </div> -->
+       </div>
+	   <div style="text-align: center;  background-color: white;  padding:15px;">
+
+	           <button id="submitButton" type="button"
+	            class="custom-tab-btn Show_input" form="fileupload"
+	            th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+	            style="display: none;">Submit</button>
+	          </div> 
+       </div>
+     
     </form>
   </div>
  </div>

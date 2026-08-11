@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.lang.reflect.Method;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -97,6 +98,12 @@ public class BRRS_FORMAT_NEW_CPR_ReportService {
     );
 }
 	
+	private FORMAT_NEW_CPR_Summary_Entity findSummaryByDate(Date date) {
+		String sql = "SELECT * FROM BRRS_FORMAT_NEW_CPR_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<FORMAT_NEW_CPR_Summary_Entity> list = jdbcTemplate.query(sql, new Object[]{date}, new FORMAT_NEW_CPR_Summary_RowMapper());
+		if (list.isEmpty()) throw new RuntimeException("Record not found for REPORT_DATE: " + date);
+		return list.get(0);
+	}
 // =====================================================
 // ARCHIVAL  SUMAMRY REPO
 // =====================================================
@@ -3867,7 +3874,7 @@ public void setDelFlg(char delFlg) {
 
 
 //=====================================================
-// MODEL AND VIEW METHOD summary FORMAT_NEW_CPR
+// MVC MODEL AND VIEW METHOD summary FORMAT_NEW_CPR
 //=====================================================
 
  SimpleDateFormat dateformat =
@@ -4119,6 +4126,108 @@ public List<Object[]> getFORMAT_NEW_CPRArchival() {
 //=====================================================
 // UPDATE REPORT
 //=====================================================
+
+@Transactional
+public void updateReport(FORMAT_NEW_CPR_Summary_Entity updatedEntity) {
+
+    System.out.println("Came to services");
+    System.out.println("Report Date: " + updatedEntity.getReport_date());
+
+    FORMAT_NEW_CPR_Summary_Entity existing =
+            findSummaryByDate(updatedEntity.getReport_date());
+
+    // Audit old copy
+    FORMAT_NEW_CPR_Summary_Entity oldcopy = new FORMAT_NEW_CPR_Summary_Entity();
+    BeanUtils.copyProperties(existing, oldcopy);
+
+    // Only allowed R-numbers
+    int[] allowedIndexes = {10, 16, 19,20, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49};
+
+    try {
+
+        for (int i : allowedIndexes) {
+
+            String field = "AMOUNT";
+
+            String getterName = "getR" + i + "_" + field;
+            String setterName = "setR" + i + "_" + field;
+
+            try {
+
+                Method getter =
+                        FORMAT_NEW_CPR_Summary_Entity.class.getMethod(getterName);
+
+                Method setter =
+                        FORMAT_NEW_CPR_Summary_Entity.class.getMethod(
+                                setterName,
+                                getter.getReturnType()
+                        );
+
+                Object newValue = getter.invoke(updatedEntity);
+
+                setter.invoke(existing, newValue);
+
+            } catch (NoSuchMethodException e) {
+
+                // Safely skip if field doesn't exist
+                continue;
+            }
+        }
+
+    } catch (Exception e) {
+
+        throw new RuntimeException(
+                "Error while updating report fields", e);
+    }
+
+    // Check changes before save
+    String changes = auditService.getChanges(oldcopy, existing);
+
+ // Save entity
+    jdbcTemplate.update( 
+            "UPDATE BRRS_FORMAT_NEW_CPR_SUMMARYTABLE SET " +
+            "R10_AMOUNT=?, R16_AMOUNT=?, R19_AMOUNT=?, R20_AMOUNT=?, R22_AMOUNT=?," +
+            "R25_AMOUNT=?, R26_AMOUNT=?, R28_AMOUNT=?, R33_AMOUNT=?, " +
+            "R38_AMOUNT=?, R39_AMOUNT=?, R40_AMOUNT=?, R41_AMOUNT=?, " +
+            "R42_AMOUNT=?, R45_AMOUNT=?, R46_AMOUNT=?, R47_AMOUNT=?, " +
+            "R48_AMOUNT=?, R49_AMOUNT=? " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+            
+            existing.getR10_AMOUNT(),
+            existing.getR16_AMOUNT(),
+            existing.getR19_AMOUNT(),
+            existing.getR20_AMOUNT(),
+            existing.getR22_AMOUNT(),
+            existing.getR25_AMOUNT(),
+            existing.getR26_AMOUNT(),
+            existing.getR28_AMOUNT(),
+            existing.getR33_AMOUNT(),
+            existing.getR38_AMOUNT(),
+            existing.getR39_AMOUNT(),
+            existing.getR40_AMOUNT(),
+            existing.getR41_AMOUNT(),
+            existing.getR42_AMOUNT(),
+            existing.getR45_AMOUNT(),
+            existing.getR46_AMOUNT(),
+            existing.getR47_AMOUNT(),
+            existing.getR48_AMOUNT(),
+            existing.getR49_AMOUNT(),
+            existing.getReport_date()
+    );
+
+    // Audit only if changes found
+    if (!changes.isEmpty()) {
+
+        auditService.compareEntitiesmanual(
+                oldcopy,
+                existing,
+                updatedEntity.getReport_date().toString(),
+                "FORMAT_NEW_CPR Summary Screen",
+                "BRRS_FORMAT_NEW_CPR_SUMMARY"
+        );
+    }
+}
+
 
 //=====================================================
 // VIEW AND EDIT

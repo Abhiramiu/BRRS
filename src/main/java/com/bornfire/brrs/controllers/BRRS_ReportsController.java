@@ -38,10 +38,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -69,8 +69,12 @@ import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
 import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
 import com.bornfire.brrs.services.BRRS_CASH_FLOW_ReportService;
+import com.bornfire.brrs.services.BRRS_DBS10_FINCON_II_1A_ReportService;
 import com.bornfire.brrs.services.BRRS_FORMAT_II_ReportService;
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService;
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
@@ -206,10 +210,6 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_En
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Detail_Entity;
-import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Archival_Summary_Entity;
-import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService.IRRBB_ADVANCES_Summary_Entity;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
@@ -6548,5 +6548,72 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+	@Autowired
+	BRRS_DBS10_FINCON_II_1A_ReportService BRRS_DBS10_FINCON_II_1A_ReportService;
 
+	@PostMapping("/DBS10_FINCON_II_1AupdateAll")
+	public ResponseEntity<String> updateReportBG(
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("type") String type, HttpServletRequest request) {
+
+		try {
+
+			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
+
+			boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+			Object entityInstance = isResub ? new BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Manual_Archival_Summary_Entity()
+					: new BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Manual_Summary_Entity();
+
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+
+			binder.bind(request);
+
+			// Set report date
+			Method setDateMethod = entityInstance.getClass().getMethod("setREPORT_DATE", Date.class);
+
+			setDateMethod.invoke(entityInstance, asondate);
+
+			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
+
+			BRRS_DBS10_FINCON_II_1A_ReportService.updateReport(entityInstance, type);
+
+			return ResponseEntity.ok("Modified Successfully.");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
+		}
+	}
+	
+	
+	@Autowired
+	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
+
+	@RequestMapping(value = "/FNCupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReport(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute FORMAT_NEW_CPR_Summary_Entity request) {
+		try {
+			System.out.println("came to single controller");
+
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
+			// call services
+			BRRS_FORMAT_NEW_CPR_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
 }
