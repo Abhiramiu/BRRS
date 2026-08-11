@@ -6776,6 +6776,7 @@ public class BRRS_CASH_FLOW_ReportService {
 		}
 
 		List<CASH_FLOW_Archival_Summary_Entity> dataList = getdatabydateListarchival(dateformat.parse(todate), version);
+		List<CASH_FLOW_Manual_Archival_Summary_Entity> dataList1 = getdatabydateListarchivalManual(dateformat.parse(todate), version);
 
 		if (dataList.isEmpty()) {
 			logger.warn("Service: No data found for CASH_FLOW new report. Returning empty result.");
@@ -6843,6 +6844,7 @@ public class BRRS_CASH_FLOW_ReportService {
 				for (int i = 0; i < dataList.size(); i++) {
 
 					CASH_FLOW_Archival_Summary_Entity record = dataList.get(i);
+					CASH_FLOW_Manual_Archival_Summary_Entity record1 = dataList1.get(i);
 					System.out.println("rownumber=" + startRow + i);
 					Row row = sheet.getRow(startRow + i);
 					if (row == null) {

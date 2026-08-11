@@ -1116,6 +1116,12 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "DBS10_FINCON_II_1A":
+			repsummary = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
 		}
 
 		return repsummary;
@@ -2173,6 +2179,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		case "DBS10_FINCON_II_1A":
+			try {
+				repfile = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel(filename, reportId, fromdate, todate, currency, dtltype,
+						type, version);
+
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
 		case "M_MRC":
 			try {
 				repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
@@ -3061,12 +3078,9 @@ public class RegulatoryReportServices {
 			break;
 
 		case "DBS10_FINCON_II_1A":
-			try {
-				archivalData = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> DBS10_FINCON_II_1ALIST = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival();
+			archivalData.addAll(DBS10_FINCON_II_1ALIST);
+			System.out.println("Fetched DBS10_FINCON_II_1A archival data: " + DBS10_FINCON_II_1ALIST.size());
 			break;
 
 		case "M_INT_RATES_FCA":
@@ -4143,8 +4157,8 @@ public class RegulatoryReportServices {
 				break;
 
 			case "DBS10_FINCON_II_1A":
-				modelAndView = BRRS_DBS10_FINCON_II_1A_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+				modelAndView = BRRS_DBS10_FINCON_II_1A_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
 			case "MDISB4":
