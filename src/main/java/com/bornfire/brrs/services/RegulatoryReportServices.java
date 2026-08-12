@@ -11659,8 +11659,12 @@ public class RegulatoryReportServices {
 
 	public Map<String, Object> getInrRateDetails() {
 		try {
-			return jdbcTemplate.queryForMap(
-					"SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG");
+			List<Map<String, Object>> list = jdbcTemplate.queryForList(
+					"SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG ORDER BY REPORT_DATE DESC NULLS LAST");
+			if (!list.isEmpty()) {
+				return list.get(0);
+			}
+			return new HashMap<String, Object>();
 		} catch (Exception e) {
 			return new HashMap<String, Object>();
 		}

@@ -396,7 +396,7 @@
 						<div style="display: inline-flex; align-items: center; gap: 8px;">
 							<span class="report-label">INR Exchange Rate</span>
 							<input type="date" id="inrDateInput" class="form-control form-control-sm" style="width: 140px; border-radius: 4px; border: 1px solid #cbd5e1;" />
-							<input type="number" id="inrRateInput" step="0.01" placeholder="Enter INR Rate" class="form-control form-control-sm" style="width: 140px; text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
+							<input type="number" id="inrRateInput" step="0.0001" placeholder="Enter INR Rate" class="form-control form-control-sm" style="width: 140px; text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
 							<button class="nav-link" onclick="submitInrRate()" style="text-align: center; font-weight: 550 !important; color: #333;">
 								Submit
 							</button>
@@ -502,6 +502,7 @@
 						if (data.EXCHANGE_RATE) {
 							var rateInput = document.getElementById("inrRateInput");
 							if (rateInput) {
+								rateInput.value = data.EXCHANGE_RATE;
 								rateInput.placeholder = data.EXCHANGE_RATE;
 							}
 						}
@@ -520,8 +521,8 @@
 				inrInput.addEventListener("input", function (e) {
 					var val = this.value;
 					var parts = val.split('.');
-					if (parts.length === 2 && parts[1].length > 2) {
-						this.value = parts[0] + '.' + parts[1].substring(0, 2);
+					if (parts.length === 2 && parts[1].length > 4) {
+						this.value = parts[0] + '.' + parts[1].substring(0, 4);
 					}
 				});
 			}
@@ -662,10 +663,10 @@
 				return;
 			}
 			
-			// Enforce at most 2 decimal places restriction
+			// Enforce at most 4 decimal places restriction
 			var parts = inrRate.split('.');
-			if (parts.length === 2 && parts[1].length > 2) {
-				alert("Please enter an exchange rate with at most 2 decimal places (e.g., 7.13).");
+			if (parts.length === 2 && parts[1].length > 4) {
+				alert("Please enter an exchange rate with at most 4 decimal places (e.g., 7.1234).");
 				return;
 			}
 
