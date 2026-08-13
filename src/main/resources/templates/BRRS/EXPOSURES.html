@@ -730,19 +730,19 @@ label.error {
 
   
 
- <!-- 
+
 <script>
 function showmodify(btn) {
     // Enable editable fields
     $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
     // ===== GROUP 1 =====
-    let rows1 = [23,25,26,30,35,42,43,44,46];
-    let fields1 = ["total_value", "total_no_of_acct"];
+    let rows1 = [58];
+    let fields1 = ["AMOUNT"];
 
     rows1.forEach(r => {
         fields1.forEach(f => {
-            const selector = `#r${r}_${f}`;
+            const selector = `#R${r}_${f}`;
             if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
         });
     });
@@ -780,7 +780,63 @@ function cancelModify() {
 
 </script>
 
- -->
+<script>
+function getValue(id) {
+
+    const el = $("#" + id);
+    let value = "";
+
+    if (el.is("input")) {
+        value = el.val();
+    } else {
+        value = el.text();
+    }
+
+    return parseFloat((value || "0").replace(/,/g, "")) || 0;
+}
+
+function setValue(id, value) {
+
+    const formatted = Number(value || 0).toLocaleString('en-US', {
+        maximumFractionDigits: 0
+    });
+
+    const el = $("#" + id);
+
+    if (el.is("input")) {
+        el.val(formatted);
+    } else {
+        el.text(formatted);
+    }
+}
+
+$(document).ready(function () {
+
+    originalR16 = getValue("R16_AMOUNT");
+    originalR20 = getValue("R20_AMOUNT");
+
+    calculateAll();
+
+    $("#fileupload").on("input change", "input", function () {
+        calculateAll();
+    });
+});
+
+function calculateAll() {
+
+    const R58_AMOUNT = getValue("R58_AMOUNT");
+    const R59_AMOUNT = getValue("R59_AMOUNT");
+    const R60_AMOUNT = getValue("R60_AMOUNT");
+
+    let R62_AMOUNT = 0;
+
+    if (R60_AMOUNT !== 0) {
+        R62_AMOUNT = ((R58_AMOUNT + R59_AMOUNT) / R60_AMOUNT) * 100;
+    }
+
+    setValue("R62_AMOUNT", R62_AMOUNT);
+}
+</script>
 
 
 
@@ -799,7 +855,7 @@ function cancelModify() {
       }, 300);
  }
 
- <!-- 
+ 
  function fileuploads(btn) {
      const asondate = btn.getAttribute("data-todate");
      const type = btn.getAttribute("data-type");
@@ -809,7 +865,7 @@ function cancelModify() {
 
      try {
          // ✅ Step 1: Calculate totals
-
+		calculateAll();
          // ✅ Step 2: Remove commas from all text inputs
          $("#fileupload input[type='text']").each(function () {
              $(this).val($(this).val().replace(/,/g, ''));
@@ -835,7 +891,7 @@ function cancelModify() {
 
          // ✅ Step 5: AJAX submission
          $.ajax({
-             url: './FNCupdateAll',
+             url: './Exposures_updateAll',
              type: 'POST',
              data: formData,
              processData: false,
@@ -843,7 +899,7 @@ function cancelModify() {
              dataType: 'text',
              success: function () {
                  $("#resultModalLabel").text("BRRS");
-                 $("#resultModalBody").text(" Updated Successfully.");
+                 $("#resultModalBody").text(" Modified Successfully.");
                  $("#resultModal").modal("show");
              },
              error: function (jqXHR) {
@@ -1033,7 +1089,7 @@ function cancelModify() {
 
 
 
-<title>BRRS</title>
+<title>EXPOSURES</title>
 <body> 
 <div class="container-fluid" style="padding-left:10px; padding-right:0px;">
   <div class="row">
@@ -1074,26 +1130,28 @@ function cancelModify() {
             Summary
         </button>
 
-        <button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
-            Details
-        </button>
+       
 
        <!-- Modify -->
-   <!--      <button class="custom-tab-btn"
+        <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
                 th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
-        Cancel
+        <!--Cancel-->
         <button class="custom-tab-btn"
                 style="display:none;"
                 title="Cancel editing"
                 id="cancelRecord"
                 onclick="cancelModify();">
             Cancel
-        </button> -->
+        </button> 
+		
+		<button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+		           Details
+		       </button>
  
         <!-- Download button - Summary -->
         <button type="button" class="custom-tab-btn"
@@ -1172,7 +1230,10 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">1</td>
-    <td style="text-align:left; padding-left:10px;">BRIGHTLAD HOLDINGS PTY LTD</td>
+	<td id="R6_BORROWER"
+	    th:text="${reportsummary.R6_BORROWER}"
+	    style="text-align: left; padding-left: 10px;">
+	</td>
     <td id="R6_AMOUNT" th:text="${#numbers.formatDecimal(reportsummary.R6_AMOUNT,1,'COMMA',0,'POINT')}"
          style="text-align: right; width: 200px;"
          th:attr="reportLable='R6', reportAddlCriteria1='C3'"
@@ -1190,7 +1251,10 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">2</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R7_BORROWER"
+	    th:text="${reportsummary.R7_BORROWER}"
+	    style="text-align: left; padding-left: 10px;">
+	</td>
     <td id="R7_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R7_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1207,7 +1271,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">3</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R8_BORROWER"
+	    th:text="${reportsummary.R8_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R8_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R8_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1224,7 +1290,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">4</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R9_BORROWER"
+	    th:text="${reportsummary.R9_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R9_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R9_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1241,7 +1309,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">5</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R10_BORROWER"
+	    th:text="${reportsummary.R10_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R10_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R10_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1258,7 +1328,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">6</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R11_BORROWER"
+	    th:text="${reportsummary.R11_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R11_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R11_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1275,7 +1347,10 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">7</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+
+	<td id="R12_BORROWER"
+	    th:text="${reportsummary.R12_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R12_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R12_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1292,7 +1367,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">8</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R13_BORROWER"
+	    th:text="${reportsummary.R13_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R13_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R13_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1309,7 +1386,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">9</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R14_BORROWER"
+	    th:text="${reportsummary.R14_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R14_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R14_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1326,7 +1405,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">10</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R15_BORROWER"
+	    th:text="${reportsummary.R15_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R15_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R15_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1343,7 +1424,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">11</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R16_BORROWER"
+	    th:text="${reportsummary.R16_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R16_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R16_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1360,7 +1443,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">12</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R17_BORROWER"
+	    th:text="${reportsummary.R17_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R17_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R17_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1377,7 +1462,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">13</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R18_BORROWER"
+	    th:text="${reportsummary.R18_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R18_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R18_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1394,7 +1481,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">14</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R19_BORROWER"
+	    th:text="${reportsummary.R19_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R19_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R19_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1411,7 +1500,10 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">15</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+
+	<td id="R20_BORROWER"
+	    th:text="${reportsummary.R20_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R20_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R20_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1428,7 +1520,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">16</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R21_BORROWER"
+	    th:text="${reportsummary.R21_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R21_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R21_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1445,7 +1539,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">17</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R22_BORROWER"
+	    th:text="${reportsummary.R22_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R22_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R22_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1462,7 +1558,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">18</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R23_BORROWER"
+	    th:text="${reportsummary.R23_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R23_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R23_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1479,7 +1577,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">19</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R24_BORROWER"
+	    th:text="${reportsummary.R24_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R24_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R24_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1496,7 +1596,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">20</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R25_BORROWER"
+	    th:text="${reportsummary.R25_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R25_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R25_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1542,7 +1644,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">1</td>
-    <td style="text-align:left; padding-left:10px;">AP SINGH GROUP</td>
+	<td id="R31_BORROWER"
+	    th:text="${reportsummary.R31_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R31_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R31_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1559,7 +1663,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">2</td>
-    <td style="text-align:left; padding-left:10px;">BRIGHTLAD GROUP</td>
+	<td id="R32_BORROWER"
+	    th:text="${reportsummary.R32_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R32_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R32_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1576,7 +1682,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">3</td>
-    <td style="text-align:left; padding-left:10px;">GUC GROUP</td>
+	<td id="R33_BORROWER"
+	    th:text="${reportsummary.R33_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R33_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R33_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1593,7 +1701,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">4</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R34_BORROWER"
+	    th:text="${reportsummary.R34_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R34_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R34_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1610,7 +1720,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">5</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R35_BORROWER"
+	    th:text="${reportsummary.R35_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R35_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R35_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1627,7 +1739,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">6</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R36_BORROWER"
+	    th:text="${reportsummary.R36_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R36_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R36_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1644,7 +1758,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">7</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R37_BORROWER"
+	    th:text="${reportsummary.R37_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R37_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R37_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1661,7 +1777,10 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">8</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+
+	<td id="R38_BORROWER"
+	    th:text="${reportsummary.R38_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R38_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R38_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1678,7 +1797,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">9</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R39_BORROWER"
+	    th:text="${reportsummary.R39_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R39_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R39_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1695,7 +1816,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">10</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R40_BORROWER"
+	    th:text="${reportsummary.R40_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R40_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R40_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1712,7 +1835,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">11</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R41_BORROWER"
+	    th:text="${reportsummary.R41_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R41_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R41_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1729,7 +1854,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">12</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R42_BORROWER"
+	    th:text="${reportsummary.R42_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R42_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R42_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1746,7 +1873,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">13</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R43_BORROWER"
+	    th:text="${reportsummary.R43_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R43_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R43_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1763,7 +1892,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">14</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R44_BORROWER"
+	    th:text="${reportsummary.R44_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R44_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R44_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1780,7 +1911,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">15</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R45_BORROWER"
+	    th:text="${reportsummary.R45_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R45_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R45_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1797,7 +1930,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">16</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R46_BORROWER"
+	    th:text="${reportsummary.R46_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R46_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R46_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1814,7 +1949,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">17</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R47_BORROWER"
+	    th:text="${reportsummary.R47_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R47_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R47_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1831,7 +1968,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">18</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R48_BORROWER"
+	    th:text="${reportsummary.R48_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R48_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R48_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1848,7 +1987,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">19</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R49_BORROWER"
+	    th:text="${reportsummary.R49_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R49_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R49_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1865,7 +2006,9 @@ function cancelModify() {
 
 <tr>
     <td style="text-align:left; padding-left:10px;">20</td>
-    <td style="text-align:left; padding-left:10px;"></td>
+	<td id="R50_BORROWER"
+	    th:text="${reportsummary.R50_BORROWER}"
+	    style="text-align: left; padding-left: 10px;"></td>
     <td id="R50_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R50_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -1927,12 +2070,22 @@ Advances for the Bank
     <td colspan="2" style="text-align:left; padding-left:10px;">
         Outstanding Unsecured Guarantees
     </td>
-    <td id="R58_AMOUNT"
+	<td id="R58_AMOUNT_INPUT"
+	    style="text-align: right; width: 200px; padding-left: 10px;">
+	    <input class="display-input Show_input"
+	           type="text"
+	           th:value="${reportsummary.R58_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R58_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+	           id="R58_AMOUNT"
+	           name="R58_AMOUNT"
+	           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+	           readonly />
+	</td>
+    <!--<td id="R58_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R58_AMOUNT,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R58', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>
+    </td>-->
 </tr>
 
 <tr>
@@ -1998,13 +2151,13 @@ Outstanding unsecured advances as a % of total Outstanding <br> advances (in per
 
        </div>
        </div>
-  <!--     <div style="text-align: center;  background-color: white;  padding:15px;">
+      <div style="text-align: center;  background-color: white;  padding:15px;">
 
         <button id="submitButton" type="button"
          class="custom-tab-btn Show_input" form="fileupload"
          th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
          style="display: none;">Submit</button>
-       </div> -->
+       </div> 
     </form>
   </div>
  </div>
