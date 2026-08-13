@@ -1063,6 +1063,11 @@ public class RegulatoryReportServices {
 
 			break;
 
+		case "BORR_UFCE":
+			repsummary = BRRS_BORR_UFCE_ReportService.getBORR_UFCEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version != null ? version.toString() : null);
+			break;
+
 		case "AML":
 			repsummary = brrs_aml_reportservice.getAMLView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -2711,6 +2716,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+
+		case "BORR_UFCE":
+			try {
+				repfile = BRRS_BORR_UFCE_ReportService.getBORR_UFCEExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version != null ? version.toString() : null);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 		}
 
 		return repfile;
@@ -3626,13 +3640,9 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched AS_11 archival data: " + AS11List.size());
 			break;
 		case "BORR_UFCE":
-			try {
-				archivalData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> borrUfceList = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
+			archivalData.addAll(borrUfceList);
+			System.out.println("Fetched BORR_UFCE archival data: " + borrUfceList.size());
 			break;
 
 		case "Q_STAFF":

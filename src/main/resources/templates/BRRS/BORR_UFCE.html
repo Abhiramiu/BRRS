@@ -560,7 +560,8 @@ label.error {
   function closemodel() {
       $('#alert').modal('hide');
       $('#resultModal').modal('hide');
-
+      $('#resultModal1').modal('hide');
+      $('#cellresultModal').modal('hide');
   }
 //  function showResultModal(title, message) {
 //			// Set the text for the modal elements
@@ -1972,7 +1973,7 @@ function cancelModify() {
      <p id="resultModalBody1"></p>
       
      <button type="button" class="custom-tab-btn" onclick="closemodel()"
-      data-dismiss="modal">OK</button>
+      data-dismiss="modal" data-bs-dismiss="modal">OK</button>
     </div>
    </div>
   </div>
