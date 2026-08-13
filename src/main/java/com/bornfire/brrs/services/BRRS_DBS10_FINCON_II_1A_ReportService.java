@@ -5057,14 +5057,17 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 		if (("ARCHIVAL".equals(type) || "RESUB".equals(type)) && version != null) {
 
 			List<DBS10_FINCON_II_1A_Archival_Summary_Entity> T1Master = new ArrayList<>();
+			List<DBS10_FINCON_II_1A_Manual_Archival_Summary_Entity> T2Master = new ArrayList<>();
 
 			try {
 
 				Date dt = dateformat.parse(todate);
 
 				T1Master = getdatabydateListarchival(dt, version);
+				T2Master = getdatabydateListarchivalManual(dt, version);
 
 				System.out.println(type + " Summary size = " + T1Master.size());
+				System.out.println(type + " Manual Summary size = " + T2Master.size());
 
 				mv.addObject("REPORT_DATE", dateformat.format(dt));
 				System.out.println("getishighestversion(dt, version) : " + getishighestversion(dt, version));
@@ -5075,6 +5078,7 @@ public class BRRS_DBS10_FINCON_II_1A_ReportService {
 			}
 
 			mv.addObject("reportsummary", T1Master);
+			mv.addObject("reportsummary1", T2Master);
 		}
 		// NORMAL MODE
 
