@@ -4141,7 +4141,7 @@ public void updateReport(FORMAT_NEW_CPR_Summary_Entity updatedEntity) {
     BeanUtils.copyProperties(existing, oldcopy);
 
     // Only allowed R-numbers
-    int[] allowedIndexes = {10, 16, 19,20, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49};
+    int[] allowedIndexes = {10, 19, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49};
 
     try {
 

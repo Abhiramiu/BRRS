@@ -733,7 +733,7 @@ label.error {
   }
  </script>
  
- <script>
+ <!--<script>
 	let originalR16 = 0;
 	let originalR20 = 0;
 
@@ -792,7 +792,7 @@ label.error {
 	    calculateR20();
 
 	}
- </script>
+ </script>-->
 
 
  <script>
@@ -804,7 +804,7 @@ label.error {
  			.removeAttr("disabled");
 
  		// ===== GROUP 1 =====
- 		let rows1 = [10, 16, 19, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49];
+ 		let rows1 = [10, 19, 22, 25, 26, 28,33,38,39, 40, 41, 42, 45,46,47,48,49];
  		let fields1 = ["AMOUNT"];
 
  		rows1.forEach(r => {
@@ -1394,7 +1394,7 @@ function cancelModify() {
     <td style="text-align:right; padding-left:10px;">9</td>
     <td style="text-align:left; padding-left:10px;"> Total Non Performing Advances (Gross) </td>
 	
-	<td id="R16_AMOUNT_INPUT"
+	<!--<td id="R16_AMOUNT_INPUT"
 		    style="text-align: right; width: 200px; padding-left: 10px;">
 		    <input class="display-input Show_input"
 		           type="text"
@@ -1403,13 +1403,13 @@ function cancelModify() {
 		           name="R16_AMOUNT"
 		           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
 		           readonly />
-		</td>
-   <!-- <td id="R16_AMOUNT"
+		</td>-->
+   <td id="R16_AMOUNT"
         th:text="${#numbers.formatDecimal(reportsummary.R16_AMOUNT,1,'COMMA',0,'POINT')}"
         style="background-color: rgb(107, 122, 143);color: white;text-align: right; width: 200px;"
         th:attr="reportLable='R16', reportAddlCriteria1='C3'"
         onclick="showdetailsbyRowAndColumn(this)">
-    </td>-->
+    </td>
 </tr>
 
 <tr>

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +59,9 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_Entity;
+import com.bornfire.brrs.services.BRRS_FORMAT_NEW_CPR_ReportService.FORMAT_NEW_CPR_Summary_RowMapper;
+
 @Service
 @Transactional
 public class BRRS_FSI_ReportService {
@@ -86,6 +90,13 @@ public class BRRS_FSI_ReportService {
 		String sql = "SELECT * FROM BRRS_FSI_SUMMARYTABLE WHERE REPORT_DATE = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new FSIRowMapper());
+	}
+	
+	private FSI_Summary_Entity findSummaryByDate(Date date) {
+		String sql = "SELECT * FROM BRRS_FSI_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<FSI_Summary_Entity> list = jdbcTemplate.query(sql, new Object[]{date}, new FSIRowMapper());
+		if (list.isEmpty()) throw new RuntimeException("Record not found for REPORT_DATE: " + date);
+		return list.get(0);
 	}
 
 	// GET REPORT_DATE + REPORT_VERSION
@@ -6770,4 +6781,128 @@ public class BRRS_FSI_ReportService {
 		return resubList;
 	}
 
+	
+	//=====================================================
+	// UPDATE REPORT
+	//=====================================================
+
+	@Transactional
+	public void updateReport(FSI_Summary_Entity updatedEntity) {
+
+	    System.out.println("Came to services");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+
+	    FSI_Summary_Entity existing =
+	            findSummaryByDate(updatedEntity.getREPORT_DATE());
+
+	    // Audit old copy
+	    FSI_Summary_Entity oldcopy = new FSI_Summary_Entity();
+	    BeanUtils.copyProperties(existing, oldcopy);
+
+	    // Only allowed R-numbers
+	    int[] allowedIndexes = {13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56,
+	    	    60, 61, 67, 68, 69, 71, 74, 88, 90, 91, 102, 104,
+	    	    107, 108, 110, 111, 112, 113};
+
+	    try {
+
+	        for (int i : allowedIndexes) {
+
+	            String field = "AMOUNT";
+
+	            String getterName = "getR" + i + "_" + field;
+	            String setterName = "setR" + i + "_" + field;
+
+	            try {
+
+	                Method getter =
+	                		FSI_Summary_Entity.class.getMethod(getterName);
+
+	                Method setter =
+	                		FSI_Summary_Entity.class.getMethod(
+	                                setterName,
+	                                getter.getReturnType()
+	                        );
+
+	                Object newValue = getter.invoke(updatedEntity);
+
+	                setter.invoke(existing, newValue);
+
+	            } catch (NoSuchMethodException e) {
+
+	                // Safely skip if field doesn't exist
+	                continue;
+	            }
+	        }
+
+	    } catch (Exception e) {
+
+	        throw new RuntimeException(
+	                "Error while updating report fields", e);
+	    }
+
+	    // Check changes before save
+	    String changes = auditService.getChanges(oldcopy, existing);
+
+	 // Save entity
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_FSI_SUMMARYTABLE SET " +
+	            "R13_AMOUNT=?, R18_AMOUNT=?, R19_AMOUNT=?, R27_AMOUNT=?, R29_AMOUNT=?, " +
+	            "R32_AMOUNT=?, R42_AMOUNT=?, R48_AMOUNT=?, R49_AMOUNT=?, R52_AMOUNT=?, " +
+	            "R53_AMOUNT=?, R54_AMOUNT=?, R55_AMOUNT=?, R56_AMOUNT=?, R60_AMOUNT=?, " +
+	            "R61_AMOUNT=?, R67_AMOUNT=?, R68_AMOUNT=?, R69_AMOUNT=?, R71_AMOUNT=?, " +
+	            "R74_AMOUNT=?, R88_AMOUNT=?, R90_AMOUNT=?, R91_AMOUNT=?, R102_AMOUNT=?, " +
+	            "R104_AMOUNT=?, R107_AMOUNT=?, R108_AMOUNT=?, R110_AMOUNT=?, R111_AMOUNT=?, " +
+	            "R112_AMOUNT=?, R113_AMOUNT=? " +
+	            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+
+	            existing.getR13_AMOUNT(),
+	            existing.getR18_AMOUNT(),
+	            existing.getR19_AMOUNT(),
+	            existing.getR27_AMOUNT(),
+	            existing.getR29_AMOUNT(),
+	            existing.getR32_AMOUNT(),
+	            existing.getR42_AMOUNT(),
+	            existing.getR48_AMOUNT(),
+	            existing.getR49_AMOUNT(),
+	            existing.getR52_AMOUNT(),
+	            existing.getR53_AMOUNT(),
+	            existing.getR54_AMOUNT(),
+	            existing.getR55_AMOUNT(),
+	            existing.getR56_AMOUNT(),
+	            existing.getR60_AMOUNT(),
+	            existing.getR61_AMOUNT(),
+	            existing.getR67_AMOUNT(),
+	            existing.getR68_AMOUNT(),
+	            existing.getR69_AMOUNT(),
+	            existing.getR71_AMOUNT(),
+	            existing.getR74_AMOUNT(),
+	            existing.getR88_AMOUNT(),
+	            existing.getR90_AMOUNT(),
+	            existing.getR91_AMOUNT(),
+	            existing.getR102_AMOUNT(),
+	            existing.getR104_AMOUNT(),
+	            existing.getR107_AMOUNT(),
+	            existing.getR108_AMOUNT(),
+	            existing.getR110_AMOUNT(),
+	            existing.getR111_AMOUNT(),
+	            existing.getR112_AMOUNT(),
+	            existing.getR113_AMOUNT(),
+	            existing.getREPORT_DATE()
+	    );
+
+	    // Audit only if changes found
+	    if (!changes.isEmpty()) {
+
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                existing,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "FSI Summary Screen",
+	                "BRRS_FSI_SUMMARY"
+	        );
+	    }
+	}
+	
+	
 }
