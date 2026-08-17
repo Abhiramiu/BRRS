@@ -122,11 +122,14 @@ div span {
 	background-color: #f3f6f9;
 }
 
-thead th {
+thead th,
+.thead-light th,
+table thead th {
 	position: sticky;
 	top: 0;
-	background-color: #e9ecf0;
-	z-index: 1;
+	background-color: #D8D8D8 !important;
+	color: #000000 !important;
+	z-index: 2;
 }
 
 .table td {
@@ -416,6 +419,42 @@ function showdetails() {
 			location.href = Callurl;
 		}
 		
+		function downloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate   = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+					+ '?fromdate=' + encodeURIComponent(fromdate)
+					+ '&todate='   + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
+
+		function emailDownloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate   = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+					+ '?fromdate=' + encodeURIComponent(fromdate)
+					+ '&todate='   + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
+
 		// ==================== ARCHIVAL FUNCTIONS ====================
 
 		function showArchival() {
@@ -723,7 +762,7 @@ function showdetails() {
 	</script>
 </head>
 
-<title>IRRBB_ADVANCES</title>
+<title>IRRBB - ADVANCES</title>
 <body>
 	<div class="container-fluid"
 		style="padding-left: 0px; padding-right: 0px;">
@@ -744,7 +783,7 @@ function showdetails() {
 						<h5
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
 
-							IRRBB ADVANCES - INTEREST RATE RISK IN BANKING BOOK
+							IRRBB - ADVANCES
 
 						</h5>
 
@@ -786,22 +825,43 @@ function showdetails() {
 
 						<!-- FORMAT Download Button -->
 						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetail' or displaymode == 'resubSummary' or displaymode == 'resubDetail'}"
+							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
 							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='IRRBB_ADVANCES.xlsx',
-            data-type=${type},
-            data-format='email',
-            data-version=${version != null ? version : ''}"
+							        data-asondate=${asondate},
+							        data-fromdate=${fromdate},
+							        data-todate=${todate},
+							        data-currency=${currency}, 
+							        data-dtltype=${dtltype},
+							        data-filename='IRRBB_ADVANCES.xlsx',
+							        data-type=${type},
+							        data-format='email',
+							        data-version=${version != null ? version : ''}"
 							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> FORMAT
 						</button>
 
-						<!-- MODIFY / CANCEL BUTTONS (M_SIR STYLE) -->
+						<!-- PDF Download Dropdown -->
+						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
+							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'Details' or displaymode == 'archivalSummary'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown" style="font-family: Arial; font-weight: bold;">
+								<i class="fa fa-download"></i> PDF
+							</button>
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link"
+								   th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+								   onclick="downloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+								</a>
+								<div class="dropdown-divider"></div>
+								<a href="#" class="nav-link"
+								   th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+								   onclick="emailDownloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+								</a>
+							</div>
+						</div>
+
+						<!-- MODIFY / CANCEL BUTTONS-->
 						<button type="button" class="custom-tab-btn" id="modifyBtn"
 							onclick="enableInlineEdit();"
 							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
@@ -827,31 +887,31 @@ function showdetails() {
 				
 				<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Summary
-					View - IRRBB ADVANCES</h1>
+					View - IRRBB - ADVANCES</h1>
 				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">Detail
-					View - IRRBB ADVANCES</h1>
+					View - IRRBB - ADVANCES</h1>
 
 				<h1 th:if="${displaymode == 'archivalSummary'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Archival Summary View - IRRBB ADVANCES (Read Only)</h1>
+					Archival Summary View - IRRBB - ADVANCES (Read Only)</h1>
 
 				<h1 th:if="${displaymode == 'archivalDetail'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding-top: 10px; padding-bottom: 10px;">
-					Archival Detail View - IRRBB ADVANCES (Read Only)</h1>
+					Archival Detail View - IRRBB - ADVANCES (Read Only)</h1>
 					
 				<h1 th:if="${displaymode == 'resubSummary'}" style="text-align: left; font-family: arial; font-weight: bold; 
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143); 
 				          margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;">
-					Resubmission Summary View - IRRBB ADVANCES
+					Resubmission Summary View - IRRBB - ADVANCES
 				</h1>
 
 				<h1 th:if="${displaymode == 'resubDetail'}" style="text-align: left; font-family: arial; font-weight: bold;
 				          color: white; font-size: 20px;
 				          background-color: rgb(107, 122, 143)28a745; 
 				          margin-top:10px; margin-bottom:10px; padding-top: 10px; padding-bottom: 10px;">
-					Resubmission Detail View - IRRBB ADVANCES
+					Resubmission Detail View - IRRBB - ADVANCES
 				</h1>
 
 				<!-- =========================================================== -->
