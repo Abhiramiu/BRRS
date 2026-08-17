@@ -315,6 +315,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_DBS10_FINCON_II_1A_ReportService BRRS_DBS10_FINCON_II_1A_ReportService;
+	
+	@Autowired
+	BRRS_DBS10_FINCON_III_1B_ReportService BRRS_DBS10_FINCON_III_1B_ReportService;
 
 	@Autowired
 	BRRS_AML_ReportService brrs_aml_reportservice;
@@ -1127,6 +1130,12 @@ public class RegulatoryReportServices {
 					type, version);
 
 			break;
+			
+		case "DBS10_FINCON_III_1B":
+			repsummary = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version);
+
+			break;
 		}
 
 		return repsummary;
@@ -1275,6 +1284,8 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AcurrentDtl(reportId, fromdate,
 					todate, currency, dtltype, pageable, Filter, type, version);
 			break;
+			
+
 
 		case "MDISB4":
 			repdetail = BRRS_MDISB4_ReportService.getMDISB4currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2195,6 +2206,16 @@ public class RegulatoryReportServices {
 			}
 			break;
 			
+			
+		case "DBS10_FINCON_III_1B":
+			try {
+				repfile = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
 		case "M_MRC":
 			try {
 				repfile = BRRS_M_MRC_reportservice.BRRS_M_MRCExcel(filename, reportId, fromdate, todate, currency,
@@ -2813,6 +2834,7 @@ public class RegulatoryReportServices {
 		} else if ("DBS10_FINCON_II_1ADetail".equals(filename)) {
 			return BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1ADetailExcel(filename, fromdate, todate,
 					currency, dtltype, type, version);
+		
 		} else if ("MDISB4Detail".equals(filename)) {
 			return BRRS_MDISB4_ReportService.getMDISB4DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3094,6 +3116,12 @@ public class RegulatoryReportServices {
 			List<Object[]> DBS10_FINCON_II_1ALIST = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AArchival();
 			archivalData.addAll(DBS10_FINCON_II_1ALIST);
 			System.out.println("Fetched DBS10_FINCON_II_1A archival data: " + DBS10_FINCON_II_1ALIST.size());
+			break;
+			
+		case "DBS10_FINCON_III_1B":
+			List<Object[]> DBS10_FINCON_III_1BLIST = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BArchival();
+			archivalData.addAll(DBS10_FINCON_III_1BLIST);
+			System.out.println("Fetched DBS10_FINCON_III_1B archival data: " + DBS10_FINCON_III_1BLIST.size());
 			break;
 
 		case "M_INT_RATES_FCA":
@@ -3754,6 +3782,7 @@ public class RegulatoryReportServices {
 		} else if (filename.equals("DBS10_FINCON_II_1ADetail")) {
 			fileData = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1ADetailExcel(filename, fromdate,
 					todate, currency, dtltype, type, version);
+		
 		} else if (filename.equals("MDISB4Detail")) {
 			fileData = BRRS_MDISB4_ReportService.getMDISB4DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -4171,6 +4200,7 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_DBS10_FINCON_II_1A_ReportService.getViewOrEditPage(request.getParameter("SNO"),
 						request.getParameter("formmode"), request.getParameter("type"));
 				break;
+			
 
 			case "MDISB4":
 				modelAndView = BRRS_MDISB4_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4611,6 +4641,8 @@ public class RegulatoryReportServices {
 			case "DBS10_FINCON_II_1A":
 				response = BRRS_DBS10_FINCON_II_1A_ReportService.updateDetailEdit(request);
 				break;
+				
+
 
 			case "MDISB4":
 				response = BRRS_MDISB4_ReportService.updateDetailEdit(request);
