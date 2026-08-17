@@ -185,7 +185,59 @@
             color: white !important;
         }
 
-    </style>
+    
+/* =========================================================
+   DBS10 FINCON III (1)(b) TRANSACTION TABLE
+   ========================================================= */
+.detail-table-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-top: 10px;
+    padding-bottom: 8px;
+}
+
+#reportdetails {
+    min-width: 1500px;
+    width: 1500px !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+}
+
+#reportdetails thead th {
+    background: #D8D8D8 !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-weight: bold !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    line-height: 1.25 !important;
+    padding: 8px 6px !important;
+}
+
+#reportdetails tbody td {
+    border: 1px solid #000 !important;
+    background: #fff !important;
+    color: #000 !important;
+    text-align: center;
+    vertical-align: middle;
+    padding: 7px 6px !important;
+}
+
+#reportdetails th:nth-child(1), #reportdetails td:nth-child(1) { width: 120px !important; }
+#reportdetails th:nth-child(2), #reportdetails td:nth-child(2) { width: 150px !important; }
+#reportdetails th:nth-child(3), #reportdetails td:nth-child(3) { width: 160px !important; }
+#reportdetails th:nth-child(4), #reportdetails td:nth-child(4) { width: 170px !important; }
+#reportdetails th:nth-child(5), #reportdetails td:nth-child(5) { width: 240px !important; }
+#reportdetails th:nth-child(6), #reportdetails td:nth-child(6) { width: 135px !important; }
+#reportdetails th:nth-child(7), #reportdetails td:nth-child(7) { width: 135px !important; }
+#reportdetails th:nth-child(8), #reportdetails td:nth-child(8) { width: 130px !important; }
+#reportdetails th:nth-child(9), #reportdetails td:nth-child(9) { width: 130px !important; }
+#reportdetails th:nth-child(10), #reportdetails td:nth-child(10) { width: 180px !important; }
+
+</style>
 
 
     <!-- ========================================================= -->
@@ -330,19 +382,6 @@
         table.dataTable tbody td {
             border: 1px solid #000000 !important;
         }
-
-        /* Complex 3-row header: keep the header visible and aligned. */
-        #reportdetails thead tr:nth-child(1) th,
-        #reportdetails thead tr:nth-child(2) th,
-        #reportdetails thead tr:nth-child(3) th {
-            height: auto !important;
-            min-height: 34px;
-        }
-
-        .dataTables_scrollHead {
-            overflow: hidden !important;
-        }
-
 
         /* Do not let DataTables automatic numeric/date alignment change ours */
         table.dataTable th.dt-type-numeric,
@@ -1755,6 +1794,7 @@
 									      </tr>
 
 
+									      <!-- X-SERIES CODE ROW -->
 									      <tr>
 
 									          <th>
@@ -1762,15 +1802,15 @@
 									          </th>
 
 									          <th>
-									             
-									          </th>
-
-									          <th>
-									             
+									              
 									          </th>
 
 									          <th>
 									              
+									          </th>
+
+									          <th>
+									             
 									          </th>
 
 									          <th>
@@ -1800,7 +1840,10 @@
 									      </tr>
 
 									  </thead>
- <tbody>
+
+
+									  <!-- BACKEND DATA -->
+									  <tbody>
 
 									      <tr th:each="report, srlno : ${reportsummary}">
 
@@ -1945,11 +1988,6 @@
                             <!-- dateOfTrnsEnd, tenorOfTrans, amt, returnVal.      -->
                             <!-- ================================================= -->
                             <tbody>
-                                <tr th:if="${#lists.isEmpty(reportsummary)}">
-                                    <td colspan="10" style="text-align:center; padding:15px;">
-                                        No data available for the selected report date.
-                                    </td>
-                                </tr>
                                 <tr th:each="report, srlno : ${reportsummary}">
 
                                     <!-- X010 -->

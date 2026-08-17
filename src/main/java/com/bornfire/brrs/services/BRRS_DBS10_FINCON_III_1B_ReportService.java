@@ -989,6 +989,33 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		}
 	}
 
+
+	// ===========================================================
+	// SAFE RESULTSET HELPERS
+	// ===========================================================
+	private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+		java.sql.ResultSetMetaData meta = rs.getMetaData();
+		for (int i = 1; i <= meta.getColumnCount(); i++) {
+			if (columnName.equalsIgnoreCase(meta.getColumnLabel(i))
+					|| columnName.equalsIgnoreCase(meta.getColumnName(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String getStringSafe(ResultSet rs, String columnName) throws SQLException {
+		return hasColumn(rs, columnName) ? rs.getString(columnName) : null;
+	}
+
+	private Date getDateSafe(ResultSet rs, String columnName) throws SQLException {
+		return hasColumn(rs, columnName) ? rs.getDate(columnName) : null;
+	}
+
+	private BigDecimal getBigDecimalSafe(ResultSet rs, String columnName) throws SQLException {
+		return hasColumn(rs, columnName) ? rs.getBigDecimal(columnName) : null;
+	}
+
 	// ===========================================================
 	// ROW MAPPER CLASSES
 	// ===========================================================
@@ -997,27 +1024,38 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	private class SummaryRowMapper implements RowMapper<BRRS_DBS10_FINCON_III_1B_Summary_Entity> {
 		@Override
 		public BRRS_DBS10_FINCON_III_1B_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			BRRS_DBS10_FINCON_III_1B_Summary_Entity entity = new BRRS_DBS10_FINCON_III_1B_Summary_Entity();
-			entity.setTransSerialNo(rs.getBigDecimal("TRANS_SERIAL_NO"));
-			entity.setNameOfSfis(rs.getString("NAME_OF_SFIS"));
-			entity.setNameOfCounterParty(rs.getString("NAME_OF_COUNTER_PARTY"));
-			entity.setNatureOfTrans(rs.getString("NATURE_OF_TRANS"));
-			entity.setOrgIssue(rs.getString("ORG_ISSUE"));
-			entity.setDateOfTrnsBegin(rs.getDate("DATE_OF_TRNS_BEGIN"));
-			entity.setDateOfTrnsEnd(rs.getDate("DATE_OF_TRNS_END"));
-			entity.setTenorOfTrans(rs.getString("TENOR_OF_TRANS"));
-			entity.setAmt(rs.getBigDecimal("AMT"));
-			entity.setReturnVal(rs.getString("RETURN_VAL"));
-			entity.setReportDate(rs.getDate("REPORT_DATE"));
-			entity.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
-			entity.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
-			entity.setReportCode(rs.getString("REPORT_CODE"));
-			entity.setReportDesc(rs.getString("REPORT_DESC"));
-			entity.setEntityFlg(rs.getString("ENTITY_FLG"));
-			entity.setModifyFlg(rs.getString("MODIFY_FLG"));
-			entity.setDelFlg(rs.getString("DEL_FLG"));
-			// REPORT_RESUBDATE is not read from the normal summary table.
-			// It is used by archival/resubmission processing only.
+			BRRS_DBS10_FINCON_III_1B_Summary_Entity entity =
+					new BRRS_DBS10_FINCON_III_1B_Summary_Entity();
+
+			/*
+			 * IMPORTANT:
+			 * The normal SUMMARYTABLE in the database does not necessarily contain
+			 * every archival/resubmission column.  Do not call ResultSet.getXXX()
+			 * directly for optional columns because Oracle throws
+			 * "Invalid column name" when a column is absent.
+			 */
+			entity.setTransSerialNo(getBigDecimalSafe(rs, "TRANS_SERIAL_NO"));
+			entity.setNameOfSfis(getStringSafe(rs, "NAME_OF_SFIS"));
+			entity.setNameOfCounterParty(getStringSafe(rs, "NAME_OF_COUNTER_PARTY"));
+			entity.setNatureOfTrans(getStringSafe(rs, "NATURE_OF_TRANS"));
+			entity.setOrgIssue(getStringSafe(rs, "ORG_ISSUE"));
+			entity.setDateOfTrnsBegin(getDateSafe(rs, "DATE_OF_TRNS_BEGIN"));
+			entity.setDateOfTrnsEnd(getDateSafe(rs, "DATE_OF_TRNS_END"));
+			entity.setTenorOfTrans(getStringSafe(rs, "TENOR_OF_TRANS"));
+			entity.setAmt(getBigDecimalSafe(rs, "AMT"));
+			entity.setReturnVal(getStringSafe(rs, "RETURN_VAL"));
+
+			entity.setReportDate(getDateSafe(rs, "REPORT_DATE"));
+			entity.setReportVersion(getBigDecimalSafe(rs, "REPORT_VERSION"));
+			entity.setReportFrequency(getStringSafe(rs, "REPORT_FREQUENCY"));
+			entity.setReportCode(getStringSafe(rs, "REPORT_CODE"));
+			entity.setReportDesc(getStringSafe(rs, "REPORT_DESC"));
+			entity.setEntityFlg(getStringSafe(rs, "ENTITY_FLG"));
+			entity.setModifyFlg(getStringSafe(rs, "MODIFY_FLG"));
+			entity.setDelFlg(getStringSafe(rs, "DEL_FLG"));
+
+			// REPORT_RESUBDATE is intentionally NOT read from the normal table.
+			// It belongs to archival/resubmission handling.
 			return entity;
 		}
 	}
@@ -1086,7 +1124,6 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			entity.setEntityFlg(rs.getString("ENTITY_FLG"));
 			entity.setModifyFlg(rs.getString("MODIFY_FLG"));
 			entity.setDelFlg(rs.getString("DEL_FLG"));
-			entity.setReportResubDate(rs.getDate("REPORT_RESUBDATE"));
 			return entity;
 		}
 	}
@@ -1172,6 +1209,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+
 			}
 		}
 		// =====================================================
@@ -1206,17 +1244,10 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		// NORMAL MODE
 		// =====================================================
 		else {
-			// Set the display mode before the database call so the page structure
-			// (including the table header) is still rendered if DB data is empty/fails.
-			if ("detail".equalsIgnoreCase(dtltype)) {
-				mv.addObject("displaymode", "Details");
-			} else {
-				mv.addObject("displaymode", "summary");
-			}
-
 			try {
 				Date dt = dateformat.parse(todate);
 				String formattedDate = dateformat.format(dt);
+				System.out.println("Normal report date = " + formattedDate);
 
 				List<BRRS_DBS10_FINCON_III_1B_Summary_Entity> normalSummary = jdbcTemplate.query(
 						"SELECT * FROM BRRS_DBS10_FINCON_III_1B_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')",
@@ -1225,13 +1256,17 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 				System.out.println("Normal Summary size = " + normalSummary.size());
 
 				if ("detail".equalsIgnoreCase(dtltype)) {
-					List<BRRS_DBS10_FINCON_III_1B_Detail_Entity> normalDetail = jdbcTemplate.query(
-							"SELECT * FROM BRRS_DBS10_FINCON_III_1B_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')",
-							new Object[] { formattedDate }, new DetailRowMapper());
-					mv.addObject("reportdetails", normalDetail);
-					System.out.println("Normal Detail size = " + normalDetail.size());
+					/*
+					 * The DBS10 FINCON III (1)(b) frontend transaction report
+					 * uses the X010-X090 fields from the SUMMARYTABLE.
+					 * Do not map the unrelated DETAILTABLE here; its columns
+					 * are different (SNO, CUSTOMER_ID, ACCOUNT_NUMBER, etc.).
+					 */
+					mv.addObject("reportdetails", normalSummary);
+					mv.addObject("displaymode", "Details");
+					System.out.println("Transaction detail rows = " + normalSummary.size());
 				} else {
-					// displaymode was set before the query.
+					mv.addObject("displaymode", "summary");
 				}
 
 				mv.addObject("reportsummary", normalSummary);
@@ -1239,9 +1274,17 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				// Keep the page renderable even if DB mapping fails.
-				mv.addObject("reportsummary", java.util.Collections.emptyList());
-				mv.addObject("reportdetails", java.util.Collections.emptyList());
+
+				// Keep the HTML report shell/header visible even if a database
+				// column or row-mapping problem occurs.
+				mv.addObject("reportsummary",
+						new java.util.ArrayList<BRRS_DBS10_FINCON_III_1B_Summary_Entity>());
+
+				if ("detail".equalsIgnoreCase(dtltype)) {
+					mv.addObject("displaymode", "Details");
+				} else {
+					mv.addObject("displaymode", "summary");
+				}
 			}
 		}
 
