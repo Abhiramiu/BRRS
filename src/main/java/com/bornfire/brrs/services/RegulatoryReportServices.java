@@ -439,6 +439,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
 
+	@Autowired
+	BRRS_UFCE_RETAILADV_ReportService BRRS_UFCE_RETAILADV_ReportService;
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -1119,15 +1122,20 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 
+		case "UFCE_RETAILADV":
+			repsummary = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
+
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
 
 			break;
-			
+
 		case "DBS10_FINCON_II_1A":
-			repsummary = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+			repsummary = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
 
 			break;
 			
@@ -1566,6 +1574,11 @@ public class RegulatoryReportServices {
 					dtltype, pageable, Filter, type, version);
 			break;
 
+		case "UFCE_RETAILADV":
+			repdetail = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_DetailView(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version);
+			break;
+
 		}
 		return repdetail;
 	}
@@ -1581,6 +1594,15 @@ public class RegulatoryReportServices {
 		case "IRRBB_ADV":
 			try {
 				repfile = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+		case "UFCE_RETAILADV":
+			try {
+				repfile = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_Excel(filename, reportId, fromdate,
 						todate, currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2195,18 +2217,17 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "DBS10_FINCON_II_1A":
 			try {
-				repfile = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel(filename, reportId, fromdate, todate, currency, dtltype,
-						type, version);
+				repfile = BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, version);
 
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
-			
-			
+						
 		case "DBS10_FINCON_III_1B":
 			try {
 				repfile = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BExcel(filename, reportId, fromdate,
@@ -2915,9 +2936,14 @@ public class RegulatoryReportServices {
 			archivalData.addAll(irrbbAdvList);
 			System.out.println("Fetched IRRBB_ADVANCES archival data: " + irrbbAdvList.size());
 			break;
+			
+		case "UFCE_RETAILADV":
+			List<Object[]> retailadvList = BRRS_UFCE_RETAILADV_ReportService.getRETAILADV_UFCEArchival();
+			archivalData.addAll(retailadvList);
+			System.out.println("Fetched UFCE_RETAILADV archival data: " + retailadvList.size());
+			break;
 
 		case "M_SFINP2":
-
 			List<Object[]> msfinp2List = BRRS_M_SFINP2_reportservice.getM_SFINP2Archival();
 			archivalData.addAll(msfinp2List);
 			System.out.println("Fetched M_SFINP2 archival data: " + msfinp2List.size());
@@ -4874,6 +4900,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "UFCE_RETAILADV":
+			try {
+				List<Object[]> resubList = BRRS_UFCE_RETAILADV_ReportService.getRETAILADV_UFCEResubList();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for UFCE_RETAILADV: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for UFCE_RETAILADV: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
 		case "IRRBB_BORROWINGS":
 			try {
 				List<Object[]> resubList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Resub();
@@ -6523,6 +6560,66 @@ public class RegulatoryReportServices {
 		logger.info("PDF request → reportId={} fromdate={} todate={}", reportId, fromdate, todate);
 
 		switch (reportId) {
+		case "IRRBB_ADV":
+			try {
+				if (filename != null && filename.startsWith("EMAIL_")) {
+					excelBytes = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+				} else {
+					excelBytes = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("IRRBB_ADV: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 100 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("IRRBB_ADV: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("IRRBB_ADV: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("IRRBB_ADV: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "UFCE_RETAILADV":
+			try {
+				if (filename != null && filename.startsWith("EMAIL_")) {
+					excelBytes = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+				} else {
+					excelBytes = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("UFCE_RETAILADV: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 100 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("UFCE_RETAILADV: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("UFCE_RETAILADV: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("UFCE_RETAILADV: PDF generation failed", e);
+				return new byte[0];
+			}
+
 		case "M_PI":
 			try {
 				excelBytes = BRRS_M_PI_reportservice.getBRRS_M_PIExcel("M_PI.xlsx", reportId, fromdate, todate,
