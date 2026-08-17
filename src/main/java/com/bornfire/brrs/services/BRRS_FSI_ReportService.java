@@ -6786,123 +6786,140 @@ public class BRRS_FSI_ReportService {
 	// UPDATE REPORT
 	//=====================================================
 
-	@Transactional
-	public void updateReport(FSI_Summary_Entity updatedEntity) {
+@Transactional
+public void updateReport(FSI_Summary_Entity updatedEntity) {
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+    System.out.println("Came to services");
+    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    FSI_Summary_Entity existing =
-	            findSummaryByDate(updatedEntity.getREPORT_DATE());
+    FSI_Summary_Entity existing =
+            findSummaryByDate(updatedEntity.getREPORT_DATE());
 
-	    // Audit old copy
-	    FSI_Summary_Entity oldcopy = new FSI_Summary_Entity();
-	    BeanUtils.copyProperties(existing, oldcopy);
+    // Audit old copy
+    FSI_Summary_Entity oldcopy = new FSI_Summary_Entity();
+    BeanUtils.copyProperties(existing, oldcopy);
 
-	    // Only allowed R-numbers
-	    int[] allowedIndexes = {13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56,
-	    	    60, 61, 67, 68, 69, 71, 74, 88, 90, 91, 102, 104,
-	    	    107, 108, 110, 111, 112, 113};
+    // Only allowed R-numbers
+    int[] allowedIndexes = {
+        13, 18, 19, 27, 29, 32, 42, 48, 49,
+        52, 53, 54, 55, 56, 60, 61, 67, 68,
+        69, 71, 74, 88, 90, 91, 102, 104,
+        107, 108, 110, 111, 112, 113,
+        119, 120, 121, 122, 123, 124
+    };
 
-	    try {
+    try {
 
-	        for (int i : allowedIndexes) {
+        for (int i : allowedIndexes) {
 
-	            String field = "AMOUNT";
+            String field = "AMOUNT";
 
-	            String getterName = "getR" + i + "_" + field;
-	            String setterName = "setR" + i + "_" + field;
+            String getterName = "getR" + i + "_" + field;
+            String setterName = "setR" + i + "_" + field;
 
-	            try {
+            try {
 
-	                Method getter =
-	                		FSI_Summary_Entity.class.getMethod(getterName);
+                Method getter =
+                        FSI_Summary_Entity.class.getMethod(getterName);
 
-	                Method setter =
-	                		FSI_Summary_Entity.class.getMethod(
-	                                setterName,
-	                                getter.getReturnType()
-	                        );
+                Method setter =
+                        FSI_Summary_Entity.class.getMethod(
+                                setterName,
+                                getter.getReturnType()
+                        );
 
-	                Object newValue = getter.invoke(updatedEntity);
+                Object newValue = getter.invoke(updatedEntity);
 
-	                setter.invoke(existing, newValue);
+                setter.invoke(existing, newValue);
 
-	            } catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
 
-	                // Safely skip if field doesn't exist
-	                continue;
-	            }
-	        }
+                // Safely skip if field doesn't exist
+                continue;
+            }
+        }
 
-	    } catch (Exception e) {
+    } catch (Exception e) {
 
-	        throw new RuntimeException(
-	                "Error while updating report fields", e);
-	    }
+        throw new RuntimeException(
+                "Error while updating report fields", e);
+    }
 
-	    // Check changes before save
-	    String changes = auditService.getChanges(oldcopy, existing);
+    // Check changes before save
+    String changes = auditService.getChanges(oldcopy, existing);
 
-	 // Save entity
-	    jdbcTemplate.update(
-	            "UPDATE BRRS_FSI_SUMMARYTABLE SET " +
-	            "R13_AMOUNT=?, R18_AMOUNT=?, R19_AMOUNT=?, R27_AMOUNT=?, R29_AMOUNT=?, " +
-	            "R32_AMOUNT=?, R42_AMOUNT=?, R48_AMOUNT=?, R49_AMOUNT=?, R52_AMOUNT=?, " +
-	            "R53_AMOUNT=?, R54_AMOUNT=?, R55_AMOUNT=?, R56_AMOUNT=?, R60_AMOUNT=?, " +
-	            "R61_AMOUNT=?, R67_AMOUNT=?, R68_AMOUNT=?, R69_AMOUNT=?, R71_AMOUNT=?, " +
-	            "R74_AMOUNT=?, R88_AMOUNT=?, R90_AMOUNT=?, R91_AMOUNT=?, R102_AMOUNT=?, " +
-	            "R104_AMOUNT=?, R107_AMOUNT=?, R108_AMOUNT=?, R110_AMOUNT=?, R111_AMOUNT=?, " +
-	            "R112_AMOUNT=?, R113_AMOUNT=? " +
-	            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+    // Save entity
+    jdbcTemplate.update(
+            "UPDATE BRRS_FSI_SUMMARYTABLE SET " +
 
-	            existing.getR13_AMOUNT(),
-	            existing.getR18_AMOUNT(),
-	            existing.getR19_AMOUNT(),
-	            existing.getR27_AMOUNT(),
-	            existing.getR29_AMOUNT(),
-	            existing.getR32_AMOUNT(),
-	            existing.getR42_AMOUNT(),
-	            existing.getR48_AMOUNT(),
-	            existing.getR49_AMOUNT(),
-	            existing.getR52_AMOUNT(),
-	            existing.getR53_AMOUNT(),
-	            existing.getR54_AMOUNT(),
-	            existing.getR55_AMOUNT(),
-	            existing.getR56_AMOUNT(),
-	            existing.getR60_AMOUNT(),
-	            existing.getR61_AMOUNT(),
-	            existing.getR67_AMOUNT(),
-	            existing.getR68_AMOUNT(),
-	            existing.getR69_AMOUNT(),
-	            existing.getR71_AMOUNT(),
-	            existing.getR74_AMOUNT(),
-	            existing.getR88_AMOUNT(),
-	            existing.getR90_AMOUNT(),
-	            existing.getR91_AMOUNT(),
-	            existing.getR102_AMOUNT(),
-	            existing.getR104_AMOUNT(),
-	            existing.getR107_AMOUNT(),
-	            existing.getR108_AMOUNT(),
-	            existing.getR110_AMOUNT(),
-	            existing.getR111_AMOUNT(),
-	            existing.getR112_AMOUNT(),
-	            existing.getR113_AMOUNT(),
-	            existing.getREPORT_DATE()
-	    );
+            "R13_AMOUNT=?, R18_AMOUNT=?, R19_AMOUNT=?, R27_AMOUNT=?, R29_AMOUNT=?, " +
+            "R32_AMOUNT=?, R42_AMOUNT=?, R48_AMOUNT=?, R49_AMOUNT=?, R52_AMOUNT=?, " +
+            "R53_AMOUNT=?, R54_AMOUNT=?, R55_AMOUNT=?, R56_AMOUNT=?, R60_AMOUNT=?, " +
+            "R61_AMOUNT=?, R67_AMOUNT=?, R68_AMOUNT=?, R69_AMOUNT=?, R71_AMOUNT=?, " +
+            "R74_AMOUNT=?, R88_AMOUNT=?, R90_AMOUNT=?, R91_AMOUNT=?, R102_AMOUNT=?, " +
+            "R104_AMOUNT=?, R107_AMOUNT=?, R108_AMOUNT=?, R110_AMOUNT=?, R111_AMOUNT=?, " +
+            "R112_AMOUNT=?, R113_AMOUNT=?, " +
+            "R119_AMOUNT=?, R120_AMOUNT=?, R121_AMOUNT=?, R122_AMOUNT=?, " +
+            "R123_AMOUNT=?, R124_AMOUNT=? " +
 
-	    // Audit only if changes found
-	    if (!changes.isEmpty()) {
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existing,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "FSI Summary Screen",
-	                "BRRS_FSI_SUMMARY"
-	        );
-	    }
-	}
+            existing.getR13_AMOUNT(),
+            existing.getR18_AMOUNT(),
+            existing.getR19_AMOUNT(),
+            existing.getR27_AMOUNT(),
+            existing.getR29_AMOUNT(),
+            existing.getR32_AMOUNT(),
+            existing.getR42_AMOUNT(),
+            existing.getR48_AMOUNT(),
+            existing.getR49_AMOUNT(),
+            existing.getR52_AMOUNT(),
+            existing.getR53_AMOUNT(),
+            existing.getR54_AMOUNT(),
+            existing.getR55_AMOUNT(),
+            existing.getR56_AMOUNT(),
+            existing.getR60_AMOUNT(),
+            existing.getR61_AMOUNT(),
+            existing.getR67_AMOUNT(),
+            existing.getR68_AMOUNT(),
+            existing.getR69_AMOUNT(),
+            existing.getR71_AMOUNT(),
+            existing.getR74_AMOUNT(),
+            existing.getR88_AMOUNT(),
+            existing.getR90_AMOUNT(),
+            existing.getR91_AMOUNT(),
+            existing.getR102_AMOUNT(),
+            existing.getR104_AMOUNT(),
+            existing.getR107_AMOUNT(),
+            existing.getR108_AMOUNT(),
+            existing.getR110_AMOUNT(),
+            existing.getR111_AMOUNT(),
+            existing.getR112_AMOUNT(),
+            existing.getR113_AMOUNT(),
+
+            // Newly added R119 - R124
+            existing.getR119_AMOUNT(),
+            existing.getR120_AMOUNT(),
+            existing.getR121_AMOUNT(),
+            existing.getR122_AMOUNT(),
+            existing.getR123_AMOUNT(),
+            existing.getR124_AMOUNT(),
+
+            existing.getREPORT_DATE()
+    );
+
+    // Audit only if changes found
+    if (!changes.isEmpty()) {
+
+        auditService.compareEntitiesmanual(
+                oldcopy,
+                existing,
+                updatedEntity.getREPORT_DATE().toString(),
+                "FSI Summary Screen",
+                "BRRS_FSI_SUMMARY"
+        );
+    }
+}
 	
 	
 }

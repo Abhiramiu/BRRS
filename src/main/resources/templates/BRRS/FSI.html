@@ -755,7 +755,7 @@ function showmodify(btn) {
 	let rows1 = [
 	    13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56,
 	    60, 61, 67, 68, 69, 71, 74, 88, 90, 91, 102, 104,
-	    107, 108, 110, 111, 112, 113
+	    107, 108, 110, 111, 112, 113,119,120,121,122,123,124
 	];
     let fields1 = ["AMOUNT"];
 
@@ -2964,67 +2964,110 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">57. Credit to the private
 												sector</td>
-											<td id="R119_AMOUNT"
+												
+												<td id="R119_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																								    <input class="display-input Show_input" type="text"
+																								           th:value="${reportsummary.R119_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R119_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								           id="R119_AMOUNT" name="R119_AMOUNT"
+																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																								           readonly />
+																								</td>
+											<!--<td id="R119_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R119_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R119', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R120 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">58. Loan concentration by
 												economic activity</td>
-											<td id="R120_AMOUNT"
+												<td id="R120_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																								    <input class="display-input Show_input" type="text"
+																								           th:value="${reportsummary.R120_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R120_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																								           id="R120_AMOUNT" name="R120_AMOUNT"
+																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																								           readonly />
+																								</td>
+											<!--<td id="R120_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R120_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R120', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R121 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">59. Reference lending rates
 											</td>
-											<td id="R121_AMOUNT"
+											<td id="R121_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																							    <input class="display-input Show_input" type="text"
+																							           th:value="${reportsummary.R121_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R121_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																							           id="R121_AMOUNT" name="R121_AMOUNT"
+																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																							           readonly />
+																							</td>
+											<!--<td id="R121_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R121_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R121', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R122 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">60. Reference deposit rates
 											</td>
-											<td id="R122_AMOUNT"
+											<td id="R122_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																							    <input class="display-input Show_input" type="text"
+																							           th:value="${reportsummary.R122_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R122_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																							           id="R122_AMOUNT" name="R122_AMOUNT"
+																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																							           readonly />
+																							</td>
+											<!--<td id="R122_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R122_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R122', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R123 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">61. Highest interbank rate
 											</td>
-											<td id="R123_AMOUNT"
+											<td id="R123_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																							    <input class="display-input Show_input" type="text"
+																							           th:value="${reportsummary.R123_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R123_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																							           id="R123_AMOUNT" name="R123_AMOUNT"
+																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																							           readonly />
+																							</td>
+											<!--<td id="R123_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R123_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R123', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R124 -->
 										<tr>
 											<td style="text-align:left;padding-left:10px;">62. Lowest interbank rate
 											</td>
-											<td id="R124_AMOUNT"
+											<td id="R124_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
+																							    <input class="display-input Show_input" type="text"
+																							           th:value="${reportsummary.R124_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R124_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+																							           id="R124_AMOUNT" name="R124_AMOUNT"
+																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+																							           readonly />
+																							</td>
+											<!--<td id="R124_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R124_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R124', reportAddlCriteria1='C2'"
 												onclick="showdetailsbyRowAndColumn(this)">
-											</td>
+											</td>-->
 										</tr>
 										<!-- R125 -->
 										<tr>
