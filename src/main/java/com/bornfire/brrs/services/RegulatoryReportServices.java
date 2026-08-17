@@ -1070,8 +1070,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "BORR_UFCE":
-			repsummary = BRRS_BORR_UFCE_ReportService.getBORR_UFCEView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version != null ? version.toString() : null);
+			repsummary = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
 			break;
 
 		case "AML":
@@ -1568,11 +1568,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_AS_11_Reportservice.getAS_11currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
-		case "BORR_UFCE":
-
-			repdetail = BRRS_BORR_UFCE_ReportService.getBORR_UFCEcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
-			break;
+		
 
 		case "UFCE_RETAILADV":
 			repdetail = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_DetailView(reportId, fromdate, todate,
@@ -1599,6 +1595,13 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+			
+		/*
+		 * case "BORR_UFCE": try { repfile =
+		 * BRRS_BORR_UFCE_ReportService.getBORR_UFCE_Excel(filename, reportId, fromdate,
+		 * todate, currency, dtltype, type, format, version); } catch (Exception e) {
+		 * e.printStackTrace(); } break;
+		 */
 
 		case "UFCE_RETAILADV":
 			try {
@@ -2759,14 +2762,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		case "BORR_UFCE":
-			try {
-				repfile = BRRS_BORR_UFCE_ReportService.getBORR_UFCEExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version != null ? version.toString() : null);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			break;
+		
 		}
 
 		return repfile;
@@ -2913,10 +2909,7 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		else if ("BORR_UFCEDetail".equals(filename)) {
-			return BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
+		
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 			return brrs_m_int_new_rates_reportservice.getM_INT_RATESNEWDetailExcel(filename, fromdate, todate, currency,
@@ -3693,11 +3686,7 @@ public class RegulatoryReportServices {
 			archivalData.addAll(AS11List);
 			System.out.println("Fetched AS_11 archival data: " + AS11List.size());
 			break;
-		case "BORR_UFCE":
-			List<Object[]> borrUfceList = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
-			archivalData.addAll(borrUfceList);
-			System.out.println("Fetched BORR_UFCE archival data: " + borrUfceList.size());
-			break;
+		
 
 		case "Q_STAFF":
 			List<Object[]> QSList = BRRS_Q_STAFF_report_service.getQ_STAFFArchival();
@@ -4071,11 +4060,7 @@ public class RegulatoryReportServices {
 					version);
 		}
 
-		else if ("BORR_UFCEDetail".equals(filename)) {
-
-			fileData = BRRS_BORR_UFCE_ReportService.getBORR_UFCEDetailExcel(filename, fromdate, todate, currency,
-					dtltype, type, version);
-		}
+		
 
 		else if ("M_INTRATESNEWDetail".equals(filename)) {
 
@@ -4486,10 +4471,7 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_AS_11_Reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-			case "BORR_UFCE":
-				modelAndView = BRRS_BORR_UFCE_ReportService.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+			
 
 			case "M_SFINP2":
 				modelAndView = BRRS_M_SFINP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4858,9 +4840,7 @@ public class RegulatoryReportServices {
 			case "AS_11":
 				response = BRRS_AS_11_Reportservice.updateDetailEdit(request);
 				break;
-			case "BORR_UFCE":
-				response = BRRS_BORR_UFCE_ReportService.updateDetailEdit(request);
-				break;
+			
 
 			case "M_SFINP2":
 				response = BRRS_M_SFINP2_reportservice.updateDetailEdit(request);
