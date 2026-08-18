@@ -724,8 +724,13 @@ public class BDGF_Services {
 			}
 
 			// ================= Fetch data from DB =================
-			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findDepGRecordsByReportDate(todate);
 
+			
+			   SimpleDateFormat sdfInput = new SimpleDateFormat("dd-MM-yyyy");
+		        Date reportDate = sdfInput.parse(todate);
+
+		        List<GeneralMasterEntity> dataList =
+		                GeneralMasterRepos.findDepGRecordsByReportDate(reportDate);
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");

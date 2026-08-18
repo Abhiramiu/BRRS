@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,6 @@ import com.bornfire.brrs.config.SequenceGenerator;
 import com.bornfire.brrs.entities.GeneralMasterEntity;
 import com.bornfire.brrs.entities.GeneralMasterRepo;
 import com.bornfire.brrs.entities.MCBL_Detail_Rep;
-import com.bornfire.brrs.entities.MCBL_Entity;
 import com.bornfire.brrs.entities.MCBL_Main_Rep;
 import com.bornfire.brrs.entities.MCBL_Rep;
 
@@ -587,8 +587,15 @@ public String addMCBL(MultipartFile file, String userid, String username, String
 			}
 
 			// ================= Fetch data from DB =================
-			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findMCBLRecordsByReportDate(todate);
+//			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findMCBLRecordsByReportDate(todate);
 
+			
+			   SimpleDateFormat sdfInput = new SimpleDateFormat("dd-MM-yyyy");
+		        Date reportDate = sdfInput.parse(todate);
+
+		        List<GeneralMasterEntity> dataList =
+		                GeneralMasterRepos.findDepGRecordsByReportDate(reportDate);
+		        
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
 				for (GeneralMasterEntity rec : dataList) {

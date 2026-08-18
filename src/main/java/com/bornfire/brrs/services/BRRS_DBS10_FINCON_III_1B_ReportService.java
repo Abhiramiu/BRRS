@@ -57,180 +57,181 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Summary Entity
 	public static class BRRS_DBS10_FINCON_III_1B_Summary_Entity {
-	    private String transSerialNo;
-	    private String nameOfSfis;
-	    private String nameOfCounterParty;
-	    private String natureOfTrans;
-	    private String orgIssue;
-	    private Date dateOfTrnsBegin;
-	    private Date dateOfTrnsEnd;
-	    private String tenorOfTrans;
-	    private BigDecimal amt;
-	    @Column(name = "RETURNVAL")
-	    private String returnVal;
-	    private Date reportDate;
-	    private BigDecimal reportVersion;
-	    private String reportFrequency;
-	    private String reportCode;
-	    private String reportDesc;
-	    private String entityFlg;
-	    private String modifyFlg;
-	    private String delFlg;
-	    private Date reportResubDate;
+		private String transSerialNo;
+		private String nameOfSfis;
+		private String nameOfCounterParty;
+		private String natureOfTrans;
+		private String orgIssue;
+		private Date dateOfTrnsBegin;
+		private Date dateOfTrnsEnd;
+		private String tenorOfTrans;
+		private BigDecimal amt;
+		@Column(name = "RETURNVAL")
+		private String returnVal;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubDate;
 
-	    // Getters and Setters
-	    public String getTransSerialNo() {
-	        return transSerialNo;
-	    }
+		// Getters and Setters
+		public String getTransSerialNo() {
+			return transSerialNo;
+		}
 
-	    public void setTransSerialNo(String transSerialNo) {
-	        this.transSerialNo = transSerialNo;
-	    }
+		public void setTransSerialNo(String transSerialNo) {
+			this.transSerialNo = transSerialNo;
+		}
 
-	    public String getNameOfSfis() {
-	        return nameOfSfis;
-	    }
+		public String getNameOfSfis() {
+			return nameOfSfis;
+		}
 
-	    public void setNameOfSfis(String nameOfSfis) {
-	        this.nameOfSfis = nameOfSfis;
-	    }
+		public void setNameOfSfis(String nameOfSfis) {
+			this.nameOfSfis = nameOfSfis;
+		}
 
-	    public String getNameOfCounterParty() {
-	        return nameOfCounterParty;
-	    }
+		public String getNameOfCounterParty() {
+			return nameOfCounterParty;
+		}
 
-	    public void setNameOfCounterParty(String nameOfCounterParty) {
-	        this.nameOfCounterParty = nameOfCounterParty;
-	    }
+		public void setNameOfCounterParty(String nameOfCounterParty) {
+			this.nameOfCounterParty = nameOfCounterParty;
+		}
 
-	    public String getNatureOfTrans() {
-	        return natureOfTrans;
-	    }
+		public String getNatureOfTrans() {
+			return natureOfTrans;
+		}
 
-	    public void setNatureOfTrans(String natureOfTrans) {
-	        this.natureOfTrans = natureOfTrans;
-	    }
+		public void setNatureOfTrans(String natureOfTrans) {
+			this.natureOfTrans = natureOfTrans;
+		}
 
-	    public String getOrgIssue() {
-	        return orgIssue;
-	    }
+		public String getOrgIssue() {
+			return orgIssue;
+		}
 
-	    public void setOrgIssue(String orgIssue) {
-	        this.orgIssue = orgIssue;
-	    }
+		public void setOrgIssue(String orgIssue) {
+			this.orgIssue = orgIssue;
+		}
 
-	    public Date getDateOfTrnsBegin() {
-	        return dateOfTrnsBegin;
-	    }
+		public Date getDateOfTrnsBegin() {
+			return dateOfTrnsBegin;
+		}
 
-	    public void setDateOfTrnsBegin(Date dateOfTrnsBegin) {
-	        this.dateOfTrnsBegin = dateOfTrnsBegin;
-	    }
+		public void setDateOfTrnsBegin(Date dateOfTrnsBegin) {
+			this.dateOfTrnsBegin = dateOfTrnsBegin;
+		}
 
-	    public Date getDateOfTrnsEnd() {
-	        return dateOfTrnsEnd;
-	    }
+		public Date getDateOfTrnsEnd() {
+			return dateOfTrnsEnd;
+		}
 
-	    public void setDateOfTrnsEnd(Date dateOfTrnsEnd) {
-	        this.dateOfTrnsEnd = dateOfTrnsEnd;
-	    }
+		public void setDateOfTrnsEnd(Date dateOfTrnsEnd) {
+			this.dateOfTrnsEnd = dateOfTrnsEnd;
+		}
 
-	    public String getTenorOfTrans() {
-	        return tenorOfTrans;
-	    }
+		public String getTenorOfTrans() {
+			return tenorOfTrans;
+		}
 
-	    public void setTenorOfTrans(String tenorOfTrans) {
-	        this.tenorOfTrans = tenorOfTrans;
-	    }
+		public void setTenorOfTrans(String tenorOfTrans) {
+			this.tenorOfTrans = tenorOfTrans;
+		}
 
-	    public BigDecimal getAmt() {
-	        return amt;
-	    }
+		public BigDecimal getAmt() {
+			return amt;
+		}
 
-	    public void setAmt(BigDecimal amt) {
-	        this.amt = amt;
-	    }
+		public void setAmt(BigDecimal amt) {
+			this.amt = amt;
+		}
 
-	    public String getReturnVal() {
-	        return returnVal;
-	    }
+		public String getReturnVal() {
+			return returnVal;
+		}
 
-	    public void setReturnVal(String returnVal) {
-	        this.returnVal = returnVal;
-	    }
+		public void setReturnVal(String returnVal) {
+			this.returnVal = returnVal;
+		}
 
-	    public Date getReportDate() {
-	        return reportDate;
-	    }
+		public Date getReportDate() {
+			return reportDate;
+		}
 
-	    public void setReportDate(Date reportDate) {
-	        this.reportDate = reportDate;
-	    }
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
 
-	    public BigDecimal getReportVersion() {
-	        return reportVersion;
-	    }
+		public BigDecimal getReportVersion() {
+			return reportVersion;
+		}
 
-	    public void setReportVersion(BigDecimal reportVersion) {
-	        this.reportVersion = reportVersion;
-	    }
+		public void setReportVersion(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
 
-	    public String getReportFrequency() {
-	        return reportFrequency;
-	    }
+		public String getReportFrequency() {
+			return reportFrequency;
+		}
 
-	    public void setReportFrequency(String reportFrequency) {
-	        this.reportFrequency = reportFrequency;
-	    }
+		public void setReportFrequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
 
-	    public String getReportCode() {
-	        return reportCode;
-	    }
+		public String getReportCode() {
+			return reportCode;
+		}
 
-	    public void setReportCode(String reportCode) {
-	        this.reportCode = reportCode;
-	    }
+		public void setReportCode(String reportCode) {
+			this.reportCode = reportCode;
+		}
 
-	    public String getReportDesc() {
-	        return reportDesc;
-	    }
+		public String getReportDesc() {
+			return reportDesc;
+		}
 
-	    public void setReportDesc(String reportDesc) {
-	        this.reportDesc = reportDesc;
-	    }
+		public void setReportDesc(String reportDesc) {
+			this.reportDesc = reportDesc;
+		}
 
-	    public String getEntityFlg() {
-	        return entityFlg;
-	    }
+		public String getEntityFlg() {
+			return entityFlg;
+		}
 
-	    public void setEntityFlg(String entityFlg) {
-	        this.entityFlg = entityFlg;
-	    }
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
 
-	    public String getModifyFlg() {
-	        return modifyFlg;
-	    }
+		public String getModifyFlg() {
+			return modifyFlg;
+		}
 
-	    public void setModifyFlg(String modifyFlg) {
-	        this.modifyFlg = modifyFlg;
-	    }
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
 
-	    public String getDelFlg() {
-	        return delFlg;
-	    }
+		public String getDelFlg() {
+			return delFlg;
+		}
 
-	    public void setDelFlg(String delFlg) {
-	        this.delFlg = delFlg;
-	    }
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
+		}
 
-	    public Date getReportResubDate() {
-	        return reportResubDate;
-	    }
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
 
-	    public void setReportResubDate(Date reportResubDate) {
-	        this.reportResubDate = reportResubDate;
-	    }
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
 	}
+
 	// Detail Entity
 	public static class BRRS_DBS10_FINCON_III_1B_Detail_Entity {
 		private Long sno;
@@ -526,206 +527,16 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// Archival Summary Entity
 	public static class DBS10_FINCON_III_1B_Archival_Summary_Entity {
 		private String transSerialNo;
-	    private String nameOfSfis;
-	    private String nameOfCounterParty;
-	    private String natureOfTrans;
-	    private String orgIssue;
-	    private Date dateOfTrnsBegin;
-	    private Date dateOfTrnsEnd;
-	    private String tenorOfTrans;
-	    private BigDecimal amt;
-	    @Column(name = "RETURNVAL")
-	    private String returnVal;
-	    private Date reportDate;
-	    private BigDecimal reportVersion;
-	    private String reportFrequency;
-	    private String reportCode;
-	    private String reportDesc;
-	    private String entityFlg;
-	    private String modifyFlg;
-	    private String delFlg;
-	    private Date reportResubDate;
-
-	    // Getters and Setters
-	    public String getTransSerialNo() {
-	        return transSerialNo;
-	    }
-
-	    public void setTransSerialNo(String transSerialNo) {
-	        this.transSerialNo = transSerialNo;
-	    }
-
-	    public String getNameOfSfis() {
-	        return nameOfSfis;
-	    }
-
-	    public void setNameOfSfis(String nameOfSfis) {
-	        this.nameOfSfis = nameOfSfis;
-	    }
-
-	    public String getNameOfCounterParty() {
-	        return nameOfCounterParty;
-	    }
-
-	    public void setNameOfCounterParty(String nameOfCounterParty) {
-	        this.nameOfCounterParty = nameOfCounterParty;
-	    }
-
-	    public String getNatureOfTrans() {
-	        return natureOfTrans;
-	    }
-
-	    public void setNatureOfTrans(String natureOfTrans) {
-	        this.natureOfTrans = natureOfTrans;
-	    }
-
-	    public String getOrgIssue() {
-	        return orgIssue;
-	    }
-
-	    public void setOrgIssue(String orgIssue) {
-	        this.orgIssue = orgIssue;
-	    }
-
-	    public Date getDateOfTrnsBegin() {
-	        return dateOfTrnsBegin;
-	    }
-
-	    public void setDateOfTrnsBegin(Date dateOfTrnsBegin) {
-	        this.dateOfTrnsBegin = dateOfTrnsBegin;
-	    }
-
-	    public Date getDateOfTrnsEnd() {
-	        return dateOfTrnsEnd;
-	    }
-
-	    public void setDateOfTrnsEnd(Date dateOfTrnsEnd) {
-	        this.dateOfTrnsEnd = dateOfTrnsEnd;
-	    }
-
-	    public String getTenorOfTrans() {
-	        return tenorOfTrans;
-	    }
-
-	    public void setTenorOfTrans(String tenorOfTrans) {
-	        this.tenorOfTrans = tenorOfTrans;
-	    }
-
-	    public BigDecimal getAmt() {
-	        return amt;
-	    }
-
-	    public void setAmt(BigDecimal amt) {
-	        this.amt = amt;
-	    }
-
-	    public String getReturnVal() {
-	        return returnVal;
-	    }
-
-	    public void setReturnVal(String returnVal) {
-	        this.returnVal = returnVal;
-	    }
-
-	    public Date getReportDate() {
-	        return reportDate;
-	    }
-
-	    public void setReportDate(Date reportDate) {
-	        this.reportDate = reportDate;
-	    }
-
-	    public BigDecimal getReportVersion() {
-	        return reportVersion;
-	    }
-
-	    public void setReportVersion(BigDecimal reportVersion) {
-	        this.reportVersion = reportVersion;
-	    }
-
-	    public String getReportFrequency() {
-	        return reportFrequency;
-	    }
-
-	    public void setReportFrequency(String reportFrequency) {
-	        this.reportFrequency = reportFrequency;
-	    }
-
-	    public String getReportCode() {
-	        return reportCode;
-	    }
-
-	    public void setReportCode(String reportCode) {
-	        this.reportCode = reportCode;
-	    }
-
-	    public String getReportDesc() {
-	        return reportDesc;
-	    }
-
-	    public void setReportDesc(String reportDesc) {
-	        this.reportDesc = reportDesc;
-	    }
-
-	    public String getEntityFlg() {
-	        return entityFlg;
-	    }
-
-	    public void setEntityFlg(String entityFlg) {
-	        this.entityFlg = entityFlg;
-	    }
-
-	    public String getModifyFlg() {
-	        return modifyFlg;
-	    }
-
-	    public void setModifyFlg(String modifyFlg) {
-	        this.modifyFlg = modifyFlg;
-	    }
-
-	    public String getDelFlg() {
-	        return delFlg;
-	    }
-
-	    public void setDelFlg(String delFlg) {
-	        this.delFlg = delFlg;
-	    }
-
-	    public Date getReportResubDate() {
-	        return reportResubDate;
-	    }
-
-	    public void setReportResubDate(Date reportResubDate) {
-	        this.reportResubDate = reportResubDate;
-	    }
-	}
-
-	// Archival Detail Entity
-	public static class BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity {
-		private Long sno;
-		private String customerId;
-		private String accountNumber;
-		private String schemeCode;
-		private String glCode;
-		private String glDescription;
-		private String typeOfLoan;
-		private String name;
-		private String accountCurrency;
-		private BigDecimal outstandingBalanceAcctCcy;
-		private BigDecimal outstandingBalanceInr;
-		private Date accountOpeningDate;
-		private Date maturityDate;
-		private BigDecimal tenorMonth;
-		private BigDecimal emiOfLoan;
-		private String floatingFixed;
-		private String existingBenchmark;
-		private String existingRepricingFrequency;
-		private Date lastRepricingDate;
-		private Date nextRepricingDate;
-		private String spreadOverBenchmark;
-		private String finalRoi;
-		private String capFloorRateOfInterest;
-		private String assetStatus;
+		private String nameOfSfis;
+		private String nameOfCounterParty;
+		private String natureOfTrans;
+		private String orgIssue;
+		private Date dateOfTrnsBegin;
+		private Date dateOfTrnsEnd;
+		private String tenorOfTrans;
+		private BigDecimal amt;
+		@Column(name = "RETURNVAL")
+		private String returnVal;
 		private Date reportDate;
 		private BigDecimal reportVersion;
 		private String reportFrequency;
@@ -734,197 +545,87 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		private String entityFlg;
 		private String modifyFlg;
 		private String delFlg;
+		private Date reportResubDate;
 
-		public Long getSno() {
-			return sno;
+		// Getters and Setters
+		public String getTransSerialNo() {
+			return transSerialNo;
 		}
 
-		public void setSno(Long sno) {
-			this.sno = sno;
+		public void setTransSerialNo(String transSerialNo) {
+			this.transSerialNo = transSerialNo;
 		}
 
-		public String getCustomerId() {
-			return customerId;
+		public String getNameOfSfis() {
+			return nameOfSfis;
 		}
 
-		public void setCustomerId(String customerId) {
-			this.customerId = customerId;
+		public void setNameOfSfis(String nameOfSfis) {
+			this.nameOfSfis = nameOfSfis;
 		}
 
-		public String getAccountNumber() {
-			return accountNumber;
+		public String getNameOfCounterParty() {
+			return nameOfCounterParty;
 		}
 
-		public void setAccountNumber(String accountNumber) {
-			this.accountNumber = accountNumber;
+		public void setNameOfCounterParty(String nameOfCounterParty) {
+			this.nameOfCounterParty = nameOfCounterParty;
 		}
 
-		public String getSchemeCode() {
-			return schemeCode;
+		public String getNatureOfTrans() {
+			return natureOfTrans;
 		}
 
-		public void setSchemeCode(String schemeCode) {
-			this.schemeCode = schemeCode;
+		public void setNatureOfTrans(String natureOfTrans) {
+			this.natureOfTrans = natureOfTrans;
 		}
 
-		public String getGlCode() {
-			return glCode;
+		public String getOrgIssue() {
+			return orgIssue;
 		}
 
-		public void setGlCode(String glCode) {
-			this.glCode = glCode;
+		public void setOrgIssue(String orgIssue) {
+			this.orgIssue = orgIssue;
 		}
 
-		public String getGlDescription() {
-			return glDescription;
+		public Date getDateOfTrnsBegin() {
+			return dateOfTrnsBegin;
 		}
 
-		public void setGlDescription(String glDescription) {
-			this.glDescription = glDescription;
+		public void setDateOfTrnsBegin(Date dateOfTrnsBegin) {
+			this.dateOfTrnsBegin = dateOfTrnsBegin;
 		}
 
-		public String getTypeOfLoan() {
-			return typeOfLoan;
+		public Date getDateOfTrnsEnd() {
+			return dateOfTrnsEnd;
 		}
 
-		public void setTypeOfLoan(String typeOfLoan) {
-			this.typeOfLoan = typeOfLoan;
+		public void setDateOfTrnsEnd(Date dateOfTrnsEnd) {
+			this.dateOfTrnsEnd = dateOfTrnsEnd;
 		}
 
-		public String getName() {
-			return name;
+		public String getTenorOfTrans() {
+			return tenorOfTrans;
 		}
 
-		public void setName(String name) {
-			this.name = name;
+		public void setTenorOfTrans(String tenorOfTrans) {
+			this.tenorOfTrans = tenorOfTrans;
 		}
 
-		public String getAccountCurrency() {
-			return accountCurrency;
+		public BigDecimal getAmt() {
+			return amt;
 		}
 
-		public void setAccountCurrency(String accountCurrency) {
-			this.accountCurrency = accountCurrency;
+		public void setAmt(BigDecimal amt) {
+			this.amt = amt;
 		}
 
-		public BigDecimal getOutstandingBalanceAcctCcy() {
-			return outstandingBalanceAcctCcy;
+		public String getReturnVal() {
+			return returnVal;
 		}
 
-		public void setOutstandingBalanceAcctCcy(BigDecimal outstandingBalanceAcctCcy) {
-			this.outstandingBalanceAcctCcy = outstandingBalanceAcctCcy;
-		}
-
-		public BigDecimal getOutstandingBalanceInr() {
-			return outstandingBalanceInr;
-		}
-
-		public void setOutstandingBalanceInr(BigDecimal outstandingBalanceInr) {
-			this.outstandingBalanceInr = outstandingBalanceInr;
-		}
-
-		public Date getAccountOpeningDate() {
-			return accountOpeningDate;
-		}
-
-		public void setAccountOpeningDate(Date accountOpeningDate) {
-			this.accountOpeningDate = accountOpeningDate;
-		}
-
-		public Date getMaturityDate() {
-			return maturityDate;
-		}
-
-		public void setMaturityDate(Date maturityDate) {
-			this.maturityDate = maturityDate;
-		}
-
-		public BigDecimal getTenorMonth() {
-			return tenorMonth;
-		}
-
-		public void setTenorMonth(BigDecimal tenorMonth) {
-			this.tenorMonth = tenorMonth;
-		}
-
-		public BigDecimal getEmiOfLoan() {
-			return emiOfLoan;
-		}
-
-		public void setEmiOfLoan(BigDecimal emiOfLoan) {
-			this.emiOfLoan = emiOfLoan;
-		}
-
-		public String getFloatingFixed() {
-			return floatingFixed;
-		}
-
-		public void setFloatingFixed(String floatingFixed) {
-			this.floatingFixed = floatingFixed;
-		}
-
-		public String getExistingBenchmark() {
-			return existingBenchmark;
-		}
-
-		public void setExistingBenchmark(String existingBenchmark) {
-			this.existingBenchmark = existingBenchmark;
-		}
-
-		public String getExistingRepricingFrequency() {
-			return existingRepricingFrequency;
-		}
-
-		public void setExistingRepricingFrequency(String existingRepricingFrequency) {
-			this.existingRepricingFrequency = existingRepricingFrequency;
-		}
-
-		public Date getLastRepricingDate() {
-			return lastRepricingDate;
-		}
-
-		public void setLastRepricingDate(Date lastRepricingDate) {
-			this.lastRepricingDate = lastRepricingDate;
-		}
-
-		public Date getNextRepricingDate() {
-			return nextRepricingDate;
-		}
-
-		public void setNextRepricingDate(Date nextRepricingDate) {
-			this.nextRepricingDate = nextRepricingDate;
-		}
-
-		public String getSpreadOverBenchmark() {
-			return spreadOverBenchmark;
-		}
-
-		public void setSpreadOverBenchmark(String spreadOverBenchmark) {
-			this.spreadOverBenchmark = spreadOverBenchmark;
-		}
-
-		public String getFinalRoi() {
-			return finalRoi;
-		}
-
-		public void setFinalRoi(String finalRoi) {
-			this.finalRoi = finalRoi;
-		}
-
-		public String getCapFloorRateOfInterest() {
-			return capFloorRateOfInterest;
-		}
-
-		public void setCapFloorRateOfInterest(String capFloorRateOfInterest) {
-			this.capFloorRateOfInterest = capFloorRateOfInterest;
-		}
-
-		public String getAssetStatus() {
-			return assetStatus;
-		}
-
-		public void setAssetStatus(String assetStatus) {
-			this.assetStatus = assetStatus;
+		public void setReturnVal(String returnVal) {
+			this.returnVal = returnVal;
 		}
 
 		public Date getReportDate() {
@@ -990,8 +691,192 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		public void setDelFlg(String delFlg) {
 			this.delFlg = delFlg;
 		}
+
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
 	}
 
+	// Archival Detail Entity
+	public static class BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity {
+		private String transSerialNo;
+		private String nameOfSfis;
+		private String nameOfCounterParty;
+		private String natureOfTrans;
+		private String orgIssue;
+		private Date dateOfTrnsBegin;
+		private Date dateOfTrnsEnd;
+		private String tenorOfTrans;
+		private BigDecimal amt;
+		@Column(name = "RETURNVAL")
+		private String returnVal;
+		private Date reportDate;
+		private BigDecimal reportVersion;
+		private String reportFrequency;
+		private String reportCode;
+		private String reportDesc;
+		private String entityFlg;
+		private String modifyFlg;
+		private String delFlg;
+		private Date reportResubDate;
+
+		// Getters and Setters
+		public String getTransSerialNo() {
+			return transSerialNo;
+		}
+
+		public void setTransSerialNo(String transSerialNo) {
+			this.transSerialNo = transSerialNo;
+		}
+
+		public String getNameOfSfis() {
+			return nameOfSfis;
+		}
+
+		public void setNameOfSfis(String nameOfSfis) {
+			this.nameOfSfis = nameOfSfis;
+		}
+
+		public String getNameOfCounterParty() {
+			return nameOfCounterParty;
+		}
+
+		public void setNameOfCounterParty(String nameOfCounterParty) {
+			this.nameOfCounterParty = nameOfCounterParty;
+		}
+
+		public String getNatureOfTrans() {
+			return natureOfTrans;
+		}
+
+		public void setNatureOfTrans(String natureOfTrans) {
+			this.natureOfTrans = natureOfTrans;
+		}
+
+		public String getOrgIssue() {
+			return orgIssue;
+		}
+
+		public void setOrgIssue(String orgIssue) {
+			this.orgIssue = orgIssue;
+		}
+
+		public Date getDateOfTrnsBegin() {
+			return dateOfTrnsBegin;
+		}
+
+		public void setDateOfTrnsBegin(Date dateOfTrnsBegin) {
+			this.dateOfTrnsBegin = dateOfTrnsBegin;
+		}
+
+		public Date getDateOfTrnsEnd() {
+			return dateOfTrnsEnd;
+		}
+
+		public void setDateOfTrnsEnd(Date dateOfTrnsEnd) {
+			this.dateOfTrnsEnd = dateOfTrnsEnd;
+		}
+
+		public String getTenorOfTrans() {
+			return tenorOfTrans;
+		}
+
+		public void setTenorOfTrans(String tenorOfTrans) {
+			this.tenorOfTrans = tenorOfTrans;
+		}
+
+		public BigDecimal getAmt() {
+			return amt;
+		}
+
+		public void setAmt(BigDecimal amt) {
+			this.amt = amt;
+		}
+
+		public String getReturnVal() {
+			return returnVal;
+		}
+
+		public void setReturnVal(String returnVal) {
+			this.returnVal = returnVal;
+		}
+
+		public Date getReportDate() {
+			return reportDate;
+		}
+
+		public void setReportDate(Date reportDate) {
+			this.reportDate = reportDate;
+		}
+
+		public BigDecimal getReportVersion() {
+			return reportVersion;
+		}
+
+		public void setReportVersion(BigDecimal reportVersion) {
+			this.reportVersion = reportVersion;
+		}
+
+		public String getReportFrequency() {
+			return reportFrequency;
+		}
+
+		public void setReportFrequency(String reportFrequency) {
+			this.reportFrequency = reportFrequency;
+		}
+
+		public String getReportCode() {
+			return reportCode;
+		}
+
+		public void setReportCode(String reportCode) {
+			this.reportCode = reportCode;
+		}
+
+		public String getReportDesc() {
+			return reportDesc;
+		}
+
+		public void setReportDesc(String reportDesc) {
+			this.reportDesc = reportDesc;
+		}
+
+		public String getEntityFlg() {
+			return entityFlg;
+		}
+
+		public void setEntityFlg(String entityFlg) {
+			this.entityFlg = entityFlg;
+		}
+
+		public String getModifyFlg() {
+			return modifyFlg;
+		}
+
+		public void setModifyFlg(String modifyFlg) {
+			this.modifyFlg = modifyFlg;
+		}
+
+		public String getDelFlg() {
+			return delFlg;
+		}
+
+		public void setDelFlg(String delFlg) {
+			this.delFlg = delFlg;
+		}
+
+		public Date getReportResubDate() {
+			return reportResubDate;
+		}
+
+		public void setReportResubDate(Date reportResubDate) {
+			this.reportResubDate = reportResubDate;
+		}
+	}
 
 	// ===========================================================
 	// SAFE RESULTSET HELPERS
@@ -1027,15 +912,13 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	private class SummaryRowMapper implements RowMapper<BRRS_DBS10_FINCON_III_1B_Summary_Entity> {
 		@Override
 		public BRRS_DBS10_FINCON_III_1B_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
-			BRRS_DBS10_FINCON_III_1B_Summary_Entity entity =
-					new BRRS_DBS10_FINCON_III_1B_Summary_Entity();
+			BRRS_DBS10_FINCON_III_1B_Summary_Entity entity = new BRRS_DBS10_FINCON_III_1B_Summary_Entity();
 
 			/*
-			 * IMPORTANT:
-			 * The normal SUMMARYTABLE in the database does not necessarily contain
-			 * every archival/resubmission column.  Do not call ResultSet.getXXX()
-			 * directly for optional columns because Oracle throws
-			 * "Invalid column name" when a column is absent.
+			 * IMPORTANT: The normal SUMMARYTABLE in the database does not necessarily
+			 * contain every archival/resubmission column. Do not call ResultSet.getXXX()
+			 * directly for optional columns because Oracle throws "Invalid column name"
+			 * when a column is absent.
 			 */
 			entity.setTransSerialNo(getStringSafe(rs, "TRANS_SERIAL_NO"));
 			entity.setNameOfSfis(getStringSafe(rs, "NAME_OF_SFIS"));
@@ -1136,30 +1019,16 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		@Override
 		public BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 			BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity entity = new BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity();
-			entity.setSno(rs.getLong("SNO"));
-			entity.setCustomerId(rs.getString("CUSTOMER_ID"));
-			entity.setAccountNumber(rs.getString("ACCOUNT_NUMBER"));
-			entity.setSchemeCode(rs.getString("SCHEME_CODE"));
-			entity.setGlCode(rs.getString("GL_CODE"));
-			entity.setGlDescription(rs.getString("GL_DESCRIPTION"));
-			entity.setTypeOfLoan(rs.getString("TYPE_OF_LOAN"));
-			entity.setName(rs.getString("NAME"));
-			entity.setAccountCurrency(rs.getString("ACCOUNT_CURRENCY"));
-			entity.setOutstandingBalanceAcctCcy(rs.getBigDecimal("OUTSTANDING_BALANCE_ACCT_CCY"));
-			entity.setOutstandingBalanceInr(rs.getBigDecimal("OUTSTANDING_BALANCE_INR"));
-			entity.setAccountOpeningDate(rs.getDate("ACCOUNT_OPENING_DATE"));
-			entity.setMaturityDate(rs.getDate("MATURITY_DATE"));
-			entity.setTenorMonth(rs.getBigDecimal("TENOR_MONTH"));
-			entity.setEmiOfLoan(rs.getBigDecimal("EMI_OF_LOAN"));
-			entity.setFloatingFixed(rs.getString("FLOATING_FIXED"));
-			entity.setExistingBenchmark(rs.getString("EXISTING_BENCHMARK"));
-			entity.setExistingRepricingFrequency(rs.getString("EXISTING_REPRICING_FREQUENCY"));
-			entity.setLastRepricingDate(rs.getDate("LAST_REPRICING_DATE"));
-			entity.setNextRepricingDate(rs.getDate("NEXT_REPRICING_DATE"));
-			entity.setSpreadOverBenchmark(rs.getString("SPREAD_OVER_BENCHMARK"));
-			entity.setFinalRoi(rs.getString("FINAL_ROI"));
-			entity.setCapFloorRateOfInterest(rs.getString("CAP_FLOOR_RATE_OF_INTEREST"));
-			entity.setAssetStatus(rs.getString("ASSET_STATUS"));
+			entity.setTransSerialNo(rs.getString("TRANS_SERIAL_NO"));
+			entity.setNameOfSfis(rs.getString("NAME_OF_SFIS"));
+			entity.setNameOfCounterParty(rs.getString("NAME_OF_COUNTER_PARTY"));
+			entity.setNatureOfTrans(rs.getString("NATURE_OF_TRANS"));
+			entity.setOrgIssue(rs.getString("ORG_ISSUE"));
+			entity.setDateOfTrnsBegin(rs.getDate("DATE_OF_TRNS_BEGIN"));
+			entity.setDateOfTrnsEnd(rs.getDate("DATE_OF_TRNS_END"));
+			entity.setTenorOfTrans(rs.getString("TENOR_OF_TRANS"));
+			entity.setAmt(rs.getBigDecimal("AMT"));
+			entity.setReturnVal(rs.getString("RETURNVAL"));
 			entity.setReportDate(rs.getDate("REPORT_DATE"));
 			entity.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
 			entity.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
@@ -1222,13 +1091,14 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			try {
 				Date dt = dateformat.parse(todate);
 
-				List<DBS10_FINCON_III_1B_Archival_Summary_Entity> resubSummary = getResubDataByDateAndVersion(dt, version);
+				List<DBS10_FINCON_III_1B_Archival_Summary_Entity> resubSummary = getResubDataByDateAndVersion(dt,
+						version);
 
 				System.out.println("Resub Summary size = " + resubSummary.size());
 
 				if ("detail".equalsIgnoreCase(dtltype)) {
-					List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> resubDetail = getResubDetailDataByDateAndVersion(dt,
-							version);
+					List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> resubDetail = getResubDetailDataByDateAndVersion(
+							dt, version);
 					mv.addObject("reportdetails", resubDetail);
 					mv.addObject("displaymode", "resubDetail");
 					System.out.println("Resub Detail size = " + resubDetail.size());
@@ -1260,10 +1130,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 				if ("detail".equalsIgnoreCase(dtltype)) {
 					/*
-					 * The DBS10 FINCON III (1)(b) frontend transaction report
-					 * uses the X010-X090 fields from the SUMMARYTABLE.
-					 * Do not map the unrelated DETAILTABLE here; its columns
-					 * are different (SNO, CUSTOMER_ID, ACCOUNT_NUMBER, etc.).
+					 * The DBS10 FINCON III (1)(b) frontend transaction report uses the X010-X090
+					 * fields from the SUMMARYTABLE. Do not map the unrelated DETAILTABLE here; its
+					 * columns are different (SNO, CUSTOMER_ID, ACCOUNT_NUMBER, etc.).
 					 */
 					mv.addObject("reportdetails", normalSummary);
 					mv.addObject("displaymode", "Details");
@@ -1280,8 +1149,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 				// Keep the HTML report shell/header visible even if a database
 				// column or row-mapping problem occurs.
-				mv.addObject("reportsummary",
-						new java.util.ArrayList<BRRS_DBS10_FINCON_III_1B_Summary_Entity>());
+				mv.addObject("reportsummary", new java.util.ArrayList<BRRS_DBS10_FINCON_III_1B_Summary_Entity>());
 
 				if ("detail".equalsIgnoreCase(dtltype)) {
 					mv.addObject("displaymode", "Details");
@@ -1308,17 +1176,18 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// Helper: Save normal data to ARCHIVAL SUMMARY table
 	// NOTE: Previously this also duplicated the same record into the ARCHIVAL
 	// DETAIL table because, under the old IRRBB_ADVANCES schema, Summary and
-	// Detail shared identical columns. Now that BRRS_DBS10_FINCON_III_1B_Detail_Entity
+	// Detail shared identical columns. Now that
+	// BRRS_DBS10_FINCON_III_1B_Detail_Entity
 	// has a different (loan/account level) column set than the Summary entity,
-	// the detail archival must be done separately via saveDetailToArchivalFromNormal(...)
+	// the detail archival must be done separately via
+	// saveDetailToArchivalFromNormal(...)
 	// using the actual Detail_Entity record(s) for the report date.
 	private void saveToArchivalFromNormal(BRRS_DBS10_FINCON_III_1B_Summary_Entity oldRecord, BigDecimal version) {
-		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "(TRANS_SERIAL_NO, NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, "
 				+ "DATE_OF_TRNS_BEGIN, DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, "
 				+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, "
-				+ "REPORT_RESUBDATE) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "REPORT_RESUBDATE) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			jdbcTemplate.update(archivalSummarySql, oldRecord.getTransSerialNo(), oldRecord.getNameOfSfis(),
@@ -1335,7 +1204,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Helper: Save normal DETAIL data to ARCHIVAL DETAIL table
 	private void saveDetailToArchivalFromNormal(BRRS_DBS10_FINCON_III_1B_Detail_Entity oldRecord, BigDecimal version) {
-		String archivalDetailSql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE "
+		String archivalDetailSql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL "
 				+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
 				+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
 				+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
@@ -1365,7 +1234,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// Get next version for archival
 	private BigDecimal getNextArchivalVersion(String reportDate) {
 		try {
-			String sql = "SELECT COALESCE(MAX(REPORT_VERSION), 0) + 1 FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+			String sql = "SELECT COALESCE(MAX(REPORT_VERSION), 0) + 1 FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 			BigDecimal nextVersion = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
 			return nextVersion != null ? nextVersion : BigDecimal.ONE;
 		} catch (Exception e) {
@@ -1379,11 +1248,11 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	public void saveResubIrradv(DBS10_FINCON_III_1B_Archival_Summary_Entity summary) {
 		String nextTransSerialNo = jdbcTemplate.queryForObject(
-				"SELECT BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE_TRANS_SERIAL_NO_SEQ.NEXTVAL FROM DUAL",
+				"SELECT BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY_TRANS_SERIAL_NO_SEQ.NEXTVAL FROM DUAL",
 				String.class);
 		summary.setTransSerialNo(nextTransSerialNo);
 
-		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE (TRANS_SERIAL_NO, "
+		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY (TRANS_SERIAL_NO, "
 				+ "NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, DATE_OF_TRNS_BEGIN, "
 				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, REPORT_VERSION, "
 				+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
@@ -1391,10 +1260,10 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 		jdbcTemplate.update(archivalSummarySql, summary.getTransSerialNo(), summary.getNameOfSfis(),
 				summary.getNameOfCounterParty(), summary.getNatureOfTrans(), summary.getOrgIssue(),
-				summary.getDateOfTrnsBegin(), summary.getDateOfTrnsEnd(), summary.getTenorOfTrans(),
-				summary.getAmt(), summary.getReturnVal(), summary.getReportDate(), summary.getReportVersion(),
-				summary.getReportFrequency(), summary.getReportCode(), summary.getReportDesc(),
-				summary.getEntityFlg(), summary.getModifyFlg(), summary.getDelFlg(), summary.getReportResubDate());
+				summary.getDateOfTrnsBegin(), summary.getDateOfTrnsEnd(), summary.getTenorOfTrans(), summary.getAmt(),
+				summary.getReturnVal(), summary.getReportDate(), summary.getReportVersion(),
+				summary.getReportFrequency(), summary.getReportCode(), summary.getReportDesc(), summary.getEntityFlg(),
+				summary.getModifyFlg(), summary.getDelFlg(), summary.getReportResubDate());
 	}
 
 	// Overloaded method - accepts Summary_Entity from controller
@@ -1425,10 +1294,10 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// Helper: Save resub data as new version in ARCHIVAL SUMMARY table
 	private void saveResubAsNewVersion(DBS10_FINCON_III_1B_Archival_Summary_Entity oldRecord, BigDecimal newVersion) {
 		BigDecimal nextTransSerialNo = jdbcTemplate.queryForObject(
-				"SELECT BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE_TRANS_SERIAL_NO_SEQ.NEXTVAL FROM DUAL",
+				"SELECT BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY_TRANS_SERIAL_NO_SEQ.NEXTVAL FROM DUAL",
 				BigDecimal.class);
 
-		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE (TRANS_SERIAL_NO, "
+		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY (TRANS_SERIAL_NO, "
 				+ "NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, DATE_OF_TRNS_BEGIN, "
 				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, REPORT_VERSION, "
 				+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
@@ -1449,7 +1318,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Get Archival Summary Data
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getArchivalData(String reportDate, BigDecimal version) {
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 		if (version != null) {
 			sql += " AND REPORT_VERSION = ?";
 			return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new ArchivalSummaryRowMapper());
@@ -1458,8 +1327,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	}
 
 	// Get Archival Detail Data
-	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getArchivalDetailData(String reportDate, BigDecimal version) {
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getArchivalDetailData(String reportDate,
+			BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 		if (version != null) {
 			sql += " AND REPORT_VERSION = ?";
 			return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new ArchivalDetailRowMapper());
@@ -1469,7 +1339,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Get Resub Summary Data (Uses Archival Table)
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getResubData(String reportDate, BigDecimal version) {
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 		if (version != null) {
 			sql += " AND REPORT_VERSION = ?";
 			return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new ArchivalSummaryRowMapper());
@@ -1478,8 +1348,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	}
 
 	// Get Resub Detail Data (Uses Archival Table)
-	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getResubDetailData(String reportDate, BigDecimal version) {
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getResubDetailData(String reportDate,
+			BigDecimal version) {
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 		if (version != null) {
 			sql += " AND REPORT_VERSION = ?";
 			return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new ArchivalDetailRowMapper());
@@ -1489,20 +1360,20 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Get All Versions for archival
 	public List<BigDecimal> getArchivalVersions(String reportDate) {
-		String sql = "SELECT DISTINCT REPORT_VERSION FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') ORDER BY REPORT_VERSION DESC";
+		String sql = "SELECT DISTINCT REPORT_VERSION FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') ORDER BY REPORT_VERSION DESC";
 		return jdbcTemplate.queryForList(sql, new Object[] { reportDate }, BigDecimal.class);
 	}
 
 	// Get All Versions for resub
 	public List<BigDecimal> getResubVersions(String reportDate) {
-		String sql = "SELECT DISTINCT REPORT_VERSION FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') ORDER BY REPORT_VERSION DESC";
+		String sql = "SELECT DISTINCT REPORT_VERSION FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') ORDER BY REPORT_VERSION DESC";
 		return jdbcTemplate.queryForList(sql, new Object[] { reportDate }, BigDecimal.class);
 	}
 
 	// Get next version number for resub
 	public BigDecimal getNextResubVersion(String reportDate) {
 		try {
-			String sql = "SELECT COALESCE(MAX(REPORT_VERSION), 0) + 1 FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+			String sql = "SELECT COALESCE(MAX(REPORT_VERSION), 0) + 1 FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 			BigDecimal nextVersion = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
 			return nextVersion != null ? nextVersion : BigDecimal.ONE;
 		} catch (Exception e) {
@@ -1514,20 +1385,33 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// GET REPORT_DATE + REPORT_VERSION for ARCHIVAL
 	// ===========================================================
 	public List<Object[]> getDBS10_FINCON_III_1BArchival() {
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE " + "ORDER BY REPORT_VERSION";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
 				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
 	}
+	// ===========================================================
+	// GET RESUB LIST (for dropdown)
+	// ===========================================================
+	public List<Object[]> getDBS10_FINCON_III_1BResubList() {
 
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
+
+		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
+				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
+	}
 	// ===========================================================
 	// GET ARCHIVAL FULL DATA BY DATE + VERSION (SUMMARY)
 	// ===========================================================
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getArchivalDataByDateAndVersion(Date reportDate,
 			BigDecimal reportVersion) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportVersion }, new ArchivalSummaryRowMapper());
@@ -1539,7 +1423,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getArchivalDetailDataByDateAndVersion(Date reportDate,
 			BigDecimal reportVersion) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE "
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL "
 				+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportVersion }, new ArchivalDetailRowMapper());
@@ -1551,7 +1435,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getResubDataByDateAndVersion(Date reportDate,
 			BigDecimal reportVersion) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportVersion }, new ArchivalSummaryRowMapper());
@@ -1563,7 +1447,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	public List<BRRS_DBS10_FINCON_III_1B_Archival_Detail_Entity> getResubDetailDataByDateAndVersion(Date reportDate,
 			BigDecimal reportVersion) {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE "
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL "
 				+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
 
 		return jdbcTemplate.query(sql, new Object[] { reportDate, reportVersion }, new ArchivalDetailRowMapper());
@@ -1574,8 +1458,8 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getAllArchivalWithVersion() {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION ASC";
 
 		return jdbcTemplate.query(sql, new ArchivalSummaryRowMapper());
 	}
@@ -1585,8 +1469,8 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 	public List<DBS10_FINCON_III_1B_Archival_Summary_Entity> getAllResubWithVersion() {
 
-		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+		String sql = "SELECT * FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
+				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_VERSION ASC";
 
 		return jdbcTemplate.query(sql, new ArchivalSummaryRowMapper());
 	}
@@ -1596,7 +1480,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 	public BigDecimal findMaxArchivalVersion(Date reportDate) {
 
-		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "WHERE REPORT_DATE = ?";
 
 		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
@@ -1607,7 +1491,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 	public BigDecimal findMaxResubVersion(Date reportDate) {
 
-		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "WHERE REPORT_DATE = ?";
 
 		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
@@ -1618,7 +1502,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESArchivalList() {
 
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
+		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY "
 				+ "ORDER BY REPORT_VERSION";
 
 		return jdbcTemplate.query(sql,
@@ -1631,7 +1515,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	public List<Object[]> getIRRBB_ADVANCESResubList() {
 
 		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE " + "ORDER BY REPORT_VERSION";
+				+ "FROM BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY " + "ORDER BY REPORT_VERSION";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
 				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
@@ -1718,10 +1602,21 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 			for (BRRS_DBS10_FINCON_III_1B_Summary_Entity data : dataList) {
 				Row row = sheet.createRow(rowIndex++);
-				setCellValue(row, 0, data.getTransSerialNo(), numberStyle);
-				setCellValue(row, 1, data.getNameOfSfis(), textStyle);
+
+				// Fallback logic for Name of SFIs
+				String nameOfSfis = (data.getNameOfSfis() != null && !data.getNameOfSfis().trim().isEmpty())
+						? data.getNameOfSfis()
+						: "BANK OF BARODA (BOTSWANA) LIMITED";
+
+				// Fallback logic for Nature of Transaction
+				String natureOfTrans = (data.getNatureOfTrans() != null && !data.getNatureOfTrans().trim().isEmpty())
+						? data.getNatureOfTrans()
+						: "PLACEMENT";
+
+				setCellValue(row, 0, data.getTransSerialNo(), textStyle);
+				setCellValue(row, 1, nameOfSfis, textStyle);
 				setCellValue(row, 2, data.getNameOfCounterParty(), textStyle);
-				setCellValue(row, 3, data.getNatureOfTrans(), textStyle);
+				setCellValue(row, 3, natureOfTrans, textStyle);
 				setCellValue(row, 4, data.getOrgIssue(), textStyle);
 				setCellValue(row, 5, data.getDateOfTrnsBegin(), dateStyle);
 				setCellValue(row, 6, data.getDateOfTrnsEnd(), dateStyle);
@@ -1735,8 +1630,8 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		}
 	}
 
-	private byte[] generateExcelFromArchivalData(List<DBS10_FINCON_III_1B_Archival_Summary_Entity> dataList, String filename,
-			String type) throws Exception {
+	private byte[] generateExcelFromArchivalData(List<DBS10_FINCON_III_1B_Archival_Summary_Entity> dataList,
+			String filename, String type) throws Exception {
 		if (dataList == null || dataList.isEmpty()) {
 			logger.warn("No archival data found for IRRBB_ADVANCES report.");
 			return new byte[0];
@@ -1790,18 +1685,27 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 			for (DBS10_FINCON_III_1B_Archival_Summary_Entity data : dataList) {
 				Row row = sheet.createRow(rowIndex++);
-				setCellValue(row, 0, data.getTransSerialNo(), numberStyle);
-				setCellValue(row, 1, data.getNameOfSfis(), textStyle);
+
+				// Fallback logic for Name of SFIs
+				String nameOfSfis = (data.getNameOfSfis() != null && !data.getNameOfSfis().trim().isEmpty())
+						? data.getNameOfSfis()
+						: "BANK OF BARODA (BOTSWANA) LIMITED";
+
+				// Fallback logic for Nature of Transaction
+				String natureOfTrans = (data.getNatureOfTrans() != null && !data.getNatureOfTrans().trim().isEmpty())
+						? data.getNatureOfTrans()
+						: "PLACEMENT";
+
+				setCellValue(row, 0, data.getTransSerialNo(), textStyle);
+				setCellValue(row, 1, nameOfSfis, textStyle);
 				setCellValue(row, 2, data.getNameOfCounterParty(), textStyle);
-				setCellValue(row, 3, data.getNatureOfTrans(), textStyle);
+				setCellValue(row, 3, natureOfTrans, textStyle);
 				setCellValue(row, 4, data.getOrgIssue(), textStyle);
 				setCellValue(row, 5, data.getDateOfTrnsBegin(), dateStyle);
 				setCellValue(row, 6, data.getDateOfTrnsEnd(), dateStyle);
 				setCellValue(row, 7, data.getTenorOfTrans(), numberStyle);
 				setCellValue(row, 8, data.getAmt(), numberStyle);
 				setCellValue(row, 9, data.getReturnVal(), numberStyle);
-				setCellValue(row, 10, data.getReportVersion(), textStyle);
-				setCellValue(row, 11, data.getReportResubDate(), dateStyle);
 			}
 
 			workbook.write(out);
@@ -1809,8 +1713,8 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		}
 	}
 
-	private byte[] generateExcelFromResubData(List<DBS10_FINCON_III_1B_Archival_Summary_Entity> dataList, String filename,
-			String type) throws Exception {
+	private byte[] generateExcelFromResubData(List<DBS10_FINCON_III_1B_Archival_Summary_Entity> dataList,
+			String filename, String type) throws Exception {
 		if (dataList == null || dataList.isEmpty()) {
 			logger.warn("No resub data found for IRRBB_ADVANCES report.");
 			return new byte[0];
@@ -2013,9 +1917,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
 		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
 
-		String summaryTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE"
+		String summaryTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_SUMMARY"
 				: "BRRS_DBS10_FINCON_III_1B_SUMMARYTABLE";
-		String detailTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_DBS10_FINCON_III_1B_ARCHIVAL_DETAILTABLE"
+		String detailTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_DBS10_FINCON_III_1B_ARCHIVALTABLE_DETAIL"
 				: "BRRS_DBS10_FINCON_III_1B_DETAILTABLE";
 
 		String summarySql = "UPDATE " + summaryTable + " SET " + "FLOATING_FIXED = ?, " + "EXISTING_BENCHMARK = ?, "

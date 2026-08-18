@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -694,8 +695,11 @@ public class BLBF_Services {
 			}
 
 			// ======== Fetch Data from DB ========
-			List<GeneralMasterEntity> dataList = GeneralMasterRepos.findLoanBRecordsByReportDate(todate);
+			   SimpleDateFormat sdfInput = new SimpleDateFormat("dd-MM-yyyy");
+		        Date reportDate = sdfInput.parse(todate);
 
+		        List<GeneralMasterEntity> dataList =
+		                GeneralMasterRepos.findLoanBRecordsByReportDate(reportDate);
 			if (dataList != null && !dataList.isEmpty()) {
 				int rowIndex = 1;
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");

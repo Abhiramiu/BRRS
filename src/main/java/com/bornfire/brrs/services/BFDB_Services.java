@@ -1,7 +1,6 @@
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
-
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -10,6 +9,7 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -763,18 +763,24 @@ public class BFDB_Services {
 	            sheet.setColumnWidth(i, 5000);
 	        }
 
-	        // ================= Fetch data from DB =================
-	        List<GeneralMasterEntity> dataList = GeneralMasterRepos.findDepBRecordsByReportDate(todate);
+	     // ================= Fetch data from DB =================
+
+	        SimpleDateFormat sdfInput = new SimpleDateFormat("dd-MM-yyyy");
+	        Date reportDate = sdfInput.parse(todate);
+
+	        List<GeneralMasterEntity> dataList =
+	                GeneralMasterRepos.findDepBRecordsByReportDate(reportDate);
 
 	        if (dataList != null && !dataList.isEmpty()) {
+
 	            int rowIndex = 1;
 	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
 	            for (GeneralMasterEntity rec : dataList) {
+
 	                XSSFRow row = sheet.createRow(rowIndex++);
 	                int col = 0;
 
-	                // ======= All cells with borders =======
 	                createDataCell(row, col++, rec.getCustomerId(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSolId(), dataCellStyle);
 	                createDataCell(row, col++, rec.getGender(), dataCellStyle);
@@ -782,8 +788,13 @@ public class BFDB_Services {
 	                createDataCell(row, col++, rec.getCustomerName(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchmCode(), dataCellStyle);
 	                createDataCell(row, col++, rec.getSchmDesc(), dataCellStyle);
-	                createDataCell(row, col++, rec.getAcctOpenDate() != null ? sdf.format(rec.getAcctOpenDate()) : "", dataCellStyle);
-	                createDataCell(row, col++, rec.getAcctCloseDate() != null ? sdf.format(rec.getAcctCloseDate()) : "", dataCellStyle);
+	                createDataCell(row, col++,
+	                        rec.getAcctOpenDate() != null ? sdf.format(rec.getAcctOpenDate()) : "",
+	                        dataCellStyle);
+
+	                createDataCell(row, col++,
+	                        rec.getAcctCloseDate() != null ? sdf.format(rec.getAcctCloseDate()) : "",
+	                        dataCellStyle);
 
 	                createNumericCell(row, col++, rec.getBalanceAsOn(), numericStyle);
 	                createDataCell(row, col++, rec.getCurrency(), dataCellStyle);
@@ -791,7 +802,11 @@ public class BFDB_Services {
 	                createNumericCell(row, col++, rec.getRateOfInterest(), numericStyle);
 	                createNumericCell(row, col++, rec.getHundred(), numericStyle);
 	                createDataCell(row, col++, rec.getStatus(), dataCellStyle);
-	                createDataCell(row, col++, rec.getMaturityDate() != null ? sdf.format(rec.getMaturityDate()) : "", dataCellStyle);
+
+	                createDataCell(row, col++,
+	                        rec.getMaturityDate() != null ? sdf.format(rec.getMaturityDate()) : "",
+	                        dataCellStyle);
+
 	                createDataCell(row, col++, rec.getGlSubHeadCode(), dataCellStyle);
 	                createDataCell(row, col++, rec.getGlSubHeadDesc(), dataCellStyle);
 	                createDataCell(row, col++, rec.getTypeOfAccounts(), dataCellStyle);
@@ -800,8 +815,12 @@ public class BFDB_Services {
 	                createNumericCell(row, col++, rec.getEffectiveInterestRate(), numericStyle);
 	                createDataCell(row, col++, rec.getBranchName(), dataCellStyle);
 	                createDataCell(row, col++, rec.getBranchCode(), dataCellStyle);
-	                createDataCell(row, col++, rec.getReportDate() != null ? sdf.format(rec.getReportDate()) : "", dataCellStyle);
+
+	                createDataCell(row, col++,
+	                        rec.getReportDate() != null ? sdf.format(rec.getReportDate()) : "",
+	                        dataCellStyle);
 	            }
+	        
 	        }
 
 	        // ================= Write to ByteArray =================

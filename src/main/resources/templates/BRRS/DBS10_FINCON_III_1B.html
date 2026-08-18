@@ -259,7 +259,7 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 		function showdetails() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ '';
+			var Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype='detail',type=${type},version=${version})}]]*/ '';
 			location.href = Callurl;
 		}
 
@@ -269,15 +269,41 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			location.href = Callurl;
 		}
 
+		/* Archival View Navigation Handlers */
+		function showArchivalDetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type='ARCHIVAL', asondate=${asondate}, version=${version})}]]*/ '';
+			location.href = Callurl;
+		}
+
+		function goToArchivalSummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type='ARCHIVAL', asondate=${asondate}, version=${version})}]]*/ '';
+			location.href = Callurl;
+		}
+
+		/* Resub View Navigation Handlers */
+		function showResubDetail() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type='RESUB', asondate=${asondate}, version=${version})}]]*/ '';
+			location.href = Callurl;
+		}
+
+		function goToResubSummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type='RESUB', asondate=${asondate}, version=${version})}]]*/ '';
+			location.href = Callurl;
+		}
+
 		function activateTab(tabName) {
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
 				btn.classList.remove('active');
 			});
 
-			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
-			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			if (tabName === 'summary' || tabName === 'archivalSummary' || tabName === 'resubSummary') {
+				document.getElementById('custom-tab-btnSummary')?.classList.add('active');
+			} else if (tabName === 'Details' || tabName === 'archivalDetail' || tabName === 'resubDetail') {
+				document.getElementById('custom-tab-btnDetails')?.classList.add('active');
 			}
 		}
 
@@ -425,14 +451,11 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			});
 		}
 
-
-
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
 				location.reload();
 			}
 		}
-
 
 		function closemodels() {
 			$("#resultModal").modal("hide");
@@ -462,18 +485,15 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 		}
 
 		function submitExcelUpload() {
-
 			var category = $('input[name="fileCategory"]:checked').val();
 			var dateInput = document.getElementById('uploadDate').value;
 			var fileInput = document.getElementById('excelFile');
 
-			// Date validation
 			if (!dateInput) {
 				showResultModal('Alert', 'Please select a date.');
 				return;
 			}
 
-			// File validation
 			if (fileInput.files.length === 0) {
 				showResultModal('Alert', 'Please select a file.');
 				return;
@@ -482,41 +502,20 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			var selectedFile = fileInput.files[0];
 			var fileName = selectedFile.name.toLowerCase();
 
-			// Allow only Borrowing or Placement files
-			if (!fileName.includes("borrowing") &&
-				!fileName.includes("placement")) {
-
-				showResultModal(
-					'Invalid File',
-					'Please upload a valid file.'
-				);
-
+			if (!fileName.includes("borrowing") && !fileName.includes("placement")) {
+				showResultModal('Invalid File', 'Please upload a valid file.');
 				fileInput.value = '';
 				return;
 			}
 
-			// Borrowing validation
-			if (category === "Borrowing" &&
-				!fileName.includes("borrowing")) {
-
-				showResultModal(
-					'Invalid File',
-					'Please upload a valid Borrowing file.'
-				);
-
+			if (category === "Borrowing" && !fileName.includes("borrowing")) {
+				showResultModal('Invalid File', 'Please upload a valid Borrowing file.');
 				fileInput.value = '';
 				return;
 			}
 
-			// Placement validation
-			if (category === "Placement" &&
-				!fileName.includes("placement")) {
-
-				showResultModal(
-					'Invalid File',
-					'Please upload a valid Placement file.'
-				);
-
+			if (category === "Placement" && !fileName.includes("placement")) {
+				showResultModal('Invalid File', 'Please upload a valid Placement file.');
 				fileInput.value = '';
 				return;
 			}
@@ -543,10 +542,7 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 				error: function (jqXHR) {
 					$('#loader').modal('hide');
-					showResultModal(
-						'Error',
-						jqXHR.responseText || 'Upload failed.'
-					);
+					showResultModal('Error', jqXHR.responseText || 'Upload failed.');
 				}
 			});
 		}
@@ -585,28 +581,37 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 						</span>
 
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+						<!-- Summary / Detail Buttons for Normal View -->
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
 
-						<!-- Placement & Borrowing Upload Button -->
+						<!-- Summary / Detail Buttons for Archival Mode -->
+						<button type="button" class="custom-tab-btn" onclick="goToArchivalSummary();"
+							th:if="${displaymode == 'archivalDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showArchivalDetail();"
+							th:if="${displaymode == 'archivalSummary'}">Details</button>
+
+						<!-- Summary / Detail Buttons for Resubmission Mode -->
+						<button type="button" class="custom-tab-btn" onclick="goToResubSummary();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
+							th:if="${displaymode == 'resubSummary'}">Details</button>
+
+						<!-- Upload Excel Button -->
 						<button type="button" class="custom-tab-btn" id="btnUploadPlacement"
-							onclick="openUploadModal();">
+							onclick="openUploadModal();" th:if="${type != 'ARCHIVAL'&& type !='RESUB'}">
 							<i class="fa fa-upload"></i> Upload Excel
 						</button>
-
-						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL' and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
-							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
-							id="addRecord">
-							Modify
-						</button>-->
 
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
+						<!-- Excel Download for Summary View -->
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid}, 
 							data-asondate=${asondate}, 
 							data-fromdate=${fromdate}, 
 							data-todate=${todate}, 
@@ -618,40 +623,60 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 							<i class="fa fa-download"></i>
 						</button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-							data-fromdate=${fromdate},
-							data-todate=${todate},
-							data-filename='DBS10_FINCON_III_1BDetail',
-							data-type=${type},
-							data-version=${version}">
-							<i class="fa fa-download"></i>
-						</button>
+					
 					</div>
 				</div>
 			</div>
 
-			<div class="col-12" th:if="${displaymode == 'summary'}">
+			<!-- Headers based on Display Modes -->
+			<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL' and type != 'RESUB'}"
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Summary View - DBS10_FINCON_III_1B
+			</h1>
+
+			<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL' and type != 'RESUB'}"
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Detail View - DBS10_FINCON_III_1B
+			</h1>
+
+			<h1 th:if="${displaymode == 'archivalSummary'}"
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Archival Summary View - DBS10_FINCON_III_1B (Read Only)
+			</h1>
+
+			<h1 th:if="${displaymode == 'archivalDetail'}"
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Archival Detail View - DBS10_FINCON_III_1B (Read Only)
+			</h1>
+
+			<h1 th:if="${displaymode == 'resubSummary'}" 
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Resubmission Summary View - DBS10_FINCON_III_1B
+			</h1>
+
+			<h1 th:if="${displaymode == 'resubDetail'}" 
+				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
+				Resubmission Detail View - DBS10_FINCON_III_1B
+			</h1>
+
+			<!-- TABLE FOR ALL SUMMARY & DETAIL MODES -->
+			<div class="col-12" th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetail' or displaymode == 'resubSummary' or displaymode == 'resubDetail'}">
 				<div class="row">
 					<form action="#" method="POST" id="fileupload" style="width:100%;">
 						<div class="col-sm-12">
 
-							<div
-								style="background-color: #C0C0C0; font-weight: bold; padding: 4px 8px; margin-bottom: 5px; font-size: 14px;">
+							<div style="background-color: #C0C0C0; font-weight: bold; padding: 4px 8px; margin-bottom: 5px; font-size: 14px;">
 								Monetary items present in the return should be reported ₹ in Crores
 							</div>
 
-							<div class="table-wrapper table-responsive scrollable-table-container"
-								style="border-right:1px solid #dee2e6; max-height:600px; overflow-y:auto;">
+							<div class="table-wrapper table-responsive scrollable-table-container" style="border-right:1px solid #dee2e6; max-height:600px; overflow-y:auto;">
 
-								<table class="sticky-header-table table table-bordered table-sm table-condensed"
-									id="reports" style="font-family: Arial, sans-serif; font-size: 13px;">
+								<table class="sticky-header-table table table-bordered table-sm table-condensed" id="reports" style="font-family: Arial, sans-serif; font-size: 13px;">
 
 									<thead style="text-align:center;">
 										<!-- TITLE ROW -->
 										<tr>
-											<th colspan="10"
-												style="background-color: #FFD700; color: #000000; font-weight: bold; text-align: left; font-size: 14px; padding: 6px; border: 1px solid #000000;">
+											<th colspan="10" style="background-color: #FFD700; color: #000000; font-weight: bold; text-align: left; font-size: 14px; padding: 6px; border: 1px solid #000000;">
 												(1)(b)(i) Details of FB (Capital) intra-group transactions with a
 												threshold limit of Rs.10 crore and above relating to each of the
 												transaction-types ( i.e. Loans extended, Deposit placed,
@@ -663,42 +688,31 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 										<!-- HEADER ROW 1 -->
 										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; border: 1px solid #000000;">
 												Transaction<br>Serial Number</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Name of SFIs</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
 												Name of Counter party</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Nature of Transactions</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
 												Original issuer of the paper/ security, if applicable</th>
-											<th colspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 13px; font-weight: bold; border: 1px solid #000000;">
+											<th colspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 13px; font-weight: bold; border: 1px solid #000000;">
 												Date of Transactions</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
 												Tenor of the Transactions (in days)</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Amount</th>
-											<th rowspan="2"
-												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
 												Return / yield on the investment (in %)</th>
 										</tr>
 
 										<!-- HEADER ROW 2 -->
 										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
-											<th
-												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+											<th style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
 												Beginning DateYYYY-MM-DD</th>
-											<th
-												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+											<th style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
 												Ending DateYYYY-MM-DD</th>
 										</tr>
 
@@ -718,51 +732,53 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 									</thead>
 									<tbody>
 
+										<!-- SUMMARY / ARCHIVAL / RESUB DATA LOOP -->
 										<tr th:each="report : ${reportsummary}">
 
-											<!-- X010 -->
-											<td th:text="${report.transSerialNo}">
-											</td>
+											<td th:text="${report.transSerialNo}"></td>
 
-											<!-- X020 -->
-											<td>BANK OF BARODA (BOTSWANA) LIMITED
-											</td>
+											<td>BANK OF BARODA (BOTSWANA) LIMITED</td>
 
-											<!-- X030 -->
-											<td th:text="${report.nameOfCounterParty}">
-											</td>
+											<td th:text="${report.nameOfCounterParty}"></td>
 
-											<!-- X040 -->
-											<td>PLACEMENT
-											</td>
+											<td>PLACEMENT</td>
 
-											<!-- X050 -->
-											<td th:text="${report.orgIssue}">
-											</td>
+											<td th:text="${report.orgIssue}"></td>
 
-											<!-- X060 -->
-											<td th:text="${report.dateOfTrnsBegin != null ?
-																	                  #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}"
-												style="background-color: #F8BE8E;">
-											</td>
+											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
 
-											<!-- X061 -->
-											<td th:text="${report.dateOfTrnsEnd != null ?
-																	                  #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}"
-												style="background-color: #F8BE8E;">
-											</td>
+											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
 
-											<!-- X070 -->
-											<td th:text="${report.tenorOfTrans}" style="text-align: right;">
-											</td>
+											<td th:text="${report.tenorOfTrans}" style="text-align: right;"></td>
 
-											<!-- X080 -->
-											<td th:text="${report.amt}"style="text-align: right;">
-											</td>
+											<td th:text="${report.amt}" style="text-align: right;"></td>
 
-											<!-- X090 -->
-											<td th:text="${report.returnVal}"style="text-align: right;">
-											</td>
+											<td th:text="${report.returnVal}" style="text-align: right;"></td>
+
+										</tr>
+
+										<!-- DETAIL MODE DIRECT DATA LOOP (FOR ARCHIVAL OR RESUB DETAILS IF MODEL ATTRIBUTE DIFFERS) -->
+										<tr th:each="report : ${reportdetails}" th:if="${reportsummary == null}">
+
+											<td th:text="${report.transSerialNo}"></td>
+
+											<td>BANK OF BARODA (BOTSWANA) LIMITED</td>
+
+											<td th:text="${report.nameOfCounterParty}"></td>
+
+											<td>PLACEMENT</td>
+
+											<td th:text="${report.orgIssue}"></td>
+
+											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+
+											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+
+											<td th:text="${report.tenorOfTrans}" style="text-align: right;"></td>
+
+											<td th:text="${report.amt}" style="text-align: right;"></td>
+
+											<td th:text="${report.returnVal}" style="text-align: right;"></td>
 
 										</tr>
 
@@ -793,8 +809,7 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			<div class="modal-content" style="background: transparent; border:none;">
 				<div class="modal-body" style="text-align: center">
 					<div>
-						<img th:src="@{/images/loader.gif}" id="bfirelogo"
-							style="width: 153px; height: auto; background-color: transparent;" alt="Loading...">
+						<img th:src="@{/images/loader.gif}" id="bfirelogo" style="width: 153px; height: auto; background-color: transparent;" alt="Loading...">
 					</div>
 				</div>
 			</div>
@@ -820,20 +835,17 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 	<div class="modal fade" id="cellresultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="menu-title-header"
-					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+				<div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
 					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
 						Do you want to open the report?
 					</div>
 				</div>
 
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
-						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal" style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
 						Cancel
 					</button>
-					<button type="button" class="custom-tab-btn yes-btn"
-						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+					<button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
 						Yes
 					</button>
 				</div>
@@ -845,10 +857,8 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 	<div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-				<div class="menu-title-header"
-					style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0;font-weight: bold;">
-					<h5 class="modal-title text-white text-center" id="uploadModalLabel">Upload Placement / Borrowing
-						Data</h5>
+				<div class="menu-title-header" style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0;font-weight: bold;">
+					<h5 class="modal-title text-white text-center" id="uploadModalLabel">Upload Placement / Borrowing Data</h5>
 				</div>
 				<form id="placementUploadForm" enctype="multipart/form-data">
 					<div class="modal-body">
@@ -858,41 +868,31 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 							<label style="font-weight: bold; color: #333;">Select Category Option:</label>
 							<div class="d-flex align-items-center mt-1">
 								<div class="custom-control custom-radio mr-4">
-									<input type="radio" id="categoryBorrowing" name="fileCategory" value="Borrowing"
-										class="custom-control-input" checked>
-									<label class="custom-control-label" for="categoryBorrowing"
-										style="font-weight: 600; cursor: pointer;">Borrowing</label>
+									<input type="radio" id="categoryBorrowing" name="fileCategory" value="Borrowing" class="custom-control-input" checked>
+									<label class="custom-control-label" for="categoryBorrowing" style="font-weight: 600; cursor: pointer;">Borrowing</label>
 								</div>
 								<div class="custom-control custom-radio">
-									<input type="radio" id="categoryPlacement" name="fileCategory" value="Placement"
-										class="custom-control-input">
-									<label class="custom-control-label" for="categoryPlacement"
-										style="font-weight: 600; cursor: pointer;">Placement</label>
+									<input type="radio" id="categoryPlacement" name="fileCategory" value="Placement" class="custom-control-input">
+									<label class="custom-control-label" for="categoryPlacement" style="font-weight: 600; cursor: pointer;">Placement</label>
 								</div>
 							</div>
 						</div>
 
 						<div class="form-group text-left">
 							<label for="uploadDate" style="font-weight: bold; color: #333;">Select Date:</label>
-							<input type="date" class="form-control" id="uploadDate" name="asondate" required
-								th:value="${asondate}">
+							<input type="date" class="form-control" id="uploadDate" name="asondate" required th:value="${asondate}">
 						</div>
 
 						<div class="form-group text-left">
 							<label for="excelFile" style="font-weight: bold; color: #333;">Select Excel File:</label>
-							<input type="file" class="form-control-file border p-1" id="excelFile" name="file"
-								accept=".xlsx, .xls" required>
-							<small class="form-text text-muted">File name must contain the selected word (e.g.,
-								<code>Borrowing_Data.xlsx</code> or <code>Placement_Data.xlsx</code>).</small>
+							<input type="file" class="form-control-file border p-1" id="excelFile" name="file" accept=".xlsx, .xls" required>
+							<small class="form-text text-muted">File name must contain the selected word (e.g., <code>Borrowing_Data.xlsx</code> or <code>Placement_Data.xlsx</code>).</small>
 						</div>
 
 					</div>
 					<div class="modal-footer" style="justify-content: center;">
-						<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
-							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;"
-							onclick="location.reload();">Cancel</button>
-						<button type="button" class="custom-tab-btn yes-btn" onclick="submitExcelUpload();"
-							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
+						<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal" style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;" onclick="location.reload();">Cancel</button>
+						<button type="button" class="custom-tab-btn yes-btn" onclick="submitExcelUpload();" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
 					</div>
 				</form>
 			</div>

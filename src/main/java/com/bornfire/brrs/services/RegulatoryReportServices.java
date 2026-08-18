@@ -4895,7 +4895,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+			
+		case "DBS10_FINCON_III_1B":
+			try {
+				List<Object[]> resubList = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BResubList();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for DBS10_FINCON_III_1B: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for DBS10_FINCON_III_1B: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+			
 		case "UFCE_RETAILADV":
 			try {
 				List<Object[]> resubList = BRRS_UFCE_RETAILADV_ReportService.getRETAILADV_UFCEResubList();
