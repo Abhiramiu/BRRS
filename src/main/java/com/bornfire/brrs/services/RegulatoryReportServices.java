@@ -440,6 +440,9 @@ public class RegulatoryReportServices {
 	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
 
 	@Autowired
+	BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportservice;
+
+	@Autowired
 	BRRS_LOAN_LIST_UFCE_ReportService BRRS_LOAN_LIST_UFCE_ReportService;
 
 	@Autowired
@@ -1125,6 +1128,11 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 
+		case "IRRBB_DEPOSITS":
+			repsummary = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
+
 		case "UFCE_RETAILADV":
 			repsummary = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_View(reportId, fromdate, todate,
 					currency, dtltype, pageable, type, version);
@@ -1600,6 +1608,15 @@ public class RegulatoryReportServices {
 		case "IRRBB_ADV":
 			try {
 				repfile = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+		case "IRRBB_DEPOSITS":
+			try {
+				repfile = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_Excel(filename, reportId, fromdate,
 						todate, currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2950,6 +2967,12 @@ public class RegulatoryReportServices {
 			List<Object[]> retailadvList = BRRS_UFCE_RETAILADV_ReportService.getRETAILADV_UFCEArchival();
 			archivalData.addAll(retailadvList);
 			System.out.println("Fetched UFCE_RETAILADV archival data: " + retailadvList.size());
+			break;
+
+		case "IRRBB_DEPOSITS":
+			List<Object[]> irrbbDepList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITSArchival();
+			archivalData.addAll(irrbbDepList);
+			System.out.println("Fetched IRRBB_DEPOSITS archival data: " + irrbbDepList.size());
 			break;
 
 		case "LOAN_LIST_UFCE":
@@ -4895,7 +4918,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "DBS10_FINCON_III_1B":
 			try {
 				List<Object[]> resubList = BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BResubList();
@@ -4906,7 +4929,18 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
+		case "IRRBB_DEPOSITS":
+			try {
+				List<Object[]> resubDepList = BRRS_IRRBB_DEPOSITS_reportservice.getIRRBB_DEPOSITSResubList();
+				resubmissionData.addAll(resubDepList);
+				System.out.println("Resubmission data fetched for IRRBB_DEPOSITS: " + resubDepList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for IRRBB_DEPOSITS: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
 		case "UFCE_RETAILADV":
 			try {
 				List<Object[]> resubList = BRRS_UFCE_RETAILADV_ReportService.getRETAILADV_UFCEResubList();
@@ -6635,6 +6669,36 @@ public class RegulatoryReportServices {
 				return pdfBytes;
 			} catch (Exception e) {
 				logger.error("UFCE_RETAILADV: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "IRRBB_DEPOSITS":
+			try {
+				if (filename != null && filename.startsWith("EMAIL_")) {
+					excelBytes = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+				} else {
+					excelBytes = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("IRRBB_DEPOSITS: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRangesDep = Arrays.asList(new int[] { 0, 100 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRangesDep, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("IRRBB_DEPOSITS: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("IRRBB_DEPOSITS: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("IRRBB_DEPOSITS: PDF generation failed", e);
 				return new byte[0];
 			}
 

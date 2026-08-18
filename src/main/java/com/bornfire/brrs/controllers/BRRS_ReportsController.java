@@ -80,6 +80,7 @@ import com.bornfire.brrs.services.BRRS_FSI_ReportService;
 import com.bornfire.brrs.services.BRRS_FSI_ReportService.FSI_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
@@ -270,9 +271,12 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_Q_LARADV_ReportService BRRS_Q_LARADV_reportservice;
-	
+
 	@Autowired
 	BRRS_IRRBB_ADVANCES_ReportService BRRS_IRRBB_ADVANCES_reportservice;
+
+	@Autowired
+	BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportservice;
 
 	private String pagesize;
 
@@ -5769,10 +5773,11 @@ public class BRRS_ReportsController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "Rate/updateInrRate", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate, @RequestParam("reportDate") String reportDate) {
+	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate,
+			@RequestParam("reportDate") String reportDate) {
 		return regreportServices.updateInrRate(inrRate, reportDate);
 	}
 
@@ -6495,6 +6500,7 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
+
 	@Autowired
 	BRRS_CASH_FLOW_ReportService BRRS_CASH_FLOW_ReportService;
 
@@ -6509,7 +6515,8 @@ public class BRRS_ReportsController {
 
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-			Object entityInstance = isResub ? new BRRS_CASH_FLOW_ReportService.CASH_FLOW_Manual_Archival_Summary_Entity()
+			Object entityInstance = isResub
+					? new BRRS_CASH_FLOW_ReportService.CASH_FLOW_Manual_Archival_Summary_Entity()
 					: new BRRS_CASH_FLOW_ReportService.CASH_FLOW_Manual_Summary_Entity();
 
 			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
@@ -6539,7 +6546,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
 	}
-	
+
 	// BATCH UPDATE METHOD FOR INLINE CELL EDITS
 	@RequestMapping(value = "/updateAllBRRSIrradv", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -6554,6 +6561,22 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+
+	// BATCH UPDATE METHOD FOR INLINE CELL EDITS (IRRBB_DEPOSITS)
+	@RequestMapping(value = "/updateAllBRRSIrrdep", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllBRRSIrrdep(
+			@RequestBody List<BRRS_IRRBB_DEPOSITS_ReportService.IRRBB_DEPOSITS_Update_Row> rows,
+			@RequestParam(value = "type", required = false) String type) {
+		try {
+			BRRS_IRRBB_DEPOSITS_reportservice.updateAllIrrdepRows(rows, type);
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
 	@Autowired
 	BRRS_DBS10_FINCON_II_1A_ReportService BRRS_DBS10_FINCON_II_1A_ReportService;
 
@@ -6568,7 +6591,8 @@ public class BRRS_ReportsController {
 
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-			Object entityInstance = isResub ? new BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Manual_Archival_Summary_Entity()
+			Object entityInstance = isResub
+					? new BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Manual_Archival_Summary_Entity()
 					: new BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Manual_Summary_Entity();
 
 			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
@@ -6598,8 +6622,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
 	}
-	
-	
+
 	@Autowired
 	BRRS_FORMAT_NEW_CPR_ReportService BRRS_FORMAT_NEW_CPR_ReportService;
 
@@ -6622,8 +6645,7 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	
-	
+
 	@Autowired
 	BRRS_EXPOSURES_ReportService BRRS_EXPOSURES_ReportService;
 
@@ -6646,8 +6668,6 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	
-	
 
 	@Autowired
 	BRRS_FSI_ReportService BRRS_FSI_ReportService;
@@ -6671,19 +6691,17 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-	
+
 	@Autowired
 	private BorrowingFileUploadService service;
 
 	@PostMapping("/uploadPlacementBorrowing")
 	@ResponseBody
-	public ResponseEntity<String> uploadPlacementBorrowing(
-			@RequestParam("file") MultipartFile file,
-			@RequestParam("asondate") String asondate,
-			@RequestParam("category") String category) {
+	public ResponseEntity<String> uploadPlacementBorrowing(@RequestParam("file") MultipartFile file,
+			@RequestParam("asondate") String asondate, @RequestParam("category") String category) {
 
-		logger.info("Received request to upload file: {} for date: {} and category: {}", 
-				file.getOriginalFilename(), asondate, category);
+		logger.info("Received request to upload file: {} for date: {} and category: {}", file.getOriginalFilename(),
+				asondate, category);
 
 		try {
 			String resultMessage = service.uploadBorrowingFile(file, asondate, category);
