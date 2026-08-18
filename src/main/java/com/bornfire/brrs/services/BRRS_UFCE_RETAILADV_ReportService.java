@@ -1177,12 +1177,16 @@ public class BRRS_UFCE_RETAILADV_ReportService {
 	}
 
 	public List<RETAILADV_UFCE_Archival_Summary_Entity> getArchivalData(String reportDate, BigDecimal version) {
-		String sql = "SELECT * FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
 		if (version != null) {
-			sql += " AND REPORT_VERSION = ?";
+			String sql = "SELECT * FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') AND REPORT_VERSION = ?";
 			return jdbcTemplate.query(sql, new Object[] { reportDate, version }, new ArchivalSummaryRowMapper());
+		} else {
+			String sql = "SELECT * FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE "
+					+ "WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') "
+					+ "AND SNO IN (SELECT MIN(SNO) FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY') AND REPORT_VERSION IS NOT NULL GROUP BY REPORT_DATE, REPORT_VERSION) "
+					+ "ORDER BY REPORT_VERSION DESC";
+			return jdbcTemplate.query(sql, new Object[] { reportDate, reportDate }, new ArchivalSummaryRowMapper());
 		}
-		return jdbcTemplate.query(sql, new Object[] { reportDate }, new ArchivalSummaryRowMapper());
 	}
 
 	public List<RETAILADV_UFCE_Archival_Summary_Entity> getResubData(String reportDate, BigDecimal version) {
@@ -1190,7 +1194,10 @@ public class BRRS_UFCE_RETAILADV_ReportService {
 	}
 
 	public List<Object[]> getRETAILADV_UFCEArchival() {
-		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE ORDER BY REPORT_VERSION";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_RETAILADV_UFCE_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
 				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
 	}

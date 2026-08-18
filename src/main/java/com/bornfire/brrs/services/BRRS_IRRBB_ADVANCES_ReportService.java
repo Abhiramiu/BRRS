@@ -1804,8 +1804,10 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// GET REPORT_DATE + REPORT_VERSION for ARCHIVAL
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESArchival() {
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "ORDER BY REPORT_VERSION";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
 				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
@@ -1864,8 +1866,9 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<IRRBB_ADVANCES_Archival_Summary_Entity> getAllArchivalWithVersion() {
 
-		String sql = "SELECT * FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+		String sql = "SELECT * FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE SNO IN (SELECT MIN(SNO) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL GROUP BY REPORT_DATE, REPORT_VERSION) "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, new ArchivalSummaryRowMapper());
 	}
@@ -1875,8 +1878,9 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<IRRBB_ADVANCES_Archival_Summary_Entity> getAllResubWithVersion() {
 
-		String sql = "SELECT * FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_VERSION ASC";
+		String sql = "SELECT * FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE SNO IN (SELECT MIN(SNO) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE REPORT_VERSION IS NOT NULL GROUP BY REPORT_DATE, REPORT_VERSION) "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, new ArchivalSummaryRowMapper());
 	}
@@ -1908,8 +1912,10 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESArchivalList() {
 
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "ORDER BY REPORT_VERSION";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION "
+				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql,
 				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
@@ -1920,8 +1926,10 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESResubList() {
 
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "ORDER BY REPORT_VERSION";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
+				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
 				rs.getBigDecimal("REPORT_VERSION"), rs.getDate("REPORT_RESUBDATE") });
