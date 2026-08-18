@@ -1,0 +1,1045 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!--
+CREATED BY	: PRAVINRAJ M V
+CREATED ON	: 14.08.2026
+PURPOSE		: BRRS LOAN LIST UFCE REPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<!-- JavaScript -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th,
+		.thead-light th,
+		table thead th {
+			position: sticky;
+			top: 0;
+			background-color: #D8D8D8 !important;
+			color: #000000 !important;
+			z-index: 2;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+
+	<script th:inline="javascript">
+		var reportid = /*[[${reportid}]]*/ 'LOAN_LIST_UFCE';
+
+		$(document).ready(function () {
+			$('#loader').modal('hide');
+
+			var tableIds = ['#loanlistTable', '#loanlistDetailTable', '#archivalTable', '#archivalDetailTable', '#resubTable', '#resubDetailTable'];
+			tableIds.forEach(function (id) {
+				if ($(id).length) {
+					var table = $(id).DataTable({
+						"pageLength": 25,
+						"order": [],
+						"scrollX": true,
+						"scrollY": "calc(100vh - 280px)",
+						"scrollCollapse": true,
+						"paging": true,
+						"autoWidth": true,
+						"language": {
+							"lengthMenu": "_MENU_ &nbsp;Entries per page"
+						}
+					});
+					setTimeout(function () {
+						table.columns.adjust().draw(false);
+					}, 200);
+				}
+			});
+		});
+
+		$(window).on('pageshow', function () {
+			$('#loader').modal('hide');
+		});
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard';
+		}
+
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		function showdetails() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/ '#';
+			location.href = Callurl;
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/ '#';
+			location.href = Callurl;
+		}
+
+		function showArchivalDetail() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = /*[[@{'/Reports/' + ${reportid}}]]*/'#';
+			url += '?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=ARCHIVAL&dtltype=detail';
+			if (version) {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		function showResubDetail() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = /*[[@{'/Reports/' + ${reportid}}]]*/'#';
+			url += '?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=RESUB&dtltype=detail';
+			if (version) {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		function goToResubSummary() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = /*[[@{'/Reports/' + ${reportid}}]]*/'#';
+			url += '?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=RESUB';
+			if (version) {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		function goToArchivalSummary() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = /*[[@{'/Reports/' + ${reportid}}]]*/'#';
+			url += '?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=ARCHIVAL';
+			if (version) {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		function downloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
+
+		function emailDownloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
+
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format') || '';
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+
+		function closemodel() {
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+		}
+
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
+	</script>
+</head>
+
+<title>LOAN LIST - UFCE</title>
+
+<body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card" style="width: 100%;">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							LOAN LIST - UFCE
+						</h5>
+						<div class="boards">
+							<p class="scrolling-text">Bank of Baroda(Botswana)Ltd</p>
+						</div>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
+
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+						<!-- Summary/Detail toggle for Normal -->
+						<button type="button" class="custom-tab-btn" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+
+						<!-- Summary/Detail toggle for Archival -->
+						<button type="button" class="custom-tab-btn" onclick="goToArchivalSummary();"
+							th:if="${displaymode == 'archivalDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showArchivalDetail();"
+							th:if="${displaymode == 'archivalSummary'}">Details</button>
+
+						<!-- Summary/Detail toggle for Resub -->
+						<button type="button" class="custom-tab-btn" onclick="goToResubSummary();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
+							th:if="${displaymode == 'resubSummary'}">Details</button>
+
+						<!-- FORMAT Download Button -->
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary'  or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
+							th:attr="data-reportid=${reportid},
+									data-asondate=${asondate},
+									data-fromdate=${fromdate},
+									data-todate=${todate},
+									data-currency=${currency}, 
+									data-dtltype=${dtltype},
+									data-filename='LOAN_LIST_UFCE.xlsx',
+									data-type=${type},
+									data-format='email',
+									data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> FORMAT
+						</button>
+
+						<!-- PDF Download Dropdown (M_BOP style) -->
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;" th:if="${displaymode == 'summary'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown"
+								style="font-family: Arial; font-weight: bold;">
+								<i class="fa fa-download"></i> PDF
+							</button>
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link"
+									th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+									onclick="downloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+								</a>
+								<div class="dropdown-divider"></div>
+								<a href="#" class="nav-link"
+									th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+									onclick="emailDownloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Header Titles -->
+				<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Summary View - LOAN LIST - UFCE</h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Detail View - LOAN LIST - UFCE</h1>
+				<h1 th:if="${displaymode == 'archivalSummary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Archival Summary View - LOAN LIST - UFCE (Read Only)</h1>
+				<h1 th:if="${displaymode == 'archivalDetail'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Archival Detail View - LOAN LIST - UFCE (Read Only)</h1>
+				<h1 th:if="${displaymode == 'resubSummary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Resubmission Summary View - LOAN LIST - UFCE</h1>
+				<h1 th:if="${displaymode == 'resubDetail'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Resubmission Detail View - LOAN LIST - UFCE</h1>
+
+				<!-- Normal Summary Table -->
+				<div th:if="${displaymode == 'summary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="loanlistTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Normal Detail Table -->
+				<div th:if="${displaymode == 'Details'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="loanlistDetailTable"
+								class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportdetails}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Archival Summary Table -->
+				<div th:if="${displaymode == 'archivalSummary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="archivalTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Archival Detail Table -->
+				<div th:if="${displaymode == 'archivalDetail'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="archivalDetailTable"
+								class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportdetails}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Resub Summary Table -->
+				<div th:if="${displaymode == 'resubSummary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="resubTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportsummary}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Resub Detail Table -->
+				<div th:if="${displaymode == 'resubDetail'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="resubDetailTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th>S.No</th>
+										<th>GL Code</th>
+										<th>Sol ID</th>
+										<th>CIF</th>
+										<th>Account Number</th>
+										<th>Name of Customer</th>
+										<th>Category</th>
+										<th>Staff</th>
+										<th>Loan Status</th>
+										<th>Currency</th>
+										<th>Scheme Type</th>
+										<th>Scheme Code</th>
+										<th>Gross Amount (BWP)</th>
+										<th>Gross Amount (INR)</th>
+										<th>Net Amount (BWP)</th>
+										<th>Fund Based INR Lakh (Revised)</th>
+										<th>Remark</th>
+										<th>Sanction Amount (LC)</th>
+										<th>Sanction Amount INR (Actual)</th>
+										<th>Sanction Amount INR (Lakh)</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="data : ${reportdetails}">
+										<td th:text="${data.sno}"></td>
+										<td th:text="${data.glCode}"></td>
+										<td th:text="${data.solId}"></td>
+										<td th:text="${data.cif}"></td>
+										<td th:text="${data.accNo}"></td>
+										<td th:text="${data.nameOfCustomer}"></td>
+										<td th:text="${data.category}"></td>
+										<td th:text="${data.staff}"></td>
+										<td th:text="${data.loanStatus}"></td>
+										<td th:text="${data.ccy}"></td>
+										<td th:text="${data.schType}"></td>
+										<td th:text="${data.schCode}"></td>
+										<td th:text="${data.grossAmountBwp != null ? #numbers.formatDecimal(data.grossAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.grossAmountInr != null ? #numbers.formatDecimal(data.grossAmountInr, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.netAmountBwp != null ? #numbers.formatDecimal(data.netAmountBwp, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.fundBasedInrLakhRevised != null ? #numbers.formatDecimal(data.fundBasedInrLakhRevised, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.remark}"></td>
+										<td th:text="${data.sanctionAmountLc != null ? #numbers.formatDecimal(data.sanctionAmountLc, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrActual != null ? #numbers.formatDecimal(data.sanctionAmountInrActual, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+										<td th:text="${data.sanctionAmountInrLakh != null ? #numbers.formatDecimal(data.sanctionAmountInrLakh, 1, 'COMMA', 2, 'POINT') : '0.00'}"
+											style="text-align: right;"></td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Loader Modal -->
+	<div class="modal fade" id="loader" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static"
+		data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; margin: auto;">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result Modal -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<style>
+	/* Table Hover & Cell Styling from IRRBB_ADVANCES */
+	.table-hover tbody tr:hover {
+		background-color: #f3f6f9 !important;
+	}
+
+	.table-cell tbody td:hover,
+	tbody td:hover,
+	tbody td:hover input,
+	tbody td:hover select,
+	tbody td:hover span {
+		background-color: #f0f0f0 !important;
+		cursor: pointer;
+	}
+
+	.table-bordered td,
+	.table-bordered th {
+		border: 1px solid #000 !important;
+	}
+
+	thead th {
+		position: sticky;
+		top: 0;
+		background-color: #D8D8D8 !important;
+		color: #000 !important;
+		font-weight: bold;
+		z-index: 1;
+	}
+
+	.table td {
+		background-color: #FFFFFF;
+	}
+
+	/* Column Auto-Sizing based on tbody td data content (thead th wraps to fit) */
+	.dataTables_scrollHeadInner,
+	.dataTables_scrollBody table {
+		width: 100% !important;
+	}
+
+	.dataTables_scrollHeadInner table {
+		width: 100% !important;
+	}
+
+	/* Data cells in tbody define column widths naturally */
+	table.dataTable tbody td {
+		white-space: nowrap !important;
+		padding: 6px 10px !important;
+		vertical-align: middle !important;
+	}
+
+	/* Header th text wraps to fit tbody column width */
+	table.dataTable thead th {
+		white-space: normal !important;
+		word-wrap: break-word !important;
+		overflow-wrap: break-word !important;
+		padding: 6px 8px !important;
+		vertical-align: bottom !important;
+		text-align: center !important;
+	}
+
+	.dataTables_length select {
+		margin-right: 8px;
+		margin-left: 4px;
+	}
+
+	div.dataTables_scrollBody {
+		border-bottom: 1px solid #dee2e6;
+	}
+
+	.scrollable-table-container {
+		max-height: 510px;
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+</style>
+
+</html>
