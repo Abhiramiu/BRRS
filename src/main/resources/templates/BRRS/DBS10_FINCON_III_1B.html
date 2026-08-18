@@ -1,2840 +1,903 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 
-<html lang="en"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<!-- 
+CREATED BY	: GOPIKA B
+CREATED ON	: 13.AUG.2026
+PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>DBS10_FINCON_III_1B</title>
-
-    <!-- ========================================================= -->
-    <!-- CSS -->
-    <!-- ========================================================= -->
-
-    <link rel="stylesheet"
-          type="text/css"
-          th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
-
-    <link rel="stylesheet"
-          type="text/css"
-          th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
-
-    <link rel="stylesheet"
-          type="text/css"
-          th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
-
-    <link rel="stylesheet"
-          type="text/css"
-          th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
-
-    <link rel="stylesheet"
-          th:href="@{/css/CustomButton.css}" />
-
-    <link rel="icon"
-          th:href="@{/favicon.ico}"
-          type="image/x-icon" />
-
-    <!-- ========================================================= -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================================================= -->
-
-    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-
-    <script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
-            th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}">
-    </script>
-
-    <script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
-
-    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
-
-    <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
-
-    <script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
-
-    <script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}">
-    </script>
-
-    <script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}">
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- COMMON CSS -->
-    <!-- ========================================================= -->
-
-    <style>
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
-        }
-
-        .card {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.10);
-            border-radius: 8px;
-        }
-
-        .btns {
-            float: right;
-            margin: 5px;
-        }
-
-        .formline {
-            padding-bottom: 15px;
-        }
-
-        .error {
-            color: red;
-            padding-left: 10px;
-        }
-
-        .btn-primary {
-            background-color: #E77400;
-            border-color: #0c0c0c;
-        }
-
-        .left-arrow-circle {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background-color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin-right: 10px;
-
-            transition: background-color 0.3s,
-                        transform 0.2s;
-        }
-
-        .left-arrow-circle i {
-            color: rgb(107,122,143);
-        }
-
-        .left-arrow-circle:hover {
-            background-color: rgb(107,122,143);
-            cursor: pointer;
-            transform: scale(1.05);
-            border: 2px solid white;
-        }
-
-        .left-arrow-circle:hover i {
-            color: white;
-        }
-
-        .boards {
-            transform: translateY(6px);
-
-            background-color: rgb(107,122,143);
-
-            color: white;
-
-            padding: 5px 100px;
-
-            border-radius: 8px;
-
-            overflow: hidden;
-
-            white-space: nowrap;
-
-            flex: 1;
-
-            min-width: 200px;
-
-            box-shadow: 0 0 10px rgb(107,122,143);
-
-            position: relative;
-        }
-
-        .scrolling-text {
-            display: inline-block;
-
-            font-family: "Courier New", monospace;
-
-            font-weight: bold;
-
-            letter-spacing: 1px;
-
-            animation: scroll-left 10s linear infinite;
-        }
-
-        @keyframes scroll-left {
-
-            0% {
-                transform: translateX(100%);
-            }
-
-            100% {
-                transform: translateX(-100%);
-            }
-
-        }
-
-        .white-text {
-            color: white !important;
-        }
-
-        .white-text span {
-            color: white !important;
-        }
-
-    
-/* =========================================================
-   DBS10 FINCON III (1)(b) TRANSACTION TABLE
-   ========================================================= */
-.detail-table-container {
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
-    margin-top: 10px;
-    padding-bottom: 8px;
-}
-
-#reportdetails {
-    min-width: 1500px;
-    width: 1500px !important;
-    border-collapse: collapse !important;
-    table-layout: fixed !important;
-}
-
-#reportdetails thead th {
-    background: #D8D8D8 !important;
-    color: #000 !important;
-    border: 1px solid #000 !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    font-weight: bold !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    line-height: 1.25 !important;
-    padding: 8px 6px !important;
-}
-
-#reportdetails tbody td {
-    border: 1px solid #000 !important;
-    background: #fff !important;
-    color: #000 !important;
-    text-align: center;
-    vertical-align: middle;
-    padding: 7px 6px !important;
-}
-
-#reportdetails th:nth-child(1), #reportdetails td:nth-child(1) { width: 120px !important; }
-#reportdetails th:nth-child(2), #reportdetails td:nth-child(2) { width: 150px !important; }
-#reportdetails th:nth-child(3), #reportdetails td:nth-child(3) { width: 160px !important; }
-#reportdetails th:nth-child(4), #reportdetails td:nth-child(4) { width: 170px !important; }
-#reportdetails th:nth-child(5), #reportdetails td:nth-child(5) { width: 240px !important; }
-#reportdetails th:nth-child(6), #reportdetails td:nth-child(6) { width: 135px !important; }
-#reportdetails th:nth-child(7), #reportdetails td:nth-child(7) { width: 135px !important; }
-#reportdetails th:nth-child(8), #reportdetails td:nth-child(8) { width: 130px !important; }
-#reportdetails th:nth-child(9), #reportdetails td:nth-child(9) { width: 130px !important; }
-#reportdetails th:nth-child(10), #reportdetails td:nth-child(10) { width: 180px !important; }
-
-</style>
-
-
-    <!-- ========================================================= -->
-    <!-- SUMMARY TABLE CSS -->
-    <!-- ========================================================= -->
-
-    <style>
-
-        #reports,
-        #reports th,
-        #reports td {
-            border: 1px solid black !important;
-        }
-
-        #reports {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        #reports thead th {
-            background-color: #D8D8D8;
-            color: #000000;
-            font-weight: bold;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .scrollable-table-container {
-
-            max-height: 600px;
-
-            overflow-y: auto;
-
-            overflow-x: auto;
-
-            border: 1px solid #ccc;
-        }
-
-        #reports thead th {
-
-            position: sticky;
-
-            top: 0;
-
-            background-color: #D8D8D8;
-
-            z-index: 10;
-        }
-
-    </style>
-
-
-    <!-- ========================================================= -->
-    <!-- DETAILS TABLE CSS - TRANSACTION STRUCTURE -->
-    <!-- ========================================================= -->
-    <style>
-        #reportdetails {
-            width: 100% !important;
-            min-width: 1500px;
-            border-collapse: collapse !important;
-            table-layout: fixed !important;
-            font-family: Arial, sans-serif;
-            margin: 0 !important;
-        }
-
-        #reportdetails th,
-        #reportdetails td {
-            border: 1px solid #000000 !important;
-        }
-
-        #reportdetails thead th {
-            background-color: #D8D8D8 !important;
-            color: #000000 !important;
-            font-weight: bold;
-            font-size: 13px;
-            text-align: center;
-            vertical-align: middle;
-            padding: 8px 6px;
-            white-space: normal !important;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            line-height: 1.25;
-        }
-
-        #reportdetails tbody td {
-            background-color: #FFFFFF !important;
-            color: #000000 !important;
-            font-size: 13px;
-            padding: 7px 8px;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        #reportdetails tbody tr:hover td {
-            background-color: #f3f6f9 !important;
-        }
-
-        /* Column widths - X010 to X090 */
-        #reportdetails th:nth-child(1), #reportdetails td:nth-child(1) { width: 125px; }
-        #reportdetails th:nth-child(2), #reportdetails td:nth-child(2) { width: 160px; }
-        #reportdetails th:nth-child(3), #reportdetails td:nth-child(3) { width: 170px; }
-        #reportdetails th:nth-child(4), #reportdetails td:nth-child(4) { width: 175px; }
-        #reportdetails th:nth-child(5), #reportdetails td:nth-child(5) { width: 240px; }
-        #reportdetails th:nth-child(6), #reportdetails td:nth-child(6) { width: 135px; }
-        #reportdetails th:nth-child(7), #reportdetails td:nth-child(7) { width: 135px; }
-        #reportdetails th:nth-child(8), #reportdetails td:nth-child(8) { width: 125px; }
-        #reportdetails th:nth-child(9), #reportdetails td:nth-child(9) { width: 130px; }
-        #reportdetails th:nth-child(10), #reportdetails td:nth-child(10) { width: 180px; }
-
-        /* Alignment */
-        #reportdetails tbody td:nth-child(1),
-        #reportdetails tbody td:nth-child(6),
-        #reportdetails tbody td:nth-child(7),
-        #reportdetails tbody td:nth-child(8) {
-            text-align: center !important;
-        }
-
-        #reportdetails tbody td:nth-child(9),
-        #reportdetails tbody td:nth-child(10) {
-            text-align: right !important;
-        }
-
-        /* Keep DataTables header/body aligned */
-        .dataTables_scrollHeadInner,
-        .dataTables_scrollBody table {
-            width: 100% !important;
-        }
-
-        .dataTables_scrollHeadInner table {
-            min-width: 1500px !important;
-        }
-
-        .dataTables_scrollBody {
-            overflow-x: auto !important;
-        }
-
-        table.dataTable {
-            border-collapse: collapse !important;
-        }
-
-        table.dataTable thead th,
-        table.dataTable tbody td {
-            border: 1px solid #000000 !important;
-        }
-
-        /* Do not let DataTables automatic numeric/date alignment change ours */
-        table.dataTable th.dt-type-numeric,
-        table.dataTable th.dt-type-date,
-        table.dataTable td.dt-type-numeric,
-        table.dataTable td.dt-type-date {
-            text-align: inherit !important;
-        }
-
-        .detail-table-container {
-            width: 100%;
-            max-height: 600px;
-            overflow-x: auto;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-        }
-    </style>
-
-    <!-- ========================================================= -->
-    <!-- PAGINATION CSS -->
-    <!-- ========================================================= -->
-
-    <style>
-
-        div.dataTables_wrapper div.dataTables_paginate {
-
-            text-align: right !important;
-
-            float: right !important;
-
-            width: auto;
-
-            margin-top: 10px;
-
-        }
-
-        div.dataTables_wrapper div.dataTables_info {
-
-            float: left !important;
-
-            margin-top: 10px;
-
-        }
-
-        .pagination {
-
-            margin: 0;
-
-        }
-
-        .page-item.active .page-link {
-
-            background-color: #386276;
-
-            border-color: #386276;
-
-        }
-
-        .page-link {
-
-            color: #386276;
-
-        }
-
-    </style>
-
-
-    <!-- ========================================================= -->
-    <!-- COMMON FUNCTIONS -->
-    <!-- ========================================================= -->
-
-    <script th:inline="javascript">
-
-        $(document).ready(function () {
-
-            $('#loader').modal('hide');
-
-            Maker_Checker_Function();
-
-        });
-
-
-        $(window).on('pageshow', function () {
-
-            $('#loader').modal('hide');
-
-        });
-
-
-        $(window).on('beforeunload', function () {
-
-            $('#loader').modal('hide');
-
-        });
-
-
-        function Maker_Checker_Function() {
-
-            $.ajax({
-
-                url: "/BRRS/getUserRole",
-
-                type: "GET",
-
-                success: function (roleId) {
-
-                    if (roleId === "ADM-C" ||
-                        roleId === "USR-C" ||
-                        roleId === "USER-AUDIT") {
-
-                        const modifyBtn =
-                            document.getElementById("addRecord");
-
-                        if (modifyBtn) {
-
-                            modifyBtn.style.display = "none";
-
-                        }
-
-                    }
-
-
-                    if (roleId === "ADM-M" ||
-                        roleId === "USR-M") {
-
-                        const button =
-                            document.getElementById("custom-tab-btnAdd");
-
-                        if (button) {
-
-                            button.style.display = "none";
-
-                        }
-
-                    }
-
-                },
-
-                error: function (err) {
-
-                    console.error(
-                        "Error fetching role:",
-                        err
-                    );
-
-                }
-
-            });
-
-        }
-
-
-        function home() {
-
-            $("#loader").modal("show");
-
-            location.href = 'Dashboard';
-
-        }
-
-
-        function back() {
-
-            $("#loader").modal("show");
-
-            window.history.back();
-
-        }
-
-
-        function showdetails() {
-
-            $('#loader').modal('show');
-
-            var Callurl =
-                /*[[@{'/Reports/'+${reportid}+'/Details'
-                    (asondate=${asondate},
-                     fromdate=${fromdate},
-                     todate=${todate},
-                     currency=${currency},
-                     dtltype=${dtltype},
-                     type=${type},
-                     version=${version})}]]*/ "";
-
-            location.href = Callurl;
-
-        }
-
-
-        function showsummary() {
-
-            $('#loader').modal('show');
-
-            var Callurl =
-                /*[[@{'/Reports/' + ${reportid}
-                    (dtltype='report',
-                     fromdate=${fromdate},
-                     todate=${todate},
-                     type=${type},
-                     version=${version},
-                     asondate=${asondate})}]]*/ "";
-
-            location.href = Callurl;
-
-        }
-
-
-        function activateTab(tabName) {
-
-            document
-                .querySelectorAll('.custom-tab-btn')
-                .forEach(function(btn) {
-
-                    btn.classList.remove('active');
-
-                });
-
-
-            if (tabName === 'summary') {
-
-                var summaryBtn =
-                    document.getElementById(
-                        'custom-tab-btnSummary'
-                    );
-
-                if (summaryBtn) {
-
-                    summaryBtn.classList.add('active');
-
-                }
-
-            }
-
-
-            if (tabName === 'Details') {
-
-                var detailsBtn =
-                    document.getElementById(
-                        'custom-tab-btnDetails'
-                    );
-
-                if (detailsBtn) {
-
-                    detailsBtn.classList.add('active');
-
-                }
-
-            }
-
-        }
-
-
-        window.onload = function () {
-
-            var selectedTab =
-                document.getElementById(
-                    "selectedTab"
-                );
-
-            if (selectedTab) {
-
-                activateTab(
-                    selectedTab.value
-                );
-
-            }
-
-        };
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- DOWNLOAD EXCEL -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function downloadfile(button) {
-
-            var reportid =
-                button.getAttribute('data-reportid');
-
-            var asondate =
-                button.getAttribute('data-asondate');
-
-            var fromdate =
-                button.getAttribute('data-fromdate');
-
-            var todate =
-                button.getAttribute('data-todate');
-
-            var currency =
-                button.getAttribute('data-currency');
-
-            var subreportid =
-                button.getAttribute('data-subreportid');
-
-            var secid =
-                button.getAttribute('data-secid');
-
-            var filename =
-                button.getAttribute('data-filename');
-
-            var type =
-                button.getAttribute('data-type');
-
-            var version =
-                button.getAttribute('data-version');
-
-
-            $('#loader').modal('show');
-
-
-            $.ajax({
-
-                url: './downloadExcel' +
-
-                    '?reportid=' + encodeURIComponent(reportid) +
-
-                    '&fromdate=' + encodeURIComponent(fromdate) +
-
-                    '&asondate=' + encodeURIComponent(asondate) +
-
-                    '&todate=' + encodeURIComponent(todate) +
-
-                    '&currency=' + encodeURIComponent(currency) +
-
-                    '&subreportid=' + encodeURIComponent(subreportid || '') +
-
-                    '&secid=' + encodeURIComponent(secid || '') +
-
-                    '&filename=' + encodeURIComponent(filename) +
-
-                    '&type=' + encodeURIComponent(type) +
-
-                    '&version=' + encodeURIComponent(version || ''),
-
-                type: 'GET',
-
-                xhrFields: {
-
-                    responseType: 'blob'
-
-                },
-
-
-                success: function (data) {
-
-                    if (data && data.size > 100) {
-
-                        const blob =
-                            new Blob(
-                                [data],
-                                {
-                                    type:
-                                        'application/vnd.ms-excel'
-                                }
-                            );
-
-                        const url =
-                            window.URL.createObjectURL(blob);
-
-                        const a =
-                            document.createElement('a');
-
-                        a.style.display = 'none';
-
-                        a.href = url;
-
-                        a.download = filename;
-
-                        document.body.appendChild(a);
-
-                        a.click();
-
-                        window.URL.revokeObjectURL(url);
-
-                        document.body.removeChild(a);
-
-                        showResultModal(
-                            'BRRS',
-                            filename +
-                            ' downloaded successfully.'
-                        );
-
-                    } else {
-
-                        showResultModal(
-                            'Information',
-                            'No data was available to create a download.'
-                        );
-
-                    }
-
-                },
-
-
-                error: function (
-                    jqXHR,
-                    textStatus,
-                    errorThrown
-                ) {
-
-                    console.error(
-                        "Download failed:",
-                        textStatus,
-                        errorThrown
-                    );
-
-                    showResultModal(
-                        'Error',
-                        'An error occurred while downloading the file. Please try again.'
-                    );
-
-                },
-
-
-                complete: function () {
-
-                    $('#loader').modal('hide');
-
-                }
-
-            });
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- ASYNC DETAIL DOWNLOAD -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function startReport(button) {
-
-            const alertMsg =
-                document.getElementById(
-                    "alertMessage"
-                );
-
-            const filename =
-                button.getAttribute(
-                    'data-filename'
-                );
-
-            const fromdate =
-                button.getAttribute(
-                    'data-fromdate'
-                );
-
-            const todate =
-                button.getAttribute(
-                    'data-todate'
-                );
-
-            const currency =
-                button.getAttribute(
-                    'data-currency'
-                );
-
-            const dtltype =
-                button.getAttribute(
-                    'data-dtltype'
-                );
-
-            const type =
-                button.getAttribute(
-                    'data-type'
-                );
-
-            const version =
-                button.getAttribute(
-                    'data-version'
-                );
-
-
-            const sessionfilename =
-                sessionStorage.getItem(
-                    "filename"
-                );
-
-
-            if (sessionfilename === filename) {
-
-                if (alertMsg) {
-
-                    alertMsg.innerHTML =
-                        'Download request already Processing...';
-
-                }
-
-                showAlert();
-
-                return;
-
-            }
-
-
-            if (alertMsg) {
-
-                alertMsg.innerHTML =
-                    'Download request Processing...';
-
-            }
-
-            showAlert();
-
-
-            const baseUrl =
-                '/BRRS/Reports/startreport';
-
-
-            const downloadUrl =
-                baseUrl +
-
-                '?filename=' +
-                encodeURIComponent(filename) +
-
-                '&fromdate=' +
-                encodeURIComponent(fromdate || '') +
-
-                '&todate=' +
-                encodeURIComponent(todate || '') +
-
-                '&currency=' +
-                encodeURIComponent(currency || '') +
-
-                '&dtltype=' +
-                encodeURIComponent(dtltype || '') +
-
-                '&type=' +
-                encodeURIComponent(type || '') +
-
-                '&version=' +
-                encodeURIComponent(version || '');
-
-
-            fetch(downloadUrl)
-
-                .then(function(res) {
-
-                    return res.text();
-
-                })
-
-                .then(function(jobId) {
-
-                    sessionStorage.setItem(
-                        "jobId",
-                        jobId
-                    );
-
-                    sessionStorage.setItem(
-                        "filename",
-                        filename
-                    );
-
-                    checkReport(jobId);
-
-                })
-
-                .catch(function(error) {
-
-                    console.error(
-                        "Report start error:",
-                        error
-                    );
-
-                    showResultModal(
-                        'Error',
-                        'Unable to start report download.'
-                    );
-
-                });
-
-        }
-
-
-        function checkReport(jobId) {
-
-            fetch(
-                '/BRRS/Reports/checkreport?jobId=' +
-                encodeURIComponent(jobId)
-            )
-
-            .then(function(res) {
-
-                return res.text();
-
-            })
-
-            .then(function(status) {
-
-                if (status === "READY") {
-
-                    const filename =
-                        sessionStorage.getItem(
-                            "filename"
-                        );
-
-                    downloadDetailfile(
-                        jobId,
-                        filename
-                    );
-
-                    sessionStorage.removeItem(
-                        "jobId"
-                    );
-
-                    sessionStorage.removeItem(
-                        "filename"
-                    );
-
-
-                } else if (status === "PROCESSING") {
-
-                    setTimeout(
-                        function() {
-
-                            checkReport(jobId);
-
-                        },
-                        5000
-                    );
-
-
-                } else if (status === "ERROR") {
-
-                    showResultModal(
-                        'Information',
-                        'No data was available to create a download.'
-                    );
-
-                    sessionStorage.removeItem(
-                        "jobId"
-                    );
-
-                    sessionStorage.removeItem(
-                        "filename"
-                    );
-
-                }
-
-            })
-
-            .catch(function(error) {
-
-                console.error(
-                    "Report status error:",
-                    error
-                );
-
-            });
-
-        }
-
-
-        function downloadDetailfile(
-            jobId,
-            filename
-        ) {
-
-            $.ajax({
-
-                url:
-                    '/BRRS/Reports/downloaddetailExcel' +
-
-                    '?jobId=' +
-                    encodeURIComponent(jobId) +
-
-                    '&filename=' +
-                    encodeURIComponent(filename),
-
-                type: 'GET',
-
-                xhrFields: {
-
-                    responseType: 'blob'
-
-                },
-
-
-                success: function(data) {
-
-                    $('#loader').modal('hide');
-
-
-                    if (data && data.size > 100) {
-
-                        const blob =
-                            new Blob(
-                                [data],
-                                {
-                                    type:
-                                        'application/vnd.ms-excel'
-                                }
-                            );
-
-                        const url =
-                            window.URL.createObjectURL(blob);
-
-                        const a =
-                            document.createElement('a');
-
-                        a.style.display = 'none';
-
-                        a.href = url;
-
-                        a.download = filename;
-
-                        document.body.appendChild(a);
-
-                        a.click();
-
-                        window.URL.revokeObjectURL(url);
-
-                        document.body.removeChild(a);
-
-
-                        showResultModal(
-                            'BRRS',
-                            filename +
-                            ' downloaded successfully.'
-                        );
-
-                    } else {
-
-                        showResultModal(
-                            'Information',
-                            'No data was available to create a download.'
-                        );
-
-                    }
-
-                },
-
-
-                error: function(
-                    jqXHR,
-                    textStatus,
-                    errorThrown
-                ) {
-
-                    $('#loader').modal('hide');
-
-                    console.error(
-                        "Download failed:",
-                        textStatus,
-                        errorThrown
-                    );
-
-                    showResultModal(
-                        'Error',
-                        'An error occurred while downloading the file.'
-                    );
-
-                }
-
-            });
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- MODIFY / CANCEL -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function showmodify(btn) {
-
-            $(".Show_input")
-                .not(".nonEditable")
-                .removeAttr("readonly")
-                .removeAttr("disabled");
-
-
-            $("#submitButton").show();
-
-            $("#cancelRecord").show();
-
-            $(btn).hide();
-
-        }
-
-
-        function cancelModify() {
-
-            if (
-                confirm(
-                    "Are you sure you want to cancel changes? Page will reload."
-                )
-            ) {
-
-                location.reload();
-
-            }
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- REPORT ID -->
-    <!-- ========================================================= -->
-
-    <script th:inline="javascript">
-
-        const reportId =
-            /*[[${reportid}]]*/ null;
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- DETAIL EDIT -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function openDBS10_FINCON_III_1BDetail(
-            elem,
-            mode
-        ) {
-
-            var type =
-                elem.getAttribute(
-                    "data-type"
-                );
-
-
-            if (type === "ARCHIVAL") {
-
-                showResultModal(
-                    'BRRS',
-                    'Archived Data cannot be modified'
-                );
-
-                return;
-
-            }
-
-
-            const accountNumber =
-                elem.getAttribute(
-                    "data-accountNumber"
-                );
-
-
-            const asondate =
-                elem.getAttribute(
-                    "data-asondate"
-                );
-
-
-            location.href =
-                `/BRRS/Reports/${reportId}/Detailspage` +
-
-                `?formmode=${mode}` +
-
-                `&accountNumber=${encodeURIComponent(accountNumber)}` +
-
-                `&asondate=${encodeURIComponent(asondate)}`;
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- DETAIL UPDATE -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function submitDBS10_FINCON_III_1BUpdate() {
-
-            const formData =
-                $('#DetailForm').serialize();
-
-
-            const previousUrl =
-                document.referrer;
-
-
-            $('#loader').modal('show');
-
-
-            $.ajax({
-
-                url:
-                    `/BRRS/Reports/${reportId}/update`,
-
-                type: 'POST',
-
-                data: formData,
-
-
-                success: function(response) {
-
-                    $('#loader').modal('hide');
-
-
-                    showResultModal(
-                        'BRRS',
-                        response ||
-                        'Updated Successfully.'
-                    );
-
-
-                    setTimeout(
-                        function() {
-
-                            if (previousUrl) {
-
-                                window.location.href =
-                                    previousUrl;
-
-                            } else {
-
-                                window.history.back();
-
-                            }
-
-                        },
-                        1500
-                    );
-
-                },
-
-
-                error: function(
-                    xhr,
-                    status,
-                    error
-                ) {
-
-                    $('#loader').modal('hide');
-
-
-                    console.error(
-                        "Update error:",
-                        error
-                    );
-
-
-                    showResultModal(
-                        'Error',
-                        'Failed to update record. Please try again.'
-                    );
-
-                }
-
-            });
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- RESULT MODAL FUNCTIONS -->
-    <!-- ========================================================= -->
-
-    <script>
-
-        function closemodels() {
-
-            $("#resultModal").modal("hide");
-
-            $('#loader').modal('hide');
-
-
-            setTimeout(
-                function() {
-
-                    location.reload();
-
-                },
-                300
-            );
-
-        }
-
-
-        function closemodel() {
-
-            $('#alert').modal('hide');
-
-            $('#resultModal').modal('hide');
-
-        }
-
-
-        function showResultModal(
-            title,
-            message
-        ) {
-
-            $('#resultModalLabel')
-                .text(title);
-
-            $('#resultModalBody')
-                .text(message);
-
-            $('#resultModal')
-                .modal('show');
-
-        }
-
-    </script>
-
-
-    <!-- ========================================================= -->
-    <!-- DATATABLES -->
-    <!-- ========================================================= -->
-
-    <script th:inline="javascript">
-        $(document).ready(function () {
-
-            if ($('#reportdetails').length) {
-
-                var table = $('#reportdetails').DataTable({
-                    scrollY: "550px",
-                    scrollX: true,
-                    scrollCollapse: true,
-                    autoWidth: false,
-                    paging: true,
-                    searching: true,
-                    lengthChange: false,
-                    ordering: true,
-                    pageLength: 100,
-                    fixedHeader: false,
-                    order: [],
-                    columnDefs: [
-                        { targets: 0, width: "125px", className: "text-center" },
-                        { targets: 1, width: "160px" },
-                        { targets: 2, width: "170px" },
-                        { targets: 3, width: "175px" },
-                        { targets: 4, width: "240px" },
-                        { targets: 5, width: "135px", className: "text-center" },
-                        { targets: 6, width: "135px", className: "text-center" },
-                        { targets: 7, width: "125px", className: "text-center" },
-                        { targets: 8, width: "130px", className: "text-right" },
-                        { targets: 9, width: "180px", className: "text-right" }
-                    ],
-                    dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
-                });
-
-                $(window).on('resize', function () {
-                    table.columns.adjust();
-                });
-
-                setTimeout(function () {
-                    table.columns.adjust();
-                }, 500);
-            }
-        });
-    </script>
-
-
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>DBS1_FINCON_III_1B</title>
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<!-- JavaScript -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc0000;
+			border-color: #161617;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+		}
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		#reports,
+		#reports th,
+		#reports td {
+			border: 1px solid black !important;
+		}
+
+		#reports {
+			border-collapse: collapse;
+		}
+
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 100px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+
+		.scrollable-table-container {
+			max-height: 600px;
+			overflow-y: auto;
+			overflow-x: hidden;
+			border: 1px solid #ccc;
+		}
+
+		.scrollable-table-container thead tr:nth-child(1) {
+			position: sticky;
+			top: 0;
+			background-color: #b3b6b9;
+			z-index: 5;
+		}
+
+		.scrollable-table-container thead tr:nth-child(2) {
+			position: sticky;
+			top: 34px;
+			background-color: #b3b6b9;
+			z-index: 4;
+		}
+
+		.scrollable-table-container thead tr:nth-child(3) {
+			position: sticky;
+			top: 67px;
+			background-color: #b3b6b9;
+			z-index: 3;
+		}
+	</style>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
+
+		$(document).ready(function () {
+			$('#loader').modal('hide');
+			Maker_Checker_Function();
+		});
+
+		$(window).on('pageshow beforeunload', function () {
+			$('#loader').modal('hide');
+		});
+
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+				}
+			});
+		}
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard';
+		}
+
+		function back() {
+			$("#loader").modal("toggle");
+			window.history.back();
+		}
+
+		function showdetails() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ '';
+			location.href = Callurl;
+		}
+
+		function showsummary() {
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/ '';
+			location.href = Callurl;
+		}
+
+		function activateTab(tabName) {
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+
+		window.onload = function () {
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+
+		function downloadfile(button) {
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				},
+				complete: function () {
+					$('#loader').modal('hide');
+				}
+			});
+		}
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				showResultModal('Information', 'Download request already Processing...');
+				return;
+			}
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+
+			fetch(downloadUrl)
+				.then(res => res.text())
+				.then(jobId => {
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename);
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					} else if (status === "PROCESSING") {
+						setTimeout(() => checkReport(jobId), 5000);
+					} else if (status === "ERROR") {
+						showResultModal('Error', 'No data was available to create a download.');
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+		function downloadDetailfile(jobId, filename) {
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				location.reload();
+			}
+		}
+
+
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
+
+		function closemodel() {
+			$('#resultModal').modal('hide');
+		}
+
+		function showResultModal(title, message) {
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			$('#resultModal').modal('show');
+		}
+
+		function redirectBack() {
+			window.history.back();
+		}
+
+		/* Upload Modal JS Handlers */
+		function openUploadModal() {
+			$('#uploadFileModal').modal('show');
+		}
+
+		function submitExcelUpload() {
+
+			var category = $('input[name="fileCategory"]:checked').val();
+			var dateInput = document.getElementById('uploadDate').value;
+			var fileInput = document.getElementById('excelFile');
+
+			// Date validation
+			if (!dateInput) {
+				showResultModal('Alert', 'Please select a date.');
+				return;
+			}
+
+			// File validation
+			if (fileInput.files.length === 0) {
+				showResultModal('Alert', 'Please select a file.');
+				return;
+			}
+
+			var selectedFile = fileInput.files[0];
+			var fileName = selectedFile.name.toLowerCase();
+
+			// Allow only Borrowing or Placement files
+			if (!fileName.includes("borrowing") &&
+				!fileName.includes("placement")) {
+
+				showResultModal(
+					'Invalid File',
+					'Please upload a valid file.'
+				);
+
+				fileInput.value = '';
+				return;
+			}
+
+			// Borrowing validation
+			if (category === "Borrowing" &&
+				!fileName.includes("borrowing")) {
+
+				showResultModal(
+					'Invalid File',
+					'Please upload a valid Borrowing file.'
+				);
+
+				fileInput.value = '';
+				return;
+			}
+
+			// Placement validation
+			if (category === "Placement" &&
+				!fileName.includes("placement")) {
+
+				showResultModal(
+					'Invalid File',
+					'Please upload a valid Placement file.'
+				);
+
+				fileInput.value = '';
+				return;
+			}
+
+			var formData = new FormData();
+			formData.append("file", selectedFile);
+			formData.append("asondate", dateInput);
+			formData.append("category", category);
+
+			$('#uploadFileModal').modal('hide');
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/uploadPlacementBorrowing',
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					showResultModal('Success', response);
+				},
+
+				error: function (jqXHR) {
+					$('#loader').modal('hide');
+					showResultModal(
+						'Error',
+						jqXHR.responseText || 'Upload failed.'
+					);
+				}
+			});
+		}
+	</script>
 </head>
 
-
 <body>
-
-
-<!-- ========================================================= -->
-<!-- MAIN CONTAINER -->
-<!-- ========================================================= -->
-
-<div class="container-fluid"
-     style="padding-left:0px;padding-right:0px;">
-
-
-    <div class="row">
-
-
-        <!-- HEADER MENU -->
-
-        <div th:insert="HeaderMenu :: header"></div>
-
-
-        <!-- ===================================================== -->
-        <!-- PAGE HEADER -->
-        <!-- ===================================================== -->
-
-        <div class="card"
-             style="width:100%;">
-
-            <div class="card-header"
-                 style="
-                    background-color:rgb(107,122,143);
-                    display:flex;
-                    align-items:center;
-                    justify-content:space-between;
-                 ">
-
-
-                <div style="
-                    display:flex;
-                    align-items:center;
-                    width:75%;
-                ">
-
-
-                    <!-- BACK -->
-
-                    <div class="left-arrow-circle"
-                         onclick="back();">
-
-                        <i class="fa fa-arrow-left"></i>
-
-                    </div>
-
-
-                    <!-- TITLE -->
-
-                    <h5 style="
-                        font-family:Arial;
-                        font-size:20px;
-                        font-weight:bold;
-                        color:white;
-                        margin:0 10px;
-                        white-space:nowrap;
-                    ">
-
-                        DBS10 FINCON III (1)(b)
-
-                    </h5>
-
-
-                    <!-- BANK BOARD -->
-
-                    <div class="boards">
-
-                        <p class="scrolling-text">
-
-                            BANK OF BOTSWANA -
-                            BANKING SUPERVISION DEPARTMENT
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ================================================= -->
-                <!-- RIGHT HEADER -->
-                <!-- ================================================= -->
-
-                <div class="custom-tab-btn-group nav-buttons"
-                     style="
-                        display:flex;
-                        color:white;
-                        align-items:center;
-                     ">
-
-
-                    <!-- REPORT DATE -->
-
-                    <span class="white-text"
-                          style="
-                            font-size:16px;
-                            margin-right:20px;
-                            margin-left:5px;
-                          ">
-
-                        Report Date:
-
-                        <span
-                            th:text="${#strings.replace(asondate,'/','-')}">
-                            2025-09-18
-                        </span>
-
-                    </span>
-
-
-                    <input type="hidden"
-                           id="selectedTab"
-                           th:value="${displaymode}">
-
-
-                    <!-- SUMMARY BUTTON -->
-
-                    <button type="button"
-                            class="custom-tab-btn"
-                            id="custom-tab-btnSummary"
-                            onclick="showsummary();"
-                            th:if="${displaymode == 'Details'}">
-
-                        Summary
-
-                    </button>
-
-
-                    <!-- MODIFY -->
-
-                    <button type="button"
-                            class="custom-tab-btn"
-                            id="addRecord"
-                            onclick="showmodify(this);"
-                            title="Click to EDIT Records"
-                            th:if="${type != 'ARCHIVAL'}">
-
-                        Modify
-
-                    </button>
-
-
-                    <!-- CANCEL -->
-
-                    <button type="button"
-                            class="custom-tab-btn"
-                            id="cancelRecord"
-                            onclick="cancelModify();"
-                            style="display:none;">
-
-                        Cancel
-
-                    </button>
-
-
-                    <!-- DOWNLOAD SUMMARY -->
-
-                    <button type="button"
-                            class="custom-tab-btn"
-                            id="downloadSummaryBtn"
-                            th:if="${displaymode == 'summary'}"
-                            th:attr="
-                                data-reportid=${reportid},
-                                data-asondate=${asondate},
-                                data-fromdate=${fromdate},
-                                data-todate=${todate},
-                                data-currency=${currency},
-                                data-dtltype=${dtltype},
-                                data-filename='DBS10_FINCON_III_1B.xlsx',
-                                data-type=${type},
-                                data-version=${version}
-                            "
-                            onclick="downloadfile(this);">
-
-                        <i class="fa fa-download"></i>
-
-                    </button>
-
-
-                    <!-- DOWNLOAD DETAIL -->
-
-                    <button type="button"
-                            class="custom-tab-btn"
-                            id="downloadDetailBtn"
-                            th:if="${displaymode == 'Details'}"
-                            th:attr="
-                                data-fromdate=${fromdate},
-                                data-todate=${todate},
-                                data-filename='DBS10_FINCON_III_1B_Detail',
-                                data-type=${type},
-                                data-version=${version}
-                            "
-                            onclick="startReport(this);">
-
-                        <i class="fa fa-download"></i>
-
-                    </button>
-
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ========================================================= -->
-        <!-- SUMMARY -->
-        <!-- ========================================================= -->
-
-        <div th:if="${displaymode == 'summary'}"
-             style="width:100%;">
-
-            <div class="row">
-
-                <form action="#"
-                      method="POST"
-                      id="fileupload"
-                      style="width:100%;">
-
-
-                    <div class="col-sm-12">
-
-
-                        <div class="table-wrapper
-                                    table-responsive
-                                    scrollable-table-container">
-
-
-                            <table class="
-                                    sticky-header-table
-                                    table
-                                    table-bordered
-                                    table-cell
-                                    table-sm"
-                                   id="reports">
-
-
-                                <thead>
-
-
-                                    <tr>
-
-                                        <th
-                                            style="
-                                                background-color:#FFFFFF;
-                                            ">
-                                        </th>
-
-                                        <th colspan="3"
-                                            style="
-                                                background-color:#D8D8D8;
-                                                text-align:left;
-                                            ">
-
-                                            DBS10 FINCON III (1)(b)
-
-                                        </th>
-
-                                    </tr>
-
-
-                                    <tr>
-
-                                        <th
-                                            style="
-                                                background-color:#FFFFFF;
-                                                border-color:transparent;
-                                            ">
-                                        </th>
-
-                                   
-
-                                    </tr>
-									<!-- FIRST HEADER ROW -->
-									      <tr>
-
-									          <th rowspan="2">
-									              Transaction Serial Number
-									          </th>
-
-									          <th rowspan="2">
-									              Name of SFIs
-									          </th>
-
-									          <th rowspan="2">
-									              Name of Counter party
-									          </th>
-
-									          <th rowspan="2">
-									              Nature of Transactions
-									          </th>
-
-									          <th rowspan="2">
-									              Original issuer of the paper / security,
-									              if applicable
-									          </th>
-
-									          <!-- DATE GROUP -->
-									          <th colspan="2">
-									              Date of Transactions
-									          </th>
-
-									          <th rowspan="2">
-									              Tenor of the Transactions<br>
-									              (in days)
-									          </th>
-
-									          <th rowspan="2">
-									              Amount
-									          </th>
-
-									          <th rowspan="2">
-									              Return / yield<br>
-									              on the investment (in %)
-									          </th>
-
-									      </tr>
-
-
-									      <!-- SECOND HEADER ROW -->
-									      <tr>
-
-									          <th>
-									              Beginning Date<br>
-									              YYYY-MM-DD
-									          </th>
-
-									          <th>
-									              Ending Date<br>
-									              YYYY-MM-DD
-									          </th>
-
-									      </tr>
-
-
-									      <!-- X-SERIES CODE ROW -->
-									      <tr>
-
-									          <th>
-									              
-									          </th>
-
-									          <th>
-									              
-									          </th>
-
-									          <th>
-									              
-									          </th>
-
-									          <th>
-									             
-									          </th>
-
-									          <th>
-									              X010
-									          </th>
-
-									          <th>
-									              X020
-									          </th>
-
-									          <th>
-									              X030
-									          </th>
-
-									          <th>
-									              X040
-									          </th>
-
-									          <th>
-									              X050
-									          </th>
-
-									          <th>
-									              X060
-									          </th>
-
-									      </tr>
-
-									  </thead>
-
-
-									  <!-- BACKEND DATA -->
-									  <tbody>
-
-									      <tr th:each="report, srlno : ${reportsummary}">
-
-									          <!-- X010 -->
-									          <td th:text="${report.transSerialNo}">
-									          </td>
-
-									          <!-- X020 -->
-									          <td th:text="${report.nameOfSfis}">
-									          </td>
-
-									          <!-- X030 -->
-									          <td th:text="${report.nameOfCounterParty}">
-									          </td>
-
-									          <!-- X040 -->
-									          <td th:text="${report.natureOfTrans}">
-									          </td>
-
-									          <!-- X050 -->
-									          <td th:text="${report.orgIssue}">
-									          </td>
-
-									          <!-- X060 -->
-									          <td th:text="${report.dateOfTrnsBegin != null ?
-									                  #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}">
-									          </td>
-
-									          <!-- X061 -->
-									          <td th:text="${report.dateOfTrnsEnd != null ?
-									                  #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}">
-									          </td>
-
-									          <!-- X070 -->
-									          <td th:text="${report.tenorOfTrans}">
-									          </td>
-
-									          <!-- X080 -->
-									          <td th:text="${report.amt != null ?
-									                  #numbers.formatDecimal(report.amt, 1, 'COMMA', 2, 'POINT') : ''}">
-									          </td>
-
-									          <!-- X090 -->
-									          <td th:text="${report.returnVal}">
-									          </td>
-
-									      </tr>
-
-                                </tbody>
-
-
-                            </table>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </form>
-
-            </div>
-
-        </div>
-
-
-        <!-- ========================================================= -->
-        <!-- DETAILS -->
-        <!-- ========================================================= -->
-
-        <div th:if="${displaymode == 'Details'}"
-             style="width:100%;">
-
-            <div class="row">
-
-                <div class="col-sm-12">
-
-
-                    <div class="detail-table-container">
-
-
-                        <table
-                            class="table table-striped table-bordered table-hover"
-                            id="reportdetails">
-
-                            <!-- ================================================= -->
-                            <!-- TRANSACTION REPORT HEADER -->
-                            <!-- ================================================= -->
-                                                        <thead>
-                                <tr>
-                                    <th rowspan="2">Transaction Serial Number</th>
-                                    <th rowspan="2">Name of SFIs</th>
-                                    <th rowspan="2">Name of Counter party</th>
-                                    <th rowspan="2">Nature of Transactions</th>
-                                    <th rowspan="2">
-                                        Original issuer of the paper / security, if applicable
-                                    </th>
-                                    <th colspan="2">Date of Transactions</th>
-                                    <th rowspan="2">
-                                        Tenor of the Transactions<br>(in days)
-                                    </th>
-                                    <th rowspan="2">Amount</th>
-                                    <th rowspan="2">
-                                        Return / yield<br>on the investment (in %)
-                                    </th>
-                                </tr>
-
-                                <tr>
-                                    <th>
-                                        Beginning Date<br>
-                                        YYYY-MM-DD
-                                    </th>
-                                    <th>
-                                        Ending Date<br>
-                                        YYYY-MM-DD
-                                    </th>
-                                </tr>
-
-                                <tr>
-                                    <th>X010</th>
-                                    <th>X020</th>
-                                    <th>X030</th>
-                                    <th>X040</th>
-                                    <th>X050</th>
-                                    <th>X060</th>
-                                    <th>X061</th>
-                                    <th>X070</th>
-                                    <th>X080</th>
-                                    <th>X090</th>
-                                </tr>
-                            </thead>
-
-                            
-
-                            <!-- ================================================= -->
-                            <!-- BACKEND DATA -->
-                            <!-- Uses the Summary Entity fields from the service. -->
-                            <!-- The service exposes these fields:               -->
-                            <!-- transSerialNo, nameOfSfis, nameOfCounterParty,   -->
-                            <!-- natureOfTrans, orgIssue, dateOfTrnsBegin,       -->
-                            <!-- dateOfTrnsEnd, tenorOfTrans, amt, returnVal.      -->
-                            <!-- ================================================= -->
-                            <tbody>
-                                <tr th:each="report, srlno : ${reportsummary}">
-
-                                    <!-- X010 -->
-                                    <td th:text="${report.transSerialNo}"></td>
-
-                                    <!-- X020 -->
-                                    <td th:text="${report.nameOfSfis}"></td>
-
-                                    <!-- X030 -->
-                                    <td th:text="${report.nameOfCounterParty}"></td>
-
-                                    <!-- X040 -->
-                                    <td th:text="${report.natureOfTrans}"></td>
-
-                                    <!-- X050 -->
-                                    <td th:text="${report.orgIssue}"></td>
-
-                                    <!-- X060 -->
-                                    <td
-                                        th:text="${report.dateOfTrnsBegin != null ?
-                                            #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}">
-                                    </td>
-
-                                    <!-- X061 -->
-                                    <td
-                                        th:text="${report.dateOfTrnsEnd != null ?
-                                            #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}">
-                                    </td>
-
-                                    <!-- X070 -->
-                                    <td th:text="${report.tenorOfTrans}"></td>
-
-                                    <!-- X080 -->
-                                    <td
-                                        th:text="${report.amt != null ?
-                                            #numbers.formatDecimal(report.amt, 1, 'COMMA', 2, 'POINT') : ''}">
-                                    </td>
-
-                                    <!-- X090 -->
-                                    <td th:text="${report.returnVal}"></td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-                    </div>
-
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ========================================================= -->
-        <!-- DETAIL FORM -->
-        <!-- ========================================================= -->
-
-        <div
-            th:if="${formmode == 'edit'}"
-            class="card"
-            style="width:100%;">
-
-            <div class="card-body">
-
-
-                <form
-                    th:object="${Data}"
-                    method="post"
-                    id="DetailForm">
-
-
-                    <!-- CUSTOMER ID -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Customer ID
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{customerId}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Account Number
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{accountNumber}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SCHEME / GL -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Scheme Code
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{schemeCode}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            GL Code
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{glCode}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- GL DESCRIPTION / TYPE -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            GL Description
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{glDescription}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Type of Loan
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{typeOfLoan}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- NAME / CURRENCY -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Name
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{name}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Account Currency
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{accountCurrency}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- OUTSTANDING BALANCES -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Outstanding Balance Account Currency
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                th:field="*{outstandingBalanceAcctCcy}"
-                                class="form-control form-control-sm"
-                                style="text-align:right;">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Outstanding Balance INR
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                th:field="*{outstandingBalanceInr}"
-                                class="form-control form-control-sm"
-                                style="text-align:right;">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- DATES -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Account Opening Date
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="date"
-                                th:field="*{accountOpeningDate}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Maturity Date
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="date"
-                                th:field="*{maturityDate}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- TENOR / EMI -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Tenor Month
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                th:field="*{tenorMonth}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            EMI of Loan
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                th:field="*{emiOfLoan}"
-                                class="form-control form-control-sm"
-                                style="text-align:right;">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- FLOATING / BENCHMARK -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Floating / Fixed
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{floatingFixed}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Existing Benchmark
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{existingBenchmark}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- REPRICING -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Existing Repricing Frequency
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{existingRepricingFrequency}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Last Repricing Date
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="date"
-                                th:field="*{lastRepricingDate}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- NEXT REPRICING / SPREAD -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Next Repricing Date
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="date"
-                                th:field="*{nextRepricingDate}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Spread Over Benchmark
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{spreadOverBenchmark}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- ROI / CAP FLOOR -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Final ROI
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{finalRoi}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Cap / Floor Rate of Interest
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{capFloorRateOfInterest}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- ASSET STATUS / REPORT DATE -->
-
-                    <div class="row formline">
-
-                        <label class="col-sm-2">
-                            Asset Status
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="text"
-                                th:field="*{assetStatus}"
-                                class="form-control form-control-sm">
-
-                        </div>
-
-
-                        <div class="col-sm-1"></div>
-
-
-                        <label class="col-sm-2">
-                            Report Date
-                        </label>
-
-                        <div class="col-sm-3">
-
-                            <input
-                                type="date"
-                                th:field="*{reportDate}"
-                                class="form-control form-control-sm"
-                                readonly>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- UPDATE -->
-
-                    <div
-                        style="
-                            text-align:center;
-                            margin-top:20px;
-                        ">
-
-                        <button
-                            type="button"
-                            class="custom-tab-btn"
-                            onclick="
-                                submitDBS10_FINCON_III_1BUpdate();
-                            ">
-
-                            Update
-
-                        </button>
-
-                    </div>
-
-
-                </form>
-
-
-            </div>
-
-        </div>
-
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- LOADER -->
-<!-- ========================================================= -->
-
-<div class="modal fade"
-     id="loader"
-     data-backdrop="static"
-     data-keyboard="false">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content"
-             style="background:transparent;">
-
-            <div class="modal-body"
-                 style="text-align:center;">
-
-                <img
-                    th:src="@{/images/loader.gif}"
-                    id="bfirelogo"
-                    style="
-                        width:153px;
-                        height:auto;
-                        background-color:transparent;
-                    "
-                    alt="Bornfire">
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- RESULT MODAL -->
-<!-- ========================================================= -->
-
-<div class="modal fade"
-     id="resultModal">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-
-            <div class="menu-title-header">
-
-                <div
-                    class="modal-title"
-                    id="resultModalLabel"
-                    style="
-                        text-align:center;
-                        color:white;
-                    ">
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="modal-body"
-                style="
-                    text-align:center;
-                    font-size:1.1rem;
-                ">
-
-                <p id="resultModalBody"></p>
-
-
-                <button
-                    type="button"
-                    class="custom-tab-btn"
-                    onclick="closemodels();"
-                    data-dismiss="modal">
-
-                    OK
-
-                </button>
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- CELL RESULT MODAL -->
-<!-- ========================================================= -->
-
-<div class="modal fade"
-     id="cellresultModal">
-
-    <div class="modal-dialog modal-dialog-centered">
-
-        <div class="modal-content">
-
-
-            <div
-                class="menu-title-header"
-                style="
-                    background-color:#6c7a91;
-                    padding:8px;
-                ">
-
-                <div
-                    class="modal-title"
-                    id="cellresultModalLabel"
-                    style="
-                        text-align:center;
-                        color:white;
-                    ">
-
-                    Do you want to open the report?
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="modal-body"
-                style="
-                    text-align:center;
-                    font-size:1.1rem;
-                ">
-
-
-                <button
-                    type="button"
-                    class="custom-tab-btn cancel-btn"
-                    data-dismiss="modal"
-                    style="
-                        margin-right:10px;
-                        border:2px solid #6c7a91;
-                        background:white;
-                        color:black;
-                        border-radius:20px;
-                        padding:5px 15px;
-                    ">
-
-                    Cancel
-
-                </button>
-
-
-                <button
-                    type="button"
-                    class="custom-tab-btn yes-btn"
-                    style="
-                        background:#6c7a91;
-                        color:white;
-                        border:none;
-                        border-radius:20px;
-                        padding:5px 20px;
-                    ">
-
-                    Yes
-
-                </button>
-
-
-            </div>
-
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!-- CELL DETAILS FUNCTION -->
-<!-- ========================================================= -->
-
-<script th:inline="javascript">
-
-    function showdetailsbyRowAndColumn(a) {
-
-        var rowId =
-            a.getAttribute(
-                'reportLable'
-            );
-
-        var columnId =
-            a.getAttribute(
-                'reportAddlCriteria1'
-            );
-
-        var cellValue =
-            a.textContent ||
-            a.innerText;
-
-
-        if (
-            cellValue &&
-            cellValue.trim() !== '0'
-        ) {
-
-
-            document.getElementById(
-                "cellresultModalLabel"
-            ).innerText =
-                "Do you want to open details for Row: " +
-                rowId +
-                " and Column: " +
-                columnId +
-                "?";
-
-
-            $('#cellresultModal')
-                .modal('show');
-
-
-            document.querySelector(
-                '.yes-btn'
-            ).onclick = function() {
-
-
-                $('#cellresultModal')
-                    .modal('hide');
-
-
-                $('#loader')
-                    .modal('show');
-
-
-                var Callurl =
-                    /*[[
-                        @{'/Reports/' + ${reportid} + '/Details'
-                        (
-                            asondate=${asondate},
-                            fromdate=${fromdate},
-                            todate=${todate},
-                            currency=${currency},
-                            dtltype=${dtltype},
-                            type=${type},
-                            version=${version}
-                        )}
-                    ]]*/ "";
-
-
-                Callurl +=
-                    "&filter=" +
-                    encodeURIComponent(
-                        rowId +
-                        "," +
-                        columnId
-                    );
-
-
-                location.href =
-                    Callurl;
-
-            };
-
-
-        } else {
-
-            showResultModal(
-                "Alert",
-                "No Records available for this selected cell."
-            );
-
-        }
-
-    }
-
-</script>
-
+	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card col-12 p-0">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							DBS1_FINCON_III_1B
+						</h5>
+
+						<div class="boards">
+							<p class="scrolling-text"> BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px; margin-left:5px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						</span>
+
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+
+						<!-- Placement & Borrowing Upload Button -->
+						<button type="button" class="custom-tab-btn" id="btnUploadPlacement"
+							onclick="openUploadModal();">
+							<i class="fa fa-upload"></i> Upload Excel
+						</button>
+
+						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
+							id="addRecord">
+							Modify
+						</button>-->
+
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+							data-asondate=${asondate}, 
+							data-fromdate=${fromdate}, 
+							data-todate=${todate}, 
+							data-currency=${currency},  
+							data-dtltype=${dtltype}, 
+							data-filename='DBS10_FINCON_III_1B.xlsx',
+							data-type=${type},
+							data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							data-fromdate=${fromdate},
+							data-todate=${todate},
+							data-filename='DBS10_FINCON_III_1BDetail',
+							data-type=${type},
+							data-version=${version}">
+							<i class="fa fa-download"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12" th:if="${displaymode == 'summary'}">
+				<div class="row">
+					<form action="#" method="POST" id="fileupload" style="width:100%;">
+						<div class="col-sm-12">
+
+							<div
+								style="background-color: #C0C0C0; font-weight: bold; padding: 4px 8px; margin-bottom: 5px; font-size: 14px;">
+								Monetary items present in the return should be reported ₹ in Crores
+							</div>
+
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right:1px solid #dee2e6; max-height:600px; overflow-y:auto;">
+
+								<table class="sticky-header-table table table-bordered table-sm table-condensed"
+									id="reports" style="font-family: Arial, sans-serif; font-size: 13px;">
+
+									<thead style="text-align:center;">
+										<!-- TITLE ROW -->
+										<tr>
+											<th colspan="10"
+												style="background-color: #FFD700; color: #000000; font-weight: bold; text-align: left; font-size: 14px; padding: 6px; border: 1px solid #000000;">
+												(1)(b)(i) Details of FB (Capital) intra-group transactions with a
+												threshold limit of Rs.10 crore and above relating to each of the
+												transaction-types ( i.e. Loans extended, Deposit placed,
+												Bonds/Debentures, CP, CD, Purchase of assets, units of group MF
+												schemes***, units of group Venture Funds schemes etc.) during the
+												reporting period for each SFI
+											</th>
+										</tr>
+
+										<!-- HEADER ROW 1 -->
+										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; border: 1px solid #000000;">
+												Transaction<br>Serial Number</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+												Name of SFIs</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+												Name of Counter party</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+												Nature of Transactions</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+												Original issuer of the paper/ security, if applicable</th>
+											<th colspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 13px; font-weight: bold; border: 1px solid #000000;">
+												Date of Transactions</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+												Tenor of the Transactions (in days)</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+												Amount</th>
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+												Return / yield on the investment (in %)</th>
+										</tr>
+
+										<!-- HEADER ROW 2 -->
+										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
+											<th
+												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+												Beginning DateYYYY-MM-DD</th>
+											<th
+												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+												Ending DateYYYY-MM-DD</th>
+										</tr>
+
+										<!-- COLUMN CODES -->
+										<tr style="background-color: #FFD700; color: #000000; font-weight: bold;">
+											<th style="background-color: #FFD700; border: 1px solid #000000;"></th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;"></th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;"></th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;"></th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X010</th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X020</th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X030</th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X040</th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X050</th>
+											<th style="background-color: #FFD700; border: 1px solid #000000;">X060</th>
+										</tr>
+									</thead>
+									<tbody>
+
+										<tr th:each="report : ${reportsummary}">
+
+											<!-- X010 -->
+											<td th:text="${report.transSerialNo}">
+											</td>
+
+											<!-- X020 -->
+											<td>BANK OF BARODA (BOTSWANA) LIMITED
+											</td>
+
+											<!-- X030 -->
+											<td th:text="${report.nameOfCounterParty}">
+											</td>
+
+											<!-- X040 -->
+											<td>PLACEMENT
+											</td>
+
+											<!-- X050 -->
+											<td th:text="${report.orgIssue}">
+											</td>
+
+											<!-- X060 -->
+											<td th:text="${report.dateOfTrnsBegin != null ?
+																	                  #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;">
+											</td>
+
+											<!-- X061 -->
+											<td th:text="${report.dateOfTrnsEnd != null ?
+																	                  #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;">
+											</td>
+
+											<!-- X070 -->
+											<td th:text="${report.tenorOfTrans}" style="text-align: right;">
+											</td>
+
+											<!-- X080 -->
+											<td th:text="${report.amt}"style="text-align: right;">
+											</td>
+
+											<!-- X090 -->
+											<td th:text="${report.returnVal}"style="text-align: right;">
+											</td>
+
+										</tr>
+
+									</tbody>
+								</table>
+
+							</div>
+
+							<div style="text-align:center;background-color:white;padding:10px;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+									onclick="fileuploads(this);" style="display:none;">
+									Submit
+								</button>
+							</div>
+
+						</div>
+					</form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Loader Modal -->
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent; border:none;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src="@{/images/loader.gif}" id="bfirelogo"
+							style="width: 153px; height: auto; background-color: transparent;" alt="Loading...">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Result Modal -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" onclick="closemodels()">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Custom Cell Result Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
+						Do you want to open the report?
+					</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+						Cancel
+					</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+						Yes
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Excel File Upload Modal -->
+	<div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0;font-weight: bold;">
+					<h5 class="modal-title text-white text-center" id="uploadModalLabel">Upload Placement / Borrowing
+						Data</h5>
+				</div>
+				<form id="placementUploadForm" enctype="multipart/form-data">
+					<div class="modal-body">
+
+						<!-- Category Option Selection -->
+						<div class="form-group text-left">
+							<label style="font-weight: bold; color: #333;">Select Category Option:</label>
+							<div class="d-flex align-items-center mt-1">
+								<div class="custom-control custom-radio mr-4">
+									<input type="radio" id="categoryBorrowing" name="fileCategory" value="Borrowing"
+										class="custom-control-input" checked>
+									<label class="custom-control-label" for="categoryBorrowing"
+										style="font-weight: 600; cursor: pointer;">Borrowing</label>
+								</div>
+								<div class="custom-control custom-radio">
+									<input type="radio" id="categoryPlacement" name="fileCategory" value="Placement"
+										class="custom-control-input">
+									<label class="custom-control-label" for="categoryPlacement"
+										style="font-weight: 600; cursor: pointer;">Placement</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group text-left">
+							<label for="uploadDate" style="font-weight: bold; color: #333;">Select Date:</label>
+							<input type="date" class="form-control" id="uploadDate" name="asondate" required
+								th:value="${asondate}">
+						</div>
+
+						<div class="form-group text-left">
+							<label for="excelFile" style="font-weight: bold; color: #333;">Select Excel File:</label>
+							<input type="file" class="form-control-file border p-1" id="excelFile" name="file"
+								accept=".xlsx, .xls" required>
+							<small class="form-text text-muted">File name must contain the selected word (e.g.,
+								<code>Borrowing_Data.xlsx</code> or <code>Placement_Data.xlsx</code>).</small>
+						</div>
+
+					</div>
+					<div class="modal-footer" style="justify-content: center;">
+						<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;"
+							onclick="location.reload();">Cancel</button>
+						<button type="button" class="custom-tab-btn yes-btn" onclick="submitExcelUpload();"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 
 </body>
 

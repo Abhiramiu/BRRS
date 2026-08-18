@@ -3,6 +3,7 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,13 +13,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.math.BigDecimal;
+
+import javax.persistence.Column;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -33,8 +36,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.bornfire.brrs.services.BRRS_DBS10_FINCON_II_1A_ReportService.DBS10_FINCON_II_1A_Detail_Entity;
 
 @Service
 @Component
@@ -56,7 +57,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Summary Entity
 	public static class BRRS_DBS10_FINCON_III_1B_Summary_Entity {
-	    private BigDecimal transSerialNo;
+	    private String transSerialNo;
 	    private String nameOfSfis;
 	    private String nameOfCounterParty;
 	    private String natureOfTrans;
@@ -65,6 +66,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	    private Date dateOfTrnsEnd;
 	    private String tenorOfTrans;
 	    private BigDecimal amt;
+	    @Column(name = "RETURNVAL")
 	    private String returnVal;
 	    private Date reportDate;
 	    private BigDecimal reportVersion;
@@ -77,11 +79,11 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	    private Date reportResubDate;
 
 	    // Getters and Setters
-	    public BigDecimal getTransSerialNo() {
+	    public String getTransSerialNo() {
 	        return transSerialNo;
 	    }
 
-	    public void setTransSerialNo(BigDecimal transSerialNo) {
+	    public void setTransSerialNo(String transSerialNo) {
 	        this.transSerialNo = transSerialNo;
 	    }
 
@@ -523,7 +525,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 	// Archival Summary Entity
 	public static class DBS10_FINCON_III_1B_Archival_Summary_Entity {
-		private BigDecimal transSerialNo;
+		private String transSerialNo;
 	    private String nameOfSfis;
 	    private String nameOfCounterParty;
 	    private String natureOfTrans;
@@ -532,6 +534,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	    private Date dateOfTrnsEnd;
 	    private String tenorOfTrans;
 	    private BigDecimal amt;
+	    @Column(name = "RETURNVAL")
 	    private String returnVal;
 	    private Date reportDate;
 	    private BigDecimal reportVersion;
@@ -544,11 +547,11 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	    private Date reportResubDate;
 
 	    // Getters and Setters
-	    public BigDecimal getTransSerialNo() {
+	    public String getTransSerialNo() {
 	        return transSerialNo;
 	    }
 
-	    public void setTransSerialNo(BigDecimal transSerialNo) {
+	    public void setTransSerialNo(String transSerialNo) {
 	        this.transSerialNo = transSerialNo;
 	    }
 
@@ -1034,7 +1037,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			 * directly for optional columns because Oracle throws
 			 * "Invalid column name" when a column is absent.
 			 */
-			entity.setTransSerialNo(getBigDecimalSafe(rs, "TRANS_SERIAL_NO"));
+			entity.setTransSerialNo(getStringSafe(rs, "TRANS_SERIAL_NO"));
 			entity.setNameOfSfis(getStringSafe(rs, "NAME_OF_SFIS"));
 			entity.setNameOfCounterParty(getStringSafe(rs, "NAME_OF_COUNTER_PARTY"));
 			entity.setNatureOfTrans(getStringSafe(rs, "NATURE_OF_TRANS"));
@@ -1043,7 +1046,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			entity.setDateOfTrnsEnd(getDateSafe(rs, "DATE_OF_TRNS_END"));
 			entity.setTenorOfTrans(getStringSafe(rs, "TENOR_OF_TRANS"));
 			entity.setAmt(getBigDecimalSafe(rs, "AMT"));
-			entity.setReturnVal(getStringSafe(rs, "RETURN_VAL"));
+			entity.setReturnVal(getStringSafe(rs, "RETURNVAL"));
 
 			entity.setReportDate(getDateSafe(rs, "REPORT_DATE"));
 			entity.setReportVersion(getBigDecimalSafe(rs, "REPORT_VERSION"));
@@ -1106,7 +1109,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 		@Override
 		public DBS10_FINCON_III_1B_Archival_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 			DBS10_FINCON_III_1B_Archival_Summary_Entity entity = new DBS10_FINCON_III_1B_Archival_Summary_Entity();
-			entity.setTransSerialNo(rs.getBigDecimal("TRANS_SERIAL_NO"));
+			entity.setTransSerialNo(rs.getString("TRANS_SERIAL_NO"));
 			entity.setNameOfSfis(rs.getString("NAME_OF_SFIS"));
 			entity.setNameOfCounterParty(rs.getString("NAME_OF_COUNTER_PARTY"));
 			entity.setNatureOfTrans(rs.getString("NATURE_OF_TRANS"));
@@ -1115,7 +1118,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			entity.setDateOfTrnsEnd(rs.getDate("DATE_OF_TRNS_END"));
 			entity.setTenorOfTrans(rs.getString("TENOR_OF_TRANS"));
 			entity.setAmt(rs.getBigDecimal("AMT"));
-			entity.setReturnVal(rs.getString("RETURN_VAL"));
+			entity.setReturnVal(rs.getString("RETURNVAL"));
 			entity.setReportDate(rs.getDate("REPORT_DATE"));
 			entity.setReportVersion(rs.getBigDecimal("REPORT_VERSION"));
 			entity.setReportFrequency(rs.getString("REPORT_FREQUENCY"));
@@ -1312,7 +1315,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	private void saveToArchivalFromNormal(BRRS_DBS10_FINCON_III_1B_Summary_Entity oldRecord, BigDecimal version) {
 		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE "
 				+ "(TRANS_SERIAL_NO, NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, "
-				+ "DATE_OF_TRNS_BEGIN, DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURN_VAL, REPORT_DATE, "
+				+ "DATE_OF_TRNS_BEGIN, DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, "
 				+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, "
 				+ "REPORT_RESUBDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -1375,14 +1378,14 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 	// ===========================================================
 
 	public void saveResubIrradv(DBS10_FINCON_III_1B_Archival_Summary_Entity summary) {
-		BigDecimal nextTransSerialNo = jdbcTemplate.queryForObject(
+		String nextTransSerialNo = jdbcTemplate.queryForObject(
 				"SELECT BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE_TRANS_SERIAL_NO_SEQ.NEXTVAL FROM DUAL",
-				BigDecimal.class);
+				String.class);
 		summary.setTransSerialNo(nextTransSerialNo);
 
 		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE (TRANS_SERIAL_NO, "
 				+ "NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, DATE_OF_TRNS_BEGIN, "
-				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURN_VAL, REPORT_DATE, REPORT_VERSION, "
+				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, REPORT_VERSION, "
 				+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -1427,7 +1430,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 
 		String archivalSummarySql = "INSERT INTO BRRS_DBS10_FINCON_III_1B_ARCHIVAL_SUMMARYTABLE (TRANS_SERIAL_NO, "
 				+ "NAME_OF_SFIS, NAME_OF_COUNTER_PARTY, NATURE_OF_TRANS, ORG_ISSUE, DATE_OF_TRNS_BEGIN, "
-				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURN_VAL, REPORT_DATE, REPORT_VERSION, "
+				+ "DATE_OF_TRNS_END, TENOR_OF_TRANS, AMT, RETURNVAL, REPORT_DATE, REPORT_VERSION, "
 				+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -1696,6 +1699,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			CellStyle numberStyle = workbook.createCellStyle();
 			numberStyle.setFont(font);
 			numberStyle.setDataFormat(dataFormat.getFormat("#,##0.00"));
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
@@ -1704,12 +1708,13 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.setFont(font);
 			dateStyle.setDataFormat(dataFormat.getFormat("dd-MM-yyyy"));
+			dateStyle.setAlignment(HorizontalAlignment.LEFT);
 			dateStyle.setBorderBottom(BorderStyle.THIN);
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
 
-			int rowIndex = 2;
+			int rowIndex = 6;
 
 			for (BRRS_DBS10_FINCON_III_1B_Summary_Entity data : dataList) {
 				Row row = sheet.createRow(rowIndex++);
@@ -1720,9 +1725,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 				setCellValue(row, 4, data.getOrgIssue(), textStyle);
 				setCellValue(row, 5, data.getDateOfTrnsBegin(), dateStyle);
 				setCellValue(row, 6, data.getDateOfTrnsEnd(), dateStyle);
-				setCellValue(row, 7, data.getTenorOfTrans(), textStyle);
+				setCellValue(row, 7, data.getTenorOfTrans(), numberStyle);
 				setCellValue(row, 8, data.getAmt(), numberStyle);
-				setCellValue(row, 9, data.getReturnVal(), textStyle);
+				setCellValue(row, 9, data.getReturnVal(), numberStyle);
 			}
 
 			workbook.write(out);
@@ -1766,6 +1771,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			CellStyle numberStyle = workbook.createCellStyle();
 			numberStyle.setFont(font);
 			numberStyle.setDataFormat(dataFormat.getFormat("#,##0.00"));
+			numberStyle.setAlignment(HorizontalAlignment.RIGHT);
 			numberStyle.setBorderBottom(BorderStyle.THIN);
 			numberStyle.setBorderTop(BorderStyle.THIN);
 			numberStyle.setBorderLeft(BorderStyle.THIN);
@@ -1774,12 +1780,13 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			CellStyle dateStyle = workbook.createCellStyle();
 			dateStyle.setFont(font);
 			dateStyle.setDataFormat(dataFormat.getFormat("dd-MM-yyyy"));
+			dateStyle.setAlignment(HorizontalAlignment.LEFT);
 			dateStyle.setBorderBottom(BorderStyle.THIN);
 			dateStyle.setBorderTop(BorderStyle.THIN);
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
 
-			int rowIndex = 2;
+			int rowIndex = 6;
 
 			for (DBS10_FINCON_III_1B_Archival_Summary_Entity data : dataList) {
 				Row row = sheet.createRow(rowIndex++);
@@ -1790,10 +1797,10 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 				setCellValue(row, 4, data.getOrgIssue(), textStyle);
 				setCellValue(row, 5, data.getDateOfTrnsBegin(), dateStyle);
 				setCellValue(row, 6, data.getDateOfTrnsEnd(), dateStyle);
-				setCellValue(row, 7, data.getTenorOfTrans(), textStyle);
+				setCellValue(row, 7, data.getTenorOfTrans(), numberStyle);
 				setCellValue(row, 8, data.getAmt(), numberStyle);
-				setCellValue(row, 9, data.getReturnVal(), textStyle);
-				setCellValue(row, 10, data.getReportVersion(), numberStyle);
+				setCellValue(row, 9, data.getReturnVal(), numberStyle);
+				setCellValue(row, 10, data.getReportVersion(), textStyle);
 				setCellValue(row, 11, data.getReportResubDate(), dateStyle);
 			}
 
@@ -1851,7 +1858,7 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 			dateStyle.setBorderLeft(BorderStyle.THIN);
 			dateStyle.setBorderRight(BorderStyle.THIN);
 
-			int rowIndex = 2;
+			int rowIndex = 6;
 
 			for (DBS10_FINCON_III_1B_Archival_Summary_Entity data : dataList) {
 				Row row = sheet.createRow(rowIndex++);
@@ -1864,9 +1871,9 @@ public class BRRS_DBS10_FINCON_III_1B_ReportService {
 				setCellValue(row, 6, data.getDateOfTrnsEnd(), dateStyle);
 				setCellValue(row, 7, data.getTenorOfTrans(), textStyle);
 				setCellValue(row, 8, data.getAmt(), numberStyle);
-				setCellValue(row, 9, data.getReturnVal(), textStyle);
+				setCellValue(row, 9, data.getReturnVal(), numberStyle);
 				setCellValue(row, 10, data.getReportVersion(), numberStyle);
-				setCellValue(row, 11, data.getReportResubDate(), dateStyle);
+				setCellValue(row, 11, data.getReportResubDate(), numberStyle);
 			}
 
 			workbook.write(out);

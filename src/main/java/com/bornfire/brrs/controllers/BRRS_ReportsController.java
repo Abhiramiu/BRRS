@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -214,6 +215,7 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_En
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
+import com.bornfire.brrs.services.BorrowingFileUploadService;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
@@ -6667,6 +6669,32 @@ public class BRRS_ReportsController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	@Autowired
+	private BorrowingFileUploadService service;
+
+	@PostMapping("/uploadPlacementBorrowing")
+	@ResponseBody
+	public ResponseEntity<String> uploadPlacementBorrowing(
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("asondate") String asondate,
+			@RequestParam("category") String category) {
+
+		logger.info("Received request to upload file: {} for date: {} and category: {}", 
+				file.getOriginalFilename(), asondate, category);
+
+		try {
+			String resultMessage = service.uploadBorrowingFile(file, asondate, category);
+			return ResponseEntity.ok(resultMessage);
+		} catch (IllegalArgumentException e) {
+			logger.error("Validation error during file upload: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
+			logger.error("Server error processing file upload", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Upload failed due to server error: " + e.getMessage());
 		}
 	}
 }

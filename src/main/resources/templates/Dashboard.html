@@ -12,8 +12,8 @@
 		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
 	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/dataTables.bootstrap4.min.css"
 		th:href="@{/webjars/datatables/1.10.19/css/dataTables.bootstrap4.min.css}">
-		<link rel="icon" th:href="@{/images/client_Logo_bkp.png}"
-			type="image/x-icon">
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}" type="image/x-icon">
+	
 	<script src="js/chart.umd.min.js"></script>
 	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
 	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
@@ -32,6 +32,7 @@
 			--light-text-main: #0f172a;
 			--light-text-muted: #64748b;
 			--light-row-hover: #f1f5f9;
+			--header-blue: #003366;
 		}
 
 		html,
@@ -74,9 +75,8 @@
 		.card-header h4 {
 			font-size: 19px;
 			font-weight: 700;
-			padding: 25px;
-			margin: 0;
 			padding: 8px;
+			margin: 0;
 			text-transform: uppercase;
 		}
 
@@ -125,6 +125,31 @@
 
 		.run-btn:hover {
 			transform: scale(1.06);
+		}
+
+		/* Escalation Matrix Trigger Button (No Background + Visible Border) */
+		.btn-escalation {
+			background-color: transparent !important;
+			background: none !important;
+			color: #333333 !important;
+			font-weight: 550 !important;
+			font-size: 0.875rem;
+			border: 1px solid #707070 !important;
+			padding: 4px 12px;
+			border-radius: 4px;
+			transition: all 0.2s ease;
+			box-shadow: none !important;
+		}
+
+		.btn-escalation:hover {
+			background-color: #f1f5f9 !important;
+			border-color: #333333 !important;
+			color: #000000 !important;
+		}
+
+		.btn-escalation:focus {
+			box-shadow: none !important;
+			outline: none !important;
 		}
 
 		.center-content-orchestrator {
@@ -185,9 +210,10 @@
 			display: flex;
 			justify-content: center;
 			width: 100%;
+			margin-bottom: 25px;
 		}
 
-		/* Upgraded Split Screen Container Dashboard Setup */
+		/* Split Screen Container Dashboard Setup */
 		.dark-panel-container {
 			background-color: var(--light-panel-bg) !important;
 			border-radius: 8px;
@@ -325,7 +351,57 @@
 			font-weight: 600;
 		}
 
-		/* Responsive Breakdown Rules for Tablets/Small Laptops */
+		/* Escalation Matrix Modal Styling */
+		.escalation-header {
+			background-color: #6B7A8F !important;
+			color: #ffffff;
+		}
+
+		.escalation-table {
+			width: 100%;
+			border-collapse: collapse;
+			border: 1px solid #cbd5e1;
+		}
+
+		.escalation-table th {
+			background-color: #6B7A8F !important;
+			color: #ffffff;
+			font-weight: 700;
+			text-align: left;
+			padding: 10px 12px;
+			font-size: 12px;
+			border: 1px solid #002244;
+		}
+
+		.escalation-table td {
+			padding: 8px 12px;
+			border: 1px solid #e2e8f0;
+			color: #1e293b;
+			font-size: 13px;
+		}
+
+		.escalation-table tbody tr:nth-child(even) {
+			background-color: #f8fafc;
+		}
+
+		.escalation-table tbody tr:hover {
+			background-color: #f1f5f9;
+		}
+
+		.escalation-table .resource-name {
+			font-weight: 700;
+		}
+
+		.escalation-table .email-link {
+			color: #0284c7;
+			text-decoration: none;
+		}
+
+		.escalation-table .email-link:hover {
+			text-decoration: underline;
+		}
+
+		/* Responsive Breakdown Rules */
 		@media (max-width: 992px) {
 			.dark-panel-container {
 				grid-template-columns: 1fr;
@@ -356,6 +432,11 @@
 		@media (max-width: 576px) {
 			.chart-section-wrapper {
 				flex-direction: column;
+			}
+
+			.escalation-table {
+				display: block;
+				overflow-x: auto;
 			}
 		}
 	</style>
@@ -399,6 +480,10 @@
 							<input type="number" id="inrRateInput" step="0.0001" placeholder="Enter INR Rate" class="form-control form-control-sm" style="width: 140px; text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
 							<button class="nav-link" onclick="submitInrRate()" style="text-align: center; font-weight: 550 !important; color: #333;">
 								Submit
+							</button>
+							<!-- Bordered Transparent Escalation Matrix Button -->
+							<button type="button" class="btn btn-escalation ml-2" data-toggle="modal" data-target="#escalationModal">
+								Escalation Matrix
 							</button>
 						</div>
 					</td>
@@ -467,6 +552,62 @@
 		</div>
 	</div>
 
+	<!-- Escalation Matrix Modal Popup -->
+	<div class="modal fade" id="escalationModal" tabindex="-1" role="dialog" aria-labelledby="escalationModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header escalation-header">
+					<h5 class=" font-weight-bold" id="escalationModalLabel">ESCALATION MATRIX</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="color: #ffffff !important; opacity: 1;">
+						<span aria-hidden="true" style="color: #ffffff !important;">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body p-3">
+					<table class="escalation-table">
+						<thead>
+							<tr>
+								<th style="width: 8%;">S.No</th>
+								<th style="width: 32%;">Name of Resource</th>
+								<th style="width: 35%;">Email Id</th>
+								<th style="width: 25%;">Contact No</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td style="font-weight: 700;">1</td>
+								<td class="resource-name">Krishnapandi M G</td>
+								<td><a class="email-link" href="mailto:krishnapandi.mg@bornfire.co.in">krishnapandi.mg@bornfire.co.in</a></td>
+								<td style="font-weight: 600;">+91 63831 01337</td>
+							</tr>
+							<tr>
+								<td style="font-weight: 700;">2</td>
+								<td class="resource-name">Abhirami Ulaganathan</td>
+								<td><a class="email-link" href="mailto:abhirami.u@bornfire.co.in">abhirami.u@bornfire.co.in</a></td>
+								<td style="font-weight: 600;">+91 96864 19627</td>
+							</tr>
+							<tr>
+								<td style="font-weight: 700;">3</td>
+								<td class="resource-name">Nandhini J</td>
+								<td><a class="email-link" href="mailto:nandhini.j@bornfire.co.in">nandhini.j@bornfire.co.in</a></td>
+								<td style="font-weight: 600;">+91 86755 56868</td>
+							</tr>
+							<tr>
+								<td style="font-weight: 700;">4</td>
+								<td class="resource-name">Ramkumar T R</td>
+								<td><a class="email-link" href="mailto:ramkumar.tr@bornfire.in">ramkumar.tr@bornfire.in</a></td>
+								<td style="font-weight: 600;">+91 98409 20338</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Alert Modal -->
 	<div class="modal fade" id="alert">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content">
