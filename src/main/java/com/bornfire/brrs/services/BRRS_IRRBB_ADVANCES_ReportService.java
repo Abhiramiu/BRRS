@@ -1805,8 +1805,7 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESArchival() {
 		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
 				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
@@ -1912,10 +1911,8 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 	public List<Object[]> getIRRBB_ADVANCESArchivalList() {
 
-		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION "
-				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "WHERE REPORT_VERSION IS NOT NULL "
-				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
+		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+				+ "WHERE REPORT_VERSION IS NOT NULL " + "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql,
 				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
@@ -1927,8 +1924,7 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	public List<Object[]> getIRRBB_ADVANCESResubList() {
 
 		String sql = "SELECT DISTINCT REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE "
-				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "WHERE REPORT_VERSION IS NOT NULL "
+				+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE " + "WHERE REPORT_VERSION IS NOT NULL "
 				+ "ORDER BY REPORT_DATE DESC, REPORT_VERSION DESC";
 
 		return jdbcTemplate.query(sql, (rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"),
@@ -2120,8 +2116,6 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 				setCellValue(row, 20, data.getFinalRoi(), textStyle);
 				setCellValue(row, 21, data.getCapFloorRateOfInterest(), textStyle);
 				setCellValue(row, 22, data.getAssetStatus(), textStyle);
-				setCellValue(row, 23, data.getReportVersion(), numberStyle);
-				setCellValue(row, 24, data.getReportResubdate(), dateStyle);
 			}
 
 			workbook.write(out);
@@ -2205,8 +2199,6 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 				setCellValue(row, 20, data.getFinalRoi(), textStyle);
 				setCellValue(row, 21, data.getCapFloorRateOfInterest(), textStyle);
 				setCellValue(row, 22, data.getAssetStatus(), textStyle);
-				setCellValue(row, 23, data.getReportVersion(), numberStyle);
-				setCellValue(row, 24, data.getReportResubdate(), dateStyle);
 			}
 
 			workbook.write(out);
@@ -2351,6 +2343,68 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 		String detailTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE"
 				: "BRRS_IRRBB_ADV_DETAILTABLE";
 
+		// 1. Step 1: Archive current summary and detail state to Archival tables with
+		// new version BEFORE anything else
+		String reportDateStr = null;
+		try {
+			reportDateStr = jdbcTemplate.queryForObject(
+					"SELECT TO_CHAR(REPORT_DATE, 'DD-MON-YYYY') FROM " + summaryTable + " WHERE SNO = ?", String.class,
+					rows.get(0).getSno());
+		} catch (Exception e) {
+			logger.warn("Could not query REPORT_DATE for SNO {}: {}", rows.get(0).getSno(), e.getMessage());
+		}
+
+		if (!"RESUB".equalsIgnoreCase(type) && reportDateStr != null && !reportDateStr.trim().isEmpty()) {
+			try {
+				BigDecimal nextVersion = getNextArchivalVersion(reportDateStr);
+				logger.info("Archiving current summary & detail data for date {} as version {} before submit updates",
+						reportDateStr, nextVersion);
+
+				String archiveSummarySql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+						+ "SELECT SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+						+ "FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+
+				jdbcTemplate.update(archiveSummarySql, nextVersion, reportDateStr);
+
+				String archiveDetailSql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE "
+						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+						+ "SELECT SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+						+ "FROM BRRS_IRRBB_ADV_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+
+				jdbcTemplate.update(archiveDetailSql, nextVersion, reportDateStr);
+			} catch (Exception e) {
+				logger.error("Error archiving summary & detail data before updates: {}", e.getMessage(), e);
+			}
+		}
+
+		// 2. Step 2 (Procedure Execution): Sequentially execute procedures FIRST right
+		// after Step 1:
+		// BRRS_IRRBB_ADV_DETAIL_PROCEDURE, THEN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE
+		executeIrradvProcedures(reportDateStr);
+
+		// 3. Step 3 (Table Modifications): Apply inline updates to summary and detail
+		// tables only after procedure execution
 		String summarySql = "UPDATE " + summaryTable + " SET " + "FLOATING_FIXED = ?, " + "EXISTING_BENCHMARK = ?, "
 				+ "EXISTING_REPRICING_FREQUENCY = ?, " + "LAST_REPRICING_DATE = ?, " + "NEXT_REPRICING_DATE = ?, "
 				+ "SPREAD_OVER_BENCHMARK = ?, " + "CAP_FLOOR_RATE_OF_INTEREST = ? " + "WHERE SNO = ?";
@@ -2393,20 +2447,6 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 				}
 			}
 		}
-
-		// Fetch REPORT_DATE to pass to procedure if required
-		String reportDateStr = null;
-		try {
-			reportDateStr = jdbcTemplate.queryForObject(
-					"SELECT TO_CHAR(REPORT_DATE, 'DD-MON-YYYY') FROM " + summaryTable + " WHERE SNO = ?", String.class,
-					rows.get(0).getSno());
-		} catch (Exception e) {
-			logger.warn("Could not query REPORT_DATE for SNO {}: {}", rows.get(0).getSno(), e.getMessage());
-		}
-
-		// Sequentially execute procedures: FIRST BRRS_IRRBB_ADV_DETAIL_PROCEDURE, THEN
-		// BRRS_IRRBB_ADV_SUMMARY_PROCEDURE
-		executeIrradvProcedures(reportDateStr);
 	}
 
 	private void executeIrradvProcedures(String reportDateStr) {

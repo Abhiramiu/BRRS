@@ -1583,6 +1583,11 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version);
 			break;
 
+		case "BORR_UFCE":
+			repdetail = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_DetailView(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version);
+			break;
+
 		case "UFCE_RETAILADV":
 			repdetail = BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_DetailView(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
@@ -1614,6 +1619,7 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+
 		case "IRRBB_DEPOSITS":
 			try {
 				repfile = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_Excel(filename, reportId, fromdate,
@@ -1623,12 +1629,14 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-		/*
-		 * case "BORR_UFCE": try { repfile =
-		 * BRRS_BORR_UFCE_ReportService.getBORR_UFCE_Excel(filename, reportId, fromdate,
-		 * todate, currency, dtltype, type, format, version); } catch (Exception e) {
-		 * e.printStackTrace(); } break;
-		 */
+		case "BORR_UFCE":
+			try {
+				repfile = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
 
 		case "UFCE_RETAILADV":
 			try {
@@ -2961,6 +2969,12 @@ public class RegulatoryReportServices {
 			List<Object[]> irrbbAdvList = BRRS_IRRBB_ADVANCES_reportservice.getIRRBB_ADVANCESArchival();
 			archivalData.addAll(irrbbAdvList);
 			System.out.println("Fetched IRRBB_ADVANCES archival data: " + irrbbAdvList.size());
+			break;
+
+		case "BORR_UFCE":
+			List<Object[]> borrUfceList = BRRS_BORR_UFCE_ReportService.getBORR_UFCEArchival();
+			archivalData.addAll(borrUfceList);
+			System.out.println("Fetched BORR_UFCE archival data: " + borrUfceList.size());
 			break;
 
 		case "UFCE_RETAILADV":
@@ -6627,8 +6641,7 @@ public class RegulatoryReportServices {
 					return new byte[0];
 				}
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 100 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("IRRBB_ADV: PDF conversion returned empty bytes");
@@ -6639,6 +6652,35 @@ public class RegulatoryReportServices {
 				return pdfBytes;
 			} catch (Exception e) {
 				logger.error("IRRBB_ADV: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "BORR_UFCE":
+			try {
+				if (filename != null && filename.startsWith("EMAIL_")) {
+					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+				} else {
+					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("BORR_UFCE: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("BORR_UFCE: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("BORR_UFCE: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("BORR_UFCE: PDF generation failed", e);
 				return new byte[0];
 			}
 
@@ -6657,8 +6699,7 @@ public class RegulatoryReportServices {
 					return new byte[0];
 				}
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 100 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("UFCE_RETAILADV: PDF conversion returned empty bytes");
@@ -6717,8 +6758,7 @@ public class RegulatoryReportServices {
 					return new byte[0];
 				}
 
-				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 100 });
-				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
 
 				if (pdfBytes == null || pdfBytes.length == 0) {
 					logger.error("LOAN_LIST_UFCE: PDF conversion returned empty bytes");
