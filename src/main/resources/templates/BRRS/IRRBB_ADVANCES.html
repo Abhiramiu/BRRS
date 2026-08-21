@@ -751,6 +751,15 @@ function showdetails() {
 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
+			var urlParams = new URLSearchParams(window.location.search);
+			if ((urlParams.get('type') === 'RESUB' || currentType === 'RESUB') && urlParams.has('version')) {
+				var v = parseFloat(urlParams.get('version'));
+				if (!isNaN(v)) {
+					urlParams.set('version', (v + 1).toString());
+					window.location.search = urlParams.toString();
+					return;
+				}
+			}
 			location.reload();
 		}
 
@@ -823,6 +832,20 @@ function showdetails() {
 						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
 							th:if="${displaymode == 'resubSummary'}">Details</button>
 
+						<!-- MODIFY / CANCEL BUTTONS-->
+						<button type="button" class="custom-tab-btn" id="modifyBtn"
+							onclick="enableInlineEdit();"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							title="Click to EDIT Records">
+							Modify
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="cancelRecord"
+							onclick="cancelInlineEdit();" style="display: none;"
+							title="Cancel editing">
+							Cancel
+						</button>
+
 						<!-- FORMAT Download Button -->
 						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
 							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
@@ -860,20 +883,6 @@ function showdetails() {
 								</a>
 							</div>
 						</div>
-
-						<!-- MODIFY / CANCEL BUTTONS-->
-						<button type="button" class="custom-tab-btn" id="modifyBtn"
-							onclick="enableInlineEdit();"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
-							title="Click to EDIT Records">
-							Modify
-						</button>
-
-						<button type="button" class="custom-tab-btn" id="cancelRecord"
-							onclick="cancelInlineEdit();" style="display: none;"
-							title="Cancel editing">
-							Cancel
-						</button>
 
 
 						
@@ -1723,13 +1732,19 @@ function showdetails() {
 				</div>
 			</div>
 		</div>
-	<script>
+	<script th:inline="javascript">
+		var currentType = /*[[${type}]]*/ '';
+		var currentVersion = /*[[${version}]]*/ null;
+		var maxVersion = /*[[${maxVersion}]]*/ null;
+
 		$(document).ready(function () {
 			var tableIds = ['#irradvTable', '#irradvDetailTable', '#archivalTable', '#archivalDetailTable', '#resubTable', '#resubDetailTable'];
 			tableIds.forEach(function (id) {
 				if ($(id).length) {
 					var table = $(id).DataTable({
 						"pageLength": 25,
+						"ordering": false,
+						"bSort": false,
 						"order": [],
 						"scrollX": true,
 						"scrollY": "calc(100vh - 280px)",
@@ -1748,6 +1763,19 @@ function showdetails() {
 		});
 
 		function enableInlineEdit() {
+			var urlParams = new URLSearchParams(window.location.search);
+			var paramType = urlParams.get('type') || currentType;
+			var paramVersion = urlParams.get('version') || currentVersion;
+
+			if ((paramType === 'RESUB' || paramType === 'ARCHIVAL' || $('#resubTable').is(':visible') || $('#archivalTable').is(':visible')) && paramVersion != null && maxVersion != null) {
+				var pVer = parseFloat(paramVersion);
+				var mVer = parseFloat(maxVersion);
+				if (!isNaN(pVer) && !isNaN(mVer) && pVer < mVer) {
+					showResultModal('Alert', 'Only the max version of the report can be resubmitted');
+					return;
+				}
+			}
+
 			$('#modifyBtn').hide();
 			$('.submit-btn-bottom').show();
 			$('#cancelRecord').show();
@@ -1755,8 +1783,8 @@ function showdetails() {
 			$('input.editable-cell').each(function() {
 				$(this).removeAttr('readonly');
 				$(this).css({
-					'background-color': '#d3d3d3',
-					'border': 'none',
+					'background-color': '#ffff99',
+					'border': '1px solid #999',
 					'outline': 'none',
 					'padding': '2px 5px'
 				});
@@ -1765,8 +1793,8 @@ function showdetails() {
 			$('select.editable-cell').each(function() {
 				$(this).removeAttr('disabled');
 				$(this).css({
-					'background-color': '#d3d3d3',
-					'border': 'none',
+					'background-color': '#ffff99',
+					'border': '1px solid #999',
 					'outline': 'none',
 					'padding': '2px 5px',
 					'-webkit-appearance': 'menulist',

@@ -1512,10 +1512,22 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 			}
 		}
 
+		try {
+			Date dtForMax = dateformat.parse(todate);
+			if (dtForMax != null) {
+				BigDecimal maxVer = findMaxResubVersion(dtForMax);
+				mv.addObject("maxVersion", maxVer);
+			}
+		} catch (Exception ex) {
+			logger.warn("Could not calculate maxVersion for date {}: {}", todate, ex.getMessage());
+		}
+
 		mv.setViewName("BRRS/IRRBB_ADVANCES");
 		mv.addObject("menu", reportId);
 		mv.addObject("currency", currency);
 		mv.addObject("reportId", reportId);
+		mv.addObject("version", version);
+		mv.addObject("type", type);
 
 		System.out.println("View Loaded: " + mv.getViewName());
 
@@ -1888,22 +1900,23 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// FIND MAX VERSION BY DATE (for archival)
 	// ===========================================================
 	public BigDecimal findMaxArchivalVersion(Date reportDate) {
-
-		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "WHERE REPORT_DATE = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
+		try {
+			String sql = "SELECT MAX(TO_NUMBER(REGEXP_REPLACE(TO_CHAR(REPORT_VERSION), '[^0-9.]', ''))) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			BigDecimal max = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
+			return max != null ? max : BigDecimal.ZERO;
+		} catch (Exception e) {
+			return BigDecimal.ZERO;
+		}
 	}
 
-	// ===========================================================
-	// FIND MAX VERSION BY DATE (for resub)
-	// ===========================================================
 	public BigDecimal findMaxResubVersion(Date reportDate) {
-
-		String sql = "SELECT MAX(REPORT_VERSION) " + "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
-				+ "WHERE REPORT_DATE = ?";
-
-		return jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
+		try {
+			String sql = "SELECT MAX(TO_NUMBER(REGEXP_REPLACE(TO_CHAR(REPORT_VERSION), '[^0-9.]', ''))) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			BigDecimal max = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
+			return max != null ? max : BigDecimal.ZERO;
+		} catch (Exception e) {
+			return BigDecimal.ZERO;
+		}
 	}
 
 	// ===========================================================
@@ -2338,27 +2351,136 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 		SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
 		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
 
-		String summaryTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE"
-				: "BRRS_IRRBB_ADV_SUMMARYTABLE";
-		String detailTable = "RESUB".equalsIgnoreCase(type) ? "BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE"
-				: "BRRS_IRRBB_ADV_DETAILTABLE";
+		// =====================================================
+		// RESUBMISSION MODE: Update ONLY Archival Tables as a NEW version
+		// =====================================================
+		if ("RESUB".equalsIgnoreCase(type)) {
+			Date reportDate = null;
+			try {
+				reportDate = jdbcTemplate.queryForObject("SELECT REPORT_DATE FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE SNO = ?",
+						Date.class, rows.get(0).getSno());
+			} catch (Exception e) {
+				try {
+					reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE", Date.class);
+				} catch (Exception ex) {
+					logger.warn("Could not query REPORT_DATE from archival table: {}", ex.getMessage());
+				}
+			}
 
-		// 1. Step 1: Archive current summary and detail state to Archival tables with
-		// new version BEFORE anything else
-		String reportDateStr = null;
-		try {
-			reportDateStr = jdbcTemplate.queryForObject(
-					"SELECT TO_CHAR(REPORT_DATE, 'DD-MON-YYYY') FROM " + summaryTable + " WHERE SNO = ?", String.class,
-					rows.get(0).getSno());
-		} catch (Exception e) {
-			logger.warn("Could not query REPORT_DATE for SNO {}: {}", rows.get(0).getSno(), e.getMessage());
+			if (reportDate != null) {
+				try {
+					BigDecimal maxVer = findMaxResubVersion(reportDate);
+					BigDecimal nextVersion = (maxVer != null) ? maxVer.add(BigDecimal.ONE) : BigDecimal.ONE;
+					logger.info("Resubmission mode for IRRBB_ADVANCES: Cloned max version {} into new archival version {}", maxVer, nextVersion);
+
+					// Insert modified summary records directly into nextVersion in archival summary table
+					String insertArchivalSummarySql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
+							+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+							+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+							+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+							+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+							+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+							+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+							+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE) + 1, "
+							+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+							+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+							+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, ?, "
+							+ "?, ?, ?, ?, "
+							+ "?, FINAL_ROI, ?, ASSET_STATUS, REPORT_DATE, "
+							+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+							+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE SNO = ?";
+
+					for (IRRBB_ADVANCES_Update_Row row : rows) {
+						if (row.getSno() == null) continue;
+						Date lastRepriceDate = parseDate(row.getLastRepricingDate(), sdf1, sdf2);
+						Date nextRepriceDate = parseDate(row.getNextRepricingDate(), sdf1, sdf2);
+
+						jdbcTemplate.update(insertArchivalSummarySql,
+								row.getFloatingFixed(),
+								row.getExistingBenchmark(),
+								row.getExistingRepricingFrequency(),
+								lastRepriceDate,
+								nextRepriceDate,
+								row.getSpreadOverBenchmark(),
+								row.getCapFloorRateOfInterest(),
+								nextVersion,
+								row.getSno());
+					}
+
+					// Clone maxVer detail records to nextVersion in archival detail table
+					String cloneDetailSql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE "
+							+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+							+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+							+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+							+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+							+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+							+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+							+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE) + ROWNUM, "
+							+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+							+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
+							+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
+							+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
+							+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
+							+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+							+ "FROM BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+
+					jdbcTemplate.update(cloneDetailSql, nextVersion, reportDate, maxVer);
+
+					String updateArchivalDetailSql = "UPDATE BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE SET "
+							+ "FLOATING_FIXED = ?, EXISTING_BENCHMARK = ?, EXISTING_REPRICING_FREQUENCY = ?, "
+							+ "LAST_REPRICING_DATE = ?, NEXT_REPRICING_DATE = ?, SPREAD_OVER_BENCHMARK = ?, CAP_FLOOR_RATE_OF_INTEREST = ? "
+							+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ? "
+							+ "AND ("
+							+ "  (ACCOUNT_NUMBER IS NOT NULL AND ACCOUNT_NUMBER = (SELECT ACCOUNT_NUMBER FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE SNO = ?)) "
+							+ "  OR (CUSTOMER_ID IS NOT NULL AND CUSTOMER_ID = (SELECT CUSTOMER_ID FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE WHERE SNO = ?))"
+							+ ")";
+
+					for (IRRBB_ADVANCES_Update_Row row : rows) {
+						if (row.getSno() == null) continue;
+						Date lastRepriceDate = parseDate(row.getLastRepricingDate(), sdf1, sdf2);
+						Date nextRepriceDate = parseDate(row.getNextRepricingDate(), sdf1, sdf2);
+
+						try {
+							jdbcTemplate.update(updateArchivalDetailSql, row.getFloatingFixed(), row.getExistingBenchmark(),
+									row.getExistingRepricingFrequency(), lastRepriceDate, nextRepriceDate,
+									row.getSpreadOverBenchmark(), row.getCapFloorRateOfInterest(),
+									reportDate, nextVersion, row.getSno(), row.getSno());
+						} catch (Exception ex) {
+							logger.warn("Detail archival update warning for SNO {}: {}", row.getSno(), ex.getMessage());
+						}
+					}
+				} catch (Exception e) {
+					logger.error("Error performing IRRBB_ADVANCES resubmission update: {}", e.getMessage(), e);
+				}
+			}
+			return;
 		}
 
-		if (!"RESUB".equalsIgnoreCase(type) && reportDateStr != null && !reportDateStr.trim().isEmpty()) {
+		// =====================================================
+		// NORMAL MODE: Archive current un-modified snapshot FIRST, then Update Live Tables
+		// =====================================================
+		String summaryTable = "BRRS_IRRBB_ADV_SUMMARYTABLE";
+		String detailTable = "BRRS_IRRBB_ADV_DETAILTABLE";
+
+		Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject("SELECT REPORT_DATE FROM " + summaryTable + " WHERE SNO = ?",
+					Date.class, rows.get(0).getSno());
+		} catch (Exception e) {
 			try {
-				BigDecimal nextVersion = getNextArchivalVersion(reportDateStr);
+				reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM " + summaryTable, Date.class);
+			} catch (Exception ex) {
+				logger.warn("Could not query REPORT_DATE: {}", ex.getMessage());
+			}
+		}
+
+		// Step 1: Copy CURRENT un-modified record from SUMMARY/DETAIL table into ARCHIVAL table as maxVersion + 1 FIRST
+		if (reportDate != null) {
+			try {
+				BigDecimal nextVersion = findMaxArchivalVersion(reportDate);
+				nextVersion = (nextVersion != null) ? nextVersion.add(BigDecimal.ONE) : BigDecimal.ONE;
 				logger.info("Archiving current summary & detail data for date {} as version {} before submit updates",
-						reportDateStr, nextVersion);
+						reportDate, nextVersion);
 
 				String archiveSummarySql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE "
 						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
@@ -2367,15 +2489,18 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
 						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
 						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE) + ROWNUM, "
+						+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
 						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
 						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
 						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
 						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
 						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+						+ "FROM BRRS_IRRBB_ADV_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
-				jdbcTemplate.update(archiveSummarySql, nextVersion, reportDateStr);
+				int summaryCount = jdbcTemplate.update(archiveSummarySql, nextVersion, reportDate);
+				logger.info("Archived {} summary records into BRRS_IRRBB_ADV_ARCHIVAL_SUMMARYTABLE with version {}",
+						summaryCount, nextVersion);
 
 				String archiveDetailSql = "INSERT INTO BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE "
 						+ "(SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
@@ -2384,27 +2509,24 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
 						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
 						+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-						+ "SELECT SNO, CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
+						+ "SELECT (SELECT COALESCE(MAX(SNO), 0) FROM BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE) + ROWNUM, "
+						+ "CUSTOMER_ID, ACCOUNT_NUMBER, SCHEME_CODE, GL_CODE, GL_DESCRIPTION, "
 						+ "TYPE_OF_LOAN, NAME, ACCOUNT_CURRENCY, OUTSTANDING_BALANCE_ACCT_CCY, OUTSTANDING_BALANCE_INR, "
 						+ "ACCOUNT_OPENING_DATE, MATURITY_DATE, TENOR_MONTH, EMI_OF_LOAN, FLOATING_FIXED, "
 						+ "EXISTING_BENCHMARK, EXISTING_REPRICING_FREQUENCY, LAST_REPRICING_DATE, NEXT_REPRICING_DATE, "
 						+ "SPREAD_OVER_BENCHMARK, FINAL_ROI, CAP_FLOOR_RATE_OF_INTEREST, ASSET_STATUS, REPORT_DATE, "
 						+ "?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
-						+ "FROM BRRS_IRRBB_ADV_DETAILTABLE WHERE REPORT_DATE = TO_DATE(?, 'DD-MON-YYYY')";
+						+ "FROM BRRS_IRRBB_ADV_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
-				jdbcTemplate.update(archiveDetailSql, nextVersion, reportDateStr);
+				int detailCount = jdbcTemplate.update(archiveDetailSql, nextVersion, reportDate);
+				logger.info("Archived {} detail records into BRRS_IRRBB_ADV_ARCHIVAL_DETAILTABLE with version {}",
+						detailCount, nextVersion);
 			} catch (Exception e) {
 				logger.error("Error archiving summary & detail data before updates: {}", e.getMessage(), e);
 			}
 		}
 
-		// 2. Step 2 (Procedure Execution): Sequentially execute procedures FIRST right
-		// after Step 1:
-		// BRRS_IRRBB_ADV_DETAIL_PROCEDURE, THEN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE
-		executeIrradvProcedures(reportDateStr);
-
-		// 3. Step 3 (Table Modifications): Apply inline updates to summary and detail
-		// tables only after procedure execution
+		// Step 2: NOW apply inline updates to main summary and detail tables
 		String summarySql = "UPDATE " + summaryTable + " SET " + "FLOATING_FIXED = ?, " + "EXISTING_BENCHMARK = ?, "
 				+ "EXISTING_REPRICING_FREQUENCY = ?, " + "LAST_REPRICING_DATE = ?, " + "NEXT_REPRICING_DATE = ?, "
 				+ "SPREAD_OVER_BENCHMARK = ?, " + "CAP_FLOOR_RATE_OF_INTEREST = ? " + "WHERE SNO = ?";
@@ -2446,44 +2568,6 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 					logger.warn("Detail table fallback update warning for SNO {}: {}", row.getSno(), ex.getMessage());
 				}
 			}
-		}
-	}
-
-	private void executeIrradvProcedures(String reportDateStr) {
-		// 1. First run BRRS_IRRBB_ADV_DETAIL_PROCEDURE
-		try {
-			logger.info("Executing BRRS_IRRBB_ADV_DETAIL_PROCEDURE with date: {}", reportDateStr);
-			if (reportDateStr != null && !reportDateStr.trim().isEmpty()) {
-				try {
-					jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_DETAIL_PROCEDURE(?); END;", reportDateStr);
-				} catch (Exception ex) {
-					jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_DETAIL_PROCEDURE; END;");
-				}
-			} else {
-				jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_DETAIL_PROCEDURE; END;");
-			}
-			logger.info("BRRS_IRRBB_ADV_DETAIL_PROCEDURE executed successfully.");
-		} catch (Exception e) {
-			logger.error("Error executing BRRS_IRRBB_ADV_DETAIL_PROCEDURE", e);
-			throw new RuntimeException("Detail Procedure Execution Failed: " + e.getMessage(), e);
-		}
-
-		// 2. Then run BRRS_IRRBB_ADV_SUMMARY_PROCEDURE
-		try {
-			logger.info("Executing BRRS_IRRBB_ADV_SUMMARY_PROCEDURE with date: {}", reportDateStr);
-			if (reportDateStr != null && !reportDateStr.trim().isEmpty()) {
-				try {
-					jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE(?); END;", reportDateStr);
-				} catch (Exception ex) {
-					jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE; END;");
-				}
-			} else {
-				jdbcTemplate.update("BEGIN BRRS_IRRBB_ADV_SUMMARY_PROCEDURE; END;");
-			}
-			logger.info("BRRS_IRRBB_ADV_SUMMARY_PROCEDURE executed successfully.");
-		} catch (Exception e) {
-			logger.error("Error executing BRRS_IRRBB_ADV_SUMMARY_PROCEDURE", e);
-			throw new RuntimeException("Summary Procedure Execution Failed: " + e.getMessage(), e);
 		}
 	}
 

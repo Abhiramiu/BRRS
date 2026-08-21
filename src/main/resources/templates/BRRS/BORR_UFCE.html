@@ -287,40 +287,7 @@ td {
 		location.href = url;
 	}
 
-	function openDetail(element, mode) {
-		$('#loader').modal('show');
-		var acctNo = element.getAttribute('data-acctNo');
-		var asondate = element.getAttribute('data-asondate');
-		var type = element.getAttribute('data-type');
-		
-		var url = /*[[@{'/Reports/' + ${reportid} + '/DetailEdit'}]]*/;
-		url += '?acctNo=' + encodeURIComponent(acctNo) + 
-			   '&asondate=' + encodeURIComponent(asondate) + 
-			   '&formmode=' + encodeURIComponent(mode) + 
-			   '&type=' + encodeURIComponent(type);
-		location.href = url;
-	}
 
-	function submitUpdate() {
-		$('#loader').modal('show');
-		var formData = $('#DetailForm').serialize();
-		$.ajax({
-			url: /*[[@{'/Reports/' + ${reportid} + '/updateDetail'}]]*/,
-			type: 'POST',
-			data: formData,
-			success: function (response) {
-				$('#loader').modal('hide');
-				showResultModal('BRRS', 'Record updated successfully.');
-				setTimeout(function() {
-					showdetails();
-				}, 1500);
-			},
-			error: function () {
-				$('#loader').modal('hide');
-				showResultModal('Error', 'Failed to update record.');
-			}
-		});
-	}
 
 	function downloadfile(button) {
 		var reportid = button.getAttribute('data-reportid');
@@ -737,65 +704,7 @@ td {
 
 
 
-				<!-- Detail Form Screen (when formmode == 'edit') -->
-				<div th:if="${formmode == 'edit'}" class="card">
-					<div class="card-body">
-						<form th:object="${Data}" method="post" id="DetailForm">
-							<!-- Row 1 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Customer ID</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{CUST_ID}" class="form-control form-control-sm" readonly />
-								</div>
-								<div class="col-sm-1"></div>
-								<label class="col-sm-2">Account Number</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{ACCT_NO}" class="form-control form-control-sm" readonly />
-								</div>
-							</div>
 
-							<!-- Row 2 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Account Name</label>
-								<div class="col-sm-3">
-									<input type="text" th:field="*{ACCT_NAME}" class="form-control form-control-sm" readonly />
-								</div>
-								<div class="col-sm-1"></div>
-								<label class="col-sm-2">Balance Equi to BWP</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{BAL_EQUI_TO_BWP}" class="form-control form-control-sm" style="text-align:right;" />
-								</div>
-							</div>
-
-							<!-- Row 3 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Sanction Amount BWP</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{SANCTION_AMT_BWP}" class="form-control form-control-sm" style="text-align:right;" />
-								</div>
-								<div class="col-sm-1"></div>
-								<label class="col-sm-2">Interest Rate</label>
-								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{INT_RATE}" class="form-control form-control-sm" style="text-align:right;" />
-								</div>
-							</div>
-
-							<!-- Row 4 -->
-							<div class="row formline" style="margin-top:10px;">
-								<label class="col-sm-2">Report Date</label>
-								<div class="col-sm-3">
-									<input type="date" name="report_date" class="form-control form-control-sm"
-										   th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly/>
-								</div>
-							</div>
-
-							<!-- Update Button -->
-							<div style="text-align:center; margin-top:20px;">
-								<button type="button" class="custom-tab-btn" onclick="submitUpdate()">Update</button>
-							</div>
-						</form>
-					</div>
-				</div>
 
 			</div>
 		</div>
