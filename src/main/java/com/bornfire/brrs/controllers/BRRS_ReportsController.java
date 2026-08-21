@@ -68,6 +68,7 @@ import com.bornfire.brrs.services.BRRS_BDISB2_ReportService;
 import com.bornfire.brrs.services.BRRS_BDISB3_ReportService;
 import com.bornfire.brrs.services.BRRS_CAP_RATIO_BUFFER_ReportService;
 import com.bornfire.brrs.services.BRRS_CASH_FLOW_ReportService;
+import com.bornfire.brrs.services.BRRS_DBS10_FINCON_III_1C_ReportService;
 import com.bornfire.brrs.services.BRRS_DBS10_FINCON_II_1A_ReportService;
 import com.bornfire.brrs.services.BRRS_EXPOSURES_ReportService;
 import com.bornfire.brrs.services.BRRS_EXPOSURES_ReportService.EXPOSURES_Summary_Entity;
@@ -78,8 +79,8 @@ import com.bornfire.brrs.services.BRRS_FSI_ReportService;
 import com.bornfire.brrs.services.BRRS_FSI_ReportService.FSI_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_GL_SCH_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_ADVANCES_ReportService;
-import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_BORROWINGS_ReportService;
+import com.bornfire.brrs.services.BRRS_IRRBB_DEPOSITS_ReportService;
 import com.bornfire.brrs.services.BRRS_IRRBB_PLACEMENTS_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB1_ReportService;
 import com.bornfire.brrs.services.BRRS_MDISB2_ReportService;
@@ -6715,4 +6716,49 @@ public class BRRS_ReportsController {
 					.body("Upload failed due to server error: " + e.getMessage());
 		}
 	}
+	@Autowired
+	BRRS_DBS10_FINCON_III_1C_ReportService BRRS_DBS10_FINCON_III_1C_ReportService;
+
+	@PostMapping("/DBS10_FINCON_III_1CupdateAll")
+	public ResponseEntity<String> updateReportbg(
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("type") String type, HttpServletRequest request) {
+
+		try {
+
+			System.out.println("Came to single controller. Type : " + type + " Date : " + asondate);
+
+			boolean isResub = "RESUB".equalsIgnoreCase(type);
+
+			Object entityInstance = isResub ? new BRRS_DBS10_FINCON_III_1C_ReportService.DBS10_FINCON_III_1C_Manual_Archival_Summary_Entity()
+					: new BRRS_DBS10_FINCON_III_1C_ReportService.DBS10_FINCON_III_1C_Manual_Summary_Entity();
+
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+
+			binder.bind(request);
+
+			// Set report date
+			Method setDateMethod = entityInstance.getClass().getMethod("setReport_date", Date.class);
+
+			setDateMethod.invoke(entityInstance, asondate);
+
+			System.out.println("Entity Created : " + entityInstance.getClass().getSimpleName());
+
+			BRRS_DBS10_FINCON_III_1C_ReportService.updateReport(entityInstance, type);
+
+			return ResponseEntity.ok("Modified Successfully.");
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
+		}
+	}
+
 }

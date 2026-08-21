@@ -297,7 +297,8 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_ADISB1_ReportService BRRS_ADISB1_ReportService;
-
+	@Autowired
+	BRRS_DBS10_FINCON_III_1C_ReportService BRRS_DBS10_FINCON_III_1C_ReportService;
 	@Autowired
 	BRRS_ADISB2_ReportService BRRS_ADISB2_ReportService;
 
@@ -600,6 +601,10 @@ public class RegulatoryReportServices {
 
 		case "ADISB1":
 			repsummary = BRRS_ADISB1_ReportService.getADISB1View(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version);
+			break;
+		case "DBS10_FINCON_III_1C":
+			repsummary = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CView(reportId, fromdate, todate, currency, dtltype,
 					pageable, type, version);
 			break;
 
@@ -1377,7 +1382,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_ADISB1_ReportService.getADISB1currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version);
 			break;
+		case "DBS10_FINCON_III_1C":
 
+			repdetail = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version);
+			break;
 		case "ADISB2":
 
 			repdetail = BRRS_ADISB2_ReportService.getADISB2currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2414,7 +2423,15 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "DBS10_FINCON_III_1C":
+			try {
+				repfile = BRRS_DBS10_FINCON_III_1C_ReportService.BRRS_DBS10_FINCON_III_1CExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
 
+			} catch (Exception e) { // TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 		case "ADISB2":
 			try {
 				repfile = BRRS_ADISB2_ReportService.getM_ADISB2Excel(filename, reportId, fromdate, todate, currency,
@@ -2907,6 +2924,9 @@ public class RegulatoryReportServices {
 		} else if ("ADISB1Detail".equals(filename)) {
 			return BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
+		}else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
+			return BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate, todate, currency, dtltype,
+						type, version);
 		} else if ("ADISB2Detail".equals(filename)) {
 			return BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3664,7 +3684,11 @@ public class RegulatoryReportServices {
 			archivalData.addAll(ADISB11List);
 			System.out.println("Fetched ADISB1 archival data: " + ADISB11List.size());
 			break;
-
+		case "DBS10_FINCON_III_1C":
+			List<Object[]> DBS10_FINCON_III_1CList = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CArchival();
+			archivalData.addAll(DBS10_FINCON_III_1CList);
+			System.out.println("Fetched DBS10_FINCON_III_1C archival data: " + DBS10_FINCON_III_1CList.size());
+			break;
 		case "ADISB2":
 			List<Object[]> ADISB21List = BRRS_ADISB2_ReportService.getADISB2Archival();
 			archivalData.addAll(ADISB21List);
@@ -3948,7 +3972,11 @@ public class RegulatoryReportServices {
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
 		}
+		else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
 
+			fileData = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
+		}
 		else if ("ADISB2Detail".equals(filename)) {
 
 			fileData = BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
@@ -4362,7 +4390,10 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_ADISB1_ReportService.getViewOrEditPage(request.getParameter("SNO"),
 						request.getParameter("formmode"), request.getParameter("type"));
 				break;
-
+			case "DBS10_FINCON_III_1C":
+				modelAndView = BRRS_DBS10_FINCON_III_1C_ReportService.getViewOrEditPage(request.getParameter("SNO"),
+						request.getParameter("formmode"), request.getParameter("type"));
+				break;
 			case "ADISB2":
 				modelAndView = BRRS_ADISB2_ReportService.getViewOrEditPage(request.getParameter("SNO"),
 						request.getParameter("formmode"), request.getParameter("type"));
@@ -4576,6 +4607,9 @@ public class RegulatoryReportServices {
 			case "ADISB1":
 				response = BRRS_ADISB1_ReportService.callregenprocedure(request);
 				break;
+			case "DBS10_FINCON_III_1C":
+				response = BRRS_DBS10_FINCON_III_1C_ReportService.updateDetailEdit(request);
+				break;
 			case "Q_SMME_LA":
 				response = BRRS_Q_SMME_loans_Advances_reportService.callregenprocedure(request);
 				break;
@@ -4775,7 +4809,9 @@ public class RegulatoryReportServices {
 			case "ADISB1":
 				response = BRRS_ADISB1_ReportService.updateDetailEdit(request);
 				break;
-
+			case "DBS10_FINCON_III_1C":
+				response = BRRS_DBS10_FINCON_III_1C_ReportService.updateDetailEdit(request);
+				break;
 			case "ADISB2":
 				response = BRRS_ADISB2_ReportService.updateDetailEdit(request);
 				break;
@@ -5733,7 +5769,16 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-
+		case "DBS10_FINCON_III_1C":
+			try {
+				List<Object[]> resubList = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for DBS10_FINCON_III_1C: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for DBS10_FINCON_III_1C: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
 		case "ADISB2":
 			try {
 				List<Object[]> resubList = BRRS_ADISB2_ReportService.getADISB2Resub();
