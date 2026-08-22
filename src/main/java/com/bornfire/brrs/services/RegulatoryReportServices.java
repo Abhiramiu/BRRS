@@ -449,6 +449,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_UFCE_RETAILADV_ReportService BRRS_UFCE_RETAILADV_ReportService;
 
+	@Autowired
+	BRRS_UFCE_ANNEXURE_ReportService BRRS_UFCE_ANNEXURE_ReportService;
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -1153,6 +1156,11 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 
+		case "UFCE_ANNEXURE":
+			repsummary = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_View(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
+			break;
+
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -1617,6 +1625,11 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, Filter, type, version);
 			break;
 
+		case "UFCE_ANNEXURE":
+			repdetail = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_DetailView(reportId, fromdate, todate,
+					currency, dtltype, pageable, Filter, type, version);
+			break;
+
 		}
 		return repdetail;
 	}
@@ -1669,6 +1682,15 @@ public class RegulatoryReportServices {
 		case "LOAN_LIST_UFCE":
 			try {
 				repfile = BRRS_LOAN_LIST_UFCE_ReportService.getBRRS_LOAN_LIST_UFCE_Excel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+		case "UFCE_ANNEXURE":
+			try {
+				repfile = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_Excel(filename, reportId, fromdate,
 						todate, currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -3036,6 +3058,12 @@ public class RegulatoryReportServices {
 			List<Object[]> loanListList = BRRS_LOAN_LIST_UFCE_ReportService.getLOAN_LIST_UFCEArchival();
 			archivalData.addAll(loanListList);
 			System.out.println("Fetched LOAN_LIST_UFCE archival data: " + loanListList.size());
+			break;
+
+		case "UFCE_ANNEXURE":
+			List<Object[]> ufceAnnexureList = BRRS_UFCE_ANNEXURE_ReportService.getUFCE_ANNEXUREArchival();
+			archivalData.addAll(ufceAnnexureList);
+			System.out.println("Fetched UFCE_ANNEXURE archival data: " + ufceAnnexureList.size());
 			break;
 
 		case "M_SFINP2":
@@ -5052,6 +5080,17 @@ public class RegulatoryReportServices {
 			}
 			break;
 
+		case "UFCE_ANNEXURE":
+			try {
+				List<Object[]> resubList = BRRS_UFCE_ANNEXURE_ReportService.getUFCE_ANNEXUREResubList();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for UFCE_ANNEXURE: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for UFCE_ANNEXURE: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
 		case "IRRBB_BORROWINGS":
 			try {
 				List<Object[]> resubList = BRRS_IRRBB_BORROWINGS_reportservice.getIRRBB_BORROWINGS_Resub();
@@ -6801,6 +6840,35 @@ public class RegulatoryReportServices {
 				return pdfBytes;
 			} catch (Exception e) {
 				logger.error("UFCE_RETAILADV: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "UFCE_ANNEXURE":
+			try {
+				if (filename != null && filename.startsWith("EMAIL_")) {
+					excelBytes = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+				} else {
+					excelBytes = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_Excel(filename, reportId,
+							fromdate, todate, currency, dtltype, null, "excel", null);
+				}
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("UFCE_ANNEXURE: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("UFCE_ANNEXURE: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("UFCE_ANNEXURE: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("UFCE_ANNEXURE: PDF generation failed", e);
 				return new byte[0];
 			}
 

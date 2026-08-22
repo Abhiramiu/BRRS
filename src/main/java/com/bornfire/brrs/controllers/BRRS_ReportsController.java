@@ -217,6 +217,7 @@ import com.bornfire.brrs.services.BRRS_Q_STAFF_Report_Service.Q_STAFF_Summary_En
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
+import com.bornfire.brrs.services.BRRS_UFCE_ANNEXURE_ReportService;
 import com.bornfire.brrs.services.BorrowingFileUploadService;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
@@ -278,6 +279,11 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_IRRBB_DEPOSITS_ReportService BRRS_IRRBB_DEPOSITS_reportservice;
+
+	@Autowired
+	BRRS_UFCE_ANNEXURE_ReportService BRRS_UFCE_ANNEXURE_reportservice;
+	
+	
 
 	private String pagesize;
 
@@ -6571,6 +6577,21 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "type", required = false) String type) {
 		try {
 			BRRS_IRRBB_DEPOSITS_reportservice.updateAllIrrdepRows(rows, type);
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	// BATCH UPDATE METHOD FOR INLINE CELL EDITS (UFCE_ANNEXURE)
+	@RequestMapping(value = "/updateAllBRRSUfceAnnexure", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllBRRSUfceAnnexure(
+			@RequestBody List<BRRS_UFCE_ANNEXURE_ReportService.UFCE_ANNEXURE_Update_Row> rows,
+			@RequestParam(value = "type", required = false) String type) {
+		try {
+			BRRS_UFCE_ANNEXURE_reportservice.updateAllUfceAnnexureRows(rows, type);
 			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
 			e.printStackTrace();

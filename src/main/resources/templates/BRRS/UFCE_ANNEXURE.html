@@ -1,0 +1,1283 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<!-- 
+PURPOSE: BRRS UFCE ANNEXURE REPORT
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- CSS -->
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js" th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+div span {
+	font-weight: bold;
+	color: white !important;
+}
+
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.table-responsive {
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th,
+.thead-light th,
+table thead th {
+	position: sticky;
+	top: 0;
+	background-color: #D8D8D8 !important;
+	color: #000000 !important;
+	text-align: center !important;
+	vertical-align: middle !important;
+	padding: 3px 5px !important;
+	line-height: 1.2 !important;
+	z-index: 2;
+}
+
+tfoot th,
+tfoot.thead-light th,
+.table tfoot th {
+	text-align: right !important;
+	padding: 10px 8px !important;
+	vertical-align: middle !important;
+}
+
+.table td {
+	background-color: #FFFFFF;
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.table-cell tbody td:hover {
+	background-color: #f0f0f0;
+	cursor: pointer;
+}
+
+.table-bordered td, .table-bordered th {
+	border: 1px solid #000 !important;
+}
+
+.left-arrow-circle {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	background-color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.3s, transform 0.2s;
+}
+
+.left-arrow-circle i {
+	color: rgb(107, 122, 143);
+}
+
+.left-arrow-circle:hover {
+	background-color: rgb(107, 122, 143);
+	cursor: pointer;
+	transform: scale(1.05);
+	border: 2px solid white;
+}
+
+.left-arrow-circle:hover i {
+	color: white;
+}
+
+.white-text span {
+	color: white !important;
+}
+
+.boards {
+	transform: translateY(6px);
+	background-color: rgb(107, 122, 143);
+	color: white;
+	padding: 5px 5px;
+	border-radius: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	flex: 1;
+	min-width: 200px;
+	box-shadow: 0 0 10px rgb(107, 122, 143);
+	position: relative;
+}
+
+.scrolling-text {
+	display: inline-block;
+	font-family: "Courier New", monospace;
+	font-weight: bold;
+	letter-spacing: 1px;
+	animation: scroll-left 10s linear infinite;
+}
+
+@keyframes scroll-left {
+	0% {
+		transform: translateX(100%);
+	}
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+<script th:inline="javascript">
+	var reportid = /*[[${reportid}]]*/ 'UFCE_ANNEXURE';
+	var currentType = /*[[${type}]]*/ '';
+	var currentVersion = /*[[${version}]]*/ null;
+	var maxVersion = /*[[${maxVersion}]]*/ null;
+
+	$(document).ready(function () {
+		$('#loader').modal('hide');
+		
+		var tableIds = ['#reports', '#reportdetails', '#archivalTable', '#archivalDetailTable', '#resubTable', '#resubDetailTable'];
+		tableIds.forEach(function (id) {
+			if ($(id).length) {
+				var table = $(id).DataTable({
+					"pageLength": 25,
+					"ordering": false,
+					"bSort": false,
+					"order": [],
+					"scrollX": true,
+					"scrollY": "calc(100vh - 350px)",
+					"scrollCollapse": true,
+					"paging": true,
+					"autoWidth": true,
+					"language": {
+						"lengthMenu": "_MENU_ &nbsp;Entries per page"
+					},
+					"footerCallback": function (row, data, start, end, display) {
+						var api = this.api();
+
+						var numVal = function (i) {
+							if (typeof i === 'number') return i;
+							if (typeof i === 'string') {
+								var valMatch = i.match(/value=["']([^"']*)["']/i);
+								var strToParse = valMatch ? valMatch[1] : i.replace(/<[^>]+>/g, '');
+								var cleaned = strToParse.replace(/,/g, '').trim();
+								var parsed = parseFloat(cleaned);
+								return isNaN(parsed) ? 0 : parsed;
+							}
+							return 0;
+						};
+
+						var calcColTotal = function(colIdx) {
+							return api.column(colIdx, { search: 'applied' }).data().reduce(function (a, b) {
+								return numVal(a) + numVal(b);
+							}, 0);
+						};
+
+						var formatNum = function(val) {
+							return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+						};
+
+						$(row).find('.total-fund-based-on-date').html(formatNum(calcColTotal(11)));
+						$(row).find('.total-prov-required').html(formatNum(calcColTotal(12)));
+					}
+				});
+
+				// Dynamic footer update on live inline editing (preserves focus without redrawing table)
+				$(id).on('input', 'input.editable-cell', function() {
+					var $table = $(id);
+					var calcLiveTotal = function(colIdx) {
+						var sum = 0;
+						$table.find('tbody tr:visible').each(function() {
+							var $td = $(this).find('td').eq(colIdx);
+							var $input = $td.find('input');
+							var valStr = $input.length ? $input.val() : $td.text();
+							var cleaned = (valStr || '').replace(/,/g, '').trim();
+							var val = parseFloat(cleaned);
+							if (!isNaN(val)) {
+								sum += val;
+							}
+						});
+						return sum;
+					};
+					var formatNum = function(val) {
+						return val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+					};
+					$table.find('tfoot .total-fund-based-on-date').html(formatNum(calcLiveTotal(11)));
+					$table.find('tfoot .total-prov-required').html(formatNum(calcLiveTotal(12)));
+				});
+				setTimeout(function() {
+					table.columns.adjust();
+				}, 200);
+			}
+		});
+	});
+
+	$(window).on('pageshow', function () {
+		$('#loader').modal('hide');
+	});
+
+	function home() {
+		$("#loader").modal("toggle");
+		location.href = 'Dashboard';
+	}
+
+	function back() {
+		$("#loader").modal("toggle");
+		window.history.back();
+	}
+
+	function showdetails() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+		location.href = Callurl;
+	}
+
+	function showsummary() {
+		$('#loader').modal('show');
+		var Callurl = /*[[@{'/Reports/' + ${reportid}(dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/;
+		location.href = Callurl;
+	}
+
+	function showArchivalDetail() {
+		$('#loader').modal('show');
+		var fromdate = /*[[${fromdate}]]*/ '';
+		var todate = /*[[${todate}]]*/ '';
+		var asondate = /*[[${asondate}]]*/ '';
+		var version = /*[[${version}]]*/ '';
+		
+		var url = /*[[@{'/Reports/' + ${reportid}}]]*/;
+		url += '?fromdate=' + encodeURIComponent(fromdate) + 
+			   '&todate=' + encodeURIComponent(todate) + 
+			   '&asondate=' + encodeURIComponent(asondate) + 
+			   '&type=ARCHIVAL&dtltype=detail';
+		if (version) {
+			url += '&version=' + encodeURIComponent(version);
+		}
+		location.href = url;
+	}
+
+	function goToArchivalSummary() {
+		$('#loader').modal('show');
+		var fromdate = /*[[${fromdate}]]*/ '';
+		var todate = /*[[${todate}]]*/ '';
+		var asondate = /*[[${asondate}]]*/ '';
+		var version = /*[[${version}]]*/ '';
+		
+		var url = /*[[@{'/Reports/' + ${reportid}}]]*/;
+		url += '?fromdate=' + encodeURIComponent(fromdate) + 
+			   '&todate=' + encodeURIComponent(todate) + 
+			   '&asondate=' + encodeURIComponent(asondate) + 
+			   '&type=ARCHIVAL';
+		if (version) {
+			url += '&version=' + encodeURIComponent(version);
+		}
+		location.href = url;
+	}
+
+	function showResubDetail() {
+		$('#loader').modal('show');
+		var fromdate = /*[[${fromdate}]]*/ '';
+		var todate = /*[[${todate}]]*/ '';
+		var asondate = /*[[${asondate}]]*/ '';
+		var version = /*[[${version}]]*/ '';
+		
+		var url = /*[[@{'/Reports/' + ${reportid}}]]*/;
+		url += '?fromdate=' + encodeURIComponent(fromdate) + 
+			   '&todate=' + encodeURIComponent(todate) + 
+			   '&asondate=' + encodeURIComponent(asondate) + 
+			   '&type=RESUB&dtltype=detail';
+		if (version) {
+			url += '&version=' + encodeURIComponent(version);
+		}
+		location.href = url;
+	}
+
+	function goToResubSummary() {
+		$('#loader').modal('show');
+		var fromdate = /*[[${fromdate}]]*/ '';
+		var todate = /*[[${todate}]]*/ '';
+		var asondate = /*[[${asondate}]]*/ '';
+		var version = /*[[${version}]]*/ '';
+		
+		var url = /*[[@{'/Reports/' + ${reportid}}]]*/;
+		url += '?fromdate=' + encodeURIComponent(fromdate) + 
+			   '&todate=' + encodeURIComponent(todate) + 
+			   '&asondate=' + encodeURIComponent(asondate) + 
+			   '&type=RESUB';
+		if (version) {
+			url += '&version=' + encodeURIComponent(version);
+		}
+		location.href = url;
+	}
+
+	function downloadfile(button) {
+		var reportid = button.getAttribute('data-reportid');
+		var asondate = button.getAttribute('data-asondate');
+		var fromdate = button.getAttribute('data-fromdate');
+		var todate = button.getAttribute('data-todate');
+		var currency = button.getAttribute('data-currency');
+		var subreportid = button.getAttribute('data-subreportid');
+		var secid = button.getAttribute('data-secid');
+		var dtltype = button.getAttribute('data-dtltype');
+		var filename = button.getAttribute('data-filename');
+		var type = button.getAttribute('data-type');
+		var version = button.getAttribute('data-version');
+		var format = button.getAttribute('data-format') || '';
+
+		$('#loader').modal('show');
+
+		$.ajax({
+			url: './downloadExcel?reportid=' + reportid +
+				 '&fromdate=' + fromdate +
+				 '&asondate=' + asondate +
+				 '&todate=' + todate +
+				 '&currency=' + currency +
+				 '&subreportid=' + subreportid +
+				 '&secid=' + secid +
+				 '&filename=' + filename +
+				 '&type=' + type +
+				 '&version=' + version +
+				 '&format=' + format,
+			type: 'GET',
+			xhrFields: {
+				responseType: 'blob'
+			},
+			success: function (data) {
+				$('#loader').modal('hide');
+				if (data && data.size > 100) {
+					const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.style.display = 'none';
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+					showResultModal('BRRS', filename + ' downloaded successfully.');
+				} else {
+					showResultModal('Information', 'No data was available to create a download.');
+				}
+			},
+			error: function () {
+				$('#loader').modal('hide');
+				showResultModal('Error', 'An error occurred while downloading the file.');
+			}
+		});
+	}
+
+	function downloadSummaryPdf(element) {
+		var reportid = element.getAttribute('data-reportid');
+		var fromdate = element.getAttribute('data-fromdate');
+		var todate   = element.getAttribute('data-todate');
+
+		$('#loader').modal('show');
+
+		var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate='   + encodeURIComponent(todate);
+
+		window.location.href = url;
+
+		setTimeout(function () {
+			$('#loader').modal('hide');
+		}, 2000);
+	}
+
+	function emailDownloadSummaryPdf(element) {
+		var reportid = element.getAttribute('data-reportid');
+		var fromdate = element.getAttribute('data-fromdate');
+		var todate   = element.getAttribute('data-todate');
+
+		$('#loader').modal('show');
+
+		var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate='   + encodeURIComponent(todate);
+
+		window.location.href = url;
+
+		setTimeout(function () {
+			$('#loader').modal('hide');
+		}, 2000);
+	}
+
+	var isModifiedSuccess = false;
+
+	function closemodel() {
+		$('#alert').modal('hide');
+		$('#resultModal').modal('hide');
+		if (isModifiedSuccess) {
+			isModifiedSuccess = false;
+			var urlParams = new URLSearchParams(window.location.search);
+			if ((urlParams.get('type') === 'RESUB' || currentType === 'RESUB') && urlParams.has('version')) {
+				var v = parseFloat(urlParams.get('version'));
+				if (!isNaN(v)) {
+					urlParams.set('version', (v + 1).toString());
+					window.location.search = urlParams.toString();
+					return;
+				}
+			}
+			location.reload();
+		}
+	}
+
+	function showResultModal(title, message) {
+		$('#resultModalLabel').text(title);
+		$('#resultModalBody').text(message);
+		$('#resultModal').modal('show');
+	}
+
+	// ======================
+	// INLINE EDIT FUNCTIONS 
+	// ======================
+
+	function enableInlineEdit() {
+		var urlParams = new URLSearchParams(window.location.search);
+		var paramType = urlParams.get('type') || currentType;
+		var paramVersion = urlParams.get('version') || currentVersion;
+
+		if ((paramType === 'RESUB' || paramType === 'ARCHIVAL' || $('#resubTable').is(':visible') || $('#archivalTable').is(':visible')) && paramVersion != null && maxVersion != null) {
+			var pVer = parseFloat(paramVersion);
+			var mVer = parseFloat(maxVersion);
+			if (!isNaN(pVer) && !isNaN(mVer) && pVer < mVer) {
+				showResultModal('Alert', 'Only the max version of the report can be resubmitted');
+				return;
+			}
+		}
+
+		$('#modifyBtn').hide();
+		$('.submit-btn-bottom').show();
+		$('#cancelRecord').show();
+
+		$('input.editable-cell').each(function() {
+			$(this).removeAttr('readonly');
+			$(this).css({
+				'background-color': '#ffff99',
+				'border': '1px solid #999',
+				'outline': 'none',
+				'padding': '2px 5px'
+			});
+		});
+	}
+
+	function cancelInlineEdit() {
+		location.reload();
+	}
+
+	function saveInlineEdits() {
+		var rowsData = [];
+		var targetTable = $('#reports').length && $('#reports').is(':visible') ? $('#reports') : $('#resubTable');
+
+		if (!targetTable.length) {
+			showResultModal('Information', 'No table found to save.');
+			return;
+		}
+
+		var headerInput = $('input[name="ufcePercent"]:visible');
+		if (!headerInput.length) {
+			headerInput = $('input[name="ufcePercent"]');
+		}
+		var headerUfcePercentVal = headerInput.val();
+		var headerUfcePercent = (headerUfcePercentVal !== undefined && headerUfcePercentVal !== null && String(headerUfcePercentVal).trim() !== '')
+			? parseFloat(headerUfcePercentVal) : null;
+
+		targetTable.find('tbody tr').each(function() {
+			var row = $(this);
+			var sno = row.find('input.row-sno').val();
+			if (sno) {
+				rowsData.push({
+					sno: parseInt(sno),
+					branch: row.find('input[name="branch"]').val() || '',
+					totFrgnCcyExposure: parseFloat(row.find('input[name="totFrgnCcyExposure"]').val()) || 0,
+					ufce: parseFloat(row.find('input[name="ufce"]').val()) || 0,
+					ufcePercent: headerUfcePercent,
+					ebid: parseFloat(row.find('input[name="ebid"]').val()) || 0,
+					incrementalProvReq: parseFloat(row.find('input[name="incrementalProvReq"]').val()) || 0,
+					provRequired: parseFloat(row.find('input[name="provRequired"]').val()) || 0
+				});
+			}
+		});
+
+		if (rowsData.length === 0) {
+			showResultModal('Information', 'No records found to update.');
+			return;
+		}
+
+		var urlParams = new URLSearchParams(window.location.search);
+		var type = urlParams.get('type') || ($('#resubTable').length && $('#resubTable').is(':visible') ? 'RESUB' : '');
+
+		$('#loader').modal('show');
+
+		$.ajax({
+			url: '/BRRS/Reports/updateAllBRRSUfceAnnexure?type=' + encodeURIComponent(type),
+			type: 'POST',
+			contentType: 'application/json',
+			data: JSON.stringify(rowsData),
+			success: function(response) {
+				$('#loader').modal('hide');
+				isModifiedSuccess = true;
+				setTimeout(function() {
+					showResultModal('BRRS', 'Modified Successfully.');
+				}, 300);
+			},
+			error: function(xhr) {
+				$('#loader').modal('hide');
+				setTimeout(function() {
+					showResultModal('Error', xhr.responseText || 'Error updating records');
+				}, 300);
+			}
+		});
+	}
+</script>
+</head>
+
+<title>UFCE - ANNEXURE</title>
+<body>
+	<div class="container-fluid" style="padding-left: 0px; padding-right: 0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card" style="width: 100%;">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+						<h5 style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							UFCE - ANNEXURE
+						</h5>
+						<div class="boards">
+							<p class="scrolling-text">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT</p>
+						</div>
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons" style="display: flex; color: white; align-items: center;">
+						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
+							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}"></span>
+						</span>
+
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+						<!-- Summary/Detail toggle for Normal -->
+						<button type="button" class="custom-tab-btn" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
+						
+						<!-- Summary/Detail toggle for Archival -->
+						<button type="button" class="custom-tab-btn" onclick="goToArchivalSummary();"
+							th:if="${displaymode == 'archivalDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showArchivalDetail();"
+							th:if="${displaymode == 'archivalSummary'}">Details</button>
+
+						<!-- Summary/Detail toggle for Resub -->
+						<button type="button" class="custom-tab-btn" onclick="goToResubSummary();"
+							th:if="${displaymode == 'resubDetail'}">Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
+							th:if="${displaymode == 'resubSummary'}">Details</button>
+
+						<!-- MODIFY / CANCEL BUTTONS-->
+						<button type="button" class="custom-tab-btn" id="modifyBtn"
+							onclick="enableInlineEdit();"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							title="Click to EDIT Records">
+							Modify
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="cancelRecord"
+							onclick="cancelInlineEdit();" style="display: none;"
+							title="Cancel editing">
+							Cancel
+						</button>
+
+						<!-- FORMAT Download Button -->
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
+							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
+							th:attr="data-reportid=${reportid},
+									data-asondate=${asondate},
+									data-fromdate=${fromdate},
+									data-todate=${todate},
+									data-currency=${currency}, 
+									data-dtltype=${dtltype},
+									data-filename='UFCE_ANNEXURE.xlsx',
+									data-type=${type},
+									data-format='email',
+									data-version=${version != null ? version : ''}"
+							style="font-family: Arial; font-weight: bold;">
+							<i class="fa fa-download"></i> FORMAT
+						</button>
+
+						<!-- PDF Download Dropdown -->
+						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
+							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'archivalSummary'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown" style="font-family: Arial; font-weight: bold;">
+								<i class="fa fa-download"></i> PDF
+							</button>
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link"
+								   th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+								   onclick="downloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+								</a>
+								
+						</div>
+					</div>
+				</div>
+
+				<!-- Header Titles -->
+				<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Summary View </h1>
+				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Detail View</h1>
+				<h1 th:if="${displaymode == 'archivalSummary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Archival Summary View (Read Only)</h1>
+				<h1 th:if="${displaymode == 'archivalDetail'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Archival Detail View (Read Only)</h1>
+				<h1 th:if="${displaymode == 'resubSummary'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Resubmission Summary View</h1>
+				<h1 th:if="${displaymode == 'resubDetail'}"
+					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+					Resubmission Detail View</h1>
+
+				<!-- Normal Summary Table -->
+				<div th:if="${displaymode == 'summary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="reports" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ufcePercent" th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : ''}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportsummary}">
+										<td>
+											<input type="hidden" class="row-sno" th:value="${data.sno}"/>
+											<span th:text="${data.sno}"></span>
+										</td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="branch" th:value="${data.branch}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px;"/>
+										</td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="totFrgnCcyExposure" th:value="${data.totFrgnCcyExposure}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ufce" th:value="${data.ufce}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ebid" th:value="${data.ebid}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="incrementalProvReq" th:value="${data.incrementalProvReq}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="provRequired" th:value="${data.provRequired}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					<div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
+						<button type="button" class="custom-tab-btn submit-btn-bottom"
+							onclick="saveInlineEdits();" style="display: none;"
+							title="Submit changes">
+							Submit
+						</button>
+					</div>
+				</div>
+
+				<!-- Normal Detail Table -->
+				<div th:if="${displaymode == 'Details'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="reportdetails" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input"
+												   name="ufcePercent" th:value="${reportdetails != null and !reportdetails.isEmpty() ? reportdetails[0].ufcePercent : (reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : '')}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportdetails}">
+										<td style="text-align: left;" th:text="${data.sno}"></td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td style="text-align: left;" th:text="${data.branch}"></td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td style="text-align: right;" th:text="${data.totFrgnCcyExposure != null ? #numbers.formatDecimal(data.totFrgnCcyExposure, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ufce != null ? #numbers.formatDecimal(data.ufce, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ebid != null ? #numbers.formatDecimal(data.ebid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.incrementalProvReq != null ? #numbers.formatDecimal(data.incrementalProvReq, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.provRequired != null ? #numbers.formatDecimal(data.provRequired, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Archival Summary Table -->
+				<div th:if="${displaymode == 'archivalSummary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="archivalTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input"
+												   name="ufcePercent" th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : ''}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportsummary}">
+										<td style="text-align: left;" th:text="${data.sno}"></td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td style="text-align: left;" th:text="${data.branch}"></td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td style="text-align: right;" th:text="${data.totFrgnCcyExposure != null ? #numbers.formatDecimal(data.totFrgnCcyExposure, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ufce != null ? #numbers.formatDecimal(data.ufce, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ebid != null ? #numbers.formatDecimal(data.ebid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.incrementalProvReq != null ? #numbers.formatDecimal(data.incrementalProvReq, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.provRequired != null ? #numbers.formatDecimal(data.provRequired, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Archival Detail Table -->
+				<div th:if="${displaymode == 'archivalDetail'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="archivalDetailTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input"
+												   name="ufcePercent" th:value="${reportdetails != null and !reportdetails.isEmpty() ? reportdetails[0].ufcePercent : (reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : '')}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportdetails}">
+										<td style="text-align: left;" th:text="${data.sno}"></td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td style="text-align: left;" th:text="${data.branch}"></td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td style="text-align: right;" th:text="${data.totFrgnCcyExposure != null ? #numbers.formatDecimal(data.totFrgnCcyExposure, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ufce != null ? #numbers.formatDecimal(data.ufce, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ebid != null ? #numbers.formatDecimal(data.ebid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.incrementalProvReq != null ? #numbers.formatDecimal(data.incrementalProvReq, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.provRequired != null ? #numbers.formatDecimal(data.provRequired, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- Resub Summary Table -->
+				<div th:if="${displaymode == 'resubSummary'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="resubTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ufcePercent" th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : ''}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportsummary}">
+										<td>
+											<input type="hidden" class="row-sno" th:value="${data.sno}"/>
+											<span th:text="${data.sno}"></span>
+										</td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="branch" th:value="${data.branch}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px;"/>
+										</td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="totFrgnCcyExposure" th:value="${data.totFrgnCcyExposure}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ufce" th:value="${data.ufce}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="ebid" th:value="${data.ebid}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="incrementalProvReq" th:value="${data.incrementalProvReq}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td>
+											<input type="text" class="form-control form-control-sm cell-input editable-cell"
+												   name="provRequired" th:value="${data.provRequired}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 100px; text-align: right;"/>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					<div style="text-align: center; margin-top: 15px; margin-bottom: 15px;">
+						<button type="button" class="custom-tab-btn submit-btn-bottom"
+							onclick="saveInlineEdits();" style="display: none;"
+							title="Submit changes">
+							Submit
+						</button>
+					</div>
+				</div>
+
+				<!-- Resub Detail Table -->
+				<div th:if="${displaymode == 'resubDetail'}" class="container-fluid">
+					<div class="row">
+						<div class="col-sm-12" style="overflow-x: auto;">
+							<table id="resubDetailTable" class="table table-bordered table-cell table-hover table-sm">
+								<thead class="thead-light">
+									<tr>
+										<th rowspan="2">S.No</th>
+										<th rowspan="2">Name of the borrower</th>
+										<th rowspan="2">Branch</th>
+										<th rowspan="2">Finacle A/C ID</th>
+										<th rowspan="2">Finacle ID</th>
+										<th rowspan="2">Total Foreign Currency Exposure</th>
+										<th rowspan="2">UFCE</th>
+										<th>Likely Loss</th>
+										<th rowspan="2">EBID</th>
+										<th>Likely Loss / EBID </th>
+										<th rowspan="2">Incremental Provisioning Required</th>
+										<th>Fund Based /S  As on </th>
+										<th>Provision Required</th>
+									</tr>
+									<tr>
+
+										<th style="padding: 0; min-width: 80px;">
+											<input type="text" class="form-control form-control-sm cell-input"
+												   name="ufcePercent" th:value="${reportdetails != null and !reportdetails.isEmpty() ? reportdetails[0].ufcePercent : (reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].ufcePercent : '')}" readonly
+												   style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: center; font-weight: bold;"/>
+										</th>
+
+										<th>(7/8*100)</th>
+
+										<th th:text="${#strings.replace(asondate, '/', '-')}"></th>
+										<th>(10*11)</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th style="text-align: center;">1</th>
+										<th style="text-align: center;">2</th>
+										<th style="text-align: center;">3</th>
+										<th style="text-align: center;">4</th>
+										<th style="text-align: center;">5</th>
+										<th style="text-align: center;">6</th>
+										<th style="text-align: center;">7</th>
+										<th style="text-align: center;">8</th>
+										<th style="text-align: center;">9</th>
+										<th style="text-align: center;">10</th>
+										<th style="text-align: center;">11</th>
+										<th style="text-align: center;">12</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+									<tr th:each="data : ${reportdetails}">
+										<td style="text-align: left;" th:text="${data.sno}"></td>
+										<td style="text-align: left;" th:text="${data.nameOfBorrower}"></td>
+										<td style="text-align: left;" th:text="${data.branch}"></td>
+										<td style="text-align: left;" th:text="${data.finacleAcId}"></td>
+										<td style="text-align: left;" th:text="${data.finacleId}"></td>
+										<td style="text-align: right;" th:text="${data.totFrgnCcyExposure != null ? #numbers.formatDecimal(data.totFrgnCcyExposure, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ufce != null ? #numbers.formatDecimal(data.ufce, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLoss != null ? #numbers.formatDecimal(data.likelyLoss, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.ebid != null ? #numbers.formatDecimal(data.ebid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.likelyLossEbid != null ? #numbers.formatDecimal(data.likelyLossEbid, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.incrementalProvReq != null ? #numbers.formatDecimal(data.incrementalProvReq, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.fundBasedOnDate != null ? #numbers.formatDecimal(data.fundBasedOnDate, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+										<td style="text-align: right;" th:text="${data.provRequired != null ? #numbers.formatDecimal(data.provRequired, 1, 'COMMA', 2, 'POINT') : '0.00'}"></td>
+									</tr>
+								</tbody>
+								<tfoot class="thead-light" style="font-weight: bold; font-family: Arial;">
+									<tr>
+										<th colspan="11" style="text-align: right;">Total:</th>
+										<th class="total-fund-based-on-date" style="text-align: right;">0.00</th>
+										<th class="total-prov-required" style="text-align: right;">0.00</th>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- Loader Modal -->
+	<div class="modal fade" id="loader" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; margin: auto;">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result Modal -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header" style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<button type="button" class="custom-tab-btn" onclick="closemodel()"
+						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
