@@ -484,13 +484,7 @@ td {
 								   onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
-								<div class="dropdown-divider"></div>
-								<a href="#" class="nav-link"
-								   th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
-									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
-								</a>
-							</div>
+
 						</div>
 					</div>
 				</div>
@@ -498,22 +492,22 @@ td {
 				<!-- Header Titles -->
 				<h1 th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Summary View - UFCE - RETAIL ADVANCES</h1>
+					Summary View</h1>
 				<h1 th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Detail View - UFCE - RETAIL ADVANCES</h1>
+					Detail View</h1>
 				<h1 th:if="${displaymode == 'archivalSummary'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Archival Summary View - UFCE - RETAIL ADVANCES (Read Only)</h1>
+					Archival Summary View (Read Only)</h1>
 				<h1 th:if="${displaymode == 'archivalDetail'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Archival Detail View - UFCE - RETAIL ADVANCES (Read Only)</h1>
+					Archival Detail View (Read Only)</h1>
 				<h1 th:if="${displaymode == 'resubSummary'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Resubmission Summary View - UFCE - RETAIL ADVANCES</h1>
+					Resubmission Summary View</h1>
 				<h1 th:if="${displaymode == 'resubDetail'}"
 					style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px;">
-					Resubmission Detail View - UFCE - RETAIL ADVANCES</h1>
+					Resubmission Detail View</h1>
 
 				<!-- Normal Summary Table -->
 				<div th:if="${displaymode == 'summary'}" class="container-fluid">
