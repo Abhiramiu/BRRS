@@ -1363,84 +1363,84 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR40_OVER3Y_TO_5Y(rs.getBigDecimal("R40_OVER3Y_TO_5Y"));
 			obj.setR40_OVER5Y(rs.getBigDecimal("R40_OVER5Y"));
 			obj.setR40_TOTAL(rs.getBigDecimal("R40_TOTAL"));
-			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT"));
-			obj.setR41_DAY1(rs.getBigDecimal("R41_DAY1"));
-			obj.setR41_DAY2_7(rs.getBigDecimal("R41_DAY2_7"));
-			obj.setR41_DAY8_14(rs.getBigDecimal("R41_DAY8_14"));
-			obj.setR41_DAY15_30(rs.getBigDecimal("R41_DAY15_30"));
-			obj.setR41_DAY31_TO_2M(rs.getBigDecimal("R41_DAY31_TO_2M"));
-			obj.setR41_MORE2M_TO_3M(rs.getBigDecimal("R41_MORE2M_TO_3M"));
-			obj.setR41_OVER3M_TO_6M(rs.getBigDecimal("R41_OVER3M_TO_6M"));
-			obj.setR41_OVER6M_TO_1Y(rs.getBigDecimal("R41_OVER6M_TO_1Y"));
-			obj.setR41_OVER1Y_TO_3Y(rs.getBigDecimal("R41_OVER1Y_TO_3Y"));
-			obj.setR41_OVER3Y_TO_5Y(rs.getBigDecimal("R41_OVER3Y_TO_5Y"));
-			obj.setR41_OVER5Y(rs.getBigDecimal("R41_OVER5Y"));
-			obj.setR41_TOTAL(rs.getBigDecimal("R41_TOTAL"));
-			obj.setR42_PRODUCT(rs.getString("R42_PRODUCT"));
-			obj.setR42_DAY1(rs.getBigDecimal("R42_DAY1"));
-			obj.setR42_DAY2_7(rs.getBigDecimal("R42_DAY2_7"));
-			obj.setR42_DAY8_14(rs.getBigDecimal("R42_DAY8_14"));
-			obj.setR42_DAY15_30(rs.getBigDecimal("R42_DAY15_30"));
-			obj.setR42_DAY31_TO_2M(rs.getBigDecimal("R42_DAY31_TO_2M"));
-			obj.setR42_MORE2M_TO_3M(rs.getBigDecimal("R42_MORE2M_TO_3M"));
-			obj.setR42_OVER3M_TO_6M(rs.getBigDecimal("R42_OVER3M_TO_6M"));
-			obj.setR42_OVER6M_TO_1Y(rs.getBigDecimal("R42_OVER6M_TO_1Y"));
-			obj.setR42_OVER1Y_TO_3Y(rs.getBigDecimal("R42_OVER1Y_TO_3Y"));
-			obj.setR42_OVER3Y_TO_5Y(rs.getBigDecimal("R42_OVER3Y_TO_5Y"));
-			obj.setR42_OVER5Y(rs.getBigDecimal("R42_OVER5Y"));
-			obj.setR42_TOTAL(rs.getBigDecimal("R42_TOTAL"));
-			obj.setR43_PRODUCT(rs.getString("R43_PRODUCT"));
-			obj.setR43_DAY1(rs.getBigDecimal("R43_DAY1"));
-			obj.setR43_DAY2_7(rs.getBigDecimal("R43_DAY2_7"));
-			obj.setR43_DAY8_14(rs.getBigDecimal("R43_DAY8_14"));
-			obj.setR43_DAY15_30(rs.getBigDecimal("R43_DAY15_30"));
-			obj.setR43_DAY31_TO_2M(rs.getBigDecimal("R43_DAY31_TO_2M"));
-			obj.setR43_MORE2M_TO_3M(rs.getBigDecimal("R43_MORE2M_TO_3M"));
-			obj.setR43_OVER3M_TO_6M(rs.getBigDecimal("R43_OVER3M_TO_6M"));
-			obj.setR43_OVER6M_TO_1Y(rs.getBigDecimal("R43_OVER6M_TO_1Y"));
-			obj.setR43_OVER1Y_TO_3Y(rs.getBigDecimal("R43_OVER1Y_TO_3Y"));
-			obj.setR43_OVER3Y_TO_5Y(rs.getBigDecimal("R43_OVER3Y_TO_5Y"));
-			obj.setR43_OVER5Y(rs.getBigDecimal("R43_OVER5Y"));
-			obj.setR43_TOTAL(rs.getBigDecimal("R43_TOTAL"));
-			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT"));
-			obj.setR44_DAY1(rs.getBigDecimal("R44_DAY1"));
-			obj.setR44_DAY2_7(rs.getBigDecimal("R44_DAY2_7"));
-			obj.setR44_DAY8_14(rs.getBigDecimal("R44_DAY8_14"));
-			obj.setR44_DAY15_30(rs.getBigDecimal("R44_DAY15_30"));
-			obj.setR44_DAY31_TO_2M(rs.getBigDecimal("R44_DAY31_TO_2M"));
-			obj.setR44_MORE2M_TO_3M(rs.getBigDecimal("R44_MORE2M_TO_3M"));
-			obj.setR44_OVER3M_TO_6M(rs.getBigDecimal("R44_OVER3M_TO_6M"));
-			obj.setR44_OVER6M_TO_1Y(rs.getBigDecimal("R44_OVER6M_TO_1Y"));
-			obj.setR44_OVER1Y_TO_3Y(rs.getBigDecimal("R44_OVER1Y_TO_3Y"));
-			obj.setR44_OVER3Y_TO_5Y(rs.getBigDecimal("R44_OVER3Y_TO_5Y"));
-			obj.setR44_OVER5Y(rs.getBigDecimal("R44_OVER5Y"));
-			obj.setR44_TOTAL(rs.getBigDecimal("R44_TOTAL"));
-			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT"));
-			obj.setR45_DAY1(rs.getBigDecimal("R45_DAY1"));
-			obj.setR45_DAY2_7(rs.getBigDecimal("R45_DAY2_7"));
-			obj.setR45_DAY8_14(rs.getBigDecimal("R45_DAY8_14"));
-			obj.setR45_DAY15_30(rs.getBigDecimal("R45_DAY15_30"));
-			obj.setR45_DAY31_TO_2M(rs.getBigDecimal("R45_DAY31_TO_2M"));
-			obj.setR45_MORE2M_TO_3M(rs.getBigDecimal("R45_MORE2M_TO_3M"));
-			obj.setR45_OVER3M_TO_6M(rs.getBigDecimal("R45_OVER3M_TO_6M"));
-			obj.setR45_OVER6M_TO_1Y(rs.getBigDecimal("R45_OVER6M_TO_1Y"));
-			obj.setR45_OVER1Y_TO_3Y(rs.getBigDecimal("R45_OVER1Y_TO_3Y"));
-			obj.setR45_OVER3Y_TO_5Y(rs.getBigDecimal("R45_OVER3Y_TO_5Y"));
-			obj.setR45_OVER5Y(rs.getBigDecimal("R45_OVER5Y"));
-			obj.setR45_TOTAL(rs.getBigDecimal("R45_TOTAL"));
-			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT"));
-			obj.setR46_DAY1(rs.getBigDecimal("R46_DAY1"));
-			obj.setR46_DAY2_7(rs.getBigDecimal("R46_DAY2_7"));
-			obj.setR46_DAY8_14(rs.getBigDecimal("R46_DAY8_14"));
-			obj.setR46_DAY15_30(rs.getBigDecimal("R46_DAY15_30"));
-			obj.setR46_DAY31_TO_2M(rs.getBigDecimal("R46_DAY31_TO_2M"));
-			obj.setR46_MORE2M_TO_3M(rs.getBigDecimal("R46_MORE2M_TO_3M"));
-			obj.setR46_OVER3M_TO_6M(rs.getBigDecimal("R46_OVER3M_TO_6M"));
-			obj.setR46_OVER6M_TO_1Y(rs.getBigDecimal("R46_OVER6M_TO_1Y"));
-			obj.setR46_OVER1Y_TO_3Y(rs.getBigDecimal("R46_OVER1Y_TO_3Y"));
-			obj.setR46_OVER3Y_TO_5Y(rs.getBigDecimal("R46_OVER3Y_TO_5Y"));
-			obj.setR46_OVER5Y(rs.getBigDecimal("R46_OVER5Y"));
-			obj.setR46_TOTAL(rs.getBigDecimal("R46_TOTAL"));
+//			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT"));
+//			obj.setR41_DAY1(rs.getBigDecimal("R41_DAY1"));
+//			obj.setR41_DAY2_7(rs.getBigDecimal("R41_DAY2_7"));
+//			obj.setR41_DAY8_14(rs.getBigDecimal("R41_DAY8_14"));
+//			obj.setR41_DAY15_30(rs.getBigDecimal("R41_DAY15_30"));
+//			obj.setR41_DAY31_TO_2M(rs.getBigDecimal("R41_DAY31_TO_2M"));
+//			obj.setR41_MORE2M_TO_3M(rs.getBigDecimal("R41_MORE2M_TO_3M"));
+//			obj.setR41_OVER3M_TO_6M(rs.getBigDecimal("R41_OVER3M_TO_6M"));
+//			obj.setR41_OVER6M_TO_1Y(rs.getBigDecimal("R41_OVER6M_TO_1Y"));
+//			obj.setR41_OVER1Y_TO_3Y(rs.getBigDecimal("R41_OVER1Y_TO_3Y"));
+//			obj.setR41_OVER3Y_TO_5Y(rs.getBigDecimal("R41_OVER3Y_TO_5Y"));
+//			obj.setR41_OVER5Y(rs.getBigDecimal("R41_OVER5Y"));
+//			obj.setR41_TOTAL(rs.getBigDecimal("R41_TOTAL"));
+//			obj.setR42_PRODUCT(rs.getString("R42_PRODUCT"));
+//			obj.setR42_DAY1(rs.getBigDecimal("R42_DAY1"));
+//			obj.setR42_DAY2_7(rs.getBigDecimal("R42_DAY2_7"));
+//			obj.setR42_DAY8_14(rs.getBigDecimal("R42_DAY8_14"));
+//			obj.setR42_DAY15_30(rs.getBigDecimal("R42_DAY15_30"));
+//			obj.setR42_DAY31_TO_2M(rs.getBigDecimal("R42_DAY31_TO_2M"));
+//			obj.setR42_MORE2M_TO_3M(rs.getBigDecimal("R42_MORE2M_TO_3M"));
+//			obj.setR42_OVER3M_TO_6M(rs.getBigDecimal("R42_OVER3M_TO_6M"));
+//			obj.setR42_OVER6M_TO_1Y(rs.getBigDecimal("R42_OVER6M_TO_1Y"));
+//			obj.setR42_OVER1Y_TO_3Y(rs.getBigDecimal("R42_OVER1Y_TO_3Y"));
+//			obj.setR42_OVER3Y_TO_5Y(rs.getBigDecimal("R42_OVER3Y_TO_5Y"));
+//			obj.setR42_OVER5Y(rs.getBigDecimal("R42_OVER5Y"));
+//			obj.setR42_TOTAL(rs.getBigDecimal("R42_TOTAL"));
+//			obj.setR43_PRODUCT(rs.getString("R43_PRODUCT"));
+//			obj.setR43_DAY1(rs.getBigDecimal("R43_DAY1"));
+//			obj.setR43_DAY2_7(rs.getBigDecimal("R43_DAY2_7"));
+//			obj.setR43_DAY8_14(rs.getBigDecimal("R43_DAY8_14"));
+//			obj.setR43_DAY15_30(rs.getBigDecimal("R43_DAY15_30"));
+//			obj.setR43_DAY31_TO_2M(rs.getBigDecimal("R43_DAY31_TO_2M"));
+//			obj.setR43_MORE2M_TO_3M(rs.getBigDecimal("R43_MORE2M_TO_3M"));
+//			obj.setR43_OVER3M_TO_6M(rs.getBigDecimal("R43_OVER3M_TO_6M"));
+//			obj.setR43_OVER6M_TO_1Y(rs.getBigDecimal("R43_OVER6M_TO_1Y"));
+//			obj.setR43_OVER1Y_TO_3Y(rs.getBigDecimal("R43_OVER1Y_TO_3Y"));
+//			obj.setR43_OVER3Y_TO_5Y(rs.getBigDecimal("R43_OVER3Y_TO_5Y"));
+//			obj.setR43_OVER5Y(rs.getBigDecimal("R43_OVER5Y"));
+//			obj.setR43_TOTAL(rs.getBigDecimal("R43_TOTAL"));
+//			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT"));
+//			obj.setR44_DAY1(rs.getBigDecimal("R44_DAY1"));
+//			obj.setR44_DAY2_7(rs.getBigDecimal("R44_DAY2_7"));
+//			obj.setR44_DAY8_14(rs.getBigDecimal("R44_DAY8_14"));
+//			obj.setR44_DAY15_30(rs.getBigDecimal("R44_DAY15_30"));
+//			obj.setR44_DAY31_TO_2M(rs.getBigDecimal("R44_DAY31_TO_2M"));
+//			obj.setR44_MORE2M_TO_3M(rs.getBigDecimal("R44_MORE2M_TO_3M"));
+//			obj.setR44_OVER3M_TO_6M(rs.getBigDecimal("R44_OVER3M_TO_6M"));
+//			obj.setR44_OVER6M_TO_1Y(rs.getBigDecimal("R44_OVER6M_TO_1Y"));
+//			obj.setR44_OVER1Y_TO_3Y(rs.getBigDecimal("R44_OVER1Y_TO_3Y"));
+//			obj.setR44_OVER3Y_TO_5Y(rs.getBigDecimal("R44_OVER3Y_TO_5Y"));
+//			obj.setR44_OVER5Y(rs.getBigDecimal("R44_OVER5Y"));
+//			obj.setR44_TOTAL(rs.getBigDecimal("R44_TOTAL"));
+//			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT"));
+//			obj.setR45_DAY1(rs.getBigDecimal("R45_DAY1"));
+//			obj.setR45_DAY2_7(rs.getBigDecimal("R45_DAY2_7"));
+//			obj.setR45_DAY8_14(rs.getBigDecimal("R45_DAY8_14"));
+//			obj.setR45_DAY15_30(rs.getBigDecimal("R45_DAY15_30"));
+//			obj.setR45_DAY31_TO_2M(rs.getBigDecimal("R45_DAY31_TO_2M"));
+//			obj.setR45_MORE2M_TO_3M(rs.getBigDecimal("R45_MORE2M_TO_3M"));
+//			obj.setR45_OVER3M_TO_6M(rs.getBigDecimal("R45_OVER3M_TO_6M"));
+//			obj.setR45_OVER6M_TO_1Y(rs.getBigDecimal("R45_OVER6M_TO_1Y"));
+//			obj.setR45_OVER1Y_TO_3Y(rs.getBigDecimal("R45_OVER1Y_TO_3Y"));
+//			obj.setR45_OVER3Y_TO_5Y(rs.getBigDecimal("R45_OVER3Y_TO_5Y"));
+//			obj.setR45_OVER5Y(rs.getBigDecimal("R45_OVER5Y"));
+//			obj.setR45_TOTAL(rs.getBigDecimal("R45_TOTAL"));
+//			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT"));
+//			obj.setR46_DAY1(rs.getBigDecimal("R46_DAY1"));
+//			obj.setR46_DAY2_7(rs.getBigDecimal("R46_DAY2_7"));
+//			obj.setR46_DAY8_14(rs.getBigDecimal("R46_DAY8_14"));
+//			obj.setR46_DAY15_30(rs.getBigDecimal("R46_DAY15_30"));
+//			obj.setR46_DAY31_TO_2M(rs.getBigDecimal("R46_DAY31_TO_2M"));
+//			obj.setR46_MORE2M_TO_3M(rs.getBigDecimal("R46_MORE2M_TO_3M"));
+//			obj.setR46_OVER3M_TO_6M(rs.getBigDecimal("R46_OVER3M_TO_6M"));
+//			obj.setR46_OVER6M_TO_1Y(rs.getBigDecimal("R46_OVER6M_TO_1Y"));
+//			obj.setR46_OVER1Y_TO_3Y(rs.getBigDecimal("R46_OVER1Y_TO_3Y"));
+//			obj.setR46_OVER3Y_TO_5Y(rs.getBigDecimal("R46_OVER3Y_TO_5Y"));
+//			obj.setR46_OVER5Y(rs.getBigDecimal("R46_OVER5Y"));
+//			obj.setR46_TOTAL(rs.getBigDecimal("R46_TOTAL"));
 			obj.setR47_PRODUCT(rs.getString("R47_PRODUCT"));
 			obj.setR47_DAY1(rs.getBigDecimal("R47_DAY1"));
 			obj.setR47_DAY2_7(rs.getBigDecimal("R47_DAY2_7"));
@@ -1831,97 +1831,97 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR76_OVER3Y_TO_5Y(rs.getBigDecimal("R76_OVER3Y_TO_5Y"));
 			obj.setR76_OVER5Y(rs.getBigDecimal("R76_OVER5Y"));
 			obj.setR76_TOTAL(rs.getBigDecimal("R76_TOTAL"));
-			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
-			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
-			obj.setR77_DAY2_7(rs.getBigDecimal("R77_DAY2_7"));
-			obj.setR77_DAY8_14(rs.getBigDecimal("R77_DAY8_14"));
-			obj.setR77_DAY15_30(rs.getBigDecimal("R77_DAY15_30"));
-			obj.setR77_DAY31_TO_2M(rs.getBigDecimal("R77_DAY31_TO_2M"));
-			obj.setR77_MORE2M_TO_3M(rs.getBigDecimal("R77_MORE2M_TO_3M"));
-			obj.setR77_OVER3M_TO_6M(rs.getBigDecimal("R77_OVER3M_TO_6M"));
-			obj.setR77_OVER6M_TO_1Y(rs.getBigDecimal("R77_OVER6M_TO_1Y"));
-			obj.setR77_OVER1Y_TO_3Y(rs.getBigDecimal("R77_OVER1Y_TO_3Y"));
-			obj.setR77_OVER3Y_TO_5Y(rs.getBigDecimal("R77_OVER3Y_TO_5Y"));
-			obj.setR77_OVER5Y(rs.getBigDecimal("R77_OVER5Y"));
-			obj.setR77_TOTAL(rs.getBigDecimal("R77_TOTAL"));
-			obj.setR78_PRODUCT(rs.getString("R78_PRODUCT"));
-			obj.setR78_DAY1(rs.getBigDecimal("R78_DAY1"));
-			obj.setR78_DAY2_7(rs.getBigDecimal("R78_DAY2_7"));
-			obj.setR78_DAY8_14(rs.getBigDecimal("R78_DAY8_14"));
-			obj.setR78_DAY15_30(rs.getBigDecimal("R78_DAY15_30"));
-			obj.setR78_DAY31_TO_2M(rs.getBigDecimal("R78_DAY31_TO_2M"));
-			obj.setR78_MORE2M_TO_3M(rs.getBigDecimal("R78_MORE2M_TO_3M"));
-			obj.setR78_OVER3M_TO_6M(rs.getBigDecimal("R78_OVER3M_TO_6M"));
-			obj.setR78_OVER6M_TO_1Y(rs.getBigDecimal("R78_OVER6M_TO_1Y"));
-			obj.setR78_OVER1Y_TO_3Y(rs.getBigDecimal("R78_OVER1Y_TO_3Y"));
-			obj.setR78_OVER3Y_TO_5Y(rs.getBigDecimal("R78_OVER3Y_TO_5Y"));
-			obj.setR78_OVER5Y(rs.getBigDecimal("R78_OVER5Y"));
-			obj.setR78_TOTAL(rs.getBigDecimal("R78_TOTAL"));
-			obj.setR79_PRODUCT(rs.getString("R79_PRODUCT"));
-			obj.setR79_DAY1(rs.getBigDecimal("R79_DAY1"));
-			obj.setR79_DAY2_7(rs.getBigDecimal("R79_DAY2_7"));
-			obj.setR79_DAY8_14(rs.getBigDecimal("R79_DAY8_14"));
-			obj.setR79_DAY15_30(rs.getBigDecimal("R79_DAY15_30"));
-			obj.setR79_DAY31_TO_2M(rs.getBigDecimal("R79_DAY31_TO_2M"));
-			obj.setR79_MORE2M_TO_3M(rs.getBigDecimal("R79_MORE2M_TO_3M"));
-			obj.setR79_OVER3M_TO_6M(rs.getBigDecimal("R79_OVER3M_TO_6M"));
-			obj.setR79_OVER6M_TO_1Y(rs.getBigDecimal("R79_OVER6M_TO_1Y"));
-			obj.setR79_OVER1Y_TO_3Y(rs.getBigDecimal("R79_OVER1Y_TO_3Y"));
-			obj.setR79_OVER3Y_TO_5Y(rs.getBigDecimal("R79_OVER3Y_TO_5Y"));
-			obj.setR79_OVER5Y(rs.getBigDecimal("R79_OVER5Y"));
-			obj.setR79_TOTAL(rs.getBigDecimal("R79_TOTAL"));
-			obj.setR80_PRODUCT(rs.getString("R80_PRODUCT"));
-			obj.setR80_DAY1(rs.getBigDecimal("R80_DAY1"));
-			obj.setR80_DAY2_7(rs.getBigDecimal("R80_DAY2_7"));
-			obj.setR80_DAY8_14(rs.getBigDecimal("R80_DAY8_14"));
-			obj.setR80_DAY15_30(rs.getBigDecimal("R80_DAY15_30"));
-			obj.setR80_DAY31_TO_2M(rs.getBigDecimal("R80_DAY31_TO_2M"));
-			obj.setR80_MORE2M_TO_3M(rs.getBigDecimal("R80_MORE2M_TO_3M"));
-			obj.setR80_OVER3M_TO_6M(rs.getBigDecimal("R80_OVER3M_TO_6M"));
-			obj.setR80_OVER6M_TO_1Y(rs.getBigDecimal("R80_OVER6M_TO_1Y"));
-			obj.setR80_OVER1Y_TO_3Y(rs.getBigDecimal("R80_OVER1Y_TO_3Y"));
-			obj.setR80_OVER3Y_TO_5Y(rs.getBigDecimal("R80_OVER3Y_TO_5Y"));
-			obj.setR80_OVER5Y(rs.getBigDecimal("R80_OVER5Y"));
-			obj.setR80_TOTAL(rs.getBigDecimal("R80_TOTAL"));
-			obj.setR81_PRODUCT(rs.getString("R81_PRODUCT"));
-			obj.setR81_DAY1(rs.getBigDecimal("R81_DAY1"));
-			obj.setR81_DAY2_7(rs.getBigDecimal("R81_DAY2_7"));
-			obj.setR81_DAY8_14(rs.getBigDecimal("R81_DAY8_14"));
-			obj.setR81_DAY15_30(rs.getBigDecimal("R81_DAY15_30"));
-			obj.setR81_DAY31_TO_2M(rs.getBigDecimal("R81_DAY31_TO_2M"));
-			obj.setR81_MORE2M_TO_3M(rs.getBigDecimal("R81_MORE2M_TO_3M"));
-			obj.setR81_OVER3M_TO_6M(rs.getBigDecimal("R81_OVER3M_TO_6M"));
-			obj.setR81_OVER6M_TO_1Y(rs.getBigDecimal("R81_OVER6M_TO_1Y"));
-			obj.setR81_OVER1Y_TO_3Y(rs.getBigDecimal("R81_OVER1Y_TO_3Y"));
-			obj.setR81_OVER3Y_TO_5Y(rs.getBigDecimal("R81_OVER3Y_TO_5Y"));
-			obj.setR81_OVER5Y(rs.getBigDecimal("R81_OVER5Y"));
-			obj.setR81_TOTAL(rs.getBigDecimal("R81_TOTAL"));
-			obj.setR82_PRODUCT(rs.getString("R82_PRODUCT"));
-			obj.setR82_DAY1(rs.getBigDecimal("R82_DAY1"));
-			obj.setR82_DAY2_7(rs.getBigDecimal("R82_DAY2_7"));
-			obj.setR82_DAY8_14(rs.getBigDecimal("R82_DAY8_14"));
-			obj.setR82_DAY15_30(rs.getBigDecimal("R82_DAY15_30"));
-			obj.setR82_DAY31_TO_2M(rs.getBigDecimal("R82_DAY31_TO_2M"));
-			obj.setR82_MORE2M_TO_3M(rs.getBigDecimal("R82_MORE2M_TO_3M"));
-			obj.setR82_OVER3M_TO_6M(rs.getBigDecimal("R82_OVER3M_TO_6M"));
-			obj.setR82_OVER6M_TO_1Y(rs.getBigDecimal("R82_OVER6M_TO_1Y"));
-			obj.setR82_OVER1Y_TO_3Y(rs.getBigDecimal("R82_OVER1Y_TO_3Y"));
-			obj.setR82_OVER3Y_TO_5Y(rs.getBigDecimal("R82_OVER3Y_TO_5Y"));
-			obj.setR82_OVER5Y(rs.getBigDecimal("R82_OVER5Y"));
-			obj.setR82_TOTAL(rs.getBigDecimal("R82_TOTAL"));
-			obj.setR83_PRODUCT(rs.getString("R83_PRODUCT"));
-			obj.setR83_DAY1(rs.getBigDecimal("R83_DAY1"));
-			obj.setR83_DAY2_7(rs.getBigDecimal("R83_DAY2_7"));
-			obj.setR83_DAY8_14(rs.getBigDecimal("R83_DAY8_14"));
-			obj.setR83_DAY15_30(rs.getBigDecimal("R83_DAY15_30"));
-			obj.setR83_DAY31_TO_2M(rs.getBigDecimal("R83_DAY31_TO_2M"));
-			obj.setR83_MORE2M_TO_3M(rs.getBigDecimal("R83_MORE2M_TO_3M"));
-			obj.setR83_OVER3M_TO_6M(rs.getBigDecimal("R83_OVER3M_TO_6M"));
-			obj.setR83_OVER6M_TO_1Y(rs.getBigDecimal("R83_OVER6M_TO_1Y"));
-			obj.setR83_OVER1Y_TO_3Y(rs.getBigDecimal("R83_OVER1Y_TO_3Y"));
-			obj.setR83_OVER3Y_TO_5Y(rs.getBigDecimal("R83_OVER3Y_TO_5Y"));
-			obj.setR83_OVER5Y(rs.getBigDecimal("R83_OVER5Y"));
-			obj.setR83_TOTAL(rs.getBigDecimal("R83_TOTAL"));
+//			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
+//			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
+//			obj.setR77_DAY2_7(rs.getBigDecimal("R77_DAY2_7"));
+//			obj.setR77_DAY8_14(rs.getBigDecimal("R77_DAY8_14"));
+//			obj.setR77_DAY15_30(rs.getBigDecimal("R77_DAY15_30"));
+//			obj.setR77_DAY31_TO_2M(rs.getBigDecimal("R77_DAY31_TO_2M"));
+//			obj.setR77_MORE2M_TO_3M(rs.getBigDecimal("R77_MORE2M_TO_3M"));
+//			obj.setR77_OVER3M_TO_6M(rs.getBigDecimal("R77_OVER3M_TO_6M"));
+//			obj.setR77_OVER6M_TO_1Y(rs.getBigDecimal("R77_OVER6M_TO_1Y"));
+//			obj.setR77_OVER1Y_TO_3Y(rs.getBigDecimal("R77_OVER1Y_TO_3Y"));
+//			obj.setR77_OVER3Y_TO_5Y(rs.getBigDecimal("R77_OVER3Y_TO_5Y"));
+//			obj.setR77_OVER5Y(rs.getBigDecimal("R77_OVER5Y"));
+//			obj.setR77_TOTAL(rs.getBigDecimal("R77_TOTAL"));
+//			obj.setR78_PRODUCT(rs.getString("R78_PRODUCT"));
+//			obj.setR78_DAY1(rs.getBigDecimal("R78_DAY1"));
+//			obj.setR78_DAY2_7(rs.getBigDecimal("R78_DAY2_7"));
+//			obj.setR78_DAY8_14(rs.getBigDecimal("R78_DAY8_14"));
+//			obj.setR78_DAY15_30(rs.getBigDecimal("R78_DAY15_30"));
+//			obj.setR78_DAY31_TO_2M(rs.getBigDecimal("R78_DAY31_TO_2M"));
+//			obj.setR78_MORE2M_TO_3M(rs.getBigDecimal("R78_MORE2M_TO_3M"));
+//			obj.setR78_OVER3M_TO_6M(rs.getBigDecimal("R78_OVER3M_TO_6M"));
+//			obj.setR78_OVER6M_TO_1Y(rs.getBigDecimal("R78_OVER6M_TO_1Y"));
+//			obj.setR78_OVER1Y_TO_3Y(rs.getBigDecimal("R78_OVER1Y_TO_3Y"));
+//			obj.setR78_OVER3Y_TO_5Y(rs.getBigDecimal("R78_OVER3Y_TO_5Y"));
+//			obj.setR78_OVER5Y(rs.getBigDecimal("R78_OVER5Y"));
+//			obj.setR78_TOTAL(rs.getBigDecimal("R78_TOTAL"));
+//			obj.setR79_PRODUCT(rs.getString("R79_PRODUCT"));
+//			obj.setR79_DAY1(rs.getBigDecimal("R79_DAY1"));
+//			obj.setR79_DAY2_7(rs.getBigDecimal("R79_DAY2_7"));
+//			obj.setR79_DAY8_14(rs.getBigDecimal("R79_DAY8_14"));
+//			obj.setR79_DAY15_30(rs.getBigDecimal("R79_DAY15_30"));
+//			obj.setR79_DAY31_TO_2M(rs.getBigDecimal("R79_DAY31_TO_2M"));
+//			obj.setR79_MORE2M_TO_3M(rs.getBigDecimal("R79_MORE2M_TO_3M"));
+//			obj.setR79_OVER3M_TO_6M(rs.getBigDecimal("R79_OVER3M_TO_6M"));
+//			obj.setR79_OVER6M_TO_1Y(rs.getBigDecimal("R79_OVER6M_TO_1Y"));
+//			obj.setR79_OVER1Y_TO_3Y(rs.getBigDecimal("R79_OVER1Y_TO_3Y"));
+//			obj.setR79_OVER3Y_TO_5Y(rs.getBigDecimal("R79_OVER3Y_TO_5Y"));
+//			obj.setR79_OVER5Y(rs.getBigDecimal("R79_OVER5Y"));
+//			obj.setR79_TOTAL(rs.getBigDecimal("R79_TOTAL"));
+//			obj.setR80_PRODUCT(rs.getString("R80_PRODUCT"));
+//			obj.setR80_DAY1(rs.getBigDecimal("R80_DAY1"));
+//			obj.setR80_DAY2_7(rs.getBigDecimal("R80_DAY2_7"));
+//			obj.setR80_DAY8_14(rs.getBigDecimal("R80_DAY8_14"));
+//			obj.setR80_DAY15_30(rs.getBigDecimal("R80_DAY15_30"));
+//			obj.setR80_DAY31_TO_2M(rs.getBigDecimal("R80_DAY31_TO_2M"));
+//			obj.setR80_MORE2M_TO_3M(rs.getBigDecimal("R80_MORE2M_TO_3M"));
+//			obj.setR80_OVER3M_TO_6M(rs.getBigDecimal("R80_OVER3M_TO_6M"));
+//			obj.setR80_OVER6M_TO_1Y(rs.getBigDecimal("R80_OVER6M_TO_1Y"));
+//			obj.setR80_OVER1Y_TO_3Y(rs.getBigDecimal("R80_OVER1Y_TO_3Y"));
+//			obj.setR80_OVER3Y_TO_5Y(rs.getBigDecimal("R80_OVER3Y_TO_5Y"));
+//			obj.setR80_OVER5Y(rs.getBigDecimal("R80_OVER5Y"));
+//			obj.setR80_TOTAL(rs.getBigDecimal("R80_TOTAL"));
+//			obj.setR81_PRODUCT(rs.getString("R81_PRODUCT"));
+//			obj.setR81_DAY1(rs.getBigDecimal("R81_DAY1"));
+//			obj.setR81_DAY2_7(rs.getBigDecimal("R81_DAY2_7"));
+//			obj.setR81_DAY8_14(rs.getBigDecimal("R81_DAY8_14"));
+//			obj.setR81_DAY15_30(rs.getBigDecimal("R81_DAY15_30"));
+//			obj.setR81_DAY31_TO_2M(rs.getBigDecimal("R81_DAY31_TO_2M"));
+//			obj.setR81_MORE2M_TO_3M(rs.getBigDecimal("R81_MORE2M_TO_3M"));
+//			obj.setR81_OVER3M_TO_6M(rs.getBigDecimal("R81_OVER3M_TO_6M"));
+//			obj.setR81_OVER6M_TO_1Y(rs.getBigDecimal("R81_OVER6M_TO_1Y"));
+//			obj.setR81_OVER1Y_TO_3Y(rs.getBigDecimal("R81_OVER1Y_TO_3Y"));
+//			obj.setR81_OVER3Y_TO_5Y(rs.getBigDecimal("R81_OVER3Y_TO_5Y"));
+//			obj.setR81_OVER5Y(rs.getBigDecimal("R81_OVER5Y"));
+//			obj.setR81_TOTAL(rs.getBigDecimal("R81_TOTAL"));
+//			obj.setR82_PRODUCT(rs.getString("R82_PRODUCT"));
+//			obj.setR82_DAY1(rs.getBigDecimal("R82_DAY1"));
+//			obj.setR82_DAY2_7(rs.getBigDecimal("R82_DAY2_7"));
+//			obj.setR82_DAY8_14(rs.getBigDecimal("R82_DAY8_14"));
+//			obj.setR82_DAY15_30(rs.getBigDecimal("R82_DAY15_30"));
+//			obj.setR82_DAY31_TO_2M(rs.getBigDecimal("R82_DAY31_TO_2M"));
+//			obj.setR82_MORE2M_TO_3M(rs.getBigDecimal("R82_MORE2M_TO_3M"));
+//			obj.setR82_OVER3M_TO_6M(rs.getBigDecimal("R82_OVER3M_TO_6M"));
+//			obj.setR82_OVER6M_TO_1Y(rs.getBigDecimal("R82_OVER6M_TO_1Y"));
+//			obj.setR82_OVER1Y_TO_3Y(rs.getBigDecimal("R82_OVER1Y_TO_3Y"));
+//			obj.setR82_OVER3Y_TO_5Y(rs.getBigDecimal("R82_OVER3Y_TO_5Y"));
+//			obj.setR82_OVER5Y(rs.getBigDecimal("R82_OVER5Y"));
+//			obj.setR82_TOTAL(rs.getBigDecimal("R82_TOTAL"));
+//			obj.setR83_PRODUCT(rs.getString("R83_PRODUCT"));
+//			obj.setR83_DAY1(rs.getBigDecimal("R83_DAY1"));
+//			obj.setR83_DAY2_7(rs.getBigDecimal("R83_DAY2_7"));
+//			obj.setR83_DAY8_14(rs.getBigDecimal("R83_DAY8_14"));
+//			obj.setR83_DAY15_30(rs.getBigDecimal("R83_DAY15_30"));
+//			obj.setR83_DAY31_TO_2M(rs.getBigDecimal("R83_DAY31_TO_2M"));
+//			obj.setR83_MORE2M_TO_3M(rs.getBigDecimal("R83_MORE2M_TO_3M"));
+//			obj.setR83_OVER3M_TO_6M(rs.getBigDecimal("R83_OVER3M_TO_6M"));
+//			obj.setR83_OVER6M_TO_1Y(rs.getBigDecimal("R83_OVER6M_TO_1Y"));
+//			obj.setR83_OVER1Y_TO_3Y(rs.getBigDecimal("R83_OVER1Y_TO_3Y"));
+//			obj.setR83_OVER3Y_TO_5Y(rs.getBigDecimal("R83_OVER3Y_TO_5Y"));
+//			obj.setR83_OVER5Y(rs.getBigDecimal("R83_OVER5Y"));
+//			obj.setR83_TOTAL(rs.getBigDecimal("R83_TOTAL"));
 			obj.setR84_PRODUCT(rs.getString("R84_PRODUCT"));
 			obj.setR84_DAY1(rs.getBigDecimal("R84_DAY1"));
 			obj.setR84_DAY2_7(rs.getBigDecimal("R84_DAY2_7"));
@@ -2391,84 +2391,84 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR40_OVER3Y_TO_5Y(rs.getBigDecimal("R40_OVER3Y_TO_5Y"));
 			obj.setR40_OVER5Y(rs.getBigDecimal("R40_OVER5Y"));
 			obj.setR40_TOTAL(rs.getBigDecimal("R40_TOTAL"));
-			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT"));
-			obj.setR41_DAY1(rs.getBigDecimal("R41_DAY1"));
-			obj.setR41_DAY2_7(rs.getBigDecimal("R41_DAY2_7"));
-			obj.setR41_DAY8_14(rs.getBigDecimal("R41_DAY8_14"));
-			obj.setR41_DAY15_30(rs.getBigDecimal("R41_DAY15_30"));
-			obj.setR41_DAY31_TO_2M(rs.getBigDecimal("R41_DAY31_TO_2M"));
-			obj.setR41_MORE2M_TO_3M(rs.getBigDecimal("R41_MORE2M_TO_3M"));
-			obj.setR41_OVER3M_TO_6M(rs.getBigDecimal("R41_OVER3M_TO_6M"));
-			obj.setR41_OVER6M_TO_1Y(rs.getBigDecimal("R41_OVER6M_TO_1Y"));
-			obj.setR41_OVER1Y_TO_3Y(rs.getBigDecimal("R41_OVER1Y_TO_3Y"));
-			obj.setR41_OVER3Y_TO_5Y(rs.getBigDecimal("R41_OVER3Y_TO_5Y"));
-			obj.setR41_OVER5Y(rs.getBigDecimal("R41_OVER5Y"));
-			obj.setR41_TOTAL(rs.getBigDecimal("R41_TOTAL"));
-			obj.setR42_PRODUCT(rs.getString("R42_PRODUCT"));
-			obj.setR42_DAY1(rs.getBigDecimal("R42_DAY1"));
-			obj.setR42_DAY2_7(rs.getBigDecimal("R42_DAY2_7"));
-			obj.setR42_DAY8_14(rs.getBigDecimal("R42_DAY8_14"));
-			obj.setR42_DAY15_30(rs.getBigDecimal("R42_DAY15_30"));
-			obj.setR42_DAY31_TO_2M(rs.getBigDecimal("R42_DAY31_TO_2M"));
-			obj.setR42_MORE2M_TO_3M(rs.getBigDecimal("R42_MORE2M_TO_3M"));
-			obj.setR42_OVER3M_TO_6M(rs.getBigDecimal("R42_OVER3M_TO_6M"));
-			obj.setR42_OVER6M_TO_1Y(rs.getBigDecimal("R42_OVER6M_TO_1Y"));
-			obj.setR42_OVER1Y_TO_3Y(rs.getBigDecimal("R42_OVER1Y_TO_3Y"));
-			obj.setR42_OVER3Y_TO_5Y(rs.getBigDecimal("R42_OVER3Y_TO_5Y"));
-			obj.setR42_OVER5Y(rs.getBigDecimal("R42_OVER5Y"));
-			obj.setR42_TOTAL(rs.getBigDecimal("R42_TOTAL"));
-			obj.setR43_PRODUCT(rs.getString("R43_PRODUCT"));
-			obj.setR43_DAY1(rs.getBigDecimal("R43_DAY1"));
-			obj.setR43_DAY2_7(rs.getBigDecimal("R43_DAY2_7"));
-			obj.setR43_DAY8_14(rs.getBigDecimal("R43_DAY8_14"));
-			obj.setR43_DAY15_30(rs.getBigDecimal("R43_DAY15_30"));
-			obj.setR43_DAY31_TO_2M(rs.getBigDecimal("R43_DAY31_TO_2M"));
-			obj.setR43_MORE2M_TO_3M(rs.getBigDecimal("R43_MORE2M_TO_3M"));
-			obj.setR43_OVER3M_TO_6M(rs.getBigDecimal("R43_OVER3M_TO_6M"));
-			obj.setR43_OVER6M_TO_1Y(rs.getBigDecimal("R43_OVER6M_TO_1Y"));
-			obj.setR43_OVER1Y_TO_3Y(rs.getBigDecimal("R43_OVER1Y_TO_3Y"));
-			obj.setR43_OVER3Y_TO_5Y(rs.getBigDecimal("R43_OVER3Y_TO_5Y"));
-			obj.setR43_OVER5Y(rs.getBigDecimal("R43_OVER5Y"));
-			obj.setR43_TOTAL(rs.getBigDecimal("R43_TOTAL"));
-			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT"));
-			obj.setR44_DAY1(rs.getBigDecimal("R44_DAY1"));
-			obj.setR44_DAY2_7(rs.getBigDecimal("R44_DAY2_7"));
-			obj.setR44_DAY8_14(rs.getBigDecimal("R44_DAY8_14"));
-			obj.setR44_DAY15_30(rs.getBigDecimal("R44_DAY15_30"));
-			obj.setR44_DAY31_TO_2M(rs.getBigDecimal("R44_DAY31_TO_2M"));
-			obj.setR44_MORE2M_TO_3M(rs.getBigDecimal("R44_MORE2M_TO_3M"));
-			obj.setR44_OVER3M_TO_6M(rs.getBigDecimal("R44_OVER3M_TO_6M"));
-			obj.setR44_OVER6M_TO_1Y(rs.getBigDecimal("R44_OVER6M_TO_1Y"));
-			obj.setR44_OVER1Y_TO_3Y(rs.getBigDecimal("R44_OVER1Y_TO_3Y"));
-			obj.setR44_OVER3Y_TO_5Y(rs.getBigDecimal("R44_OVER3Y_TO_5Y"));
-			obj.setR44_OVER5Y(rs.getBigDecimal("R44_OVER5Y"));
-			obj.setR44_TOTAL(rs.getBigDecimal("R44_TOTAL"));
-			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT"));
-			obj.setR45_DAY1(rs.getBigDecimal("R45_DAY1"));
-			obj.setR45_DAY2_7(rs.getBigDecimal("R45_DAY2_7"));
-			obj.setR45_DAY8_14(rs.getBigDecimal("R45_DAY8_14"));
-			obj.setR45_DAY15_30(rs.getBigDecimal("R45_DAY15_30"));
-			obj.setR45_DAY31_TO_2M(rs.getBigDecimal("R45_DAY31_TO_2M"));
-			obj.setR45_MORE2M_TO_3M(rs.getBigDecimal("R45_MORE2M_TO_3M"));
-			obj.setR45_OVER3M_TO_6M(rs.getBigDecimal("R45_OVER3M_TO_6M"));
-			obj.setR45_OVER6M_TO_1Y(rs.getBigDecimal("R45_OVER6M_TO_1Y"));
-			obj.setR45_OVER1Y_TO_3Y(rs.getBigDecimal("R45_OVER1Y_TO_3Y"));
-			obj.setR45_OVER3Y_TO_5Y(rs.getBigDecimal("R45_OVER3Y_TO_5Y"));
-			obj.setR45_OVER5Y(rs.getBigDecimal("R45_OVER5Y"));
-			obj.setR45_TOTAL(rs.getBigDecimal("R45_TOTAL"));
-			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT"));
-			obj.setR46_DAY1(rs.getBigDecimal("R46_DAY1"));
-			obj.setR46_DAY2_7(rs.getBigDecimal("R46_DAY2_7"));
-			obj.setR46_DAY8_14(rs.getBigDecimal("R46_DAY8_14"));
-			obj.setR46_DAY15_30(rs.getBigDecimal("R46_DAY15_30"));
-			obj.setR46_DAY31_TO_2M(rs.getBigDecimal("R46_DAY31_TO_2M"));
-			obj.setR46_MORE2M_TO_3M(rs.getBigDecimal("R46_MORE2M_TO_3M"));
-			obj.setR46_OVER3M_TO_6M(rs.getBigDecimal("R46_OVER3M_TO_6M"));
-			obj.setR46_OVER6M_TO_1Y(rs.getBigDecimal("R46_OVER6M_TO_1Y"));
-			obj.setR46_OVER1Y_TO_3Y(rs.getBigDecimal("R46_OVER1Y_TO_3Y"));
-			obj.setR46_OVER3Y_TO_5Y(rs.getBigDecimal("R46_OVER3Y_TO_5Y"));
-			obj.setR46_OVER5Y(rs.getBigDecimal("R46_OVER5Y"));
-			obj.setR46_TOTAL(rs.getBigDecimal("R46_TOTAL"));
+//			obj.setR41_PRODUCT(rs.getString("R41_PRODUCT"));
+//			obj.setR41_DAY1(rs.getBigDecimal("R41_DAY1"));
+//			obj.setR41_DAY2_7(rs.getBigDecimal("R41_DAY2_7"));
+//			obj.setR41_DAY8_14(rs.getBigDecimal("R41_DAY8_14"));
+//			obj.setR41_DAY15_30(rs.getBigDecimal("R41_DAY15_30"));
+//			obj.setR41_DAY31_TO_2M(rs.getBigDecimal("R41_DAY31_TO_2M"));
+//			obj.setR41_MORE2M_TO_3M(rs.getBigDecimal("R41_MORE2M_TO_3M"));
+//			obj.setR41_OVER3M_TO_6M(rs.getBigDecimal("R41_OVER3M_TO_6M"));
+//			obj.setR41_OVER6M_TO_1Y(rs.getBigDecimal("R41_OVER6M_TO_1Y"));
+//			obj.setR41_OVER1Y_TO_3Y(rs.getBigDecimal("R41_OVER1Y_TO_3Y"));
+//			obj.setR41_OVER3Y_TO_5Y(rs.getBigDecimal("R41_OVER3Y_TO_5Y"));
+//			obj.setR41_OVER5Y(rs.getBigDecimal("R41_OVER5Y"));
+//			obj.setR41_TOTAL(rs.getBigDecimal("R41_TOTAL"));
+//			obj.setR42_PRODUCT(rs.getString("R42_PRODUCT"));
+//			obj.setR42_DAY1(rs.getBigDecimal("R42_DAY1"));
+//			obj.setR42_DAY2_7(rs.getBigDecimal("R42_DAY2_7"));
+//			obj.setR42_DAY8_14(rs.getBigDecimal("R42_DAY8_14"));
+//			obj.setR42_DAY15_30(rs.getBigDecimal("R42_DAY15_30"));
+//			obj.setR42_DAY31_TO_2M(rs.getBigDecimal("R42_DAY31_TO_2M"));
+//			obj.setR42_MORE2M_TO_3M(rs.getBigDecimal("R42_MORE2M_TO_3M"));
+//			obj.setR42_OVER3M_TO_6M(rs.getBigDecimal("R42_OVER3M_TO_6M"));
+//			obj.setR42_OVER6M_TO_1Y(rs.getBigDecimal("R42_OVER6M_TO_1Y"));
+//			obj.setR42_OVER1Y_TO_3Y(rs.getBigDecimal("R42_OVER1Y_TO_3Y"));
+//			obj.setR42_OVER3Y_TO_5Y(rs.getBigDecimal("R42_OVER3Y_TO_5Y"));
+//			obj.setR42_OVER5Y(rs.getBigDecimal("R42_OVER5Y"));
+//			obj.setR42_TOTAL(rs.getBigDecimal("R42_TOTAL"));
+//			obj.setR43_PRODUCT(rs.getString("R43_PRODUCT"));
+//			obj.setR43_DAY1(rs.getBigDecimal("R43_DAY1"));
+//			obj.setR43_DAY2_7(rs.getBigDecimal("R43_DAY2_7"));
+//			obj.setR43_DAY8_14(rs.getBigDecimal("R43_DAY8_14"));
+//			obj.setR43_DAY15_30(rs.getBigDecimal("R43_DAY15_30"));
+//			obj.setR43_DAY31_TO_2M(rs.getBigDecimal("R43_DAY31_TO_2M"));
+//			obj.setR43_MORE2M_TO_3M(rs.getBigDecimal("R43_MORE2M_TO_3M"));
+//			obj.setR43_OVER3M_TO_6M(rs.getBigDecimal("R43_OVER3M_TO_6M"));
+//			obj.setR43_OVER6M_TO_1Y(rs.getBigDecimal("R43_OVER6M_TO_1Y"));
+//			obj.setR43_OVER1Y_TO_3Y(rs.getBigDecimal("R43_OVER1Y_TO_3Y"));
+//			obj.setR43_OVER3Y_TO_5Y(rs.getBigDecimal("R43_OVER3Y_TO_5Y"));
+//			obj.setR43_OVER5Y(rs.getBigDecimal("R43_OVER5Y"));
+//			obj.setR43_TOTAL(rs.getBigDecimal("R43_TOTAL"));
+//			obj.setR44_PRODUCT(rs.getString("R44_PRODUCT"));
+//			obj.setR44_DAY1(rs.getBigDecimal("R44_DAY1"));
+//			obj.setR44_DAY2_7(rs.getBigDecimal("R44_DAY2_7"));
+//			obj.setR44_DAY8_14(rs.getBigDecimal("R44_DAY8_14"));
+//			obj.setR44_DAY15_30(rs.getBigDecimal("R44_DAY15_30"));
+//			obj.setR44_DAY31_TO_2M(rs.getBigDecimal("R44_DAY31_TO_2M"));
+//			obj.setR44_MORE2M_TO_3M(rs.getBigDecimal("R44_MORE2M_TO_3M"));
+//			obj.setR44_OVER3M_TO_6M(rs.getBigDecimal("R44_OVER3M_TO_6M"));
+//			obj.setR44_OVER6M_TO_1Y(rs.getBigDecimal("R44_OVER6M_TO_1Y"));
+//			obj.setR44_OVER1Y_TO_3Y(rs.getBigDecimal("R44_OVER1Y_TO_3Y"));
+//			obj.setR44_OVER3Y_TO_5Y(rs.getBigDecimal("R44_OVER3Y_TO_5Y"));
+//			obj.setR44_OVER5Y(rs.getBigDecimal("R44_OVER5Y"));
+//			obj.setR44_TOTAL(rs.getBigDecimal("R44_TOTAL"));
+//			obj.setR45_PRODUCT(rs.getString("R45_PRODUCT"));
+//			obj.setR45_DAY1(rs.getBigDecimal("R45_DAY1"));
+//			obj.setR45_DAY2_7(rs.getBigDecimal("R45_DAY2_7"));
+//			obj.setR45_DAY8_14(rs.getBigDecimal("R45_DAY8_14"));
+//			obj.setR45_DAY15_30(rs.getBigDecimal("R45_DAY15_30"));
+//			obj.setR45_DAY31_TO_2M(rs.getBigDecimal("R45_DAY31_TO_2M"));
+//			obj.setR45_MORE2M_TO_3M(rs.getBigDecimal("R45_MORE2M_TO_3M"));
+//			obj.setR45_OVER3M_TO_6M(rs.getBigDecimal("R45_OVER3M_TO_6M"));
+//			obj.setR45_OVER6M_TO_1Y(rs.getBigDecimal("R45_OVER6M_TO_1Y"));
+//			obj.setR45_OVER1Y_TO_3Y(rs.getBigDecimal("R45_OVER1Y_TO_3Y"));
+//			obj.setR45_OVER3Y_TO_5Y(rs.getBigDecimal("R45_OVER3Y_TO_5Y"));
+//			obj.setR45_OVER5Y(rs.getBigDecimal("R45_OVER5Y"));
+//			obj.setR45_TOTAL(rs.getBigDecimal("R45_TOTAL"));
+//			obj.setR46_PRODUCT(rs.getString("R46_PRODUCT"));
+//			obj.setR46_DAY1(rs.getBigDecimal("R46_DAY1"));
+//			obj.setR46_DAY2_7(rs.getBigDecimal("R46_DAY2_7"));
+//			obj.setR46_DAY8_14(rs.getBigDecimal("R46_DAY8_14"));
+//			obj.setR46_DAY15_30(rs.getBigDecimal("R46_DAY15_30"));
+//			obj.setR46_DAY31_TO_2M(rs.getBigDecimal("R46_DAY31_TO_2M"));
+//			obj.setR46_MORE2M_TO_3M(rs.getBigDecimal("R46_MORE2M_TO_3M"));
+//			obj.setR46_OVER3M_TO_6M(rs.getBigDecimal("R46_OVER3M_TO_6M"));
+//			obj.setR46_OVER6M_TO_1Y(rs.getBigDecimal("R46_OVER6M_TO_1Y"));
+//			obj.setR46_OVER1Y_TO_3Y(rs.getBigDecimal("R46_OVER1Y_TO_3Y"));
+//			obj.setR46_OVER3Y_TO_5Y(rs.getBigDecimal("R46_OVER3Y_TO_5Y"));
+//			obj.setR46_OVER5Y(rs.getBigDecimal("R46_OVER5Y"));
+//			obj.setR46_TOTAL(rs.getBigDecimal("R46_TOTAL"));
 			obj.setR47_PRODUCT(rs.getString("R47_PRODUCT"));
 			obj.setR47_DAY1(rs.getBigDecimal("R47_DAY1"));
 			obj.setR47_DAY2_7(rs.getBigDecimal("R47_DAY2_7"));
@@ -2859,97 +2859,97 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR76_OVER3Y_TO_5Y(rs.getBigDecimal("R76_OVER3Y_TO_5Y"));
 			obj.setR76_OVER5Y(rs.getBigDecimal("R76_OVER5Y"));
 			obj.setR76_TOTAL(rs.getBigDecimal("R76_TOTAL"));
-			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
-			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
-			obj.setR77_DAY2_7(rs.getBigDecimal("R77_DAY2_7"));
-			obj.setR77_DAY8_14(rs.getBigDecimal("R77_DAY8_14"));
-			obj.setR77_DAY15_30(rs.getBigDecimal("R77_DAY15_30"));
-			obj.setR77_DAY31_TO_2M(rs.getBigDecimal("R77_DAY31_TO_2M"));
-			obj.setR77_MORE2M_TO_3M(rs.getBigDecimal("R77_MORE2M_TO_3M"));
-			obj.setR77_OVER3M_TO_6M(rs.getBigDecimal("R77_OVER3M_TO_6M"));
-			obj.setR77_OVER6M_TO_1Y(rs.getBigDecimal("R77_OVER6M_TO_1Y"));
-			obj.setR77_OVER1Y_TO_3Y(rs.getBigDecimal("R77_OVER1Y_TO_3Y"));
-			obj.setR77_OVER3Y_TO_5Y(rs.getBigDecimal("R77_OVER3Y_TO_5Y"));
-			obj.setR77_OVER5Y(rs.getBigDecimal("R77_OVER5Y"));
-			obj.setR77_TOTAL(rs.getBigDecimal("R77_TOTAL"));
-			obj.setR78_PRODUCT(rs.getString("R78_PRODUCT"));
-			obj.setR78_DAY1(rs.getBigDecimal("R78_DAY1"));
-			obj.setR78_DAY2_7(rs.getBigDecimal("R78_DAY2_7"));
-			obj.setR78_DAY8_14(rs.getBigDecimal("R78_DAY8_14"));
-			obj.setR78_DAY15_30(rs.getBigDecimal("R78_DAY15_30"));
-			obj.setR78_DAY31_TO_2M(rs.getBigDecimal("R78_DAY31_TO_2M"));
-			obj.setR78_MORE2M_TO_3M(rs.getBigDecimal("R78_MORE2M_TO_3M"));
-			obj.setR78_OVER3M_TO_6M(rs.getBigDecimal("R78_OVER3M_TO_6M"));
-			obj.setR78_OVER6M_TO_1Y(rs.getBigDecimal("R78_OVER6M_TO_1Y"));
-			obj.setR78_OVER1Y_TO_3Y(rs.getBigDecimal("R78_OVER1Y_TO_3Y"));
-			obj.setR78_OVER3Y_TO_5Y(rs.getBigDecimal("R78_OVER3Y_TO_5Y"));
-			obj.setR78_OVER5Y(rs.getBigDecimal("R78_OVER5Y"));
-			obj.setR78_TOTAL(rs.getBigDecimal("R78_TOTAL"));
-			obj.setR79_PRODUCT(rs.getString("R79_PRODUCT"));
-			obj.setR79_DAY1(rs.getBigDecimal("R79_DAY1"));
-			obj.setR79_DAY2_7(rs.getBigDecimal("R79_DAY2_7"));
-			obj.setR79_DAY8_14(rs.getBigDecimal("R79_DAY8_14"));
-			obj.setR79_DAY15_30(rs.getBigDecimal("R79_DAY15_30"));
-			obj.setR79_DAY31_TO_2M(rs.getBigDecimal("R79_DAY31_TO_2M"));
-			obj.setR79_MORE2M_TO_3M(rs.getBigDecimal("R79_MORE2M_TO_3M"));
-			obj.setR79_OVER3M_TO_6M(rs.getBigDecimal("R79_OVER3M_TO_6M"));
-			obj.setR79_OVER6M_TO_1Y(rs.getBigDecimal("R79_OVER6M_TO_1Y"));
-			obj.setR79_OVER1Y_TO_3Y(rs.getBigDecimal("R79_OVER1Y_TO_3Y"));
-			obj.setR79_OVER3Y_TO_5Y(rs.getBigDecimal("R79_OVER3Y_TO_5Y"));
-			obj.setR79_OVER5Y(rs.getBigDecimal("R79_OVER5Y"));
-			obj.setR79_TOTAL(rs.getBigDecimal("R79_TOTAL"));
-			obj.setR80_PRODUCT(rs.getString("R80_PRODUCT"));
-			obj.setR80_DAY1(rs.getBigDecimal("R80_DAY1"));
-			obj.setR80_DAY2_7(rs.getBigDecimal("R80_DAY2_7"));
-			obj.setR80_DAY8_14(rs.getBigDecimal("R80_DAY8_14"));
-			obj.setR80_DAY15_30(rs.getBigDecimal("R80_DAY15_30"));
-			obj.setR80_DAY31_TO_2M(rs.getBigDecimal("R80_DAY31_TO_2M"));
-			obj.setR80_MORE2M_TO_3M(rs.getBigDecimal("R80_MORE2M_TO_3M"));
-			obj.setR80_OVER3M_TO_6M(rs.getBigDecimal("R80_OVER3M_TO_6M"));
-			obj.setR80_OVER6M_TO_1Y(rs.getBigDecimal("R80_OVER6M_TO_1Y"));
-			obj.setR80_OVER1Y_TO_3Y(rs.getBigDecimal("R80_OVER1Y_TO_3Y"));
-			obj.setR80_OVER3Y_TO_5Y(rs.getBigDecimal("R80_OVER3Y_TO_5Y"));
-			obj.setR80_OVER5Y(rs.getBigDecimal("R80_OVER5Y"));
-			obj.setR80_TOTAL(rs.getBigDecimal("R80_TOTAL"));
-			obj.setR81_PRODUCT(rs.getString("R81_PRODUCT"));
-			obj.setR81_DAY1(rs.getBigDecimal("R81_DAY1"));
-			obj.setR81_DAY2_7(rs.getBigDecimal("R81_DAY2_7"));
-			obj.setR81_DAY8_14(rs.getBigDecimal("R81_DAY8_14"));
-			obj.setR81_DAY15_30(rs.getBigDecimal("R81_DAY15_30"));
-			obj.setR81_DAY31_TO_2M(rs.getBigDecimal("R81_DAY31_TO_2M"));
-			obj.setR81_MORE2M_TO_3M(rs.getBigDecimal("R81_MORE2M_TO_3M"));
-			obj.setR81_OVER3M_TO_6M(rs.getBigDecimal("R81_OVER3M_TO_6M"));
-			obj.setR81_OVER6M_TO_1Y(rs.getBigDecimal("R81_OVER6M_TO_1Y"));
-			obj.setR81_OVER1Y_TO_3Y(rs.getBigDecimal("R81_OVER1Y_TO_3Y"));
-			obj.setR81_OVER3Y_TO_5Y(rs.getBigDecimal("R81_OVER3Y_TO_5Y"));
-			obj.setR81_OVER5Y(rs.getBigDecimal("R81_OVER5Y"));
-			obj.setR81_TOTAL(rs.getBigDecimal("R81_TOTAL"));
-			obj.setR82_PRODUCT(rs.getString("R82_PRODUCT"));
-			obj.setR82_DAY1(rs.getBigDecimal("R82_DAY1"));
-			obj.setR82_DAY2_7(rs.getBigDecimal("R82_DAY2_7"));
-			obj.setR82_DAY8_14(rs.getBigDecimal("R82_DAY8_14"));
-			obj.setR82_DAY15_30(rs.getBigDecimal("R82_DAY15_30"));
-			obj.setR82_DAY31_TO_2M(rs.getBigDecimal("R82_DAY31_TO_2M"));
-			obj.setR82_MORE2M_TO_3M(rs.getBigDecimal("R82_MORE2M_TO_3M"));
-			obj.setR82_OVER3M_TO_6M(rs.getBigDecimal("R82_OVER3M_TO_6M"));
-			obj.setR82_OVER6M_TO_1Y(rs.getBigDecimal("R82_OVER6M_TO_1Y"));
-			obj.setR82_OVER1Y_TO_3Y(rs.getBigDecimal("R82_OVER1Y_TO_3Y"));
-			obj.setR82_OVER3Y_TO_5Y(rs.getBigDecimal("R82_OVER3Y_TO_5Y"));
-			obj.setR82_OVER5Y(rs.getBigDecimal("R82_OVER5Y"));
-			obj.setR82_TOTAL(rs.getBigDecimal("R82_TOTAL"));
-			obj.setR83_PRODUCT(rs.getString("R83_PRODUCT"));
-			obj.setR83_DAY1(rs.getBigDecimal("R83_DAY1"));
-			obj.setR83_DAY2_7(rs.getBigDecimal("R83_DAY2_7"));
-			obj.setR83_DAY8_14(rs.getBigDecimal("R83_DAY8_14"));
-			obj.setR83_DAY15_30(rs.getBigDecimal("R83_DAY15_30"));
-			obj.setR83_DAY31_TO_2M(rs.getBigDecimal("R83_DAY31_TO_2M"));
-			obj.setR83_MORE2M_TO_3M(rs.getBigDecimal("R83_MORE2M_TO_3M"));
-			obj.setR83_OVER3M_TO_6M(rs.getBigDecimal("R83_OVER3M_TO_6M"));
-			obj.setR83_OVER6M_TO_1Y(rs.getBigDecimal("R83_OVER6M_TO_1Y"));
-			obj.setR83_OVER1Y_TO_3Y(rs.getBigDecimal("R83_OVER1Y_TO_3Y"));
-			obj.setR83_OVER3Y_TO_5Y(rs.getBigDecimal("R83_OVER3Y_TO_5Y"));
-			obj.setR83_OVER5Y(rs.getBigDecimal("R83_OVER5Y"));
-			obj.setR83_TOTAL(rs.getBigDecimal("R83_TOTAL"));
+//			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
+//			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
+//			obj.setR77_DAY2_7(rs.getBigDecimal("R77_DAY2_7"));
+//			obj.setR77_DAY8_14(rs.getBigDecimal("R77_DAY8_14"));
+//			obj.setR77_DAY15_30(rs.getBigDecimal("R77_DAY15_30"));
+//			obj.setR77_DAY31_TO_2M(rs.getBigDecimal("R77_DAY31_TO_2M"));
+//			obj.setR77_MORE2M_TO_3M(rs.getBigDecimal("R77_MORE2M_TO_3M"));
+//			obj.setR77_OVER3M_TO_6M(rs.getBigDecimal("R77_OVER3M_TO_6M"));
+//			obj.setR77_OVER6M_TO_1Y(rs.getBigDecimal("R77_OVER6M_TO_1Y"));
+//			obj.setR77_OVER1Y_TO_3Y(rs.getBigDecimal("R77_OVER1Y_TO_3Y"));
+//			obj.setR77_OVER3Y_TO_5Y(rs.getBigDecimal("R77_OVER3Y_TO_5Y"));
+//			obj.setR77_OVER5Y(rs.getBigDecimal("R77_OVER5Y"));
+//			obj.setR77_TOTAL(rs.getBigDecimal("R77_TOTAL"));
+//			obj.setR78_PRODUCT(rs.getString("R78_PRODUCT"));
+//			obj.setR78_DAY1(rs.getBigDecimal("R78_DAY1"));
+//			obj.setR78_DAY2_7(rs.getBigDecimal("R78_DAY2_7"));
+//			obj.setR78_DAY8_14(rs.getBigDecimal("R78_DAY8_14"));
+//			obj.setR78_DAY15_30(rs.getBigDecimal("R78_DAY15_30"));
+//			obj.setR78_DAY31_TO_2M(rs.getBigDecimal("R78_DAY31_TO_2M"));
+//			obj.setR78_MORE2M_TO_3M(rs.getBigDecimal("R78_MORE2M_TO_3M"));
+//			obj.setR78_OVER3M_TO_6M(rs.getBigDecimal("R78_OVER3M_TO_6M"));
+//			obj.setR78_OVER6M_TO_1Y(rs.getBigDecimal("R78_OVER6M_TO_1Y"));
+//			obj.setR78_OVER1Y_TO_3Y(rs.getBigDecimal("R78_OVER1Y_TO_3Y"));
+//			obj.setR78_OVER3Y_TO_5Y(rs.getBigDecimal("R78_OVER3Y_TO_5Y"));
+//			obj.setR78_OVER5Y(rs.getBigDecimal("R78_OVER5Y"));
+//			obj.setR78_TOTAL(rs.getBigDecimal("R78_TOTAL"));
+//			obj.setR79_PRODUCT(rs.getString("R79_PRODUCT"));
+//			obj.setR79_DAY1(rs.getBigDecimal("R79_DAY1"));
+//			obj.setR79_DAY2_7(rs.getBigDecimal("R79_DAY2_7"));
+//			obj.setR79_DAY8_14(rs.getBigDecimal("R79_DAY8_14"));
+//			obj.setR79_DAY15_30(rs.getBigDecimal("R79_DAY15_30"));
+//			obj.setR79_DAY31_TO_2M(rs.getBigDecimal("R79_DAY31_TO_2M"));
+//			obj.setR79_MORE2M_TO_3M(rs.getBigDecimal("R79_MORE2M_TO_3M"));
+//			obj.setR79_OVER3M_TO_6M(rs.getBigDecimal("R79_OVER3M_TO_6M"));
+//			obj.setR79_OVER6M_TO_1Y(rs.getBigDecimal("R79_OVER6M_TO_1Y"));
+//			obj.setR79_OVER1Y_TO_3Y(rs.getBigDecimal("R79_OVER1Y_TO_3Y"));
+//			obj.setR79_OVER3Y_TO_5Y(rs.getBigDecimal("R79_OVER3Y_TO_5Y"));
+//			obj.setR79_OVER5Y(rs.getBigDecimal("R79_OVER5Y"));
+//			obj.setR79_TOTAL(rs.getBigDecimal("R79_TOTAL"));
+//			obj.setR80_PRODUCT(rs.getString("R80_PRODUCT"));
+//			obj.setR80_DAY1(rs.getBigDecimal("R80_DAY1"));
+//			obj.setR80_DAY2_7(rs.getBigDecimal("R80_DAY2_7"));
+//			obj.setR80_DAY8_14(rs.getBigDecimal("R80_DAY8_14"));
+//			obj.setR80_DAY15_30(rs.getBigDecimal("R80_DAY15_30"));
+//			obj.setR80_DAY31_TO_2M(rs.getBigDecimal("R80_DAY31_TO_2M"));
+//			obj.setR80_MORE2M_TO_3M(rs.getBigDecimal("R80_MORE2M_TO_3M"));
+//			obj.setR80_OVER3M_TO_6M(rs.getBigDecimal("R80_OVER3M_TO_6M"));
+//			obj.setR80_OVER6M_TO_1Y(rs.getBigDecimal("R80_OVER6M_TO_1Y"));
+//			obj.setR80_OVER1Y_TO_3Y(rs.getBigDecimal("R80_OVER1Y_TO_3Y"));
+//			obj.setR80_OVER3Y_TO_5Y(rs.getBigDecimal("R80_OVER3Y_TO_5Y"));
+//			obj.setR80_OVER5Y(rs.getBigDecimal("R80_OVER5Y"));
+//			obj.setR80_TOTAL(rs.getBigDecimal("R80_TOTAL"));
+//			obj.setR81_PRODUCT(rs.getString("R81_PRODUCT"));
+//			obj.setR81_DAY1(rs.getBigDecimal("R81_DAY1"));
+//			obj.setR81_DAY2_7(rs.getBigDecimal("R81_DAY2_7"));
+//			obj.setR81_DAY8_14(rs.getBigDecimal("R81_DAY8_14"));
+//			obj.setR81_DAY15_30(rs.getBigDecimal("R81_DAY15_30"));
+//			obj.setR81_DAY31_TO_2M(rs.getBigDecimal("R81_DAY31_TO_2M"));
+//			obj.setR81_MORE2M_TO_3M(rs.getBigDecimal("R81_MORE2M_TO_3M"));
+//			obj.setR81_OVER3M_TO_6M(rs.getBigDecimal("R81_OVER3M_TO_6M"));
+//			obj.setR81_OVER6M_TO_1Y(rs.getBigDecimal("R81_OVER6M_TO_1Y"));
+//			obj.setR81_OVER1Y_TO_3Y(rs.getBigDecimal("R81_OVER1Y_TO_3Y"));
+//			obj.setR81_OVER3Y_TO_5Y(rs.getBigDecimal("R81_OVER3Y_TO_5Y"));
+//			obj.setR81_OVER5Y(rs.getBigDecimal("R81_OVER5Y"));
+//			obj.setR81_TOTAL(rs.getBigDecimal("R81_TOTAL"));
+//			obj.setR82_PRODUCT(rs.getString("R82_PRODUCT"));
+//			obj.setR82_DAY1(rs.getBigDecimal("R82_DAY1"));
+//			obj.setR82_DAY2_7(rs.getBigDecimal("R82_DAY2_7"));
+//			obj.setR82_DAY8_14(rs.getBigDecimal("R82_DAY8_14"));
+//			obj.setR82_DAY15_30(rs.getBigDecimal("R82_DAY15_30"));
+//			obj.setR82_DAY31_TO_2M(rs.getBigDecimal("R82_DAY31_TO_2M"));
+//			obj.setR82_MORE2M_TO_3M(rs.getBigDecimal("R82_MORE2M_TO_3M"));
+//			obj.setR82_OVER3M_TO_6M(rs.getBigDecimal("R82_OVER3M_TO_6M"));
+//			obj.setR82_OVER6M_TO_1Y(rs.getBigDecimal("R82_OVER6M_TO_1Y"));
+//			obj.setR82_OVER1Y_TO_3Y(rs.getBigDecimal("R82_OVER1Y_TO_3Y"));
+//			obj.setR82_OVER3Y_TO_5Y(rs.getBigDecimal("R82_OVER3Y_TO_5Y"));
+//			obj.setR82_OVER5Y(rs.getBigDecimal("R82_OVER5Y"));
+//			obj.setR82_TOTAL(rs.getBigDecimal("R82_TOTAL"));
+//			obj.setR83_PRODUCT(rs.getString("R83_PRODUCT"));
+//			obj.setR83_DAY1(rs.getBigDecimal("R83_DAY1"));
+//			obj.setR83_DAY2_7(rs.getBigDecimal("R83_DAY2_7"));
+//			obj.setR83_DAY8_14(rs.getBigDecimal("R83_DAY8_14"));
+//			obj.setR83_DAY15_30(rs.getBigDecimal("R83_DAY15_30"));
+//			obj.setR83_DAY31_TO_2M(rs.getBigDecimal("R83_DAY31_TO_2M"));
+//			obj.setR83_MORE2M_TO_3M(rs.getBigDecimal("R83_MORE2M_TO_3M"));
+//			obj.setR83_OVER3M_TO_6M(rs.getBigDecimal("R83_OVER3M_TO_6M"));
+//			obj.setR83_OVER6M_TO_1Y(rs.getBigDecimal("R83_OVER6M_TO_1Y"));
+//			obj.setR83_OVER1Y_TO_3Y(rs.getBigDecimal("R83_OVER1Y_TO_3Y"));
+//			obj.setR83_OVER3Y_TO_5Y(rs.getBigDecimal("R83_OVER3Y_TO_5Y"));
+//			obj.setR83_OVER5Y(rs.getBigDecimal("R83_OVER5Y"));
+//			obj.setR83_TOTAL(rs.getBigDecimal("R83_TOTAL"));
 			obj.setR84_PRODUCT(rs.getString("R84_PRODUCT"));
 			obj.setR84_DAY1(rs.getBigDecimal("R84_DAY1"));
 			obj.setR84_DAY2_7(rs.getBigDecimal("R84_DAY2_7"));
@@ -3424,84 +3424,84 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R40_OVER3Y_TO_5Y;
 	private BigDecimal R40_OVER5Y;
 	private BigDecimal R40_TOTAL;
-	private String R41_PRODUCT;
-	private BigDecimal R41_DAY1;
-	private BigDecimal R41_DAY2_7;
-	private BigDecimal R41_DAY8_14;
-	private BigDecimal R41_DAY15_30;
-	private BigDecimal R41_DAY31_TO_2M;
-	private BigDecimal R41_MORE2M_TO_3M;
-	private BigDecimal R41_OVER3M_TO_6M;
-	private BigDecimal R41_OVER6M_TO_1Y;
-	private BigDecimal R41_OVER1Y_TO_3Y;
-	private BigDecimal R41_OVER3Y_TO_5Y;
-	private BigDecimal R41_OVER5Y;
-	private BigDecimal R41_TOTAL;
-	private String R42_PRODUCT;
-	private BigDecimal R42_DAY1;
-	private BigDecimal R42_DAY2_7;
-	private BigDecimal R42_DAY8_14;
-	private BigDecimal R42_DAY15_30;
-	private BigDecimal R42_DAY31_TO_2M;
-	private BigDecimal R42_MORE2M_TO_3M;
-	private BigDecimal R42_OVER3M_TO_6M;
-	private BigDecimal R42_OVER6M_TO_1Y;
-	private BigDecimal R42_OVER1Y_TO_3Y;
-	private BigDecimal R42_OVER3Y_TO_5Y;
-	private BigDecimal R42_OVER5Y;
-	private BigDecimal R42_TOTAL;
-	private String R43_PRODUCT;
-	private BigDecimal R43_DAY1;
-	private BigDecimal R43_DAY2_7;
-	private BigDecimal R43_DAY8_14;
-	private BigDecimal R43_DAY15_30;
-	private BigDecimal R43_DAY31_TO_2M;
-	private BigDecimal R43_MORE2M_TO_3M;
-	private BigDecimal R43_OVER3M_TO_6M;
-	private BigDecimal R43_OVER6M_TO_1Y;
-	private BigDecimal R43_OVER1Y_TO_3Y;
-	private BigDecimal R43_OVER3Y_TO_5Y;
-	private BigDecimal R43_OVER5Y;
-	private BigDecimal R43_TOTAL;
-	private String R44_PRODUCT;
-	private BigDecimal R44_DAY1;
-	private BigDecimal R44_DAY2_7;
-	private BigDecimal R44_DAY8_14;
-	private BigDecimal R44_DAY15_30;
-	private BigDecimal R44_DAY31_TO_2M;
-	private BigDecimal R44_MORE2M_TO_3M;
-	private BigDecimal R44_OVER3M_TO_6M;
-	private BigDecimal R44_OVER6M_TO_1Y;
-	private BigDecimal R44_OVER1Y_TO_3Y;
-	private BigDecimal R44_OVER3Y_TO_5Y;
-	private BigDecimal R44_OVER5Y;
-	private BigDecimal R44_TOTAL;
-	private String R45_PRODUCT;
-	private BigDecimal R45_DAY1;
-	private BigDecimal R45_DAY2_7;
-	private BigDecimal R45_DAY8_14;
-	private BigDecimal R45_DAY15_30;
-	private BigDecimal R45_DAY31_TO_2M;
-	private BigDecimal R45_MORE2M_TO_3M;
-	private BigDecimal R45_OVER3M_TO_6M;
-	private BigDecimal R45_OVER6M_TO_1Y;
-	private BigDecimal R45_OVER1Y_TO_3Y;
-	private BigDecimal R45_OVER3Y_TO_5Y;
-	private BigDecimal R45_OVER5Y;
-	private BigDecimal R45_TOTAL;
-	private String R46_PRODUCT;
-	private BigDecimal R46_DAY1;
-	private BigDecimal R46_DAY2_7;
-	private BigDecimal R46_DAY8_14;
-	private BigDecimal R46_DAY15_30;
-	private BigDecimal R46_DAY31_TO_2M;
-	private BigDecimal R46_MORE2M_TO_3M;
-	private BigDecimal R46_OVER3M_TO_6M;
-	private BigDecimal R46_OVER6M_TO_1Y;
-	private BigDecimal R46_OVER1Y_TO_3Y;
-	private BigDecimal R46_OVER3Y_TO_5Y;
-	private BigDecimal R46_OVER5Y;
-	private BigDecimal R46_TOTAL;
+//	private String R41_PRODUCT;
+//	private BigDecimal R41_DAY1;
+//	private BigDecimal R41_DAY2_7;
+//	private BigDecimal R41_DAY8_14;
+//	private BigDecimal R41_DAY15_30;
+//	private BigDecimal R41_DAY31_TO_2M;
+//	private BigDecimal R41_MORE2M_TO_3M;
+//	private BigDecimal R41_OVER3M_TO_6M;
+//	private BigDecimal R41_OVER6M_TO_1Y;
+//	private BigDecimal R41_OVER1Y_TO_3Y;
+//	private BigDecimal R41_OVER3Y_TO_5Y;
+//	private BigDecimal R41_OVER5Y;
+//	private BigDecimal R41_TOTAL;
+//	private String R42_PRODUCT;
+//	private BigDecimal R42_DAY1;
+//	private BigDecimal R42_DAY2_7;
+//	private BigDecimal R42_DAY8_14;
+//	private BigDecimal R42_DAY15_30;
+//	private BigDecimal R42_DAY31_TO_2M;
+//	private BigDecimal R42_MORE2M_TO_3M;
+//	private BigDecimal R42_OVER3M_TO_6M;
+//	private BigDecimal R42_OVER6M_TO_1Y;
+//	private BigDecimal R42_OVER1Y_TO_3Y;
+//	private BigDecimal R42_OVER3Y_TO_5Y;
+//	private BigDecimal R42_OVER5Y;
+//	private BigDecimal R42_TOTAL;
+//	private String R43_PRODUCT;
+//	private BigDecimal R43_DAY1;
+//	private BigDecimal R43_DAY2_7;
+//	private BigDecimal R43_DAY8_14;
+//	private BigDecimal R43_DAY15_30;
+//	private BigDecimal R43_DAY31_TO_2M;
+//	private BigDecimal R43_MORE2M_TO_3M;
+//	private BigDecimal R43_OVER3M_TO_6M;
+//	private BigDecimal R43_OVER6M_TO_1Y;
+//	private BigDecimal R43_OVER1Y_TO_3Y;
+//	private BigDecimal R43_OVER3Y_TO_5Y;
+//	private BigDecimal R43_OVER5Y;
+//	private BigDecimal R43_TOTAL;
+//	private String R44_PRODUCT;
+//	private BigDecimal R44_DAY1;
+//	private BigDecimal R44_DAY2_7;
+//	private BigDecimal R44_DAY8_14;
+//	private BigDecimal R44_DAY15_30;
+//	private BigDecimal R44_DAY31_TO_2M;
+//	private BigDecimal R44_MORE2M_TO_3M;
+//	private BigDecimal R44_OVER3M_TO_6M;
+//	private BigDecimal R44_OVER6M_TO_1Y;
+//	private BigDecimal R44_OVER1Y_TO_3Y;
+//	private BigDecimal R44_OVER3Y_TO_5Y;
+//	private BigDecimal R44_OVER5Y;
+//	private BigDecimal R44_TOTAL;
+//	private String R45_PRODUCT;
+//	private BigDecimal R45_DAY1;
+//	private BigDecimal R45_DAY2_7;
+//	private BigDecimal R45_DAY8_14;
+//	private BigDecimal R45_DAY15_30;
+//	private BigDecimal R45_DAY31_TO_2M;
+//	private BigDecimal R45_MORE2M_TO_3M;
+//	private BigDecimal R45_OVER3M_TO_6M;
+//	private BigDecimal R45_OVER6M_TO_1Y;
+//	private BigDecimal R45_OVER1Y_TO_3Y;
+//	private BigDecimal R45_OVER3Y_TO_5Y;
+//	private BigDecimal R45_OVER5Y;
+//	private BigDecimal R45_TOTAL;
+//	private String R46_PRODUCT;
+//	private BigDecimal R46_DAY1;
+//	private BigDecimal R46_DAY2_7;
+//	private BigDecimal R46_DAY8_14;
+//	private BigDecimal R46_DAY15_30;
+//	private BigDecimal R46_DAY31_TO_2M;
+//	private BigDecimal R46_MORE2M_TO_3M;
+//	private BigDecimal R46_OVER3M_TO_6M;
+//	private BigDecimal R46_OVER6M_TO_1Y;
+//	private BigDecimal R46_OVER1Y_TO_3Y;
+//	private BigDecimal R46_OVER3Y_TO_5Y;
+//	private BigDecimal R46_OVER5Y;
+//	private BigDecimal R46_TOTAL;
 	private String R47_PRODUCT;
 	private BigDecimal R47_DAY1;
 	private BigDecimal R47_DAY2_7;
@@ -3892,97 +3892,97 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R76_OVER3Y_TO_5Y;
 	private BigDecimal R76_OVER5Y;
 	private BigDecimal R76_TOTAL;
-	private String R77_PRODUCT;
-	private BigDecimal R77_DAY1;
-	private BigDecimal R77_DAY2_7;
-	private BigDecimal R77_DAY8_14;
-	private BigDecimal R77_DAY15_30;
-	private BigDecimal R77_DAY31_TO_2M;
-	private BigDecimal R77_MORE2M_TO_3M;
-	private BigDecimal R77_OVER3M_TO_6M;
-	private BigDecimal R77_OVER6M_TO_1Y;
-	private BigDecimal R77_OVER1Y_TO_3Y;
-	private BigDecimal R77_OVER3Y_TO_5Y;
-	private BigDecimal R77_OVER5Y;
-	private BigDecimal R77_TOTAL;
-	private String R78_PRODUCT;
-	private BigDecimal R78_DAY1;
-	private BigDecimal R78_DAY2_7;
-	private BigDecimal R78_DAY8_14;
-	private BigDecimal R78_DAY15_30;
-	private BigDecimal R78_DAY31_TO_2M;
-	private BigDecimal R78_MORE2M_TO_3M;
-	private BigDecimal R78_OVER3M_TO_6M;
-	private BigDecimal R78_OVER6M_TO_1Y;
-	private BigDecimal R78_OVER1Y_TO_3Y;
-	private BigDecimal R78_OVER3Y_TO_5Y;
-	private BigDecimal R78_OVER5Y;
-	private BigDecimal R78_TOTAL;
-	private String R79_PRODUCT;
-	private BigDecimal R79_DAY1;
-	private BigDecimal R79_DAY2_7;
-	private BigDecimal R79_DAY8_14;
-	private BigDecimal R79_DAY15_30;
-	private BigDecimal R79_DAY31_TO_2M;
-	private BigDecimal R79_MORE2M_TO_3M;
-	private BigDecimal R79_OVER3M_TO_6M;
-	private BigDecimal R79_OVER6M_TO_1Y;
-	private BigDecimal R79_OVER1Y_TO_3Y;
-	private BigDecimal R79_OVER3Y_TO_5Y;
-	private BigDecimal R79_OVER5Y;
-	private BigDecimal R79_TOTAL;
-	private String R80_PRODUCT;
-	private BigDecimal R80_DAY1;
-	private BigDecimal R80_DAY2_7;
-	private BigDecimal R80_DAY8_14;
-	private BigDecimal R80_DAY15_30;
-	private BigDecimal R80_DAY31_TO_2M;
-	private BigDecimal R80_MORE2M_TO_3M;
-	private BigDecimal R80_OVER3M_TO_6M;
-	private BigDecimal R80_OVER6M_TO_1Y;
-	private BigDecimal R80_OVER1Y_TO_3Y;
-	private BigDecimal R80_OVER3Y_TO_5Y;
-	private BigDecimal R80_OVER5Y;
-	private BigDecimal R80_TOTAL;
-	private String R81_PRODUCT;
-	private BigDecimal R81_DAY1;
-	private BigDecimal R81_DAY2_7;
-	private BigDecimal R81_DAY8_14;
-	private BigDecimal R81_DAY15_30;
-	private BigDecimal R81_DAY31_TO_2M;
-	private BigDecimal R81_MORE2M_TO_3M;
-	private BigDecimal R81_OVER3M_TO_6M;
-	private BigDecimal R81_OVER6M_TO_1Y;
-	private BigDecimal R81_OVER1Y_TO_3Y;
-	private BigDecimal R81_OVER3Y_TO_5Y;
-	private BigDecimal R81_OVER5Y;
-	private BigDecimal R81_TOTAL;
-	private String R82_PRODUCT;
-	private BigDecimal R82_DAY1;
-	private BigDecimal R82_DAY2_7;
-	private BigDecimal R82_DAY8_14;
-	private BigDecimal R82_DAY15_30;
-	private BigDecimal R82_DAY31_TO_2M;
-	private BigDecimal R82_MORE2M_TO_3M;
-	private BigDecimal R82_OVER3M_TO_6M;
-	private BigDecimal R82_OVER6M_TO_1Y;
-	private BigDecimal R82_OVER1Y_TO_3Y;
-	private BigDecimal R82_OVER3Y_TO_5Y;
-	private BigDecimal R82_OVER5Y;
-	private BigDecimal R82_TOTAL;
-	private String R83_PRODUCT;
-	private BigDecimal R83_DAY1;
-	private BigDecimal R83_DAY2_7;
-	private BigDecimal R83_DAY8_14;
-	private BigDecimal R83_DAY15_30;
-	private BigDecimal R83_DAY31_TO_2M;
-	private BigDecimal R83_MORE2M_TO_3M;
-	private BigDecimal R83_OVER3M_TO_6M;
-	private BigDecimal R83_OVER6M_TO_1Y;
-	private BigDecimal R83_OVER1Y_TO_3Y;
-	private BigDecimal R83_OVER3Y_TO_5Y;
-	private BigDecimal R83_OVER5Y;
-	private BigDecimal R83_TOTAL;
+//	private String R77_PRODUCT;
+//	private BigDecimal R77_DAY1;
+//	private BigDecimal R77_DAY2_7;
+//	private BigDecimal R77_DAY8_14;
+//	private BigDecimal R77_DAY15_30;
+//	private BigDecimal R77_DAY31_TO_2M;
+//	private BigDecimal R77_MORE2M_TO_3M;
+//	private BigDecimal R77_OVER3M_TO_6M;
+//	private BigDecimal R77_OVER6M_TO_1Y;
+//	private BigDecimal R77_OVER1Y_TO_3Y;
+//	private BigDecimal R77_OVER3Y_TO_5Y;
+//	private BigDecimal R77_OVER5Y;
+//	private BigDecimal R77_TOTAL;
+//	private String R78_PRODUCT;
+//	private BigDecimal R78_DAY1;
+//	private BigDecimal R78_DAY2_7;
+//	private BigDecimal R78_DAY8_14;
+//	private BigDecimal R78_DAY15_30;
+//	private BigDecimal R78_DAY31_TO_2M;
+//	private BigDecimal R78_MORE2M_TO_3M;
+//	private BigDecimal R78_OVER3M_TO_6M;
+//	private BigDecimal R78_OVER6M_TO_1Y;
+//	private BigDecimal R78_OVER1Y_TO_3Y;
+//	private BigDecimal R78_OVER3Y_TO_5Y;
+//	private BigDecimal R78_OVER5Y;
+//	private BigDecimal R78_TOTAL;
+//	private String R79_PRODUCT;
+//	private BigDecimal R79_DAY1;
+//	private BigDecimal R79_DAY2_7;
+//	private BigDecimal R79_DAY8_14;
+//	private BigDecimal R79_DAY15_30;
+//	private BigDecimal R79_DAY31_TO_2M;
+//	private BigDecimal R79_MORE2M_TO_3M;
+//	private BigDecimal R79_OVER3M_TO_6M;
+//	private BigDecimal R79_OVER6M_TO_1Y;
+//	private BigDecimal R79_OVER1Y_TO_3Y;
+//	private BigDecimal R79_OVER3Y_TO_5Y;
+//	private BigDecimal R79_OVER5Y;
+//	private BigDecimal R79_TOTAL;
+//	private String R80_PRODUCT;
+//	private BigDecimal R80_DAY1;
+//	private BigDecimal R80_DAY2_7;
+//	private BigDecimal R80_DAY8_14;
+//	private BigDecimal R80_DAY15_30;
+//	private BigDecimal R80_DAY31_TO_2M;
+//	private BigDecimal R80_MORE2M_TO_3M;
+//	private BigDecimal R80_OVER3M_TO_6M;
+//	private BigDecimal R80_OVER6M_TO_1Y;
+//	private BigDecimal R80_OVER1Y_TO_3Y;
+//	private BigDecimal R80_OVER3Y_TO_5Y;
+//	private BigDecimal R80_OVER5Y;
+//	private BigDecimal R80_TOTAL;
+//	private String R81_PRODUCT;
+//	private BigDecimal R81_DAY1;
+//	private BigDecimal R81_DAY2_7;
+//	private BigDecimal R81_DAY8_14;
+//	private BigDecimal R81_DAY15_30;
+//	private BigDecimal R81_DAY31_TO_2M;
+//	private BigDecimal R81_MORE2M_TO_3M;
+//	private BigDecimal R81_OVER3M_TO_6M;
+//	private BigDecimal R81_OVER6M_TO_1Y;
+//	private BigDecimal R81_OVER1Y_TO_3Y;
+//	private BigDecimal R81_OVER3Y_TO_5Y;
+//	private BigDecimal R81_OVER5Y;
+//	private BigDecimal R81_TOTAL;
+//	private String R82_PRODUCT;
+//	private BigDecimal R82_DAY1;
+//	private BigDecimal R82_DAY2_7;
+//	private BigDecimal R82_DAY8_14;
+//	private BigDecimal R82_DAY15_30;
+//	private BigDecimal R82_DAY31_TO_2M;
+//	private BigDecimal R82_MORE2M_TO_3M;
+//	private BigDecimal R82_OVER3M_TO_6M;
+//	private BigDecimal R82_OVER6M_TO_1Y;
+//	private BigDecimal R82_OVER1Y_TO_3Y;
+//	private BigDecimal R82_OVER3Y_TO_5Y;
+//	private BigDecimal R82_OVER5Y;
+//	private BigDecimal R82_TOTAL;
+//	private String R83_PRODUCT;
+//	private BigDecimal R83_DAY1;
+//	private BigDecimal R83_DAY2_7;
+//	private BigDecimal R83_DAY8_14;
+//	private BigDecimal R83_DAY15_30;
+//	private BigDecimal R83_DAY31_TO_2M;
+//	private BigDecimal R83_MORE2M_TO_3M;
+//	private BigDecimal R83_OVER3M_TO_6M;
+//	private BigDecimal R83_OVER6M_TO_1Y;
+//	private BigDecimal R83_OVER1Y_TO_3Y;
+//	private BigDecimal R83_OVER3Y_TO_5Y;
+//	private BigDecimal R83_OVER5Y;
+//	private BigDecimal R83_TOTAL;
 	private String R84_PRODUCT;
 	private BigDecimal R84_DAY1;
 	private BigDecimal R84_DAY2_7;
@@ -6365,474 +6365,474 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR40_TOTAL(BigDecimal r40_TOTAL) {
 		R40_TOTAL = r40_TOTAL;
 	}
-	public String getR41_PRODUCT() {
-		return R41_PRODUCT;
-	}
-	public void setR41_PRODUCT(String r41_PRODUCT) {
-		R41_PRODUCT = r41_PRODUCT;
-	}
-	public BigDecimal getR41_DAY1() {
-		return R41_DAY1;
-	}
-	public void setR41_DAY1(BigDecimal r41_DAY1) {
-		R41_DAY1 = r41_DAY1;
-	}
-	public BigDecimal getR41_DAY2_7() {
-		return R41_DAY2_7;
-	}
-	public void setR41_DAY2_7(BigDecimal r41_DAY2_7) {
-		R41_DAY2_7 = r41_DAY2_7;
-	}
-	public BigDecimal getR41_DAY8_14() {
-		return R41_DAY8_14;
-	}
-	public void setR41_DAY8_14(BigDecimal r41_DAY8_14) {
-		R41_DAY8_14 = r41_DAY8_14;
-	}
-	public BigDecimal getR41_DAY15_30() {
-		return R41_DAY15_30;
-	}
-	public void setR41_DAY15_30(BigDecimal r41_DAY15_30) {
-		R41_DAY15_30 = r41_DAY15_30;
-	}
-	public BigDecimal getR41_DAY31_TO_2M() {
-		return R41_DAY31_TO_2M;
-	}
-	public void setR41_DAY31_TO_2M(BigDecimal r41_DAY31_TO_2M) {
-		R41_DAY31_TO_2M = r41_DAY31_TO_2M;
-	}
-	public BigDecimal getR41_MORE2M_TO_3M() {
-		return R41_MORE2M_TO_3M;
-	}
-	public void setR41_MORE2M_TO_3M(BigDecimal r41_MORE2M_TO_3M) {
-		R41_MORE2M_TO_3M = r41_MORE2M_TO_3M;
-	}
-	public BigDecimal getR41_OVER3M_TO_6M() {
-		return R41_OVER3M_TO_6M;
-	}
-	public void setR41_OVER3M_TO_6M(BigDecimal r41_OVER3M_TO_6M) {
-		R41_OVER3M_TO_6M = r41_OVER3M_TO_6M;
-	}
-	public BigDecimal getR41_OVER6M_TO_1Y() {
-		return R41_OVER6M_TO_1Y;
-	}
-	public void setR41_OVER6M_TO_1Y(BigDecimal r41_OVER6M_TO_1Y) {
-		R41_OVER6M_TO_1Y = r41_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR41_OVER1Y_TO_3Y() {
-		return R41_OVER1Y_TO_3Y;
-	}
-	public void setR41_OVER1Y_TO_3Y(BigDecimal r41_OVER1Y_TO_3Y) {
-		R41_OVER1Y_TO_3Y = r41_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR41_OVER3Y_TO_5Y() {
-		return R41_OVER3Y_TO_5Y;
-	}
-	public void setR41_OVER3Y_TO_5Y(BigDecimal r41_OVER3Y_TO_5Y) {
-		R41_OVER3Y_TO_5Y = r41_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR41_OVER5Y() {
-		return R41_OVER5Y;
-	}
-	public void setR41_OVER5Y(BigDecimal r41_OVER5Y) {
-		R41_OVER5Y = r41_OVER5Y;
-	}
-	public BigDecimal getR41_TOTAL() {
-		return R41_TOTAL;
-	}
-	public void setR41_TOTAL(BigDecimal r41_TOTAL) {
-		R41_TOTAL = r41_TOTAL;
-	}
-	public String getR42_PRODUCT() {
-		return R42_PRODUCT;
-	}
-	public void setR42_PRODUCT(String r42_PRODUCT) {
-		R42_PRODUCT = r42_PRODUCT;
-	}
-	public BigDecimal getR42_DAY1() {
-		return R42_DAY1;
-	}
-	public void setR42_DAY1(BigDecimal r42_DAY1) {
-		R42_DAY1 = r42_DAY1;
-	}
-	public BigDecimal getR42_DAY2_7() {
-		return R42_DAY2_7;
-	}
-	public void setR42_DAY2_7(BigDecimal r42_DAY2_7) {
-		R42_DAY2_7 = r42_DAY2_7;
-	}
-	public BigDecimal getR42_DAY8_14() {
-		return R42_DAY8_14;
-	}
-	public void setR42_DAY8_14(BigDecimal r42_DAY8_14) {
-		R42_DAY8_14 = r42_DAY8_14;
-	}
-	public BigDecimal getR42_DAY15_30() {
-		return R42_DAY15_30;
-	}
-	public void setR42_DAY15_30(BigDecimal r42_DAY15_30) {
-		R42_DAY15_30 = r42_DAY15_30;
-	}
-	public BigDecimal getR42_DAY31_TO_2M() {
-		return R42_DAY31_TO_2M;
-	}
-	public void setR42_DAY31_TO_2M(BigDecimal r42_DAY31_TO_2M) {
-		R42_DAY31_TO_2M = r42_DAY31_TO_2M;
-	}
-	public BigDecimal getR42_MORE2M_TO_3M() {
-		return R42_MORE2M_TO_3M;
-	}
-	public void setR42_MORE2M_TO_3M(BigDecimal r42_MORE2M_TO_3M) {
-		R42_MORE2M_TO_3M = r42_MORE2M_TO_3M;
-	}
-	public BigDecimal getR42_OVER3M_TO_6M() {
-		return R42_OVER3M_TO_6M;
-	}
-	public void setR42_OVER3M_TO_6M(BigDecimal r42_OVER3M_TO_6M) {
-		R42_OVER3M_TO_6M = r42_OVER3M_TO_6M;
-	}
-	public BigDecimal getR42_OVER6M_TO_1Y() {
-		return R42_OVER6M_TO_1Y;
-	}
-	public void setR42_OVER6M_TO_1Y(BigDecimal r42_OVER6M_TO_1Y) {
-		R42_OVER6M_TO_1Y = r42_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR42_OVER1Y_TO_3Y() {
-		return R42_OVER1Y_TO_3Y;
-	}
-	public void setR42_OVER1Y_TO_3Y(BigDecimal r42_OVER1Y_TO_3Y) {
-		R42_OVER1Y_TO_3Y = r42_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR42_OVER3Y_TO_5Y() {
-		return R42_OVER3Y_TO_5Y;
-	}
-	public void setR42_OVER3Y_TO_5Y(BigDecimal r42_OVER3Y_TO_5Y) {
-		R42_OVER3Y_TO_5Y = r42_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR42_OVER5Y() {
-		return R42_OVER5Y;
-	}
-	public void setR42_OVER5Y(BigDecimal r42_OVER5Y) {
-		R42_OVER5Y = r42_OVER5Y;
-	}
-	public BigDecimal getR42_TOTAL() {
-		return R42_TOTAL;
-	}
-	public void setR42_TOTAL(BigDecimal r42_TOTAL) {
-		R42_TOTAL = r42_TOTAL;
-	}
-	public String getR43_PRODUCT() {
-		return R43_PRODUCT;
-	}
-	public void setR43_PRODUCT(String r43_PRODUCT) {
-		R43_PRODUCT = r43_PRODUCT;
-	}
-	public BigDecimal getR43_DAY1() {
-		return R43_DAY1;
-	}
-	public void setR43_DAY1(BigDecimal r43_DAY1) {
-		R43_DAY1 = r43_DAY1;
-	}
-	public BigDecimal getR43_DAY2_7() {
-		return R43_DAY2_7;
-	}
-	public void setR43_DAY2_7(BigDecimal r43_DAY2_7) {
-		R43_DAY2_7 = r43_DAY2_7;
-	}
-	public BigDecimal getR43_DAY8_14() {
-		return R43_DAY8_14;
-	}
-	public void setR43_DAY8_14(BigDecimal r43_DAY8_14) {
-		R43_DAY8_14 = r43_DAY8_14;
-	}
-	public BigDecimal getR43_DAY15_30() {
-		return R43_DAY15_30;
-	}
-	public void setR43_DAY15_30(BigDecimal r43_DAY15_30) {
-		R43_DAY15_30 = r43_DAY15_30;
-	}
-	public BigDecimal getR43_DAY31_TO_2M() {
-		return R43_DAY31_TO_2M;
-	}
-	public void setR43_DAY31_TO_2M(BigDecimal r43_DAY31_TO_2M) {
-		R43_DAY31_TO_2M = r43_DAY31_TO_2M;
-	}
-	public BigDecimal getR43_MORE2M_TO_3M() {
-		return R43_MORE2M_TO_3M;
-	}
-	public void setR43_MORE2M_TO_3M(BigDecimal r43_MORE2M_TO_3M) {
-		R43_MORE2M_TO_3M = r43_MORE2M_TO_3M;
-	}
-	public BigDecimal getR43_OVER3M_TO_6M() {
-		return R43_OVER3M_TO_6M;
-	}
-	public void setR43_OVER3M_TO_6M(BigDecimal r43_OVER3M_TO_6M) {
-		R43_OVER3M_TO_6M = r43_OVER3M_TO_6M;
-	}
-	public BigDecimal getR43_OVER6M_TO_1Y() {
-		return R43_OVER6M_TO_1Y;
-	}
-	public void setR43_OVER6M_TO_1Y(BigDecimal r43_OVER6M_TO_1Y) {
-		R43_OVER6M_TO_1Y = r43_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR43_OVER1Y_TO_3Y() {
-		return R43_OVER1Y_TO_3Y;
-	}
-	public void setR43_OVER1Y_TO_3Y(BigDecimal r43_OVER1Y_TO_3Y) {
-		R43_OVER1Y_TO_3Y = r43_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR43_OVER3Y_TO_5Y() {
-		return R43_OVER3Y_TO_5Y;
-	}
-	public void setR43_OVER3Y_TO_5Y(BigDecimal r43_OVER3Y_TO_5Y) {
-		R43_OVER3Y_TO_5Y = r43_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR43_OVER5Y() {
-		return R43_OVER5Y;
-	}
-	public void setR43_OVER5Y(BigDecimal r43_OVER5Y) {
-		R43_OVER5Y = r43_OVER5Y;
-	}
-	public BigDecimal getR43_TOTAL() {
-		return R43_TOTAL;
-	}
-	public void setR43_TOTAL(BigDecimal r43_TOTAL) {
-		R43_TOTAL = r43_TOTAL;
-	}
-	public String getR44_PRODUCT() {
-		return R44_PRODUCT;
-	}
-	public void setR44_PRODUCT(String r44_PRODUCT) {
-		R44_PRODUCT = r44_PRODUCT;
-	}
-	public BigDecimal getR44_DAY1() {
-		return R44_DAY1;
-	}
-	public void setR44_DAY1(BigDecimal r44_DAY1) {
-		R44_DAY1 = r44_DAY1;
-	}
-	public BigDecimal getR44_DAY2_7() {
-		return R44_DAY2_7;
-	}
-	public void setR44_DAY2_7(BigDecimal r44_DAY2_7) {
-		R44_DAY2_7 = r44_DAY2_7;
-	}
-	public BigDecimal getR44_DAY8_14() {
-		return R44_DAY8_14;
-	}
-	public void setR44_DAY8_14(BigDecimal r44_DAY8_14) {
-		R44_DAY8_14 = r44_DAY8_14;
-	}
-	public BigDecimal getR44_DAY15_30() {
-		return R44_DAY15_30;
-	}
-	public void setR44_DAY15_30(BigDecimal r44_DAY15_30) {
-		R44_DAY15_30 = r44_DAY15_30;
-	}
-	public BigDecimal getR44_DAY31_TO_2M() {
-		return R44_DAY31_TO_2M;
-	}
-	public void setR44_DAY31_TO_2M(BigDecimal r44_DAY31_TO_2M) {
-		R44_DAY31_TO_2M = r44_DAY31_TO_2M;
-	}
-	public BigDecimal getR44_MORE2M_TO_3M() {
-		return R44_MORE2M_TO_3M;
-	}
-	public void setR44_MORE2M_TO_3M(BigDecimal r44_MORE2M_TO_3M) {
-		R44_MORE2M_TO_3M = r44_MORE2M_TO_3M;
-	}
-	public BigDecimal getR44_OVER3M_TO_6M() {
-		return R44_OVER3M_TO_6M;
-	}
-	public void setR44_OVER3M_TO_6M(BigDecimal r44_OVER3M_TO_6M) {
-		R44_OVER3M_TO_6M = r44_OVER3M_TO_6M;
-	}
-	public BigDecimal getR44_OVER6M_TO_1Y() {
-		return R44_OVER6M_TO_1Y;
-	}
-	public void setR44_OVER6M_TO_1Y(BigDecimal r44_OVER6M_TO_1Y) {
-		R44_OVER6M_TO_1Y = r44_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR44_OVER1Y_TO_3Y() {
-		return R44_OVER1Y_TO_3Y;
-	}
-	public void setR44_OVER1Y_TO_3Y(BigDecimal r44_OVER1Y_TO_3Y) {
-		R44_OVER1Y_TO_3Y = r44_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR44_OVER3Y_TO_5Y() {
-		return R44_OVER3Y_TO_5Y;
-	}
-	public void setR44_OVER3Y_TO_5Y(BigDecimal r44_OVER3Y_TO_5Y) {
-		R44_OVER3Y_TO_5Y = r44_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR44_OVER5Y() {
-		return R44_OVER5Y;
-	}
-	public void setR44_OVER5Y(BigDecimal r44_OVER5Y) {
-		R44_OVER5Y = r44_OVER5Y;
-	}
-	public BigDecimal getR44_TOTAL() {
-		return R44_TOTAL;
-	}
-	public void setR44_TOTAL(BigDecimal r44_TOTAL) {
-		R44_TOTAL = r44_TOTAL;
-	}
-	public String getR45_PRODUCT() {
-		return R45_PRODUCT;
-	}
-	public void setR45_PRODUCT(String r45_PRODUCT) {
-		R45_PRODUCT = r45_PRODUCT;
-	}
-	public BigDecimal getR45_DAY1() {
-		return R45_DAY1;
-	}
-	public void setR45_DAY1(BigDecimal r45_DAY1) {
-		R45_DAY1 = r45_DAY1;
-	}
-	public BigDecimal getR45_DAY2_7() {
-		return R45_DAY2_7;
-	}
-	public void setR45_DAY2_7(BigDecimal r45_DAY2_7) {
-		R45_DAY2_7 = r45_DAY2_7;
-	}
-	public BigDecimal getR45_DAY8_14() {
-		return R45_DAY8_14;
-	}
-	public void setR45_DAY8_14(BigDecimal r45_DAY8_14) {
-		R45_DAY8_14 = r45_DAY8_14;
-	}
-	public BigDecimal getR45_DAY15_30() {
-		return R45_DAY15_30;
-	}
-	public void setR45_DAY15_30(BigDecimal r45_DAY15_30) {
-		R45_DAY15_30 = r45_DAY15_30;
-	}
-	public BigDecimal getR45_DAY31_TO_2M() {
-		return R45_DAY31_TO_2M;
-	}
-	public void setR45_DAY31_TO_2M(BigDecimal r45_DAY31_TO_2M) {
-		R45_DAY31_TO_2M = r45_DAY31_TO_2M;
-	}
-	public BigDecimal getR45_MORE2M_TO_3M() {
-		return R45_MORE2M_TO_3M;
-	}
-	public void setR45_MORE2M_TO_3M(BigDecimal r45_MORE2M_TO_3M) {
-		R45_MORE2M_TO_3M = r45_MORE2M_TO_3M;
-	}
-	public BigDecimal getR45_OVER3M_TO_6M() {
-		return R45_OVER3M_TO_6M;
-	}
-	public void setR45_OVER3M_TO_6M(BigDecimal r45_OVER3M_TO_6M) {
-		R45_OVER3M_TO_6M = r45_OVER3M_TO_6M;
-	}
-	public BigDecimal getR45_OVER6M_TO_1Y() {
-		return R45_OVER6M_TO_1Y;
-	}
-	public void setR45_OVER6M_TO_1Y(BigDecimal r45_OVER6M_TO_1Y) {
-		R45_OVER6M_TO_1Y = r45_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR45_OVER1Y_TO_3Y() {
-		return R45_OVER1Y_TO_3Y;
-	}
-	public void setR45_OVER1Y_TO_3Y(BigDecimal r45_OVER1Y_TO_3Y) {
-		R45_OVER1Y_TO_3Y = r45_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR45_OVER3Y_TO_5Y() {
-		return R45_OVER3Y_TO_5Y;
-	}
-	public void setR45_OVER3Y_TO_5Y(BigDecimal r45_OVER3Y_TO_5Y) {
-		R45_OVER3Y_TO_5Y = r45_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR45_OVER5Y() {
-		return R45_OVER5Y;
-	}
-	public void setR45_OVER5Y(BigDecimal r45_OVER5Y) {
-		R45_OVER5Y = r45_OVER5Y;
-	}
-	public BigDecimal getR45_TOTAL() {
-		return R45_TOTAL;
-	}
-	public void setR45_TOTAL(BigDecimal r45_TOTAL) {
-		R45_TOTAL = r45_TOTAL;
-	}
-	public String getR46_PRODUCT() {
-		return R46_PRODUCT;
-	}
-	public void setR46_PRODUCT(String r46_PRODUCT) {
-		R46_PRODUCT = r46_PRODUCT;
-	}
-	public BigDecimal getR46_DAY1() {
-		return R46_DAY1;
-	}
-	public void setR46_DAY1(BigDecimal r46_DAY1) {
-		R46_DAY1 = r46_DAY1;
-	}
-	public BigDecimal getR46_DAY2_7() {
-		return R46_DAY2_7;
-	}
-	public void setR46_DAY2_7(BigDecimal r46_DAY2_7) {
-		R46_DAY2_7 = r46_DAY2_7;
-	}
-	public BigDecimal getR46_DAY8_14() {
-		return R46_DAY8_14;
-	}
-	public void setR46_DAY8_14(BigDecimal r46_DAY8_14) {
-		R46_DAY8_14 = r46_DAY8_14;
-	}
-	public BigDecimal getR46_DAY15_30() {
-		return R46_DAY15_30;
-	}
-	public void setR46_DAY15_30(BigDecimal r46_DAY15_30) {
-		R46_DAY15_30 = r46_DAY15_30;
-	}
-	public BigDecimal getR46_DAY31_TO_2M() {
-		return R46_DAY31_TO_2M;
-	}
-	public void setR46_DAY31_TO_2M(BigDecimal r46_DAY31_TO_2M) {
-		R46_DAY31_TO_2M = r46_DAY31_TO_2M;
-	}
-	public BigDecimal getR46_MORE2M_TO_3M() {
-		return R46_MORE2M_TO_3M;
-	}
-	public void setR46_MORE2M_TO_3M(BigDecimal r46_MORE2M_TO_3M) {
-		R46_MORE2M_TO_3M = r46_MORE2M_TO_3M;
-	}
-	public BigDecimal getR46_OVER3M_TO_6M() {
-		return R46_OVER3M_TO_6M;
-	}
-	public void setR46_OVER3M_TO_6M(BigDecimal r46_OVER3M_TO_6M) {
-		R46_OVER3M_TO_6M = r46_OVER3M_TO_6M;
-	}
-	public BigDecimal getR46_OVER6M_TO_1Y() {
-		return R46_OVER6M_TO_1Y;
-	}
-	public void setR46_OVER6M_TO_1Y(BigDecimal r46_OVER6M_TO_1Y) {
-		R46_OVER6M_TO_1Y = r46_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR46_OVER1Y_TO_3Y() {
-		return R46_OVER1Y_TO_3Y;
-	}
-	public void setR46_OVER1Y_TO_3Y(BigDecimal r46_OVER1Y_TO_3Y) {
-		R46_OVER1Y_TO_3Y = r46_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR46_OVER3Y_TO_5Y() {
-		return R46_OVER3Y_TO_5Y;
-	}
-	public void setR46_OVER3Y_TO_5Y(BigDecimal r46_OVER3Y_TO_5Y) {
-		R46_OVER3Y_TO_5Y = r46_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR46_OVER5Y() {
-		return R46_OVER5Y;
-	}
-	public void setR46_OVER5Y(BigDecimal r46_OVER5Y) {
-		R46_OVER5Y = r46_OVER5Y;
-	}
-	public BigDecimal getR46_TOTAL() {
-		return R46_TOTAL;
-	}
-	public void setR46_TOTAL(BigDecimal r46_TOTAL) {
-		R46_TOTAL = r46_TOTAL;
-	}
+//	public String getR41_PRODUCT() {
+//		return R41_PRODUCT;
+//	}
+//	public void setR41_PRODUCT(String r41_PRODUCT) {
+//		R41_PRODUCT = r41_PRODUCT;
+//	}
+//	public BigDecimal getR41_DAY1() {
+//		return R41_DAY1;
+//	}
+//	public void setR41_DAY1(BigDecimal r41_DAY1) {
+//		R41_DAY1 = r41_DAY1;
+//	}
+//	public BigDecimal getR41_DAY2_7() {
+//		return R41_DAY2_7;
+//	}
+//	public void setR41_DAY2_7(BigDecimal r41_DAY2_7) {
+//		R41_DAY2_7 = r41_DAY2_7;
+//	}
+//	public BigDecimal getR41_DAY8_14() {
+//		return R41_DAY8_14;
+//	}
+//	public void setR41_DAY8_14(BigDecimal r41_DAY8_14) {
+//		R41_DAY8_14 = r41_DAY8_14;
+//	}
+//	public BigDecimal getR41_DAY15_30() {
+//		return R41_DAY15_30;
+//	}
+//	public void setR41_DAY15_30(BigDecimal r41_DAY15_30) {
+//		R41_DAY15_30 = r41_DAY15_30;
+//	}
+//	public BigDecimal getR41_DAY31_TO_2M() {
+//		return R41_DAY31_TO_2M;
+//	}
+//	public void setR41_DAY31_TO_2M(BigDecimal r41_DAY31_TO_2M) {
+//		R41_DAY31_TO_2M = r41_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR41_MORE2M_TO_3M() {
+//		return R41_MORE2M_TO_3M;
+//	}
+//	public void setR41_MORE2M_TO_3M(BigDecimal r41_MORE2M_TO_3M) {
+//		R41_MORE2M_TO_3M = r41_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR41_OVER3M_TO_6M() {
+//		return R41_OVER3M_TO_6M;
+//	}
+//	public void setR41_OVER3M_TO_6M(BigDecimal r41_OVER3M_TO_6M) {
+//		R41_OVER3M_TO_6M = r41_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR41_OVER6M_TO_1Y() {
+//		return R41_OVER6M_TO_1Y;
+//	}
+//	public void setR41_OVER6M_TO_1Y(BigDecimal r41_OVER6M_TO_1Y) {
+//		R41_OVER6M_TO_1Y = r41_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR41_OVER1Y_TO_3Y() {
+//		return R41_OVER1Y_TO_3Y;
+//	}
+//	public void setR41_OVER1Y_TO_3Y(BigDecimal r41_OVER1Y_TO_3Y) {
+//		R41_OVER1Y_TO_3Y = r41_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR41_OVER3Y_TO_5Y() {
+//		return R41_OVER3Y_TO_5Y;
+//	}
+//	public void setR41_OVER3Y_TO_5Y(BigDecimal r41_OVER3Y_TO_5Y) {
+//		R41_OVER3Y_TO_5Y = r41_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR41_OVER5Y() {
+//		return R41_OVER5Y;
+//	}
+//	public void setR41_OVER5Y(BigDecimal r41_OVER5Y) {
+//		R41_OVER5Y = r41_OVER5Y;
+//	}
+//	public BigDecimal getR41_TOTAL() {
+//		return R41_TOTAL;
+//	}
+//	public void setR41_TOTAL(BigDecimal r41_TOTAL) {
+//		R41_TOTAL = r41_TOTAL;
+//	}
+//	public String getR42_PRODUCT() {
+//		return R42_PRODUCT;
+//	}
+//	public void setR42_PRODUCT(String r42_PRODUCT) {
+//		R42_PRODUCT = r42_PRODUCT;
+//	}
+//	public BigDecimal getR42_DAY1() {
+//		return R42_DAY1;
+//	}
+//	public void setR42_DAY1(BigDecimal r42_DAY1) {
+//		R42_DAY1 = r42_DAY1;
+//	}
+//	public BigDecimal getR42_DAY2_7() {
+//		return R42_DAY2_7;
+//	}
+//	public void setR42_DAY2_7(BigDecimal r42_DAY2_7) {
+//		R42_DAY2_7 = r42_DAY2_7;
+//	}
+//	public BigDecimal getR42_DAY8_14() {
+//		return R42_DAY8_14;
+//	}
+//	public void setR42_DAY8_14(BigDecimal r42_DAY8_14) {
+//		R42_DAY8_14 = r42_DAY8_14;
+//	}
+//	public BigDecimal getR42_DAY15_30() {
+//		return R42_DAY15_30;
+//	}
+//	public void setR42_DAY15_30(BigDecimal r42_DAY15_30) {
+//		R42_DAY15_30 = r42_DAY15_30;
+//	}
+//	public BigDecimal getR42_DAY31_TO_2M() {
+//		return R42_DAY31_TO_2M;
+//	}
+//	public void setR42_DAY31_TO_2M(BigDecimal r42_DAY31_TO_2M) {
+//		R42_DAY31_TO_2M = r42_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR42_MORE2M_TO_3M() {
+//		return R42_MORE2M_TO_3M;
+//	}
+//	public void setR42_MORE2M_TO_3M(BigDecimal r42_MORE2M_TO_3M) {
+//		R42_MORE2M_TO_3M = r42_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR42_OVER3M_TO_6M() {
+//		return R42_OVER3M_TO_6M;
+//	}
+//	public void setR42_OVER3M_TO_6M(BigDecimal r42_OVER3M_TO_6M) {
+//		R42_OVER3M_TO_6M = r42_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR42_OVER6M_TO_1Y() {
+//		return R42_OVER6M_TO_1Y;
+//	}
+//	public void setR42_OVER6M_TO_1Y(BigDecimal r42_OVER6M_TO_1Y) {
+//		R42_OVER6M_TO_1Y = r42_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR42_OVER1Y_TO_3Y() {
+//		return R42_OVER1Y_TO_3Y;
+//	}
+//	public void setR42_OVER1Y_TO_3Y(BigDecimal r42_OVER1Y_TO_3Y) {
+//		R42_OVER1Y_TO_3Y = r42_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR42_OVER3Y_TO_5Y() {
+//		return R42_OVER3Y_TO_5Y;
+//	}
+//	public void setR42_OVER3Y_TO_5Y(BigDecimal r42_OVER3Y_TO_5Y) {
+//		R42_OVER3Y_TO_5Y = r42_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR42_OVER5Y() {
+//		return R42_OVER5Y;
+//	}
+//	public void setR42_OVER5Y(BigDecimal r42_OVER5Y) {
+//		R42_OVER5Y = r42_OVER5Y;
+//	}
+//	public BigDecimal getR42_TOTAL() {
+//		return R42_TOTAL;
+//	}
+//	public void setR42_TOTAL(BigDecimal r42_TOTAL) {
+//		R42_TOTAL = r42_TOTAL;
+//	}
+//	public String getR43_PRODUCT() {
+//		return R43_PRODUCT;
+//	}
+//	public void setR43_PRODUCT(String r43_PRODUCT) {
+//		R43_PRODUCT = r43_PRODUCT;
+//	}
+//	public BigDecimal getR43_DAY1() {
+//		return R43_DAY1;
+//	}
+//	public void setR43_DAY1(BigDecimal r43_DAY1) {
+//		R43_DAY1 = r43_DAY1;
+//	}
+//	public BigDecimal getR43_DAY2_7() {
+//		return R43_DAY2_7;
+//	}
+//	public void setR43_DAY2_7(BigDecimal r43_DAY2_7) {
+//		R43_DAY2_7 = r43_DAY2_7;
+//	}
+//	public BigDecimal getR43_DAY8_14() {
+//		return R43_DAY8_14;
+//	}
+//	public void setR43_DAY8_14(BigDecimal r43_DAY8_14) {
+//		R43_DAY8_14 = r43_DAY8_14;
+//	}
+//	public BigDecimal getR43_DAY15_30() {
+//		return R43_DAY15_30;
+//	}
+//	public void setR43_DAY15_30(BigDecimal r43_DAY15_30) {
+//		R43_DAY15_30 = r43_DAY15_30;
+//	}
+//	public BigDecimal getR43_DAY31_TO_2M() {
+//		return R43_DAY31_TO_2M;
+//	}
+//	public void setR43_DAY31_TO_2M(BigDecimal r43_DAY31_TO_2M) {
+//		R43_DAY31_TO_2M = r43_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR43_MORE2M_TO_3M() {
+//		return R43_MORE2M_TO_3M;
+//	}
+//	public void setR43_MORE2M_TO_3M(BigDecimal r43_MORE2M_TO_3M) {
+//		R43_MORE2M_TO_3M = r43_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR43_OVER3M_TO_6M() {
+//		return R43_OVER3M_TO_6M;
+//	}
+//	public void setR43_OVER3M_TO_6M(BigDecimal r43_OVER3M_TO_6M) {
+//		R43_OVER3M_TO_6M = r43_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR43_OVER6M_TO_1Y() {
+//		return R43_OVER6M_TO_1Y;
+//	}
+//	public void setR43_OVER6M_TO_1Y(BigDecimal r43_OVER6M_TO_1Y) {
+//		R43_OVER6M_TO_1Y = r43_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR43_OVER1Y_TO_3Y() {
+//		return R43_OVER1Y_TO_3Y;
+//	}
+//	public void setR43_OVER1Y_TO_3Y(BigDecimal r43_OVER1Y_TO_3Y) {
+//		R43_OVER1Y_TO_3Y = r43_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR43_OVER3Y_TO_5Y() {
+//		return R43_OVER3Y_TO_5Y;
+//	}
+//	public void setR43_OVER3Y_TO_5Y(BigDecimal r43_OVER3Y_TO_5Y) {
+//		R43_OVER3Y_TO_5Y = r43_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR43_OVER5Y() {
+//		return R43_OVER5Y;
+//	}
+//	public void setR43_OVER5Y(BigDecimal r43_OVER5Y) {
+//		R43_OVER5Y = r43_OVER5Y;
+//	}
+//	public BigDecimal getR43_TOTAL() {
+//		return R43_TOTAL;
+//	}
+//	public void setR43_TOTAL(BigDecimal r43_TOTAL) {
+//		R43_TOTAL = r43_TOTAL;
+//	}
+//	public String getR44_PRODUCT() {
+//		return R44_PRODUCT;
+//	}
+//	public void setR44_PRODUCT(String r44_PRODUCT) {
+//		R44_PRODUCT = r44_PRODUCT;
+//	}
+//	public BigDecimal getR44_DAY1() {
+//		return R44_DAY1;
+//	}
+//	public void setR44_DAY1(BigDecimal r44_DAY1) {
+//		R44_DAY1 = r44_DAY1;
+//	}
+//	public BigDecimal getR44_DAY2_7() {
+//		return R44_DAY2_7;
+//	}
+//	public void setR44_DAY2_7(BigDecimal r44_DAY2_7) {
+//		R44_DAY2_7 = r44_DAY2_7;
+//	}
+//	public BigDecimal getR44_DAY8_14() {
+//		return R44_DAY8_14;
+//	}
+//	public void setR44_DAY8_14(BigDecimal r44_DAY8_14) {
+//		R44_DAY8_14 = r44_DAY8_14;
+//	}
+//	public BigDecimal getR44_DAY15_30() {
+//		return R44_DAY15_30;
+//	}
+//	public void setR44_DAY15_30(BigDecimal r44_DAY15_30) {
+//		R44_DAY15_30 = r44_DAY15_30;
+//	}
+//	public BigDecimal getR44_DAY31_TO_2M() {
+//		return R44_DAY31_TO_2M;
+//	}
+//	public void setR44_DAY31_TO_2M(BigDecimal r44_DAY31_TO_2M) {
+//		R44_DAY31_TO_2M = r44_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR44_MORE2M_TO_3M() {
+//		return R44_MORE2M_TO_3M;
+//	}
+//	public void setR44_MORE2M_TO_3M(BigDecimal r44_MORE2M_TO_3M) {
+//		R44_MORE2M_TO_3M = r44_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR44_OVER3M_TO_6M() {
+//		return R44_OVER3M_TO_6M;
+//	}
+//	public void setR44_OVER3M_TO_6M(BigDecimal r44_OVER3M_TO_6M) {
+//		R44_OVER3M_TO_6M = r44_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR44_OVER6M_TO_1Y() {
+//		return R44_OVER6M_TO_1Y;
+//	}
+//	public void setR44_OVER6M_TO_1Y(BigDecimal r44_OVER6M_TO_1Y) {
+//		R44_OVER6M_TO_1Y = r44_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR44_OVER1Y_TO_3Y() {
+//		return R44_OVER1Y_TO_3Y;
+//	}
+//	public void setR44_OVER1Y_TO_3Y(BigDecimal r44_OVER1Y_TO_3Y) {
+//		R44_OVER1Y_TO_3Y = r44_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR44_OVER3Y_TO_5Y() {
+//		return R44_OVER3Y_TO_5Y;
+//	}
+//	public void setR44_OVER3Y_TO_5Y(BigDecimal r44_OVER3Y_TO_5Y) {
+//		R44_OVER3Y_TO_5Y = r44_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR44_OVER5Y() {
+//		return R44_OVER5Y;
+//	}
+//	public void setR44_OVER5Y(BigDecimal r44_OVER5Y) {
+//		R44_OVER5Y = r44_OVER5Y;
+//	}
+//	public BigDecimal getR44_TOTAL() {
+//		return R44_TOTAL;
+//	}
+//	public void setR44_TOTAL(BigDecimal r44_TOTAL) {
+//		R44_TOTAL = r44_TOTAL;
+//	}
+//	public String getR45_PRODUCT() {
+//		return R45_PRODUCT;
+//	}
+//	public void setR45_PRODUCT(String r45_PRODUCT) {
+//		R45_PRODUCT = r45_PRODUCT;
+//	}
+//	public BigDecimal getR45_DAY1() {
+//		return R45_DAY1;
+//	}
+//	public void setR45_DAY1(BigDecimal r45_DAY1) {
+//		R45_DAY1 = r45_DAY1;
+//	}
+//	public BigDecimal getR45_DAY2_7() {
+//		return R45_DAY2_7;
+//	}
+//	public void setR45_DAY2_7(BigDecimal r45_DAY2_7) {
+//		R45_DAY2_7 = r45_DAY2_7;
+//	}
+//	public BigDecimal getR45_DAY8_14() {
+//		return R45_DAY8_14;
+//	}
+//	public void setR45_DAY8_14(BigDecimal r45_DAY8_14) {
+//		R45_DAY8_14 = r45_DAY8_14;
+//	}
+//	public BigDecimal getR45_DAY15_30() {
+//		return R45_DAY15_30;
+//	}
+//	public void setR45_DAY15_30(BigDecimal r45_DAY15_30) {
+//		R45_DAY15_30 = r45_DAY15_30;
+//	}
+//	public BigDecimal getR45_DAY31_TO_2M() {
+//		return R45_DAY31_TO_2M;
+//	}
+//	public void setR45_DAY31_TO_2M(BigDecimal r45_DAY31_TO_2M) {
+//		R45_DAY31_TO_2M = r45_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR45_MORE2M_TO_3M() {
+//		return R45_MORE2M_TO_3M;
+//	}
+//	public void setR45_MORE2M_TO_3M(BigDecimal r45_MORE2M_TO_3M) {
+//		R45_MORE2M_TO_3M = r45_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR45_OVER3M_TO_6M() {
+//		return R45_OVER3M_TO_6M;
+//	}
+//	public void setR45_OVER3M_TO_6M(BigDecimal r45_OVER3M_TO_6M) {
+//		R45_OVER3M_TO_6M = r45_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR45_OVER6M_TO_1Y() {
+//		return R45_OVER6M_TO_1Y;
+//	}
+//	public void setR45_OVER6M_TO_1Y(BigDecimal r45_OVER6M_TO_1Y) {
+//		R45_OVER6M_TO_1Y = r45_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR45_OVER1Y_TO_3Y() {
+//		return R45_OVER1Y_TO_3Y;
+//	}
+//	public void setR45_OVER1Y_TO_3Y(BigDecimal r45_OVER1Y_TO_3Y) {
+//		R45_OVER1Y_TO_3Y = r45_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR45_OVER3Y_TO_5Y() {
+//		return R45_OVER3Y_TO_5Y;
+//	}
+//	public void setR45_OVER3Y_TO_5Y(BigDecimal r45_OVER3Y_TO_5Y) {
+//		R45_OVER3Y_TO_5Y = r45_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR45_OVER5Y() {
+//		return R45_OVER5Y;
+//	}
+//	public void setR45_OVER5Y(BigDecimal r45_OVER5Y) {
+//		R45_OVER5Y = r45_OVER5Y;
+//	}
+//	public BigDecimal getR45_TOTAL() {
+//		return R45_TOTAL;
+//	}
+//	public void setR45_TOTAL(BigDecimal r45_TOTAL) {
+//		R45_TOTAL = r45_TOTAL;
+//	}
+//	public String getR46_PRODUCT() {
+//		return R46_PRODUCT;
+//	}
+//	public void setR46_PRODUCT(String r46_PRODUCT) {
+//		R46_PRODUCT = r46_PRODUCT;
+//	}
+//	public BigDecimal getR46_DAY1() {
+//		return R46_DAY1;
+//	}
+//	public void setR46_DAY1(BigDecimal r46_DAY1) {
+//		R46_DAY1 = r46_DAY1;
+//	}
+//	public BigDecimal getR46_DAY2_7() {
+//		return R46_DAY2_7;
+//	}
+//	public void setR46_DAY2_7(BigDecimal r46_DAY2_7) {
+//		R46_DAY2_7 = r46_DAY2_7;
+//	}
+//	public BigDecimal getR46_DAY8_14() {
+//		return R46_DAY8_14;
+//	}
+//	public void setR46_DAY8_14(BigDecimal r46_DAY8_14) {
+//		R46_DAY8_14 = r46_DAY8_14;
+//	}
+//	public BigDecimal getR46_DAY15_30() {
+//		return R46_DAY15_30;
+//	}
+//	public void setR46_DAY15_30(BigDecimal r46_DAY15_30) {
+//		R46_DAY15_30 = r46_DAY15_30;
+//	}
+//	public BigDecimal getR46_DAY31_TO_2M() {
+//		return R46_DAY31_TO_2M;
+//	}
+//	public void setR46_DAY31_TO_2M(BigDecimal r46_DAY31_TO_2M) {
+//		R46_DAY31_TO_2M = r46_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR46_MORE2M_TO_3M() {
+//		return R46_MORE2M_TO_3M;
+//	}
+//	public void setR46_MORE2M_TO_3M(BigDecimal r46_MORE2M_TO_3M) {
+//		R46_MORE2M_TO_3M = r46_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR46_OVER3M_TO_6M() {
+//		return R46_OVER3M_TO_6M;
+//	}
+//	public void setR46_OVER3M_TO_6M(BigDecimal r46_OVER3M_TO_6M) {
+//		R46_OVER3M_TO_6M = r46_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR46_OVER6M_TO_1Y() {
+//		return R46_OVER6M_TO_1Y;
+//	}
+//	public void setR46_OVER6M_TO_1Y(BigDecimal r46_OVER6M_TO_1Y) {
+//		R46_OVER6M_TO_1Y = r46_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR46_OVER1Y_TO_3Y() {
+//		return R46_OVER1Y_TO_3Y;
+//	}
+//	public void setR46_OVER1Y_TO_3Y(BigDecimal r46_OVER1Y_TO_3Y) {
+//		R46_OVER1Y_TO_3Y = r46_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR46_OVER3Y_TO_5Y() {
+//		return R46_OVER3Y_TO_5Y;
+//	}
+//	public void setR46_OVER3Y_TO_5Y(BigDecimal r46_OVER3Y_TO_5Y) {
+//		R46_OVER3Y_TO_5Y = r46_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR46_OVER5Y() {
+//		return R46_OVER5Y;
+//	}
+//	public void setR46_OVER5Y(BigDecimal r46_OVER5Y) {
+//		R46_OVER5Y = r46_OVER5Y;
+//	}
+//	public BigDecimal getR46_TOTAL() {
+//		return R46_TOTAL;
+//	}
+//	public void setR46_TOTAL(BigDecimal r46_TOTAL) {
+//		R46_TOTAL = r46_TOTAL;
+//	}
 	public String getR47_PRODUCT() {
 		return R47_PRODUCT;
 	}
@@ -9173,552 +9173,552 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR76_TOTAL(BigDecimal r76_TOTAL) {
 		R76_TOTAL = r76_TOTAL;
 	}
-	public String getR77_PRODUCT() {
-		return R77_PRODUCT;
-	}
-	public void setR77_PRODUCT(String r77_PRODUCT) {
-		R77_PRODUCT = r77_PRODUCT;
-	}
-	public BigDecimal getR77_DAY1() {
-		return R77_DAY1;
-	}
-	public void setR77_DAY1(BigDecimal r77_DAY1) {
-		R77_DAY1 = r77_DAY1;
-	}
-	public BigDecimal getR77_DAY2_7() {
-		return R77_DAY2_7;
-	}
-	public void setR77_DAY2_7(BigDecimal r77_DAY2_7) {
-		R77_DAY2_7 = r77_DAY2_7;
-	}
-	public BigDecimal getR77_DAY8_14() {
-		return R77_DAY8_14;
-	}
-	public void setR77_DAY8_14(BigDecimal r77_DAY8_14) {
-		R77_DAY8_14 = r77_DAY8_14;
-	}
-	public BigDecimal getR77_DAY15_30() {
-		return R77_DAY15_30;
-	}
-	public void setR77_DAY15_30(BigDecimal r77_DAY15_30) {
-		R77_DAY15_30 = r77_DAY15_30;
-	}
-	public BigDecimal getR77_DAY31_TO_2M() {
-		return R77_DAY31_TO_2M;
-	}
-	public void setR77_DAY31_TO_2M(BigDecimal r77_DAY31_TO_2M) {
-		R77_DAY31_TO_2M = r77_DAY31_TO_2M;
-	}
-	public BigDecimal getR77_MORE2M_TO_3M() {
-		return R77_MORE2M_TO_3M;
-	}
-	public void setR77_MORE2M_TO_3M(BigDecimal r77_MORE2M_TO_3M) {
-		R77_MORE2M_TO_3M = r77_MORE2M_TO_3M;
-	}
-	public BigDecimal getR77_OVER3M_TO_6M() {
-		return R77_OVER3M_TO_6M;
-	}
-	public void setR77_OVER3M_TO_6M(BigDecimal r77_OVER3M_TO_6M) {
-		R77_OVER3M_TO_6M = r77_OVER3M_TO_6M;
-	}
-	public BigDecimal getR77_OVER6M_TO_1Y() {
-		return R77_OVER6M_TO_1Y;
-	}
-	public void setR77_OVER6M_TO_1Y(BigDecimal r77_OVER6M_TO_1Y) {
-		R77_OVER6M_TO_1Y = r77_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR77_OVER1Y_TO_3Y() {
-		return R77_OVER1Y_TO_3Y;
-	}
-	public void setR77_OVER1Y_TO_3Y(BigDecimal r77_OVER1Y_TO_3Y) {
-		R77_OVER1Y_TO_3Y = r77_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR77_OVER3Y_TO_5Y() {
-		return R77_OVER3Y_TO_5Y;
-	}
-	public void setR77_OVER3Y_TO_5Y(BigDecimal r77_OVER3Y_TO_5Y) {
-		R77_OVER3Y_TO_5Y = r77_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR77_OVER5Y() {
-		return R77_OVER5Y;
-	}
-	public void setR77_OVER5Y(BigDecimal r77_OVER5Y) {
-		R77_OVER5Y = r77_OVER5Y;
-	}
-	public BigDecimal getR77_TOTAL() {
-		return R77_TOTAL;
-	}
-	public void setR77_TOTAL(BigDecimal r77_TOTAL) {
-		R77_TOTAL = r77_TOTAL;
-	}
-	public String getR78_PRODUCT() {
-		return R78_PRODUCT;
-	}
-	public void setR78_PRODUCT(String r78_PRODUCT) {
-		R78_PRODUCT = r78_PRODUCT;
-	}
-	public BigDecimal getR78_DAY1() {
-		return R78_DAY1;
-	}
-	public void setR78_DAY1(BigDecimal r78_DAY1) {
-		R78_DAY1 = r78_DAY1;
-	}
-	public BigDecimal getR78_DAY2_7() {
-		return R78_DAY2_7;
-	}
-	public void setR78_DAY2_7(BigDecimal r78_DAY2_7) {
-		R78_DAY2_7 = r78_DAY2_7;
-	}
-	public BigDecimal getR78_DAY8_14() {
-		return R78_DAY8_14;
-	}
-	public void setR78_DAY8_14(BigDecimal r78_DAY8_14) {
-		R78_DAY8_14 = r78_DAY8_14;
-	}
-	public BigDecimal getR78_DAY15_30() {
-		return R78_DAY15_30;
-	}
-	public void setR78_DAY15_30(BigDecimal r78_DAY15_30) {
-		R78_DAY15_30 = r78_DAY15_30;
-	}
-	public BigDecimal getR78_DAY31_TO_2M() {
-		return R78_DAY31_TO_2M;
-	}
-	public void setR78_DAY31_TO_2M(BigDecimal r78_DAY31_TO_2M) {
-		R78_DAY31_TO_2M = r78_DAY31_TO_2M;
-	}
-	public BigDecimal getR78_MORE2M_TO_3M() {
-		return R78_MORE2M_TO_3M;
-	}
-	public void setR78_MORE2M_TO_3M(BigDecimal r78_MORE2M_TO_3M) {
-		R78_MORE2M_TO_3M = r78_MORE2M_TO_3M;
-	}
-	public BigDecimal getR78_OVER3M_TO_6M() {
-		return R78_OVER3M_TO_6M;
-	}
-	public void setR78_OVER3M_TO_6M(BigDecimal r78_OVER3M_TO_6M) {
-		R78_OVER3M_TO_6M = r78_OVER3M_TO_6M;
-	}
-	public BigDecimal getR78_OVER6M_TO_1Y() {
-		return R78_OVER6M_TO_1Y;
-	}
-	public void setR78_OVER6M_TO_1Y(BigDecimal r78_OVER6M_TO_1Y) {
-		R78_OVER6M_TO_1Y = r78_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR78_OVER1Y_TO_3Y() {
-		return R78_OVER1Y_TO_3Y;
-	}
-	public void setR78_OVER1Y_TO_3Y(BigDecimal r78_OVER1Y_TO_3Y) {
-		R78_OVER1Y_TO_3Y = r78_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR78_OVER3Y_TO_5Y() {
-		return R78_OVER3Y_TO_5Y;
-	}
-	public void setR78_OVER3Y_TO_5Y(BigDecimal r78_OVER3Y_TO_5Y) {
-		R78_OVER3Y_TO_5Y = r78_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR78_OVER5Y() {
-		return R78_OVER5Y;
-	}
-	public void setR78_OVER5Y(BigDecimal r78_OVER5Y) {
-		R78_OVER5Y = r78_OVER5Y;
-	}
-	public BigDecimal getR78_TOTAL() {
-		return R78_TOTAL;
-	}
-	public void setR78_TOTAL(BigDecimal r78_TOTAL) {
-		R78_TOTAL = r78_TOTAL;
-	}
-	public String getR79_PRODUCT() {
-		return R79_PRODUCT;
-	}
-	public void setR79_PRODUCT(String r79_PRODUCT) {
-		R79_PRODUCT = r79_PRODUCT;
-	}
-	public BigDecimal getR79_DAY1() {
-		return R79_DAY1;
-	}
-	public void setR79_DAY1(BigDecimal r79_DAY1) {
-		R79_DAY1 = r79_DAY1;
-	}
-	public BigDecimal getR79_DAY2_7() {
-		return R79_DAY2_7;
-	}
-	public void setR79_DAY2_7(BigDecimal r79_DAY2_7) {
-		R79_DAY2_7 = r79_DAY2_7;
-	}
-	public BigDecimal getR79_DAY8_14() {
-		return R79_DAY8_14;
-	}
-	public void setR79_DAY8_14(BigDecimal r79_DAY8_14) {
-		R79_DAY8_14 = r79_DAY8_14;
-	}
-	public BigDecimal getR79_DAY15_30() {
-		return R79_DAY15_30;
-	}
-	public void setR79_DAY15_30(BigDecimal r79_DAY15_30) {
-		R79_DAY15_30 = r79_DAY15_30;
-	}
-	public BigDecimal getR79_DAY31_TO_2M() {
-		return R79_DAY31_TO_2M;
-	}
-	public void setR79_DAY31_TO_2M(BigDecimal r79_DAY31_TO_2M) {
-		R79_DAY31_TO_2M = r79_DAY31_TO_2M;
-	}
-	public BigDecimal getR79_MORE2M_TO_3M() {
-		return R79_MORE2M_TO_3M;
-	}
-	public void setR79_MORE2M_TO_3M(BigDecimal r79_MORE2M_TO_3M) {
-		R79_MORE2M_TO_3M = r79_MORE2M_TO_3M;
-	}
-	public BigDecimal getR79_OVER3M_TO_6M() {
-		return R79_OVER3M_TO_6M;
-	}
-	public void setR79_OVER3M_TO_6M(BigDecimal r79_OVER3M_TO_6M) {
-		R79_OVER3M_TO_6M = r79_OVER3M_TO_6M;
-	}
-	public BigDecimal getR79_OVER6M_TO_1Y() {
-		return R79_OVER6M_TO_1Y;
-	}
-	public void setR79_OVER6M_TO_1Y(BigDecimal r79_OVER6M_TO_1Y) {
-		R79_OVER6M_TO_1Y = r79_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR79_OVER1Y_TO_3Y() {
-		return R79_OVER1Y_TO_3Y;
-	}
-	public void setR79_OVER1Y_TO_3Y(BigDecimal r79_OVER1Y_TO_3Y) {
-		R79_OVER1Y_TO_3Y = r79_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR79_OVER3Y_TO_5Y() {
-		return R79_OVER3Y_TO_5Y;
-	}
-	public void setR79_OVER3Y_TO_5Y(BigDecimal r79_OVER3Y_TO_5Y) {
-		R79_OVER3Y_TO_5Y = r79_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR79_OVER5Y() {
-		return R79_OVER5Y;
-	}
-	public void setR79_OVER5Y(BigDecimal r79_OVER5Y) {
-		R79_OVER5Y = r79_OVER5Y;
-	}
-	public BigDecimal getR79_TOTAL() {
-		return R79_TOTAL;
-	}
-	public void setR79_TOTAL(BigDecimal r79_TOTAL) {
-		R79_TOTAL = r79_TOTAL;
-	}
-	public String getR80_PRODUCT() {
-		return R80_PRODUCT;
-	}
-	public void setR80_PRODUCT(String r80_PRODUCT) {
-		R80_PRODUCT = r80_PRODUCT;
-	}
-	public BigDecimal getR80_DAY1() {
-		return R80_DAY1;
-	}
-	public void setR80_DAY1(BigDecimal r80_DAY1) {
-		R80_DAY1 = r80_DAY1;
-	}
-	public BigDecimal getR80_DAY2_7() {
-		return R80_DAY2_7;
-	}
-	public void setR80_DAY2_7(BigDecimal r80_DAY2_7) {
-		R80_DAY2_7 = r80_DAY2_7;
-	}
-	public BigDecimal getR80_DAY8_14() {
-		return R80_DAY8_14;
-	}
-	public void setR80_DAY8_14(BigDecimal r80_DAY8_14) {
-		R80_DAY8_14 = r80_DAY8_14;
-	}
-	public BigDecimal getR80_DAY15_30() {
-		return R80_DAY15_30;
-	}
-	public void setR80_DAY15_30(BigDecimal r80_DAY15_30) {
-		R80_DAY15_30 = r80_DAY15_30;
-	}
-	public BigDecimal getR80_DAY31_TO_2M() {
-		return R80_DAY31_TO_2M;
-	}
-	public void setR80_DAY31_TO_2M(BigDecimal r80_DAY31_TO_2M) {
-		R80_DAY31_TO_2M = r80_DAY31_TO_2M;
-	}
-	public BigDecimal getR80_MORE2M_TO_3M() {
-		return R80_MORE2M_TO_3M;
-	}
-	public void setR80_MORE2M_TO_3M(BigDecimal r80_MORE2M_TO_3M) {
-		R80_MORE2M_TO_3M = r80_MORE2M_TO_3M;
-	}
-	public BigDecimal getR80_OVER3M_TO_6M() {
-		return R80_OVER3M_TO_6M;
-	}
-	public void setR80_OVER3M_TO_6M(BigDecimal r80_OVER3M_TO_6M) {
-		R80_OVER3M_TO_6M = r80_OVER3M_TO_6M;
-	}
-	public BigDecimal getR80_OVER6M_TO_1Y() {
-		return R80_OVER6M_TO_1Y;
-	}
-	public void setR80_OVER6M_TO_1Y(BigDecimal r80_OVER6M_TO_1Y) {
-		R80_OVER6M_TO_1Y = r80_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR80_OVER1Y_TO_3Y() {
-		return R80_OVER1Y_TO_3Y;
-	}
-	public void setR80_OVER1Y_TO_3Y(BigDecimal r80_OVER1Y_TO_3Y) {
-		R80_OVER1Y_TO_3Y = r80_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR80_OVER3Y_TO_5Y() {
-		return R80_OVER3Y_TO_5Y;
-	}
-	public void setR80_OVER3Y_TO_5Y(BigDecimal r80_OVER3Y_TO_5Y) {
-		R80_OVER3Y_TO_5Y = r80_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR80_OVER5Y() {
-		return R80_OVER5Y;
-	}
-	public void setR80_OVER5Y(BigDecimal r80_OVER5Y) {
-		R80_OVER5Y = r80_OVER5Y;
-	}
-	public BigDecimal getR80_TOTAL() {
-		return R80_TOTAL;
-	}
-	public void setR80_TOTAL(BigDecimal r80_TOTAL) {
-		R80_TOTAL = r80_TOTAL;
-	}
-	public String getR81_PRODUCT() {
-		return R81_PRODUCT;
-	}
-	public void setR81_PRODUCT(String r81_PRODUCT) {
-		R81_PRODUCT = r81_PRODUCT;
-	}
-	public BigDecimal getR81_DAY1() {
-		return R81_DAY1;
-	}
-	public void setR81_DAY1(BigDecimal r81_DAY1) {
-		R81_DAY1 = r81_DAY1;
-	}
-	public BigDecimal getR81_DAY2_7() {
-		return R81_DAY2_7;
-	}
-	public void setR81_DAY2_7(BigDecimal r81_DAY2_7) {
-		R81_DAY2_7 = r81_DAY2_7;
-	}
-	public BigDecimal getR81_DAY8_14() {
-		return R81_DAY8_14;
-	}
-	public void setR81_DAY8_14(BigDecimal r81_DAY8_14) {
-		R81_DAY8_14 = r81_DAY8_14;
-	}
-	public BigDecimal getR81_DAY15_30() {
-		return R81_DAY15_30;
-	}
-	public void setR81_DAY15_30(BigDecimal r81_DAY15_30) {
-		R81_DAY15_30 = r81_DAY15_30;
-	}
-	public BigDecimal getR81_DAY31_TO_2M() {
-		return R81_DAY31_TO_2M;
-	}
-	public void setR81_DAY31_TO_2M(BigDecimal r81_DAY31_TO_2M) {
-		R81_DAY31_TO_2M = r81_DAY31_TO_2M;
-	}
-	public BigDecimal getR81_MORE2M_TO_3M() {
-		return R81_MORE2M_TO_3M;
-	}
-	public void setR81_MORE2M_TO_3M(BigDecimal r81_MORE2M_TO_3M) {
-		R81_MORE2M_TO_3M = r81_MORE2M_TO_3M;
-	}
-	public BigDecimal getR81_OVER3M_TO_6M() {
-		return R81_OVER3M_TO_6M;
-	}
-	public void setR81_OVER3M_TO_6M(BigDecimal r81_OVER3M_TO_6M) {
-		R81_OVER3M_TO_6M = r81_OVER3M_TO_6M;
-	}
-	public BigDecimal getR81_OVER6M_TO_1Y() {
-		return R81_OVER6M_TO_1Y;
-	}
-	public void setR81_OVER6M_TO_1Y(BigDecimal r81_OVER6M_TO_1Y) {
-		R81_OVER6M_TO_1Y = r81_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR81_OVER1Y_TO_3Y() {
-		return R81_OVER1Y_TO_3Y;
-	}
-	public void setR81_OVER1Y_TO_3Y(BigDecimal r81_OVER1Y_TO_3Y) {
-		R81_OVER1Y_TO_3Y = r81_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR81_OVER3Y_TO_5Y() {
-		return R81_OVER3Y_TO_5Y;
-	}
-	public void setR81_OVER3Y_TO_5Y(BigDecimal r81_OVER3Y_TO_5Y) {
-		R81_OVER3Y_TO_5Y = r81_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR81_OVER5Y() {
-		return R81_OVER5Y;
-	}
-	public void setR81_OVER5Y(BigDecimal r81_OVER5Y) {
-		R81_OVER5Y = r81_OVER5Y;
-	}
-	public BigDecimal getR81_TOTAL() {
-		return R81_TOTAL;
-	}
-	public void setR81_TOTAL(BigDecimal r81_TOTAL) {
-		R81_TOTAL = r81_TOTAL;
-	}
-	public String getR82_PRODUCT() {
-		return R82_PRODUCT;
-	}
-	public void setR82_PRODUCT(String r82_PRODUCT) {
-		R82_PRODUCT = r82_PRODUCT;
-	}
-	public BigDecimal getR82_DAY1() {
-		return R82_DAY1;
-	}
-	public void setR82_DAY1(BigDecimal r82_DAY1) {
-		R82_DAY1 = r82_DAY1;
-	}
-	public BigDecimal getR82_DAY2_7() {
-		return R82_DAY2_7;
-	}
-	public void setR82_DAY2_7(BigDecimal r82_DAY2_7) {
-		R82_DAY2_7 = r82_DAY2_7;
-	}
-	public BigDecimal getR82_DAY8_14() {
-		return R82_DAY8_14;
-	}
-	public void setR82_DAY8_14(BigDecimal r82_DAY8_14) {
-		R82_DAY8_14 = r82_DAY8_14;
-	}
-	public BigDecimal getR82_DAY15_30() {
-		return R82_DAY15_30;
-	}
-	public void setR82_DAY15_30(BigDecimal r82_DAY15_30) {
-		R82_DAY15_30 = r82_DAY15_30;
-	}
-	public BigDecimal getR82_DAY31_TO_2M() {
-		return R82_DAY31_TO_2M;
-	}
-	public void setR82_DAY31_TO_2M(BigDecimal r82_DAY31_TO_2M) {
-		R82_DAY31_TO_2M = r82_DAY31_TO_2M;
-	}
-	public BigDecimal getR82_MORE2M_TO_3M() {
-		return R82_MORE2M_TO_3M;
-	}
-	public void setR82_MORE2M_TO_3M(BigDecimal r82_MORE2M_TO_3M) {
-		R82_MORE2M_TO_3M = r82_MORE2M_TO_3M;
-	}
-	public BigDecimal getR82_OVER3M_TO_6M() {
-		return R82_OVER3M_TO_6M;
-	}
-	public void setR82_OVER3M_TO_6M(BigDecimal r82_OVER3M_TO_6M) {
-		R82_OVER3M_TO_6M = r82_OVER3M_TO_6M;
-	}
-	public BigDecimal getR82_OVER6M_TO_1Y() {
-		return R82_OVER6M_TO_1Y;
-	}
-	public void setR82_OVER6M_TO_1Y(BigDecimal r82_OVER6M_TO_1Y) {
-		R82_OVER6M_TO_1Y = r82_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR82_OVER1Y_TO_3Y() {
-		return R82_OVER1Y_TO_3Y;
-	}
-	public void setR82_OVER1Y_TO_3Y(BigDecimal r82_OVER1Y_TO_3Y) {
-		R82_OVER1Y_TO_3Y = r82_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR82_OVER3Y_TO_5Y() {
-		return R82_OVER3Y_TO_5Y;
-	}
-	public void setR82_OVER3Y_TO_5Y(BigDecimal r82_OVER3Y_TO_5Y) {
-		R82_OVER3Y_TO_5Y = r82_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR82_OVER5Y() {
-		return R82_OVER5Y;
-	}
-	public void setR82_OVER5Y(BigDecimal r82_OVER5Y) {
-		R82_OVER5Y = r82_OVER5Y;
-	}
-	public BigDecimal getR82_TOTAL() {
-		return R82_TOTAL;
-	}
-	public void setR82_TOTAL(BigDecimal r82_TOTAL) {
-		R82_TOTAL = r82_TOTAL;
-	}
-	public String getR83_PRODUCT() {
-		return R83_PRODUCT;
-	}
-	public void setR83_PRODUCT(String r83_PRODUCT) {
-		R83_PRODUCT = r83_PRODUCT;
-	}
-	public BigDecimal getR83_DAY1() {
-		return R83_DAY1;
-	}
-	public void setR83_DAY1(BigDecimal r83_DAY1) {
-		R83_DAY1 = r83_DAY1;
-	}
-	public BigDecimal getR83_DAY2_7() {
-		return R83_DAY2_7;
-	}
-	public void setR83_DAY2_7(BigDecimal r83_DAY2_7) {
-		R83_DAY2_7 = r83_DAY2_7;
-	}
-	public BigDecimal getR83_DAY8_14() {
-		return R83_DAY8_14;
-	}
-	public void setR83_DAY8_14(BigDecimal r83_DAY8_14) {
-		R83_DAY8_14 = r83_DAY8_14;
-	}
-	public BigDecimal getR83_DAY15_30() {
-		return R83_DAY15_30;
-	}
-	public void setR83_DAY15_30(BigDecimal r83_DAY15_30) {
-		R83_DAY15_30 = r83_DAY15_30;
-	}
-	public BigDecimal getR83_DAY31_TO_2M() {
-		return R83_DAY31_TO_2M;
-	}
-	public void setR83_DAY31_TO_2M(BigDecimal r83_DAY31_TO_2M) {
-		R83_DAY31_TO_2M = r83_DAY31_TO_2M;
-	}
-	public BigDecimal getR83_MORE2M_TO_3M() {
-		return R83_MORE2M_TO_3M;
-	}
-	public void setR83_MORE2M_TO_3M(BigDecimal r83_MORE2M_TO_3M) {
-		R83_MORE2M_TO_3M = r83_MORE2M_TO_3M;
-	}
-	public BigDecimal getR83_OVER3M_TO_6M() {
-		return R83_OVER3M_TO_6M;
-	}
-	public void setR83_OVER3M_TO_6M(BigDecimal r83_OVER3M_TO_6M) {
-		R83_OVER3M_TO_6M = r83_OVER3M_TO_6M;
-	}
-	public BigDecimal getR83_OVER6M_TO_1Y() {
-		return R83_OVER6M_TO_1Y;
-	}
-	public void setR83_OVER6M_TO_1Y(BigDecimal r83_OVER6M_TO_1Y) {
-		R83_OVER6M_TO_1Y = r83_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR83_OVER1Y_TO_3Y() {
-		return R83_OVER1Y_TO_3Y;
-	}
-	public void setR83_OVER1Y_TO_3Y(BigDecimal r83_OVER1Y_TO_3Y) {
-		R83_OVER1Y_TO_3Y = r83_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR83_OVER3Y_TO_5Y() {
-		return R83_OVER3Y_TO_5Y;
-	}
-	public void setR83_OVER3Y_TO_5Y(BigDecimal r83_OVER3Y_TO_5Y) {
-		R83_OVER3Y_TO_5Y = r83_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR83_OVER5Y() {
-		return R83_OVER5Y;
-	}
-	public void setR83_OVER5Y(BigDecimal r83_OVER5Y) {
-		R83_OVER5Y = r83_OVER5Y;
-	}
-	public BigDecimal getR83_TOTAL() {
-		return R83_TOTAL;
-	}
-	public void setR83_TOTAL(BigDecimal r83_TOTAL) {
-		R83_TOTAL = r83_TOTAL;
-	}
+//	public String getR77_PRODUCT() {
+//		return R77_PRODUCT;
+//	}
+//	public void setR77_PRODUCT(String r77_PRODUCT) {
+//		R77_PRODUCT = r77_PRODUCT;
+//	}
+//	public BigDecimal getR77_DAY1() {
+//		return R77_DAY1;
+//	}
+//	public void setR77_DAY1(BigDecimal r77_DAY1) {
+//		R77_DAY1 = r77_DAY1;
+//	}
+//	public BigDecimal getR77_DAY2_7() {
+//		return R77_DAY2_7;
+//	}
+//	public void setR77_DAY2_7(BigDecimal r77_DAY2_7) {
+//		R77_DAY2_7 = r77_DAY2_7;
+//	}
+//	public BigDecimal getR77_DAY8_14() {
+//		return R77_DAY8_14;
+//	}
+//	public void setR77_DAY8_14(BigDecimal r77_DAY8_14) {
+//		R77_DAY8_14 = r77_DAY8_14;
+//	}
+//	public BigDecimal getR77_DAY15_30() {
+//		return R77_DAY15_30;
+//	}
+//	public void setR77_DAY15_30(BigDecimal r77_DAY15_30) {
+//		R77_DAY15_30 = r77_DAY15_30;
+//	}
+//	public BigDecimal getR77_DAY31_TO_2M() {
+//		return R77_DAY31_TO_2M;
+//	}
+//	public void setR77_DAY31_TO_2M(BigDecimal r77_DAY31_TO_2M) {
+//		R77_DAY31_TO_2M = r77_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR77_MORE2M_TO_3M() {
+//		return R77_MORE2M_TO_3M;
+//	}
+//	public void setR77_MORE2M_TO_3M(BigDecimal r77_MORE2M_TO_3M) {
+//		R77_MORE2M_TO_3M = r77_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR77_OVER3M_TO_6M() {
+//		return R77_OVER3M_TO_6M;
+//	}
+//	public void setR77_OVER3M_TO_6M(BigDecimal r77_OVER3M_TO_6M) {
+//		R77_OVER3M_TO_6M = r77_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR77_OVER6M_TO_1Y() {
+//		return R77_OVER6M_TO_1Y;
+//	}
+//	public void setR77_OVER6M_TO_1Y(BigDecimal r77_OVER6M_TO_1Y) {
+//		R77_OVER6M_TO_1Y = r77_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR77_OVER1Y_TO_3Y() {
+//		return R77_OVER1Y_TO_3Y;
+//	}
+//	public void setR77_OVER1Y_TO_3Y(BigDecimal r77_OVER1Y_TO_3Y) {
+//		R77_OVER1Y_TO_3Y = r77_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR77_OVER3Y_TO_5Y() {
+//		return R77_OVER3Y_TO_5Y;
+//	}
+//	public void setR77_OVER3Y_TO_5Y(BigDecimal r77_OVER3Y_TO_5Y) {
+//		R77_OVER3Y_TO_5Y = r77_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR77_OVER5Y() {
+//		return R77_OVER5Y;
+//	}
+//	public void setR77_OVER5Y(BigDecimal r77_OVER5Y) {
+//		R77_OVER5Y = r77_OVER5Y;
+//	}
+//	public BigDecimal getR77_TOTAL() {
+//		return R77_TOTAL;
+//	}
+//	public void setR77_TOTAL(BigDecimal r77_TOTAL) {
+//		R77_TOTAL = r77_TOTAL;
+//	}
+//	public String getR78_PRODUCT() {
+//		return R78_PRODUCT;
+//	}
+//	public void setR78_PRODUCT(String r78_PRODUCT) {
+//		R78_PRODUCT = r78_PRODUCT;
+//	}
+//	public BigDecimal getR78_DAY1() {
+//		return R78_DAY1;
+//	}
+//	public void setR78_DAY1(BigDecimal r78_DAY1) {
+//		R78_DAY1 = r78_DAY1;
+//	}
+//	public BigDecimal getR78_DAY2_7() {
+//		return R78_DAY2_7;
+//	}
+//	public void setR78_DAY2_7(BigDecimal r78_DAY2_7) {
+//		R78_DAY2_7 = r78_DAY2_7;
+//	}
+//	public BigDecimal getR78_DAY8_14() {
+//		return R78_DAY8_14;
+//	}
+//	public void setR78_DAY8_14(BigDecimal r78_DAY8_14) {
+//		R78_DAY8_14 = r78_DAY8_14;
+//	}
+//	public BigDecimal getR78_DAY15_30() {
+//		return R78_DAY15_30;
+//	}
+//	public void setR78_DAY15_30(BigDecimal r78_DAY15_30) {
+//		R78_DAY15_30 = r78_DAY15_30;
+//	}
+//	public BigDecimal getR78_DAY31_TO_2M() {
+//		return R78_DAY31_TO_2M;
+//	}
+//	public void setR78_DAY31_TO_2M(BigDecimal r78_DAY31_TO_2M) {
+//		R78_DAY31_TO_2M = r78_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR78_MORE2M_TO_3M() {
+//		return R78_MORE2M_TO_3M;
+//	}
+//	public void setR78_MORE2M_TO_3M(BigDecimal r78_MORE2M_TO_3M) {
+//		R78_MORE2M_TO_3M = r78_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR78_OVER3M_TO_6M() {
+//		return R78_OVER3M_TO_6M;
+//	}
+//	public void setR78_OVER3M_TO_6M(BigDecimal r78_OVER3M_TO_6M) {
+//		R78_OVER3M_TO_6M = r78_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR78_OVER6M_TO_1Y() {
+//		return R78_OVER6M_TO_1Y;
+//	}
+//	public void setR78_OVER6M_TO_1Y(BigDecimal r78_OVER6M_TO_1Y) {
+//		R78_OVER6M_TO_1Y = r78_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR78_OVER1Y_TO_3Y() {
+//		return R78_OVER1Y_TO_3Y;
+//	}
+//	public void setR78_OVER1Y_TO_3Y(BigDecimal r78_OVER1Y_TO_3Y) {
+//		R78_OVER1Y_TO_3Y = r78_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR78_OVER3Y_TO_5Y() {
+//		return R78_OVER3Y_TO_5Y;
+//	}
+//	public void setR78_OVER3Y_TO_5Y(BigDecimal r78_OVER3Y_TO_5Y) {
+//		R78_OVER3Y_TO_5Y = r78_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR78_OVER5Y() {
+//		return R78_OVER5Y;
+//	}
+//	public void setR78_OVER5Y(BigDecimal r78_OVER5Y) {
+//		R78_OVER5Y = r78_OVER5Y;
+//	}
+//	public BigDecimal getR78_TOTAL() {
+//		return R78_TOTAL;
+//	}
+//	public void setR78_TOTAL(BigDecimal r78_TOTAL) {
+//		R78_TOTAL = r78_TOTAL;
+//	}
+//	public String getR79_PRODUCT() {
+//		return R79_PRODUCT;
+//	}
+//	public void setR79_PRODUCT(String r79_PRODUCT) {
+//		R79_PRODUCT = r79_PRODUCT;
+//	}
+//	public BigDecimal getR79_DAY1() {
+//		return R79_DAY1;
+//	}
+//	public void setR79_DAY1(BigDecimal r79_DAY1) {
+//		R79_DAY1 = r79_DAY1;
+//	}
+//	public BigDecimal getR79_DAY2_7() {
+//		return R79_DAY2_7;
+//	}
+//	public void setR79_DAY2_7(BigDecimal r79_DAY2_7) {
+//		R79_DAY2_7 = r79_DAY2_7;
+//	}
+//	public BigDecimal getR79_DAY8_14() {
+//		return R79_DAY8_14;
+//	}
+//	public void setR79_DAY8_14(BigDecimal r79_DAY8_14) {
+//		R79_DAY8_14 = r79_DAY8_14;
+//	}
+//	public BigDecimal getR79_DAY15_30() {
+//		return R79_DAY15_30;
+//	}
+//	public void setR79_DAY15_30(BigDecimal r79_DAY15_30) {
+//		R79_DAY15_30 = r79_DAY15_30;
+//	}
+//	public BigDecimal getR79_DAY31_TO_2M() {
+//		return R79_DAY31_TO_2M;
+//	}
+//	public void setR79_DAY31_TO_2M(BigDecimal r79_DAY31_TO_2M) {
+//		R79_DAY31_TO_2M = r79_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR79_MORE2M_TO_3M() {
+//		return R79_MORE2M_TO_3M;
+//	}
+//	public void setR79_MORE2M_TO_3M(BigDecimal r79_MORE2M_TO_3M) {
+//		R79_MORE2M_TO_3M = r79_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR79_OVER3M_TO_6M() {
+//		return R79_OVER3M_TO_6M;
+//	}
+//	public void setR79_OVER3M_TO_6M(BigDecimal r79_OVER3M_TO_6M) {
+//		R79_OVER3M_TO_6M = r79_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR79_OVER6M_TO_1Y() {
+//		return R79_OVER6M_TO_1Y;
+//	}
+//	public void setR79_OVER6M_TO_1Y(BigDecimal r79_OVER6M_TO_1Y) {
+//		R79_OVER6M_TO_1Y = r79_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR79_OVER1Y_TO_3Y() {
+//		return R79_OVER1Y_TO_3Y;
+//	}
+//	public void setR79_OVER1Y_TO_3Y(BigDecimal r79_OVER1Y_TO_3Y) {
+//		R79_OVER1Y_TO_3Y = r79_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR79_OVER3Y_TO_5Y() {
+//		return R79_OVER3Y_TO_5Y;
+//	}
+//	public void setR79_OVER3Y_TO_5Y(BigDecimal r79_OVER3Y_TO_5Y) {
+//		R79_OVER3Y_TO_5Y = r79_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR79_OVER5Y() {
+//		return R79_OVER5Y;
+//	}
+//	public void setR79_OVER5Y(BigDecimal r79_OVER5Y) {
+//		R79_OVER5Y = r79_OVER5Y;
+//	}
+//	public BigDecimal getR79_TOTAL() {
+//		return R79_TOTAL;
+//	}
+//	public void setR79_TOTAL(BigDecimal r79_TOTAL) {
+//		R79_TOTAL = r79_TOTAL;
+//	}
+//	public String getR80_PRODUCT() {
+//		return R80_PRODUCT;
+//	}
+//	public void setR80_PRODUCT(String r80_PRODUCT) {
+//		R80_PRODUCT = r80_PRODUCT;
+//	}
+//	public BigDecimal getR80_DAY1() {
+//		return R80_DAY1;
+//	}
+//	public void setR80_DAY1(BigDecimal r80_DAY1) {
+//		R80_DAY1 = r80_DAY1;
+//	}
+//	public BigDecimal getR80_DAY2_7() {
+//		return R80_DAY2_7;
+//	}
+//	public void setR80_DAY2_7(BigDecimal r80_DAY2_7) {
+//		R80_DAY2_7 = r80_DAY2_7;
+//	}
+//	public BigDecimal getR80_DAY8_14() {
+//		return R80_DAY8_14;
+//	}
+//	public void setR80_DAY8_14(BigDecimal r80_DAY8_14) {
+//		R80_DAY8_14 = r80_DAY8_14;
+//	}
+//	public BigDecimal getR80_DAY15_30() {
+//		return R80_DAY15_30;
+//	}
+//	public void setR80_DAY15_30(BigDecimal r80_DAY15_30) {
+//		R80_DAY15_30 = r80_DAY15_30;
+//	}
+//	public BigDecimal getR80_DAY31_TO_2M() {
+//		return R80_DAY31_TO_2M;
+//	}
+//	public void setR80_DAY31_TO_2M(BigDecimal r80_DAY31_TO_2M) {
+//		R80_DAY31_TO_2M = r80_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR80_MORE2M_TO_3M() {
+//		return R80_MORE2M_TO_3M;
+//	}
+//	public void setR80_MORE2M_TO_3M(BigDecimal r80_MORE2M_TO_3M) {
+//		R80_MORE2M_TO_3M = r80_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR80_OVER3M_TO_6M() {
+//		return R80_OVER3M_TO_6M;
+//	}
+//	public void setR80_OVER3M_TO_6M(BigDecimal r80_OVER3M_TO_6M) {
+//		R80_OVER3M_TO_6M = r80_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR80_OVER6M_TO_1Y() {
+//		return R80_OVER6M_TO_1Y;
+//	}
+//	public void setR80_OVER6M_TO_1Y(BigDecimal r80_OVER6M_TO_1Y) {
+//		R80_OVER6M_TO_1Y = r80_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR80_OVER1Y_TO_3Y() {
+//		return R80_OVER1Y_TO_3Y;
+//	}
+//	public void setR80_OVER1Y_TO_3Y(BigDecimal r80_OVER1Y_TO_3Y) {
+//		R80_OVER1Y_TO_3Y = r80_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR80_OVER3Y_TO_5Y() {
+//		return R80_OVER3Y_TO_5Y;
+//	}
+//	public void setR80_OVER3Y_TO_5Y(BigDecimal r80_OVER3Y_TO_5Y) {
+//		R80_OVER3Y_TO_5Y = r80_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR80_OVER5Y() {
+//		return R80_OVER5Y;
+//	}
+//	public void setR80_OVER5Y(BigDecimal r80_OVER5Y) {
+//		R80_OVER5Y = r80_OVER5Y;
+//	}
+//	public BigDecimal getR80_TOTAL() {
+//		return R80_TOTAL;
+//	}
+//	public void setR80_TOTAL(BigDecimal r80_TOTAL) {
+//		R80_TOTAL = r80_TOTAL;
+//	}
+//	public String getR81_PRODUCT() {
+//		return R81_PRODUCT;
+//	}
+//	public void setR81_PRODUCT(String r81_PRODUCT) {
+//		R81_PRODUCT = r81_PRODUCT;
+//	}
+//	public BigDecimal getR81_DAY1() {
+//		return R81_DAY1;
+//	}
+//	public void setR81_DAY1(BigDecimal r81_DAY1) {
+//		R81_DAY1 = r81_DAY1;
+//	}
+//	public BigDecimal getR81_DAY2_7() {
+//		return R81_DAY2_7;
+//	}
+//	public void setR81_DAY2_7(BigDecimal r81_DAY2_7) {
+//		R81_DAY2_7 = r81_DAY2_7;
+//	}
+//	public BigDecimal getR81_DAY8_14() {
+//		return R81_DAY8_14;
+//	}
+//	public void setR81_DAY8_14(BigDecimal r81_DAY8_14) {
+//		R81_DAY8_14 = r81_DAY8_14;
+//	}
+//	public BigDecimal getR81_DAY15_30() {
+//		return R81_DAY15_30;
+//	}
+//	public void setR81_DAY15_30(BigDecimal r81_DAY15_30) {
+//		R81_DAY15_30 = r81_DAY15_30;
+//	}
+//	public BigDecimal getR81_DAY31_TO_2M() {
+//		return R81_DAY31_TO_2M;
+//	}
+//	public void setR81_DAY31_TO_2M(BigDecimal r81_DAY31_TO_2M) {
+//		R81_DAY31_TO_2M = r81_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR81_MORE2M_TO_3M() {
+//		return R81_MORE2M_TO_3M;
+//	}
+//	public void setR81_MORE2M_TO_3M(BigDecimal r81_MORE2M_TO_3M) {
+//		R81_MORE2M_TO_3M = r81_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR81_OVER3M_TO_6M() {
+//		return R81_OVER3M_TO_6M;
+//	}
+//	public void setR81_OVER3M_TO_6M(BigDecimal r81_OVER3M_TO_6M) {
+//		R81_OVER3M_TO_6M = r81_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR81_OVER6M_TO_1Y() {
+//		return R81_OVER6M_TO_1Y;
+//	}
+//	public void setR81_OVER6M_TO_1Y(BigDecimal r81_OVER6M_TO_1Y) {
+//		R81_OVER6M_TO_1Y = r81_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR81_OVER1Y_TO_3Y() {
+//		return R81_OVER1Y_TO_3Y;
+//	}
+//	public void setR81_OVER1Y_TO_3Y(BigDecimal r81_OVER1Y_TO_3Y) {
+//		R81_OVER1Y_TO_3Y = r81_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR81_OVER3Y_TO_5Y() {
+//		return R81_OVER3Y_TO_5Y;
+//	}
+//	public void setR81_OVER3Y_TO_5Y(BigDecimal r81_OVER3Y_TO_5Y) {
+//		R81_OVER3Y_TO_5Y = r81_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR81_OVER5Y() {
+//		return R81_OVER5Y;
+//	}
+//	public void setR81_OVER5Y(BigDecimal r81_OVER5Y) {
+//		R81_OVER5Y = r81_OVER5Y;
+//	}
+//	public BigDecimal getR81_TOTAL() {
+//		return R81_TOTAL;
+//	}
+//	public void setR81_TOTAL(BigDecimal r81_TOTAL) {
+//		R81_TOTAL = r81_TOTAL;
+//	}
+//	public String getR82_PRODUCT() {
+//		return R82_PRODUCT;
+//	}
+//	public void setR82_PRODUCT(String r82_PRODUCT) {
+//		R82_PRODUCT = r82_PRODUCT;
+//	}
+//	public BigDecimal getR82_DAY1() {
+//		return R82_DAY1;
+//	}
+//	public void setR82_DAY1(BigDecimal r82_DAY1) {
+//		R82_DAY1 = r82_DAY1;
+//	}
+//	public BigDecimal getR82_DAY2_7() {
+//		return R82_DAY2_7;
+//	}
+//	public void setR82_DAY2_7(BigDecimal r82_DAY2_7) {
+//		R82_DAY2_7 = r82_DAY2_7;
+//	}
+//	public BigDecimal getR82_DAY8_14() {
+//		return R82_DAY8_14;
+//	}
+//	public void setR82_DAY8_14(BigDecimal r82_DAY8_14) {
+//		R82_DAY8_14 = r82_DAY8_14;
+//	}
+//	public BigDecimal getR82_DAY15_30() {
+//		return R82_DAY15_30;
+//	}
+//	public void setR82_DAY15_30(BigDecimal r82_DAY15_30) {
+//		R82_DAY15_30 = r82_DAY15_30;
+//	}
+//	public BigDecimal getR82_DAY31_TO_2M() {
+//		return R82_DAY31_TO_2M;
+//	}
+//	public void setR82_DAY31_TO_2M(BigDecimal r82_DAY31_TO_2M) {
+//		R82_DAY31_TO_2M = r82_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR82_MORE2M_TO_3M() {
+//		return R82_MORE2M_TO_3M;
+//	}
+//	public void setR82_MORE2M_TO_3M(BigDecimal r82_MORE2M_TO_3M) {
+//		R82_MORE2M_TO_3M = r82_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR82_OVER3M_TO_6M() {
+//		return R82_OVER3M_TO_6M;
+//	}
+//	public void setR82_OVER3M_TO_6M(BigDecimal r82_OVER3M_TO_6M) {
+//		R82_OVER3M_TO_6M = r82_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR82_OVER6M_TO_1Y() {
+//		return R82_OVER6M_TO_1Y;
+//	}
+//	public void setR82_OVER6M_TO_1Y(BigDecimal r82_OVER6M_TO_1Y) {
+//		R82_OVER6M_TO_1Y = r82_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR82_OVER1Y_TO_3Y() {
+//		return R82_OVER1Y_TO_3Y;
+//	}
+//	public void setR82_OVER1Y_TO_3Y(BigDecimal r82_OVER1Y_TO_3Y) {
+//		R82_OVER1Y_TO_3Y = r82_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR82_OVER3Y_TO_5Y() {
+//		return R82_OVER3Y_TO_5Y;
+//	}
+//	public void setR82_OVER3Y_TO_5Y(BigDecimal r82_OVER3Y_TO_5Y) {
+//		R82_OVER3Y_TO_5Y = r82_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR82_OVER5Y() {
+//		return R82_OVER5Y;
+//	}
+//	public void setR82_OVER5Y(BigDecimal r82_OVER5Y) {
+//		R82_OVER5Y = r82_OVER5Y;
+//	}
+//	public BigDecimal getR82_TOTAL() {
+//		return R82_TOTAL;
+//	}
+//	public void setR82_TOTAL(BigDecimal r82_TOTAL) {
+//		R82_TOTAL = r82_TOTAL;
+//	}
+//	public String getR83_PRODUCT() {
+//		return R83_PRODUCT;
+//	}
+//	public void setR83_PRODUCT(String r83_PRODUCT) {
+//		R83_PRODUCT = r83_PRODUCT;
+//	}
+//	public BigDecimal getR83_DAY1() {
+//		return R83_DAY1;
+//	}
+//	public void setR83_DAY1(BigDecimal r83_DAY1) {
+//		R83_DAY1 = r83_DAY1;
+//	}
+//	public BigDecimal getR83_DAY2_7() {
+//		return R83_DAY2_7;
+//	}
+//	public void setR83_DAY2_7(BigDecimal r83_DAY2_7) {
+//		R83_DAY2_7 = r83_DAY2_7;
+//	}
+//	public BigDecimal getR83_DAY8_14() {
+//		return R83_DAY8_14;
+//	}
+//	public void setR83_DAY8_14(BigDecimal r83_DAY8_14) {
+//		R83_DAY8_14 = r83_DAY8_14;
+//	}
+//	public BigDecimal getR83_DAY15_30() {
+//		return R83_DAY15_30;
+//	}
+//	public void setR83_DAY15_30(BigDecimal r83_DAY15_30) {
+//		R83_DAY15_30 = r83_DAY15_30;
+//	}
+//	public BigDecimal getR83_DAY31_TO_2M() {
+//		return R83_DAY31_TO_2M;
+//	}
+//	public void setR83_DAY31_TO_2M(BigDecimal r83_DAY31_TO_2M) {
+//		R83_DAY31_TO_2M = r83_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR83_MORE2M_TO_3M() {
+//		return R83_MORE2M_TO_3M;
+//	}
+//	public void setR83_MORE2M_TO_3M(BigDecimal r83_MORE2M_TO_3M) {
+//		R83_MORE2M_TO_3M = r83_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR83_OVER3M_TO_6M() {
+//		return R83_OVER3M_TO_6M;
+//	}
+//	public void setR83_OVER3M_TO_6M(BigDecimal r83_OVER3M_TO_6M) {
+//		R83_OVER3M_TO_6M = r83_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR83_OVER6M_TO_1Y() {
+//		return R83_OVER6M_TO_1Y;
+//	}
+//	public void setR83_OVER6M_TO_1Y(BigDecimal r83_OVER6M_TO_1Y) {
+//		R83_OVER6M_TO_1Y = r83_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR83_OVER1Y_TO_3Y() {
+//		return R83_OVER1Y_TO_3Y;
+//	}
+//	public void setR83_OVER1Y_TO_3Y(BigDecimal r83_OVER1Y_TO_3Y) {
+//		R83_OVER1Y_TO_3Y = r83_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR83_OVER3Y_TO_5Y() {
+//		return R83_OVER3Y_TO_5Y;
+//	}
+//	public void setR83_OVER3Y_TO_5Y(BigDecimal r83_OVER3Y_TO_5Y) {
+//		R83_OVER3Y_TO_5Y = r83_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR83_OVER5Y() {
+//		return R83_OVER5Y;
+//	}
+//	public void setR83_OVER5Y(BigDecimal r83_OVER5Y) {
+//		R83_OVER5Y = r83_OVER5Y;
+//	}
+//	public BigDecimal getR83_TOTAL() {
+//		return R83_TOTAL;
+//	}
+//	public void setR83_TOTAL(BigDecimal r83_TOTAL) {
+//		R83_TOTAL = r83_TOTAL;
+//	}
 	public String getR84_PRODUCT() {
 		return R84_PRODUCT;
 	}
@@ -10585,84 +10585,84 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R40_OVER3Y_TO_5Y;
 	private BigDecimal R40_OVER5Y;
 	private BigDecimal R40_TOTAL;
-	private String R41_PRODUCT;
-	private BigDecimal R41_DAY1;
-	private BigDecimal R41_DAY2_7;
-	private BigDecimal R41_DAY8_14;
-	private BigDecimal R41_DAY15_30;
-	private BigDecimal R41_DAY31_TO_2M;
-	private BigDecimal R41_MORE2M_TO_3M;
-	private BigDecimal R41_OVER3M_TO_6M;
-	private BigDecimal R41_OVER6M_TO_1Y;
-	private BigDecimal R41_OVER1Y_TO_3Y;
-	private BigDecimal R41_OVER3Y_TO_5Y;
-	private BigDecimal R41_OVER5Y;
-	private BigDecimal R41_TOTAL;
-	private String R42_PRODUCT;
-	private BigDecimal R42_DAY1;
-	private BigDecimal R42_DAY2_7;
-	private BigDecimal R42_DAY8_14;
-	private BigDecimal R42_DAY15_30;
-	private BigDecimal R42_DAY31_TO_2M;
-	private BigDecimal R42_MORE2M_TO_3M;
-	private BigDecimal R42_OVER3M_TO_6M;
-	private BigDecimal R42_OVER6M_TO_1Y;
-	private BigDecimal R42_OVER1Y_TO_3Y;
-	private BigDecimal R42_OVER3Y_TO_5Y;
-	private BigDecimal R42_OVER5Y;
-	private BigDecimal R42_TOTAL;
-	private String R43_PRODUCT;
-	private BigDecimal R43_DAY1;
-	private BigDecimal R43_DAY2_7;
-	private BigDecimal R43_DAY8_14;
-	private BigDecimal R43_DAY15_30;
-	private BigDecimal R43_DAY31_TO_2M;
-	private BigDecimal R43_MORE2M_TO_3M;
-	private BigDecimal R43_OVER3M_TO_6M;
-	private BigDecimal R43_OVER6M_TO_1Y;
-	private BigDecimal R43_OVER1Y_TO_3Y;
-	private BigDecimal R43_OVER3Y_TO_5Y;
-	private BigDecimal R43_OVER5Y;
-	private BigDecimal R43_TOTAL;
-	private String R44_PRODUCT;
-	private BigDecimal R44_DAY1;
-	private BigDecimal R44_DAY2_7;
-	private BigDecimal R44_DAY8_14;
-	private BigDecimal R44_DAY15_30;
-	private BigDecimal R44_DAY31_TO_2M;
-	private BigDecimal R44_MORE2M_TO_3M;
-	private BigDecimal R44_OVER3M_TO_6M;
-	private BigDecimal R44_OVER6M_TO_1Y;
-	private BigDecimal R44_OVER1Y_TO_3Y;
-	private BigDecimal R44_OVER3Y_TO_5Y;
-	private BigDecimal R44_OVER5Y;
-	private BigDecimal R44_TOTAL;
-	private String R45_PRODUCT;
-	private BigDecimal R45_DAY1;
-	private BigDecimal R45_DAY2_7;
-	private BigDecimal R45_DAY8_14;
-	private BigDecimal R45_DAY15_30;
-	private BigDecimal R45_DAY31_TO_2M;
-	private BigDecimal R45_MORE2M_TO_3M;
-	private BigDecimal R45_OVER3M_TO_6M;
-	private BigDecimal R45_OVER6M_TO_1Y;
-	private BigDecimal R45_OVER1Y_TO_3Y;
-	private BigDecimal R45_OVER3Y_TO_5Y;
-	private BigDecimal R45_OVER5Y;
-	private BigDecimal R45_TOTAL;
-	private String R46_PRODUCT;
-	private BigDecimal R46_DAY1;
-	private BigDecimal R46_DAY2_7;
-	private BigDecimal R46_DAY8_14;
-	private BigDecimal R46_DAY15_30;
-	private BigDecimal R46_DAY31_TO_2M;
-	private BigDecimal R46_MORE2M_TO_3M;
-	private BigDecimal R46_OVER3M_TO_6M;
-	private BigDecimal R46_OVER6M_TO_1Y;
-	private BigDecimal R46_OVER1Y_TO_3Y;
-	private BigDecimal R46_OVER3Y_TO_5Y;
-	private BigDecimal R46_OVER5Y;
-	private BigDecimal R46_TOTAL;
+//	private String R41_PRODUCT;
+//	private BigDecimal R41_DAY1;
+//	private BigDecimal R41_DAY2_7;
+//	private BigDecimal R41_DAY8_14;
+//	private BigDecimal R41_DAY15_30;
+//	private BigDecimal R41_DAY31_TO_2M;
+//	private BigDecimal R41_MORE2M_TO_3M;
+//	private BigDecimal R41_OVER3M_TO_6M;
+//	private BigDecimal R41_OVER6M_TO_1Y;
+//	private BigDecimal R41_OVER1Y_TO_3Y;
+//	private BigDecimal R41_OVER3Y_TO_5Y;
+//	private BigDecimal R41_OVER5Y;
+//	private BigDecimal R41_TOTAL;
+//	private String R42_PRODUCT;
+//	private BigDecimal R42_DAY1;
+//	private BigDecimal R42_DAY2_7;
+//	private BigDecimal R42_DAY8_14;
+//	private BigDecimal R42_DAY15_30;
+//	private BigDecimal R42_DAY31_TO_2M;
+//	private BigDecimal R42_MORE2M_TO_3M;
+//	private BigDecimal R42_OVER3M_TO_6M;
+//	private BigDecimal R42_OVER6M_TO_1Y;
+//	private BigDecimal R42_OVER1Y_TO_3Y;
+//	private BigDecimal R42_OVER3Y_TO_5Y;
+//	private BigDecimal R42_OVER5Y;
+//	private BigDecimal R42_TOTAL;
+//	private String R43_PRODUCT;
+//	private BigDecimal R43_DAY1;
+//	private BigDecimal R43_DAY2_7;
+//	private BigDecimal R43_DAY8_14;
+//	private BigDecimal R43_DAY15_30;
+//	private BigDecimal R43_DAY31_TO_2M;
+//	private BigDecimal R43_MORE2M_TO_3M;
+//	private BigDecimal R43_OVER3M_TO_6M;
+//	private BigDecimal R43_OVER6M_TO_1Y;
+//	private BigDecimal R43_OVER1Y_TO_3Y;
+//	private BigDecimal R43_OVER3Y_TO_5Y;
+//	private BigDecimal R43_OVER5Y;
+//	private BigDecimal R43_TOTAL;
+//	private String R44_PRODUCT;
+//	private BigDecimal R44_DAY1;
+//	private BigDecimal R44_DAY2_7;
+//	private BigDecimal R44_DAY8_14;
+//	private BigDecimal R44_DAY15_30;
+//	private BigDecimal R44_DAY31_TO_2M;
+//	private BigDecimal R44_MORE2M_TO_3M;
+//	private BigDecimal R44_OVER3M_TO_6M;
+//	private BigDecimal R44_OVER6M_TO_1Y;
+//	private BigDecimal R44_OVER1Y_TO_3Y;
+//	private BigDecimal R44_OVER3Y_TO_5Y;
+//	private BigDecimal R44_OVER5Y;
+//	private BigDecimal R44_TOTAL;
+//	private String R45_PRODUCT;
+//	private BigDecimal R45_DAY1;
+//	private BigDecimal R45_DAY2_7;
+//	private BigDecimal R45_DAY8_14;
+//	private BigDecimal R45_DAY15_30;
+//	private BigDecimal R45_DAY31_TO_2M;
+//	private BigDecimal R45_MORE2M_TO_3M;
+//	private BigDecimal R45_OVER3M_TO_6M;
+//	private BigDecimal R45_OVER6M_TO_1Y;
+//	private BigDecimal R45_OVER1Y_TO_3Y;
+//	private BigDecimal R45_OVER3Y_TO_5Y;
+//	private BigDecimal R45_OVER5Y;
+//	private BigDecimal R45_TOTAL;
+//	private String R46_PRODUCT;
+//	private BigDecimal R46_DAY1;
+//	private BigDecimal R46_DAY2_7;
+//	private BigDecimal R46_DAY8_14;
+//	private BigDecimal R46_DAY15_30;
+//	private BigDecimal R46_DAY31_TO_2M;
+//	private BigDecimal R46_MORE2M_TO_3M;
+//	private BigDecimal R46_OVER3M_TO_6M;
+//	private BigDecimal R46_OVER6M_TO_1Y;
+//	private BigDecimal R46_OVER1Y_TO_3Y;
+//	private BigDecimal R46_OVER3Y_TO_5Y;
+//	private BigDecimal R46_OVER5Y;
+//	private BigDecimal R46_TOTAL;
 	private String R47_PRODUCT;
 	private BigDecimal R47_DAY1;
 	private BigDecimal R47_DAY2_7;
@@ -11053,97 +11053,97 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R76_OVER3Y_TO_5Y;
 	private BigDecimal R76_OVER5Y;
 	private BigDecimal R76_TOTAL;
-	private String R77_PRODUCT;
-	private BigDecimal R77_DAY1;
-	private BigDecimal R77_DAY2_7;
-	private BigDecimal R77_DAY8_14;
-	private BigDecimal R77_DAY15_30;
-	private BigDecimal R77_DAY31_TO_2M;
-	private BigDecimal R77_MORE2M_TO_3M;
-	private BigDecimal R77_OVER3M_TO_6M;
-	private BigDecimal R77_OVER6M_TO_1Y;
-	private BigDecimal R77_OVER1Y_TO_3Y;
-	private BigDecimal R77_OVER3Y_TO_5Y;
-	private BigDecimal R77_OVER5Y;
-	private BigDecimal R77_TOTAL;
-	private String R78_PRODUCT;
-	private BigDecimal R78_DAY1;
-	private BigDecimal R78_DAY2_7;
-	private BigDecimal R78_DAY8_14;
-	private BigDecimal R78_DAY15_30;
-	private BigDecimal R78_DAY31_TO_2M;
-	private BigDecimal R78_MORE2M_TO_3M;
-	private BigDecimal R78_OVER3M_TO_6M;
-	private BigDecimal R78_OVER6M_TO_1Y;
-	private BigDecimal R78_OVER1Y_TO_3Y;
-	private BigDecimal R78_OVER3Y_TO_5Y;
-	private BigDecimal R78_OVER5Y;
-	private BigDecimal R78_TOTAL;
-	private String R79_PRODUCT;
-	private BigDecimal R79_DAY1;
-	private BigDecimal R79_DAY2_7;
-	private BigDecimal R79_DAY8_14;
-	private BigDecimal R79_DAY15_30;
-	private BigDecimal R79_DAY31_TO_2M;
-	private BigDecimal R79_MORE2M_TO_3M;
-	private BigDecimal R79_OVER3M_TO_6M;
-	private BigDecimal R79_OVER6M_TO_1Y;
-	private BigDecimal R79_OVER1Y_TO_3Y;
-	private BigDecimal R79_OVER3Y_TO_5Y;
-	private BigDecimal R79_OVER5Y;
-	private BigDecimal R79_TOTAL;
-	private String R80_PRODUCT;
-	private BigDecimal R80_DAY1;
-	private BigDecimal R80_DAY2_7;
-	private BigDecimal R80_DAY8_14;
-	private BigDecimal R80_DAY15_30;
-	private BigDecimal R80_DAY31_TO_2M;
-	private BigDecimal R80_MORE2M_TO_3M;
-	private BigDecimal R80_OVER3M_TO_6M;
-	private BigDecimal R80_OVER6M_TO_1Y;
-	private BigDecimal R80_OVER1Y_TO_3Y;
-	private BigDecimal R80_OVER3Y_TO_5Y;
-	private BigDecimal R80_OVER5Y;
-	private BigDecimal R80_TOTAL;
-	private String R81_PRODUCT;
-	private BigDecimal R81_DAY1;
-	private BigDecimal R81_DAY2_7;
-	private BigDecimal R81_DAY8_14;
-	private BigDecimal R81_DAY15_30;
-	private BigDecimal R81_DAY31_TO_2M;
-	private BigDecimal R81_MORE2M_TO_3M;
-	private BigDecimal R81_OVER3M_TO_6M;
-	private BigDecimal R81_OVER6M_TO_1Y;
-	private BigDecimal R81_OVER1Y_TO_3Y;
-	private BigDecimal R81_OVER3Y_TO_5Y;
-	private BigDecimal R81_OVER5Y;
-	private BigDecimal R81_TOTAL;
-	private String R82_PRODUCT;
-	private BigDecimal R82_DAY1;
-	private BigDecimal R82_DAY2_7;
-	private BigDecimal R82_DAY8_14;
-	private BigDecimal R82_DAY15_30;
-	private BigDecimal R82_DAY31_TO_2M;
-	private BigDecimal R82_MORE2M_TO_3M;
-	private BigDecimal R82_OVER3M_TO_6M;
-	private BigDecimal R82_OVER6M_TO_1Y;
-	private BigDecimal R82_OVER1Y_TO_3Y;
-	private BigDecimal R82_OVER3Y_TO_5Y;
-	private BigDecimal R82_OVER5Y;
-	private BigDecimal R82_TOTAL;
-	private String R83_PRODUCT;
-	private BigDecimal R83_DAY1;
-	private BigDecimal R83_DAY2_7;
-	private BigDecimal R83_DAY8_14;
-	private BigDecimal R83_DAY15_30;
-	private BigDecimal R83_DAY31_TO_2M;
-	private BigDecimal R83_MORE2M_TO_3M;
-	private BigDecimal R83_OVER3M_TO_6M;
-	private BigDecimal R83_OVER6M_TO_1Y;
-	private BigDecimal R83_OVER1Y_TO_3Y;
-	private BigDecimal R83_OVER3Y_TO_5Y;
-	private BigDecimal R83_OVER5Y;
-	private BigDecimal R83_TOTAL;
+//	private String R77_PRODUCT;
+//	private BigDecimal R77_DAY1;
+//	private BigDecimal R77_DAY2_7;
+//	private BigDecimal R77_DAY8_14;
+//	private BigDecimal R77_DAY15_30;
+//	private BigDecimal R77_DAY31_TO_2M;
+//	private BigDecimal R77_MORE2M_TO_3M;
+//	private BigDecimal R77_OVER3M_TO_6M;
+//	private BigDecimal R77_OVER6M_TO_1Y;
+//	private BigDecimal R77_OVER1Y_TO_3Y;
+//	private BigDecimal R77_OVER3Y_TO_5Y;
+//	private BigDecimal R77_OVER5Y;
+//	private BigDecimal R77_TOTAL;
+//	private String R78_PRODUCT;
+//	private BigDecimal R78_DAY1;
+//	private BigDecimal R78_DAY2_7;
+//	private BigDecimal R78_DAY8_14;
+//	private BigDecimal R78_DAY15_30;
+//	private BigDecimal R78_DAY31_TO_2M;
+//	private BigDecimal R78_MORE2M_TO_3M;
+//	private BigDecimal R78_OVER3M_TO_6M;
+//	private BigDecimal R78_OVER6M_TO_1Y;
+//	private BigDecimal R78_OVER1Y_TO_3Y;
+//	private BigDecimal R78_OVER3Y_TO_5Y;
+//	private BigDecimal R78_OVER5Y;
+//	private BigDecimal R78_TOTAL;
+//	private String R79_PRODUCT;
+//	private BigDecimal R79_DAY1;
+//	private BigDecimal R79_DAY2_7;
+//	private BigDecimal R79_DAY8_14;
+//	private BigDecimal R79_DAY15_30;
+//	private BigDecimal R79_DAY31_TO_2M;
+//	private BigDecimal R79_MORE2M_TO_3M;
+//	private BigDecimal R79_OVER3M_TO_6M;
+//	private BigDecimal R79_OVER6M_TO_1Y;
+//	private BigDecimal R79_OVER1Y_TO_3Y;
+//	private BigDecimal R79_OVER3Y_TO_5Y;
+//	private BigDecimal R79_OVER5Y;
+//	private BigDecimal R79_TOTAL;
+//	private String R80_PRODUCT;
+//	private BigDecimal R80_DAY1;
+//	private BigDecimal R80_DAY2_7;
+//	private BigDecimal R80_DAY8_14;
+//	private BigDecimal R80_DAY15_30;
+//	private BigDecimal R80_DAY31_TO_2M;
+//	private BigDecimal R80_MORE2M_TO_3M;
+//	private BigDecimal R80_OVER3M_TO_6M;
+//	private BigDecimal R80_OVER6M_TO_1Y;
+//	private BigDecimal R80_OVER1Y_TO_3Y;
+//	private BigDecimal R80_OVER3Y_TO_5Y;
+//	private BigDecimal R80_OVER5Y;
+//	private BigDecimal R80_TOTAL;
+//	private String R81_PRODUCT;
+//	private BigDecimal R81_DAY1;
+//	private BigDecimal R81_DAY2_7;
+//	private BigDecimal R81_DAY8_14;
+//	private BigDecimal R81_DAY15_30;
+//	private BigDecimal R81_DAY31_TO_2M;
+//	private BigDecimal R81_MORE2M_TO_3M;
+//	private BigDecimal R81_OVER3M_TO_6M;
+//	private BigDecimal R81_OVER6M_TO_1Y;
+//	private BigDecimal R81_OVER1Y_TO_3Y;
+//	private BigDecimal R81_OVER3Y_TO_5Y;
+//	private BigDecimal R81_OVER5Y;
+//	private BigDecimal R81_TOTAL;
+//	private String R82_PRODUCT;
+//	private BigDecimal R82_DAY1;
+//	private BigDecimal R82_DAY2_7;
+//	private BigDecimal R82_DAY8_14;
+//	private BigDecimal R82_DAY15_30;
+//	private BigDecimal R82_DAY31_TO_2M;
+//	private BigDecimal R82_MORE2M_TO_3M;
+//	private BigDecimal R82_OVER3M_TO_6M;
+//	private BigDecimal R82_OVER6M_TO_1Y;
+//	private BigDecimal R82_OVER1Y_TO_3Y;
+//	private BigDecimal R82_OVER3Y_TO_5Y;
+//	private BigDecimal R82_OVER5Y;
+//	private BigDecimal R82_TOTAL;
+//	private String R83_PRODUCT;
+//	private BigDecimal R83_DAY1;
+//	private BigDecimal R83_DAY2_7;
+//	private BigDecimal R83_DAY8_14;
+//	private BigDecimal R83_DAY15_30;
+//	private BigDecimal R83_DAY31_TO_2M;
+//	private BigDecimal R83_MORE2M_TO_3M;
+//	private BigDecimal R83_OVER3M_TO_6M;
+//	private BigDecimal R83_OVER6M_TO_1Y;
+//	private BigDecimal R83_OVER1Y_TO_3Y;
+//	private BigDecimal R83_OVER3Y_TO_5Y;
+//	private BigDecimal R83_OVER5Y;
+//	private BigDecimal R83_TOTAL;
 	private String R84_PRODUCT;
 	private BigDecimal R84_DAY1;
 	private BigDecimal R84_DAY2_7;
@@ -13526,474 +13526,474 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR40_TOTAL(BigDecimal r40_TOTAL) {
 		R40_TOTAL = r40_TOTAL;
 	}
-	public String getR41_PRODUCT() {
-		return R41_PRODUCT;
-	}
-	public void setR41_PRODUCT(String r41_PRODUCT) {
-		R41_PRODUCT = r41_PRODUCT;
-	}
-	public BigDecimal getR41_DAY1() {
-		return R41_DAY1;
-	}
-	public void setR41_DAY1(BigDecimal r41_DAY1) {
-		R41_DAY1 = r41_DAY1;
-	}
-	public BigDecimal getR41_DAY2_7() {
-		return R41_DAY2_7;
-	}
-	public void setR41_DAY2_7(BigDecimal r41_DAY2_7) {
-		R41_DAY2_7 = r41_DAY2_7;
-	}
-	public BigDecimal getR41_DAY8_14() {
-		return R41_DAY8_14;
-	}
-	public void setR41_DAY8_14(BigDecimal r41_DAY8_14) {
-		R41_DAY8_14 = r41_DAY8_14;
-	}
-	public BigDecimal getR41_DAY15_30() {
-		return R41_DAY15_30;
-	}
-	public void setR41_DAY15_30(BigDecimal r41_DAY15_30) {
-		R41_DAY15_30 = r41_DAY15_30;
-	}
-	public BigDecimal getR41_DAY31_TO_2M() {
-		return R41_DAY31_TO_2M;
-	}
-	public void setR41_DAY31_TO_2M(BigDecimal r41_DAY31_TO_2M) {
-		R41_DAY31_TO_2M = r41_DAY31_TO_2M;
-	}
-	public BigDecimal getR41_MORE2M_TO_3M() {
-		return R41_MORE2M_TO_3M;
-	}
-	public void setR41_MORE2M_TO_3M(BigDecimal r41_MORE2M_TO_3M) {
-		R41_MORE2M_TO_3M = r41_MORE2M_TO_3M;
-	}
-	public BigDecimal getR41_OVER3M_TO_6M() {
-		return R41_OVER3M_TO_6M;
-	}
-	public void setR41_OVER3M_TO_6M(BigDecimal r41_OVER3M_TO_6M) {
-		R41_OVER3M_TO_6M = r41_OVER3M_TO_6M;
-	}
-	public BigDecimal getR41_OVER6M_TO_1Y() {
-		return R41_OVER6M_TO_1Y;
-	}
-	public void setR41_OVER6M_TO_1Y(BigDecimal r41_OVER6M_TO_1Y) {
-		R41_OVER6M_TO_1Y = r41_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR41_OVER1Y_TO_3Y() {
-		return R41_OVER1Y_TO_3Y;
-	}
-	public void setR41_OVER1Y_TO_3Y(BigDecimal r41_OVER1Y_TO_3Y) {
-		R41_OVER1Y_TO_3Y = r41_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR41_OVER3Y_TO_5Y() {
-		return R41_OVER3Y_TO_5Y;
-	}
-	public void setR41_OVER3Y_TO_5Y(BigDecimal r41_OVER3Y_TO_5Y) {
-		R41_OVER3Y_TO_5Y = r41_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR41_OVER5Y() {
-		return R41_OVER5Y;
-	}
-	public void setR41_OVER5Y(BigDecimal r41_OVER5Y) {
-		R41_OVER5Y = r41_OVER5Y;
-	}
-	public BigDecimal getR41_TOTAL() {
-		return R41_TOTAL;
-	}
-	public void setR41_TOTAL(BigDecimal r41_TOTAL) {
-		R41_TOTAL = r41_TOTAL;
-	}
-	public String getR42_PRODUCT() {
-		return R42_PRODUCT;
-	}
-	public void setR42_PRODUCT(String r42_PRODUCT) {
-		R42_PRODUCT = r42_PRODUCT;
-	}
-	public BigDecimal getR42_DAY1() {
-		return R42_DAY1;
-	}
-	public void setR42_DAY1(BigDecimal r42_DAY1) {
-		R42_DAY1 = r42_DAY1;
-	}
-	public BigDecimal getR42_DAY2_7() {
-		return R42_DAY2_7;
-	}
-	public void setR42_DAY2_7(BigDecimal r42_DAY2_7) {
-		R42_DAY2_7 = r42_DAY2_7;
-	}
-	public BigDecimal getR42_DAY8_14() {
-		return R42_DAY8_14;
-	}
-	public void setR42_DAY8_14(BigDecimal r42_DAY8_14) {
-		R42_DAY8_14 = r42_DAY8_14;
-	}
-	public BigDecimal getR42_DAY15_30() {
-		return R42_DAY15_30;
-	}
-	public void setR42_DAY15_30(BigDecimal r42_DAY15_30) {
-		R42_DAY15_30 = r42_DAY15_30;
-	}
-	public BigDecimal getR42_DAY31_TO_2M() {
-		return R42_DAY31_TO_2M;
-	}
-	public void setR42_DAY31_TO_2M(BigDecimal r42_DAY31_TO_2M) {
-		R42_DAY31_TO_2M = r42_DAY31_TO_2M;
-	}
-	public BigDecimal getR42_MORE2M_TO_3M() {
-		return R42_MORE2M_TO_3M;
-	}
-	public void setR42_MORE2M_TO_3M(BigDecimal r42_MORE2M_TO_3M) {
-		R42_MORE2M_TO_3M = r42_MORE2M_TO_3M;
-	}
-	public BigDecimal getR42_OVER3M_TO_6M() {
-		return R42_OVER3M_TO_6M;
-	}
-	public void setR42_OVER3M_TO_6M(BigDecimal r42_OVER3M_TO_6M) {
-		R42_OVER3M_TO_6M = r42_OVER3M_TO_6M;
-	}
-	public BigDecimal getR42_OVER6M_TO_1Y() {
-		return R42_OVER6M_TO_1Y;
-	}
-	public void setR42_OVER6M_TO_1Y(BigDecimal r42_OVER6M_TO_1Y) {
-		R42_OVER6M_TO_1Y = r42_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR42_OVER1Y_TO_3Y() {
-		return R42_OVER1Y_TO_3Y;
-	}
-	public void setR42_OVER1Y_TO_3Y(BigDecimal r42_OVER1Y_TO_3Y) {
-		R42_OVER1Y_TO_3Y = r42_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR42_OVER3Y_TO_5Y() {
-		return R42_OVER3Y_TO_5Y;
-	}
-	public void setR42_OVER3Y_TO_5Y(BigDecimal r42_OVER3Y_TO_5Y) {
-		R42_OVER3Y_TO_5Y = r42_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR42_OVER5Y() {
-		return R42_OVER5Y;
-	}
-	public void setR42_OVER5Y(BigDecimal r42_OVER5Y) {
-		R42_OVER5Y = r42_OVER5Y;
-	}
-	public BigDecimal getR42_TOTAL() {
-		return R42_TOTAL;
-	}
-	public void setR42_TOTAL(BigDecimal r42_TOTAL) {
-		R42_TOTAL = r42_TOTAL;
-	}
-	public String getR43_PRODUCT() {
-		return R43_PRODUCT;
-	}
-	public void setR43_PRODUCT(String r43_PRODUCT) {
-		R43_PRODUCT = r43_PRODUCT;
-	}
-	public BigDecimal getR43_DAY1() {
-		return R43_DAY1;
-	}
-	public void setR43_DAY1(BigDecimal r43_DAY1) {
-		R43_DAY1 = r43_DAY1;
-	}
-	public BigDecimal getR43_DAY2_7() {
-		return R43_DAY2_7;
-	}
-	public void setR43_DAY2_7(BigDecimal r43_DAY2_7) {
-		R43_DAY2_7 = r43_DAY2_7;
-	}
-	public BigDecimal getR43_DAY8_14() {
-		return R43_DAY8_14;
-	}
-	public void setR43_DAY8_14(BigDecimal r43_DAY8_14) {
-		R43_DAY8_14 = r43_DAY8_14;
-	}
-	public BigDecimal getR43_DAY15_30() {
-		return R43_DAY15_30;
-	}
-	public void setR43_DAY15_30(BigDecimal r43_DAY15_30) {
-		R43_DAY15_30 = r43_DAY15_30;
-	}
-	public BigDecimal getR43_DAY31_TO_2M() {
-		return R43_DAY31_TO_2M;
-	}
-	public void setR43_DAY31_TO_2M(BigDecimal r43_DAY31_TO_2M) {
-		R43_DAY31_TO_2M = r43_DAY31_TO_2M;
-	}
-	public BigDecimal getR43_MORE2M_TO_3M() {
-		return R43_MORE2M_TO_3M;
-	}
-	public void setR43_MORE2M_TO_3M(BigDecimal r43_MORE2M_TO_3M) {
-		R43_MORE2M_TO_3M = r43_MORE2M_TO_3M;
-	}
-	public BigDecimal getR43_OVER3M_TO_6M() {
-		return R43_OVER3M_TO_6M;
-	}
-	public void setR43_OVER3M_TO_6M(BigDecimal r43_OVER3M_TO_6M) {
-		R43_OVER3M_TO_6M = r43_OVER3M_TO_6M;
-	}
-	public BigDecimal getR43_OVER6M_TO_1Y() {
-		return R43_OVER6M_TO_1Y;
-	}
-	public void setR43_OVER6M_TO_1Y(BigDecimal r43_OVER6M_TO_1Y) {
-		R43_OVER6M_TO_1Y = r43_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR43_OVER1Y_TO_3Y() {
-		return R43_OVER1Y_TO_3Y;
-	}
-	public void setR43_OVER1Y_TO_3Y(BigDecimal r43_OVER1Y_TO_3Y) {
-		R43_OVER1Y_TO_3Y = r43_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR43_OVER3Y_TO_5Y() {
-		return R43_OVER3Y_TO_5Y;
-	}
-	public void setR43_OVER3Y_TO_5Y(BigDecimal r43_OVER3Y_TO_5Y) {
-		R43_OVER3Y_TO_5Y = r43_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR43_OVER5Y() {
-		return R43_OVER5Y;
-	}
-	public void setR43_OVER5Y(BigDecimal r43_OVER5Y) {
-		R43_OVER5Y = r43_OVER5Y;
-	}
-	public BigDecimal getR43_TOTAL() {
-		return R43_TOTAL;
-	}
-	public void setR43_TOTAL(BigDecimal r43_TOTAL) {
-		R43_TOTAL = r43_TOTAL;
-	}
-	public String getR44_PRODUCT() {
-		return R44_PRODUCT;
-	}
-	public void setR44_PRODUCT(String r44_PRODUCT) {
-		R44_PRODUCT = r44_PRODUCT;
-	}
-	public BigDecimal getR44_DAY1() {
-		return R44_DAY1;
-	}
-	public void setR44_DAY1(BigDecimal r44_DAY1) {
-		R44_DAY1 = r44_DAY1;
-	}
-	public BigDecimal getR44_DAY2_7() {
-		return R44_DAY2_7;
-	}
-	public void setR44_DAY2_7(BigDecimal r44_DAY2_7) {
-		R44_DAY2_7 = r44_DAY2_7;
-	}
-	public BigDecimal getR44_DAY8_14() {
-		return R44_DAY8_14;
-	}
-	public void setR44_DAY8_14(BigDecimal r44_DAY8_14) {
-		R44_DAY8_14 = r44_DAY8_14;
-	}
-	public BigDecimal getR44_DAY15_30() {
-		return R44_DAY15_30;
-	}
-	public void setR44_DAY15_30(BigDecimal r44_DAY15_30) {
-		R44_DAY15_30 = r44_DAY15_30;
-	}
-	public BigDecimal getR44_DAY31_TO_2M() {
-		return R44_DAY31_TO_2M;
-	}
-	public void setR44_DAY31_TO_2M(BigDecimal r44_DAY31_TO_2M) {
-		R44_DAY31_TO_2M = r44_DAY31_TO_2M;
-	}
-	public BigDecimal getR44_MORE2M_TO_3M() {
-		return R44_MORE2M_TO_3M;
-	}
-	public void setR44_MORE2M_TO_3M(BigDecimal r44_MORE2M_TO_3M) {
-		R44_MORE2M_TO_3M = r44_MORE2M_TO_3M;
-	}
-	public BigDecimal getR44_OVER3M_TO_6M() {
-		return R44_OVER3M_TO_6M;
-	}
-	public void setR44_OVER3M_TO_6M(BigDecimal r44_OVER3M_TO_6M) {
-		R44_OVER3M_TO_6M = r44_OVER3M_TO_6M;
-	}
-	public BigDecimal getR44_OVER6M_TO_1Y() {
-		return R44_OVER6M_TO_1Y;
-	}
-	public void setR44_OVER6M_TO_1Y(BigDecimal r44_OVER6M_TO_1Y) {
-		R44_OVER6M_TO_1Y = r44_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR44_OVER1Y_TO_3Y() {
-		return R44_OVER1Y_TO_3Y;
-	}
-	public void setR44_OVER1Y_TO_3Y(BigDecimal r44_OVER1Y_TO_3Y) {
-		R44_OVER1Y_TO_3Y = r44_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR44_OVER3Y_TO_5Y() {
-		return R44_OVER3Y_TO_5Y;
-	}
-	public void setR44_OVER3Y_TO_5Y(BigDecimal r44_OVER3Y_TO_5Y) {
-		R44_OVER3Y_TO_5Y = r44_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR44_OVER5Y() {
-		return R44_OVER5Y;
-	}
-	public void setR44_OVER5Y(BigDecimal r44_OVER5Y) {
-		R44_OVER5Y = r44_OVER5Y;
-	}
-	public BigDecimal getR44_TOTAL() {
-		return R44_TOTAL;
-	}
-	public void setR44_TOTAL(BigDecimal r44_TOTAL) {
-		R44_TOTAL = r44_TOTAL;
-	}
-	public String getR45_PRODUCT() {
-		return R45_PRODUCT;
-	}
-	public void setR45_PRODUCT(String r45_PRODUCT) {
-		R45_PRODUCT = r45_PRODUCT;
-	}
-	public BigDecimal getR45_DAY1() {
-		return R45_DAY1;
-	}
-	public void setR45_DAY1(BigDecimal r45_DAY1) {
-		R45_DAY1 = r45_DAY1;
-	}
-	public BigDecimal getR45_DAY2_7() {
-		return R45_DAY2_7;
-	}
-	public void setR45_DAY2_7(BigDecimal r45_DAY2_7) {
-		R45_DAY2_7 = r45_DAY2_7;
-	}
-	public BigDecimal getR45_DAY8_14() {
-		return R45_DAY8_14;
-	}
-	public void setR45_DAY8_14(BigDecimal r45_DAY8_14) {
-		R45_DAY8_14 = r45_DAY8_14;
-	}
-	public BigDecimal getR45_DAY15_30() {
-		return R45_DAY15_30;
-	}
-	public void setR45_DAY15_30(BigDecimal r45_DAY15_30) {
-		R45_DAY15_30 = r45_DAY15_30;
-	}
-	public BigDecimal getR45_DAY31_TO_2M() {
-		return R45_DAY31_TO_2M;
-	}
-	public void setR45_DAY31_TO_2M(BigDecimal r45_DAY31_TO_2M) {
-		R45_DAY31_TO_2M = r45_DAY31_TO_2M;
-	}
-	public BigDecimal getR45_MORE2M_TO_3M() {
-		return R45_MORE2M_TO_3M;
-	}
-	public void setR45_MORE2M_TO_3M(BigDecimal r45_MORE2M_TO_3M) {
-		R45_MORE2M_TO_3M = r45_MORE2M_TO_3M;
-	}
-	public BigDecimal getR45_OVER3M_TO_6M() {
-		return R45_OVER3M_TO_6M;
-	}
-	public void setR45_OVER3M_TO_6M(BigDecimal r45_OVER3M_TO_6M) {
-		R45_OVER3M_TO_6M = r45_OVER3M_TO_6M;
-	}
-	public BigDecimal getR45_OVER6M_TO_1Y() {
-		return R45_OVER6M_TO_1Y;
-	}
-	public void setR45_OVER6M_TO_1Y(BigDecimal r45_OVER6M_TO_1Y) {
-		R45_OVER6M_TO_1Y = r45_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR45_OVER1Y_TO_3Y() {
-		return R45_OVER1Y_TO_3Y;
-	}
-	public void setR45_OVER1Y_TO_3Y(BigDecimal r45_OVER1Y_TO_3Y) {
-		R45_OVER1Y_TO_3Y = r45_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR45_OVER3Y_TO_5Y() {
-		return R45_OVER3Y_TO_5Y;
-	}
-	public void setR45_OVER3Y_TO_5Y(BigDecimal r45_OVER3Y_TO_5Y) {
-		R45_OVER3Y_TO_5Y = r45_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR45_OVER5Y() {
-		return R45_OVER5Y;
-	}
-	public void setR45_OVER5Y(BigDecimal r45_OVER5Y) {
-		R45_OVER5Y = r45_OVER5Y;
-	}
-	public BigDecimal getR45_TOTAL() {
-		return R45_TOTAL;
-	}
-	public void setR45_TOTAL(BigDecimal r45_TOTAL) {
-		R45_TOTAL = r45_TOTAL;
-	}
-	public String getR46_PRODUCT() {
-		return R46_PRODUCT;
-	}
-	public void setR46_PRODUCT(String r46_PRODUCT) {
-		R46_PRODUCT = r46_PRODUCT;
-	}
-	public BigDecimal getR46_DAY1() {
-		return R46_DAY1;
-	}
-	public void setR46_DAY1(BigDecimal r46_DAY1) {
-		R46_DAY1 = r46_DAY1;
-	}
-	public BigDecimal getR46_DAY2_7() {
-		return R46_DAY2_7;
-	}
-	public void setR46_DAY2_7(BigDecimal r46_DAY2_7) {
-		R46_DAY2_7 = r46_DAY2_7;
-	}
-	public BigDecimal getR46_DAY8_14() {
-		return R46_DAY8_14;
-	}
-	public void setR46_DAY8_14(BigDecimal r46_DAY8_14) {
-		R46_DAY8_14 = r46_DAY8_14;
-	}
-	public BigDecimal getR46_DAY15_30() {
-		return R46_DAY15_30;
-	}
-	public void setR46_DAY15_30(BigDecimal r46_DAY15_30) {
-		R46_DAY15_30 = r46_DAY15_30;
-	}
-	public BigDecimal getR46_DAY31_TO_2M() {
-		return R46_DAY31_TO_2M;
-	}
-	public void setR46_DAY31_TO_2M(BigDecimal r46_DAY31_TO_2M) {
-		R46_DAY31_TO_2M = r46_DAY31_TO_2M;
-	}
-	public BigDecimal getR46_MORE2M_TO_3M() {
-		return R46_MORE2M_TO_3M;
-	}
-	public void setR46_MORE2M_TO_3M(BigDecimal r46_MORE2M_TO_3M) {
-		R46_MORE2M_TO_3M = r46_MORE2M_TO_3M;
-	}
-	public BigDecimal getR46_OVER3M_TO_6M() {
-		return R46_OVER3M_TO_6M;
-	}
-	public void setR46_OVER3M_TO_6M(BigDecimal r46_OVER3M_TO_6M) {
-		R46_OVER3M_TO_6M = r46_OVER3M_TO_6M;
-	}
-	public BigDecimal getR46_OVER6M_TO_1Y() {
-		return R46_OVER6M_TO_1Y;
-	}
-	public void setR46_OVER6M_TO_1Y(BigDecimal r46_OVER6M_TO_1Y) {
-		R46_OVER6M_TO_1Y = r46_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR46_OVER1Y_TO_3Y() {
-		return R46_OVER1Y_TO_3Y;
-	}
-	public void setR46_OVER1Y_TO_3Y(BigDecimal r46_OVER1Y_TO_3Y) {
-		R46_OVER1Y_TO_3Y = r46_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR46_OVER3Y_TO_5Y() {
-		return R46_OVER3Y_TO_5Y;
-	}
-	public void setR46_OVER3Y_TO_5Y(BigDecimal r46_OVER3Y_TO_5Y) {
-		R46_OVER3Y_TO_5Y = r46_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR46_OVER5Y() {
-		return R46_OVER5Y;
-	}
-	public void setR46_OVER5Y(BigDecimal r46_OVER5Y) {
-		R46_OVER5Y = r46_OVER5Y;
-	}
-	public BigDecimal getR46_TOTAL() {
-		return R46_TOTAL;
-	}
-	public void setR46_TOTAL(BigDecimal r46_TOTAL) {
-		R46_TOTAL = r46_TOTAL;
-	}
+//	public String getR41_PRODUCT() {
+//		return R41_PRODUCT;
+//	}
+//	public void setR41_PRODUCT(String r41_PRODUCT) {
+//		R41_PRODUCT = r41_PRODUCT;
+//	}
+//	public BigDecimal getR41_DAY1() {
+//		return R41_DAY1;
+//	}
+//	public void setR41_DAY1(BigDecimal r41_DAY1) {
+//		R41_DAY1 = r41_DAY1;
+//	}
+//	public BigDecimal getR41_DAY2_7() {
+//		return R41_DAY2_7;
+//	}
+//	public void setR41_DAY2_7(BigDecimal r41_DAY2_7) {
+//		R41_DAY2_7 = r41_DAY2_7;
+//	}
+//	public BigDecimal getR41_DAY8_14() {
+//		return R41_DAY8_14;
+//	}
+//	public void setR41_DAY8_14(BigDecimal r41_DAY8_14) {
+//		R41_DAY8_14 = r41_DAY8_14;
+//	}
+//	public BigDecimal getR41_DAY15_30() {
+//		return R41_DAY15_30;
+//	}
+//	public void setR41_DAY15_30(BigDecimal r41_DAY15_30) {
+//		R41_DAY15_30 = r41_DAY15_30;
+//	}
+//	public BigDecimal getR41_DAY31_TO_2M() {
+//		return R41_DAY31_TO_2M;
+//	}
+//	public void setR41_DAY31_TO_2M(BigDecimal r41_DAY31_TO_2M) {
+//		R41_DAY31_TO_2M = r41_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR41_MORE2M_TO_3M() {
+//		return R41_MORE2M_TO_3M;
+//	}
+//	public void setR41_MORE2M_TO_3M(BigDecimal r41_MORE2M_TO_3M) {
+//		R41_MORE2M_TO_3M = r41_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR41_OVER3M_TO_6M() {
+//		return R41_OVER3M_TO_6M;
+//	}
+//	public void setR41_OVER3M_TO_6M(BigDecimal r41_OVER3M_TO_6M) {
+//		R41_OVER3M_TO_6M = r41_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR41_OVER6M_TO_1Y() {
+//		return R41_OVER6M_TO_1Y;
+//	}
+//	public void setR41_OVER6M_TO_1Y(BigDecimal r41_OVER6M_TO_1Y) {
+//		R41_OVER6M_TO_1Y = r41_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR41_OVER1Y_TO_3Y() {
+//		return R41_OVER1Y_TO_3Y;
+//	}
+//	public void setR41_OVER1Y_TO_3Y(BigDecimal r41_OVER1Y_TO_3Y) {
+//		R41_OVER1Y_TO_3Y = r41_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR41_OVER3Y_TO_5Y() {
+//		return R41_OVER3Y_TO_5Y;
+//	}
+//	public void setR41_OVER3Y_TO_5Y(BigDecimal r41_OVER3Y_TO_5Y) {
+//		R41_OVER3Y_TO_5Y = r41_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR41_OVER5Y() {
+//		return R41_OVER5Y;
+//	}
+//	public void setR41_OVER5Y(BigDecimal r41_OVER5Y) {
+//		R41_OVER5Y = r41_OVER5Y;
+//	}
+//	public BigDecimal getR41_TOTAL() {
+//		return R41_TOTAL;
+//	}
+//	public void setR41_TOTAL(BigDecimal r41_TOTAL) {
+//		R41_TOTAL = r41_TOTAL;
+//	}
+//	public String getR42_PRODUCT() {
+//		return R42_PRODUCT;
+//	}
+//	public void setR42_PRODUCT(String r42_PRODUCT) {
+//		R42_PRODUCT = r42_PRODUCT;
+//	}
+//	public BigDecimal getR42_DAY1() {
+//		return R42_DAY1;
+//	}
+//	public void setR42_DAY1(BigDecimal r42_DAY1) {
+//		R42_DAY1 = r42_DAY1;
+//	}
+//	public BigDecimal getR42_DAY2_7() {
+//		return R42_DAY2_7;
+//	}
+//	public void setR42_DAY2_7(BigDecimal r42_DAY2_7) {
+//		R42_DAY2_7 = r42_DAY2_7;
+//	}
+//	public BigDecimal getR42_DAY8_14() {
+//		return R42_DAY8_14;
+//	}
+//	public void setR42_DAY8_14(BigDecimal r42_DAY8_14) {
+//		R42_DAY8_14 = r42_DAY8_14;
+//	}
+//	public BigDecimal getR42_DAY15_30() {
+//		return R42_DAY15_30;
+//	}
+//	public void setR42_DAY15_30(BigDecimal r42_DAY15_30) {
+//		R42_DAY15_30 = r42_DAY15_30;
+//	}
+//	public BigDecimal getR42_DAY31_TO_2M() {
+//		return R42_DAY31_TO_2M;
+//	}
+//	public void setR42_DAY31_TO_2M(BigDecimal r42_DAY31_TO_2M) {
+//		R42_DAY31_TO_2M = r42_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR42_MORE2M_TO_3M() {
+//		return R42_MORE2M_TO_3M;
+//	}
+//	public void setR42_MORE2M_TO_3M(BigDecimal r42_MORE2M_TO_3M) {
+//		R42_MORE2M_TO_3M = r42_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR42_OVER3M_TO_6M() {
+//		return R42_OVER3M_TO_6M;
+//	}
+//	public void setR42_OVER3M_TO_6M(BigDecimal r42_OVER3M_TO_6M) {
+//		R42_OVER3M_TO_6M = r42_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR42_OVER6M_TO_1Y() {
+//		return R42_OVER6M_TO_1Y;
+//	}
+//	public void setR42_OVER6M_TO_1Y(BigDecimal r42_OVER6M_TO_1Y) {
+//		R42_OVER6M_TO_1Y = r42_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR42_OVER1Y_TO_3Y() {
+//		return R42_OVER1Y_TO_3Y;
+//	}
+//	public void setR42_OVER1Y_TO_3Y(BigDecimal r42_OVER1Y_TO_3Y) {
+//		R42_OVER1Y_TO_3Y = r42_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR42_OVER3Y_TO_5Y() {
+//		return R42_OVER3Y_TO_5Y;
+//	}
+//	public void setR42_OVER3Y_TO_5Y(BigDecimal r42_OVER3Y_TO_5Y) {
+//		R42_OVER3Y_TO_5Y = r42_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR42_OVER5Y() {
+//		return R42_OVER5Y;
+//	}
+//	public void setR42_OVER5Y(BigDecimal r42_OVER5Y) {
+//		R42_OVER5Y = r42_OVER5Y;
+//	}
+//	public BigDecimal getR42_TOTAL() {
+//		return R42_TOTAL;
+//	}
+//	public void setR42_TOTAL(BigDecimal r42_TOTAL) {
+//		R42_TOTAL = r42_TOTAL;
+//	}
+//	public String getR43_PRODUCT() {
+//		return R43_PRODUCT;
+//	}
+//	public void setR43_PRODUCT(String r43_PRODUCT) {
+//		R43_PRODUCT = r43_PRODUCT;
+//	}
+//	public BigDecimal getR43_DAY1() {
+//		return R43_DAY1;
+//	}
+//	public void setR43_DAY1(BigDecimal r43_DAY1) {
+//		R43_DAY1 = r43_DAY1;
+//	}
+//	public BigDecimal getR43_DAY2_7() {
+//		return R43_DAY2_7;
+//	}
+//	public void setR43_DAY2_7(BigDecimal r43_DAY2_7) {
+//		R43_DAY2_7 = r43_DAY2_7;
+//	}
+//	public BigDecimal getR43_DAY8_14() {
+//		return R43_DAY8_14;
+//	}
+//	public void setR43_DAY8_14(BigDecimal r43_DAY8_14) {
+//		R43_DAY8_14 = r43_DAY8_14;
+//	}
+//	public BigDecimal getR43_DAY15_30() {
+//		return R43_DAY15_30;
+//	}
+//	public void setR43_DAY15_30(BigDecimal r43_DAY15_30) {
+//		R43_DAY15_30 = r43_DAY15_30;
+//	}
+//	public BigDecimal getR43_DAY31_TO_2M() {
+//		return R43_DAY31_TO_2M;
+//	}
+//	public void setR43_DAY31_TO_2M(BigDecimal r43_DAY31_TO_2M) {
+//		R43_DAY31_TO_2M = r43_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR43_MORE2M_TO_3M() {
+//		return R43_MORE2M_TO_3M;
+//	}
+//	public void setR43_MORE2M_TO_3M(BigDecimal r43_MORE2M_TO_3M) {
+//		R43_MORE2M_TO_3M = r43_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR43_OVER3M_TO_6M() {
+//		return R43_OVER3M_TO_6M;
+//	}
+//	public void setR43_OVER3M_TO_6M(BigDecimal r43_OVER3M_TO_6M) {
+//		R43_OVER3M_TO_6M = r43_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR43_OVER6M_TO_1Y() {
+//		return R43_OVER6M_TO_1Y;
+//	}
+//	public void setR43_OVER6M_TO_1Y(BigDecimal r43_OVER6M_TO_1Y) {
+//		R43_OVER6M_TO_1Y = r43_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR43_OVER1Y_TO_3Y() {
+//		return R43_OVER1Y_TO_3Y;
+//	}
+//	public void setR43_OVER1Y_TO_3Y(BigDecimal r43_OVER1Y_TO_3Y) {
+//		R43_OVER1Y_TO_3Y = r43_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR43_OVER3Y_TO_5Y() {
+//		return R43_OVER3Y_TO_5Y;
+//	}
+//	public void setR43_OVER3Y_TO_5Y(BigDecimal r43_OVER3Y_TO_5Y) {
+//		R43_OVER3Y_TO_5Y = r43_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR43_OVER5Y() {
+//		return R43_OVER5Y;
+//	}
+//	public void setR43_OVER5Y(BigDecimal r43_OVER5Y) {
+//		R43_OVER5Y = r43_OVER5Y;
+//	}
+//	public BigDecimal getR43_TOTAL() {
+//		return R43_TOTAL;
+//	}
+//	public void setR43_TOTAL(BigDecimal r43_TOTAL) {
+//		R43_TOTAL = r43_TOTAL;
+//	}
+//	public String getR44_PRODUCT() {
+//		return R44_PRODUCT;
+//	}
+//	public void setR44_PRODUCT(String r44_PRODUCT) {
+//		R44_PRODUCT = r44_PRODUCT;
+//	}
+//	public BigDecimal getR44_DAY1() {
+//		return R44_DAY1;
+//	}
+//	public void setR44_DAY1(BigDecimal r44_DAY1) {
+//		R44_DAY1 = r44_DAY1;
+//	}
+//	public BigDecimal getR44_DAY2_7() {
+//		return R44_DAY2_7;
+//	}
+//	public void setR44_DAY2_7(BigDecimal r44_DAY2_7) {
+//		R44_DAY2_7 = r44_DAY2_7;
+//	}
+//	public BigDecimal getR44_DAY8_14() {
+//		return R44_DAY8_14;
+//	}
+//	public void setR44_DAY8_14(BigDecimal r44_DAY8_14) {
+//		R44_DAY8_14 = r44_DAY8_14;
+//	}
+//	public BigDecimal getR44_DAY15_30() {
+//		return R44_DAY15_30;
+//	}
+//	public void setR44_DAY15_30(BigDecimal r44_DAY15_30) {
+//		R44_DAY15_30 = r44_DAY15_30;
+//	}
+//	public BigDecimal getR44_DAY31_TO_2M() {
+//		return R44_DAY31_TO_2M;
+//	}
+//	public void setR44_DAY31_TO_2M(BigDecimal r44_DAY31_TO_2M) {
+//		R44_DAY31_TO_2M = r44_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR44_MORE2M_TO_3M() {
+//		return R44_MORE2M_TO_3M;
+//	}
+//	public void setR44_MORE2M_TO_3M(BigDecimal r44_MORE2M_TO_3M) {
+//		R44_MORE2M_TO_3M = r44_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR44_OVER3M_TO_6M() {
+//		return R44_OVER3M_TO_6M;
+//	}
+//	public void setR44_OVER3M_TO_6M(BigDecimal r44_OVER3M_TO_6M) {
+//		R44_OVER3M_TO_6M = r44_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR44_OVER6M_TO_1Y() {
+//		return R44_OVER6M_TO_1Y;
+//	}
+//	public void setR44_OVER6M_TO_1Y(BigDecimal r44_OVER6M_TO_1Y) {
+//		R44_OVER6M_TO_1Y = r44_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR44_OVER1Y_TO_3Y() {
+//		return R44_OVER1Y_TO_3Y;
+//	}
+//	public void setR44_OVER1Y_TO_3Y(BigDecimal r44_OVER1Y_TO_3Y) {
+//		R44_OVER1Y_TO_3Y = r44_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR44_OVER3Y_TO_5Y() {
+//		return R44_OVER3Y_TO_5Y;
+//	}
+//	public void setR44_OVER3Y_TO_5Y(BigDecimal r44_OVER3Y_TO_5Y) {
+//		R44_OVER3Y_TO_5Y = r44_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR44_OVER5Y() {
+//		return R44_OVER5Y;
+//	}
+//	public void setR44_OVER5Y(BigDecimal r44_OVER5Y) {
+//		R44_OVER5Y = r44_OVER5Y;
+//	}
+//	public BigDecimal getR44_TOTAL() {
+//		return R44_TOTAL;
+//	}
+//	public void setR44_TOTAL(BigDecimal r44_TOTAL) {
+//		R44_TOTAL = r44_TOTAL;
+//	}
+//	public String getR45_PRODUCT() {
+//		return R45_PRODUCT;
+//	}
+//	public void setR45_PRODUCT(String r45_PRODUCT) {
+//		R45_PRODUCT = r45_PRODUCT;
+//	}
+//	public BigDecimal getR45_DAY1() {
+//		return R45_DAY1;
+//	}
+//	public void setR45_DAY1(BigDecimal r45_DAY1) {
+//		R45_DAY1 = r45_DAY1;
+//	}
+//	public BigDecimal getR45_DAY2_7() {
+//		return R45_DAY2_7;
+//	}
+//	public void setR45_DAY2_7(BigDecimal r45_DAY2_7) {
+//		R45_DAY2_7 = r45_DAY2_7;
+//	}
+//	public BigDecimal getR45_DAY8_14() {
+//		return R45_DAY8_14;
+//	}
+//	public void setR45_DAY8_14(BigDecimal r45_DAY8_14) {
+//		R45_DAY8_14 = r45_DAY8_14;
+//	}
+//	public BigDecimal getR45_DAY15_30() {
+//		return R45_DAY15_30;
+//	}
+//	public void setR45_DAY15_30(BigDecimal r45_DAY15_30) {
+//		R45_DAY15_30 = r45_DAY15_30;
+//	}
+//	public BigDecimal getR45_DAY31_TO_2M() {
+//		return R45_DAY31_TO_2M;
+//	}
+//	public void setR45_DAY31_TO_2M(BigDecimal r45_DAY31_TO_2M) {
+//		R45_DAY31_TO_2M = r45_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR45_MORE2M_TO_3M() {
+//		return R45_MORE2M_TO_3M;
+//	}
+//	public void setR45_MORE2M_TO_3M(BigDecimal r45_MORE2M_TO_3M) {
+//		R45_MORE2M_TO_3M = r45_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR45_OVER3M_TO_6M() {
+//		return R45_OVER3M_TO_6M;
+//	}
+//	public void setR45_OVER3M_TO_6M(BigDecimal r45_OVER3M_TO_6M) {
+//		R45_OVER3M_TO_6M = r45_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR45_OVER6M_TO_1Y() {
+//		return R45_OVER6M_TO_1Y;
+//	}
+//	public void setR45_OVER6M_TO_1Y(BigDecimal r45_OVER6M_TO_1Y) {
+//		R45_OVER6M_TO_1Y = r45_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR45_OVER1Y_TO_3Y() {
+//		return R45_OVER1Y_TO_3Y;
+//	}
+//	public void setR45_OVER1Y_TO_3Y(BigDecimal r45_OVER1Y_TO_3Y) {
+//		R45_OVER1Y_TO_3Y = r45_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR45_OVER3Y_TO_5Y() {
+//		return R45_OVER3Y_TO_5Y;
+//	}
+//	public void setR45_OVER3Y_TO_5Y(BigDecimal r45_OVER3Y_TO_5Y) {
+//		R45_OVER3Y_TO_5Y = r45_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR45_OVER5Y() {
+//		return R45_OVER5Y;
+//	}
+//	public void setR45_OVER5Y(BigDecimal r45_OVER5Y) {
+//		R45_OVER5Y = r45_OVER5Y;
+//	}
+//	public BigDecimal getR45_TOTAL() {
+//		return R45_TOTAL;
+//	}
+//	public void setR45_TOTAL(BigDecimal r45_TOTAL) {
+//		R45_TOTAL = r45_TOTAL;
+//	}
+//	public String getR46_PRODUCT() {
+//		return R46_PRODUCT;
+//	}
+//	public void setR46_PRODUCT(String r46_PRODUCT) {
+//		R46_PRODUCT = r46_PRODUCT;
+//	}
+//	public BigDecimal getR46_DAY1() {
+//		return R46_DAY1;
+//	}
+//	public void setR46_DAY1(BigDecimal r46_DAY1) {
+//		R46_DAY1 = r46_DAY1;
+//	}
+//	public BigDecimal getR46_DAY2_7() {
+//		return R46_DAY2_7;
+//	}
+//	public void setR46_DAY2_7(BigDecimal r46_DAY2_7) {
+//		R46_DAY2_7 = r46_DAY2_7;
+//	}
+//	public BigDecimal getR46_DAY8_14() {
+//		return R46_DAY8_14;
+//	}
+//	public void setR46_DAY8_14(BigDecimal r46_DAY8_14) {
+//		R46_DAY8_14 = r46_DAY8_14;
+//	}
+//	public BigDecimal getR46_DAY15_30() {
+//		return R46_DAY15_30;
+//	}
+//	public void setR46_DAY15_30(BigDecimal r46_DAY15_30) {
+//		R46_DAY15_30 = r46_DAY15_30;
+//	}
+//	public BigDecimal getR46_DAY31_TO_2M() {
+//		return R46_DAY31_TO_2M;
+//	}
+//	public void setR46_DAY31_TO_2M(BigDecimal r46_DAY31_TO_2M) {
+//		R46_DAY31_TO_2M = r46_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR46_MORE2M_TO_3M() {
+//		return R46_MORE2M_TO_3M;
+//	}
+//	public void setR46_MORE2M_TO_3M(BigDecimal r46_MORE2M_TO_3M) {
+//		R46_MORE2M_TO_3M = r46_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR46_OVER3M_TO_6M() {
+//		return R46_OVER3M_TO_6M;
+//	}
+//	public void setR46_OVER3M_TO_6M(BigDecimal r46_OVER3M_TO_6M) {
+//		R46_OVER3M_TO_6M = r46_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR46_OVER6M_TO_1Y() {
+//		return R46_OVER6M_TO_1Y;
+//	}
+//	public void setR46_OVER6M_TO_1Y(BigDecimal r46_OVER6M_TO_1Y) {
+//		R46_OVER6M_TO_1Y = r46_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR46_OVER1Y_TO_3Y() {
+//		return R46_OVER1Y_TO_3Y;
+//	}
+//	public void setR46_OVER1Y_TO_3Y(BigDecimal r46_OVER1Y_TO_3Y) {
+//		R46_OVER1Y_TO_3Y = r46_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR46_OVER3Y_TO_5Y() {
+//		return R46_OVER3Y_TO_5Y;
+//	}
+//	public void setR46_OVER3Y_TO_5Y(BigDecimal r46_OVER3Y_TO_5Y) {
+//		R46_OVER3Y_TO_5Y = r46_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR46_OVER5Y() {
+//		return R46_OVER5Y;
+//	}
+//	public void setR46_OVER5Y(BigDecimal r46_OVER5Y) {
+//		R46_OVER5Y = r46_OVER5Y;
+//	}
+//	public BigDecimal getR46_TOTAL() {
+//		return R46_TOTAL;
+//	}
+//	public void setR46_TOTAL(BigDecimal r46_TOTAL) {
+//		R46_TOTAL = r46_TOTAL;
+//	}
 	public String getR47_PRODUCT() {
 		return R47_PRODUCT;
 	}
@@ -16334,552 +16334,552 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR76_TOTAL(BigDecimal r76_TOTAL) {
 		R76_TOTAL = r76_TOTAL;
 	}
-	public String getR77_PRODUCT() {
-		return R77_PRODUCT;
-	}
-	public void setR77_PRODUCT(String r77_PRODUCT) {
-		R77_PRODUCT = r77_PRODUCT;
-	}
-	public BigDecimal getR77_DAY1() {
-		return R77_DAY1;
-	}
-	public void setR77_DAY1(BigDecimal r77_DAY1) {
-		R77_DAY1 = r77_DAY1;
-	}
-	public BigDecimal getR77_DAY2_7() {
-		return R77_DAY2_7;
-	}
-	public void setR77_DAY2_7(BigDecimal r77_DAY2_7) {
-		R77_DAY2_7 = r77_DAY2_7;
-	}
-	public BigDecimal getR77_DAY8_14() {
-		return R77_DAY8_14;
-	}
-	public void setR77_DAY8_14(BigDecimal r77_DAY8_14) {
-		R77_DAY8_14 = r77_DAY8_14;
-	}
-	public BigDecimal getR77_DAY15_30() {
-		return R77_DAY15_30;
-	}
-	public void setR77_DAY15_30(BigDecimal r77_DAY15_30) {
-		R77_DAY15_30 = r77_DAY15_30;
-	}
-	public BigDecimal getR77_DAY31_TO_2M() {
-		return R77_DAY31_TO_2M;
-	}
-	public void setR77_DAY31_TO_2M(BigDecimal r77_DAY31_TO_2M) {
-		R77_DAY31_TO_2M = r77_DAY31_TO_2M;
-	}
-	public BigDecimal getR77_MORE2M_TO_3M() {
-		return R77_MORE2M_TO_3M;
-	}
-	public void setR77_MORE2M_TO_3M(BigDecimal r77_MORE2M_TO_3M) {
-		R77_MORE2M_TO_3M = r77_MORE2M_TO_3M;
-	}
-	public BigDecimal getR77_OVER3M_TO_6M() {
-		return R77_OVER3M_TO_6M;
-	}
-	public void setR77_OVER3M_TO_6M(BigDecimal r77_OVER3M_TO_6M) {
-		R77_OVER3M_TO_6M = r77_OVER3M_TO_6M;
-	}
-	public BigDecimal getR77_OVER6M_TO_1Y() {
-		return R77_OVER6M_TO_1Y;
-	}
-	public void setR77_OVER6M_TO_1Y(BigDecimal r77_OVER6M_TO_1Y) {
-		R77_OVER6M_TO_1Y = r77_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR77_OVER1Y_TO_3Y() {
-		return R77_OVER1Y_TO_3Y;
-	}
-	public void setR77_OVER1Y_TO_3Y(BigDecimal r77_OVER1Y_TO_3Y) {
-		R77_OVER1Y_TO_3Y = r77_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR77_OVER3Y_TO_5Y() {
-		return R77_OVER3Y_TO_5Y;
-	}
-	public void setR77_OVER3Y_TO_5Y(BigDecimal r77_OVER3Y_TO_5Y) {
-		R77_OVER3Y_TO_5Y = r77_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR77_OVER5Y() {
-		return R77_OVER5Y;
-	}
-	public void setR77_OVER5Y(BigDecimal r77_OVER5Y) {
-		R77_OVER5Y = r77_OVER5Y;
-	}
-	public BigDecimal getR77_TOTAL() {
-		return R77_TOTAL;
-	}
-	public void setR77_TOTAL(BigDecimal r77_TOTAL) {
-		R77_TOTAL = r77_TOTAL;
-	}
-	public String getR78_PRODUCT() {
-		return R78_PRODUCT;
-	}
-	public void setR78_PRODUCT(String r78_PRODUCT) {
-		R78_PRODUCT = r78_PRODUCT;
-	}
-	public BigDecimal getR78_DAY1() {
-		return R78_DAY1;
-	}
-	public void setR78_DAY1(BigDecimal r78_DAY1) {
-		R78_DAY1 = r78_DAY1;
-	}
-	public BigDecimal getR78_DAY2_7() {
-		return R78_DAY2_7;
-	}
-	public void setR78_DAY2_7(BigDecimal r78_DAY2_7) {
-		R78_DAY2_7 = r78_DAY2_7;
-	}
-	public BigDecimal getR78_DAY8_14() {
-		return R78_DAY8_14;
-	}
-	public void setR78_DAY8_14(BigDecimal r78_DAY8_14) {
-		R78_DAY8_14 = r78_DAY8_14;
-	}
-	public BigDecimal getR78_DAY15_30() {
-		return R78_DAY15_30;
-	}
-	public void setR78_DAY15_30(BigDecimal r78_DAY15_30) {
-		R78_DAY15_30 = r78_DAY15_30;
-	}
-	public BigDecimal getR78_DAY31_TO_2M() {
-		return R78_DAY31_TO_2M;
-	}
-	public void setR78_DAY31_TO_2M(BigDecimal r78_DAY31_TO_2M) {
-		R78_DAY31_TO_2M = r78_DAY31_TO_2M;
-	}
-	public BigDecimal getR78_MORE2M_TO_3M() {
-		return R78_MORE2M_TO_3M;
-	}
-	public void setR78_MORE2M_TO_3M(BigDecimal r78_MORE2M_TO_3M) {
-		R78_MORE2M_TO_3M = r78_MORE2M_TO_3M;
-	}
-	public BigDecimal getR78_OVER3M_TO_6M() {
-		return R78_OVER3M_TO_6M;
-	}
-	public void setR78_OVER3M_TO_6M(BigDecimal r78_OVER3M_TO_6M) {
-		R78_OVER3M_TO_6M = r78_OVER3M_TO_6M;
-	}
-	public BigDecimal getR78_OVER6M_TO_1Y() {
-		return R78_OVER6M_TO_1Y;
-	}
-	public void setR78_OVER6M_TO_1Y(BigDecimal r78_OVER6M_TO_1Y) {
-		R78_OVER6M_TO_1Y = r78_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR78_OVER1Y_TO_3Y() {
-		return R78_OVER1Y_TO_3Y;
-	}
-	public void setR78_OVER1Y_TO_3Y(BigDecimal r78_OVER1Y_TO_3Y) {
-		R78_OVER1Y_TO_3Y = r78_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR78_OVER3Y_TO_5Y() {
-		return R78_OVER3Y_TO_5Y;
-	}
-	public void setR78_OVER3Y_TO_5Y(BigDecimal r78_OVER3Y_TO_5Y) {
-		R78_OVER3Y_TO_5Y = r78_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR78_OVER5Y() {
-		return R78_OVER5Y;
-	}
-	public void setR78_OVER5Y(BigDecimal r78_OVER5Y) {
-		R78_OVER5Y = r78_OVER5Y;
-	}
-	public BigDecimal getR78_TOTAL() {
-		return R78_TOTAL;
-	}
-	public void setR78_TOTAL(BigDecimal r78_TOTAL) {
-		R78_TOTAL = r78_TOTAL;
-	}
-	public String getR79_PRODUCT() {
-		return R79_PRODUCT;
-	}
-	public void setR79_PRODUCT(String r79_PRODUCT) {
-		R79_PRODUCT = r79_PRODUCT;
-	}
-	public BigDecimal getR79_DAY1() {
-		return R79_DAY1;
-	}
-	public void setR79_DAY1(BigDecimal r79_DAY1) {
-		R79_DAY1 = r79_DAY1;
-	}
-	public BigDecimal getR79_DAY2_7() {
-		return R79_DAY2_7;
-	}
-	public void setR79_DAY2_7(BigDecimal r79_DAY2_7) {
-		R79_DAY2_7 = r79_DAY2_7;
-	}
-	public BigDecimal getR79_DAY8_14() {
-		return R79_DAY8_14;
-	}
-	public void setR79_DAY8_14(BigDecimal r79_DAY8_14) {
-		R79_DAY8_14 = r79_DAY8_14;
-	}
-	public BigDecimal getR79_DAY15_30() {
-		return R79_DAY15_30;
-	}
-	public void setR79_DAY15_30(BigDecimal r79_DAY15_30) {
-		R79_DAY15_30 = r79_DAY15_30;
-	}
-	public BigDecimal getR79_DAY31_TO_2M() {
-		return R79_DAY31_TO_2M;
-	}
-	public void setR79_DAY31_TO_2M(BigDecimal r79_DAY31_TO_2M) {
-		R79_DAY31_TO_2M = r79_DAY31_TO_2M;
-	}
-	public BigDecimal getR79_MORE2M_TO_3M() {
-		return R79_MORE2M_TO_3M;
-	}
-	public void setR79_MORE2M_TO_3M(BigDecimal r79_MORE2M_TO_3M) {
-		R79_MORE2M_TO_3M = r79_MORE2M_TO_3M;
-	}
-	public BigDecimal getR79_OVER3M_TO_6M() {
-		return R79_OVER3M_TO_6M;
-	}
-	public void setR79_OVER3M_TO_6M(BigDecimal r79_OVER3M_TO_6M) {
-		R79_OVER3M_TO_6M = r79_OVER3M_TO_6M;
-	}
-	public BigDecimal getR79_OVER6M_TO_1Y() {
-		return R79_OVER6M_TO_1Y;
-	}
-	public void setR79_OVER6M_TO_1Y(BigDecimal r79_OVER6M_TO_1Y) {
-		R79_OVER6M_TO_1Y = r79_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR79_OVER1Y_TO_3Y() {
-		return R79_OVER1Y_TO_3Y;
-	}
-	public void setR79_OVER1Y_TO_3Y(BigDecimal r79_OVER1Y_TO_3Y) {
-		R79_OVER1Y_TO_3Y = r79_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR79_OVER3Y_TO_5Y() {
-		return R79_OVER3Y_TO_5Y;
-	}
-	public void setR79_OVER3Y_TO_5Y(BigDecimal r79_OVER3Y_TO_5Y) {
-		R79_OVER3Y_TO_5Y = r79_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR79_OVER5Y() {
-		return R79_OVER5Y;
-	}
-	public void setR79_OVER5Y(BigDecimal r79_OVER5Y) {
-		R79_OVER5Y = r79_OVER5Y;
-	}
-	public BigDecimal getR79_TOTAL() {
-		return R79_TOTAL;
-	}
-	public void setR79_TOTAL(BigDecimal r79_TOTAL) {
-		R79_TOTAL = r79_TOTAL;
-	}
-	public String getR80_PRODUCT() {
-		return R80_PRODUCT;
-	}
-	public void setR80_PRODUCT(String r80_PRODUCT) {
-		R80_PRODUCT = r80_PRODUCT;
-	}
-	public BigDecimal getR80_DAY1() {
-		return R80_DAY1;
-	}
-	public void setR80_DAY1(BigDecimal r80_DAY1) {
-		R80_DAY1 = r80_DAY1;
-	}
-	public BigDecimal getR80_DAY2_7() {
-		return R80_DAY2_7;
-	}
-	public void setR80_DAY2_7(BigDecimal r80_DAY2_7) {
-		R80_DAY2_7 = r80_DAY2_7;
-	}
-	public BigDecimal getR80_DAY8_14() {
-		return R80_DAY8_14;
-	}
-	public void setR80_DAY8_14(BigDecimal r80_DAY8_14) {
-		R80_DAY8_14 = r80_DAY8_14;
-	}
-	public BigDecimal getR80_DAY15_30() {
-		return R80_DAY15_30;
-	}
-	public void setR80_DAY15_30(BigDecimal r80_DAY15_30) {
-		R80_DAY15_30 = r80_DAY15_30;
-	}
-	public BigDecimal getR80_DAY31_TO_2M() {
-		return R80_DAY31_TO_2M;
-	}
-	public void setR80_DAY31_TO_2M(BigDecimal r80_DAY31_TO_2M) {
-		R80_DAY31_TO_2M = r80_DAY31_TO_2M;
-	}
-	public BigDecimal getR80_MORE2M_TO_3M() {
-		return R80_MORE2M_TO_3M;
-	}
-	public void setR80_MORE2M_TO_3M(BigDecimal r80_MORE2M_TO_3M) {
-		R80_MORE2M_TO_3M = r80_MORE2M_TO_3M;
-	}
-	public BigDecimal getR80_OVER3M_TO_6M() {
-		return R80_OVER3M_TO_6M;
-	}
-	public void setR80_OVER3M_TO_6M(BigDecimal r80_OVER3M_TO_6M) {
-		R80_OVER3M_TO_6M = r80_OVER3M_TO_6M;
-	}
-	public BigDecimal getR80_OVER6M_TO_1Y() {
-		return R80_OVER6M_TO_1Y;
-	}
-	public void setR80_OVER6M_TO_1Y(BigDecimal r80_OVER6M_TO_1Y) {
-		R80_OVER6M_TO_1Y = r80_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR80_OVER1Y_TO_3Y() {
-		return R80_OVER1Y_TO_3Y;
-	}
-	public void setR80_OVER1Y_TO_3Y(BigDecimal r80_OVER1Y_TO_3Y) {
-		R80_OVER1Y_TO_3Y = r80_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR80_OVER3Y_TO_5Y() {
-		return R80_OVER3Y_TO_5Y;
-	}
-	public void setR80_OVER3Y_TO_5Y(BigDecimal r80_OVER3Y_TO_5Y) {
-		R80_OVER3Y_TO_5Y = r80_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR80_OVER5Y() {
-		return R80_OVER5Y;
-	}
-	public void setR80_OVER5Y(BigDecimal r80_OVER5Y) {
-		R80_OVER5Y = r80_OVER5Y;
-	}
-	public BigDecimal getR80_TOTAL() {
-		return R80_TOTAL;
-	}
-	public void setR80_TOTAL(BigDecimal r80_TOTAL) {
-		R80_TOTAL = r80_TOTAL;
-	}
-	public String getR81_PRODUCT() {
-		return R81_PRODUCT;
-	}
-	public void setR81_PRODUCT(String r81_PRODUCT) {
-		R81_PRODUCT = r81_PRODUCT;
-	}
-	public BigDecimal getR81_DAY1() {
-		return R81_DAY1;
-	}
-	public void setR81_DAY1(BigDecimal r81_DAY1) {
-		R81_DAY1 = r81_DAY1;
-	}
-	public BigDecimal getR81_DAY2_7() {
-		return R81_DAY2_7;
-	}
-	public void setR81_DAY2_7(BigDecimal r81_DAY2_7) {
-		R81_DAY2_7 = r81_DAY2_7;
-	}
-	public BigDecimal getR81_DAY8_14() {
-		return R81_DAY8_14;
-	}
-	public void setR81_DAY8_14(BigDecimal r81_DAY8_14) {
-		R81_DAY8_14 = r81_DAY8_14;
-	}
-	public BigDecimal getR81_DAY15_30() {
-		return R81_DAY15_30;
-	}
-	public void setR81_DAY15_30(BigDecimal r81_DAY15_30) {
-		R81_DAY15_30 = r81_DAY15_30;
-	}
-	public BigDecimal getR81_DAY31_TO_2M() {
-		return R81_DAY31_TO_2M;
-	}
-	public void setR81_DAY31_TO_2M(BigDecimal r81_DAY31_TO_2M) {
-		R81_DAY31_TO_2M = r81_DAY31_TO_2M;
-	}
-	public BigDecimal getR81_MORE2M_TO_3M() {
-		return R81_MORE2M_TO_3M;
-	}
-	public void setR81_MORE2M_TO_3M(BigDecimal r81_MORE2M_TO_3M) {
-		R81_MORE2M_TO_3M = r81_MORE2M_TO_3M;
-	}
-	public BigDecimal getR81_OVER3M_TO_6M() {
-		return R81_OVER3M_TO_6M;
-	}
-	public void setR81_OVER3M_TO_6M(BigDecimal r81_OVER3M_TO_6M) {
-		R81_OVER3M_TO_6M = r81_OVER3M_TO_6M;
-	}
-	public BigDecimal getR81_OVER6M_TO_1Y() {
-		return R81_OVER6M_TO_1Y;
-	}
-	public void setR81_OVER6M_TO_1Y(BigDecimal r81_OVER6M_TO_1Y) {
-		R81_OVER6M_TO_1Y = r81_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR81_OVER1Y_TO_3Y() {
-		return R81_OVER1Y_TO_3Y;
-	}
-	public void setR81_OVER1Y_TO_3Y(BigDecimal r81_OVER1Y_TO_3Y) {
-		R81_OVER1Y_TO_3Y = r81_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR81_OVER3Y_TO_5Y() {
-		return R81_OVER3Y_TO_5Y;
-	}
-	public void setR81_OVER3Y_TO_5Y(BigDecimal r81_OVER3Y_TO_5Y) {
-		R81_OVER3Y_TO_5Y = r81_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR81_OVER5Y() {
-		return R81_OVER5Y;
-	}
-	public void setR81_OVER5Y(BigDecimal r81_OVER5Y) {
-		R81_OVER5Y = r81_OVER5Y;
-	}
-	public BigDecimal getR81_TOTAL() {
-		return R81_TOTAL;
-	}
-	public void setR81_TOTAL(BigDecimal r81_TOTAL) {
-		R81_TOTAL = r81_TOTAL;
-	}
-	public String getR82_PRODUCT() {
-		return R82_PRODUCT;
-	}
-	public void setR82_PRODUCT(String r82_PRODUCT) {
-		R82_PRODUCT = r82_PRODUCT;
-	}
-	public BigDecimal getR82_DAY1() {
-		return R82_DAY1;
-	}
-	public void setR82_DAY1(BigDecimal r82_DAY1) {
-		R82_DAY1 = r82_DAY1;
-	}
-	public BigDecimal getR82_DAY2_7() {
-		return R82_DAY2_7;
-	}
-	public void setR82_DAY2_7(BigDecimal r82_DAY2_7) {
-		R82_DAY2_7 = r82_DAY2_7;
-	}
-	public BigDecimal getR82_DAY8_14() {
-		return R82_DAY8_14;
-	}
-	public void setR82_DAY8_14(BigDecimal r82_DAY8_14) {
-		R82_DAY8_14 = r82_DAY8_14;
-	}
-	public BigDecimal getR82_DAY15_30() {
-		return R82_DAY15_30;
-	}
-	public void setR82_DAY15_30(BigDecimal r82_DAY15_30) {
-		R82_DAY15_30 = r82_DAY15_30;
-	}
-	public BigDecimal getR82_DAY31_TO_2M() {
-		return R82_DAY31_TO_2M;
-	}
-	public void setR82_DAY31_TO_2M(BigDecimal r82_DAY31_TO_2M) {
-		R82_DAY31_TO_2M = r82_DAY31_TO_2M;
-	}
-	public BigDecimal getR82_MORE2M_TO_3M() {
-		return R82_MORE2M_TO_3M;
-	}
-	public void setR82_MORE2M_TO_3M(BigDecimal r82_MORE2M_TO_3M) {
-		R82_MORE2M_TO_3M = r82_MORE2M_TO_3M;
-	}
-	public BigDecimal getR82_OVER3M_TO_6M() {
-		return R82_OVER3M_TO_6M;
-	}
-	public void setR82_OVER3M_TO_6M(BigDecimal r82_OVER3M_TO_6M) {
-		R82_OVER3M_TO_6M = r82_OVER3M_TO_6M;
-	}
-	public BigDecimal getR82_OVER6M_TO_1Y() {
-		return R82_OVER6M_TO_1Y;
-	}
-	public void setR82_OVER6M_TO_1Y(BigDecimal r82_OVER6M_TO_1Y) {
-		R82_OVER6M_TO_1Y = r82_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR82_OVER1Y_TO_3Y() {
-		return R82_OVER1Y_TO_3Y;
-	}
-	public void setR82_OVER1Y_TO_3Y(BigDecimal r82_OVER1Y_TO_3Y) {
-		R82_OVER1Y_TO_3Y = r82_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR82_OVER3Y_TO_5Y() {
-		return R82_OVER3Y_TO_5Y;
-	}
-	public void setR82_OVER3Y_TO_5Y(BigDecimal r82_OVER3Y_TO_5Y) {
-		R82_OVER3Y_TO_5Y = r82_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR82_OVER5Y() {
-		return R82_OVER5Y;
-	}
-	public void setR82_OVER5Y(BigDecimal r82_OVER5Y) {
-		R82_OVER5Y = r82_OVER5Y;
-	}
-	public BigDecimal getR82_TOTAL() {
-		return R82_TOTAL;
-	}
-	public void setR82_TOTAL(BigDecimal r82_TOTAL) {
-		R82_TOTAL = r82_TOTAL;
-	}
-	public String getR83_PRODUCT() {
-		return R83_PRODUCT;
-	}
-	public void setR83_PRODUCT(String r83_PRODUCT) {
-		R83_PRODUCT = r83_PRODUCT;
-	}
-	public BigDecimal getR83_DAY1() {
-		return R83_DAY1;
-	}
-	public void setR83_DAY1(BigDecimal r83_DAY1) {
-		R83_DAY1 = r83_DAY1;
-	}
-	public BigDecimal getR83_DAY2_7() {
-		return R83_DAY2_7;
-	}
-	public void setR83_DAY2_7(BigDecimal r83_DAY2_7) {
-		R83_DAY2_7 = r83_DAY2_7;
-	}
-	public BigDecimal getR83_DAY8_14() {
-		return R83_DAY8_14;
-	}
-	public void setR83_DAY8_14(BigDecimal r83_DAY8_14) {
-		R83_DAY8_14 = r83_DAY8_14;
-	}
-	public BigDecimal getR83_DAY15_30() {
-		return R83_DAY15_30;
-	}
-	public void setR83_DAY15_30(BigDecimal r83_DAY15_30) {
-		R83_DAY15_30 = r83_DAY15_30;
-	}
-	public BigDecimal getR83_DAY31_TO_2M() {
-		return R83_DAY31_TO_2M;
-	}
-	public void setR83_DAY31_TO_2M(BigDecimal r83_DAY31_TO_2M) {
-		R83_DAY31_TO_2M = r83_DAY31_TO_2M;
-	}
-	public BigDecimal getR83_MORE2M_TO_3M() {
-		return R83_MORE2M_TO_3M;
-	}
-	public void setR83_MORE2M_TO_3M(BigDecimal r83_MORE2M_TO_3M) {
-		R83_MORE2M_TO_3M = r83_MORE2M_TO_3M;
-	}
-	public BigDecimal getR83_OVER3M_TO_6M() {
-		return R83_OVER3M_TO_6M;
-	}
-	public void setR83_OVER3M_TO_6M(BigDecimal r83_OVER3M_TO_6M) {
-		R83_OVER3M_TO_6M = r83_OVER3M_TO_6M;
-	}
-	public BigDecimal getR83_OVER6M_TO_1Y() {
-		return R83_OVER6M_TO_1Y;
-	}
-	public void setR83_OVER6M_TO_1Y(BigDecimal r83_OVER6M_TO_1Y) {
-		R83_OVER6M_TO_1Y = r83_OVER6M_TO_1Y;
-	}
-	public BigDecimal getR83_OVER1Y_TO_3Y() {
-		return R83_OVER1Y_TO_3Y;
-	}
-	public void setR83_OVER1Y_TO_3Y(BigDecimal r83_OVER1Y_TO_3Y) {
-		R83_OVER1Y_TO_3Y = r83_OVER1Y_TO_3Y;
-	}
-	public BigDecimal getR83_OVER3Y_TO_5Y() {
-		return R83_OVER3Y_TO_5Y;
-	}
-	public void setR83_OVER3Y_TO_5Y(BigDecimal r83_OVER3Y_TO_5Y) {
-		R83_OVER3Y_TO_5Y = r83_OVER3Y_TO_5Y;
-	}
-	public BigDecimal getR83_OVER5Y() {
-		return R83_OVER5Y;
-	}
-	public void setR83_OVER5Y(BigDecimal r83_OVER5Y) {
-		R83_OVER5Y = r83_OVER5Y;
-	}
-	public BigDecimal getR83_TOTAL() {
-		return R83_TOTAL;
-	}
-	public void setR83_TOTAL(BigDecimal r83_TOTAL) {
-		R83_TOTAL = r83_TOTAL;
-	}
+//	public String getR77_PRODUCT() {
+//		return R77_PRODUCT;
+//	}
+//	public void setR77_PRODUCT(String r77_PRODUCT) {
+//		R77_PRODUCT = r77_PRODUCT;
+//	}
+//	public BigDecimal getR77_DAY1() {
+//		return R77_DAY1;
+//	}
+//	public void setR77_DAY1(BigDecimal r77_DAY1) {
+//		R77_DAY1 = r77_DAY1;
+//	}
+//	public BigDecimal getR77_DAY2_7() {
+//		return R77_DAY2_7;
+//	}
+//	public void setR77_DAY2_7(BigDecimal r77_DAY2_7) {
+//		R77_DAY2_7 = r77_DAY2_7;
+//	}
+//	public BigDecimal getR77_DAY8_14() {
+//		return R77_DAY8_14;
+//	}
+//	public void setR77_DAY8_14(BigDecimal r77_DAY8_14) {
+//		R77_DAY8_14 = r77_DAY8_14;
+//	}
+//	public BigDecimal getR77_DAY15_30() {
+//		return R77_DAY15_30;
+//	}
+//	public void setR77_DAY15_30(BigDecimal r77_DAY15_30) {
+//		R77_DAY15_30 = r77_DAY15_30;
+//	}
+//	public BigDecimal getR77_DAY31_TO_2M() {
+//		return R77_DAY31_TO_2M;
+//	}
+//	public void setR77_DAY31_TO_2M(BigDecimal r77_DAY31_TO_2M) {
+//		R77_DAY31_TO_2M = r77_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR77_MORE2M_TO_3M() {
+//		return R77_MORE2M_TO_3M;
+//	}
+//	public void setR77_MORE2M_TO_3M(BigDecimal r77_MORE2M_TO_3M) {
+//		R77_MORE2M_TO_3M = r77_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR77_OVER3M_TO_6M() {
+//		return R77_OVER3M_TO_6M;
+//	}
+//	public void setR77_OVER3M_TO_6M(BigDecimal r77_OVER3M_TO_6M) {
+//		R77_OVER3M_TO_6M = r77_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR77_OVER6M_TO_1Y() {
+//		return R77_OVER6M_TO_1Y;
+//	}
+//	public void setR77_OVER6M_TO_1Y(BigDecimal r77_OVER6M_TO_1Y) {
+//		R77_OVER6M_TO_1Y = r77_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR77_OVER1Y_TO_3Y() {
+//		return R77_OVER1Y_TO_3Y;
+//	}
+//	public void setR77_OVER1Y_TO_3Y(BigDecimal r77_OVER1Y_TO_3Y) {
+//		R77_OVER1Y_TO_3Y = r77_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR77_OVER3Y_TO_5Y() {
+//		return R77_OVER3Y_TO_5Y;
+//	}
+//	public void setR77_OVER3Y_TO_5Y(BigDecimal r77_OVER3Y_TO_5Y) {
+//		R77_OVER3Y_TO_5Y = r77_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR77_OVER5Y() {
+//		return R77_OVER5Y;
+//	}
+//	public void setR77_OVER5Y(BigDecimal r77_OVER5Y) {
+//		R77_OVER5Y = r77_OVER5Y;
+//	}
+//	public BigDecimal getR77_TOTAL() {
+//		return R77_TOTAL;
+//	}
+//	public void setR77_TOTAL(BigDecimal r77_TOTAL) {
+//		R77_TOTAL = r77_TOTAL;
+//	}
+//	public String getR78_PRODUCT() {
+//		return R78_PRODUCT;
+//	}
+//	public void setR78_PRODUCT(String r78_PRODUCT) {
+//		R78_PRODUCT = r78_PRODUCT;
+//	}
+//	public BigDecimal getR78_DAY1() {
+//		return R78_DAY1;
+//	}
+//	public void setR78_DAY1(BigDecimal r78_DAY1) {
+//		R78_DAY1 = r78_DAY1;
+//	}
+//	public BigDecimal getR78_DAY2_7() {
+//		return R78_DAY2_7;
+//	}
+//	public void setR78_DAY2_7(BigDecimal r78_DAY2_7) {
+//		R78_DAY2_7 = r78_DAY2_7;
+//	}
+//	public BigDecimal getR78_DAY8_14() {
+//		return R78_DAY8_14;
+//	}
+//	public void setR78_DAY8_14(BigDecimal r78_DAY8_14) {
+//		R78_DAY8_14 = r78_DAY8_14;
+//	}
+//	public BigDecimal getR78_DAY15_30() {
+//		return R78_DAY15_30;
+//	}
+//	public void setR78_DAY15_30(BigDecimal r78_DAY15_30) {
+//		R78_DAY15_30 = r78_DAY15_30;
+//	}
+//	public BigDecimal getR78_DAY31_TO_2M() {
+//		return R78_DAY31_TO_2M;
+//	}
+//	public void setR78_DAY31_TO_2M(BigDecimal r78_DAY31_TO_2M) {
+//		R78_DAY31_TO_2M = r78_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR78_MORE2M_TO_3M() {
+//		return R78_MORE2M_TO_3M;
+//	}
+//	public void setR78_MORE2M_TO_3M(BigDecimal r78_MORE2M_TO_3M) {
+//		R78_MORE2M_TO_3M = r78_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR78_OVER3M_TO_6M() {
+//		return R78_OVER3M_TO_6M;
+//	}
+//	public void setR78_OVER3M_TO_6M(BigDecimal r78_OVER3M_TO_6M) {
+//		R78_OVER3M_TO_6M = r78_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR78_OVER6M_TO_1Y() {
+//		return R78_OVER6M_TO_1Y;
+//	}
+//	public void setR78_OVER6M_TO_1Y(BigDecimal r78_OVER6M_TO_1Y) {
+//		R78_OVER6M_TO_1Y = r78_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR78_OVER1Y_TO_3Y() {
+//		return R78_OVER1Y_TO_3Y;
+//	}
+//	public void setR78_OVER1Y_TO_3Y(BigDecimal r78_OVER1Y_TO_3Y) {
+//		R78_OVER1Y_TO_3Y = r78_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR78_OVER3Y_TO_5Y() {
+//		return R78_OVER3Y_TO_5Y;
+//	}
+//	public void setR78_OVER3Y_TO_5Y(BigDecimal r78_OVER3Y_TO_5Y) {
+//		R78_OVER3Y_TO_5Y = r78_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR78_OVER5Y() {
+//		return R78_OVER5Y;
+//	}
+//	public void setR78_OVER5Y(BigDecimal r78_OVER5Y) {
+//		R78_OVER5Y = r78_OVER5Y;
+//	}
+//	public BigDecimal getR78_TOTAL() {
+//		return R78_TOTAL;
+//	}
+//	public void setR78_TOTAL(BigDecimal r78_TOTAL) {
+//		R78_TOTAL = r78_TOTAL;
+//	}
+//	public String getR79_PRODUCT() {
+//		return R79_PRODUCT;
+//	}
+//	public void setR79_PRODUCT(String r79_PRODUCT) {
+//		R79_PRODUCT = r79_PRODUCT;
+//	}
+//	public BigDecimal getR79_DAY1() {
+//		return R79_DAY1;
+//	}
+//	public void setR79_DAY1(BigDecimal r79_DAY1) {
+//		R79_DAY1 = r79_DAY1;
+//	}
+//	public BigDecimal getR79_DAY2_7() {
+//		return R79_DAY2_7;
+//	}
+//	public void setR79_DAY2_7(BigDecimal r79_DAY2_7) {
+//		R79_DAY2_7 = r79_DAY2_7;
+//	}
+//	public BigDecimal getR79_DAY8_14() {
+//		return R79_DAY8_14;
+//	}
+//	public void setR79_DAY8_14(BigDecimal r79_DAY8_14) {
+//		R79_DAY8_14 = r79_DAY8_14;
+//	}
+//	public BigDecimal getR79_DAY15_30() {
+//		return R79_DAY15_30;
+//	}
+//	public void setR79_DAY15_30(BigDecimal r79_DAY15_30) {
+//		R79_DAY15_30 = r79_DAY15_30;
+//	}
+//	public BigDecimal getR79_DAY31_TO_2M() {
+//		return R79_DAY31_TO_2M;
+//	}
+//	public void setR79_DAY31_TO_2M(BigDecimal r79_DAY31_TO_2M) {
+//		R79_DAY31_TO_2M = r79_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR79_MORE2M_TO_3M() {
+//		return R79_MORE2M_TO_3M;
+//	}
+//	public void setR79_MORE2M_TO_3M(BigDecimal r79_MORE2M_TO_3M) {
+//		R79_MORE2M_TO_3M = r79_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR79_OVER3M_TO_6M() {
+//		return R79_OVER3M_TO_6M;
+//	}
+//	public void setR79_OVER3M_TO_6M(BigDecimal r79_OVER3M_TO_6M) {
+//		R79_OVER3M_TO_6M = r79_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR79_OVER6M_TO_1Y() {
+//		return R79_OVER6M_TO_1Y;
+//	}
+//	public void setR79_OVER6M_TO_1Y(BigDecimal r79_OVER6M_TO_1Y) {
+//		R79_OVER6M_TO_1Y = r79_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR79_OVER1Y_TO_3Y() {
+//		return R79_OVER1Y_TO_3Y;
+//	}
+//	public void setR79_OVER1Y_TO_3Y(BigDecimal r79_OVER1Y_TO_3Y) {
+//		R79_OVER1Y_TO_3Y = r79_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR79_OVER3Y_TO_5Y() {
+//		return R79_OVER3Y_TO_5Y;
+//	}
+//	public void setR79_OVER3Y_TO_5Y(BigDecimal r79_OVER3Y_TO_5Y) {
+//		R79_OVER3Y_TO_5Y = r79_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR79_OVER5Y() {
+//		return R79_OVER5Y;
+//	}
+//	public void setR79_OVER5Y(BigDecimal r79_OVER5Y) {
+//		R79_OVER5Y = r79_OVER5Y;
+//	}
+//	public BigDecimal getR79_TOTAL() {
+//		return R79_TOTAL;
+//	}
+//	public void setR79_TOTAL(BigDecimal r79_TOTAL) {
+//		R79_TOTAL = r79_TOTAL;
+//	}
+//	public String getR80_PRODUCT() {
+//		return R80_PRODUCT;
+//	}
+//	public void setR80_PRODUCT(String r80_PRODUCT) {
+//		R80_PRODUCT = r80_PRODUCT;
+//	}
+//	public BigDecimal getR80_DAY1() {
+//		return R80_DAY1;
+//	}
+//	public void setR80_DAY1(BigDecimal r80_DAY1) {
+//		R80_DAY1 = r80_DAY1;
+//	}
+//	public BigDecimal getR80_DAY2_7() {
+//		return R80_DAY2_7;
+//	}
+//	public void setR80_DAY2_7(BigDecimal r80_DAY2_7) {
+//		R80_DAY2_7 = r80_DAY2_7;
+//	}
+//	public BigDecimal getR80_DAY8_14() {
+//		return R80_DAY8_14;
+//	}
+//	public void setR80_DAY8_14(BigDecimal r80_DAY8_14) {
+//		R80_DAY8_14 = r80_DAY8_14;
+//	}
+//	public BigDecimal getR80_DAY15_30() {
+//		return R80_DAY15_30;
+//	}
+//	public void setR80_DAY15_30(BigDecimal r80_DAY15_30) {
+//		R80_DAY15_30 = r80_DAY15_30;
+//	}
+//	public BigDecimal getR80_DAY31_TO_2M() {
+//		return R80_DAY31_TO_2M;
+//	}
+//	public void setR80_DAY31_TO_2M(BigDecimal r80_DAY31_TO_2M) {
+//		R80_DAY31_TO_2M = r80_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR80_MORE2M_TO_3M() {
+//		return R80_MORE2M_TO_3M;
+//	}
+//	public void setR80_MORE2M_TO_3M(BigDecimal r80_MORE2M_TO_3M) {
+//		R80_MORE2M_TO_3M = r80_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR80_OVER3M_TO_6M() {
+//		return R80_OVER3M_TO_6M;
+//	}
+//	public void setR80_OVER3M_TO_6M(BigDecimal r80_OVER3M_TO_6M) {
+//		R80_OVER3M_TO_6M = r80_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR80_OVER6M_TO_1Y() {
+//		return R80_OVER6M_TO_1Y;
+//	}
+//	public void setR80_OVER6M_TO_1Y(BigDecimal r80_OVER6M_TO_1Y) {
+//		R80_OVER6M_TO_1Y = r80_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR80_OVER1Y_TO_3Y() {
+//		return R80_OVER1Y_TO_3Y;
+//	}
+//	public void setR80_OVER1Y_TO_3Y(BigDecimal r80_OVER1Y_TO_3Y) {
+//		R80_OVER1Y_TO_3Y = r80_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR80_OVER3Y_TO_5Y() {
+//		return R80_OVER3Y_TO_5Y;
+//	}
+//	public void setR80_OVER3Y_TO_5Y(BigDecimal r80_OVER3Y_TO_5Y) {
+//		R80_OVER3Y_TO_5Y = r80_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR80_OVER5Y() {
+//		return R80_OVER5Y;
+//	}
+//	public void setR80_OVER5Y(BigDecimal r80_OVER5Y) {
+//		R80_OVER5Y = r80_OVER5Y;
+//	}
+//	public BigDecimal getR80_TOTAL() {
+//		return R80_TOTAL;
+//	}
+//	public void setR80_TOTAL(BigDecimal r80_TOTAL) {
+//		R80_TOTAL = r80_TOTAL;
+//	}
+//	public String getR81_PRODUCT() {
+//		return R81_PRODUCT;
+//	}
+//	public void setR81_PRODUCT(String r81_PRODUCT) {
+//		R81_PRODUCT = r81_PRODUCT;
+//	}
+//	public BigDecimal getR81_DAY1() {
+//		return R81_DAY1;
+//	}
+//	public void setR81_DAY1(BigDecimal r81_DAY1) {
+//		R81_DAY1 = r81_DAY1;
+//	}
+//	public BigDecimal getR81_DAY2_7() {
+//		return R81_DAY2_7;
+//	}
+//	public void setR81_DAY2_7(BigDecimal r81_DAY2_7) {
+//		R81_DAY2_7 = r81_DAY2_7;
+//	}
+//	public BigDecimal getR81_DAY8_14() {
+//		return R81_DAY8_14;
+//	}
+//	public void setR81_DAY8_14(BigDecimal r81_DAY8_14) {
+//		R81_DAY8_14 = r81_DAY8_14;
+//	}
+//	public BigDecimal getR81_DAY15_30() {
+//		return R81_DAY15_30;
+//	}
+//	public void setR81_DAY15_30(BigDecimal r81_DAY15_30) {
+//		R81_DAY15_30 = r81_DAY15_30;
+//	}
+//	public BigDecimal getR81_DAY31_TO_2M() {
+//		return R81_DAY31_TO_2M;
+//	}
+//	public void setR81_DAY31_TO_2M(BigDecimal r81_DAY31_TO_2M) {
+//		R81_DAY31_TO_2M = r81_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR81_MORE2M_TO_3M() {
+//		return R81_MORE2M_TO_3M;
+//	}
+//	public void setR81_MORE2M_TO_3M(BigDecimal r81_MORE2M_TO_3M) {
+//		R81_MORE2M_TO_3M = r81_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR81_OVER3M_TO_6M() {
+//		return R81_OVER3M_TO_6M;
+//	}
+//	public void setR81_OVER3M_TO_6M(BigDecimal r81_OVER3M_TO_6M) {
+//		R81_OVER3M_TO_6M = r81_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR81_OVER6M_TO_1Y() {
+//		return R81_OVER6M_TO_1Y;
+//	}
+//	public void setR81_OVER6M_TO_1Y(BigDecimal r81_OVER6M_TO_1Y) {
+//		R81_OVER6M_TO_1Y = r81_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR81_OVER1Y_TO_3Y() {
+//		return R81_OVER1Y_TO_3Y;
+//	}
+//	public void setR81_OVER1Y_TO_3Y(BigDecimal r81_OVER1Y_TO_3Y) {
+//		R81_OVER1Y_TO_3Y = r81_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR81_OVER3Y_TO_5Y() {
+//		return R81_OVER3Y_TO_5Y;
+//	}
+//	public void setR81_OVER3Y_TO_5Y(BigDecimal r81_OVER3Y_TO_5Y) {
+//		R81_OVER3Y_TO_5Y = r81_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR81_OVER5Y() {
+//		return R81_OVER5Y;
+//	}
+//	public void setR81_OVER5Y(BigDecimal r81_OVER5Y) {
+//		R81_OVER5Y = r81_OVER5Y;
+//	}
+//	public BigDecimal getR81_TOTAL() {
+//		return R81_TOTAL;
+//	}
+//	public void setR81_TOTAL(BigDecimal r81_TOTAL) {
+//		R81_TOTAL = r81_TOTAL;
+//	}
+//	public String getR82_PRODUCT() {
+//		return R82_PRODUCT;
+//	}
+//	public void setR82_PRODUCT(String r82_PRODUCT) {
+//		R82_PRODUCT = r82_PRODUCT;
+//	}
+//	public BigDecimal getR82_DAY1() {
+//		return R82_DAY1;
+//	}
+//	public void setR82_DAY1(BigDecimal r82_DAY1) {
+//		R82_DAY1 = r82_DAY1;
+//	}
+//	public BigDecimal getR82_DAY2_7() {
+//		return R82_DAY2_7;
+//	}
+//	public void setR82_DAY2_7(BigDecimal r82_DAY2_7) {
+//		R82_DAY2_7 = r82_DAY2_7;
+//	}
+//	public BigDecimal getR82_DAY8_14() {
+//		return R82_DAY8_14;
+//	}
+//	public void setR82_DAY8_14(BigDecimal r82_DAY8_14) {
+//		R82_DAY8_14 = r82_DAY8_14;
+//	}
+//	public BigDecimal getR82_DAY15_30() {
+//		return R82_DAY15_30;
+//	}
+//	public void setR82_DAY15_30(BigDecimal r82_DAY15_30) {
+//		R82_DAY15_30 = r82_DAY15_30;
+//	}
+//	public BigDecimal getR82_DAY31_TO_2M() {
+//		return R82_DAY31_TO_2M;
+//	}
+//	public void setR82_DAY31_TO_2M(BigDecimal r82_DAY31_TO_2M) {
+//		R82_DAY31_TO_2M = r82_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR82_MORE2M_TO_3M() {
+//		return R82_MORE2M_TO_3M;
+//	}
+//	public void setR82_MORE2M_TO_3M(BigDecimal r82_MORE2M_TO_3M) {
+//		R82_MORE2M_TO_3M = r82_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR82_OVER3M_TO_6M() {
+//		return R82_OVER3M_TO_6M;
+//	}
+//	public void setR82_OVER3M_TO_6M(BigDecimal r82_OVER3M_TO_6M) {
+//		R82_OVER3M_TO_6M = r82_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR82_OVER6M_TO_1Y() {
+//		return R82_OVER6M_TO_1Y;
+//	}
+//	public void setR82_OVER6M_TO_1Y(BigDecimal r82_OVER6M_TO_1Y) {
+//		R82_OVER6M_TO_1Y = r82_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR82_OVER1Y_TO_3Y() {
+//		return R82_OVER1Y_TO_3Y;
+//	}
+//	public void setR82_OVER1Y_TO_3Y(BigDecimal r82_OVER1Y_TO_3Y) {
+//		R82_OVER1Y_TO_3Y = r82_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR82_OVER3Y_TO_5Y() {
+//		return R82_OVER3Y_TO_5Y;
+//	}
+//	public void setR82_OVER3Y_TO_5Y(BigDecimal r82_OVER3Y_TO_5Y) {
+//		R82_OVER3Y_TO_5Y = r82_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR82_OVER5Y() {
+//		return R82_OVER5Y;
+//	}
+//	public void setR82_OVER5Y(BigDecimal r82_OVER5Y) {
+//		R82_OVER5Y = r82_OVER5Y;
+//	}
+//	public BigDecimal getR82_TOTAL() {
+//		return R82_TOTAL;
+//	}
+//	public void setR82_TOTAL(BigDecimal r82_TOTAL) {
+//		R82_TOTAL = r82_TOTAL;
+//	}
+//	public String getR83_PRODUCT() {
+//		return R83_PRODUCT;
+//	}
+//	public void setR83_PRODUCT(String r83_PRODUCT) {
+//		R83_PRODUCT = r83_PRODUCT;
+//	}
+//	public BigDecimal getR83_DAY1() {
+//		return R83_DAY1;
+//	}
+//	public void setR83_DAY1(BigDecimal r83_DAY1) {
+//		R83_DAY1 = r83_DAY1;
+//	}
+//	public BigDecimal getR83_DAY2_7() {
+//		return R83_DAY2_7;
+//	}
+//	public void setR83_DAY2_7(BigDecimal r83_DAY2_7) {
+//		R83_DAY2_7 = r83_DAY2_7;
+//	}
+//	public BigDecimal getR83_DAY8_14() {
+//		return R83_DAY8_14;
+//	}
+//	public void setR83_DAY8_14(BigDecimal r83_DAY8_14) {
+//		R83_DAY8_14 = r83_DAY8_14;
+//	}
+//	public BigDecimal getR83_DAY15_30() {
+//		return R83_DAY15_30;
+//	}
+//	public void setR83_DAY15_30(BigDecimal r83_DAY15_30) {
+//		R83_DAY15_30 = r83_DAY15_30;
+//	}
+//	public BigDecimal getR83_DAY31_TO_2M() {
+//		return R83_DAY31_TO_2M;
+//	}
+//	public void setR83_DAY31_TO_2M(BigDecimal r83_DAY31_TO_2M) {
+//		R83_DAY31_TO_2M = r83_DAY31_TO_2M;
+//	}
+//	public BigDecimal getR83_MORE2M_TO_3M() {
+//		return R83_MORE2M_TO_3M;
+//	}
+//	public void setR83_MORE2M_TO_3M(BigDecimal r83_MORE2M_TO_3M) {
+//		R83_MORE2M_TO_3M = r83_MORE2M_TO_3M;
+//	}
+//	public BigDecimal getR83_OVER3M_TO_6M() {
+//		return R83_OVER3M_TO_6M;
+//	}
+//	public void setR83_OVER3M_TO_6M(BigDecimal r83_OVER3M_TO_6M) {
+//		R83_OVER3M_TO_6M = r83_OVER3M_TO_6M;
+//	}
+//	public BigDecimal getR83_OVER6M_TO_1Y() {
+//		return R83_OVER6M_TO_1Y;
+//	}
+//	public void setR83_OVER6M_TO_1Y(BigDecimal r83_OVER6M_TO_1Y) {
+//		R83_OVER6M_TO_1Y = r83_OVER6M_TO_1Y;
+//	}
+//	public BigDecimal getR83_OVER1Y_TO_3Y() {
+//		return R83_OVER1Y_TO_3Y;
+//	}
+//	public void setR83_OVER1Y_TO_3Y(BigDecimal r83_OVER1Y_TO_3Y) {
+//		R83_OVER1Y_TO_3Y = r83_OVER1Y_TO_3Y;
+//	}
+//	public BigDecimal getR83_OVER3Y_TO_5Y() {
+//		return R83_OVER3Y_TO_5Y;
+//	}
+//	public void setR83_OVER3Y_TO_5Y(BigDecimal r83_OVER3Y_TO_5Y) {
+//		R83_OVER3Y_TO_5Y = r83_OVER3Y_TO_5Y;
+//	}
+//	public BigDecimal getR83_OVER5Y() {
+//		return R83_OVER5Y;
+//	}
+//	public void setR83_OVER5Y(BigDecimal r83_OVER5Y) {
+//		R83_OVER5Y = r83_OVER5Y;
+//	}
+//	public BigDecimal getR83_TOTAL() {
+//		return R83_TOTAL;
+//	}
+//	public void setR83_TOTAL(BigDecimal r83_TOTAL) {
+//		R83_TOTAL = r83_TOTAL;
+//	}
 	public String getR84_PRODUCT() {
 		return R84_PRODUCT;
 	}

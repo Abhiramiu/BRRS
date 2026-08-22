@@ -1,5 +1,6 @@
 package com.bornfire.brrs.entities;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,6 +90,9 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	@Modifying
 	@Query("update RRReport a set report_validity=?2, lchg_user_id=?3, lchg_time=sysdate where rptCode=?1 ")
 	public int updateValidity(String rptCode, String valid, String userid);
+
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'SLS' ORDER BY rpt_code", nativeQuery = true)
+	List<RRReport> getReportListbrrsSLS();
 
 
 }
