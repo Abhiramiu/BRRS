@@ -12099,47 +12099,68 @@ public class RegulatoryReportServices {
 		}
 	}
 
-	public String updateInrRate(BigDecimal inrRate, String reportDate) {
-		if (inrRate == null || inrRate.compareTo(BigDecimal.ZERO) <= 0) {
+	public String updateExchangeRate(String currency, BigDecimal rate, String reportDate) {
+		if (rate == null || rate.compareTo(BigDecimal.ZERO) <= 0) {
 			return "Error: Exchange rate must be greater than 0.";
 		}
 		if (reportDate == null || reportDate.isEmpty()) {
 			return "Error: Report date must be specified.";
 		}
+		if (currency == null || currency.isEmpty()) {
+			currency = "INR";
+		}
+		final String selectedCurrency = currency.toUpperCase();
 		try {
-			String sql = "{ call BRRS_UPDATE_ALL_INR_RATES(?, ?) }";
+			String sql = "{ call BRRS_UPDATE_EXCHANGE_RATES(?, ?, ?) }";
 			jdbcTemplate.update(connection -> {
 				java.sql.CallableStatement cs = connection.prepareCall(sql);
-				cs.setBigDecimal(1, inrRate);
-				cs.setString(2, reportDate);
+				cs.setString(1, selectedCurrency);
+				cs.setBigDecimal(2, rate);
+				cs.setString(3, reportDate);
 				return cs;
 			});
 
-			return "Successfully updated INR rate: " + inrRate + " for date: " + reportDate;
+			return "Successfully updated " + selectedCurrency + " exchange rate: " + rate + " for date: " + reportDate;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "Error executing BRRS_UPDATE_ALL_INR_RATES: " + e.getMessage();
+			return "Error executing BRRS_UPDATE_EXCHANGE_RATES: " + e.getMessage();
 		}
 	}
 
-	public BigDecimal getInrRate() {
-		try {
-			return jdbcTemplate.queryForObject("SELECT EXCHANGE_RATE FROM BRRS_INR_RATE_CONFIG", BigDecimal.class);
-		} catch (Exception e) {
-			return null;
+	public Map<String, Object> getExchangeRateDetails(String currency, String reportDate) {
+		Map<String, Object> response = new HashMap<String, Object>();
+		if (currency == null || currency.isEmpty()) {
+			currency = "INR";
 		}
-	}
-
-	public Map<String, Object> getInrRateDetails() {
+		String currCol = currency.toUpperCase();
+		if (!java.util.Arrays.asList("INR", "USD", "EUR", "BWP", "ZAR", "AUD", "GBP").contains(currCol)) {
+			currCol = "INR";
+		}
 		try {
-			List<Map<String, Object>> list = jdbcTemplate.queryForList(
-					"SELECT EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_INR_RATE_CONFIG ORDER BY REPORT_DATE DESC NULLS LAST");
-			if (!list.isEmpty()) {
+			List<Map<String, Object>> list;
+			if (reportDate != null && !reportDate.trim().isEmpty()) {
+				String sql = "SELECT " + currCol + " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE TRUNC(REPORT_DATE) = TO_DATE(?, 'YYYY-MM-DD')";
+				list = jdbcTemplate.queryForList(sql, reportDate);
+			} else {
+				String sql = "SELECT " + currCol + " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE " + currCol + " IS NOT NULL ORDER BY REPORT_DATE DESC NULLS LAST";
+				list = jdbcTemplate.queryForList(sql);
+			}
+			if (!list.isEmpty() && list.get(0).get("EXCHANGE_RATE") != null) {
 				return list.get(0);
 			}
-			return new HashMap<String, Object>();
 		} catch (Exception e) {
-			return new HashMap<String, Object>();
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	public List<Map<String, Object>> getAllExchangeRates() {
+		try {
+			String sql = "SELECT TO_CHAR(REPORT_DATE, 'DD-MM-YYYY') AS REPORT_DATE, INR, USD, EUR, BWP, ZAR, AUD, GBP FROM BRRS_EXCHANGE_RATE ORDER BY REPORT_DATE DESC";
+			return jdbcTemplate.queryForList(sql);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ArrayList<Map<String, Object>>();
 		}
 	}
 

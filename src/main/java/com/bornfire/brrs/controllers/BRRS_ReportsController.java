@@ -5781,21 +5781,35 @@ public class BRRS_ReportsController {
 
 	}
 
-	@RequestMapping(value = "Rate/updateInrRate", method = RequestMethod.POST)
+	@RequestMapping(value = "Rate/updateExchangeRate", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateInrRate(@RequestParam("inrRate") BigDecimal inrRate,
+	public String updateExchangeRate(@RequestParam(value = "currency", required = false, defaultValue = "INR") String currency,
+			@RequestParam("rate") BigDecimal rate,
 			@RequestParam("reportDate") String reportDate) {
-		return regreportServices.updateInrRate(inrRate, reportDate);
+		return regreportServices.updateExchangeRate(currency, rate, reportDate);
 	}
 
-	@RequestMapping(value = "Rate/getInrRate", method = RequestMethod.GET)
+	@RequestMapping(value = "Rate/getExchangeRate", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> getDtaxInrRate() {
+	public ResponseEntity<Map<String, Object>> getExchangeRate(
+			@RequestParam(value = "currency", required = false, defaultValue = "INR") String currency,
+			@RequestParam(value = "reportDate", required = false) String reportDate) {
 		try {
-			Map<String, Object> details = regreportServices.getInrRateDetails();
+			Map<String, Object> details = regreportServices.getExchangeRateDetails(currency, reportDate);
 			return ResponseEntity.ok(details);
 		} catch (Exception e) {
 			return ResponseEntity.ok(Collections.emptyMap());
+		}
+	}
+
+	@RequestMapping(value = "Rate/getAllExchangeRates", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List<Map<String, Object>>> getAllExchangeRates() {
+		try {
+			List<Map<String, Object>> list = regreportServices.getAllExchangeRates();
+			return ResponseEntity.ok(list);
+		} catch (Exception e) {
+			return ResponseEntity.ok(Collections.emptyList());
 		}
 	}
 

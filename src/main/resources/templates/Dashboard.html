@@ -401,6 +401,59 @@
 			text-decoration: underline;
 		}
 
+		/* Inline Date Hint Popover */
+		.date-hint-popover {
+			position: absolute;
+			left: 0;
+			top: 100%;
+			margin-top: 4px;
+			background-color: #fff3cd;
+			color: #856404;
+			border: 1px solid #ffeeba;
+			border-radius: 6px;
+			padding: 6px 12px;
+			font-size: 12px;
+			font-weight: 500;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			z-index: 1050;
+		}
+
+		.date-hint-popover::before {
+			content: '';
+			position: absolute;
+			bottom: 100%;
+			left: 20px;
+			border-width: 6px;
+			border-style: solid;
+			border-color: transparent transparent #fff3cd transparent;
+		}
+
+		/* Validation Pop-Up Button Styles */
+		.custom-tab-btn {
+			background: white;
+			color: #333;
+			font-weight: 600;
+			border: 2px solid #5c7495;
+			padding: 6px 22px;
+			margin: 0 5px;
+			border-radius: 30px;
+			transition: all 0.3s ease;
+			cursor: pointer;
+			display: inline-block;
+			outline: none;
+		}
+
+		.custom-tab-btn:hover {
+			background-color: #5c7495;
+			color: white;
+			border: 2px solid #5c7495;
+		}
+
+		.custom-tab-btn:focus {
+			outline: none;
+			box-shadow: none;
+		}
+
 		/* Responsive Breakdown Rules */
 		@media (max-width: 992px) {
 			.dark-panel-container {
@@ -475,15 +528,13 @@
 					</td>
 					<td style="text-align:right;font-size: 15px;">
 						<div style="display: inline-flex; align-items: center; gap: 8px;">
-							<span class="report-label">INR Exchange Rate</span>
-							<input type="date" id="inrDateInput" class="form-control form-control-sm"
-								style="width: 140px; border-radius: 4px; border: 1px solid #cbd5e1;" />
-							<input type="number" id="inrRateInput" step="0.0001" placeholder="Enter INR Rate"
-								class="form-control form-control-sm"
-								style="width: 140px; text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
-							<button class="nav-link" onclick="submitInrRate()"
-								style="text-align: center; font-weight: 550 !important; color: #333;">
-								Submit
+							<button type="button" class="btn btn-escalation ml-2" data-toggle="modal"
+								data-target="#viewExchangeRatesModal" onclick="loadAllExchangeRatesTable()">
+								Exchange Rate
+							</button>
+							<button type="button" class="btn btn-escalation ml-2" data-toggle="modal"
+								data-target="#exchangeRateModal" onclick="openExchangeRateModal()">
+								Update Exchange Rate
 							</button>
 							<!-- Bordered Transparent Escalation Matrix Button -->
 							<button type="button" class="btn btn-escalation ml-2" data-toggle="modal"
@@ -554,6 +605,96 @@
 				</div>
 			</div>
 
+		</div>
+	</div>
+
+	<!-- View Exchange Rates Modal Popup -->
+	<div class="modal fade" id="viewExchangeRatesModal" tabindex="-1" role="dialog" aria-labelledby="viewExchangeRatesModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="max-width: 850px;">
+			<div class="modal-content" style="border-radius: 8px;">
+				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white;">
+					<h5 class="font-weight-bold modal-title" id="viewExchangeRatesModalLabel" style="color: white; margin: 0;">Exchange Rates</h5>
+				</div>
+				<div class="modal-body p-3" style="max-height: 480px; overflow-y: auto;">
+					<table class="table table-bordered table-striped table-sm text-center" style="width: 100%; font-size: 13px;">
+						<thead style="background-color: #f1f5f9; color: #334155; font-weight: 600;">
+							<tr>
+								<th style="width: 6%;">S.No</th>
+								<th style="width: 16%;">Report Date</th>
+								<th style="width: 11%;">INR</th>
+								<th style="width: 11%;">USD</th>
+								<th style="width: 11%;">EUR</th>
+								<th style="width: 11%;">BWP</th>
+								<th style="width: 11%;">ZAR</th>
+								<th style="width: 11%;">AUD</th>
+								<th style="width: 12%;">GBP</th>
+							</tr>
+						</thead>
+						<tbody id="exchangeRatesTableBody">
+							<tr>
+								<td colspan="9" class="text-muted">Loading exchange rates...</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center;">
+					<button type="button" class="custom-tab-btn" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Update Exchange Rate Modal Popup -->
+	<div class="modal fade" id="exchangeRateModal" tabindex="-1" role="dialog" aria-labelledby="exchangeRateModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 450px;">
+			<div class="modal-content" style="border-radius: 8px;">
+				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white;">
+					<h5 class="font-weight-bold modal-title" id="exchangeRateModalLabel" style="color: white; margin: 0;">Update Exchange Rate</h5>
+				</div>
+				<div class="modal-body p-4">
+					<form id="exchangeRateForm" onsubmit="return false;">
+						<div class="form-group mb-3">
+							<label for="modalCurrencySelect" class="font-weight-bold text-secondary" style="font-size: 14px;">Currency</label>
+							<select id="modalCurrencySelect" class="form-control form-control-sm" style="border-radius: 4px; border: 1px solid #cbd5e1; font-weight: 500;" onchange="loadExchangeRateForModal()">
+								<option value="INR" selected>INR</option>
+								<option value="USD">USD</option>
+								<option value="EUR">EUR</option>
+								<option value="BWP">BWP</option>
+								<option value="ZAR">ZAR</option>
+								<option value="AUD">AUD</option>
+								<option value="GBP">GBP</option>
+							</select>
+						</div>
+
+						<div class="form-group mb-3" style="position: relative;">
+							<label for="modalDateInput" class="font-weight-bold text-secondary" style="font-size: 14px;">Report Date</label>
+							<input type="date" id="modalDateInput" class="form-control form-control-sm"
+								style="border-radius: 4px; border: 1px solid #cbd5e1;" onchange="onModalDateChange()" />
+							<!-- Inline Date Hint Popover -->
+							<div id="dateHintPopover" class="date-hint-popover" style="display: none;">
+								<span id="dateHintText">Please select the last date of the month.</span>
+							</div>
+						</div>
+
+						<div class="form-group mb-3" style="position: relative;">
+							<label for="modalRateInput" class="font-weight-bold text-secondary" style="font-size: 14px;">Exchange Rate</label>
+							<input type="number" id="modalRateInput" step="0.0001" placeholder="Enter Exchange Rate"
+								class="form-control form-control-sm"
+								style="text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
+							<!-- Inline Rate Hint Popover -->
+							<div id="rateHintPopover" class="date-hint-popover" style="display: none;">
+								<span id="rateHintText">Please enter a valid exchange rate.</span>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center;">
+					<button type="button" class="custom-tab-btn" data-dismiss="modal">Cancel</button>
+					<button type="button" class="custom-tab-btn" style="background-color: #5c7495; color: white;" onclick="submitExchangeRate()">Submit</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -666,36 +807,15 @@
 				}
 			}
 
-			$.ajax({
-				url: '/BRRS/Reports/Rate/getInrRate',
-				type: 'GET',
-				success: function (data) {
-					if (data) {
-						if (data.EXCHANGE_RATE) {
-							var rateInput = document.getElementById("inrRateInput");
-							if (rateInput) {
-								rateInput.value = data.EXCHANGE_RATE;
-								rateInput.placeholder = data.EXCHANGE_RATE;
-							}
-						}
-						if (data.REPORT_DATE) {
-							var dateInput = document.getElementById("inrDateInput");
-							if (dateInput) {
-								dateInput.value = data.REPORT_DATE;
-							}
-						}
-					}
-				}
-			});
-
-			var inrInput = document.getElementById("inrRateInput");
-			if (inrInput) {
-				inrInput.addEventListener("input", function (e) {
+			var modalRateInp = document.getElementById("modalRateInput");
+			if (modalRateInp) {
+				modalRateInp.addEventListener("input", function (e) {
 					var val = this.value;
 					var parts = val.split('.');
 					if (parts.length === 2 && parts[1].length > 4) {
 						this.value = parts[0] + '.' + parts[1].substring(0, 4);
 					}
+					validateRateInputForModal();
 				});
 			}
 
@@ -828,33 +948,191 @@
 			window.location.reload();
 		}
 
-		function submitInrRate() {
-			var inrRate = document.getElementById("inrRateInput").value;
-			if (!inrRate || isNaN(inrRate) || parseFloat(inrRate) <= 0) {
-				alert("Please enter a valid INR exchange rate greater than 0.");
+		function getLastDayOfMonthString(dateStr) {
+			if (!dateStr) return dateStr;
+			var parts = dateStr.split('-');
+			if (parts.length !== 3) return dateStr;
+			var year = parseInt(parts[0], 10);
+			var month = parseInt(parts[1], 10);
+			if (isNaN(year) || isNaN(month)) return dateStr;
+
+			var lastDayObj = new Date(year, month, 0);
+			var lastDayNum = lastDayObj.getDate();
+			var mm = month < 10 ? '0' + month : '' + month;
+			var dd = lastDayNum < 10 ? '0' + lastDayNum : '' + lastDayNum;
+			return year + '-' + mm + '-' + dd;
+		}
+
+		function isLastDayOfMonth(dateStr) {
+			if (!dateStr) return false;
+			return dateStr === getLastDayOfMonthString(dateStr);
+		}
+
+		function onModalDateChange() {
+			var dateInput = document.getElementById("modalDateInput");
+			var popover = document.getElementById("dateHintPopover");
+			var popoverText = document.getElementById("dateHintText");
+
+			if (dateInput && dateInput.value) {
+				if (!isLastDayOfMonth(dateInput.value)) {
+					var lastDayStr = getLastDayOfMonthString(dateInput.value);
+					if (popoverText) {
+						popoverText.innerHTML = "⚠️ Please select the last date of the month (e.g. <b>" + lastDayStr + "</b>).";
+					}
+					if (popover) {
+						popover.style.display = "block";
+					}
+					dateInput.style.borderColor = "#dc3545";
+				} else {
+					if (popover) {
+						popover.style.display = "none";
+					}
+					dateInput.style.borderColor = "#cbd5e1";
+				}
+			} else {
+				if (popover) {
+					popover.style.display = "none";
+				}
+				if (dateInput) {
+					dateInput.style.borderColor = "#cbd5e1";
+				}
+			}
+			loadExchangeRateForModal();
+		}
+
+		function validateRateInputForModal() {
+			var rateInp = document.getElementById("modalRateInput");
+			var popover = document.getElementById("rateHintPopover");
+			var popoverText = document.getElementById("rateHintText");
+
+			if (!rateInp) return true;
+			var val = rateInp.value;
+			if (!val || isNaN(val) || parseFloat(val) <= 0) {
+				if (popoverText) {
+					popoverText.innerHTML = "⚠️ Please enter a valid exchange rate greater than 0.";
+				}
+				if (popover) {
+					popover.style.display = "block";
+				}
+				rateInp.style.borderColor = "#dc3545";
+				return false;
+			} else {
+				var parts = val.split('.');
+				if (parts.length === 2 && parts[1].length > 4) {
+					if (popoverText) {
+						popoverText.innerHTML = "⚠️ Maximum 4 decimal places allowed (e.g. 7.1234).";
+					}
+					if (popover) {
+						popover.style.display = "block";
+					}
+					rateInp.style.borderColor = "#dc3545";
+					return false;
+				} else {
+					if (popover) {
+						popover.style.display = "none";
+					}
+					rateInp.style.borderColor = "#cbd5e1";
+					return true;
+				}
+			}
+		}
+
+		function openExchangeRateModal() {
+			var dateInput = document.getElementById("modalDateInput");
+			var popover = document.getElementById("dateHintPopover");
+			if (popover) popover.style.display = "none";
+			if (dateInput) dateInput.style.borderColor = "#cbd5e1";
+
+			var rateInp = document.getElementById("modalRateInput");
+			var ratePopover = document.getElementById("rateHintPopover");
+			if (ratePopover) ratePopover.style.display = "none";
+			if (rateInp) rateInp.style.borderColor = "#cbd5e1";
+
+			if (dateInput && !dateInput.value) {
+				var processingDateString = document.getElementById("dashboardTargetDate") ? document.getElementById("dashboardTargetDate").textContent.trim() : "";
+				if (processingDateString) {
+					var parts = processingDateString.split('-');
+					if (parts.length === 3) {
+						dateInput.value = parts[2] + '-' + parts[1] + '-' + parts[0];
+					}
+				}
+			}
+			onModalDateChange();
+		}
+
+		function loadExchangeRateForModal() {
+			var currency = document.getElementById("modalCurrencySelect").value;
+			var reportDate = document.getElementById("modalDateInput").value;
+
+			var rateInp = document.getElementById("modalRateInput");
+			var ratePopover = document.getElementById("rateHintPopover");
+			if (ratePopover) ratePopover.style.display = "none";
+			if (rateInp) rateInp.style.borderColor = "#cbd5e1";
+
+			$.ajax({
+				url: '/BRRS/Reports/Rate/getExchangeRate',
+				type: 'GET',
+				data: {
+					currency: currency,
+					reportDate: reportDate
+				},
+				success: function (data) {
+					var rateInput = document.getElementById("modalRateInput");
+					var dateInput = document.getElementById("modalDateInput");
+					if (rateInput) {
+						if (data && data.EXCHANGE_RATE != null) {
+							rateInput.value = data.EXCHANGE_RATE;
+							rateInput.placeholder = data.EXCHANGE_RATE;
+						} else {
+							rateInput.value = '';
+							rateInput.placeholder = 'Enter Exchange Rate';
+						}
+					}
+					if (data && data.REPORT_DATE && dateInput && !dateInput.value) {
+						dateInput.value = data.REPORT_DATE;
+					}
+				}
+			});
+		}
+
+		function submitExchangeRate() {
+			var currency = document.getElementById("modalCurrencySelect").value;
+			var isValidRate = validateRateInputForModal();
+			if (!isValidRate) {
 				return;
 			}
 
-			// Enforce at most 4 decimal places restriction
-			var parts = inrRate.split('.');
-			if (parts.length === 2 && parts[1].length > 4) {
-				alert("Please enter an exchange rate with at most 4 decimal places (e.g., 7.1234).");
-				return;
-			}
-
-			var reportDate = document.getElementById("inrDateInput").value;
+			var reportDate = document.getElementById("modalDateInput").value;
 			if (!reportDate) {
 				alert("Please select a report date.");
 				return;
 			}
 
+			if (!isLastDayOfMonth(reportDate)) {
+				var lastDay = getLastDayOfMonthString(reportDate);
+				var popover = document.getElementById("dateHintPopover");
+				var popoverText = document.getElementById("dateHintText");
+				if (popoverText) {
+					popoverText.innerHTML = "⚠️ Please select the last date of the month (e.g. <b>" + lastDay + "</b>).";
+				}
+				if (popover) {
+					popover.style.display = "block";
+				}
+				document.getElementById("modalDateInput").style.borderColor = "#dc3545";
+				return;
+			}
+
+			var rate = document.getElementById("modalRateInput").value;
+
+			$('#exchangeRateModal').modal('hide');
 			$('#loader').modal("toggle");
 
 			$.ajax({
-				url: '/BRRS/Reports/Rate/updateInrRate',
+				url: '/BRRS/Reports/Rate/updateExchangeRate',
 				type: 'POST',
 				data: {
-					inrRate: inrRate,
+					currency: currency,
+					rate: rate,
 					reportDate: reportDate
 				},
 				success: function (response) {
@@ -864,12 +1142,51 @@
 				},
 				error: function (jqXHR) {
 					$('#loader').modal("toggle");
-					let msg = '❌ Error while updating INR rate';
+					let msg = '❌ Error while updating exchange rate';
 					if (jqXHR.responseText) {
 						msg = jqXHR.responseText;
 					}
 					$('#alertmsg').text(msg);
 					$('#alert').modal('show');
+				}
+			});
+		}
+
+		function loadAllExchangeRatesTable() {
+			var tbody = document.getElementById("exchangeRatesTableBody");
+			if (tbody) {
+				tbody.innerHTML = '<tr><td colspan="9" class="text-muted">Loading exchange rates...</td></tr>';
+			}
+			$.ajax({
+				url: '/BRRS/Reports/Rate/getAllExchangeRates',
+				type: 'GET',
+				success: function (list) {
+					if (!tbody) return;
+					if (!list || list.length === 0) {
+						tbody.innerHTML = '<tr><td colspan="9" class="text-muted">No exchange rates found.</td></tr>';
+						return;
+					}
+					var html = '';
+					for (var i = 0; i < list.length; i++) {
+						var item = list[i];
+						html += '<tr>';
+						html += '<td>' + (i + 1) + '</td>';
+						html += '<td style="font-weight: 600; color: #0f172a;">' + (item.REPORT_DATE || '-') + '</td>';
+						html += '<td>' + (item.INR != null ? parseFloat(item.INR).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.USD != null ? parseFloat(item.USD).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.EUR != null ? parseFloat(item.EUR).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.BWP != null ? parseFloat(item.BWP).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.ZAR != null ? parseFloat(item.ZAR).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.AUD != null ? parseFloat(item.AUD).toFixed(4) : '-') + '</td>';
+						html += '<td>' + (item.GBP != null ? parseFloat(item.GBP).toFixed(4) : '-') + '</td>';
+						html += '</tr>';
+					}
+					tbody.innerHTML = html;
+				},
+				error: function () {
+					if (tbody) {
+						tbody.innerHTML = '<tr><td colspan="9" class="text-danger">Failed to load exchange rates.</td></tr>';
+					}
 				}
 			});
 		}
