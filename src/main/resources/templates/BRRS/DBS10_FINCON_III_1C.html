@@ -1068,9 +1068,9 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
-						<button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
+						<!--<button class="custom-tab-btn" th:if="${displaymode == 'summary'}" onclick="showdetails();">
 							Details
-						</button>
+						</button>-->
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
