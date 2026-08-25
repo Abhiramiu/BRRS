@@ -2861,7 +2861,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 												<td
 													style="text-align: right; background-color: rgb(107, 122, 143); color: white;"
 													th:text="${#numbers.formatDecimal(row1.r41Total,1,'COMMA',0,'POINT')}"
-													id="r41Total" name="r41Total"></td>
+													></td>
 											</tr>
 
 											<tr th:each="row1: ${reportsummary}">
@@ -3137,7 +3137,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 												<td
 													style="text-align: right; background-color: rgb(107, 122, 143); color: white;"
 													th:text="${#numbers.formatDecimal(row1.r49Total,1,'COMMA',0,'POINT')}"
-													id="r49Total" name="r49Total"></td>
+													></td>
 											</tr>
 
 											<tr th:each="row1: ${reportsummary}">
@@ -3407,10 +3407,9 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													name="r57OtherInstallmentLoans"
 													th:text="${#numbers.formatDecimal(row1.r57OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
-												<td
-													style="text-align: right; background-color: rgb(107, 122, 143); color: white;"
-													th:text="${#numbers.formatDecimal(row1.r57Total,1,'COMMA',0,'POINT')}"
-													id="r57Total" name="r57Total"></td>
+												<td style="text-align: right; background-color: rgb(107, 122, 143); color: white;"	
+													th:text="${#numbers.formatDecimal(row1.r57Total,1,'COMMA',0,'POINT')}"				
+													></td>
 											</tr>
 
 											<tr th:each="row1: ${reportsummary}">
@@ -3475,9 +3474,9 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 													th:attr="RowId='R59', ColumnId='C5'"
 													th:text="${#numbers.formatDecimal(row1.r59OtherInstallmentLoans,1,'COMMA',0,'POINT')}">
 												</td>
-												<td
-													style="text-align: right; background-color: rgb(107, 122, 143); color: white;"
-													id="r59Total" name="r59Total"></td>
+												<td style="text-align: right; background-color: rgb(107, 122, 143); color: white;"	
+												th:text="${#numbers.formatDecimal(row1.r59Total,1,'COMMA',0,'POINT')}"				
+													></td>
 											</tr>
 
 											<tr th:each="row1: ${reportsummary}">
@@ -3647,7 +3646,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 												<td
 													style="text-align: right; background-color: rgb(107, 122, 143); color: white;"
 													th:text="${#numbers.formatDecimal(row1.r64Total,1,'COMMA',0,'POINT')}"
-													id="r64Total" name="r64Total"></td>
+													></td>
 											</tr>
 										</tbody>
 

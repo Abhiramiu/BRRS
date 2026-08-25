@@ -554,41 +554,41 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -1324,7 +1324,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 				success: function () {
 					$('#loader').modal('hide');
 					showResultModal('BRRS', 'Finalised successfully.');
-					setTimeout(function () { location.reload(); }, 1500);
+					setTimeout(function () {location.reload();}, 1500);
 				},
 				error: function (jqXHR) {
 					$('#loader').modal('hide');
@@ -1446,7 +1446,8 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}">Details</button>
 						<!-- Modify Button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${ role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							title="Click to EDIT Records"
+							th:if="${ role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">
 							Modify
@@ -1454,10 +1455,8 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 						<!-- Resub "Modify": pulls this archived (date, version) snapshot into the live tables -->
 						<button type="button" class="custom-tab-btn" onclick="promoteResubToLive(this);"
 							title="Pull this resubmitted version into the live report for correction"
-							th:if="${displaymode == 'resubSummary'}"
-							th:attr="data-reportid=${reportid}, data-todate=${todate}, data-fromdate=${fromdate},
-							         data-currency=${currency}, data-dtltype=${dtltype}, data-version=${version}"
-							id="promoteResubBtn">
+							th:if="${displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid}, data-todate=${todate}, data-fromdate=${fromdate},
+							         data-currency=${currency}, data-dtltype=${dtltype}, data-version=${version}" id="promoteResubBtn">
 							Modify
 						</button>
 						<!-- Finalise: only shown on the live page when reached via the resub "Modify" promotion above -->
@@ -1530,29 +1529,23 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 																				  ">
 							<i class="fa fa-download"></i> Download
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -1997,18 +1990,19 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 										</tr>
 
 										<tr>
-																					<td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
-																					<td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
-																					<td id="ROW42" style=" font-weight: bold;text-align: right;">
-																						<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R42_MONTH_END != null 
+											<td style="padding-left: 30px;" th:text="${report.r42_product}"></td>
+											<td th:text="${report.r42_cross_ref}" style="text-align: left; "></td>
+											<td id="ROW42" style=" font-weight: bold;text-align: right;">
+												<input class="display-input Show_input" type="text" th:value="${reportsummary1 != null and !#lists.isEmpty(reportsummary1) and reportsummary1[0].R42_MONTH_END != null 
 										? #numbers.formatDecimal(reportsummary1[0].R42_MONTH_END, 1,'COMMA', 0, 'POINT') 
-										: '0'}" id="R42_MONTH_END" name="R42_MONTH_END" style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
-																							readonly />
-																					</td>
-																					<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
-																						style="text-align: right; ">
-																					</td>
-																				</tr>
+										: '0'}" id="R42_MONTH_END" name="R42_MONTH_END"
+													style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<td th:text="${#numbers.formatDecimal(report.r42_average, 0, 'COMMA', 0, 'POINT')}"
+												style="text-align: right; ">
+											</td>
+										</tr>
 
 										<tr>
 											<td style="padding-left: 30px;" th:text="${report.r43_product}"></td>

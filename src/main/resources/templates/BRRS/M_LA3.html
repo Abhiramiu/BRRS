@@ -350,10 +350,10 @@ PURPOSE		: BRRSREPORT
 			}
 
 			var Callurl;
-						$('#loader').modal('show');
-						Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-							location.href = Callurl;
-						console.log(Callurl);
+			$('#loader').modal('show');
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				location.href = Callurl;
+			console.log(Callurl);
 			/*  $.ajax({
 				 type: 'get',
 				 url: Callurl,
@@ -524,6 +524,26 @@ PURPOSE		: BRRSREPORT
 
 		}
 
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+		function showResultModalDetail(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+
+			// Show the modal
+			$('#resultModal1').modal('show');
+		}
+	</script>
+
+	<script>
 		function closemodels() {
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
@@ -533,33 +553,7 @@ PURPOSE		: BRRSREPORT
 				location.reload();
 			}, 300);
 		}
-
-		function redirectBack() {
-			if (previousUrl) {
-				window.location.href = previousUrl;
-			} else {
-				window.history.back();
-			}
-		}
-
-		function showResultModal(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel').text(title);
-			$('#resultModalBody').text(message);
-			// Show the modal
-			$('#resultModal').modal('show');
-		}
-		function showResultModalDetail(title, message) {
-			// Set the text for the modal elements
-			$('#resultModalLabel1').text(title);
-			$('#resultModalBody1').text(message);
-			// Show the modal
-			$('#resultModal1').modal('show');
-		}
 	</script>
-
-
-
 
 
 
@@ -855,74 +849,67 @@ PURPOSE		: BRRSREPORT
 
 
 	</script>
-
+	
 	<script>
-		let previousUrl = document.referrer;
 
 		function submitUpdate() {
 			const formData = $('#DetailForm').serialize(); // Ensure correct form ID
-			let userAnswer = null;
 
-			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
-				$('#confirmModal').modal('show');
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
 
-				$('#btnConfirmYes').off('click').on('click', function () {
-					$('#confirmModal').modal('hide');
-					$('#confirmModal').data('answered', 'YES');
-					submitUpdate();
-				});
-
-				$('#btnConfirmNo').off('click').on('click', function () {
-					$('#confirmModal').modal('hide');
-					$('#confirmModal').data('answered', 'NO');
-					submitUpdate();
-				});
-
-				return;
-			}
-
-			userAnswer = $('#confirmModal').data('answered');
-			if (userAnswer === 'NO') {
-				formData += '&entry=NO';
-			}
-
-			$('#confirmModal').data('answered', null);
-
+			// Show loader while processing
 			$('#loader').modal('show');
 
 
 			$.ajax({
-				url: '/BRRS/Reports/' + reportId + '/update',
+				url: `/BRRS/Reports/${reportId}/update`,
 				type: 'POST',
 				data: formData,
-
 				success: function (response) {
 					$('#loader').modal('hide');
 
+					// ✅ Handle SUCCESS & NON-SUCCESS (Information)
 					if (response && response.toLowerCase().includes('success')) {
-
-						if (userAnswer === 'NO') {
-							let title = 'Success';
-							let message = response;
-							document.getElementById('resultModalLabel2').innerText = title;
-							document.getElementById('resultModalBody2').innerText = message;
-
-							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
-							modal.show();
-						} else {
-							showResultModalDU('Success', response);
-						}
-
+						showResultModalDetail('BRRS', response);
 					} else {
-						showResultModalDU('Information', response || 'No data updated.');
+						showResultModalDetail('Information', response || 'No data updated.');
 					}
+
+					// Redirect after 1.5 sec
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back(); // fallback
+						}
+					}, 1500);
 				},
-				error: function () {
+
+				error: function (xhr, status, error) {
 					$('#loader').modal('hide');
-					showResultModalDU('Error', 'Failed to update record. Please try again.');
+					console.error("Update error:", error);
+
+					// ✅ Handle ERROR
+					showResultModalDetail('Error', 'Failed to update record. Please try again.');
+
+					// Redirect back after delay even on error
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
 				}
 			});
 		}
+	</script>
+	
+
+	<script>
+		let previousUrl = document.referrer;
+
 		function regenerateProcedure() {
 			let rawDate = /*[[${todate}]]*/ 'fallback-string';
 
@@ -2191,10 +2178,9 @@ PURPOSE		: BRRSREPORT
 										th:value="${#dates.format(Data.report_date, 'yyyy-MM-dd')}" readonly />
 								</div>
 							</div>
-							<input type="hidden" th:field="*{sno}"
-										class="form-control form-control-sm" readonly />
-							<input type="hidden" th:value="${type}" name="type"
-										class="form-control form-control-sm" readonly />
+							<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
+							<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
+								readonly />
 
 							<!-- Update Button -->
 							<div style="text-align:center; margin-top:20px;">
