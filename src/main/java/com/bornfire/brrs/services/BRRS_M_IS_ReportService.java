@@ -16,8 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -58,11 +58,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
@@ -3844,6 +3842,7 @@ public class BRRS_M_IS_ReportService {
 
 		private BigDecimal acctBalanceInpula;
 
+		@Column(name = "REPORT_DATE")
 		@DateTimeFormat(pattern = "dd-MM-yyyy")
 		private Date reportDate;
 
@@ -8124,10 +8123,10 @@ public class BRRS_M_IS_ReportService {
 	// =====================================================
 	// UPDATEDETAIL FOR M_IS
 	// =====================================================
-
 	@Transactional
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
+
 			String SNO = request.getParameter("sno");
 			String acctNo = request.getParameter("acctNumber");
 			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
@@ -8135,73 +8134,134 @@ public class BRRS_M_IS_ReportService {
 			String reportDateStr = request.getParameter("reportDate");
 
 			logger.info("Received update for ACCT_NO: {}", acctNo);
+			logger.info("Received Report Date: {}", reportDateStr);
 
 			M_IS_Detail_Entity existing = detail_findBySno(SNO);
+
 			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
+				logger.warn("No record found for SNO: {}", SNO);
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
 			}
 
-			// Create old copy for audit comparison
+			// Create old copy for audit
 			M_IS_Detail_Entity oldcopy = new M_IS_Detail_Entity();
 			BeanUtils.copyProperties(existing, oldcopy);
 
 			boolean isChanged = false;
 
-			if (acctName != null && !acctName.isEmpty()) {
+			// Update Account Name
+			if (acctName != null && !acctName.trim().isEmpty()) {
 				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+
 					existing.setAcctName(acctName);
 					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
+
+					logger.info("Account Name updated to {}", acctName);
 				}
 			}
 
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
+			// Update Balance
+			if (acctBalanceInpula != null && !acctBalanceInpula.trim().isEmpty()) {
+
+				BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+
 				if (existing.getAcctBalanceInpula() == null
-						|| existing.getAcctBalanceInpula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInpula(newacctBalanceInpula);
+						|| existing.getAcctBalanceInpula().compareTo(newBalance) != 0) {
+
+					existing.setAcctBalanceInpula(newBalance);
 					isChanged = true;
-					logger.info("Balance updated to {}", newacctBalanceInpula);
+
+					logger.info("Balance updated to {}", newBalance);
 				}
 			}
 
 			if (isChanged) {
-				String sql = "UPDATE BRRS_M_IS_DETAILTABLE " + "SET ACCT_NAME = ?, " + "ACCT_BALANCE_IN_PULA = ? "
+
+				String sql = "UPDATE BRRS_M_IS_DETAILTABLE " + "SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? "
 						+ "WHERE SNO = ?";
 
 				jdbcTemplate.update(sql, existing.getAcctName(), existing.getAcctBalanceInpula(), existing.getSno());
 
-				// Audit comparison
+				// Audit
 				auditService.compareEntitiesmanual(oldcopy, existing, SNO, "M IS Detail Screen", "BRRS_M_IS_DETAIL");
 
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
+				// Format Report Date
+				String formattedDate;
 
-				// Run summary procedure after commit
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+				if (reportDateStr == null || reportDateStr.trim().isEmpty()) {
+
+					// Use entity report date if request parameter is missing
+					if (existing.getReportDate() != null) {
+
+						formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(existing.getReportDate());
+
+					} else {
+
+						logger.error("Report Date is missing");
+						return ResponseEntity.badRequest().body("Report Date is required");
+					}
+
+				} else {
+
+					try {
+
+						Date reportDate;
+
+						if (reportDateStr.contains("-") && reportDateStr.length() == 10) {
+
+							// Example: 2026-06-30
+							reportDate = new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr);
+
+						} else {
+
+							// Example: 30-06-2026
+							reportDate = new SimpleDateFormat("dd-MM-yyyy").parse(reportDateStr);
+						}
+
+						formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+					} catch (Exception e) {
+
+						logger.error("Invalid report date format: {}", reportDateStr);
+
+						return ResponseEntity.badRequest().body("Invalid Report Date Format");
+					}
+				}
+
+				logger.info("Procedure Date: {}", formattedDate);
+
+				// Execute procedure after transaction commit
+				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 					@Override
 					public void afterCommit() {
+
 						try {
-							logger.info("Transaction committed — calling BRRS_M_IS_SUMMARY_PROCEDURE({})",
-									formattedDate);
+
+							logger.info("Calling BRRS_M_IS_SUMMARY_PROCEDURE({})", formattedDate);
+
 							jdbcTemplate.update("BEGIN BRRS_M_IS_SUMMARY_PROCEDURE(?); END;", formattedDate);
-							logger.info("Procedure executed successfully after commit.");
+
+							logger.info("BRRS_M_IS_SUMMARY_PROCEDURE executed successfully");
+
 						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
+
+							logger.error("Error executing summary procedure", e);
 						}
 					}
 				});
 
 				return ResponseEntity.ok("Record updated successfully!");
+
 			} else {
+
 				logger.info("No changes detected for ACCT_NO: {}", acctNo);
 				return ResponseEntity.ok("No changes were made.");
 			}
 
 		} catch (Exception e) {
+
 			logger.error("Error updating M_IS record", e);
+
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Error updating record: " + e.getMessage());
 		}

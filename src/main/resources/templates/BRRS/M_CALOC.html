@@ -445,6 +445,10 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
 			var Callurl;
 			$('#loader').modal('show');
@@ -1324,10 +1328,19 @@ PURPOSE		: BWRBRREPORT
 								</a>
 							</div>
 						</div>
-
-
-
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+												    data-fromdate=${fromdate},
+												    data-todate=${todate},
+												    data-filename='M_CALOCDetail',
+						                data-type=${type},
+								            data-version=${version}
+												  ">
+							<i class="fa fa-download"></i>
+						</button>
+
+
+						<!--<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${role != 'M' and  displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 						  																								    data-fromdate=${fromdate},
 						  																								    data-todate=${todate},
@@ -1338,7 +1351,7 @@ PURPOSE		: BWRBRREPORT
 						  																												data-version=${version}
 						  																								  ">
 							<i class="fa fa-download"></i> Download
-						</button>
+						</button>	-->
 					</div>
 				</div>
 
@@ -12372,6 +12385,7 @@ PURPOSE		: BWRBRREPORT
 											<th>ACCT NUMBER</th>
 											<th>ACCT NAME</th>
 											<th style="text-align:right;">ACCT BALANCE IN PULA</th>
+											<th style="text-align:right;">BAL EQUI TO BWP</th>
 											<th>REPORT LABEL</th>
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT DATE</th>
@@ -12398,9 +12412,11 @@ PURPOSE		: BWRBRREPORT
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
 											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.acctBalanceInPula == null ? 0 : report.acctBalanceInPula, 1, 'COMMA', 0, 'POINT')}">
+											</td>
+											<td style="text-align:right;"
 												th:text="${#numbers.formatDecimal(report.balEquiToBwp == null ? 0 : report.balEquiToBwp, 1, 'COMMA', 0, 'POINT')}">
 											</td>
-
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
@@ -12454,35 +12470,48 @@ PURPOSE		: BWRBRREPORT
 
 								<label class="col-sm-2">Acct Balance</label>
 								<div class="col-sm-3">
-									<input type="number" step="0.01" th:field="*{balEquiToBwp}" name="balEquiToBwp"
-										class="form-control form-control-sm" style="text-align:right;" />
+									<input type="number" step="0.01" th:field="*{acctBalanceInPula}"
+										name="acctBalanceInPula" class="form-control form-control-sm"
+										style="text-align:right;" />
 								</div>
 							</div>
 
 							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Balance Equivalent </label>
+								<div class="col-sm-3">
+									<input type="number" step="0.01" th:field="*{balEquiToBwp}" name="balEquiToBwp"
+										class="form-control form-control-sm" style="text-align:right;" />
+								</div>
+								<div class="col-sm-1"></div>
 								<label class="col-sm-2">Report Label</label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{reportLabel}" class="form-control form-control-sm"
 										readonly />
 								</div>
+							</div>
 
-								<div class="col-sm-1"></div>
-
-								<label class="col-sm-2">Report Addl Criteria 1</label>
+							<div class="row formline" style="margin-top:10px;">
+								<label class="col-sm-2">Report Addl Criteria </label>
 								<div class="col-sm-3">
 									<input type="text" th:field="*{reportAddlCriteria_1}"
 										class="form-control form-control-sm" readonly />
 								</div>
-							</div>
 
-							<div class="row formline" style="margin-top:10px;">
+								<div class="col-sm-1"></div>
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" th:field="*{reportDate}" class="form-control form-control-sm"
 										readonly th:value="${#dates.format(MCALOCData.reportDate, 'yyyy-MM-dd')}" />
 
 								</div>
+
 							</div>
+
+
+
+
+
+
 
 							<div style="text-align:center; margin-top:20px;">
 								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
