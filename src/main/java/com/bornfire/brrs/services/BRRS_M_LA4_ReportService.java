@@ -62,6 +62,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -77,6 +78,9 @@ public class BRRS_M_LA4_ReportService {
 
 	@Autowired
 	AuditService auditService;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	// ENTITY MANAGER (Acts like Repository)
 	@PersistenceContext
@@ -9587,6 +9591,12 @@ public class BRRS_M_LA4_ReportService {
 			String type, BigDecimal version, HttpServletRequest req, Model md) {
 
 		ModelAndView mv = new ModelAndView();
+		
+		String userid = (String) req.getSession().getAttribute("USERID");
+		System.out.println("User Id Maker and Checker: " + userid);
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		System.out.println("Role: " + role);
 
 		System.out.println("M_LA4 View Called");
 		System.out.println("Type = " + type);
@@ -9679,6 +9689,14 @@ public class BRRS_M_LA4_ReportService {
 			Model md) {
 
 		ModelAndView mv = new ModelAndView();
+
+	    String userid = (String) req1.getSession().getAttribute("USERID");
+	    System.out.println("User Id Maker and Checker: " + userid);
+
+	    String role = userProfileRep.getUserRole(userid);
+	    md.addAttribute("role", role);
+
+	    System.out.println("Role : " + role);
 
 		try {
 
