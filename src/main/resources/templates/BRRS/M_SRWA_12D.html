@@ -479,9 +479,9 @@ PURPOSE		: BWRBRREPORT
 				"R32_LINE_NO_CREDIT_CONTRACTS", "R32_RESIDUAL_MATURITY_CREDIT_CONTRACTS",
 				"R33_LINE_NO_DEBT_CONTRACTS", "R33_RESIDUAL_MATURITY_DEBT_CONTRACTS",
 				"R33_LINE_NO_CREDIT_CONTRACTS", "R33_RESIDUAL_MATURITY_CREDIT_CONTRACTS",
-				"R43_LINE_NO_DERIVATIVE_CONTRACTS", "R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
+				"R43_LINE_NO_DERIVATIVE_CONTRACTS",
 				"R44_LINE_NO_DERIVATIVE_CONTRACTS", "R44_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
-				"R45_LINE_NO_DERIVATIVE_CONTRACTS", "R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
+				"R45_LINE_NO_DERIVATIVE_CONTRACTS",
 				"R15_PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "R15_TOTAL_CURRENT_EXCHANGE_CONTRACTS",
 				"R12_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS", "R13_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS",
 				"R14_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS", "R15_POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS",
@@ -541,13 +541,6 @@ PURPOSE		: BWRBRREPORT
 				"R44_CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
 				"R43_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS",
 				"R44_RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS"
-
-
-
-
-
-
-
 
 			];
 
@@ -5827,13 +5820,12 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW43"
-													style="background-color:#FFFFFF;padding-left:20px; font-weight:bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS, 'Subtotal')}"
-														id="R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
-														name="R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:left;"
-														readonly />
+													style="background-color:#FFFFFF;padding-left: 20px; font-weight: bold;">
+													<span id="R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
+														style="display: inline-block; width: 100%; text-align: left; padding: 5px 0; height: 28px; line-height: 28px;">
+														<span
+															th:text="${report.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS != null ? report.R43_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS : 'Subtotal'}">Subtotal</span>
+													</span>
 												</td>
 
 												<td id="ROW43"
@@ -6001,13 +5993,13 @@ PURPOSE		: BWRBRREPORT
 												</td>
 
 												<td id="ROW45"
-													style="background-color:#FFFFFF;padding-left:20px; font-weight:bold;">
-													<input class="display-input Show_input" type="text"
-														th:value="${#strings.defaultString(report.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS, 'TOTAL RWA OTC')}"
-														id="R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
-														name="R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
-														style="background-color:#FFFFFF; height:28px; border-color:transparent; text-align:left;"
-														readonly />
+													style="background-color:#FFFFFF;padding-left: 20px; font-weight: bold;">
+													<span id="R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS"
+														style="display: inline-block; width: 100%; text-align: left; padding: 5px 0; height: 28px; line-height: 28px;">
+														<span
+															th:text="${report.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS != null ? report.R45_NETTED_EXPOSURES_DERIVATIVE_CONTRACTS : 'TOTAL RWA OTC'}">TOTAL
+															RWA OTC</span>
+													</span>
 												</td>
 
 												<td id="ROW45"
