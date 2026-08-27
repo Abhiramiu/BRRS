@@ -192,12 +192,12 @@ public List<Q_ATF_Detail_Entity> getdetailDataByRowIdAndColumnId(
 
     String sql = "SELECT * FROM BRRS_Q_ATF_DETAILTABLE " +
                  "WHERE REPORT_LABEL = ? " +
-                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND (REPORT_ADDL_CRITERIA_1 = ? OR REPORT_ADDL_CRITERIA_2 = ?) " +
                  "AND REPORT_DATE = ?";
 
     return jdbcTemplate.query(
             sql,
-            new Object[]{reportLabel, reportAddlCriteria1, reportDate},
+            new Object[]{reportLabel, reportAddlCriteria1, reportAddlCriteria1, reportDate},
             new Q_ATF_Detail_RowMapper()
     );
 }
@@ -240,7 +240,7 @@ public List<Q_ATF_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(
 
     String sql = "SELECT * FROM BRRS_Q_ATF_ARCHIVALTABLE_DETAIL " +
                  "WHERE REPORT_LABEL = ? " +
-                 "AND REPORT_ADDL_CRITERIA_1 = ? " +
+                 "AND (REPORT_ADDL_CRITERIA_1 = ? OR REPORT_ADDL_CRITERIA_2 = ?) " +
                  "AND REPORT_DATE = ? " +
                  "AND DATA_ENTRY_VERSION = ?";
 
@@ -248,6 +248,7 @@ public List<Q_ATF_Archival_Detail_Entity> GetArchivalDataByRowIdAndColumnId(
             sql,
             new Object[]{
                     reportLabel,
+                    reportAddlCriteria1,
                     reportAddlCriteria1,
                     reportDate,
                     dataEntryVersion

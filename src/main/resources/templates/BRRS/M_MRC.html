@@ -1596,7 +1596,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 													th:text="${report.R22_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
 													th:attr="reportLabel='R22', reportAddlCriteria1='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"
 													th:text="${report.R22_TOTAL != null ? #numbers.formatDecimal(report.R22_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>

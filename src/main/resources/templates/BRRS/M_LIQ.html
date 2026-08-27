@@ -1724,8 +1724,7 @@ PURPOSE		: BRRS REPORT
 
 												<td id="r18_total" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r18_total != null ? #numbers.formatDecimal(report.r18_total, 1, 'COMMA', 0, 'POINT') : ''}"
-													th:attr="RowId='R18', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)">
+													th:attr="RowId='R18', ColumnId='C2'">
 											</tr>
 
 
@@ -2025,7 +2024,7 @@ PURPOSE		: BRRS REPORT
 													class="green-cell"
 													th:text="${report?.r32_total != null ? #numbers.formatDecimal(report.r32_total, 1, 'COMMA', 0, 'POINT') : ''}"
 													th:attr="RowId='R32', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)">
+													>
 												</td>
 
 
@@ -2083,8 +2082,7 @@ PURPOSE		: BRRS REPORT
 												<td style="text-align: right; padding-top:15px;  padding-right: 10px;"
 													class="green-cell"
 													th:text="${report?.r35_total != null ? #numbers.formatDecimal(report.r35_total, 1, 'COMMA', 0, 'POINT') : ''}"
-													th:attr="RowId='R35', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)">
+													th:attr="RowId='R35', ColumnId='C2'">
 												</td>
 											</tr>
 
