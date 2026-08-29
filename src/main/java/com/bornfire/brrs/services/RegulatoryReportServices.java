@@ -157,6 +157,9 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
+	
+	@Autowired
+	BRRS_SLS_WORKING_ReportService BRRS_SLS_WORKING_reportservice;
 
 	@Autowired
 	BRRS_M_TOP_100_BORROWER_ReportService BRRS_M_TOP_100_BORROWER_reportservice;
@@ -488,6 +491,11 @@ public class RegulatoryReportServices {
 			
 		case "SLS":
 			repsummary = BRRS_SLS_INPUT_SHT_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version, req, md);
+			break;
+			
+		case "SLS_WORKING":
+			repsummary = BRRS_SLS_WORKING_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version, req, md);
 			break;
 
@@ -1306,6 +1314,11 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_SLS_INPUT_SHT_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
 			break;
+			
+		case "SLS_WORKING":
+			repdetail = BRRS_SLS_WORKING_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version, req1, md);
+			break;	
 
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2120,6 +2133,16 @@ public class RegulatoryReportServices {
 		case "SLS":
 			try {
 				repfile = BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel(filename, reportId, fromdate, todate, currency,
+						dtltype, type, version);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
+			
+		case "SLS_WORKING":
+			try {
+				repfile = BRRS_SLS_WORKING_reportservice.getSLSExcel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, version);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -3233,6 +3256,14 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+		case "SLS_WORKING":
+			try {
+				archivalData = BRRS_SLS_WORKING_reportservice.getSLSArchival();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			break;
 
 		case "Q_SMME_DEP":
 			List<Object[]> QSMMEDEPList = BRRS_Q_SMME_DEP_ReportService.getQ_SMME_DEPArchival();
@@ -4284,6 +4315,10 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_SLS_INPUT_SHT_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
+			case "SLS_WORKING":
+				modelAndView = BRRS_SLS_WORKING_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+						request.getParameter("formmode"));
+				break;
 
 			case "M_IS":
 				modelAndView = BRRS_M_IS_reportservice.getViewOrEditPage(request.getParameter("SNO"),
@@ -4729,6 +4764,9 @@ public class RegulatoryReportServices {
 				break;
 			case "SLS":
 				response = BRRS_SLS_INPUT_SHT_reportservice.updateDetailEdit(request);
+				break;
+			case "SLS_WORKING":
+				response = BRRS_SLS_WORKING_reportservice.updateDetailEdit(request);
 				break;
 
 			case "MDISB1":
@@ -6194,6 +6232,9 @@ public class RegulatoryReportServices {
 				case "SLS":
 					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, version);
+				case "SLS_WORKING":
+					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, version);
 
 				case "M_PD":
 					return BRRS_M_PD_ReportService.getM_PDExcel("EMAIL_M_PD.xlsx", reportName, fromdate, todate,
@@ -6439,6 +6480,9 @@ public class RegulatoryReportServices {
 							dtltype, type, version);
 				case "SLS":
 					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, version);
+				case "SLS_WORKING":
+					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, version);
 
 				case "M_PD":
@@ -8315,6 +8359,32 @@ public class RegulatoryReportServices {
 
 			} catch (Exception e) {
 				logger.error("SLS: PDF generation failed", e);
+				return new byte[0];
+			}
+			
+		case "SLS_WORKING":
+			try {
+				excelBytes = BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportId, fromdate, todate, currency,
+						dtltype, null, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("SLS_WORKING: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				List<int[]> tableRanges = Arrays.asList(new int[] { 0, 80 });
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes, tableRanges, false);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("SLS_WORKING: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("SLS_WORKING: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+
+			} catch (Exception e) {
+				logger.error("SLS_WORKING: PDF generation failed", e);
 				return new byte[0];
 			}
 
