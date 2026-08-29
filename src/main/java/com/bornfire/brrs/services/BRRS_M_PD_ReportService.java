@@ -81,7 +81,7 @@ public class BRRS_M_PD_ReportService {
 
 	public List<M_PD_Summary_Entity> getSummaryByDate(Date reportDate) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_SUMMARYTABLE WHERE REPORT_DATE = ?",
+			"SELECT * FROM BRRS_M_PD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportDate }, new M_PDSummaryRowMapper());
 	}
 
@@ -93,7 +93,7 @@ public class BRRS_M_PD_ReportService {
 
 	public List<M_PD_Archival_Summary_Entity> getArchivalSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			"SELECT * FROM BRRS_M_PD_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?",
 			new Object[] { reportDate, version }, new M_PDArchivalSummaryRowMapper());
 	}
 
@@ -111,13 +111,13 @@ public class BRRS_M_PD_ReportService {
 
 	public List<M_PD_Detail_Entity> getDetailByDate(Date reportDate) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_DETAILTABLE WHERE REPORT_DATE = ?",
+			"SELECT * FROM BRRS_M_PD_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportDate }, new M_PDDetailRowMapper());
 	}
 
 	public int getDetailCount(Date reportDate) {
 		return jdbcTemplate.queryForObject(
-			"SELECT COUNT(*) FROM BRRS_M_PD_DETAILTABLE WHERE REPORT_DATE = ?",
+			"SELECT COUNT(*) FROM BRRS_M_PD_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportDate }, Integer.class);
 	}
 
@@ -130,7 +130,7 @@ public class BRRS_M_PD_ReportService {
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_2 = ? ) " +
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_3 = ? ) " +
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_4 = ? ) " +
-			"AND REPORT_DATE = ?",
+			"AND TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportLabel,
 					reportAddlCriteria1, reportAddlCriteria1, reportAddlCriteria1,
 					reportAddlCriteria2, reportAddlCriteria2, reportAddlCriteria2,
@@ -149,13 +149,13 @@ public class BRRS_M_PD_ReportService {
 
 	public List<M_PD_Archival_Detail_Entity> getArchivalDetailByDateAndVersion(Date reportDate, String version) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?",
+			"SELECT * FROM BRRS_M_PD_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION = ?",
 			new Object[] { reportDate, version }, new M_PDArchivalDetailRowMapper());
 	}
 
 	public int getArchivalDetailCount(Date reportDate) {
 		return jdbcTemplate.queryForObject(
-			"SELECT COUNT(*) FROM BRRS_M_PD_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ?",
+			"SELECT COUNT(*) FROM BRRS_M_PD_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportDate }, Integer.class);
 	}
 
@@ -168,7 +168,7 @@ public class BRRS_M_PD_ReportService {
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_2 = ? ) " +
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_3 = ? ) " +
 			"AND ( ? IS NULL OR ? = '' OR REPORT_ADDL_CRITERIA_4 = ? ) " +
-			"AND REPORT_DATE = ?",
+			"AND TRUNC(REPORT_DATE) = TRUNC(?)",
 			new Object[] { reportLabel,
 					reportAddlCriteria1, reportAddlCriteria1, reportAddlCriteria1,
 					reportAddlCriteria2, reportAddlCriteria2, reportAddlCriteria2,
@@ -180,13 +180,13 @@ public class BRRS_M_PD_ReportService {
 
 	public List<M_PD_RESUB_Summary_Entity> getResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			"SELECT * FROM BRRS_M_PD_RESUB_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?",
 			new Object[] { reportDate, version }, new M_PDResubSummaryRowMapper());
 	}
 
 	public List<M_PD_Manual_RESUB_Summary_Entity> getManualResubSummaryByDateAndVersion(Date reportDate, BigDecimal version) {
 		return jdbcTemplate.query(
-			"SELECT * FROM BRRS_M_PD_MANUAL_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?",
+			"SELECT * FROM BRRS_M_PD_MANUAL_RESUB_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?",
 			new Object[] { reportDate, version }, new M_PDManualResubSummaryRowMapper());
 	}
 
@@ -200,66 +200,95 @@ public class BRRS_M_PD_ReportService {
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
-//		Session hs = sessionFactory.getCurrentSession();
-		int pageSize = pageable.getPageSize();
-		int currentPage = pageable.getPageNumber();
+		int pageSize = pageable != null ? pageable.getPageSize() : 10;
+		int currentPage = pageable != null ? pageable.getPageNumber() : 0;
 		int startItem = currentPage * pageSize;
 
 		System.out.println("testing");
 		System.out.println(version);
 
-		if (type.equals("ARCHIVAL") & version != null) {
+		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			System.out.println(type);
 			
 			List<M_PD_Archival_Summary_Entity> T1Master = new ArrayList<M_PD_Archival_Summary_Entity>();
-		//	List<M_PD_Archival_Summary_Entity2> T2Master = new ArrayList<M_PD_Archival_Summary_Entity2>();
 			List<M_PD_Manual_Archival_Summary_Entity> T3Master = new ArrayList<M_PD_Manual_Archival_Summary_Entity>();
 			
 			System.out.println(version);
 			try {
 				Date d1 = dateformat.parse(todate);
-
-				// T1Master = hs.createQuery("from brrs1_REPORT_ENTITY a where a.report_date = ?1
-				// ", brrs1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = getArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
-			//	T2Master = BRRS_M_PD_Archival_Summary_Repo2.getdatabydateListarchival(dateformat.parse(todate), version);
-				T3Master = getManualArchivalSummaryByDateAndVersion(dateformat.parse(todate), version);
+				T1Master = getArchivalSummaryByDateAndVersion(d1, version);
+				T3Master = getManualArchivalSummaryByDateAndVersion(d1, version);
 				System.out.println("T1Master size : " + T1Master.size());
 				System.out.println("T3Master size : " + T3Master.size());
-
+				mv.addObject("REPORT_DATE", dateformat.format(d1));
+				mv.addObject("report_date", dateformat.format(d1));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
 
+			if (T1Master.isEmpty()) {
+				T1Master.add(new M_PD_Archival_Summary_Entity());
+			}
+			if (T3Master.isEmpty()) {
+				T3Master.add(new M_PD_Manual_Archival_Summary_Entity());
+			}
+
 			mv.addObject("reportsummary1", T1Master);
-		//	mv.addObject("reportsummary2", T2Master);
 			mv.addObject("reportsummary", T3Master);
 			
+		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
+			System.out.println(type);
+			
+			List<M_PD_RESUB_Summary_Entity> T1Master = new ArrayList<M_PD_RESUB_Summary_Entity>();
+			List<M_PD_Manual_RESUB_Summary_Entity> T3Master = new ArrayList<M_PD_Manual_RESUB_Summary_Entity>();
+			
+			System.out.println(version);
+			try {
+				Date d1 = dateformat.parse(todate);
+				T1Master = getResubSummaryByDateAndVersion(d1, version);
+				T3Master = getManualResubSummaryByDateAndVersion(d1, version);
+				System.out.println("T1Master size : " + T1Master.size());
+				System.out.println("T3Master size : " + T3Master.size());
+				mv.addObject("REPORT_DATE", dateformat.format(d1));
+				mv.addObject("report_date", dateformat.format(d1));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			if (T1Master.isEmpty()) {
+				T1Master.add(new M_PD_RESUB_Summary_Entity());
+			}
+			if (T3Master.isEmpty()) {
+				T3Master.add(new M_PD_Manual_RESUB_Summary_Entity());
+			}
+
+			mv.addObject("reportsummary1", T1Master);
+			mv.addObject("reportsummary", T3Master);
 			
 		} else {
 			List<M_PD_Summary_Entity> T1Master = new ArrayList<M_PD_Summary_Entity>();
-		//	List<M_PD_Summary_Entity2> T2Master = new ArrayList<M_PD_Summary_Entity2>();
 			List<M_PD_Manual_Summary_Entity> T3Master = new ArrayList<M_PD_Manual_Summary_Entity>();
 			try {
 				Date d1 = dateformat.parse(todate);
-
-				// T1Master = hs.createQuery("from brrs1_REPORT_ENTITY a where a.report_date = ?1
-				// ", brrs1_REPORT_ENTITY.class)
-				// .setParameter(1, df.parse(todate)).getResultList();
-				T1Master = getSummaryByDate(dateformat.parse(todate));
-			//	T2Master = BRRS_M_PD_Summary_Repo2.getdatabydateList(dateformat.parse(todate));
-				T3Master = getManualSummaryByDate(dateformat.parse(todate));
-
+				T1Master = getSummaryByDate(d1);
+				T3Master = getManualSummaryByDate(d1);
+				mv.addObject("REPORT_DATE", dateformat.format(d1));
+				mv.addObject("report_date", dateformat.format(d1));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+
+			if (T1Master.isEmpty()) {
+				T1Master.add(new M_PD_Summary_Entity());
+			}
+			if (T3Master.isEmpty()) {
+				T3Master.add(new M_PD_Manual_Summary_Entity());
+			}
+
 			mv.addObject("reportsummary1", T1Master);
-		//	mv.addObject("reportsummary2", T2Master);
 			mv.addObject("reportsummary", T3Master);
 		}
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
 		mv.setViewName("BRRS/M_PD");
 		mv.addObject("displaymode", "summary");
 		System.out.println("scv" + mv.getViewName());
@@ -613,7 +642,7 @@ public class BRRS_M_PD_ReportService {
 				if (i > 0) sql.append(",");
 				sql.append(columns.get(i)).append("=?");
 			}
-			sql.append(" WHERE REPORT_DATE=?");
+			sql.append(" WHERE TRUNC(REPORT_DATE)=TRUNC(?)");
 			List<Object> params = new ArrayList<>(values);
 			params.add(e.getReport_date());
 			jdbcTemplate.update(sql.toString(), params.toArray());
@@ -641,7 +670,7 @@ public class BRRS_M_PD_ReportService {
 			System.out.println("came to Detail download service");
 
 
-			if (type.equals("ARCHIVAL") & version != null) {
+			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 			byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 			version);
 			return ARCHIVALreport;
@@ -816,7 +845,7 @@ public class BRRS_M_PD_ReportService {
 try {
 logger.info("Generating Excel for BRRS_M_PD ARCHIVAL Details...");
 System.out.println("came to Detail download service");
-if (type.equals("ARCHIVAL") & version != null) {
+if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
 
 }
 XSSFWorkbook workbook = new XSSFWorkbook();

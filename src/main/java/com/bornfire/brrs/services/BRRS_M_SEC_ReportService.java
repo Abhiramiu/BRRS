@@ -95,7 +95,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<BRRS_M_SEC_Summary_Entity1> getdatabydateList1(Date rpt_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { rpt_date }, new BRRS_M_SEC_Summary_RowMapper1());
 	}
 
@@ -105,7 +105,7 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 	public Optional<BRRS_M_SEC_Summary_Entity1> findTopByreport_dateOrderByreport_versionDesc1(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE report_date = ? ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE TRUNC(report_date) = TRUNC(?) ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
 		List<BRRS_M_SEC_Summary_Entity1> results = jdbcTemplate.query(sql, new Object[] { report_date },
 				new BRRS_M_SEC_Summary_RowMapper1());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -113,7 +113,7 @@ public class BRRS_M_SEC_ReportService {
 
 	public Optional<BRRS_M_SEC_Summary_Entity1> findByreport_dateAndreport_version1(Date report_date,
 			String report_version) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE report_date = ? AND report_version = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE TRUNC(report_date) = TRUNC(?) AND report_version = ?";
 		List<BRRS_M_SEC_Summary_Entity1> results = jdbcTemplate.query(sql, new Object[] { report_date, report_version },
 				new BRRS_M_SEC_Summary_RowMapper1());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -129,7 +129,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<BRRS_M_SEC_Summary_Entity2> getdatabydateList2(Date rpt_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { rpt_date }, new BRRS_M_SEC_Summary_RowMapper2());
 	}
 
@@ -139,7 +139,7 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 	public Optional<BRRS_M_SEC_Summary_Entity2> findTopByreport_dateOrderByreport_versionDesc2(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE report_date = ? ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE TRUNC(report_date) = TRUNC(?) ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
 		List<BRRS_M_SEC_Summary_Entity2> results = jdbcTemplate.query(sql, new Object[] { report_date },
 				new BRRS_M_SEC_Summary_RowMapper2());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -147,7 +147,7 @@ public class BRRS_M_SEC_ReportService {
 
 	public Optional<BRRS_M_SEC_Summary_Entity2> findByreport_dateAndreport_version2(Date report_date,
 			String report_version) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE report_date = ? AND report_version = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE TRUNC(report_date) = TRUNC(?) AND report_version = ?";
 		List<BRRS_M_SEC_Summary_Entity2> results = jdbcTemplate.query(sql, new Object[] { report_date, report_version },
 				new BRRS_M_SEC_Summary_RowMapper2());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -163,7 +163,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<BRRS_M_SEC_Summary_Entity3> getdatabydateList3(Date rpt_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { rpt_date }, new BRRS_M_SEC_Summary_RowMapper3());
 	}
 
@@ -173,7 +173,7 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 	public Optional<BRRS_M_SEC_Summary_Entity3> findTopByreport_dateOrderByreport_versionDesc3(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE report_date = ? ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE TRUNC(report_date) = TRUNC(?) ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
 		List<BRRS_M_SEC_Summary_Entity3> results = jdbcTemplate.query(sql, new Object[] { report_date },
 				new BRRS_M_SEC_Summary_RowMapper3());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -181,7 +181,7 @@ public class BRRS_M_SEC_ReportService {
 
 	public Optional<BRRS_M_SEC_Summary_Entity3> findByreport_dateAndreport_version3(Date report_date,
 			String report_version) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE report_date = ? AND report_version = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE TRUNC(report_date) = TRUNC(?) AND report_version = ?";
 		List<BRRS_M_SEC_Summary_Entity3> results = jdbcTemplate.query(sql, new Object[] { report_date, report_version },
 				new BRRS_M_SEC_Summary_RowMapper3());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -197,7 +197,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<BRRS_M_SEC_Summary_Entity4> getdatabydateList4(Date rpt_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { rpt_date }, new BRRS_M_SEC_Summary_RowMapper4());
 	}
 
@@ -207,7 +207,7 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 	public Optional<BRRS_M_SEC_Summary_Entity4> findTopByreport_dateOrderByreport_versionDesc4(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE report_date = ? ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE TRUNC(report_date) = TRUNC(?) ORDER BY report_version DESC FETCH FIRST 1 ROWS ONLY";
 		List<BRRS_M_SEC_Summary_Entity4> results = jdbcTemplate.query(sql, new Object[] { report_date },
 				new BRRS_M_SEC_Summary_RowMapper4());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -215,7 +215,7 @@ public class BRRS_M_SEC_ReportService {
 
 	public Optional<BRRS_M_SEC_Summary_Entity4> findByreport_dateAndreport_version4(Date report_date,
 			String report_version) {
-		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE report_date = ? AND report_version = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE TRUNC(report_date) = TRUNC(?) AND report_version = ?";
 		List<BRRS_M_SEC_Summary_Entity4> results = jdbcTemplate.query(sql, new Object[] { report_date, report_version },
 				new BRRS_M_SEC_Summary_RowMapper4());
 		return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
@@ -231,7 +231,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<M_SEC_Detail1_Entity> getdatabydateList5(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE1 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE1 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { report_date }, new M_SEC_Detail1_RowMapper());
 	}
 
@@ -240,7 +240,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<M_SEC_Detail2_Entity> getdatabydateList6(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE2 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE2 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { report_date }, new M_SEC_Detail2_RowMapper());
 	}
 
@@ -249,7 +249,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<M_SEC_Detail3_Entity> getdatabydateList7(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE3 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE3 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { report_date }, new M_SEC_Detail3_RowMapper());
 	}
 
@@ -258,7 +258,7 @@ public class BRRS_M_SEC_ReportService {
 //===========================
 
 	public List<M_SEC_Detail4_Entity> getdatabydateList8(Date report_date) {
-		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE4 WHERE report_date = ?";
+		String sql = "SELECT * FROM BRRS_M_SEC_DETAILTABLE4 WHERE TRUNC(report_date) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { report_date }, new M_SEC_Detail4_RowMapper());
 	}
 
@@ -17562,50 +17562,112 @@ public class BRRS_M_SEC_ReportService {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_SUMMARYTABLE1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Summary1 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE1 ("
+					+ "REPORT_DATE, R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Summary1 inserted for date: " + entity.getReport_date());
 		}
 	}
-
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC DETAIL1
-//============================
 
 	private void saveOrUpdateSecDetail1(M_SEC_Detail1_Entity entity) {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_DETAILTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_DETAILTABLE1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Detail1 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE1 ("
+					+ "REPORT_DATE, R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Detail1 inserted for date: " + entity.getReport_date());
 		}
 	}
@@ -17695,50 +17757,92 @@ public class BRRS_M_SEC_ReportService {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_SUMMARYTABLE2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Summary2 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE2 ("
+					+ "REPORT_DATE, R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, R15_PRODUCT, R15_TCA2, "
+					+ "R16_PRODUCT, R16_TCA2, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Summary2 inserted for date: " + entity.getReport_date());
 		}
 	}
-
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC DETAIL2
-//============================
 
 	private void saveOrUpdateSecDetail2(M_SEC_Detail2_Entity entity) {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_DETAILTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_DETAILTABLE2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Detail2 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE2 ("
+					+ "REPORT_DATE, R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, R15_PRODUCT, R15_TCA2, "
+					+ "R16_PRODUCT, R16_TCA2, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Detail2 inserted for date: " + entity.getReport_date());
 		}
 	}
@@ -17829,50 +17933,98 @@ public class BRRS_M_SEC_ReportService {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_SUMMARYTABLE3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Summary3 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE3 ("
+					+ "REPORT_DATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Summary3 inserted for date: " + entity.getReport_date());
 		}
 	}
-
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC DETAIL3
-//============================
 
 	private void saveOrUpdateSecDetail3(M_SEC_Detail3_Entity entity) {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_DETAILTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_DETAILTABLE3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Detail3 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE3 ("
+					+ "REPORT_DATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Detail3 inserted for date: " + entity.getReport_date());
 		}
 	}
@@ -17963,50 +18115,114 @@ public class BRRS_M_SEC_ReportService {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_SUMMARYTABLE4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Summary4 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_SUMMARYTABLE4 ("
+					+ "REPORT_DATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Summary4 inserted for date: " + entity.getReport_date());
 		}
 	}
-
-	// ============================
-	// SAVE/UPDATE METHODS FOR M_SEC DETAIL4
-	// ============================
 
 	private void saveOrUpdateSecDetail4(M_SEC_Detail4_Entity entity) {
 		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_DETAILTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		Integer count = jdbcTemplate.queryForObject(checkSql, new Object[] { entity.getReport_date() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_DETAILTABLE4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_VERSION = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
 					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			jdbcTemplate.update(sql, entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date());
 			System.out.println("✅ Detail4 updated for date: " + entity.getReport_date());
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, "
-					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReport_frequency(),
-					entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(),
-					entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_DETAILTABLE4 ("
+					+ "REPORT_DATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_version(), entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Detail4 inserted for date: " + entity.getReport_date());
 		}
 	}
@@ -18218,481 +18434,877 @@ public class BRRS_M_SEC_ReportService {
 	}
 
 //============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB SUMMARY1
+//SAVE/UPDATE METHODS FOR M_SEC RESUB & ARCHIVAL
 //============================
 
 	private void saveOrUpdateResubSummary1(M_SEC_RESUB_Summary_Entity1 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE1 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_SUMMARYTABLE1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Summary1 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE1 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Summary1 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB SUMMARY2
-//============================
-
 	private void saveOrUpdateResubSummary2(M_SEC_RESUB_Summary_Entity2 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE2 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_SUMMARYTABLE2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Summary2 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE2 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, "
+					+ "R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Summary2 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB SUMMARY3
-//============================
-
 	private void saveOrUpdateResubSummary3(M_SEC_RESUB_Summary_Entity3 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE3 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_SUMMARYTABLE3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Summary3 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE3 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Summary3 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB SUMMARY4
-//============================
-
 	private void saveOrUpdateResubSummary4(M_SEC_RESUB_Summary_Entity4 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE4 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_SUMMARYTABLE4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Summary4 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_SUMMARYTABLE4 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Summary4 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB DETAIL1
-//============================
-
 	private void saveOrUpdateResubDetail1(M_SEC_RESUB_Detail_Entity1 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE1 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_DETAILTABLE1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Detail1 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE1 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Detail1 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB DETAIL2
-//============================
-
 	private void saveOrUpdateResubDetail2(M_SEC_RESUB_Detail_Entity2 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE2 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_DETAILTABLE2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Detail2 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE2 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, "
+					+ "R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Detail2 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB DETAIL3
-//============================
-
 	private void saveOrUpdateResubDetail3(M_SEC_RESUB_Detail_Entity3 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE3 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_DETAILTABLE3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Detail3 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE3 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Detail3 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR M_SEC RESUB DETAIL4
-//============================
-
 	private void saveOrUpdateResubDetail4(M_SEC_RESUB_Detail_Entity4 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE4 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_RESUB_DETAILTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_RESUB_DETAILTABLE4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Resub Detail4 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_RESUB_DETAILTABLE4 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Resub Detail4 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL SUMMARY1
-//============================
-
 	private void saveOrUpdateArchivalSummary1(BRRS_M_SEC_Archival_Summary_Entity1 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Summary1 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY1 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Summary1 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL SUMMARY2
-//============================
-
 	private void saveOrUpdateArchivalSummary2(BRRS_M_SEC_Archival_Summary_Entity2 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY2 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_SUMMARY2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Summary2 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY2 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, "
+					+ "R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Summary2 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL SUMMARY3
-//============================
-
 	private void saveOrUpdateArchivalSummary3(BRRS_M_SEC_Archival_Summary_Entity3 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Summary3 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY3 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Summary3 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL SUMMARY4
-//============================
-
 	private void saveOrUpdateArchivalSummary4(BRRS_M_SEC_Archival_Summary_Entity4 entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Summary4 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_SUMMARY4 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Summary4 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL DETAIL1
-//============================
-
 	private void saveOrUpdateArchivalDetail1(M_SEC_Archival_Detail1_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL1 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_DETAIL1 SET "
+					+ "R11_PRODUCT = ?, R11_TCA = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA = ?, "
+					+ "R17_PRODUCT = ?, R17_TCA = ?, "
+					+ "R18_PRODUCT = ?, R18_TCA = ?, "
+					+ "R19_PRODUCT = ?, R19_TCA = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Detail1 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL1 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL1 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA, R12_PRODUCT, R12_TCA, "
+					+ "R13_PRODUCT, R13_TCA, R14_PRODUCT, R14_TCA, R15_PRODUCT, R15_TCA, "
+					+ "R16_PRODUCT, R16_TCA, R17_PRODUCT, R17_TCA, R18_PRODUCT, R18_TCA, "
+					+ "R19_PRODUCT, R19_TCA, REPORT_FREQUENCY, REPORT_CODE, "
+					+ "REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA(),
+					entity.getR17_PRODUCT(), entity.getR17_TCA(),
+					entity.getR18_PRODUCT(), entity.getR18_TCA(),
+					entity.getR19_PRODUCT(), entity.getR19_TCA(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Detail1 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL DETAIL2
-//============================
-
 	private void saveOrUpdateArchivalDetail2(M_SEC_Archival_Detail2_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL2 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_DETAIL2 SET "
+					+ "R11_PRODUCT = ?, R11_TCA2 = ?, "
+					+ "R12_PRODUCT = ?, R12_TCA2 = ?, "
+					+ "R13_PRODUCT = ?, R13_TCA2 = ?, "
+					+ "R14_PRODUCT = ?, R14_TCA2 = ?, "
+					+ "R15_PRODUCT = ?, R15_TCA2 = ?, "
+					+ "R16_PRODUCT = ?, R16_TCA2 = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Detail2 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL2 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL2 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R11_PRODUCT, R11_TCA2, R12_PRODUCT, R12_TCA2, "
+					+ "R13_PRODUCT, R13_TCA2, R14_PRODUCT, R14_TCA2, "
+					+ "R15_PRODUCT, R15_TCA2, R16_PRODUCT, R16_TCA2, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR11_PRODUCT(), entity.getR11_TCA2(),
+					entity.getR12_PRODUCT(), entity.getR12_TCA2(),
+					entity.getR13_PRODUCT(), entity.getR13_TCA2(),
+					entity.getR14_PRODUCT(), entity.getR14_TCA2(),
+					entity.getR15_PRODUCT(), entity.getR15_TCA2(),
+					entity.getR16_PRODUCT(), entity.getR16_TCA2(),
+					entity.getReport_frequency(), entity.getReport_code(),
+					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Detail2 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL DETAIL3
-//============================
-
 	private void saveOrUpdateArchivalDetail3(M_SEC_Archival_Detail3_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL3 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL3 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_DETAIL3 SET "
+					+ "R26_PRODUCT = ?, R26_0_1Y_FT = ?, R26_0_1Y_HTM = ?, R26_0_1Y_TOTAL = ?, R26_1_5Y_FT = ?, R26_1_5Y_HTM = ?, R26_1_5Y_TOTAL = ?, R26_O5Y_FT = ?, R26_O5Y_HTM = ?, R26_O5Y_TOTAL = ?, R26_T_FT = ?, R26_T_HTM = ?, R26_T_TOTAL = ?, "
+					+ "R27_PRODUCT = ?, R27_0_1Y_FT = ?, R27_0_1Y_HTM = ?, R27_0_1Y_TOTAL = ?, R27_1_5Y_FT = ?, R27_1_5Y_HTM = ?, R27_1_5Y_TOTAL = ?, R27_O5Y_FT = ?, R27_O5Y_HTM = ?, R27_O5Y_TOTAL = ?, R27_T_FT = ?, R27_T_HTM = ?, R27_T_TOTAL = ?, "
+					+ "R28_PRODUCT = ?, R28_0_1Y_FT = ?, R28_0_1Y_HTM = ?, R28_0_1Y_TOTAL = ?, R28_1_5Y_FT = ?, R28_1_5Y_HTM = ?, R28_1_5Y_TOTAL = ?, R28_O5Y_FT = ?, R28_O5Y_HTM = ?, R28_O5Y_TOTAL = ?, R28_T_FT = ?, R28_T_HTM = ?, R28_T_TOTAL = ?, "
+					+ "R29_PRODUCT = ?, R29_0_1Y_FT = ?, R29_0_1Y_HTM = ?, R29_0_1Y_TOTAL = ?, R29_1_5Y_FT = ?, R29_1_5Y_HTM = ?, R29_1_5Y_TOTAL = ?, R29_O5Y_FT = ?, R29_O5Y_HTM = ?, R29_O5Y_TOTAL = ?, R29_T_FT = ?, R29_T_HTM = ?, R29_T_TOTAL = ?, "
+					+ "R30_PRODUCT = ?, R30_0_1Y_FT = ?, R30_0_1Y_HTM = ?, R30_0_1Y_TOTAL = ?, R30_1_5Y_FT = ?, R30_1_5Y_HTM = ?, R30_1_5Y_TOTAL = ?, R30_O5Y_FT = ?, R30_O5Y_HTM = ?, R30_O5Y_TOTAL = ?, R30_T_FT = ?, R30_T_HTM = ?, R30_T_TOTAL = ?, "
+					+ "R31_PRODUCT = ?, R31_0_1Y_FT = ?, R31_0_1Y_HTM = ?, R31_0_1Y_TOTAL = ?, R31_1_5Y_FT = ?, R31_1_5Y_HTM = ?, R31_1_5Y_TOTAL = ?, R31_O5Y_FT = ?, R31_O5Y_HTM = ?, R31_O5Y_TOTAL = ?, R31_T_FT = ?, R31_T_HTM = ?, R31_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Detail3 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL3 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL3 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R26_PRODUCT, R26_0_1Y_FT, R26_0_1Y_HTM, R26_0_1Y_TOTAL, R26_1_5Y_FT, R26_1_5Y_HTM, R26_1_5Y_TOTAL, R26_O5Y_FT, R26_O5Y_HTM, R26_O5Y_TOTAL, R26_T_FT, R26_T_HTM, R26_T_TOTAL, "
+					+ "R27_PRODUCT, R27_0_1Y_FT, R27_0_1Y_HTM, R27_0_1Y_TOTAL, R27_1_5Y_FT, R27_1_5Y_HTM, R27_1_5Y_TOTAL, R27_O5Y_FT, R27_O5Y_HTM, R27_O5Y_TOTAL, R27_T_FT, R27_T_HTM, R27_T_TOTAL, "
+					+ "R28_PRODUCT, R28_0_1Y_FT, R28_0_1Y_HTM, R28_0_1Y_TOTAL, R28_1_5Y_FT, R28_1_5Y_HTM, R28_1_5Y_TOTAL, R28_O5Y_FT, R28_O5Y_HTM, R28_O5Y_TOTAL, R28_T_FT, R28_T_HTM, R28_T_TOTAL, "
+					+ "R29_PRODUCT, R29_0_1Y_FT, R29_0_1Y_HTM, R29_0_1Y_TOTAL, R29_1_5Y_FT, R29_1_5Y_HTM, R29_1_5Y_TOTAL, R29_O5Y_FT, R29_O5Y_HTM, R29_O5Y_TOTAL, R29_T_FT, R29_T_HTM, R29_T_TOTAL, "
+					+ "R30_PRODUCT, R30_0_1Y_FT, R30_0_1Y_HTM, R30_0_1Y_TOTAL, R30_1_5Y_FT, R30_1_5Y_HTM, R30_1_5Y_TOTAL, R30_O5Y_FT, R30_O5Y_HTM, R30_O5Y_TOTAL, R30_T_FT, R30_T_HTM, R30_T_TOTAL, "
+					+ "R31_PRODUCT, R31_0_1Y_FT, R31_0_1Y_HTM, R31_0_1Y_TOTAL, R31_1_5Y_FT, R31_1_5Y_HTM, R31_1_5Y_TOTAL, R31_O5Y_FT, R31_O5Y_HTM, R31_O5Y_TOTAL, R31_T_FT, R31_T_HTM, R31_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR26_PRODUCT(), entity.getR26_0_1Y_FT(), entity.getR26_0_1Y_HTM(), entity.getR26_0_1Y_TOTAL(), entity.getR26_1_5Y_FT(), entity.getR26_1_5Y_HTM(), entity.getR26_1_5Y_TOTAL(), entity.getR26_O5Y_FT(), entity.getR26_O5Y_HTM(), entity.getR26_O5Y_TOTAL(), entity.getR26_T_FT(), entity.getR26_T_HTM(), entity.getR26_T_TOTAL(),
+					entity.getR27_PRODUCT(), entity.getR27_0_1Y_FT(), entity.getR27_0_1Y_HTM(), entity.getR27_0_1Y_TOTAL(), entity.getR27_1_5Y_FT(), entity.getR27_1_5Y_HTM(), entity.getR27_1_5Y_TOTAL(), entity.getR27_O5Y_FT(), entity.getR27_O5Y_HTM(), entity.getR27_O5Y_TOTAL(), entity.getR27_T_FT(), entity.getR27_T_HTM(), entity.getR27_T_TOTAL(),
+					entity.getR28_PRODUCT(), entity.getR28_0_1Y_FT(), entity.getR28_0_1Y_HTM(), entity.getR28_0_1Y_TOTAL(), entity.getR28_1_5Y_FT(), entity.getR28_1_5Y_HTM(), entity.getR28_1_5Y_TOTAL(), entity.getR28_O5Y_FT(), entity.getR28_O5Y_HTM(), entity.getR28_O5Y_TOTAL(), entity.getR28_T_FT(), entity.getR28_T_HTM(), entity.getR28_T_TOTAL(),
+					entity.getR29_PRODUCT(), entity.getR29_0_1Y_FT(), entity.getR29_0_1Y_HTM(), entity.getR29_0_1Y_TOTAL(), entity.getR29_1_5Y_FT(), entity.getR29_1_5Y_HTM(), entity.getR29_1_5Y_TOTAL(), entity.getR29_O5Y_FT(), entity.getR29_O5Y_HTM(), entity.getR29_O5Y_TOTAL(), entity.getR29_T_FT(), entity.getR29_T_HTM(), entity.getR29_T_TOTAL(),
+					entity.getR30_PRODUCT(), entity.getR30_0_1Y_FT(), entity.getR30_0_1Y_HTM(), entity.getR30_0_1Y_TOTAL(), entity.getR30_1_5Y_FT(), entity.getR30_1_5Y_HTM(), entity.getR30_1_5Y_TOTAL(), entity.getR30_O5Y_FT(), entity.getR30_O5Y_HTM(), entity.getR30_O5Y_TOTAL(), entity.getR30_T_FT(), entity.getR30_T_HTM(), entity.getR30_T_TOTAL(),
+					entity.getR31_PRODUCT(), entity.getR31_0_1Y_FT(), entity.getR31_0_1Y_HTM(), entity.getR31_0_1Y_TOTAL(), entity.getR31_1_5Y_FT(), entity.getR31_1_5Y_HTM(), entity.getR31_1_5Y_TOTAL(), entity.getR31_O5Y_FT(), entity.getR31_O5Y_HTM(), entity.getR31_O5Y_TOTAL(), entity.getR31_T_FT(), entity.getR31_T_HTM(), entity.getR31_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Detail3 inserted");
 		}
 	}
 
-//============================
-//SAVE/UPDATE METHODS FOR ARCHIVAL DETAIL4
-//============================
-
 	private void saveOrUpdateArchivalDetail4(M_SEC_Archival_Detail4_Entity entity) {
-		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL4 WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SEC_ARCHIVALTABLE_DETAIL4 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
 		Integer count = jdbcTemplate.queryForObject(checkSql,
 				new Object[] { entity.getReport_date(), entity.getReport_version() }, Integer.class);
 
-		if (count > 0) {
+		if (count != null && count > 0) {
 			String sql = "UPDATE BRRS_M_SEC_ARCHIVALTABLE_DETAIL4 SET "
+					+ "R36_PRODUCT = ?, R36_0_1Y_FT = ?, R36_0_1Y_HTM = ?, R36_0_1Y_TOTAL = ?, R36_1_5Y_FT = ?, R36_1_5Y_HTM = ?, R36_1_5Y_TOTAL = ?, R36_O5Y_FT = ?, R36_O5Y_HTM = ?, R36_O5Y_TOTAL = ?, R36_T_FT = ?, R36_T_HTM = ?, R36_T_TOTAL = ?, "
+					+ "R37_PRODUCT = ?, R37_0_1Y_FT = ?, R37_0_1Y_HTM = ?, R37_0_1Y_TOTAL = ?, R37_1_5Y_FT = ?, R37_1_5Y_HTM = ?, R37_1_5Y_TOTAL = ?, R37_O5Y_FT = ?, R37_O5Y_HTM = ?, R37_O5Y_TOTAL = ?, R37_T_FT = ?, R37_T_HTM = ?, R37_T_TOTAL = ?, "
+					+ "R38_PRODUCT = ?, R38_0_1Y_FT = ?, R38_0_1Y_HTM = ?, R38_0_1Y_TOTAL = ?, R38_1_5Y_FT = ?, R38_1_5Y_HTM = ?, R38_1_5Y_TOTAL = ?, R38_O5Y_FT = ?, R38_O5Y_HTM = ?, R38_O5Y_TOTAL = ?, R38_T_FT = ?, R38_T_HTM = ?, R38_T_TOTAL = ?, "
+					+ "R39_PRODUCT = ?, R39_0_1Y_FT = ?, R39_0_1Y_HTM = ?, R39_0_1Y_TOTAL = ?, R39_1_5Y_FT = ?, R39_1_5Y_HTM = ?, R39_1_5Y_TOTAL = ?, R39_O5Y_FT = ?, R39_O5Y_HTM = ?, R39_O5Y_TOTAL = ?, R39_T_FT = ?, R39_T_HTM = ?, R39_T_TOTAL = ?, "
+					+ "R40_PRODUCT = ?, R40_0_1Y_FT = ?, R40_0_1Y_HTM = ?, R40_0_1Y_TOTAL = ?, R40_1_5Y_FT = ?, R40_1_5Y_HTM = ?, R40_1_5Y_TOTAL = ?, R40_O5Y_FT = ?, R40_O5Y_HTM = ?, R40_O5Y_TOTAL = ?, R40_T_FT = ?, R40_T_HTM = ?, R40_T_TOTAL = ?, "
+					+ "R41_PRODUCT = ?, R41_0_1Y_FT = ?, R41_0_1Y_HTM = ?, R41_0_1Y_TOTAL = ?, R41_1_5Y_FT = ?, R41_1_5Y_HTM = ?, R41_1_5Y_TOTAL = ?, R41_O5Y_FT = ?, R41_O5Y_HTM = ?, R41_O5Y_TOTAL = ?, R41_T_FT = ?, R41_T_HTM = ?, R41_T_TOTAL = ?, "
+					+ "R42_PRODUCT = ?, R42_0_1Y_FT = ?, R42_0_1Y_HTM = ?, R42_0_1Y_TOTAL = ?, R42_1_5Y_FT = ?, R42_1_5Y_HTM = ?, R42_1_5Y_TOTAL = ?, R42_O5Y_FT = ?, R42_O5Y_HTM = ?, R42_O5Y_TOTAL = ?, R42_T_FT = ?, R42_T_HTM = ?, R42_T_TOTAL = ?, "
+					+ "R43_PRODUCT = ?, R43_0_1Y_FT = ?, R43_0_1Y_HTM = ?, R43_0_1Y_TOTAL = ?, R43_1_5Y_FT = ?, R43_1_5Y_HTM = ?, R43_1_5Y_TOTAL = ?, R43_O5Y_FT = ?, R43_O5Y_HTM = ?, R43_O5Y_TOTAL = ?, R43_T_FT = ?, R43_T_HTM = ?, R43_T_TOTAL = ?, "
 					+ "REPORT_RESUBDATE = ?, REPORT_FREQUENCY = ?, REPORT_CODE = ?, "
 					+ "REPORT_DESC = ?, ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
-					+ "WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-			jdbcTemplate.update(sql, entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+			jdbcTemplate.update(sql,
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReportResubDate(), entity.getReport_frequency(), entity.getReport_code(),
 					entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
 					entity.getReport_date(), entity.getReport_version());
 			System.out.println("✅ Archival Detail4 updated");
 		} else {
-			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL4 "
-					+ "(REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, REPORT_FREQUENCY, "
-					+ "REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
-					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-			jdbcTemplate.update(sql, entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
-					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(),
-					entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
+			String sql = "INSERT INTO BRRS_M_SEC_ARCHIVALTABLE_DETAIL4 ("
+					+ "REPORT_DATE, REPORT_VERSION, REPORT_RESUBDATE, "
+					+ "R36_PRODUCT, R36_0_1Y_FT, R36_0_1Y_HTM, R36_0_1Y_TOTAL, R36_1_5Y_FT, R36_1_5Y_HTM, R36_1_5Y_TOTAL, R36_O5Y_FT, R36_O5Y_HTM, R36_O5Y_TOTAL, R36_T_FT, R36_T_HTM, R36_T_TOTAL, "
+					+ "R37_PRODUCT, R37_0_1Y_FT, R37_0_1Y_HTM, R37_0_1Y_TOTAL, R37_1_5Y_FT, R37_1_5Y_HTM, R37_1_5Y_TOTAL, R37_O5Y_FT, R37_O5Y_HTM, R37_O5Y_TOTAL, R37_T_FT, R37_T_HTM, R37_T_TOTAL, "
+					+ "R38_PRODUCT, R38_0_1Y_FT, R38_0_1Y_HTM, R38_0_1Y_TOTAL, R38_1_5Y_FT, R38_1_5Y_HTM, R38_1_5Y_TOTAL, R38_O5Y_FT, R38_O5Y_HTM, R38_O5Y_TOTAL, R38_T_FT, R38_T_HTM, R38_T_TOTAL, "
+					+ "R39_PRODUCT, R39_0_1Y_FT, R39_0_1Y_HTM, R39_0_1Y_TOTAL, R39_1_5Y_FT, R39_1_5Y_HTM, R39_1_5Y_TOTAL, R39_O5Y_FT, R39_O5Y_HTM, R39_O5Y_TOTAL, R39_T_FT, R39_T_HTM, R39_T_TOTAL, "
+					+ "R40_PRODUCT, R40_0_1Y_FT, R40_0_1Y_HTM, R40_0_1Y_TOTAL, R40_1_5Y_FT, R40_1_5Y_HTM, R40_1_5Y_TOTAL, R40_O5Y_FT, R40_O5Y_HTM, R40_O5Y_TOTAL, R40_T_FT, R40_T_HTM, R40_T_TOTAL, "
+					+ "R41_PRODUCT, R41_0_1Y_FT, R41_0_1Y_HTM, R41_0_1Y_TOTAL, R41_1_5Y_FT, R41_1_5Y_HTM, R41_1_5Y_TOTAL, R41_O5Y_FT, R41_O5Y_HTM, R41_O5Y_TOTAL, R41_T_FT, R41_T_HTM, R41_T_TOTAL, "
+					+ "R42_PRODUCT, R42_0_1Y_FT, R42_0_1Y_HTM, R42_0_1Y_TOTAL, R42_1_5Y_FT, R42_1_5Y_HTM, R42_1_5Y_TOTAL, R42_O5Y_FT, R42_O5Y_HTM, R42_O5Y_TOTAL, R42_T_FT, R42_T_HTM, R42_T_TOTAL, "
+					+ "R43_PRODUCT, R43_0_1Y_FT, R43_0_1Y_HTM, R43_0_1Y_TOTAL, R43_1_5Y_FT, R43_1_5Y_HTM, R43_1_5Y_TOTAL, R43_O5Y_FT, R43_O5Y_HTM, R43_O5Y_TOTAL, R43_T_FT, R43_T_HTM, R43_T_TOTAL, "
+					+ "REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			jdbcTemplate.update(sql,
+					entity.getReport_date(), entity.getReport_version(), entity.getReportResubDate(),
+					entity.getR36_PRODUCT(), entity.getR36_0_1Y_FT(), entity.getR36_0_1Y_HTM(), entity.getR36_0_1Y_TOTAL(), entity.getR36_1_5Y_FT(), entity.getR36_1_5Y_HTM(), entity.getR36_1_5Y_TOTAL(), entity.getR36_O5Y_FT(), entity.getR36_O5Y_HTM(), entity.getR36_O5Y_TOTAL(), entity.getR36_T_FT(), entity.getR36_T_HTM(), entity.getR36_T_TOTAL(),
+					entity.getR37_PRODUCT(), entity.getR37_0_1Y_FT(), entity.getR37_0_1Y_HTM(), entity.getR37_0_1Y_TOTAL(), entity.getR37_1_5Y_FT(), entity.getR37_1_5Y_HTM(), entity.getR37_1_5Y_TOTAL(), entity.getR37_O5Y_FT(), entity.getR37_O5Y_HTM(), entity.getR37_O5Y_TOTAL(), entity.getR37_T_FT(), entity.getR37_T_HTM(), entity.getR37_T_TOTAL(),
+					entity.getR38_PRODUCT(), entity.getR38_0_1Y_FT(), entity.getR38_0_1Y_HTM(), entity.getR38_0_1Y_TOTAL(), entity.getR38_1_5Y_FT(), entity.getR38_1_5Y_HTM(), entity.getR38_1_5Y_TOTAL(), entity.getR38_O5Y_FT(), entity.getR38_O5Y_HTM(), entity.getR38_O5Y_TOTAL(), entity.getR38_T_FT(), entity.getR38_T_HTM(), entity.getR38_T_TOTAL(),
+					entity.getR39_PRODUCT(), entity.getR39_0_1Y_FT(), entity.getR39_0_1Y_HTM(), entity.getR39_0_1Y_TOTAL(), entity.getR39_1_5Y_FT(), entity.getR39_1_5Y_HTM(), entity.getR39_1_5Y_TOTAL(), entity.getR39_O5Y_FT(), entity.getR39_O5Y_HTM(), entity.getR39_O5Y_TOTAL(), entity.getR39_T_FT(), entity.getR39_T_HTM(), entity.getR39_T_TOTAL(),
+					entity.getR40_PRODUCT(), entity.getR40_0_1Y_FT(), entity.getR40_0_1Y_HTM(), entity.getR40_0_1Y_TOTAL(), entity.getR40_1_5Y_FT(), entity.getR40_1_5Y_HTM(), entity.getR40_1_5Y_TOTAL(), entity.getR40_O5Y_FT(), entity.getR40_O5Y_HTM(), entity.getR40_O5Y_TOTAL(), entity.getR40_T_FT(), entity.getR40_T_HTM(), entity.getR40_T_TOTAL(),
+					entity.getR41_PRODUCT(), entity.getR41_0_1Y_FT(), entity.getR41_0_1Y_HTM(), entity.getR41_0_1Y_TOTAL(), entity.getR41_1_5Y_FT(), entity.getR41_1_5Y_HTM(), entity.getR41_1_5Y_TOTAL(), entity.getR41_O5Y_FT(), entity.getR41_O5Y_HTM(), entity.getR41_O5Y_TOTAL(), entity.getR41_T_FT(), entity.getR41_T_HTM(), entity.getR41_T_TOTAL(),
+					entity.getR42_PRODUCT(), entity.getR42_0_1Y_FT(), entity.getR42_0_1Y_HTM(), entity.getR42_0_1Y_TOTAL(), entity.getR42_1_5Y_FT(), entity.getR42_1_5Y_HTM(), entity.getR42_1_5Y_TOTAL(), entity.getR42_O5Y_FT(), entity.getR42_O5Y_HTM(), entity.getR42_O5Y_TOTAL(), entity.getR42_T_FT(), entity.getR42_T_HTM(), entity.getR42_T_TOTAL(),
+					entity.getR43_PRODUCT(), entity.getR43_0_1Y_FT(), entity.getR43_0_1Y_HTM(), entity.getR43_0_1Y_TOTAL(), entity.getR43_1_5Y_FT(), entity.getR43_1_5Y_HTM(), entity.getR43_1_5Y_TOTAL(), entity.getR43_O5Y_FT(), entity.getR43_O5Y_HTM(), entity.getR43_O5Y_TOTAL(), entity.getR43_T_FT(), entity.getR43_T_HTM(), entity.getR43_T_TOTAL(),
+					entity.getReport_frequency(), entity.getReport_code(), entity.getReport_desc(), entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg());
 			System.out.println("✅ Archival Detail4 inserted");
 		}
 	}
