@@ -1230,10 +1230,10 @@ public class RegulatoryReportServices {
 					pageable, Filter, type, version, req1, md);
 			break;
 
-		case "M_OR1":
-			repdetail = brrs_m_or1_reportservice.getM_OR1currentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version, req1, md);
-			break;
+//		case "M_OR1":
+//			repdetail = brrs_m_or1_reportservice.getM_OR1currentDtl(reportId, fromdate, todate, currency, dtltype,
+//					pageable, Filter, type, version, req1, md);
+//			break;
 
 		case "M_LIQGAP":
 			repdetail = brrs_m_liqgap_reportservice.getM_LIQGAPcurrentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -2913,9 +2913,9 @@ public class RegulatoryReportServices {
 		} else if ("MCA2Detail".equals(filename)) {
 			return BRRS_M_CA2_reportservice.getM_CA2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		} else if ("M_OR1Detail".equals(filename)) {
-			return brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
+//		} else if ("M_OR1Detail".equals(filename)) {
+//			return brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
+//					version);
 		} else if ("MLIQGAPDetail".equals(filename)) {
 			return brrs_m_liqgap_reportservice.getM_LIQGAPDetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -3917,9 +3917,9 @@ public class RegulatoryReportServices {
 			fileData = BRRS_M_IS_reportservice.BRRS_M_ISDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 
-		} else if ("M_OR1Detail".equals(filename)) {
-			fileData = brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
+//		} else if ("M_OR1Detail".equals(filename)) {
+//			fileData = brrs_m_or1_reportservice.BRRS_M_OR1DetailExcel(filename, fromdate, todate, currency, dtltype,
+//					type, version);
 		} else if (filename.equals("M_MRCDetail")) {
 			fileData = BRRS_M_MRC_reportservice.getM_MRCDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -4362,10 +4362,10 @@ public class RegulatoryReportServices {
 						request.getParameter("formmode"), request.getParameter("type"));
 				break;
 
-			case "M_OR1":
-				modelAndView = brrs_m_or1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
-				break;
+//			case "M_OR1":
+//				modelAndView = brrs_m_or1_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
+//						request.getParameter("formmode"));
+//				break;
 
 			case "M_LIQGAP":
 				modelAndView = brrs_m_liqgap_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
@@ -4817,9 +4817,9 @@ public class RegulatoryReportServices {
 				response = BRRS_M_MRC_reportservice.updateDetailEdit(request);
 				break;
 
-			case "M_OR1":
-				response = brrs_m_or1_reportservice.updateDetailEdit(request);
-				break;
+//			case "M_OR1":
+//				response = brrs_m_or1_reportservice.updateDetailEdit(request);
+//				break;
 
 			case "M_LIQGAP":
 				response = brrs_m_liqgap_reportservice.updateDetailEdit(request);
@@ -5973,6 +5973,16 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for AS_11: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for AS_11: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+		case "M_OR1":
+			try {
+				List<Object[]> resubList = brrs_m_or1_reportservice.getM_OR1Resub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_OR1: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_OR1: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
