@@ -206,8 +206,7 @@ public class BRRS_M_SFINP2_ReportService {
 			}
 
 			/*
-			 * ========================================================= 
-			 * ARCHIVAL DETAIL
+			 * ========================================================= ARCHIVAL DETAIL
 			 * =========================================================
 			 */
 			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
@@ -230,8 +229,7 @@ public class BRRS_M_SFINP2_ReportService {
 			}
 
 			/*
-			 * ========================================================= 
-			 * RESUB DETAIL
+			 * ========================================================= RESUB DETAIL
 			 * =========================================================
 			 */
 			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
@@ -254,8 +252,7 @@ public class BRRS_M_SFINP2_ReportService {
 			}
 
 			/*
-			 * ========================================================= 
-			 * CURRENT DETAIL
+			 * ========================================================= CURRENT DETAIL
 			 * =========================================================
 			 */
 			else {
@@ -305,7 +302,6 @@ public class BRRS_M_SFINP2_ReportService {
 
 	@Transactional
 
-
 	// ------------------------------
 	// Updates and saves summary fields, triggers audit trail, and runs dynamic
 	// database procedures after commit
@@ -338,7 +334,7 @@ public class BRRS_M_SFINP2_ReportService {
 		M_SFINP2_Summary_Entity oldcopy = new M_SFINP2_Summary_Entity();
 		BeanUtils.copyProperties(existing, oldcopy);
 
-		int[] allowedIndexes = { 34, 35, 43, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 61, 62, 79 };
+		int[] allowedIndexes = { 34, 35, 43, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 61, 62, 78, 79 };
 
 		try {
 			for (int i : allowedIndexes) {
@@ -350,8 +346,7 @@ public class BRRS_M_SFINP2_ReportService {
 				try {
 
 					Method getter = M_SFINP2_Summary_Entity.class.getMethod(getterName);
-					Method setter = M_SFINP2_Summary_Entity.class.getMethod(setterName,
-							getter.getReturnType());
+					Method setter = M_SFINP2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 					Object newValue = getter.invoke(updatedEntity);
 
@@ -371,8 +366,7 @@ public class BRRS_M_SFINP2_ReportService {
 		}
 
 		// Check whether R79 is copied successfully
-		System.out.println("Existing R79 Before Save = "
-				+ existing.getR79_MONTH_END());
+		System.out.println("Existing R79 Before Save = " + existing.getR79_MONTH_END());
 
 		// Check changes before save
 		String changes = auditService.getChanges(oldcopy, existing);
@@ -383,10 +377,8 @@ public class BRRS_M_SFINP2_ReportService {
 		// Verify value after save
 		try {
 			BigDecimal dbValue = jdbcTemplate.queryForObject(
-					"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE "
-							+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-					new Object[] { updatedEntity.getREPORT_DATE() },
-					BigDecimal.class);
+					"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE " + "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+					new Object[] { updatedEntity.getREPORT_DATE() }, BigDecimal.class);
 
 			System.out.println("R79 Value In DB After Save = " + dbValue);
 
@@ -396,68 +388,50 @@ public class BRRS_M_SFINP2_ReportService {
 
 		// Audit only if changes found
 		if (!changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existing,
-					updatedEntity.getREPORT_DATE().toString(),
-					"M SFINP2 Summary Screen",
-					"BRRS_M_SFINP2_SUMMARY");
+			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
+					"M SFINP2 Summary Screen", "BRRS_M_SFINP2_SUMMARY");
 		}
 
 		// CALL PROCEDURE AFTER COMMIT
-		TransactionSynchronizationManager
-				.registerSynchronization(new TransactionSynchronizationAdapter() {
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
-					@Override
-					public void afterCommit() {
+			@Override
+			public void afterCommit() {
 
-						try {
+				try {
 
-							String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-									.format(updatedEntity.getREPORT_DATE());
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
 
-							logger.info(
-									"Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
-									formattedDate);
+					logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})", formattedDate);
 
-							jdbcTemplate.update(
-									"BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;",
-									formattedDate);
+					jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
-							// Check R79 value after procedure execution
-							try {
+					// Check R79 value after procedure execution
+					try {
 
-								BigDecimal dbValue = jdbcTemplate.queryForObject(
-										"SELECT R79_MONTH_END "
-												+ "FROM BRRS_M_SFINP2_SUMMARYTABLE "
-												+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-										new Object[] {
-												updatedEntity.getREPORT_DATE() },
-										BigDecimal.class);
+						BigDecimal dbValue = jdbcTemplate.queryForObject(
+								"SELECT R79_MONTH_END " + "FROM BRRS_M_SFINP2_SUMMARYTABLE "
+										+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+								new Object[] { updatedEntity.getREPORT_DATE() }, BigDecimal.class);
 
-								System.out.println(
-										"R79 Value After Procedure = "
-												+ dbValue);
+						System.out.println("R79 Value After Procedure = " + dbValue);
 
-							} catch (Exception ex) {
-								System.out.println(
-										"Unable to fetch R79 value after procedure execution.");
-							}
-
-							logger.info(
-									"Procedure executed successfully after commit.");
-
-						} catch (Exception e) {
-							logger.error("Procedure execution failed", e);
-							throw new RuntimeException(
-									"Procedure execution failed", e);
-						}
+					} catch (Exception ex) {
+						System.out.println("Unable to fetch R79 value after procedure execution.");
 					}
-				});
+
+					logger.info("Procedure executed successfully after commit.");
+
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
 	}
 
-
-
 	// ------------------------------
-	// edit/view page 
+	// edit/view page
 	// ------------------------------
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
 		ModelAndView mv = new ModelAndView("BRRS/M_SFINP2");
@@ -585,7 +559,6 @@ public class BRRS_M_SFINP2_ReportService {
 					.body("Error updating record: " + e.getMessage());
 		}
 	}
-
 
 	// ------------------------------
 	// ARCHIVAL LIST
@@ -2371,7 +2344,6 @@ public class BRRS_M_SFINP2_ReportService {
 			}
 		}
 	}
-
 
 // ------------------------------
 // SUMMARY EMAIL EXCEL
@@ -6388,7 +6360,6 @@ public class BRRS_M_SFINP2_ReportService {
 		}
 	}
 
-
 // ------------------------------
 // Resub Format excel
 // ------------------------------
@@ -9030,7 +9001,6 @@ public class BRRS_M_SFINP2_ReportService {
 		}
 	}
 
-
 	private static String getColumnName(java.lang.reflect.Field field) {
 		if (field.isAnnotationPresent(javax.persistence.Column.class)) {
 			javax.persistence.Column col = field.getAnnotation(javax.persistence.Column.class);
@@ -9038,7 +9008,6 @@ public class BRRS_M_SFINP2_ReportService {
 		}
 		return field.getName();
 	}
-
 
 	private void saveSummaryEntity(M_SFINP2_Summary_Entity entity) {
 		String countSql = "SELECT COUNT(*) FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE REPORT_DATE = ?";
