@@ -749,6 +749,9 @@ PURPOSE		: BRRS REPORT
 				readonlyIds.push(`r12_${col}`);
 			});
 
+			// R9's "Total capital required" is mapped from FXR, not manual — keep it locked too
+			readonlyIds.push("r9_tot_cap_req");
+
 			// R9–R12 currency columns
 			for (let i = 9; i <= 12; i++) {
 				readonlyCurrencyColumns.forEach(col => {
@@ -783,6 +786,7 @@ PURPOSE		: BRRS REPORT
 
 				columns.forEach(col => {
 
+					if (i === 9 && col === "tot_cap_req") return; // mapped from FXR — stays locked, no gray highlight
 
 
 					let selector = `#r${i}_${col}`;
@@ -884,20 +888,16 @@ PURPOSE		: BRRS REPORT
 			$("#r12_renminbi").val(renminbi.toLocaleString('en-US'));
 			$("#r12_other").val(other.toLocaleString('en-US'));
 
-			// ✅ New: r12_tot_cap_req = sum of all r12_* columns
-			let total =
-				pula +
-				usd +
-				zar +
-				gbd +
-				euro +
-				jpy +
-				rupee +
-				renminbi +
-				other;
+			// ✅ N12 = N9 + N10 + N11 (mapped R9 + manual R10 + manual R11)
+			let r9Total = parseFloat($("#r9_tot_cap_req").val().replace(/,/g, "")) || 0;
+			let r10Total = parseFloat($("#r10_tot_cap_req").val().replace(/,/g, "")) || 0;
+			let r11Total = parseFloat($("#r11_tot_cap_req").val().replace(/,/g, "")) || 0;
+
+			let total = r9Total + r10Total + r11Total;
 
 			$("#r12_tot_cap_req").val(total.toLocaleString('en-US'));
 		}
+
 
 		// Initialize calculation
 		$(document).ready(function () {
@@ -912,7 +912,8 @@ PURPOSE		: BRRS REPORT
 					"#r" + i + "_jpy, " +
 					"#r" + i + "_rupee, " +
 					"#r" + i + "_renminbi, " +
-					"#r" + i + "_other"
+					"#r" + i + "_other, " +
+					"#r" + i + "_tot_cap_req"
 				).on("input", calculateR12Totals);
 			}
 		});
@@ -1432,16 +1433,13 @@ PURPOSE		: BRRS REPORT
 												</td>
 
 
-												<!--<td id="ROW9" style="font-weight: bold; text-align: right; padding-left:20px;" >
-        <input class="display-input Show_input " type="text"
-               th:value="${report.r9_tot_cap_req != null ? #numbers.formatDecimal(report.r9_tot_cap_req,0,'COMMA',0,'POINT') : '0'}"
-               id="r9_tot_cap_req" name="r9_tot_cap_req"
-               style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
-               readonly />
-    </td>-->
-
-												<td style="background-color: #FFFFFF; width: 150px; height: 28px; border-color: transparent; text-align: right;"
-													th:text="${#numbers.formatDecimal(report.r9_tot_cap_req,1,'COMMA',0,'POINT')}">
+												<td id="ROW9"
+													style="font-weight: bold; text-align: right; padding-left:20px;">
+													<input class="display-input Show_input" type="text"
+														th:value="${report.r9_tot_cap_req != null ? #numbers.formatDecimal(report.r9_tot_cap_req,0,'COMMA',0,'POINT') : '0'}"
+														id="r9_tot_cap_req" name="r9_tot_cap_req"
+														style="background-color: #FFFFFF; width: 250px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
 												</td>
 
 											</tr>

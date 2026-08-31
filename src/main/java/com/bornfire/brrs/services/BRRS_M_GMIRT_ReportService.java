@@ -356,6 +356,26 @@ public class BRRS_M_GMIRT_ReportService {
 		resubSummary.setReportResubDate(now);
 
 		// ====================================================
+		// 2️⃣.1 RECOMPUTE R9 / R12 — SAME RULE AS updateReport():
+		// R9 is mapped from FXR (never trust the submitted value).
+		// N12 = N9 + N10 + N11.
+		// ====================================================
+
+		BigDecimal r9Value = getR9TotCapReq(reportDate);
+		resubSummary.setR9_tot_cap_req(r9Value);
+
+		BigDecimal r10Value = resubSummary.getR10_tot_cap_req() != null ? resubSummary.getR10_tot_cap_req()
+				: BigDecimal.ZERO;
+		BigDecimal r11Value = resubSummary.getR11_tot_cap_req() != null ? resubSummary.getR11_tot_cap_req()
+				: BigDecimal.ZERO;
+
+		BigDecimal r12Value = r9Value.add(r10Value).add(r11Value);
+		resubSummary.setR12_tot_cap_req(r12Value);
+
+		System.out.println("RESUB - R9 Value = " + r9Value + ", R10 Value = " + r10Value + ", R11 Value = " + r11Value
+				+ ", R12 Total = " + r12Value);
+
+		// ====================================================
 		// 3️⃣ RESUB DETAIL – SAME UPDATED VALUES
 		// ====================================================
 
@@ -380,6 +400,10 @@ public class BRRS_M_GMIRT_ReportService {
 		archSummary.setReport_date(reportDate);
 		archSummary.setReport_version(newVersion); // SAME VERSION
 		archSummary.setReportResubDate(now);
+
+		// Keep the archival copy consistent with the corrected resub totals
+		archSummary.setR9_tot_cap_req(r9Value);
+		archSummary.setR12_tot_cap_req(r12Value);
 
 		// ====================================================
 		// 5️⃣ ARCHIVAL DETAIL – SAME VALUES + SAME VERSION
