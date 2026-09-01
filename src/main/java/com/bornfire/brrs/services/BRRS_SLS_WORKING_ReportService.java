@@ -2,10 +2,13 @@ package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,22 +18,30 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -124,7 +135,12 @@ public class BRRS_SLS_WORKING_ReportService {
 	@Autowired
 	UserProfileRep userProfileRep;
 
-	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
+	// Locale.ENGLISH pinned explicitly: "dd-MMM-yyyy" needs English month
+	// abbreviations ("Jun"), and without a fixed locale this silently
+	// depends on the JVM's default locale - which can differ between dev
+	// and server and cause exactly this kind of "Unparseable date" error
+	// on values that look perfectly valid.
+	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy", java.util.Locale.ENGLISH);
 
 	// ------------------------------
 	// Parses a date string robustly supporting multiple formats
@@ -137,10 +153,10 @@ public class BRRS_SLS_WORKING_ReportService {
 			return dateformat.parse(dateStr);
 		} catch (ParseException e) {
 			try {
-				return new SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
+				return new SimpleDateFormat("dd/MM/yyyy", java.util.Locale.ENGLISH).parse(dateStr);
 			} catch (ParseException ex) {
 				try {
-					return new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+					return new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH).parse(dateStr);
 				} catch (ParseException ex2) {
 					logger.error("Failed to parse date: {}", dateStr);
 					return null;
@@ -581,81 +597,469 @@ public class BRRS_SLS_WORKING_ReportService {
 
 	// =====================================================================
 	// SUMMARY EXCEL EXPORT (template-based)
-	// Ported from BRRS_SLS_INPUT_SHT_ReportService.getSLSExcel() /
-	// getExcelSLSARCHIVAL(). The original wrote 11 named "day-bucket"
-	// columns per row (DAY1, DAY2_7 ... OVER5Y) via reflection into a
-	// fixed Excel template. The new schema no longer has those business
-	// names - only generic R{n}_COLUMN_A..N.
+	// Structured to match BRRS_SLS_INPUT_SHT_ReportService.getSLSExcel() /
+	// getExcelSLSARCHIVAL(): a single inline row/column reflection loop
+	// per method, no shared helper. The reference report's entity uses
+	// named "day-bucket" fields (DAY1, DAY2_7 ... OVER5Y); this report's
+	// entities use the generic column-letter convention actually present
+	// on SLS_WORKING_Summary_Entity1/2 and SLS_WORKING_Archival_Summary_
+	// Entity1/2: R{n}_COLUMN_A (String label, row-1-based, NOT written -
+	// expected to already exist in the template) through R{n}_COLUMN_N
+	// (13 BigDecimal value columns, mapped 1:1 onto Excel columns B-N).
 	//
-	// !!! ASSUMPTION - NEEDS BUSINESS CONFIRMATION !!!
-	// This port assumes the 11 day-bucket values occupy COLUMN_B through
-	// COLUMN_L in the same left-to-right order as the original 11
-	// fieldSuffixes (COLUMN_A is treated as the row's label/product column
-	// and is not written into these numeric cells; COLUMN_M/COLUMN_N are
-	// left unmapped since the original only had 11 numeric buckets + a
-	// separately-handled TOTAL). This is a POSITIONAL GUESS, not a
-	// confirmed mapping - verify against the actual template/business
-	// spec before relying on the exported figures.
+	// Row range: rows R1-R92 span BOTH summary tables - TABLE1
+	// (SLS_WORKING_Summary_Entity1 / SLS_WORKING_Archival_Summary_Entity1)
+	// defines R1_COLUMN_* through R70_COLUMN_*; TABLE2
+	// (SLS_WORKING_Summary_Entity2 / SLS_WORKING_Archival_Summary_Entity2)
+	// defines R71_COLUMN_* through R92_COLUMN_* - confirmed directly
+	// against the entity field declarations. Each row pulls from
+	// whichever table entity actually declares that row number.
 	//
-	// Row range: rows 11-85 (rowIndex 10-84) span BOTH summary tables
-	// (TABLE1 = R1-R70, TABLE2 = R71-R92), so this pulls the correct
-	// table's entity depending on which side of R70 the row falls.
+	// Rows are skipped based on the DATA itself (no COLUMN_A label for
+	// that row number on the record) rather than a hardcoded row-number
+	// list, so this stays correct even if the set of spacer/blank rows
+	// differs between report templates.
 	// =====================================================================
-	private static final char[] SLS_EXCEL_BUCKET_LETTERS = { 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L' };
-	private static final int[] SLS_EXCEL_SKIP_ROWS = { 40, 41, 42, 43, 44, 45, 74, 75, 76, 77, 78, 79, 80, 82, 85 };
 
-	private boolean isSlsExcelSkipRow(int rowIndex) {
-		for (int skip : SLS_EXCEL_SKIP_ROWS) {
-			if (rowIndex == skip) {
-				return true;
+	// ------------------------------
+	// Resolves the on-disk template file for a requested filename.
+	//
+	// WHY THIS EXISTS: the caller (browser) always asks for a fixed name,
+	// e.g. "SLS_WORKING.xlsx" (see downloadfile() in SLS_WORKING.html /
+	// data-filename attribute). If whoever deployed the template folder
+	// saved the file in the OLD binary Excel format (.xls, "Excel 97-2003
+	// Workbook") instead of .xlsx - or with any other extension/casing -
+	// an exact Paths.get(dir, filename) lookup will report the file as
+	// missing even though a perfectly usable template sits right next to
+	// it under a different extension. That mismatch, not missing data,
+	// is what produced the FileNotFoundException in the logs: SOURCETEMP
+	// contains "SLS_WORKING" as an Excel 97-2003 file while every sibling
+	// template in that folder is .xlsx.
+	//
+	// Apache POI's WorkbookFactory.create(InputStream) auto-detects HSSF
+	// (.xls) vs XSSF (.xlsx) from the file's actual header bytes, not its
+	// extension - so once we find the right file, reading it works
+	// regardless of which Excel format it's actually saved as.
+	//
+	// Resolution order:
+	//   1. Exact match: <dir>/<filename>
+	//   2. Same base name (filename without extension), any extension,
+	//      matched case-insensitively - covers "SLS_WORKING.xls" being
+	//      present when "SLS_WORKING.xlsx" was requested, or a stray
+	//      case mismatch.
+	//   3. Not found -> null, caller throws the descriptive
+	//      FileNotFoundException as before.
+	// ------------------------------
+	private Path resolveTemplateFile(String templateDir, String filename) throws Exception {
+
+		if (templateDir == null || templateDir.trim().isEmpty()) {
+			throw new FileNotFoundException("output.exportpathtemp is not configured.");
+		}
+		if (filename == null || filename.trim().isEmpty()) {
+			throw new FileNotFoundException("Excel template filename is empty.");
+		}
+
+		Path dir = Paths.get(templateDir);
+		if (!Files.isDirectory(dir)) {
+			throw new FileNotFoundException("Excel template directory does not exist: " + dir.toAbsolutePath());
+		}
+
+		String requestedName = filename.trim();
+		Path exact = dir.resolve(requestedName);
+		if (Files.exists(exact) && Files.isRegularFile(exact)) {
+			logger.info("Using exact Excel template: {}", exact.toAbsolutePath());
+			return exact;
+		}
+
+		// FIX: fall back by BASE NAME ONLY - do NOT also require the extension
+		// to match. Templates in SOURCETEMP are frequently saved by hand and
+		// can end up as "SLS_WORKING.xls" (or any other extension) even though
+		// callers always ask for "SLS_WORKING.xlsx". Requiring an exact
+		// extension match here means that file is invisible to this lookup
+		// even though it clearly has the right base name - which is exactly
+		// what caused the "template is missing on the server (no file with a
+		// matching base name was found either)" error even when a matching
+		// file DID exist under a different extension. ensureOoxmlTemplate()
+		// (called by the two report methods below) is what actually verifies/
+		// converts the format of whatever file is found here - this method's
+		// only job is to locate it by name.
+		int dotIndex = requestedName.lastIndexOf('.');
+		String baseName = dotIndex >= 0 ? requestedName.substring(0, dotIndex) : requestedName;
+
+		java.io.File[] files = dir.toFile().listFiles();
+		if (files == null) return null;
+
+		for (java.io.File file : files) {
+			if (file == null || !file.isFile()) continue;
+			String name = file.getName();
+			int candidateDot = name.lastIndexOf('.');
+			String candidateBase = candidateDot >= 0 ? name.substring(0, candidateDot) : name;
+			if (candidateBase.equalsIgnoreCase(baseName)) {
+				Path found = file.toPath();
+				logger.warn(
+						"Service: Requested template '{}' not found by exact name, but found '{}' with the same "
+								+ "base name in {} - using it instead. Consider renaming/re-saving it on the "
+								+ "server to match the expected filename so this fallback isn't needed.",
+						requestedName, name, templateDir);
+				return found;
 			}
 		}
-		return false;
+		return null;
 	}
 
-	private void writeSlsExcelBody(Sheet sheet, CellStyle textStyle, Object table1Record, Object table2Record) {
-		for (int rowIndex = 10; rowIndex < 85; rowIndex++) {
-			if (isSlsExcelSkipRow(rowIndex)) {
-				continue;
-			}
-			int rowNum = rowIndex + 1; // R{rowNum}
-			Object record = (rowNum <= 70) ? table1Record : table2Record;
-			if (record == null) {
-				continue;
-			}
+	// ------------------------------
+	// FIX: guards against the resolved template actually being a legacy
+	// binary .xls (OLE2) file wearing a ".xlsx" name/extension.
+	//
+	// WHY THIS EXISTS: resolveTemplateFile() above will happily hand back a
+	// file like "SLS_WORKING.xls" when the caller asked for
+	// "SLS_WORKING.xlsx" (that's the point of its base-name fallback).
+	// WorkbookFactory.create() auto-detects the real format from the file's
+	// bytes, so for a .xls source it returns an HSSFWorkbook - and
+	// workbook.write(out) later faithfully re-serialises it back out in that
+	// SAME binary OLE2 format. The browser still downloads those bytes as
+	// "SLS_WORKING.xlsx" though, which is exactly what produced the
+	// "Automatic update of links has been disabled" security bar users saw
+	// (legacy binary workbooks carry old-style external link/OLE records a
+	// genuine OOXML export wouldn't have) and the abnormally large download
+	// size (BIFF8 binary storage is far less efficient than OOXML,
+	// especially with a "personal working file" template that has
+	// formatting pre-applied broadly).
+	//
+	// This method looks at the ACTUAL FILE BYTES (not the extension). If the
+	// resolved template is already real OOXML (.xlsx/zip, starts with "PK"),
+	// nothing changes and the same path is returned. If it's legacy OLE2
+	// (.xls, starts with D0 CF 11 E0), it is converted to real .xlsx.
+	//
+	// FIX (root cause of the "No data was available to create a download" /
+	// 204 error): this used to shell out to a headless LibreOffice process
+	// ("soffice --headless --convert-to xlsx ..."). On this server soffice
+	// is not installed / not on PATH, so ProcessBuilder.start() threw
+	// "CreateProcess error=2, The system cannot find the file specified",
+	// which propagated out of getSLSExcel() and was treated upstream as
+	// "no data" -> 204 No Content, producing exactly that popup. Rather
+	// than depend on an external application being installed and
+	// discoverable on every deployment target, the conversion is now done
+	// entirely in-process with Apache POI (already a hard dependency of
+	// this file): the legacy HSSFWorkbook is read and its sheets/rows/
+	// cells/styles/merged-regions/column-widths are copied into a brand
+	// new XSSFWorkbook, which is then saved as real OOXML. No external
+	// process, no server configuration required.
+	// ------------------------------
+	private Path ensureOoxmlTemplate(Path templatePath) throws IOException {
+		byte[] header = new byte[8];
+		int read;
+		try (InputStream is = Files.newInputStream(templatePath)) {
+			read = is.read(header);
+		}
+		if (read < 4) {
+			throw new IOException(
+					"Template file '" + templatePath + "' is too small/empty to be a valid Excel file.");
+		}
 
-			Row row = sheet.getRow(rowIndex);
-			if (row == null) {
-				continue;
-			}
+		boolean isZipOoxml = (header[0] == 0x50 && header[1] == 0x4B); // "PK" zip signature
+		if (isZipOoxml) {
+			return templatePath; // already real .xlsx - nothing to do
+		}
 
-			for (int colIndex = 0; colIndex < SLS_EXCEL_BUCKET_LETTERS.length; colIndex++) {
-				String fieldName = "R" + rowNum + "_COLUMN_" + SLS_EXCEL_BUCKET_LETTERS[colIndex];
-				Cell cell = row.getCell(colIndex + 3);
-				if (cell == null) {
-					continue;
-				}
+		boolean isOle2Legacy = (header[0] == (byte) 0xD0 && header[1] == (byte) 0xCF
+				&& header[2] == (byte) 0x11 && header[3] == (byte) 0xE0);
+		if (!isOle2Legacy) {
+			throw new IOException("Template file '" + templatePath
+					+ "' is neither a valid .xlsx (OOXML/zip) nor a legacy .xls (OLE2) file - "
+					+ "it may be corrupted or truncated. Please re-save/redeploy it.");
+		}
+
+		logger.warn(
+				"Service: Template '{}' is actually a legacy Excel 97-2003 (.xls/OLE2) file despite its "
+						+ "name/extension. Converting to real .xlsx in-process (Apache POI) before use so the "
+						+ "download isn't served as a mislabelled binary file (this is the cause of the "
+						+ "'Automatic update of links has been disabled' warning and oversized downloads "
+						+ "users have reported).",
+				templatePath.getFileName());
+
+		Path convertedDir = Files.createTempDirectory("sls_working_xlsx_convert_");
+		String baseName2 = templatePath.getFileName().toString();
+		String convertedName = baseName2.contains(".")
+				? baseName2.substring(0, baseName2.lastIndexOf('.')) + ".xlsx"
+				: baseName2 + ".xlsx";
+		Path convertedFile = convertedDir.resolve(convertedName);
+
+		try (InputStream in = Files.newInputStream(templatePath);
+				HSSFWorkbook legacyWorkbook = new HSSFWorkbook(in);
+				XSSFWorkbook ooxmlWorkbook = new XSSFWorkbook()) {
+
+			copyLegacyWorkbookToOoxml(legacyWorkbook, ooxmlWorkbook);
+
+			try (OutputStream out = Files.newOutputStream(convertedFile)) {
+				ooxmlWorkbook.write(out);
+			}
+		} catch (Exception e) {
+			throw new IOException("Failed to convert legacy template '" + templatePath
+					+ "' to .xlsx via Apache POI: " + e.getMessage()
+					+ " -- Fix: re-save '" + templatePath.getFileName()
+					+ "' from Excel in .xlsx format and redeploy it to SOURCETEMP so this conversion "
+					+ "step isn't needed.", e);
+		}
+
+		logger.info("Service: Converted legacy template '{}' to real .xlsx at '{}'.",
+				templatePath.getFileName(), convertedFile);
+		return convertedFile;
+	}
+
+	// ------------------------------
+	// Copies every sheet/row/cell (value, formula, basic style, merged
+	// regions, column widths) from a legacy HSSFWorkbook into a brand-new
+	// XSSFWorkbook. This is what lets ensureOoxmlTemplate() convert .xls ->
+	// .xlsx without shelling out to LibreOffice. It intentionally covers
+	// the styling that actually matters for a report template (fonts,
+	// fills, borders, alignment, number formats) rather than every obscure
+	// HSSF feature - good enough to make the download open cleanly in
+	// Excel with the template's layout intact.
+	// ------------------------------
+	private void copyLegacyWorkbookToOoxml(Workbook src, Workbook dst) {
+		Map<Short, CellStyle> styleCache = new HashMap<>();
+		Map<Short, Font> fontCache = new HashMap<>();
+
+		for (int s = 0; s < src.getNumberOfSheets(); s++) {
+			Sheet srcSheet = src.getSheetAt(s);
+			Sheet dstSheet = dst.createSheet(srcSheet.getSheetName());
+
+			int maxCol = 0;
+			for (Row row : srcSheet) {
+				maxCol = Math.max(maxCol, (int) row.getLastCellNum());
+			}
+			for (int c = 0; c < maxCol; c++) {
 				try {
-					Field field = record.getClass().getDeclaredField(fieldName);
-					field.setAccessible(true);
-					Object value = field.get(record);
-					if (value instanceof BigDecimal) {
-						cell.setCellValue(((BigDecimal) value).doubleValue());
-					} else {
-						cell.setCellValue(0.00);
-					}
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					cell.setCellValue("");
-					cell.setCellStyle(textStyle);
-					logger.warn("Field not found or inaccessible: {}", fieldName);
+					dstSheet.setColumnWidth(c, srcSheet.getColumnWidth(c));
+				} catch (Exception e) {
+					// non-fatal - keep default width for this column and continue
+				}
+			}
+
+			for (int m = 0; m < srcSheet.getNumMergedRegions(); m++) {
+				dstSheet.addMergedRegion(srcSheet.getMergedRegion(m));
+			}
+
+			for (Row srcRow : srcSheet) {
+				Row dstRow = dstSheet.createRow(srcRow.getRowNum());
+				dstRow.setHeightInPoints(srcRow.getHeightInPoints());
+				for (Cell srcCell : srcRow) {
+					Cell dstCell = dstRow.createCell(srcCell.getColumnIndex());
+					copyCellValue(srcCell, dstCell);
+					dstCell.setCellStyle(copyCellStyle(src, dst, srcCell.getCellStyle(), styleCache, fontCache));
 				}
 			}
 		}
 	}
 
+	private void copyCellValue(Cell srcCell, Cell dstCell) {
+		switch (srcCell.getCellTypeEnum()) {
+			case STRING:
+				dstCell.setCellValue(srcCell.getRichStringCellValue().getString());
+				break;
+			case NUMERIC:
+				if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(srcCell)) {
+					dstCell.setCellValue(srcCell.getDateCellValue());
+				} else {
+					dstCell.setCellValue(srcCell.getNumericCellValue());
+				}
+				break;
+			case BOOLEAN:
+				dstCell.setCellValue(srcCell.getBooleanCellValue());
+				break;
+			case FORMULA:
+				// Some legacy formulas (e.g. stale external-workbook references) don't
+				// re-parse cleanly against a brand-new workbook. Fall back to the
+				// template's last-saved cached value rather than failing the whole
+				// conversion - safeEvaluateAllFormulas() re-evaluates everything it
+				// can later anyway.
+				try {
+					dstCell.setCellFormula(srcCell.getCellFormula());
+				} catch (Exception e) {
+					try {
+						dstCell.setCellValue(srcCell.getNumericCellValue());
+					} catch (Exception e2) {
+						try {
+							dstCell.setCellValue(srcCell.getRichStringCellValue().getString());
+						} catch (Exception e3) {
+							dstCell.setCellType(CellType.BLANK);
+						}
+					}
+				}
+				break;
+			case ERROR:
+				dstCell.setCellErrorValue(srcCell.getErrorCellValue());
+				break;
+			case BLANK:
+			default:
+				dstCell.setCellType(CellType.BLANK);
+		}
+	}
+
+	private CellStyle copyCellStyle(Workbook srcWb, Workbook dstWb, CellStyle srcStyle,
+			Map<Short, CellStyle> styleCache, Map<Short, Font> fontCache) {
+		if (srcStyle == null) {
+			return null;
+		}
+		CellStyle cached = styleCache.get(srcStyle.getIndex());
+		if (cached != null) {
+			return cached;
+		}
+
+		CellStyle dstStyle = dstWb.createCellStyle();
+		try {
+			dstStyle.setAlignment(srcStyle.getAlignmentEnum());
+			dstStyle.setVerticalAlignment(srcStyle.getVerticalAlignmentEnum());
+			dstStyle.setBorderTop(srcStyle.getBorderTopEnum());
+			dstStyle.setBorderBottom(srcStyle.getBorderBottomEnum());
+			dstStyle.setBorderLeft(srcStyle.getBorderLeftEnum());
+			dstStyle.setBorderRight(srcStyle.getBorderRightEnum());
+			dstStyle.setWrapText(srcStyle.getWrapText());
+			dstStyle.setDataFormat(dstWb.createDataFormat().getFormat(srcStyle.getDataFormatString()));
+			dstStyle.setFillPattern(srcStyle.getFillPatternEnum());
+			if (srcStyle.getFillPatternEnum() != FillPatternType.NO_FILL) {
+				dstStyle.setFillForegroundColor(srcStyle.getFillForegroundColor());
+				dstStyle.setFillBackgroundColor(srcStyle.getFillBackgroundColor());
+			}
+
+			Font dstFont = fontCache.get(srcStyle.getFontIndex());
+			if (dstFont == null) {
+				Font srcFont = srcWb.getFontAt(srcStyle.getFontIndex());
+				dstFont = dstWb.createFont();
+				dstFont.setBold(srcFont.getBold());
+				dstFont.setItalic(srcFont.getItalic());
+				dstFont.setStrikeout(srcFont.getStrikeout());
+				dstFont.setUnderline(srcFont.getUnderline());
+				dstFont.setFontHeightInPoints(srcFont.getFontHeightInPoints());
+				dstFont.setFontName(srcFont.getFontName());
+				dstFont.setColor(srcFont.getColor());
+				fontCache.put(srcStyle.getFontIndex(), dstFont);
+			}
+			dstStyle.setFont(dstFont);
+		} catch (Exception e) {
+			// A single unusual style shouldn't fail the whole conversion - fall
+			// back to a plain default style for this cell and keep going.
+			logger.warn("Service: Could not fully copy a cell style during .xls -> .xlsx conversion: {}",
+					e.getMessage());
+		}
+
+		styleCache.put(srcStyle.getIndex(), dstStyle);
+		return dstStyle;
+	}
+
 	// ------------------------------
-	// Generates Excel report for BRRS_SLS_WORKING current (non-archival) summary
+	// Deletes the temp converted file/dir created by ensureOoxmlTemplate(),
+	// if a conversion actually happened (resolvedPath != originalPath).
+	// Safe no-op when the template was already real .xlsx.
 	// ------------------------------
+	private void cleanupIfConverted(Path originalPath, Path resolvedPath) {
+		if (originalPath.equals(resolvedPath)) {
+			return; // no conversion happened, nothing to clean up
+		}
+		try (Stream<Path> walk = Files.walk(resolvedPath.getParent())) {
+			walk.sorted(Comparator.reverseOrder()).forEach(p -> {
+				try {
+					Files.deleteIfExists(p);
+				} catch (IOException e) {
+					logger.warn("Service: Could not delete temp converted file '{}': {}", p, e.getMessage());
+				}
+			});
+		} catch (IOException e) {
+			logger.warn("Service: Could not clean up temp conversion dir for '{}': {}", resolvedPath, e.getMessage());
+		}
+	}
+
+	// ------------------------------
+	// Evaluates every formula cell in the workbook, but cell-by-cell instead
+	// of Workbook.evaluateAll()'s all-or-nothing pass.
+	//
+	// WHY THIS EXISTS: templates in SOURCETEMP are frequently produced by
+	// copy-pasting from someone's personal working file, and can retain a
+	// stale formula that references an EXTERNAL workbook by absolute path
+	// (e.g. "C:\Users\<name>\...\some working file.xlsx"). That file will
+	// never exist on the server, so POI cannot resolve it - and
+	// evaluateAll() aborts the ENTIRE evaluation (and therefore the whole
+	// export) the moment it hits that one bad formula, even though every
+	// other formula in the template is perfectly fine.
+	//
+	// Evaluating cell-by-cell means one broken external-link formula just
+	// gets skipped (its last-saved/cached value from the template is left
+	// as-is) and logged, while every other formula in the sheet still
+	// evaluates and updates normally. Combined with
+	// setForceFormulaRecalculation(true) below, Excel will also recompute
+	// everything it can when the user opens the downloaded file - the
+	// external-link cell alone will keep showing its cached value (or a
+	// #REF!/prompt for the missing file in Excel), which is the correct,
+	// expected behaviour for a genuinely broken external reference.
+	// ------------------------------
+	private void safeEvaluateAllFormulas(Workbook workbook) {
+		org.apache.poi.ss.usermodel.FormulaEvaluator evaluator = workbook.getCreationHelper()
+				.createFormulaEvaluator();
+		int skipped = 0;
+		for (Sheet sheet : workbook) {
+			for (Row row : sheet) {
+				for (Cell cell : row) {
+					if (cell.getCellTypeEnum() != CellType.FORMULA) {
+						continue;
+					}
+					try {
+						evaluator.evaluateFormulaCell(cell);
+					} catch (Exception e) {
+						skipped++;
+						logger.warn(
+								"Service: Skipped unevaluable formula in sheet '{}' cell {}{}: {} - the cached "
+										+ "value from the template will be kept as-is.",
+								sheet.getSheetName(), cell.getColumnIndex(), cell.getRowIndex(), e.getMessage());
+					}
+				}
+			}
+		}
+		// Let Excel finish the job (and recompute anything POI's evaluator itself
+		// couldn't) the next time the file is opened.
+		workbook.setForceFormulaRecalculation(true);
+		if (skipped > 0) {
+			logger.warn("Service: {} formula cell(s) could not be evaluated server-side and were skipped.",
+					skipped);
+		}
+	}
+
+
+	// ------------------------------
+	// FIX: the legacy .xls template on the server turned out to be a
+	// personal "rolling" working file with one sheet per month (APRIL 2022,
+	// MAY 2022, ... OCTOBER) instead of a clean single-sheet template - each
+	// new month's tab was copied from the previous one, so the LAST sheet in
+	// the file is always the current/live layout (it's also the only one
+	// whose headers - "Pula in 1000" / "USD Millions" / "DEP TOTAL" /
+	// "ADV TOTAL" - actually match what the frontend shows; the older tabs
+	// use different, stale header labels from earlier report versions).
+	//
+	// getSheetAt(0) picked up the OLDEST tab instead of the live one, and
+	// because ensureOoxmlTemplate() (correctly) preserves every sheet when
+	// converting the legacy workbook, the workbook returned to the browser
+	// still carried all of the old month tabs along with it - that's why
+	// the download showed April through October instead of just the one
+	// report on screen.
+	//
+	// This selects the LAST sheet to write the report into, then removes
+	// every other sheet from the workbook before it's serialised, so the
+	// download always contains exactly the one sheet the frontend shows.
+	// ------------------------------
+	private Sheet selectLiveSheetAndPruneOthers(Workbook workbook) {
+		int liveSheetIndex = workbook.getNumberOfSheets() - 1;
+		Sheet liveSheet = workbook.getSheetAt(liveSheetIndex);
+
+		for (int i = workbook.getNumberOfSheets() - 1; i >= 0; i--) {
+			if (i != liveSheetIndex) {
+				logger.info("Service: Removing stale/extra template sheet '{}' from the download - only the "
+						+ "current sheet '{}' is included.", workbook.getSheetName(i), liveSheet.getSheetName());
+				workbook.removeSheetAt(i);
+			}
+		}
+		return liveSheet;
+	}
+
 	public byte[] getSLSExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
@@ -678,22 +1082,41 @@ public class BRRS_SLS_WORKING_ReportService {
 		}
 
 		String templateDir = env.getProperty("output.exportpathtemp");
-		Path templatePath = Paths.get(templateDir, filename);
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+		Path templatePath = resolveTemplateFile(templateDir, filename);
+		logger.info("Service: Attempting to load template from path: {}",
+				templatePath != null ? templatePath.toAbsolutePath() : Paths.get(templateDir, filename).toAbsolutePath());
 
-		if (!Files.exists(templatePath)) {
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		// NOTE: dataList1 is already confirmed non-empty above, so any failure
+		// from here on is a SERVER/CONFIG problem, not a "no data" case. It must
+		// never be swallowed into the same 204/"no data" response the caller
+		// uses for an empty dataList1.
+		if (templatePath == null) {
+			Path expected = Paths.get(templateDir, filename);
+			String msg = "Excel template '" + filename + "' is missing on the server at "
+					+ expected.toAbsolutePath()
+					+ " (no file with a matching base name was found either). "
+					+ "Data for this report date exists, but the template file was not found - "
+					+ "this is a deployment/configuration issue, not a missing-data issue.";
+			logger.error("Service: {}", msg);
+			throw new FileNotFoundException(msg);
 		}
 		if (!Files.isReadable(templatePath)) {
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			String msg = "Excel template '" + filename + "' exists at " + templatePath.toAbsolutePath()
+					+ " but is not readable (check file/folder permissions).";
+			logger.error("Service: {}", msg);
+			throw new SecurityException(msg);
 		}
 
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+		// FIX: guard against the resolved template actually being a legacy
+		// binary .xls (OLE2) file wearing a ".xlsx" name - see
+		// ensureOoxmlTemplate()'s comments for the full explanation.
+		Path resolvedTemplatePath = ensureOoxmlTemplate(templatePath);
+
+		try (InputStream templateInputStream = Files.newInputStream(resolvedTemplatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			Sheet sheet = workbook.getSheetAt(0);
+			Sheet sheet = selectLiveSheetAndPruneOthers(workbook);
 
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
@@ -708,13 +1131,75 @@ public class BRRS_SLS_WORKING_ReportService {
 			SLS_WORKING_Summary_Entity1 record1 = dataList1.get(0);
 			SLS_WORKING_Summary_Entity2 record2 = dataList2 != null && !dataList2.isEmpty() ? dataList2.get(0) : null;
 
-			writeSlsExcelBody(sheet, textStyle, record1, record2);
+			char[] bucketColumns = { 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N' };
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			for (int rowNum = 1; rowNum <= 92; rowNum++) {
+				int rowIndex = rowNum - 1;
+				Object record = (rowNum <= 70) ? record1 : record2;
+				if (record == null) {
+					continue;
+				}
+
+				// Skip rows the entity itself doesn't define a label for
+				// (blank/spacer rows in the template), instead of a hardcoded list.
+				Object labelValue;
+				try {
+					Field labelField = record.getClass().getDeclaredField("R" + rowNum + "_COLUMN_A");
+					labelField.setAccessible(true);
+					labelValue = labelField.get(record);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					continue;
+				}
+				if (labelValue == null || labelValue.toString().trim().isEmpty()) {
+					continue;
+				}
+
+				Row row = sheet.getRow(rowIndex);
+				if (row == null) {
+					continue;
+				}
+
+				for (char letter : bucketColumns) {
+					String fieldName = "R" + rowNum + "_COLUMN_" + letter;
+					int colIndex = letter - 'A'; // 'B' -> 1, 'C' -> 2, ... 'N' -> 13 (matches the Excel column letter)
+					Cell cell = row.getCell(colIndex);
+					if (cell == null) {
+						cell = row.createCell(colIndex);
+					}
+					try {
+						Field field = record.getClass().getDeclaredField(fieldName);
+						field.setAccessible(true);
+						Object value = field.get(record);
+						if (value instanceof BigDecimal) {
+							cell.setCellValue(((BigDecimal) value).doubleValue());
+						} else {
+							cell.setCellValue(0.00);
+						}
+					} catch (NoSuchFieldException | IllegalAccessException e) {
+						cell.setCellValue("");
+						cell.setCellStyle(textStyle);
+						logger.warn("Field not found or inaccessible: {}", fieldName);
+					}
+				}
+			}
+
+			safeEvaluateAllFormulas(workbook);
 			workbook.write(out);
 
 			logger.info("Service: Excel data successfully written to memory buffer ({} bytes).", out.size());
 			return out.toByteArray();
+		} catch (FileNotFoundException | SecurityException e) {
+			// Re-throw as-is so the caller can distinguish this from an empty
+			// dataset and return a proper error status instead of 204 No Content.
+			throw e;
+		} catch (Exception e) {
+			logger.error("Service: Unexpected error while generating SLS_WORKING excel from template {}: {}",
+					templatePath.toAbsolutePath(), e.getMessage(), e);
+			throw e;
+		} finally {
+			// FIX: clean up the temp converted .xlsx if ensureOoxmlTemplate()
+			// had to create one; no-op if the template was already real .xlsx.
+			cleanupIfConverted(templatePath, resolvedTemplatePath);
 		}
 	}
 
@@ -739,22 +1224,39 @@ public class BRRS_SLS_WORKING_ReportService {
 		}
 
 		String templateDir = env.getProperty("output.exportpathtemp");
-		Path templatePath = Paths.get(templateDir, filename);
-		logger.info("Service: Attempting to load template from path: {}", templatePath.toAbsolutePath());
+		Path templatePath = resolveTemplateFile(templateDir, filename);
+		logger.info("Service: Attempting to load template from path: {}",
+				templatePath != null ? templatePath.toAbsolutePath() : Paths.get(templateDir, filename).toAbsolutePath());
 
-		if (!Files.exists(templatePath)) {
-			throw new FileNotFoundException("Template file not found at: " + templatePath.toAbsolutePath());
+		// NOTE: dataList1 is already confirmed non-empty above, so any failure
+		// from here on is a SERVER/CONFIG problem, not a "no data" case.
+		if (templatePath == null) {
+			Path expected = Paths.get(templateDir, filename);
+			String msg = "Excel template '" + filename + "' is missing on the server at "
+					+ expected.toAbsolutePath()
+					+ " (no file with a matching base name was found either). "
+					+ "Data for this report date/version exists, but the template file was not found - "
+					+ "this is a deployment/configuration issue, not a missing-data issue.";
+			logger.error("Service: {}", msg);
+			throw new FileNotFoundException(msg);
 		}
 		if (!Files.isReadable(templatePath)) {
-			throw new SecurityException(
-					"Template file exists but is not readable (check permissions): " + templatePath.toAbsolutePath());
+			String msg = "Excel template '" + filename + "' exists at " + templatePath.toAbsolutePath()
+					+ " but is not readable (check file/folder permissions).";
+			logger.error("Service: {}", msg);
+			throw new SecurityException(msg);
 		}
 
-		try (InputStream templateInputStream = Files.newInputStream(templatePath);
+		// FIX: guard against the resolved template actually being a legacy
+		// binary .xls (OLE2) file wearing a ".xlsx" name - see
+		// ensureOoxmlTemplate()'s comments for the full explanation.
+		Path resolvedTemplatePath = ensureOoxmlTemplate(templatePath);
+
+		try (InputStream templateInputStream = Files.newInputStream(resolvedTemplatePath);
 				Workbook workbook = WorkbookFactory.create(templateInputStream);
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
-			Sheet sheet = workbook.getSheetAt(0);
+			Sheet sheet = selectLiveSheetAndPruneOthers(workbook);
 
 			CellStyle textStyle = workbook.createCellStyle();
 			textStyle.setBorderBottom(BorderStyle.THIN);
@@ -770,13 +1272,71 @@ public class BRRS_SLS_WORKING_ReportService {
 			SLS_WORKING_Archival_Summary_Entity2 record2 = dataList2 != null && !dataList2.isEmpty() ? dataList2.get(0)
 					: null;
 
-			writeSlsExcelBody(sheet, textStyle, record1, record2);
+			char[] bucketColumns = { 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N' };
 
-			workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+			for (int rowNum = 1; rowNum <= 92; rowNum++) {
+				int rowIndex = rowNum - 1;
+				Object record = (rowNum <= 70) ? record1 : record2;
+				if (record == null) {
+					continue;
+				}
+
+				Object labelValue;
+				try {
+					Field labelField = record.getClass().getDeclaredField("R" + rowNum + "_COLUMN_A");
+					labelField.setAccessible(true);
+					labelValue = labelField.get(record);
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					continue;
+				}
+				if (labelValue == null || labelValue.toString().trim().isEmpty()) {
+					continue;
+				}
+
+				Row row = sheet.getRow(rowIndex);
+				if (row == null) {
+					continue;
+				}
+
+				for (char letter : bucketColumns) {
+					String fieldName = "R" + rowNum + "_COLUMN_" + letter;
+					int colIndex = letter - 'A';
+					Cell cell = row.getCell(colIndex);
+					if (cell == null) {
+						cell = row.createCell(colIndex);
+					}
+					try {
+						Field field = record.getClass().getDeclaredField(fieldName);
+						field.setAccessible(true);
+						Object value = field.get(record);
+						if (value instanceof BigDecimal) {
+							cell.setCellValue(((BigDecimal) value).doubleValue());
+						} else {
+							cell.setCellValue(0.00);
+						}
+					} catch (NoSuchFieldException | IllegalAccessException e) {
+						cell.setCellValue("");
+						cell.setCellStyle(textStyle);
+						logger.warn("Field not found or inaccessible: {}", fieldName);
+					}
+				}
+			}
+
+			safeEvaluateAllFormulas(workbook);
 			workbook.write(out);
 
 			logger.info("Service: Archival Excel data successfully written to memory buffer ({} bytes).", out.size());
 			return out.toByteArray();
+		} catch (FileNotFoundException | SecurityException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error("Service: Unexpected error while generating SLS_WORKING archival excel from template {}: {}",
+					templatePath.toAbsolutePath(), e.getMessage(), e);
+			throw e;
+		} finally {
+			// FIX: clean up the temp converted .xlsx if ensureOoxmlTemplate()
+			// had to create one; no-op if the template was already real .xlsx.
+			cleanupIfConverted(templatePath, resolvedTemplatePath);
 		}
 	}
 

@@ -429,12 +429,43 @@ PURPOSE		: BRRS_M_PLLREPORT
 		};
 
 
+		// ------------------------------------------------------------------
+		// The page renders asondate/fromdate/todate as "dd-MMM-yyyy" (e.g.
+		// "30-Jun-2026") into the download buttons' data-asondate /
+		// data-fromdate / data-todate attributes. The shared
+		// BRRS_ReportsController date-parsing code (used by every report,
+		// not just this one) only accepts "dd/MM/yyyy" - sending it
+		// "30-Jun-2026" throws a ParseException server-side. Rather than
+		// touch the shared controller, convert back to dd/MM/yyyy here
+		// before the value ever leaves the browser. If a date is already
+		// dd/MM/yyyy (or something unrecognized), it's passed through
+		// unchanged.
+		// ------------------------------------------------------------------
+		function toControllerDate(dateStr) {
+			if (!dateStr) {
+				return dateStr;
+			}
+			var months = {
+				Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+				Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+			};
+			var m = dateStr.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+			if (m) {
+				var mon = months[m[2]];
+				if (mon) {
+					var day = ('0' + m[1]).slice(-2);
+					return day + '/' + mon + '/' + m[3];
+				}
+			}
+			return dateStr; // already dd/MM/yyyy or unrecognized - leave as-is
+		}
+
 		function downloadfile(button) {
 
 			var reportid = button.getAttribute('data-reportid');
-			var asondate = button.getAttribute('data-asondate');
-			var fromdate = button.getAttribute('data-fromdate');
-			var todate = button.getAttribute('data-todate');
+			var asondate = toControllerDate(button.getAttribute('data-asondate'));
+			var fromdate = toControllerDate(button.getAttribute('data-fromdate'));
+			var todate = toControllerDate(button.getAttribute('data-todate'));
 			var currency = button.getAttribute('data-currency');
 			var subreportid = button.getAttribute('data-subreportid');
 			var secid = button.getAttribute('data-secid');
@@ -469,7 +500,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 				success: function (data) {
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {
-							type: 'application/vnd.ms-excel'
+							type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 						});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
@@ -504,8 +535,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 		function downloadSummaryPdf(element) {
 			var reportid = element.getAttribute('data-reportid');
-			var fromdate = element.getAttribute('data-fromdate');
-			var todate = element.getAttribute('data-todate');
+			var fromdate = toControllerDate(element.getAttribute('data-fromdate'));
+			var todate = toControllerDate(element.getAttribute('data-todate'));
 
 			$('#loader').modal('show');
 
@@ -543,8 +574,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 			const filename = button.getAttribute('data-filename');
-			const fromdate = button.getAttribute('data-fromdate');
-			const todate = button.getAttribute('data-todate');
+			const fromdate = toControllerDate(button.getAttribute('data-fromdate'));
+			const todate = toControllerDate(button.getAttribute('data-todate'));
 			const currency = button.getAttribute('data-currency');
 			const dtltype = button.getAttribute('data-dtltype');
 			const type = button.getAttribute('data-type');
@@ -625,7 +656,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 					$('#loader').modal('hide');
 
 					if (data && data.size > 100) {
-						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const blob = new Blob([data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
 						const url = window.URL.createObjectURL(blob);
 						const a = document.createElement('a');
 						a.style.display = 'none';
@@ -1079,7 +1110,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 														                     data-todate=${todate}, 
 														                     data-currency=${currency},  
 														                     data-dtltype=${dtltype}, 
-														                     data-filename='SLS.xlsx',
+														                     data-filename='SLS_WORKING.xlsx',
 														                     data-type=${type},
 														                     data-version=${version}" onclick="downloadfile(this);">
 																					<i class="fa fa-download"></i>
@@ -1092,7 +1123,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 														                     data-todate=${todate}, 
 														                     data-currency=${currency},  
 														                     data-dtltype=${dtltype}, 
-														                     data-filename='SLSDetail',
+														                     data-filename='SLS_WORKINGDetail',
 														                     data-type=${type},
 														                     data-version=${version}" onclick="startReport(this)">
 																					<i class="fa fa-download"></i>
@@ -1115,8 +1146,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 																	<th colspan="4" style="text-align: center; width:150px; "></th>
 																	<th style="text-align: center; ">Pula in 1000</th>
 																	<th style="text-align: center;background-color:goldenrod ">USD Millions</th>
-																	<th style="text-align: center;background-color:yellow ">0.0762</th>
-																	<th style="text-align: center; "></th>
+<th style="text-align: center;background-color:yellow;color:red ">0.0762</th>																	<th style="text-align: center; "></th>
 																	<th style="text-align: center;  ">Bucketing</th>
 																	<th style="text-align: center;  "></th>
 																	<th style="text-align: center;background-color:goldenrod  ">DEP TOTAL</th>
@@ -1141,8 +1171,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R2_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R2_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R2_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1185,8 +1215,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">5</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R5_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R5_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R5_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R5_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R5_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R5_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R5_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1208,7 +1238,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R6_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R6_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R6_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1236,8 +1266,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">8</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R8_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R8_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R8_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R8_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R8_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R8_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R8_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1253,8 +1283,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">9</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R9_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R9_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R9_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R9_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R9_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R9_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R9_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1270,8 +1300,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">10</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R10_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R10_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R10_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R10_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R10_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R10_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R10_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1287,8 +1317,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">11</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R11_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R11_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R11_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R11_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R11_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R11_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R11_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1338,8 +1368,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">14</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R14_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R14_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R14_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R14_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R14_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R14_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R14_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1355,8 +1385,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">15</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R15_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R15_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R15_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R15_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R15_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R15_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R15_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1372,8 +1402,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">16</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R16_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R16_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R16_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R16_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R16_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R16_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R16_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1389,8 +1419,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">17</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R17_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R17_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R17_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R17_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R17_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R17_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R17_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1412,14 +1442,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R18_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R18_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R18_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R18_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R18_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R18_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R18_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
 									<td Style="text-align: center;">19</td>
@@ -1433,15 +1463,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R19_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R19_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R19_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R19_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R19_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
 									<td Style="text-align: center;">20</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R20_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R20_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R20_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R20_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R20_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1450,15 +1480,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R20_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R20_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R20_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R20_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R20_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
 									<td Style="text-align: center;">21</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R21_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R21_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R21_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R21_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R21_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1467,15 +1497,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R21_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R21_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R21_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R21_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R21_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
 									<td Style="text-align: center;">22</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R22_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R22_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R22_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R22_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R22_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1484,15 +1514,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R22_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R22_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R22_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R22_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R22_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								<tr>
 									<td Style="text-align: center;">23</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R23_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R23_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R23_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R23_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R23_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R23_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R23_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1678,8 +1708,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">34</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R34_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R34_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R34_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R34_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R34_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R34_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R34_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1695,13 +1725,13 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">35</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R35_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R35_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R35_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R35_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R35_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R35_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R35_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1712,8 +1742,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">36</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R36_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R36_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R36_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R36_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R36_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R36_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R36_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1729,8 +1759,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">37</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R37_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R37_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R37_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R37_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R37_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R37_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R37_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1746,8 +1776,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">38</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R38_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R38_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R38_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R38_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R38_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R38_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R38_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1763,12 +1793,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">39</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R39_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R39_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R39_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R39_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R39_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R39_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R39_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1865,12 +1895,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 									<td Style="text-align: center;">45</td>
-									<td colspan="3" Style="text-align: left;" th:text="${report.R45_COLUMN_A}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R45_COLUMN_A}"></td>
+									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R45_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R45_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R45_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R45_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R45_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1939,7 +1969,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R49_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R49_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 									<td style="text-align:right" th:text="${#numbers.formatDecimal(report.R49_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -1968,8 +1998,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								```html
 								<tr>
 								    <td Style="text-align: center;">51</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R51_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R51_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R51_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R51_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R51_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2004,26 +2034,26 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">53</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R53_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:yellow" th:text="${report.R53_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R53_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R53_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R53_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R53_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 
 								<tr>
 								    <td Style="text-align: center;">54</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R54_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R54_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R54_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R54_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R54_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2040,8 +2070,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">55</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R55_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R55_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R55_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R55_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R55_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2058,8 +2088,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">56</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R56_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R56_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R56_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R56_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R56_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2076,8 +2106,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">57</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R57_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R57_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R57_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R57_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R57_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2094,8 +2124,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">58</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R58_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R58_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R58_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R58_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R58_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2112,8 +2142,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">59</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R59_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R59_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R59_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R59_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R59_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2130,26 +2160,26 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">60</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R60_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R60_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R60_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R60_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R60_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R60_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 
 								<tr>
 								    <td Style="text-align: center;">61</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R61_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R61_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R61_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R61_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R61_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2166,8 +2196,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">62</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R62_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R62_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R62_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R62_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R62_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2184,8 +2214,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">63</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R63_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R63_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R63_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R63_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R63_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2202,8 +2232,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">64</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R64_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R64_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R64_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R64_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R64_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2221,7 +2251,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 								<tr>
 								    <td Style="text-align: center;">65</td>
 								    <td colspan="3" Style="text-align: left;" th:text="${report.R65_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R65_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R65_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R65_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2238,12 +2268,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">66</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report.R66_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report.R66_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report.R66_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report.R66_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report.R66_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report.R66_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2345,12 +2375,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 								</tr>
 								<tr>
 								    <td Style="text-align: center;">72</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R72_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R72_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R72_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2422,8 +2452,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R76_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2561,12 +2591,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">84</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R84_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R84_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:yellow" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R84_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2669,8 +2699,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">90</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R90_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R90_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R90_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
@@ -2687,20 +2717,20 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 								<tr>
 								    <td Style="text-align: center;">91</td>
-								    <td colspan="3" Style="text-align: left;" th:text="${report1.R91_COLUMN_A}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td colspan="3" Style="text-align: left;background-color:goldenrod" th:text="${report1.R91_COLUMN_A}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_B, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_C, 0, 'COMMA', 2, 'POINT')}"></td>
 								    <td style="text-align:right;background-color:green" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_D, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
-								    <td style="text-align:right" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_E, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_F, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_G, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_H, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_I, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_J, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_K, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_L, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_M, 0, 'COMMA', 2, 'POINT')}"></td>
+								    <td style="text-align:right;background-color:goldenrod" th:text="${#numbers.formatDecimal(report1.R91_COLUMN_N, 0, 'COMMA', 2, 'POINT')}"></td>
 								</tr>
 								
 
