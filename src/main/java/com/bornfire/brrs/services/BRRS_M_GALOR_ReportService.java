@@ -502,7 +502,7 @@ public class BRRS_M_GALOR_ReportService {
 		}
 
 		// R11 - ROW 11 (Index 10)
-		row = sheet.getRow(9);
+		row = sheet.getRow(10);
 		
 		
 		// Column B - BOTSWANA
