@@ -12209,12 +12209,12 @@ public class RegulatoryReportServices {
 
 	public Map<String, Object> getExchangeRateDetails(String currency, String reportDate) {
 		Map<String, Object> response = new HashMap<String, Object>();
-		if (currency == null || currency.isEmpty()) {
-			currency = "INR";
+		if (currency == null || currency.trim().isEmpty()) {
+			currency = "INR_USD";
 		}
-		String currCol = currency.toUpperCase();
-		if (!java.util.Arrays.asList("INR", "USD", "EUR", "BWP", "ZAR", "AUD", "GBP").contains(currCol)) {
-			currCol = "INR";
+		String currCol = currency.toUpperCase().trim();
+		if (!currCol.matches("^[A-Z]{3}_[A-Z]{3}$")) {
+			currCol = "INR_USD";
 		}
 		try {
 			List<Map<String, Object>> list;
@@ -12236,7 +12236,15 @@ public class RegulatoryReportServices {
 
 	public List<Map<String, Object>> getAllExchangeRates() {
 		try {
-			String sql = "SELECT TO_CHAR(REPORT_DATE, 'DD-MM-YYYY') AS REPORT_DATE, INR, USD, EUR, BWP, ZAR, AUD, GBP FROM BRRS_EXCHANGE_RATE ORDER BY REPORT_DATE DESC";
+			String sql = "SELECT TO_CHAR(REPORT_DATE, 'DD-MM-YYYY') AS REPORT_DATE, "
+					+ "INR_USD, INR_EUR, INR_BWP, INR_ZAR, INR_AUD, INR_GBP, "
+					+ "USD_INR, USD_EUR, USD_BWP, USD_ZAR, USD_AUD, USD_GBP, "
+					+ "EUR_INR, EUR_USD, EUR_BWP, EUR_ZAR, EUR_AUD, EUR_GBP, "
+					+ "BWP_INR, BWP_USD, BWP_EUR, BWP_ZAR, BWP_AUD, BWP_GBP, "
+					+ "ZAR_INR, ZAR_USD, ZAR_EUR, ZAR_BWP, ZAR_AUD, ZAR_GBP, "
+					+ "AUD_INR, AUD_USD, AUD_EUR, AUD_BWP, AUD_ZAR, AUD_GBP, "
+					+ "GBP_INR, GBP_USD, GBP_EUR, GBP_BWP, GBP_ZAR, GBP_AUD "
+					+ "FROM BRRS_EXCHANGE_RATE ORDER BY REPORT_DATE DESC";
 			return jdbcTemplate.queryForList(sql);
 		} catch (Exception e) {
 			e.printStackTrace();

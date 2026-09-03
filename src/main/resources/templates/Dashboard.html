@@ -492,6 +492,33 @@
 				overflow-x: auto;
 			}
 		}
+
+		.custom-view-dropdown {
+			appearance: none !important;
+			-webkit-appearance: none !important;
+			-moz-appearance: none !important;
+			background: #ffffff url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c7495' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 12px center / 14px 14px !important;
+			padding: 6px 36px 6px 14px !important;
+			border: 1.5px solid #5c7495 !important;
+			border-radius: 6px !important;
+			font-weight: 600 !important;
+			color: #1e293b !important;
+			font-size: 14px !important;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+			cursor: pointer !important;
+			transition: all 0.2s ease-in-out !important;
+		}
+
+		.custom-view-dropdown:focus {
+			border-color: #3b82f6 !important;
+			box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+			outline: none !important;
+		}
+
+		.custom-view-dropdown:hover {
+			border-color: #475569 !important;
+			background-color: #f8fafc !important;
+		}
 	</style>
 
 	<script type="text/javascript">
@@ -613,33 +640,36 @@
 		aria-hidden="true">
 		<div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="max-width: 850px;">
 			<div class="modal-content" style="border-radius: 8px;">
-				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white;">
-					<h5 class="font-weight-bold modal-title" id="viewExchangeRatesModalLabel" style="color: white; margin: 0;">Exchange Rates</h5>
+				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white; padding: 14px 20px;">
+					<h5 class="font-weight-bold modal-title" id="viewExchangeRatesModalLabel" style="color: white; margin: 0; font-size: 19px;">Exchange Rates</h5>
 				</div>
-				<div class="modal-body p-3" style="max-height: 480px; overflow-y: auto;">
-					<table class="table table-bordered table-striped table-sm text-center" style="width: 100%; font-size: 13px;">
-						<thead style="background-color: #f1f5f9; color: #334155; font-weight: 600;">
-							<tr>
-								<th style="width: 6%;">S.No</th>
-								<th style="width: 16%;">Report Date</th>
-								<th style="width: 11%;">INR</th>
-								<th style="width: 11%;">USD</th>
-								<th style="width: 11%;">EUR</th>
-								<th style="width: 11%;">BWP</th>
-								<th style="width: 11%;">ZAR</th>
-								<th style="width: 11%;">AUD</th>
-								<th style="width: 12%;">GBP</th>
-							</tr>
-						</thead>
-						<tbody id="exchangeRatesTableBody">
-							<tr>
-								<td colspan="9" class="text-muted">Loading exchange rates...</td>
-							</tr>
-						</tbody>
-					</table>
+				<div class="modal-body p-3" style="max-height: 520px; overflow-y: auto;">
+					<div class="d-flex align-items-center mb-3" style="gap: 12px;">
+						<label for="viewCurrencyFilter" class="font-weight-bold text-secondary mb-0" style="font-size: 15px;">Select Rates Group:</label>
+						<select id="viewCurrencyFilter" class="form-control form-control-sm custom-view-dropdown" style="width: auto;" onchange="renderFilteredRatesTable()">
+							<option value="INR" selected>INR</option>
+							<option value="USD">USD</option>
+							<option value="EUR">EUR</option>
+							<option value="BWP">BWP</option>
+							<option value="ZAR">ZAR</option>
+							<option value="AUD">AUD</option>
+							<option value="GBP">GBP</option>
+						</select>
+					</div>
+
+					<div class="table-responsive">
+						<table class="table table-bordered table-striped table-sm text-center" style="width: 100%; font-size: 14px;">
+							<thead id="exchangeRatesTableHead" style="background-color: #f1f5f9; color: #334155; font-weight: 600; font-size: 14px;"></thead>
+							<tbody id="exchangeRatesTableBody">
+								<tr>
+									<td colspan="8" class="text-muted">Loading exchange rates...</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				</div>
-				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center;">
-					<button type="button" class="custom-tab-btn" data-dismiss="modal">Close</button>
+				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center; padding: 12px 20px;">
+					<button type="button" class="custom-tab-btn" style="font-size: 14px; padding: 7px 24px;" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
@@ -650,49 +680,98 @@
 		aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 450px;">
 			<div class="modal-content" style="border-radius: 8px;">
-				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white;">
-					<h5 class="font-weight-bold modal-title" id="exchangeRateModalLabel" style="color: white; margin: 0;">Update Exchange Rate</h5>
+				<div class="modal-header escalation-header" style="background-color: #5c7495; color: white; padding: 14px 20px;">
+					<h5 class="font-weight-bold modal-title" id="exchangeRateModalLabel" style="color: white; margin: 0; font-size: 19px;">Update Exchange Rate</h5>
 				</div>
 				<div class="modal-body p-4">
 					<form id="exchangeRateForm" onsubmit="return false;">
 						<div class="form-group mb-3">
-							<label for="modalCurrencySelect" class="font-weight-bold text-secondary" style="font-size: 14px;">Currency</label>
-							<select id="modalCurrencySelect" class="form-control form-control-sm" style="border-radius: 4px; border: 1px solid #cbd5e1; font-weight: 500;" onchange="loadExchangeRateForModal()">
-								<option value="INR" selected>INR</option>
-								<option value="USD">USD</option>
-								<option value="EUR">EUR</option>
-								<option value="BWP">BWP</option>
-								<option value="ZAR">ZAR</option>
-								<option value="AUD">AUD</option>
-								<option value="GBP">GBP</option>
+							<label for="modalCurrencySelect" class="font-weight-bold text-secondary" style="font-size: 15px;">Currency Pair</label>
+							<select id="modalCurrencySelect" class="form-control form-control-sm custom-view-dropdown" style="width: 100%;" onchange="loadExchangeRateForModal()">
+								<optgroup label="INR">
+									<option value="INR_USD" selected>INR to USD</option>
+									<option value="INR_EUR">INR to EUR</option>
+									<option value="INR_BWP">INR to BWP</option>
+									<option value="INR_ZAR">INR to ZAR</option>
+									<option value="INR_AUD">INR to AUD</option>
+									<option value="INR_GBP">INR to GBP</option>
+								</optgroup>
+								<optgroup label="USD">
+									<option value="USD_INR">USD to INR</option>
+									<option value="USD_EUR">USD to EUR</option>
+									<option value="USD_BWP">USD to BWP</option>
+									<option value="USD_ZAR">USD to ZAR</option>
+									<option value="USD_AUD">USD to AUD</option>
+									<option value="USD_GBP">USD to GBP</option>
+								</optgroup>
+								<optgroup label="EUR">
+									<option value="EUR_INR">EUR to INR</option>
+									<option value="EUR_USD">EUR to USD</option>
+									<option value="EUR_BWP">EUR to BWP</option>
+									<option value="EUR_ZAR">EUR to ZAR</option>
+									<option value="EUR_AUD">EUR to AUD</option>
+									<option value="EUR_GBP">EUR to GBP</option>
+								</optgroup>
+								<optgroup label="BWP">
+									<option value="BWP_INR">BWP to INR</option>
+									<option value="BWP_USD">BWP to USD</option>
+									<option value="BWP_EUR">BWP to EUR</option>
+									<option value="BWP_ZAR">BWP to ZAR</option>
+									<option value="BWP_AUD">BWP to AUD</option>
+									<option value="BWP_GBP">BWP to GBP</option>
+								</optgroup>
+								<optgroup label="ZAR">
+									<option value="ZAR_INR">ZAR to INR</option>
+									<option value="ZAR_USD">ZAR to USD</option>
+									<option value="ZAR_EUR">ZAR to EUR</option>
+									<option value="ZAR_BWP">ZAR to BWP</option>
+									<option value="ZAR_AUD">ZAR to AUD</option>
+									<option value="ZAR_GBP">ZAR to GBP</option>
+								</optgroup>
+								<optgroup label="AUD">
+									<option value="AUD_INR">AUD to INR</option>
+									<option value="AUD_USD">AUD to USD</option>
+									<option value="AUD_EUR">AUD to EUR</option>
+									<option value="AUD_BWP">AUD to BWP</option>
+									<option value="AUD_ZAR">AUD to ZAR</option>
+									<option value="AUD_GBP">AUD to GBP</option>
+								</optgroup>
+								<optgroup label="GBP">
+									<option value="GBP_INR">GBP to INR</option>
+									<option value="GBP_USD">GBP to USD</option>
+									<option value="GBP_EUR">GBP to EUR</option>
+									<option value="GBP_BWP">GBP to BWP</option>
+									<option value="GBP_ZAR">GBP to ZAR</option>
+									<option value="GBP_AUD">GBP to AUD</option>
+								</optgroup>
 							</select>
 						</div>
 
 						<div class="form-group mb-3" style="position: relative;">
-							<label for="modalDateInput" class="font-weight-bold text-secondary" style="font-size: 14px;">Report Date</label>
+							<label for="modalDateInput" class="font-weight-bold text-secondary" style="font-size: 15px;">Report Date</label>
 							<input type="date" id="modalDateInput" class="form-control form-control-sm"
-								style="border-radius: 4px; border: 1px solid #cbd5e1;" onchange="onModalDateChange()" />
+								style="border-radius: 4px; border: 1px solid #cbd5e1; font-size: 14px; height: 38px;" onchange="onModalDateChange()" />
 							<!-- Inline Date Hint Popover -->
 							<div id="dateHintPopover" class="date-hint-popover" style="display: none;">
-								<span id="dateHintText">Please select the last date of the month.</span>
+								<span id="dateHintText" style="font-size: 13px;">Please select the last date of the month.</span>
 							</div>
 						</div>
 
 						<div class="form-group mb-3" style="position: relative;">
-							<label for="modalRateInput" class="font-weight-bold text-secondary" style="font-size: 14px;">Exchange Rate</label>
+							<label for="modalRateInput" class="font-weight-bold text-secondary" style="font-size: 15px;">Exchange Rate</label>
 							<input type="number" id="modalRateInput" step="0.0001" placeholder="Enter Exchange Rate"
 								class="form-control form-control-sm"
-								style="text-align: right; border-radius: 4px; border: 1px solid #cbd5e1;" />
+								style="text-align: right; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 14px; height: 38px;" />
 							<!-- Inline Rate Hint Popover -->
 							<div id="rateHintPopover" class="date-hint-popover" style="display: none;">
-								<span id="rateHintText">Please enter a valid exchange rate.</span>
+								<span id="rateHintText" style="font-size: 13px;">Please enter a valid exchange rate.</span>
 							</div>
 						</div>
 					</form>
 				</div>
-				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center;">
-					<button type="button" class="custom-tab-btn" data-dismiss="modal">Cancel</button>
-					<button type="button" class="custom-tab-btn" style="background-color: #5c7495; color: white;" onclick="submitExchangeRate()">Submit</button>
+				<div class="modal-footer" style="border-top: 1px solid #e9ecef; justify-content: center; padding: 12px 20px;">
+					<button type="button" class="custom-tab-btn" style="font-size: 14px; padding: 7px 24px;" data-dismiss="modal">Cancel</button>
+					<button type="button" class="custom-tab-btn" style="background-color: #5c7495; color: white; font-size: 14px; padding: 7px 24px;" onclick="submitExchangeRate()">Submit</button>
 				</div>
 			</div>
 		</div>
@@ -1152,43 +1231,76 @@
 			});
 		}
 
+		var cachedExchangeRatesList = [];
+		var CURRENCY_RATE_GROUPS = {
+			"INR": ["INR_USD", "INR_EUR", "INR_BWP", "INR_ZAR", "INR_AUD", "INR_GBP"],
+			"USD": ["USD_INR", "USD_EUR", "USD_BWP", "USD_ZAR", "USD_AUD", "USD_GBP"],
+			"EUR": ["EUR_INR", "EUR_USD", "EUR_BWP", "EUR_ZAR", "EUR_AUD", "EUR_GBP"],
+			"BWP": ["BWP_INR", "BWP_USD", "BWP_EUR", "BWP_ZAR", "BWP_AUD", "BWP_GBP"],
+			"ZAR": ["ZAR_INR", "ZAR_USD", "ZAR_EUR", "ZAR_BWP", "ZAR_AUD", "ZAR_GBP"],
+			"AUD": ["AUD_INR", "AUD_USD", "AUD_EUR", "AUD_BWP", "AUD_ZAR", "AUD_GBP"],
+			"GBP": ["GBP_INR", "GBP_USD", "GBP_EUR", "GBP_BWP", "GBP_ZAR", "GBP_AUD"]
+		};
+
 		function loadAllExchangeRatesTable() {
 			var tbody = document.getElementById("exchangeRatesTableBody");
 			if (tbody) {
-				tbody.innerHTML = '<tr><td colspan="9" class="text-muted">Loading exchange rates...</td></tr>';
+				tbody.innerHTML = '<tr><td colspan="8" class="text-muted">Loading exchange rates...</td></tr>';
 			}
 			$.ajax({
 				url: '/BRRS/Reports/Rate/getAllExchangeRates',
 				type: 'GET',
 				success: function (list) {
-					if (!tbody) return;
-					if (!list || list.length === 0) {
-						tbody.innerHTML = '<tr><td colspan="9" class="text-muted">No exchange rates found.</td></tr>';
-						return;
-					}
-					var html = '';
-					for (var i = 0; i < list.length; i++) {
-						var item = list[i];
-						html += '<tr>';
-						html += '<td>' + (i + 1) + '</td>';
-						html += '<td style="font-weight: 600; color: #0f172a;">' + (item.REPORT_DATE || '-') + '</td>';
-						html += '<td>' + (item.INR != null ? parseFloat(item.INR).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.USD != null ? parseFloat(item.USD).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.EUR != null ? parseFloat(item.EUR).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.BWP != null ? parseFloat(item.BWP).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.ZAR != null ? parseFloat(item.ZAR).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.AUD != null ? parseFloat(item.AUD).toFixed(4) : '-') + '</td>';
-						html += '<td>' + (item.GBP != null ? parseFloat(item.GBP).toFixed(4) : '-') + '</td>';
-						html += '</tr>';
-					}
-					tbody.innerHTML = html;
+					cachedExchangeRatesList = list || [];
+					renderFilteredRatesTable();
 				},
 				error: function () {
 					if (tbody) {
-						tbody.innerHTML = '<tr><td colspan="9" class="text-danger">Failed to load exchange rates.</td></tr>';
+						tbody.innerHTML = '<tr><td colspan="8" class="text-danger">Failed to load exchange rates.</td></tr>';
 					}
 				}
 			});
+		}
+
+		function renderFilteredRatesTable() {
+			var thead = document.getElementById("exchangeRatesTableHead");
+			var tbody = document.getElementById("exchangeRatesTableBody");
+			var filterSelect = document.getElementById("viewCurrencyFilter");
+
+			if (!filterSelect || !thead || !tbody) return;
+
+			var groupKey = filterSelect.value || "INR";
+			var columns = CURRENCY_RATE_GROUPS[groupKey] || CURRENCY_RATE_GROUPS["INR"];
+
+			// Render Header
+			var headHtml = '<tr><th style="width: 6%;">S.No</th><th style="width: 16%;">Report Date</th>';
+			for (var c = 0; c < columns.length; c++) {
+				var displayHeader = columns[c].replace('_', ' to ');
+				headHtml += '<th>' + displayHeader + '</th>';
+			}
+			headHtml += '</tr>';
+			thead.innerHTML = headHtml;
+
+			// Render Body
+			if (!cachedExchangeRatesList || cachedExchangeRatesList.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="' + (columns.length + 2) + '" class="text-muted">No exchange rates found.</td></tr>';
+				return;
+			}
+
+			var bodyHtml = '';
+			for (var i = 0; i < cachedExchangeRatesList.length; i++) {
+				var item = cachedExchangeRatesList[i];
+				bodyHtml += '<tr>';
+				bodyHtml += '<td>' + (i + 1) + '</td>';
+				bodyHtml += '<td style="font-weight: 600; color: #0f172a;">' + (item.REPORT_DATE || '-') + '</td>';
+				for (var c = 0; c < columns.length; c++) {
+					var colName = columns[c];
+					var val = item[colName];
+					bodyHtml += '<td>' + (val != null ? parseFloat(val).toFixed(4) : '-') + '</td>';
+				}
+				bodyHtml += '</tr>';
+			}
+			tbody.innerHTML = bodyHtml;
 		}
 	</script>
 </body>
