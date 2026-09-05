@@ -512,7 +512,12 @@ PURPOSE		: BRRS_M_LCRREPORT
 			// Hide the modals
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
+			$('#loader').modal('hide');
 
+			const message = $("#resultModalBody").text();
+			if (message.includes("Modified Successfully") || message.includes("success") || message.includes("Updated")) {
+				setTimeout(() => location.reload(), 300);
+			}
 		}
 
 
@@ -642,11 +647,17 @@ PURPOSE		: BRRS_M_LCRREPORT
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
+			// If submitButton is visible, user is in edit mode
+			if ($("#submitButton").is(":visible")) {
+				return;
+			}
 			var rowId = a.getAttribute('reportLable');
 			var columnId = a.getAttribute('reportAddlCriteria1');
-			var cellValue = a.textContent || a.innerText;
+			var inputElem = $(a).find('input');
+			var cellValue = inputElem.length ? inputElem.val() : (a.textContent || a.innerText);
+			cellValue = cellValue ? cellValue.trim() : '';
 
-			if (cellValue !== '0') {
+			if (cellValue !== '0' && cellValue !== '') {
 				// Set dynamic message in modal (instead of confirm)
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
@@ -674,6 +685,83 @@ PURPOSE		: BRRS_M_LCRREPORT
 			} else {
 				// Use your custom alert modal instead of window.alert
 				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+	</script>
+
+	<script>
+		// Show Modify (enable manual entry inputs)
+		function showmodify(btn) {
+			$("#r14_bob_total_amount, #r31_bob_total_amount, #r38_bob_total_amount")
+				.removeAttr("readonly")
+				.removeAttr("disabled")
+				.css("background-color", "#d3d3d3");
+
+			// Toggle buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+			$(btn).hide();
+		}
+
+		// Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				location.reload();
+			}
+		}
+
+		// Form submission via AJAX
+		function fileuploads(btn) {
+			try {
+				const asondate = btn.getAttribute("data-todate");
+				$('#loader').modal('show');
+
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
+
+				if ($("#fileupload").length && typeof $("#fileupload").valid === "function") {
+					if (!$("#fileupload").valid()) {
+						$('#loader').modal('hide');
+						return;
+					}
+				}
+
+				const formData = $('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate);
+
+				let apiUrl = './M_LCRupdate';
+
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " + (jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
 			}
 		}
 	</script>
@@ -969,6 +1057,19 @@ PURPOSE		: BRRS_M_LCRREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn"
+							onclick="showmodify(this);" title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
+							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							id="addRecord">Modify</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn"
+							title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+
 						<button type="button"
         class="custom-tab-btn"
         id="custom-tab-btnAdd"
@@ -1007,6 +1108,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 				<div class="row">
 					<div class="col-sm-12">
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
+						<form action="#" method="POST" id="fileupload">
 						<div class="table-wrapper table-responsive scrollable-table-container"
 							style="border-right: 1px solid #dee2e6;max-height:650px; overflow-y: auto;">
 							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
@@ -1135,9 +1237,13 @@ PURPOSE		: BRRS_M_LCRREPORT
 											th:text="${#numbers.formatDecimal(report.r14_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
 										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r14_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R14', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
+											onclick="showdetailsbyRowAndColumn(this)">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.r14_bob_total_amount != null ? #numbers.formatDecimal(report.r14_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+												id="r14_bob_total_amount" name="r14_bob_total_amount"
+												style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
+										</td>
 										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
 											th:text="${#numbers.formatDecimal(report.r14_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
 										</td>
@@ -1381,9 +1487,13 @@ PURPOSE		: BRRS_M_LCRREPORT
 											th:text="${#numbers.formatDecimal(report.r31_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
 										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r31_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R31', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
+											onclick="showdetailsbyRowAndColumn(this)">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.r31_bob_total_amount != null ? #numbers.formatDecimal(report.r31_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+												id="r31_bob_total_amount" name="r31_bob_total_amount"
+												style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
+										</td>
 										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
 											th:text="${#numbers.formatDecimal(report.r31_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
 										</td>
@@ -1478,9 +1588,13 @@ PURPOSE		: BRRS_M_LCRREPORT
 											th:text="${#numbers.formatDecimal(report.r38_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
 										</td>
 										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r38_bob_total_amount,1,'COMMA',0,'POINT')}"
 											th:attr="reportLable='R38', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
+											onclick="showdetailsbyRowAndColumn(this)">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.r38_bob_total_amount != null ? #numbers.formatDecimal(report.r38_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+												id="r38_bob_total_amount" name="r38_bob_total_amount"
+												style="background-color: #FFFF00; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
+										</td>
 										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);;"
 											th:text="${#numbers.formatDecimal(report.r38_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
 										</td>
@@ -2241,8 +2355,13 @@ PURPOSE		: BRRS_M_LCRREPORT
 								</tbody>
 							</table>
 						</div>
-
-
+						<div style="text-align: center; margin-top: 10px;">
+							<button id="submitButton" type="button"
+								class="custom-tab-btn Show_input" form="fileupload"
+								th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+								style="display: none;">Submit</button>
+						</div>
+						</form>
 					</div>
 				</div>
 			</div>

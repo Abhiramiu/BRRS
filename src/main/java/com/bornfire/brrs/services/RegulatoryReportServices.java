@@ -1002,7 +1002,7 @@ public class RegulatoryReportServices {
 
 		case "M_LCR":
 			repsummary = BRRS_M_LCR_reportservice.getM_LCRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version, req, md);
 			break;
 
 		case "Q_STAFF":

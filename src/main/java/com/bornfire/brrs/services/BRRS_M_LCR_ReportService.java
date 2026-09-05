@@ -56,6 +56,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
@@ -7548,13 +7549,24 @@ public class BRRS_M_LCR_ReportService {
 	// =========================
 
 	public ModelAndView getM_LCRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type, BigDecimal version) {
+			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
 		Session hs = sessionFactory.getCurrentSession();
 		int pageSize = pageable.getPageSize();
 		int currentPage = pageable.getPageNumber();
 		int startItem = currentPage * pageSize;
+
+		if (req1 != null && req1.getSession() != null) {
+			String userid = (String) req1.getSession().getAttribute("USERID");
+			logger.info("User Id Maker and Checker: {}", userid);
+			String role = userProfileRep.getUserRole(userid);
+			if (md != null) {
+				md.addAttribute("role", role);
+			}
+			mv.addObject("role", role);
+			logger.info("Role: {}", role);
+		}
 
 		logger.info("getM_LCRView called - type: {}, version: {}, todate: {}", type, version, todate);
 
@@ -9706,6 +9718,55 @@ public class BRRS_M_LCR_ReportService {
 		} catch (Exception e) {
 			logger.error("Error while updating BRRS_M_LCR Detail", e);
 			throw new RuntimeException("Error while updating BRRS_M_LCR Detail", e);
+		}
+	}
+
+	@Transactional
+	public void updateReport(M_LCR_Summary_Entity updatedEntity) {
+		logger.info("Came to M_LCR Update");
+		logger.info("Report Date: {}", updatedEntity.getREPORT_DATE());
+
+		// Fetch existing summary record for audit
+		M_LCR_Summary_Entity existingSummary = findSummaryByReportDate(updatedEntity.getREPORT_DATE());
+
+		if (existingSummary == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
+		}
+
+		// Audit old copy
+		M_LCR_Summary_Entity oldcopy = new M_LCR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
+
+		try {
+			if (updatedEntity.getR14_bob_total_amount() != null) {
+				existingSummary.setR14_bob_total_amount(updatedEntity.getR14_bob_total_amount());
+				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R14_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR14_bob_total_amount(), updatedEntity.getREPORT_DATE());
+			}
+
+			if (updatedEntity.getR31_bob_total_amount() != null) {
+				existingSummary.setR31_bob_total_amount(updatedEntity.getR31_bob_total_amount());
+				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R31_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR31_bob_total_amount(), updatedEntity.getREPORT_DATE());
+			}
+
+			if (updatedEntity.getR38_bob_total_amount() != null) {
+				existingSummary.setR38_bob_total_amount(updatedEntity.getR38_bob_total_amount());
+				String sql = "UPDATE BRRS_M_LCR_SUMMARYTABLE SET R38_BOB_TOTAL_AMOUNT = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR38_bob_total_amount(), updatedEntity.getREPORT_DATE());
+			}
+
+			// Audit only if changes found
+			String changes = auditService.getChanges(oldcopy, existingSummary);
+			if (!changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getREPORT_DATE().toString(),
+						"M LCR Summary Screen", "BRRS_M_LCR_SUMMARY");
+			}
+
+			logger.info("M_LCR Summary Update Completed");
+		} catch (Exception e) {
+			logger.error("Error while updating M_LCR fields", e);
+			throw new RuntimeException("Error while updating M_LCR fields", e);
 		}
 	}
 }
