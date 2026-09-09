@@ -157,7 +157,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
-	
+
 	@Autowired
 	BRRS_SLS_WORKING_ReportService BRRS_SLS_WORKING_reportservice;
 
@@ -455,6 +455,9 @@ public class RegulatoryReportServices {
 	@Autowired
 	BRRS_UFCE_ANNEXURE_ReportService BRRS_UFCE_ANNEXURE_ReportService;
 
+	@Autowired
+	BRRS_UFCE_CALCULATION_ReportService BRRS_UFCE_CALCULATION_ReportService;
+
 	private static final Logger logger = LoggerFactory.getLogger(RegulatoryReportServices.class);
 
 	public ModelAndView getReportView(String reportId, String reportDate, String fromdate, String todate,
@@ -488,15 +491,15 @@ public class RegulatoryReportServices {
 			repsummary = BRRS_M_PLL_reportservice.getM_PLLView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version, req, md);
 			break;
-			
+
 		case "SLS":
-			repsummary = BRRS_SLS_INPUT_SHT_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version, req, md);
+			repsummary = BRRS_SLS_INPUT_SHT_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version, req, md);
 			break;
-			
+
 		case "SLS_WORKING":
-			repsummary = BRRS_SLS_WORKING_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version, req, md);
+			repsummary = BRRS_SLS_WORKING_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version, req, md);
 			break;
 
 //		case "M_SRWA_12A_New":
@@ -620,8 +623,8 @@ public class RegulatoryReportServices {
 					pageable, type, version);
 			break;
 		case "DBS10_FINCON_III_1C":
-			repsummary = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+			repsummary = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CView(reportId, fromdate, todate,
+					currency, dtltype, pageable, type, version);
 			break;
 
 		case "ADISB2":
@@ -1169,6 +1172,11 @@ public class RegulatoryReportServices {
 					currency, dtltype, pageable, type, version);
 			break;
 
+		case "UFCE_CALCULATION":
+			repsummary = BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version, req, md);
+			break;
+
 		case "FSI":
 			repsummary = BRRS_FSI_ReportService.getFSIView(reportId, fromdate, todate, currency, dtltype, pageable,
 					type, version);
@@ -1309,16 +1317,16 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_M_PLL_reportservice.getM_PLLcurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
 			break;
-			
+
 		case "SLS":
 			repdetail = BRRS_SLS_INPUT_SHT_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
 			break;
-			
+
 		case "SLS_WORKING":
 			repdetail = BRRS_SLS_WORKING_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
-			break;	
+			break;
 
 		case "M_DEP3":
 			repdetail = BRRS_M_DEP3_reportservice.getM_DEP3currentDtl(reportId, fromdate, todate, currency, dtltype,
@@ -1415,8 +1423,8 @@ public class RegulatoryReportServices {
 			break;
 		case "DBS10_FINCON_III_1C":
 
-			repdetail = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version);
+			repdetail = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CcurrentDtl(reportId, fromdate,
+					todate, currency, dtltype, pageable, Filter, type, version);
 			break;
 		case "ADISB2":
 
@@ -1624,8 +1632,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "BORR_UFCE":
-			repdetail = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_DetailView(reportId, fromdate, todate,
-					currency, dtltype, pageable, Filter, type, version);
+			repdetail = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_DetailView(reportId, fromdate, todate, currency,
+					dtltype, pageable, Filter, type, version);
 			break;
 
 		case "UFCE_RETAILADV":
@@ -1641,6 +1649,21 @@ public class RegulatoryReportServices {
 		case "UFCE_ANNEXURE":
 			repdetail = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_DetailView(reportId, fromdate, todate,
 					currency, dtltype, pageable, Filter, type, version);
+			break;
+
+		case "UFCE_CALCULATION":
+			// Convert version String to BigDecimal
+			BigDecimal versionDecimal = null;
+			if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)) {
+				try {
+					versionDecimal = new BigDecimal(version);
+				} catch (NumberFormatException e) {
+					versionDecimal = null;
+				}
+			}
+
+			repdetail = BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, versionDecimal, req1, md);
 			break;
 
 		}
@@ -1664,7 +1687,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-
 		case "IRRBB_DEPOSITS":
 			try {
 				repfile = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_Excel(filename, reportId, fromdate,
@@ -1676,8 +1698,8 @@ public class RegulatoryReportServices {
 
 		case "BORR_UFCE":
 			try {
-				repfile = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId, fromdate,
-						todate, currency, dtltype, type, format, version);
+				repfile = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId, fromdate, todate,
+						currency, dtltype, type, format, version);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1705,6 +1727,15 @@ public class RegulatoryReportServices {
 			try {
 				repfile = BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_Excel(filename, reportId, fromdate,
 						todate, currency, dtltype, type, format, version);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+
+		case "UFCE_CALCULATION":
+			try {
+				repfile = BRRS_UFCE_CALCULATION_ReportService.getUFCEUploadableExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, type, version, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -2129,7 +2160,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "SLS":
 			try {
 				repfile = BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel(filename, reportId, fromdate, todate, currency,
@@ -2139,7 +2170,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "SLS_WORKING":
 			try {
 				repfile = BRRS_SLS_WORKING_reportservice.getSLSExcel(filename, reportId, fromdate, todate, currency,
@@ -2490,8 +2521,8 @@ public class RegulatoryReportServices {
 			break;
 		case "DBS10_FINCON_III_1C":
 			try {
-				repfile = BRRS_DBS10_FINCON_III_1C_ReportService.BRRS_DBS10_FINCON_III_1CExcel(filename, reportId, fromdate, todate, currency,
-						dtltype, type, version);
+				repfile = BRRS_DBS10_FINCON_III_1C_ReportService.BRRS_DBS10_FINCON_III_1CExcel(filename, reportId,
+						fromdate, todate, currency, dtltype, type, version);
 
 			} catch (Exception e) { // TODO Auto-generated catch block
 				e.printStackTrace();
@@ -2953,8 +2984,8 @@ public class RegulatoryReportServices {
 			return BRRS_M_PLL_reportservice.getM_PLLDetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
 		} else if ("SLSDetail".equals(filename)) {
-			return BRRS_SLS_INPUT_SHT_reportservice.getSLSDetailExcel(filename, fromdate, todate, currency, dtltype, type,
-					version);
+			return BRRS_SLS_INPUT_SHT_reportservice.getSLSDetailExcel(filename, fromdate, todate, currency, dtltype,
+					type, version);
 		} else if ("M_DEP3Detail".equals(filename)) {
 			return BRRS_M_DEP3_reportservice.getM_DEP3DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -2992,9 +3023,9 @@ public class RegulatoryReportServices {
 		} else if ("ADISB1Detail".equals(filename)) {
 			return BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
-		}else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
-			return BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate, todate, currency, dtltype,
-						type, version);
+		} else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
+			return BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate, todate,
+					currency, dtltype, type, version);
 		} else if ("ADISB2Detail".equals(filename)) {
 			return BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency, dtltype, type,
 					version);
@@ -3087,6 +3118,15 @@ public class RegulatoryReportServices {
 			List<Object[]> ufceAnnexureList = BRRS_UFCE_ANNEXURE_ReportService.getUFCE_ANNEXUREArchival();
 			archivalData.addAll(ufceAnnexureList);
 			System.out.println("Fetched UFCE_ANNEXURE archival data: " + ufceAnnexureList.size());
+			break;
+
+		case "UFCE_CALCULATION":
+			List<Object[]> ufceCalcList = BRRS_UFCE_CALCULATION_ReportService.getCalculationArchivalSummaryList();
+			archivalData.addAll(ufceCalcList);
+			System.out.println("Fetched UFCE_CALCULATION calculation archival data: " + ufceCalcList.size());
+			List<Object[]> ufceCalcManualList = BRRS_UFCE_CALCULATION_ReportService.getManualEntryArchivalSummaryList();
+			archivalData.addAll(ufceCalcManualList);
+			System.out.println("Fetched UFCE_CALCULATION manual-entry archival data: " + ufceCalcManualList.size());
 			break;
 
 		case "M_SFINP2":
@@ -3775,7 +3815,8 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched ADISB1 archival data: " + ADISB11List.size());
 			break;
 		case "DBS10_FINCON_III_1C":
-			List<Object[]> DBS10_FINCON_III_1CList = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CArchival();
+			List<Object[]> DBS10_FINCON_III_1CList = BRRS_DBS10_FINCON_III_1C_ReportService
+					.getDBS10_FINCON_III_1CArchival();
 			archivalData.addAll(DBS10_FINCON_III_1CList);
 			System.out.println("Fetched DBS10_FINCON_III_1C archival data: " + DBS10_FINCON_III_1CList.size());
 			break;
@@ -4061,13 +4102,11 @@ public class RegulatoryReportServices {
 
 			fileData = BRRS_ADISB1_ReportService.getADISB1DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
-		}
-		else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
+		} else if ("DBS10_FINCON_III_1CDetail".equals(filename)) {
 
-			fileData = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate, todate, currency, dtltype,
-					type, version);
-		}
-		else if ("ADISB2Detail".equals(filename)) {
+			fileData = BRRS_DBS10_FINCON_III_1C_ReportService.getDBS10_FINCON_III_1CDetailExcel(filename, fromdate,
+					todate, currency, dtltype, type, version);
+		} else if ("ADISB2Detail".equals(filename)) {
 
 			fileData = BRRS_ADISB2_ReportService.getADISB2DetailExcel(filename, fromdate, todate, currency, dtltype,
 					type, version);
@@ -4310,7 +4349,7 @@ public class RegulatoryReportServices {
 				modelAndView = BRRS_M_PLL_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
 				break;
-				
+
 			case "SLS":
 				modelAndView = BRRS_SLS_INPUT_SHT_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
 						request.getParameter("formmode"));
@@ -5125,6 +5164,23 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for UFCE_ANNEXURE: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for UFCE_ANNEXURE: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+		case "UFCE_CALCULATION":
+			try {
+				List<Object[]> calcResubList = BRRS_UFCE_CALCULATION_ReportService
+						.getResubCalculationSummaryDataAsArray(null, null);
+				resubmissionData.addAll(calcResubList);
+
+				List<Object[]> manualResubList = BRRS_UFCE_CALCULATION_ReportService
+						.getResubManualEntrySummaryDataAsArray(null, null);
+				resubmissionData.addAll(manualResubList);
+
+				System.out.println("Resubmission data fetched for UFCE_CALCULATION: " + resubmissionData.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for UFCE_CALCULATION: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;
@@ -6238,13 +6294,13 @@ public class RegulatoryReportServices {
 				case "M_PLL":
 					return BRRS_M_PLL_reportservice.getM_PLLExcel("M_PLL.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, version);
-					
+
 				case "SLS":
-					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate, currency,
-							dtltype, type, version);
+					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
 				case "SLS_WORKING":
-					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate, currency,
-							dtltype, type, version);
+					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
 
 				case "M_PD":
 					return BRRS_M_PD_ReportService.getM_PDExcel("EMAIL_M_PD.xlsx", reportName, fromdate, todate,
@@ -6489,11 +6545,11 @@ public class RegulatoryReportServices {
 					return BRRS_M_PLL_reportservice.getM_PLLExcel("M_PLL.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, version);
 				case "SLS":
-					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate, currency,
-							dtltype, type, version);
+					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLL.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
 				case "SLS_WORKING":
-					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate, currency,
-							dtltype, type, version);
+					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLL_WORKING.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
 
 				case "M_PD":
 					return BRRS_M_PD_ReportService.getM_PDExcel("M_PD.xlsx", reportName, fromdate, todate, currency,
@@ -6842,11 +6898,11 @@ public class RegulatoryReportServices {
 		case "BORR_UFCE":
 			try {
 				if (filename != null && filename.startsWith("EMAIL_")) {
-					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId,
-							fromdate, todate, currency, dtltype, "FORMAT", "excel", null);
+					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId, fromdate,
+							todate, currency, dtltype, "FORMAT", "excel", null);
 				} else {
-					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId,
-							fromdate, todate, currency, dtltype, null, "excel", null);
+					excelBytes = BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel(filename, reportId, fromdate,
+							todate, currency, dtltype, null, "excel", null);
 				}
 
 				if (excelBytes == null || excelBytes.length == 0) {
@@ -6923,6 +6979,34 @@ public class RegulatoryReportServices {
 				return pdfBytes;
 			} catch (Exception e) {
 				logger.error("UFCE_ANNEXURE: PDF generation failed", e);
+				return new byte[0];
+			}
+
+		case "UFCE_CALCULATION":
+			try {
+
+				String reportType = null;
+				BigDecimal versionDecimal = null;
+
+				excelBytes = BRRS_UFCE_CALCULATION_ReportService.getUFCEUploadableExcel(filename, reportId, fromdate,
+						todate, currency, dtltype, reportType, versionDecimal, null);
+
+				if (excelBytes == null || excelBytes.length == 0) {
+					logger.warn("UFCE_CALCULATION: No Excel data found for PDF generation → todate={}", todate);
+					return new byte[0];
+				}
+
+				pdfBytes = Exceltopdfservice.convertExcelBytesToPdf(excelBytes);
+
+				if (pdfBytes == null || pdfBytes.length == 0) {
+					logger.error("UFCE_CALCULATION: PDF conversion returned empty bytes");
+					return new byte[0];
+				}
+
+				logger.info("UFCE_CALCULATION: PDF conversion successful → {} bytes", pdfBytes.length);
+				return pdfBytes;
+			} catch (Exception e) {
+				logger.error("UFCE_CALCULATION: PDF generation failed", e);
 				return new byte[0];
 			}
 
@@ -8345,11 +8429,11 @@ public class RegulatoryReportServices {
 				logger.error("M_PLL: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "SLS":
 			try {
-				excelBytes = BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLS.xlsx", reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLS.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("SLS: No Excel data found for PDF generation → todate={}", todate);
@@ -8371,11 +8455,11 @@ public class RegulatoryReportServices {
 				logger.error("SLS: PDF generation failed", e);
 				return new byte[0];
 			}
-			
+
 		case "SLS_WORKING":
 			try {
-				excelBytes = BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("SLS_WORKING: No Excel data found for PDF generation → todate={}", todate);
@@ -11581,8 +11665,6 @@ public class RegulatoryReportServices {
 		return pdfBytes;
 	}
 
-	
-
 	public byte[] getPdfDownloadFile(String reportId, String filename, String asondate, String fromdate, String todate,
 			String currency, String subreportid, String secid, String dtltype, String type, BigDecimal version) {
 
@@ -12219,10 +12301,13 @@ public class RegulatoryReportServices {
 		try {
 			List<Map<String, Object>> list;
 			if (reportDate != null && !reportDate.trim().isEmpty()) {
-				String sql = "SELECT " + currCol + " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE TRUNC(REPORT_DATE) = TO_DATE(?, 'YYYY-MM-DD')";
+				String sql = "SELECT " + currCol
+						+ " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE TRUNC(REPORT_DATE) = TO_DATE(?, 'YYYY-MM-DD')";
 				list = jdbcTemplate.queryForList(sql, reportDate);
 			} else {
-				String sql = "SELECT " + currCol + " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE " + currCol + " IS NOT NULL ORDER BY REPORT_DATE DESC NULLS LAST";
+				String sql = "SELECT " + currCol
+						+ " AS EXCHANGE_RATE, TO_CHAR(REPORT_DATE, 'YYYY-MM-DD') AS REPORT_DATE FROM BRRS_EXCHANGE_RATE WHERE "
+						+ currCol + " IS NOT NULL ORDER BY REPORT_DATE DESC NULLS LAST";
 				list = jdbcTemplate.queryForList(sql);
 			}
 			if (!list.isEmpty() && list.get(0).get("EXCHANGE_RATE") != null) {

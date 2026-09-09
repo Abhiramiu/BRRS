@@ -1,0 +1,2017 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>UFCE - CALCULATION</title>
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+
+
+	<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: #E77400;
+			border-color: #0c0c0c;
+		}
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc0000;
+			/* fixed from #cc000000 (too many zeros) */
+			border-color: #161617;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+
+
+
+
+	<style>
+		div span {
+			font-weight: bold;
+			color: white !important;
+		}
+
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.table td {
+			background-color: #FFFFFF;
+
+		}
+
+
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+		#BRFvalidation th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 16px;
+			font-family: Arial;
+		}
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+
+
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+		/* When input or select is focused or has a value, move the label up */
+		.form-control:focus~.form-legend,
+		.form-control:not(:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		}
+
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		.form-control:not(:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+		}
+	</style>
+
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+		}
+
+		.table-cell tbody td:hover {
+			background-color: #f0f0f0;
+			/* Hover color for cell */
+			cursor: pointer;
+			/* Optional: pointer cursor */
+		}
+	</style>
+	<style>
+		#reports,
+		#reports th,
+		#reports td {
+			border: 1px solid black !important;
+		}
+
+		#reports {
+			border-collapse: collapse;
+		}
+	</style>
+
+
+
+
+	<script th:inline="javascript">
+
+		// Global report id used by showsummary()/showdetails()/archival & resub nav functions below
+		var reportid = /*[[${reportid}]]*/ '';
+
+		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+
+		$(document).ready(function () {
+			Maker_Checker_Function();
+		});
+
+		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					// console.log("User Role ID:", roleId);
+
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+						const button = document.getElementById("custom-tab-btnAdd");
+						if (button) button.style.display = "none";
+					}
+
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+				}
+			});
+		}
+
+
+
+
+		function home() {
+			$("#loader").modal("toggle");
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			$("#loader").modal("toggle");
+
+			window.history.back();
+		}
+
+		// Navigate to Summary View
+		function showsummary() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var type = /*[[${type}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate);
+			if (type && type !== '') {
+				url += '&type=' + encodeURIComponent(type);
+			}
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+
+		// Navigate to Detail View
+		function showdetails() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var type = /*[[${type}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&dtltype=detail';
+			if (type && type !== '') {
+				url += '&type=' + encodeURIComponent(type);
+			}
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+
+		// Archival Summary
+		function goToArchivalSummary() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=ARCHIVAL';
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		// Archival Detail
+		function showArchivalDetail() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=ARCHIVAL&dtltype=detail';
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		// Resub Summary
+		function goToResubSummary() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=RESUB';
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+
+		// Resub Detail
+		function showResubDetail() {
+			$('#loader').modal('show');
+			var fromdate = /*[[${fromdate}]]*/ '';
+			var todate = /*[[${todate}]]*/ '';
+			var asondate = /*[[${asondate}]]*/ '';
+			var version = /*[[${version}]]*/ '';
+
+			var url = '/BRRS/Reports/' + reportid +
+				'?fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&type=RESUB&dtltype=detail';
+			if (version && version !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
+			location.href = url;
+		}
+	</script>
+
+	<script>
+
+		function activateTab(tabName) {
+			// Remove 'active' from all buttons
+			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
+				btn.classList.remove('active');
+			});
+
+			// Add 'active' to selected button
+			if (tabName === 'summary') {
+				document.getElementById('custom-tab-btnSummary').classList.add('active');
+			} else if (tabName === 'Details') {
+				document.getElementById('custom-tab-btnDetails').classList.add('active');
+			}
+		}
+
+		window.onload = function () {
+			/* setTimeout(function() {
+				var selectedTab = document.getElementById("selectedTab").value;
+				alert(selectedTab);
+				activateTab(selectedTab);
+			}, 10000); */ // 10,000 milliseconds = 10 seconds
+
+			var selectedTab = document.getElementById("selectedTab").value;
+			activateTab(selectedTab);
+		};
+
+
+		function downloadfile(button) {
+
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+
+			$('#loader').modal('show');
+
+			// ✅ Build URL safely
+			var url = './downloadExcel?reportid=' + reportid +
+				'&fromdate=' + fromdate +
+				'&asondate=' + asondate +
+				'&todate=' + todate +
+				'&currency=' + currency +
+				'&subreportid=' + subreportid +
+				'&secid=' + secid +
+				'&filename=' + filename +
+				'&type=' + type;
+
+			// ✅ Append version ONLY if valid
+			if (version && version.trim() !== '') {
+				url += '&version=' + version;
+			}
+
+			$.ajax({
+				url: url,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
+
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+
+						document.body.appendChild(a);
+						a.click();
+
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				},
+
+				complete: function () {
+					// 🔥 Always hide loader (success / error)
+					$('#loader').modal('hide');
+				}
+			});
+		}
+
+		function downloadSummaryPdf(element) {
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
+
+			$('#loader').modal('show');
+
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
+
+			window.location.href = url;
+
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
+		}
+
+		function closemodel() {
+			// Hide the modals
+			$('#alert').modal('hide');
+			$('#resultModal').modal('hide');
+
+		}
+
+
+		function showResultModal(title, message) {
+			// Set the text for the modal elements
+			$('#resultModalLabel').text(title);
+			$('#resultModalBody').text(message);
+
+			// Show the modal
+			$('#resultModal').modal('show');
+		}
+
+	</script>
+	<script>
+
+		function startReport(button) {
+			const alertMsg = document.getElementById("alertMessage");
+			const filename = button.getAttribute('data-filename');
+			const fromdate = button.getAttribute('data-fromdate');
+			const todate = button.getAttribute('data-todate');
+			const currency = button.getAttribute('data-currency');
+			const dtltype = button.getAttribute('data-dtltype');
+			const type = button.getAttribute('data-type');
+			const version = button.getAttribute('data-version');
+			const sessionfilename = sessionStorage.getItem("filename");
+
+			if (sessionfilename == filename) {
+				alertMsg.innerHTML = 'Download request already Processing...';
+				showAlert();
+				return;
+			}
+
+			alertMsg.innerHTML = 'Download request Processing...';
+			showAlert();
+
+			const baseUrl = '/BRRS/Reports/startreport';
+			const downloadUrl = baseUrl +
+				'?filename=' + encodeURIComponent(filename) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&dtltype=' + encodeURIComponent(dtltype) +
+				'&type=' + encodeURIComponent(type) +
+				'&version=' + encodeURIComponent(version);
+			fetch(downloadUrl)  // ✅ no invalid characters now
+				.then(res => res.text())
+				.then(jobId => {
+
+					alertMsg.innerHTML = 'Download request received...' + jobId;
+					showAlert();
+					sessionStorage.setItem("jobId", jobId);
+					sessionStorage.setItem("filename", filename);
+					checkReport(jobId);
+				});
+		}
+
+		function checkReport(jobId) {
+			const alertMsg = document.getElementById("alertMessage");
+			fetch('/BRRS/Reports/checkreport?jobId=' + encodeURIComponent(jobId))
+				.then(res => res.text())
+				.then(status => {
+					if (status === "READY") {
+						alertMsg.innerHTML = 'Report is ready! Downloaded';
+						showAlert();
+						const filename = sessionStorage.getItem("filename");
+						downloadDetailfile(jobId, filename + ".xlsx")
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+
+					} else if (status === "PROCESSING") {
+						alertMsg.innerHTML = 'Download Is Processing…';
+						showAlert();
+						setTimeout(() => checkReport(jobId), 5000);
+					}
+					else if (status === "ERROR") {
+						alertMsg.innerHTML = 'No data was available to create a download.';
+						showAlert();
+						sessionStorage.removeItem("jobId");
+						sessionStorage.removeItem("filename");
+					}
+				});
+		}
+
+
+
+		function downloadDetailfile(jobId, filename) {
+
+			//$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId +
+					'&filename=' + filename,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					$('#loader').modal('hide');
+					console.error("Download failed:", textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				}
+			});
+		}
+
+
+	</script>
+
+	<script>
+		// Toggle the details table into edit mode.
+		// NOTE: hooks up to the existing /BRRS/... updateDetailEdit endpoint on submit;
+		// wire actual editable fields/inputs into the Details table as needed.
+		function showmodify(button) {
+			const addBtn = document.getElementById("addRecord");
+			const cancelBtn = document.getElementById("cancelRecord");
+			if (addBtn) addBtn.style.display = "none";
+			if (cancelBtn) cancelBtn.style.display = "inline-block";
+
+			document.querySelectorAll('#reports td[data-editable], #reportdetails td[data-editable]').forEach(function (td) {
+				td.contentEditable = "true";
+				td.classList.add("editing-cell");
+			});
+		}
+
+		function cancelModify() {
+			const addBtn = document.getElementById("addRecord");
+			const cancelBtn = document.getElementById("cancelRecord");
+			if (addBtn) addBtn.style.display = "inline-block";
+			if (cancelBtn) cancelBtn.style.display = "none";
+
+			document.querySelectorAll('#reports td.editing-cell, #reportdetails td.editing-cell').forEach(function (td) {
+				td.contentEditable = "false";
+				td.classList.remove("editing-cell");
+			});
+		}
+	</script>
+
+
+
+
+
+	<script th:inline="javascript">
+		function showdetailsbyRowAndColumn(a) {
+			var rowId = a.getAttribute('RowId');
+			var columnId = a.getAttribute('ColumnId');
+			var cellValue = a.textContent || a.innerText;
+
+			if (cellValue !== '0') {
+				// Set dynamic message in modal (instead of confirm)
+				document.getElementById("cellresultModalLabel").innerText =
+					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
+
+				// Show custom Bootstrap modal
+				$('#cellresultModal').modal('show');
+
+				// Handle Yes button
+				document.querySelector('.yes-btn').onclick = function () {
+					$('#cellresultModal').modal('hide');
+
+					// Show loader
+					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
+						backdrop: 'static',
+						keyboard: false
+					});
+					$('#loader').modal('show');
+
+					// Build dynamic URL
+					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
+
+					location.href = Callurl;
+				};
+			} else {
+				// Use your custom alert modal instead of window.alert
+				showResultModal("Alert", "No Records available for this selected cell.");
+			}
+		}
+	</script>
+
+	<style>
+		/* Keep the header fixed and aligned */
+		.dataTables_scrollHeadInner,
+		.dataTables_scrollBody table {
+			width: 100% !important;
+		}
+
+		/* Prevent thead shrinking at zoom */
+		.dataTables_scrollHeadInner table {
+			width: 100% !important;
+			min-width: 100% !important;
+		}
+
+		#reportdetails {
+			width: 100% !important;
+			table-layout: fixed !important;
+		}
+
+		#reportdetails th,
+		#reportdetails td {
+			white-space: nowrap;
+		}
+
+		table.dataTable th.dt-type-numeric,
+		table.dataTable th.dt-type-date,
+		table.dataTable td.dt-type-numeric,
+		table.dataTable td.dt-type-date {
+			text-align: left !important;
+		}
+
+		/* Right-align header (6th column = ACCT BALANCE) */
+		table.dataTable th.dt-type-numeric:nth-child(6) {
+			text-align: right !important;
+		}
+
+		/* Right-align data (6th column = ACCT BALANCE) */
+		#reportdetails td:nth-child(6),
+		.dataTables_scrollHeadInner table th:nth-child(6) {
+			text-align: right !important;
+			padding-right: 10px !important;
+		}
+	</style>
+	<script th:inline="javascript">
+		$(document).ready(function () {
+			var table = $('#reportdetails').DataTable({
+				scrollY: "550px",
+				scrollX: true,
+				scrollCollapse: true,
+				autoWidth: false,
+				paging: true,
+				searching: true,
+				lengthChange: false,
+				ordering: true,
+				pageLength: 100,
+				fixedHeader: true, // ✅ You can simply set it to true
+				// ✅ Column width settings
+				columnDefs: [
+					{width: "60px", targets: 0},   // Edit icon column
+					{width: "150px", targets: 1},  // S No column
+					{width: "300px", targets: 7}    // S No column
+				],
+
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+
+			// ✅ Fix alignment on resize / zoom
+			$(window).on('resize', function () {
+				table.columns.adjust().draw(false);
+			});
+
+			// ✅ Fix initial misalignment if loaded at non-100% zoom
+			setTimeout(function () {
+				table.columns.adjust().draw(false);
+			}, 500);
+		});
+	</script>
+
+
+
+
+	</script>
+
+
+
+
+	<style>
+		.left-arrow-circle {
+			background-color: white;
+			color: #007bff;
+			border-radius: 50%;
+			padding: 8px;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+
+		/* 🚌 Bus display style box */
+		.boards {
+			transform: translateY(6px);
+			background-color: rgb(107, 122, 143);
+			color: white;
+			padding: 5px 5px;
+			border-radius: 8px;
+			overflow: hidden;
+			white-space: nowrap;
+			flex: 1;
+			/* ✅ makes it take available space dynamically */
+			min-width: 200px;
+			box-shadow: 0 0 10px rgb(107, 122, 143);
+			position: relative;
+		}
+
+		/* ✨ Scrolling animation */
+		.scrolling-text {
+			display: inline-block;
+			font-family: "Courier New", monospace;
+			font-weight: bold;
+			letter-spacing: 1px;
+			animation: scroll-left 10s linear infinite;
+		}
+
+		/* Animation keyframes */
+		@keyframes scroll-left {
+			0% {
+				transform: translateX(100%);
+			}
+
+			100% {
+				transform: translateX(-100%);
+			}
+		}
+	</style>
+
+	<script>
+		function editRecord(icon) {
+			const row = icon.closest('tr');
+			const provisionInput = row.querySelector('.provision-field');
+
+			// Enable only provision field for editing
+			provisionInput.removeAttribute('readonly');
+			provisionInput.focus();
+
+			// Highlight editable cell
+			provisionInput.style.backgroundColor = '#fff8e1';
+
+			// Show submit button
+			document.getElementById('submitButton').style.display = 'inline-block';
+		}
+
+
+
+	</script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		/*]]>*/
+	</script>
+
+	<script>
+		function openMPLLDetail(elem, mode) {
+
+			var type = elem.getAttribute('data-type');
+
+			if (type === "ARCHIVAL") {
+				showResultModal('BRRS', "Archived Data cannot be modified");
+				return;
+			}
+
+			const acctNo = elem.getAttribute("data-acctNo");
+			const asondate = elem.getAttribute("data-asondate");
+
+			// Use the 'reportId' variable initialized above
+			// Use backticks (`) for a template literal to easily include the variable
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		}
+	</script>
+
+
+
+
+	<script>
+		function submitMPLLUpdate() {
+			const formData = $('#mpllDetailForm').serialize(); // Ensure correct form ID
+
+			// ✅ Store the previous page URL
+			const previousUrl = document.referrer; // same as going back once in history
+
+			// Show loader while processing
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: `/BRRS/Reports/${reportId}/update`,
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					// Show message via modal
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal('BRRS', response);
+					} else {
+						showResultModal('Information', response || 'No data updated.');
+					}
+
+					// ✅ Redirect back to the previous page after short delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							// fallback: just go back if referrer not found
+							window.history.back();
+						}
+					}, 1500);
+				},
+				error: function (xhr, status, error) {
+					$('#loader').modal('hide');
+					console.error("Update error:", error);
+
+					showResultModal('Error', 'Failed to update record. Please try again.');
+
+					// ✅ On error also return to previous page after delay
+					setTimeout(() => {
+						if (previousUrl) {
+							window.location.href = previousUrl;
+						} else {
+							window.history.back();
+						}
+					}, 1500);
+				}
+			});
+		}
+
+	</script>
+	<script th:inline="javascript">
+		function triggerReportGeneration() {
+			// 1. Prompt the user for the report date
+			const defaultDate = new Date();
+			const formattedDefault = ('0' + defaultDate.getDate()).slice(-2) + '-' + ('0' + (defaultDate.getMonth())).slice(-2) + '-' + defaultDate.getFullYear();
+			const reportDate = prompt("Please enter the report date to generate:", formattedDefault);
+
+			// 2. Stop if the user cancels
+			if (reportDate === null || reportDate.trim() === "") {
+				return;
+			}
+
+			// 3. Simple validation for the date format
+			const dateFormat = /^\d{2}-\d{2}-\d{4}$/;
+			if (!dateFormat.test(reportDate)) {
+				showResultModal('Error', 'Invalid date format. Please use DD-MM-YYYY.');
+				return;
+			}
+
+			// 4. Confirm with the user
+			if (!confirm("Are you sure you want to generate the M-PLL report for " + reportDate + "? This will overwrite existing data for that date.")) {
+				return;
+			}
+
+			// 5. Show loader and make the AJAX call to the backend
+			$('#loader').modal('show');
+
+			$.ajax({
+				type: "POST",
+				url: "/BRRS/Reports/M-PLL/trigger",
+				data: {
+					reportDate: reportDate // Send the date as a request parameter
+				},
+				success: function (response) {
+					showResultModal('Success', response);
+					// Optionally, refresh the page after a delay to show the new data
+					setTimeout(() => {location.reload();}, 2000);
+				},
+				error: function (xhr, status, error) {
+					// Use the error message from the server if available
+					const errorMessage = xhr.responseText || "An unknown error occurred.";
+					showResultModal('Error', 'Failed to trigger report generation: ' + errorMessage);
+				},
+				complete: function () {
+					// Always hide the loader
+					$('#loader').modal('hide');
+				}
+			});
+		}
+
+
+		// ============================================
+		// INLINE EDIT FUNCTIONS
+		// ============================================
+
+		var isModifiedSuccess = false;
+
+		function enableInlineEdit() {
+			$('#modifyBtn').hide();
+			$('.submit-btn-bottom').show();
+			$('#cancelRecord').show();
+
+			$('input.editable-cell').each(function () {
+				$(this).removeAttr('readonly');
+				$(this).css({
+					'background-color': '#ffff99',
+					'border': '1px solid #999',
+					'outline': 'none',
+					'padding': '2px 5px'
+				});
+			});
+		}
+
+		function cancelInlineEdit() {
+			location.reload();
+		}
+
+		// Dynamically recompute R22 totals from the manual entry rows (R11-R21) only.
+		// Mapped/calculated cells (R6, R7, R27-R33) are never part of this calculation.
+		function recalcManualTotals() {
+			var totalAdv = 0;
+			var totalProvision = 0;
+
+			$('#reports tr.manual-row').each(function () {
+				var row = $(this);
+				var advVal = parseFloat(row.find('input[name$="_total_adv"]').val()) || 0;
+				var provVal = parseFloat(row.find('input[name$="_provision"]').val()) || 0;
+				totalAdv += advVal;
+				totalProvision += provVal;
+			});
+
+			$('#r22_total_adv_display').val(totalAdv.toFixed(2));
+			$('#r22_provision_display').val(totalProvision.toFixed(2));
+		}
+
+		// Recalculate live as the user types into any manual entry (R11-R21) numeric cell
+		$(document).on('input', '#reports tr.manual-row input.numeric', function () {
+			recalcManualTotals();
+		});
+
+		function saveInlineEdits() {
+			var targetTable = $('#reports');
+			if (!targetTable.length) {
+				showResultModal('Information', 'No table found to save.');
+				return;
+			}
+
+			var urlParams = new URLSearchParams(window.location.search);
+			var type = urlParams.get('type') || '';
+			var screen = 'summary';
+
+			$('#loader').modal('show');
+
+			var formData = {};
+			formData['asondate'] = /*[[${asondate}]]*/ '';
+			formData['type'] = type;
+			formData['screen'] = screen;
+
+			// Collect Manual Entry rows (R11 to R21)
+			targetTable.find('tbody tr.manual-row').each(function () {
+				var row = $(this);
+				var serialNo = row.find('input[name="r11_serial_no"]').val() ||
+					row.find('input[name="r12_serial_no"]').val() ||
+					row.find('input[name="r13_serial_no"]').val() ||
+					row.find('input[name="r14_serial_no"]').val() ||
+					row.find('input[name="r15_serial_no"]').val() ||
+					row.find('input[name="r16_serial_no"]').val() ||
+					row.find('input[name="r17_serial_no"]').val() ||
+					row.find('input[name="r18_serial_no"]').val() ||
+					row.find('input[name="r19_serial_no"]').val() ||
+					row.find('input[name="r20_serial_no"]').val() ||
+					row.find('input[name="r21_serial_no"]').val();
+				if (serialNo) {
+					formData['r' + serialNo + '_subsidiary'] = row.find('input[name="r' + serialNo + '_subsidiary"]').val() || '';
+					formData['r' + serialNo + '_total_adv'] = row.find('input[name="r' + serialNo + '_total_adv"]').val() || 0;
+					formData['r' + serialNo + '_provision'] = row.find('input[name="r' + serialNo + '_provision"]').val() || 0;
+				}
+			});
+
+			$.ajax({
+				url: '/BRRS/Reports/UFCE_CALCULATIONupdateAll',
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+					isModifiedSuccess = true;
+					setTimeout(function () {
+						showResultModal('BRRS', 'Modified Successfully.');
+					}, 300);
+				},
+				error: function (xhr) {
+					$('#loader').modal('hide');
+					setTimeout(function () {
+						showResultModal('Error', xhr.responseText || 'Error updating records');
+					}, 300);
+				}
+			});
+		}
+	</script>
+</head>
+
+
+
+<title>UFCE - CALCULATION</title>
+
+<body>
+	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<div class="row">
+
+			<div th:insert="HeaderMenu :: header"></div>
+
+			<div class="card">
+				<div class="card-header"
+					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
+					<div style="display: flex; align-items: center;" onclick="back();">
+						<!-- ⬅️ Left circular arrow -->
+						<div class="left-arrow-circle">
+							<i class="fa fa-arrow-left"></i>
+						</div>
+
+						<!-- Title -->
+						<h5
+							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px;">
+							UFCE - CALCULATION
+						</h5>
+
+						<!-- Moving bus-board text -->
+						<div class="boards">
+							<p class="scrolling-text"> Bank of Baroda(Botswana)Ltd</p>
+						</div>
+
+					</div>
+
+					<div class="custom-tab-btn-group nav-buttons"
+						style="display: flex; color: white; align-items: center;">
+						<!-- 📅 Date -->
+						<span class="white-text"
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
+							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-09-18</span>
+						</span>
+						<!--	<button type="button" class="custom-tab-btn" id="triggerReportBtn"
+						           onclick="triggerReportGeneration();"
+						           >
+						       <i class="fa fa-play"></i> Trigger
+						   </button>   -->
+
+						<!-- Buttons -->
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+						<!-- On Detail Page: ONLY "Summary View" button -->
+						<button type="button" class="custom-tab-btn" onclick="showsummary();"
+							th:if="${displaymode == 'detail' or displaymode == 'normalDetailWithVersion' or displaymode == 'archivalDetail' or displaymode == 'resubDetail'}">
+							Summary View
+						</button>
+
+						<!-- On Summary Page: "Details" button -->
+						<button type="button" class="custom-tab-btn" onclick="showdetails();"
+							th:if="${displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}">
+							Details
+						</button>
+
+
+						<!-- Archival navigation -->
+						<button type="button" class="custom-tab-btn" onclick="goToArchivalSummary();"
+							th:if="${displaymode == 'archivalDetail'}">Archival Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showArchivalDetail();"
+							th:if="${displaymode == 'archivalSummary'}">Archival Details</button>
+
+						<!-- Resub navigation -->
+						<button type="button" class="custom-tab-btn" onclick="goToResubSummary();"
+							th:if="${displaymode == 'resubDetail'}">Resub Summary</button>
+						<button type="button" class="custom-tab-btn" onclick="showResubDetail();"
+							th:if="${displaymode == 'resubSummary'}">Resub Details</button>
+
+
+						<!-- MODIFY / CANCEL BUTTONS -->
+						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();"
+							th:if="${displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'resubSummary'}"
+							title="Click to EDIT Records">
+							Modify
+						</button>
+
+						<button type="button" class="custom-tab-btn" id="cancelRecord" onclick="cancelInlineEdit();"
+							style="display: none;" title="Cancel editing">
+							Cancel
+						</button>
+
+						<!-- Download button - Summary (Excel) -->
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
+							title="Download Excel" th:attr="data-reportid=${reportid}, 
+														                     data-asondate=${asondate}, 
+														                     data-fromdate=${fromdate}, 
+														                     data-todate=${todate}, 
+														                     data-currency=${currency},  
+														                     data-dtltype=${dtltype}, 
+														                     data-filename='UFCE_CALCULATION.xlsx',
+														                     data-type=${type},
+														                     data-version=${version}" onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
+
+						<!-- Download button - Summary (PDF) -->
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
+							title="Download PDF"
+							th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
+							onclick="downloadSummaryPdf(this);">
+							<i class="fa fa-file-pdf"></i>
+						</button>
+
+
+					</div>
+				</div>
+			</div>
+
+			<!-- ========================================= -->
+			<!-- SUMMARY VIEW  -->
+			<!-- ========================================= -->
+			<div th:if="${displaymode == 'summary'}">
+				<div class="row">
+					<div class="col-sm-12">
+						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
+						<div class="table-wrapper table-responsive scrollable-table-container"
+							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
+							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+								id="reports">
+								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+									<thead class="thead-light">
+										<tr>
+											<th style="width: 5%;">S.No</th>
+											<th style="width: 40%;">Particulars</th>
+											<th style="width: 20%;">Code</th>
+											<th style="width: 35%;">Amount (Rs in Lacs)</th>
+										</tr>
+									</thead>
+								<tbody style="font-family: Arial;">
+
+									<!-- ========================================= -->
+									<!-- SECTION 1: MANUAL ENTRIES (R5 to R8) -->
+									<!-- ========================================= -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Provision for
+											UFCE</td>
+									</tr>
+
+									<!-- R5: Rs in Lacs Label -->
+									<tr>
+										<td></td>
+										<td class="label-cell">Provision for UFCE</td>
+										<td class="formula-cell">Rs in Lacs</td>
+										<td></td>
+									</tr>
+
+									<!-- R6: Provision above 25 Cr -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore
+										</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r6_value : 'NIL'}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R7: Provision upto 25 Cr (mapped/calculated - read-only) -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision for accounts with exposure upto Rs.25 crore
+										</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r7_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R8: Total -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell" style="font-weight: bold;">Total</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell" style="font-weight: bold;">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r8_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold;" />
+										</td>
+									</tr>
+
+									<!-- Spacer row -->
+									<tr class="spacer-row">
+										<td colspan="4"></td>
+									</tr>
+
+									<!-- ========================================= -->
+									<!-- SECTION 2: SUBSIDIARY MANUAL ENTRIES -->
+									<!-- ========================================= -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Subsidiary
+											Details</td>
+									</tr>
+
+									<!-- Header for Subsidiary rows -->
+									<tr>
+										<th style="text-align: center; background-color: #f8f9fa;">S. No.</th>
+										<th style="text-align: center; background-color: #f8f9fa;">NAME OF THE
+											SUBSIDIARY</th>
+										<th style="text-align: center; background-color: #f8f9fa;">Total advance above
+											Rs. 25 crore</th>
+										<th style="text-align: center; background-color: #f8f9fa;">Provision for
+											accounts above Rs. 25 crore</th>
+									</tr>
+
+									<!-- Rows 11 to 21 -->
+									<tr th:each="i : ${#numbers.sequence(11, 21)}" class="manual-row">
+										<td style="text-align: center; font-weight: bold;">
+											<input type="hidden" th:name="'r' + i + '_serial_no'" th:value="${i}" />
+											<span th:text="${i - 10}"></span>
+										</td>
+										<td>
+											<input type="text"
+												class="form-control form-control-sm cell-input editable-cell"
+												th:name="'r' + i + '_subsidiary'"
+												th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_subsidiary') : ''}"
+												th:readonly="${displaymode == 'archivalSummary' or displaymode == 'archivalDetail'}"
+												style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 150px;" />
+										</td>
+										<td>
+											<input type="text"
+												class="form-control form-control-sm cell-input editable-cell numeric"
+												th:name="'r' + i + '_total_adv'"
+												th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_total_adv') : 0}"
+												th:readonly="${displaymode == 'archivalSummary' or displaymode == 'archivalDetail'}"
+												style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px; text-align: right;" />
+										</td>
+										<td>
+											<input type="text"
+												class="form-control form-control-sm cell-input editable-cell numeric"
+												th:name="'r' + i + '_provision'"
+												th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_provision') : 0}"
+												th:readonly="${displaymode == 'archivalSummary' or displaymode == 'archivalDetail'}"
+												style="background: transparent; border: none; font-size: inherit; width: 100%; min-width: 120px; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- Total Row (R22) - recalculated live by recalcManualTotals() as R11-R21 are edited -->
+									<tr class="total-row" style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center; font-weight: bold;">TOTAL</td>
+										<td></td>
+										<td style="text-align: right; font-weight: bold;">
+											<input type="text" id="r22_total_adv_display"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_total_adv : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold;" />
+										</td>
+										<td style="text-align: right; font-weight: bold;">
+											<input type="text" id="r22_provision_display"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_provision : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold;" />
+										</td>
+									</tr>
+
+									<!-- Spacer row -->
+									<tr class="spacer-row">
+										<td colspan="4"></td>
+									</tr>
+
+									<!-- ========================================= -->
+									<!-- SECTION 3: CALCULATION SECTION (R27-R33) -->
+									<!-- ========================================= -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Calculation of
+											provision for accounts with exposure upto Rs. 25 crore</td>
+									</tr>
+
+									<!-- R27 (mapped/calculated - read-only) -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Total Standard Advances as on <span
+												th:text="${#strings.replace(asondate, '/', '-')}"></span></td>
+										<td class="formula-cell">A</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r27_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R28 (mapped/calculated - read-only) -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Standard Advances above Rs. 25 crore (for which
+											provision has been calculated based on UFCE details)</td>
+										<td class="formula-cell">B</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r28_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R29 (Auto-calculated) -->
+									<tr style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Total Standard Advances to borrowers with exposure upto
+											Rs. 25 crore</td>
+										<td class="formula-cell">C = A - B</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r29_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold;" />
+										</td>
+									</tr>
+
+									<!-- R30 (mapped/calculated - read-only) -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Standard Advance to Individual borrowers (under
+											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore
+										</td>
+										<td class="formula-cell">D</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r30_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R31 (mapped/calculated - read-only) -->
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Total advance to Banks with exposure upto Rs.25.00
+											crores</td>
+										<td class="formula-cell">E</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r31_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right;" />
+										</td>
+									</tr>
+
+									<!-- R32 (Auto-calculated) -->
+									<tr style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Balance Standard advance on which provision to be created
+										</td>
+										<td class="formula-cell">F = C - D - E</td>
+										<td class="value-cell-numeric">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r32_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold;" />
+										</td>
+									</tr>
+
+									<!-- R33 (Auto-calculated, highlighted) -->
+									<tr style="font-weight: bold; background-color: #e9ecef;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision @ 0.10%</td>
+										<td class="formula-cell">G = F x 0.10%</td>
+										<td class="value-cell-numeric" style="color: #d9534f;">
+											<input type="text"
+												class="form-control form-control-sm cell-input readonly-cell"
+												th:value="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r33_value : 0}"
+												readonly
+												style="background: transparent; border: none; font-size: inherit; width: 100%; text-align: right; font-weight: bold; color: #d9534f;" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+						</div>
+
+						<!-- Submit Button -->
+						<div style="text-align: center; margin-top: 15px; background-color: white;">
+							<button type="button" class="custom-tab-btn submit-btn-bottom" onclick="saveInlineEdits();"
+								style="display: none;" title="Submit changes">
+								Submit
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- ========================================= -->
+			<!-- DETAIL VIEW (Read-Only) -->
+			<!-- ========================================= -->
+			<div th:if="${displaymode == 'detail' or displaymode == 'normalDetailWithVersion' or displaymode == 'archivalDetail' or displaymode == 'resubDetail'}"
+				class="container-fluid">
+				<div class="row">
+					<div class="col-sm-12">
+						<div class="table-wrapper table-responsive scrollable-table-container"
+							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
+							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+								id="reportdetail">
+								<thead class="thead-light">
+									<tr>
+										<th style="width: 5%;">S.No</th>
+										<th style="width: 40%;">Particulars</th>
+										<th style="width: 20%;">Code</th>
+										<th style="width: 35%;">Amount (Rs in Lacs)</th>
+									</tr>
+								</thead>
+								<tbody style="font-family: Arial;">
+
+									<!-- SECTION 1: PROVISION FOR UFCE (R5 to R8) -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Provision for
+											UFCE</td>
+									</tr>
+
+									<tr>
+										<td></td>
+										<td class="label-cell">Provision for UFCE</td>
+										<td class="formula-cell">Rs in Lacs</td>
+										<td></td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision for accounts with exposure above Rs.25 crore
+										</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell">
+											<span
+												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r6_value : 'NIL'}"></span>
+										</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision for accounts with exposure upto Rs.25 crore
+										</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell">
+											<span
+												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r7_value : 0}"></span>
+										</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell" style="font-weight: bold;">Total</td>
+										<td class="formula-cell"></td>
+										<td class="value-cell" style="font-weight: bold;">
+											<span
+												th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r8_value : 0}"></span>
+										</td>
+									</tr>
+
+									<tr class="spacer-row">
+										<td colspan="4"></td>
+									</tr>
+
+									<!-- SECTION 2: SUBSIDIARY DETAILS (R11 to R22) -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Subsidiary
+											Details</td>
+									</tr>
+
+									<tr>
+										<th style="text-align: center; background-color: #f8f9fa;">S. No.</th>
+										<th style="text-align: center; background-color: #f8f9fa;">NAME OF THE
+											SUBSIDIARY</th>
+										<th style="text-align: center; background-color: #f8f9fa;">Total advance above
+											Rs. 25 crore</th>
+										<th style="text-align: center; background-color: #f8f9fa;">Provision for
+											accounts above Rs. 25 crore</th>
+									</tr>
+
+									<tr th:each="i : ${#numbers.sequence(11, 21)}">
+										<td style="text-align: center; font-weight: bold;">
+											<span th:text="${i - 10}"></span>
+										</td>
+										<td
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_subsidiary') : ''}">
+										</td>
+										<td style="text-align: right;"
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_total_adv') : 0}">
+										</td>
+										<td style="text-align: right;"
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].get('r' + i + '_provision') : 0}">
+										</td>
+									</tr>
+
+									<tr class="total-row" style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center; font-weight: bold;">TOTAL</td>
+										<td></td>
+										<td style="text-align: right; font-weight: bold;"
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_total_adv : 0}">
+										</td>
+										<td style="text-align: right; font-weight: bold;"
+											th:text="${reportsummary != null and !reportsummary.isEmpty() ? reportsummary[0].r22_provision : 0}">
+										</td>
+									</tr>
+
+									<tr class="spacer-row">
+										<td colspan="4"></td>
+									</tr>
+
+									<!-- SECTION 3: CALCULATION SECTION (R27 to R33) -->
+									<tr style="background-color: #e8f4f8;">
+										<td colspan="4" style="text-align: center; font-weight: bold;">Calculation of
+											provision for accounts with exposure upto Rs. 25 crore</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Total Standard Advances as on <span
+												th:text="${#strings.replace(asondate, '/', '-')}"></span></td>
+										<td class="formula-cell">A</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r27_value : 0}">
+										</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Standard Advances above Rs. 25 crore (for which
+											provision has been calculated based on UFCE details)</td>
+										<td class="formula-cell">B</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r28_value : 0}">
+										</td>
+									</tr>
+
+									<tr style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Total Standard Advances to borrowers with exposure upto
+											Rs. 25 crore</td>
+										<td class="formula-cell">C = A - B</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r29_value : 0}">
+										</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Standard Advance to Individual borrowers (under
+											retail, agriculture &amp; staff segment) with exposure upto Rs. 25 crore
+										</td>
+										<td class="formula-cell">D</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r30_value : 0}">
+										</td>
+									</tr>
+
+									<tr>
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Less: Total advance to Banks with exposure upto Rs.25.00
+											crores</td>
+										<td class="formula-cell">E</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r31_value : 0}">
+										</td>
+									</tr>
+
+									<tr style="font-weight: bold; background-color: #f8f9fa;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Balance Standard advance on which provision to be created
+										</td>
+										<td class="formula-cell">F = C - D - E</td>
+										<td class="value-cell-numeric"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r32_value : 0}">
+										</td>
+									</tr>
+
+									<tr style="font-weight: bold; background-color: #e9ecef;">
+										<td style="text-align: center;"></td>
+										<td class="label-cell">Provision @ 0.10%</td>
+										<td class="formula-cell">G = F x 0.10%</td>
+										<td class="value-cell-numeric" style="color: #d9534f;"
+											th:text="${reportdetail != null and !reportdetail.isEmpty() ? reportdetail[0].r33_value : 0}">
+										</td>
+									</tr>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+			<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content" style="background: transparent;">
+						<div class="modal-body" style="text-align: center">
+							<div>
+								<img th:src=@{/images/loader.gif} id="bfirelogo"
+									style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+									alt="Bornfire">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<!-- Custom Alert/Result Modal (Matches your existing style) -->
+			<div class="modal fade" id="resultModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<!-- Your custom styled header -->
+						<div class="menu-title-header">
+							<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+								<!-- Title will be set by JavaScript -->
+							</div>
+						</div>
+						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+							<p id="resultModalBody"></p>
+							<!-- Your custom styled button -->
+							<button type="button" class="custom-tab-btn" onclick="closemodel()"
+								data-dismiss="modal">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Custom Cellresult Modal -->
+			<div class="modal fade" id="cellresultModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+
+						<!-- Custom header -->
+						<div class="menu-title-header"
+							style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+							<div class="modal-title" id="cellresultModalLabel"
+								style="text-align: center; color: white;">
+								Do you want to open the report?
+							</div>
+						</div>
+
+						<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+							<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+								style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+								Cancel
+							</button>
+							<button type="button" class="custom-tab-btn yes-btn"
+								style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+								Yes
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+</body>
+
+
+<style>
+	.dataTables_scrollHeadInner,
+	table.dataTable {
+		width: 100% !important;
+	}
+
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 700px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		overflow-x: hidden;
+		border: 1px solid #ccc;
+	}
+
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
+
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
+
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
+
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
+
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
+
+
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
+
+</html>

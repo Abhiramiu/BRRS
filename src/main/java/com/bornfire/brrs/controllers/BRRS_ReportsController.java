@@ -9,6 +9,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -219,6 +221,7 @@ import com.bornfire.brrs.services.BRRS_SCH_17_New_Service;
 import com.bornfire.brrs.services.BRRS_SCH_17_New_Service.SCH_17_Manual_Summary_Entity1;
 import com.bornfire.brrs.services.BRRS_SCH_17_ReportService;
 import com.bornfire.brrs.services.BRRS_UFCE_ANNEXURE_ReportService;
+import com.bornfire.brrs.services.BRRS_UFCE_CALCULATION_ReportService;
 import com.bornfire.brrs.services.BorrowingFileUploadService;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
@@ -283,8 +286,6 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_UFCE_ANNEXURE_ReportService BRRS_UFCE_ANNEXURE_reportservice;
-	
-	
 
 	private String pagesize;
 
@@ -1377,7 +1378,6 @@ public class BRRS_ReportsController {
 					.body("Resubmission Update Failed: " + e.getMessage());
 		}
 	}
-
 
 	@Autowired
 	private BRRS_M_CA4_ReportService brrs_m_ca4_reportservice;
@@ -5844,9 +5844,9 @@ public class BRRS_ReportsController {
 
 	@RequestMapping(value = "Rate/updateExchangeRate", method = RequestMethod.POST)
 	@ResponseBody
-	public String updateExchangeRate(@RequestParam(value = "currency", required = false, defaultValue = "INR") String currency,
-			@RequestParam("rate") BigDecimal rate,
-			@RequestParam("reportDate") String reportDate) {
+	public String updateExchangeRate(
+			@RequestParam(value = "currency", required = false, defaultValue = "INR") String currency,
+			@RequestParam("rate") BigDecimal rate, @RequestParam("reportDate") String reportDate) {
 		return regreportServices.updateExchangeRate(currency, rate, reportDate);
 	}
 
@@ -6812,6 +6812,7 @@ public class BRRS_ReportsController {
 					.body("Upload failed due to server error: " + e.getMessage());
 		}
 	}
+
 	@Autowired
 	BRRS_DBS10_FINCON_III_1C_ReportService BRRS_DBS10_FINCON_III_1C_ReportService;
 
@@ -6826,7 +6827,8 @@ public class BRRS_ReportsController {
 
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 
-			Object entityInstance = isResub ? new BRRS_DBS10_FINCON_III_1C_ReportService.DBS10_FINCON_III_1C_Manual_Archival_Summary_Entity()
+			Object entityInstance = isResub
+					? new BRRS_DBS10_FINCON_III_1C_ReportService.DBS10_FINCON_III_1C_Manual_Archival_Summary_Entity()
 					: new BRRS_DBS10_FINCON_III_1C_ReportService.DBS10_FINCON_III_1C_Manual_Summary_Entity();
 
 			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
@@ -6855,6 +6857,452 @@ public class BRRS_ReportsController {
 
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + root.getMessage());
 		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION
+	// =====================================================
+
+	@Autowired
+	BRRS_UFCE_CALCULATION_ReportService BRRS_UFCE_CALCULATION_ReportService;
+
+	// =====================================================
+	// UFCE_CALCULATION - UPDATE
+	// =====================================================
+
+	@PostMapping("/UFCE_CALCULATIONupdateAll")
+	@ResponseBody
+	public ResponseEntity<String> updateUFCECalculation(
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("type") String type, @RequestParam("screen") String screen, HttpServletRequest request) {
+
+		try {
+			logger.info("Came to UFCE_CALCULATION Update Controller");
+			logger.info("Type: {} | Screen: {} | Date: {}", type, screen, asondate);
+
+			Object entityInstance = null;
+
+			// Determine which entity to create based on screen and type
+			if ("RESUB".equalsIgnoreCase(type)) {
+				if ("summary".equalsIgnoreCase(screen)) {
+					entityInstance = new BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY();
+				} else {
+					entityInstance = new BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_ENTITY();
+				}
+			} else {
+				if ("summary".equalsIgnoreCase(screen)) {
+					entityInstance = new BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_SUMMARYTABLE_MANUAL_ENTITY();
+				} else {
+					entityInstance = new BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_DETAILTABLE_ENTITY();
+				}
+			}
+
+			// Bind request parameters to entity
+			ServletRequestDataBinder binder = new ServletRequestDataBinder(entityInstance);
+			binder.bind(request);
+
+			// Set report date
+			Method setDateMethod = entityInstance.getClass().getMethod("setReport_date", Date.class);
+			setDateMethod.invoke(entityInstance, asondate);
+
+			logger.info("Entity Created: {}", entityInstance.getClass().getSimpleName());
+
+			// Call the unified update service
+			BRRS_UFCE_CALCULATION_ReportService.updateUFCEReport(entityInstance, type);
+
+			return ResponseEntity.ok("UFCE_CALCULATION Modified Successfully.");
+
+		} catch (Exception e) {
+			logger.error("Error in UFCE_CALCULATION update", e);
+
+			Throwable root = e;
+			while (root.getCause() != null) {
+				root = root.getCause();
+			}
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + root.getMessage());
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - RESUBMISSION
+	// =====================================================
+
+	@RequestMapping(value = "/UpdateUFCE_CALCULATION_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateUFCECalculationReSub(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam("screen") String screen,
+			@ModelAttribute BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_ENTITY summaryRequest,
+			@ModelAttribute BRRS_UFCE_CALCULATION_ReportService.BRRS_UFCE_CALCULATION_ARCHIVAL_SUMMARYTABLE_MANUAL_ENTITY manualRequest,
+			HttpServletRequest req) {
+
+		try {
+			logger.info("Came to UFCE_CALCULATION Resub Controller");
+			logger.info("Screen: {}", screen);
+
+			Object entityInstance = null;
+
+			if ("summary".equalsIgnoreCase(screen)) {
+				entityInstance = manualRequest;
+				if (asondate != null) {
+					manualRequest.setReport_date(asondate);
+				}
+			} else {
+				entityInstance = summaryRequest;
+				if (asondate != null) {
+					summaryRequest.setReport_date(asondate);
+				}
+			}
+
+			logger.info("Entity: {}", entityInstance.getClass().getSimpleName());
+
+			// Call service
+			BRRS_UFCE_CALCULATION_ReportService.updateUFCEReport(entityInstance, "RESUB");
+
+			return ResponseEntity.ok("UFCE_CALCULATION Resubmission Updated Successfully");
+
+		} catch (Exception e) {
+			logger.error("Error in UFCE_CALCULATION resubmission", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - NAVIGATE TO DETAIL
+	// =====================================================
+
+	@RequestMapping(value = "/UFCE_CALCULATION/detail", method = RequestMethod.GET)
+	public ModelAndView navigateToUFCEDetail(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version, HttpServletRequest req, Model md) {
+
+		// Convert version String to BigDecimal
+		BigDecimal versionDecimal = null;
+		if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)
+				&& !"undefined".equalsIgnoreCase(version)) {
+			try {
+				versionDecimal = new BigDecimal(version);
+			} catch (NumberFormatException e) {
+				versionDecimal = null;
+			}
+		}
+
+		return BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, "detail", null,
+				type, versionDecimal, req, md);
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - MODIFY VIEW
+	// =====================================================
+
+	@RequestMapping(value = "/UFCE_CALCULATION/modify", method = RequestMethod.GET)
+	public ModelAndView navigateToUFCEModify(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version, HttpServletRequest req, Model md) {
+
+		// Convert version String to BigDecimal
+		BigDecimal versionDecimal = null;
+		if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)
+				&& !"undefined".equalsIgnoreCase(version)) {
+			try {
+				versionDecimal = new BigDecimal(version);
+			} catch (NumberFormatException e) {
+				versionDecimal = null;
+			}
+		}
+
+		return BRRS_UFCE_CALCULATION_ReportService.getUFCEModifyView(reportId, fromdate, todate, currency, "summary",
+				null, type, versionDecimal, req, md);
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - ARCHIVAL & RESUB LISTS
+	// =====================================================
+
+	@GetMapping("/UFCE_CALCULATION/archivalList")
+	@ResponseBody
+	public List<Object[]> getUFCECalculationArchivalList() {
+		logger.info("Fetching UFCE_CALCULATION archival list");
+		try {
+			List<Object[]> combinedList = new ArrayList<>();
+			combinedList.addAll(BRRS_UFCE_CALCULATION_ReportService.getCalculationArchivalSummaryList());
+			combinedList.addAll(BRRS_UFCE_CALCULATION_ReportService.getManualEntryArchivalSummaryList());
+			return combinedList;
+		} catch (Exception e) {
+			logger.error("Error fetching UFCE_CALCULATION archival list", e);
+			return Collections.emptyList();
+		}
+	}
+
+	@GetMapping("/UFCE_CALCULATION/resubList")
+	@ResponseBody
+	public List<Object[]> getUFCECalculationResubList() {
+		logger.info("Fetching UFCE_CALCULATION resub list");
+		try {
+			List<Object[]> combinedList = new ArrayList<>();
+			combinedList.addAll(BRRS_UFCE_CALCULATION_ReportService.getResubCalculationSummaryDataAsArray(null, null));
+			combinedList.addAll(BRRS_UFCE_CALCULATION_ReportService.getResubManualEntrySummaryDataAsArray(null, null));
+			return combinedList;
+		} catch (Exception e) {
+			logger.error("Error fetching UFCE_CALCULATION resub list", e);
+			return Collections.emptyList();
+		}
+	}
+
+	@GetMapping("/UFCE_CALCULATION/manualArchivalList")
+	@ResponseBody
+	public List<Object[]> getUFCECalculationManualArchivalList() {
+		logger.info("Fetching UFCE_CALCULATION manual archival list");
+		try {
+			return BRRS_UFCE_CALCULATION_ReportService.getManualEntryArchivalSummaryList();
+		} catch (Exception e) {
+			logger.error("Error fetching UFCE_CALCULATION manual archival list", e);
+			return Collections.emptyList();
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - GET LATEST VERSIONS
+	// =====================================================
+
+	@GetMapping("/UFCE_CALCULATION/latestVersions")
+	@ResponseBody
+	public Map<String, Object> getUFCECalculationLatestVersions(@RequestParam("todate") String todate) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Date reportDate = null;
+			try {
+				reportDate = dateFormat.parse(todate);
+			} catch (ParseException e) {
+				// Try dd/MM/yyyy format
+				reportDate = new SimpleDateFormat("dd/MM/yyyy").parse(todate);
+			}
+
+			BigDecimal calcVersion = BRRS_UFCE_CALCULATION_ReportService.getLatestCalculationVersion(reportDate);
+			BigDecimal manualVersion = BRRS_UFCE_CALCULATION_ReportService.getLatestManualEntryVersion(reportDate);
+
+			response.put("calculation", calcVersion != null ? calcVersion : BigDecimal.ZERO);
+			response.put("manual", manualVersion != null ? manualVersion : BigDecimal.ZERO);
+			response.put("success", true);
+		} catch (Exception e) {
+			logger.error("Error fetching latest versions", e);
+			response.put("calculation", BigDecimal.ZERO);
+			response.put("manual", BigDecimal.ZERO);
+			response.put("success", false);
+			response.put("error", e.getMessage());
+		}
+		return response;
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - DOWNLOAD PDF
+	// =====================================================
+
+	@GetMapping("/UFCE_CALCULATION/downloadPdf")
+	public void downloadUFCECalculationPdf(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "filename", required = false) String filename,
+			@RequestParam(value = "dtltype", required = false) String dtltype, HttpServletResponse response) {
+
+		try {
+			// Convert dates if needed
+			try {
+				fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+				todate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+			} catch (ParseException e) {
+				// Dates already in correct format or try another format
+				try {
+					fromdate = dateFormat.format(new SimpleDateFormat("dd-MMM-yyyy").parse(fromdate));
+					todate = dateFormat.format(new SimpleDateFormat("dd-MMM-yyyy").parse(todate));
+				} catch (ParseException ex) {
+					// Keep as is
+				}
+			}
+
+			// Convert version
+			BigDecimal versionDecimal = null;
+			if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)
+					&& !"undefined".equalsIgnoreCase(version)) {
+				try {
+					versionDecimal = new BigDecimal(version);
+				} catch (NumberFormatException e) {
+					versionDecimal = null;
+				}
+			}
+
+			String defaultFilename = filename != null ? filename : "UFCE_CALCULATION";
+
+			byte[] pdfBytes = regreportServices.getPdfDownloadFile(reportId, defaultFilename, null, fromdate, todate,
+					currency, null, null, dtltype, type, versionDecimal);
+
+			if (pdfBytes == null || pdfBytes.length == 0) {
+				logger.warn("UFCE_CALCULATION: No PDF data generated");
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				return;
+			}
+
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + defaultFilename + ".pdf\"");
+			response.setContentLength(pdfBytes.length);
+
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
+
+			logger.info("UFCE_CALCULATION PDF downloaded successfully ({} bytes)", pdfBytes.length);
+		} catch (Exception e) {
+			logger.error("UFCE_CALCULATION PDF download failed", e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - EMAIL PDF DOWNLOAD
+	// =====================================================
+
+	@GetMapping("/UFCE_CALCULATION/emailPdf")
+	public void downloadUFCECalculationEmailPdf(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "dtltype", required = false) String dtltype, HttpServletResponse response) {
+
+		try {
+			// Convert dates if needed
+			try {
+				fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+				todate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+			} catch (ParseException e) {
+				try {
+					fromdate = dateFormat.format(new SimpleDateFormat("dd-MMM-yyyy").parse(fromdate));
+					todate = dateFormat.format(new SimpleDateFormat("dd-MMM-yyyy").parse(todate));
+				} catch (ParseException ex) {
+					// Keep as is
+				}
+			}
+
+			String filename = "EMAIL_UFCE_CALCULATION.xlsx";
+
+			byte[] pdfBytes = regreportServices.getEmailPdfDownloadFile(reportId, filename, null, fromdate, todate,
+					currency, null, null, dtltype, null, null, null);
+
+			if (pdfBytes == null || pdfBytes.length == 0) {
+				logger.warn("UFCE_CALCULATION: No Email PDF data generated");
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				return;
+			}
+
+			response.setContentType("application/pdf");
+			response.setHeader("Content-Disposition", "attachment; filename=\"EMAIL_UFCE_CALCULATION.pdf\"");
+			response.setContentLength(pdfBytes.length);
+
+			try (ServletOutputStream out = response.getOutputStream()) {
+				out.write(pdfBytes);
+				out.flush();
+			}
+
+			logger.info("UFCE_CALCULATION Email PDF downloaded successfully ({} bytes)", pdfBytes.length);
+		} catch (Exception e) {
+			logger.error("UFCE_CALCULATION Email PDF download failed", e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - DOWNLOAD EXCEL
+	// =====================================================
+
+	@GetMapping("/UFCE_CALCULATION/downloadExcel")
+	@ResponseBody
+	public ResponseEntity<ByteArrayResource> downloadUFCECalculationExcel(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency, @RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "dtltype", required = false) String dtltype,
+			@RequestParam(value = "filename", required = false) String filename) {
+
+		try {
+			// Convert dates if needed
+			try {
+				fromdate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(fromdate));
+				todate = dateFormat.format(new SimpleDateFormat("dd/MM/yyyy").parse(todate));
+			} catch (ParseException e) {
+				// Keep as is
+			}
+
+			// Convert version
+			BigDecimal versionDecimal = null;
+			if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)
+					&& !"undefined".equalsIgnoreCase(version)) {
+				try {
+					versionDecimal = new BigDecimal(version);
+				} catch (NumberFormatException e) {
+					versionDecimal = null;
+				}
+			}
+
+			String defaultFilename = filename != null ? filename : "UFCE_CALCULATION";
+
+			byte[] excelData = BRRS_UFCE_CALCULATION_ReportService.getUFCEUploadableExcel(defaultFilename, reportId,
+					fromdate, todate, currency, dtltype, type, versionDecimal, null);
+
+			if (excelData == null || excelData.length == 0) {
+				logger.warn("UFCE_CALCULATION: No Excel data generated");
+				return ResponseEntity.noContent().build();
+			}
+
+			ByteArrayResource resource = new ByteArrayResource(excelData);
+
+			HttpHeaders headers = new HttpHeaders();
+			String finalFilename = defaultFilename.endsWith(".xlsx") ? defaultFilename : defaultFilename + ".xlsx";
+			headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + finalFilename);
+
+			logger.info("UFCE_CALCULATION Excel downloaded successfully ({} bytes)", excelData.length);
+			return ResponseEntity.ok().headers(headers).contentLength(excelData.length)
+					.contentType(MediaType
+							.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+					.body(resource);
+
+		} catch (Exception e) {
+			logger.error("UFCE_CALCULATION Excel download failed", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// =====================================================
+	// UFCE_CALCULATION - QUICK VIEW
+	// =====================================================
+
+	@RequestMapping(value = "/UFCE_CALCULATION/view", method = RequestMethod.GET)
+	public ModelAndView getUFCECalculationView(@RequestParam("reportId") String reportId,
+			@RequestParam("fromdate") String fromdate, @RequestParam("todate") String todate,
+			@RequestParam("currency") String currency,
+			@RequestParam(value = "dtltype", required = false) String dtltype,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version, HttpServletRequest req, Model md) {
+
+		// Convert version String to BigDecimal
+		BigDecimal versionDecimal = null;
+		if (version != null && !version.trim().isEmpty() && !"null".equalsIgnoreCase(version)
+				&& !"undefined".equalsIgnoreCase(version)) {
+			try {
+				versionDecimal = new BigDecimal(version);
+			} catch (NumberFormatException e) {
+				versionDecimal = null;
+			}
+		}
+
+		String viewType = (dtltype != null && "detail".equalsIgnoreCase(dtltype)) ? "detail" : "summary";
+
+		return BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, viewType, null,
+				type, versionDecimal, req, md);
 	}
 
 }
