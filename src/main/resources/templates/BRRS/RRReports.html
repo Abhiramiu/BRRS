@@ -401,11 +401,9 @@ function getVali(a) {
 	.fm-row td {
 		    background-color: #d3d3d3 !important;
 	}
-
-		
+	
 	</style>
 
-  
 </head>
 
  
@@ -457,7 +455,7 @@ function getVali(a) {
 							        th:id="${userProfile.srlNo}"
 							        class="userlist"
 									th:classappend="${userProfile.reportSeg == 'FM'} ? ' fm-row' : 
-									               (userProfile.reportSeg == 'FMAN' ? ' fman-row' : '')">
+									               (${userProfile.reportSeg == 'FMAN'} ? ' fman-row' : '')">
 
 							        <td class="underline"
 							            style="color: #08a6f1;"
