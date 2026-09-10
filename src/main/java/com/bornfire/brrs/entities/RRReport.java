@@ -114,6 +114,13 @@ public class RRReport {
 	@Column(name = "DOMAIN_ID")
 	private String domainId;
 
+	@Column(name = "ORDER_NO")
+	private Integer orderno;
+	
+	@Column(name = "REPORT_SEG")
+	private String reportSeg;
+	
+	
 	public int getSrlNo() {
 		return srlNo;
 	}
@@ -370,12 +377,32 @@ public class RRReport {
 	}
 
 
+	
+	public Integer getOrderno() {
+		return orderno;
+	}
+
+	public void setOrderno(Integer orderno) {
+		this.orderno = orderno;
+	}
+
+
+	public String getReportSeg() {
+		return reportSeg;
+	}
+
+	public void setReportSeg(String reportSeg) {
+		this.reportSeg = reportSeg;
+	}
+
+	
 	public RRReport(int srlNo, Date rptStartDate, String rptCode, String rptDescription, String rptType, String detFlg,
 			String rptStatus, Date startDate, Date endDate, String remarks1, String remarks2, String remarks3,
 			String remarks4, String remarks5, String delFlg, String entityFlg, String modifyFlg, String entryUser,
 			String modifyUser, String verifyUser, Date entryDate, Date modifyDate, Date verifyDate,
-			String taxonomyVersion, Date taxonomyDate, String domain, String report_validity, String report_frequency,
-			String lCHG_USER_ID, Date lCHG_TIME, String domainId, Date reportResubDate) {
+			String taxonomyVersion, Date taxonomyDate, String domain, Date reportResubDate, String report_validity,
+			String report_frequency, String lCHG_USER_ID, Date lCHG_TIME, String domainId, Integer orderno,
+			String reportSeg) {
 		super();
 		this.srlNo = srlNo;
 		this.rptStartDate = rptStartDate;
@@ -403,12 +430,14 @@ public class RRReport {
 		this.taxonomyVersion = taxonomyVersion;
 		this.taxonomyDate = taxonomyDate;
 		this.domain = domain;
+		this.reportResubDate = reportResubDate;
 		this.report_validity = report_validity;
 		this.report_frequency = report_frequency;
-		this.LCHG_USER_ID = lCHG_USER_ID;
-		this.LCHG_TIME = lCHG_TIME;
+		LCHG_USER_ID = lCHG_USER_ID;
+		LCHG_TIME = lCHG_TIME;
 		this.domainId = domainId;
-		this.reportResubDate = reportResubDate;
+		this.orderno = orderno;
+		this.reportSeg = reportSeg;
 	}
 
 	public RRReport() {

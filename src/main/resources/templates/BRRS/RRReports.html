@@ -394,6 +394,16 @@ function getVali(a) {
 
 </script>
 
+<style>
+	.fman-row td {
+			    background-color: rgb(255, 255, 0) !important;
+	}
+	.fm-row td {
+		    background-color: #d3d3d3 !important;
+	}
+
+		
+	</style>
 
   
 </head>
@@ -430,7 +440,7 @@ function getVali(a) {
 						
 						<table class="table table-striped table-bordered table-hover"
 							id="BRRSvalidation">
-							<thead style="background-color:#e9ecf0; font-family: Arial;">
+							<thead style=" font-family: Arial;">
 								<tr>									
 										<th>Report Code</th>
 										<th>Report Name</th>
@@ -441,24 +451,39 @@ function getVali(a) {
 									</tr>
 							</thead>
 							<tbody style="font-family: Arial;">
-								
-								<tr th:each="userProfile : ${reportlist}"
-									th:attr="data-cust_id=${userProfile.srlNo}"
-									th:id="${userProfile.srlNo}" class="userlist">
-								
-									<td class="underline" style="color: #08a6f1;" onclick="getVali(this);"
-										th:attr="data-rptcode=${userProfile.rptCode},
-											data-fromdate=${#dates.format(userProfile.startDate, 'dd/MM/yyyy')},
-											data-todate=${#dates.format(userProfile.endDate, 'dd/MM/yyyy')}"
-										th:text="${userProfile.rptCode}"></td>
-									<td th:text="${userProfile.rptDescription}"></td>
-									<td th:text="${#dates.format(userProfile.startDate, 'dd/MM/yyyy')}"></td>
-									<td th:text="${#dates.format(userProfile.endDate, 'dd/MM/yyyy')}"></td>
-									<td th:text="${userProfile.domainId}"></td>
-									<td class="rpt-status" th:attr="data-rptcode=${userProfile.rptCode}">Loading...</td>
-								</tr>
-								
-								
+
+							    <tr th:each="userProfile : ${reportlist}"
+							        th:attr="data-cust_id=${userProfile.srlNo}"
+							        th:id="${userProfile.srlNo}"
+							        class="userlist"
+									th:classappend="${userProfile.reportSeg == 'FM'} ? ' fm-row' : 
+									               (userProfile.reportSeg == 'FMAN' ? ' fman-row' : '')">
+
+							        <td class="underline"
+							            style="color: #08a6f1;"
+							            onclick="getVali(this);"
+							            th:attr="data-rptcode=${userProfile.rptCode},
+							                     data-fromdate=${#dates.format(userProfile.startDate, 'dd/MM/yyyy')},
+							                     data-todate=${#dates.format(userProfile.endDate, 'dd/MM/yyyy')}"
+							            th:text="${userProfile.rptCode}">
+							        </td>
+
+							        <td th:text="${userProfile.rptDescription}"></td>
+
+							        <td th:text="${#dates.format(userProfile.startDate, 'dd/MM/yyyy')}"></td>
+
+							        <td th:text="${#dates.format(userProfile.endDate, 'dd/MM/yyyy')}"></td>
+
+							        <td th:text="${userProfile.domainId}"></td>
+									
+
+							        <td class="rpt-status"
+							            th:attr="data-rptcode=${userProfile.rptCode}">
+							            Loading...
+							        </td>
+
+							    </tr>
+
 							</tbody>
 						</table>
 					</div>
