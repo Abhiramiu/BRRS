@@ -12,7 +12,7 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'M' ORDER BY ORDER_NO ", nativeQuery = true)
 	List<RRReport> getReportListbrrs();
 	
-	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'Q' ORDER BY rpt_code", nativeQuery = true)
+	@Query(value = "select * from BRRS_RR_RPT_MAST WHERE REMARKS_5 = 'Q' ORDER BY ORDER_NO", nativeQuery = true)
 	List<RRReport> getReportListbrrsQ();
 	
 	//HalfYearlyReport
