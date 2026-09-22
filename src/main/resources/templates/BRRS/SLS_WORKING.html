@@ -354,6 +354,8 @@ PURPOSE		: BRRS_M_PLLREPORT
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						const uploadSlsBtn = document.getElementById("btnUploadSls");
+						if (uploadSlsBtn) uploadSlsBtn.style.display = "none";
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
@@ -1089,6 +1091,12 @@ PURPOSE		: BRRS_M_PLLREPORT
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
+
+						<button type="button" class="custom-tab-btn" id="btnUploadSls" onclick="openSlsUploadModal();"
+							title="Upload SLS historical data (Excel)" th:if="${type != 'ARCHIVAL' and type != 'RESUB'}">
+							<i class="fa fa-upload"></i> Upload Excel
+						</button>
+
 
 
 							<!-- Modify -->
@@ -2954,6 +2962,105 @@ PURPOSE		: BRRS_M_PLLREPORT
 			</div>
 		</div>
 	</div>
+
+<!-- ===================== SLS Historical Data - Excel Upload ===================== -->
+<div class="modal fade" id="slsUploadModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="menu-title-header" style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0; font-weight: bold;">
+				<h5 class="modal-title text-white text-center" id="slsUploadModalLabel">Upload SLS Historical Data</h5>
+			</div>
+			<form id="slsUploadForm" enctype="multipart/form-data" onsubmit="return false;">
+				<div class="modal-body">
+					<div class="form-group text-left">
+						<label for="slsExcelFile" style="font-weight: bold; color: #333;">Select Excel File:</label>
+						<input type="file" class="form-control-file border p-1" id="slsExcelFile" name="file" accept=".xls, .xlsx" required>
+						<small class="form-text text-muted">
+							File name must contain <code>SLS</code> (e.g. <code>SLS_HISTORICAL_DATA_MAY_2026.xls</code>).
+							Months already in the system are updated and new months are added.
+						</small>
+					</div>
+				</div>
+				<div class="modal-footer" style="justify-content: center;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;" onclick="location.reload();">Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn" onclick="submitSlsExcelUpload();"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+	function openSlsUploadModal() {
+		$('#slsExcelFile').val('');
+		$('#slsUploadModal').modal('show');
+	}
+
+	function submitSlsExcelUpload() {
+		var fileInput = document.getElementById('slsExcelFile');
+
+		if (fileInput.files.length === 0) {
+			showResultModal('Alert', 'Please select a file.');
+			return;
+		}
+
+		var selectedFile = fileInput.files[0];
+		var fileName = selectedFile.name.toLowerCase();
+
+		if (!/\.(xls|xlsx)$/.test(fileName)) {
+			showResultModal('Invalid File', 'Please upload an Excel file (.xls or .xlsx).');
+			fileInput.value = '';
+			return;
+		}
+
+		if (fileName.indexOf('sls') === -1) {
+			showResultModal('Invalid File', 'Please upload a valid SLS file (file name must contain "SLS").');
+			fileInput.value = '';
+			return;
+		}
+
+		var formData = new FormData();
+		formData.append('file', selectedFile);
+
+		// wait until the upload modal is fully hidden before showing the loader
+		$('#slsUploadModal').one('hidden.bs.modal', function () {
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: '/BRRS/Reports/uploadSlsHistorical',
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+
+				success: function (response) {
+					finishSlsUpload('Success', response, true);
+				},
+				error: function (jqXHR) {
+					finishSlsUpload('Error', jqXHR.responseText || 'Upload failed.', false);
+				}
+			});
+		});
+		$('#slsUploadModal').modal('hide');
+	}
+
+	// small delay so the loader is fully shown before it is hidden (Bootstrap 4 ignores hide() mid-transition)
+	function finishSlsUpload(title, message, reloadOnClose) {
+		setTimeout(function () {
+			$('#loader').modal('hide');
+			if (reloadOnClose) {
+				// refresh the report once the user clicks OK so the new data is visible
+				$('#resultModal').one('hidden.bs.modal', function () {
+					location.reload();
+				});
+			}
+			showResultModal(title, message);
+		}, 500);
+	}
+</script>
+<!-- ===================== /SLS Historical Data - Excel Upload ===================== -->
 
 </body>
 

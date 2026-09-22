@@ -226,6 +226,7 @@ import com.bornfire.brrs.services.BorrowingFileUploadService;
 import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
+import com.bornfire.brrs.services.SlsHistoricalDataUploadService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -6808,6 +6809,28 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		} catch (Exception e) {
 			logger.error("Server error processing file upload", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Upload failed due to server error: " + e.getMessage());
+		}
+	}
+	
+	@Autowired
+	private SlsHistoricalDataUploadService slsHistoricalService;
+
+	@PostMapping("/uploadSlsHistorical")
+	@ResponseBody
+	public ResponseEntity<String> uploadSlsHistorical(@RequestParam("file") MultipartFile file) {
+
+		logger.info("Received request to upload SLS historical file: {}", file.getOriginalFilename());
+
+		try {
+			String resultMessage = slsHistoricalService.uploadSlsHistoricalFile(file);
+			return ResponseEntity.ok(resultMessage);
+		} catch (IllegalArgumentException e) {
+			logger.error("Validation error during SLS file upload: {}", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		} catch (Exception e) {
+			logger.error("Server error processing SLS file upload", e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Upload failed due to server error: " + e.getMessage());
 		}
