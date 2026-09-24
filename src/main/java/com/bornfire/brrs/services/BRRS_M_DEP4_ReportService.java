@@ -572,6 +572,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(9);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR10_customer_name() != null) {
 						cell1.setCellValue(record1.getR10_customer_name());
 
@@ -581,6 +584,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR10_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR10_institutional_sector());
 
@@ -590,6 +596,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR10_type_of_account() != null) {
 						cell1.setCellValue(record1.getR10_type_of_account());
 
@@ -600,6 +609,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR10_interest_rate() != null) {
 						cell1.setCellValue(record1.getR10_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -610,6 +622,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR10_amount() != null) {
 						cell1.setCellValue(record1.getR10_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -620,6 +635,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR10_total_deposit() != null) {
 						cell1.setCellValue(record1.getR10_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -633,6 +651,9 @@ public class BRRS_M_DEP4_ReportService {
 					// R11
 					row = sheet.getRow(10);
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR11_customer_name() != null) {
 						cell1.setCellValue(record1.getR11_customer_name());
 
@@ -641,6 +662,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR11_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR11_institutional_sector());
 
@@ -650,6 +674,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR11_type_of_account() != null) {
 						cell1.setCellValue(record1.getR11_type_of_account());
 
@@ -660,6 +687,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR11_interest_rate() != null) {
 						cell1.setCellValue(record1.getR11_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -670,6 +700,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR11_amount() != null) {
 						cell1.setCellValue(record1.getR11_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -680,6 +713,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR11_total_deposit() != null) {
 						cell1.setCellValue(record1.getR11_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -693,6 +729,9 @@ public class BRRS_M_DEP4_ReportService {
 					// R12
 					row = sheet.getRow(11);
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR12_customer_name() != null) {
 						cell1.setCellValue(record1.getR12_customer_name());
 
@@ -701,6 +740,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR12_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR12_institutional_sector());
 
@@ -710,6 +752,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR12_type_of_account() != null) {
 						cell1.setCellValue(record1.getR12_type_of_account());
 
@@ -720,6 +765,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR12_interest_rate() != null) {
 						cell1.setCellValue(record1.getR12_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -730,6 +778,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR12_amount() != null) {
 						cell1.setCellValue(record1.getR12_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -740,6 +791,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR12_total_deposit() != null) {
 						cell1.setCellValue(record1.getR12_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -754,6 +808,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(12);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR13_customer_name() != null) {
 						cell1.setCellValue(record1.getR13_customer_name());
 
@@ -763,6 +820,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R13_institutional_sector
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR13_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR13_institutional_sector());
 					} else {
@@ -772,6 +832,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_type_of_account
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR13_type_of_account() != null) {
 						cell1.setCellValue(record1.getR13_type_of_account());
 					} else {
@@ -781,6 +844,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_interest_rate
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR13_interest_rate() != null) {
 						cell1.setCellValue(record1.getR13_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -791,6 +857,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_amount
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR13_amount() != null) {
 						cell1.setCellValue(record1.getR13_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -801,6 +870,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_total_deposit
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR13_total_deposit() != null) {
 						cell1.setCellValue(record1.getR13_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -815,6 +887,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(13);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR14_customer_name() != null) {
 						cell1.setCellValue(record1.getR14_customer_name());
 
@@ -824,6 +899,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR14_institutional_sector() != null)
 						cell1.setCellValue(record1.getR14_institutional_sector());
 					else {
@@ -832,6 +910,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR14_type_of_account() != null)
 						cell1.setCellValue(record1.getR14_type_of_account());
 					else {
@@ -840,6 +921,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR14_interest_rate() != null) {
 						cell1.setCellValue(record1.getR14_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -849,6 +933,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR14_amount() != null) {
 						cell1.setCellValue(record1.getR14_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -858,6 +945,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR14_total_deposit() != null) {
 						cell1.setCellValue(record1.getR14_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -870,6 +960,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(14);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR15_customer_name() != null) {
 						cell1.setCellValue(record1.getR15_customer_name());
 
@@ -879,6 +972,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR15_institutional_sector() != null)
 						cell1.setCellValue(record1.getR15_institutional_sector());
 					else {
@@ -887,6 +983,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR15_type_of_account() != null)
 						cell1.setCellValue(record1.getR15_type_of_account());
 					else {
@@ -895,6 +994,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR15_interest_rate() != null) {
 						cell1.setCellValue(record1.getR15_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -904,6 +1006,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR15_amount() != null) {
 						cell1.setCellValue(record1.getR15_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -913,6 +1018,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR15_total_deposit() != null) {
 						cell1.setCellValue(record1.getR15_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -925,6 +1033,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(15);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR16_customer_name() != null) {
 						cell1.setCellValue(record1.getR16_customer_name());
 
@@ -934,6 +1045,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR16_institutional_sector() != null)
 						cell1.setCellValue(record1.getR16_institutional_sector());
 					else {
@@ -942,6 +1056,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR16_type_of_account() != null)
 						cell1.setCellValue(record1.getR16_type_of_account());
 					else {
@@ -950,6 +1067,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR16_interest_rate() != null) {
 						cell1.setCellValue(record1.getR16_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -959,6 +1079,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR16_amount() != null) {
 						cell1.setCellValue(record1.getR16_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -968,6 +1091,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR16_total_deposit() != null) {
 						cell1.setCellValue(record1.getR16_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -979,6 +1105,9 @@ public class BRRS_M_DEP4_ReportService {
 					// R17
 					row = sheet.getRow(16);
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR17_customer_name() != null) {
 						cell1.setCellValue(record1.getR17_customer_name());
 
@@ -987,6 +1116,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR17_institutional_sector() != null)
 						cell1.setCellValue(record1.getR17_institutional_sector());
 					else {
@@ -995,6 +1127,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR17_type_of_account() != null)
 						cell1.setCellValue(record1.getR17_type_of_account());
 					else {
@@ -1003,6 +1138,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR17_interest_rate() != null) {
 						cell1.setCellValue(record1.getR17_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1012,6 +1150,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR17_amount() != null) {
 						cell1.setCellValue(record1.getR17_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1021,6 +1162,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR17_total_deposit() != null) {
 						cell1.setCellValue(record1.getR17_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1033,6 +1177,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(17);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR18_customer_name() != null) {
 						cell1.setCellValue(record1.getR18_customer_name());
 
@@ -1042,6 +1189,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR18_institutional_sector() != null)
 						cell1.setCellValue(record1.getR18_institutional_sector());
 					else {
@@ -1050,6 +1200,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR18_type_of_account() != null)
 						cell1.setCellValue(record1.getR18_type_of_account());
 					else {
@@ -1058,6 +1211,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR18_interest_rate() != null) {
 						cell1.setCellValue(record1.getR18_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1067,6 +1223,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR18_amount() != null) {
 						cell1.setCellValue(record1.getR18_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1076,6 +1235,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR18_total_deposit() != null) {
 						cell1.setCellValue(record1.getR18_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1088,6 +1250,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(18);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR19_customer_name() != null) {
 						cell1.setCellValue(record1.getR19_customer_name());
 
@@ -1097,6 +1262,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR19_institutional_sector() != null)
 						cell1.setCellValue(record1.getR19_institutional_sector());
 					else {
@@ -1105,6 +1273,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR19_type_of_account() != null)
 						cell1.setCellValue(record1.getR19_type_of_account());
 					else {
@@ -1113,6 +1284,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR19_interest_rate() != null) {
 						cell1.setCellValue(record1.getR19_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1122,6 +1296,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR19_amount() != null) {
 						cell1.setCellValue(record1.getR19_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1131,6 +1308,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR19_total_deposit() != null) {
 						cell1.setCellValue(record1.getR19_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1143,6 +1323,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(19);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR20_customer_name() != null) {
 						cell1.setCellValue(record1.getR20_customer_name());
 
@@ -1152,6 +1335,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR20_institutional_sector() != null)
 						cell1.setCellValue(record1.getR20_institutional_sector());
 					else {
@@ -1160,6 +1346,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR20_type_of_account() != null)
 						cell1.setCellValue(record1.getR20_type_of_account());
 					else {
@@ -1168,6 +1357,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR20_interest_rate() != null) {
 						cell1.setCellValue(record1.getR20_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1177,6 +1369,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR20_amount() != null) {
 						cell1.setCellValue(record1.getR20_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1186,6 +1381,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR20_total_deposit() != null) {
 						cell1.setCellValue(record1.getR20_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1198,6 +1396,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(20);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR21_customer_name() != null) {
 						cell1.setCellValue(record1.getR21_customer_name());
 
@@ -1207,6 +1408,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR21_institutional_sector() != null)
 						cell1.setCellValue(record1.getR21_institutional_sector());
 					else {
@@ -1215,6 +1419,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR21_type_of_account() != null)
 						cell1.setCellValue(record1.getR21_type_of_account());
 					else {
@@ -1223,6 +1430,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR21_interest_rate() != null) {
 						cell1.setCellValue(record1.getR21_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1232,6 +1442,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR21_amount() != null) {
 						cell1.setCellValue(record1.getR21_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1241,6 +1454,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR21_total_deposit() != null) {
 						cell1.setCellValue(record1.getR21_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1253,6 +1469,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(21);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR22_customer_name() != null) {
 						cell1.setCellValue(record1.getR22_customer_name());
 
@@ -1262,6 +1481,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR22_institutional_sector() != null)
 						cell1.setCellValue(record1.getR22_institutional_sector());
 					else {
@@ -1270,6 +1492,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR22_type_of_account() != null)
 						cell1.setCellValue(record1.getR22_type_of_account());
 					else {
@@ -1278,6 +1503,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR22_interest_rate() != null) {
 						cell1.setCellValue(record1.getR22_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1287,6 +1515,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR22_amount() != null) {
 						cell1.setCellValue(record1.getR22_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1296,6 +1527,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR22_total_deposit() != null) {
 						cell1.setCellValue(record1.getR22_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1308,6 +1542,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(22);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR24_customer_name() != null) {
 						cell1.setCellValue(record1.getR24_customer_name());
 
@@ -1317,6 +1554,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR23_institutional_sector() != null)
 						cell1.setCellValue(record1.getR23_institutional_sector());
 					else {
@@ -1325,6 +1565,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR23_type_of_account() != null)
 						cell1.setCellValue(record1.getR23_type_of_account());
 					else {
@@ -1333,6 +1576,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR23_interest_rate() != null) {
 						cell1.setCellValue(record1.getR23_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1342,6 +1588,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR23_amount() != null) {
 						cell1.setCellValue(record1.getR23_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1351,6 +1600,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR23_total_deposit() != null) {
 						cell1.setCellValue(record1.getR23_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1363,6 +1615,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(23);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR24_customer_name() != null) {
 						cell1.setCellValue(record1.getR24_customer_name());
 
@@ -1372,6 +1627,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR24_institutional_sector() != null)
 						cell1.setCellValue(record1.getR24_institutional_sector());
 					else {
@@ -1380,6 +1638,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR24_type_of_account() != null)
 						cell1.setCellValue(record1.getR24_type_of_account());
 					else {
@@ -1388,6 +1649,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR24_interest_rate() != null) {
 						cell1.setCellValue(record1.getR24_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1397,6 +1661,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR24_amount() != null) {
 						cell1.setCellValue(record1.getR24_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1406,6 +1673,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR24_total_deposit() != null) {
 						cell1.setCellValue(record1.getR24_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1418,6 +1688,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(24);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR25_customer_name() != null) {
 						cell1.setCellValue(record1.getR25_customer_name());
 
@@ -1427,6 +1700,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR25_institutional_sector() != null)
 						cell1.setCellValue(record1.getR25_institutional_sector());
 					else {
@@ -1435,6 +1711,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR25_type_of_account() != null)
 						cell1.setCellValue(record1.getR25_type_of_account());
 					else {
@@ -1443,6 +1722,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR25_interest_rate() != null) {
 						cell1.setCellValue(record1.getR25_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1452,6 +1734,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR25_amount() != null) {
 						cell1.setCellValue(record1.getR25_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1461,6 +1746,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR25_total_deposit() != null) {
 						cell1.setCellValue(record1.getR25_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1473,6 +1761,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(25);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR26_customer_name() != null) {
 						cell1.setCellValue(record1.getR26_customer_name());
 
@@ -1482,6 +1773,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR26_institutional_sector() != null)
 						cell1.setCellValue(record1.getR26_institutional_sector());
 					else {
@@ -1490,6 +1784,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR26_type_of_account() != null)
 						cell1.setCellValue(record1.getR26_type_of_account());
 					else {
@@ -1498,6 +1795,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR26_interest_rate() != null) {
 						cell1.setCellValue(record1.getR26_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1507,6 +1807,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR26_amount() != null) {
 						cell1.setCellValue(record1.getR26_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1516,6 +1819,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR26_total_deposit() != null) {
 						cell1.setCellValue(record1.getR26_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1528,6 +1834,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(26);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR27_customer_name() != null) {
 						cell1.setCellValue(record1.getR27_customer_name());
 
@@ -1537,6 +1846,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR27_institutional_sector() != null)
 						cell1.setCellValue(record1.getR27_institutional_sector());
 					else {
@@ -1545,6 +1857,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR27_type_of_account() != null)
 						cell1.setCellValue(record1.getR27_type_of_account());
 					else {
@@ -1553,6 +1868,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR27_interest_rate() != null) {
 						cell1.setCellValue(record1.getR27_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1562,6 +1880,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR27_amount() != null) {
 						cell1.setCellValue(record1.getR27_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1571,6 +1892,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR27_total_deposit() != null) {
 						cell1.setCellValue(record1.getR27_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1583,6 +1907,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(27);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR28_customer_name() != null) {
 						cell1.setCellValue(record1.getR28_customer_name());
 
@@ -1592,6 +1919,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR28_institutional_sector() != null)
 						cell1.setCellValue(record1.getR28_institutional_sector());
 					else {
@@ -1600,6 +1930,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR28_type_of_account() != null)
 						cell1.setCellValue(record1.getR28_type_of_account());
 					else {
@@ -1608,6 +1941,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR28_interest_rate() != null) {
 						cell1.setCellValue(record1.getR28_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1617,6 +1953,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR28_amount() != null) {
 						cell1.setCellValue(record1.getR28_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1626,6 +1965,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR28_total_deposit() != null) {
 						cell1.setCellValue(record1.getR28_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1638,6 +1980,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(28);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR29_customer_name() != null) {
 						cell1.setCellValue(record1.getR29_customer_name());
 
@@ -1647,6 +1992,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR29_institutional_sector() != null)
 						cell1.setCellValue(record1.getR29_institutional_sector());
 					else {
@@ -1655,6 +2003,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR29_type_of_account() != null)
 						cell1.setCellValue(record1.getR29_type_of_account());
 					else {
@@ -1663,6 +2014,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR29_interest_rate() != null) {
 						cell1.setCellValue(record1.getR29_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1672,6 +2026,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR29_amount() != null) {
 						cell1.setCellValue(record1.getR29_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1681,6 +2038,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR29_total_deposit() != null) {
 						cell1.setCellValue(record1.getR29_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1693,6 +2053,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(29);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR30_customer_name() != null) {
 						cell1.setCellValue(record1.getR30_customer_name());
 
@@ -1702,6 +2065,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR30_institutional_sector() != null)
 						cell1.setCellValue(record1.getR30_institutional_sector());
 					else {
@@ -1710,6 +2076,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR30_type_of_account() != null)
 						cell1.setCellValue(record1.getR30_type_of_account());
 					else {
@@ -1718,6 +2087,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR30_interest_rate() != null) {
 						cell1.setCellValue(record1.getR30_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1727,6 +2099,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR30_amount() != null) {
 						cell1.setCellValue(record1.getR30_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1736,6 +2111,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR30_total_deposit() != null) {
 						cell1.setCellValue(record1.getR30_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1748,6 +2126,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(30);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR31_customer_name() != null) {
 						cell1.setCellValue(record1.getR31_customer_name());
 
@@ -1757,6 +2138,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR31_institutional_sector() != null)
 						cell1.setCellValue(record1.getR31_institutional_sector());
 					else {
@@ -1765,6 +2149,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR31_type_of_account() != null)
 						cell1.setCellValue(record1.getR31_type_of_account());
 					else {
@@ -1773,6 +2160,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR31_interest_rate() != null) {
 						cell1.setCellValue(record1.getR31_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1782,6 +2172,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR31_amount() != null) {
 						cell1.setCellValue(record1.getR31_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1791,6 +2184,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR31_total_deposit() != null) {
 						cell1.setCellValue(record1.getR31_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1803,6 +2199,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(31);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR32_customer_name() != null) {
 						cell1.setCellValue(record1.getR32_customer_name());
 
@@ -1812,6 +2211,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR32_institutional_sector() != null)
 						cell1.setCellValue(record1.getR32_institutional_sector());
 					else {
@@ -1820,6 +2222,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR32_type_of_account() != null)
 						cell1.setCellValue(record1.getR32_type_of_account());
 					else {
@@ -1828,6 +2233,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR32_interest_rate() != null) {
 						cell1.setCellValue(record1.getR32_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1837,6 +2245,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR32_amount() != null) {
 						cell1.setCellValue(record1.getR32_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1846,6 +2257,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR32_total_deposit() != null) {
 						cell1.setCellValue(record1.getR32_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1858,6 +2272,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(32);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR33_customer_name() != null) {
 						cell1.setCellValue(record1.getR33_customer_name());
 
@@ -1867,6 +2284,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR33_institutional_sector() != null)
 						cell1.setCellValue(record1.getR33_institutional_sector());
 					else {
@@ -1875,6 +2295,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR33_type_of_account() != null)
 						cell1.setCellValue(record1.getR33_type_of_account());
 					else {
@@ -1883,6 +2306,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR33_interest_rate() != null) {
 						cell1.setCellValue(record1.getR33_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1892,6 +2318,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR33_amount() != null) {
 						cell1.setCellValue(record1.getR33_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1901,6 +2330,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR33_total_deposit() != null) {
 						cell1.setCellValue(record1.getR33_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1913,6 +2345,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(33);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR34_customer_name() != null) {
 						cell1.setCellValue(record1.getR34_customer_name());
 
@@ -1922,6 +2357,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR34_institutional_sector() != null)
 						cell1.setCellValue(record1.getR34_institutional_sector());
 					else {
@@ -1930,6 +2368,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR34_type_of_account() != null)
 						cell1.setCellValue(record1.getR34_type_of_account());
 					else {
@@ -1938,6 +2379,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR34_interest_rate() != null) {
 						cell1.setCellValue(record1.getR34_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1947,6 +2391,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR34_amount() != null) {
 						cell1.setCellValue(record1.getR34_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1956,6 +2403,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR34_total_deposit() != null) {
 						cell1.setCellValue(record1.getR34_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -1967,6 +2417,9 @@ public class BRRS_M_DEP4_ReportService {
 					// R35
 					row = sheet.getRow(34);
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR35_customer_name() != null) {
 						cell1.setCellValue(record1.getR35_customer_name());
 
@@ -1976,6 +2429,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR35_institutional_sector() != null)
 						cell1.setCellValue(record1.getR35_institutional_sector());
 					else {
@@ -1984,6 +2440,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR35_type_of_account() != null)
 						cell1.setCellValue(record1.getR35_type_of_account());
 					else {
@@ -1992,6 +2451,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR35_interest_rate() != null) {
 						cell1.setCellValue(record1.getR35_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2001,6 +2463,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR35_amount() != null) {
 						cell1.setCellValue(record1.getR35_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2010,6 +2475,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR35_total_deposit() != null) {
 						cell1.setCellValue(record1.getR35_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2022,6 +2490,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(35);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR36_customer_name() != null) {
 						cell1.setCellValue(record1.getR36_customer_name());
 
@@ -2031,6 +2502,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR36_institutional_sector() != null)
 						cell1.setCellValue(record1.getR36_institutional_sector());
 					else {
@@ -2039,6 +2513,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR36_type_of_account() != null)
 						cell1.setCellValue(record1.getR36_type_of_account());
 					else {
@@ -2047,6 +2524,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR36_interest_rate() != null) {
 						cell1.setCellValue(record1.getR36_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2056,6 +2536,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR36_amount() != null) {
 						cell1.setCellValue(record1.getR36_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2065,6 +2548,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR36_total_deposit() != null) {
 						cell1.setCellValue(record1.getR36_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2077,6 +2563,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(36);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR37_customer_name() != null) {
 						cell1.setCellValue(record1.getR37_customer_name());
 
@@ -2086,6 +2575,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR37_institutional_sector() != null)
 						cell1.setCellValue(record1.getR37_institutional_sector());
 					else {
@@ -2094,6 +2586,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR37_type_of_account() != null)
 						cell1.setCellValue(record1.getR37_type_of_account());
 					else {
@@ -2102,6 +2597,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR37_interest_rate() != null) {
 						cell1.setCellValue(record1.getR37_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2111,6 +2609,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR37_amount() != null) {
 						cell1.setCellValue(record1.getR37_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2120,6 +2621,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR37_total_deposit() != null) {
 						cell1.setCellValue(record1.getR37_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2132,6 +2636,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(37);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR38_customer_name() != null) {
 						cell1.setCellValue(record1.getR38_customer_name());
 
@@ -2141,6 +2648,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR38_institutional_sector() != null)
 						cell1.setCellValue(record1.getR38_institutional_sector());
 					else {
@@ -2149,6 +2659,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR38_type_of_account() != null)
 						cell1.setCellValue(record1.getR38_type_of_account());
 					else {
@@ -2157,6 +2670,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR38_interest_rate() != null) {
 						cell1.setCellValue(record1.getR38_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2166,6 +2682,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR38_amount() != null) {
 						cell1.setCellValue(record1.getR38_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2175,6 +2694,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR38_total_deposit() != null) {
 						cell1.setCellValue(record1.getR38_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2187,6 +2709,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(38);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR39_customer_name() != null) {
 						cell1.setCellValue(record1.getR39_customer_name());
 
@@ -2196,6 +2721,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR39_institutional_sector() != null)
 						cell1.setCellValue(record1.getR39_institutional_sector());
 					else {
@@ -2204,6 +2732,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR39_type_of_account() != null)
 						cell1.setCellValue(record1.getR39_type_of_account());
 					else {
@@ -2212,6 +2743,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR39_interest_rate() != null) {
 						cell1.setCellValue(record1.getR39_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2221,6 +2755,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR39_amount() != null) {
 						cell1.setCellValue(record1.getR39_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2230,6 +2767,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR39_total_deposit() != null) {
 						cell1.setCellValue(record1.getR39_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2242,6 +2782,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(39);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR40_customer_name() != null) {
 						cell1.setCellValue(record1.getR40_customer_name());
 
@@ -2251,6 +2794,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR40_institutional_sector() != null)
 						cell1.setCellValue(record1.getR40_institutional_sector());
 					else {
@@ -2259,6 +2805,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR40_type_of_account() != null)
 						cell1.setCellValue(record1.getR40_type_of_account());
 					else {
@@ -2267,6 +2816,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR40_interest_rate() != null) {
 						cell1.setCellValue(record1.getR40_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2276,6 +2828,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR40_amount() != null) {
 						cell1.setCellValue(record1.getR40_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2285,6 +2840,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR40_total_deposit() != null) {
 						cell1.setCellValue(record1.getR40_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2297,6 +2855,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(40);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR41_customer_name() != null) {
 						cell1.setCellValue(record1.getR41_customer_name());
 
@@ -2305,6 +2866,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR41_institutional_sector() != null)
 						cell1.setCellValue(record1.getR41_institutional_sector());
 					else {
@@ -2313,6 +2877,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR41_type_of_account() != null)
 						cell1.setCellValue(record1.getR41_type_of_account());
 					else {
@@ -2321,6 +2888,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR41_interest_rate() != null) {
 						cell1.setCellValue(record1.getR41_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2330,6 +2900,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR41_amount() != null) {
 						cell1.setCellValue(record1.getR41_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2339,6 +2912,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR41_total_deposit() != null) {
 						cell1.setCellValue(record1.getR41_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2351,6 +2927,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(41);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR42_customer_name() != null) {
 						cell1.setCellValue(record1.getR42_customer_name());
 
@@ -2359,6 +2938,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR42_institutional_sector() != null)
 						cell1.setCellValue(record1.getR42_institutional_sector());
 					else {
@@ -2367,6 +2949,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR42_type_of_account() != null)
 						cell1.setCellValue(record1.getR42_type_of_account());
 					else {
@@ -2375,6 +2960,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR42_interest_rate() != null) {
 						cell1.setCellValue(record1.getR42_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2384,6 +2972,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR42_amount() != null) {
 						cell1.setCellValue(record1.getR42_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2393,6 +2984,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR42_total_deposit() != null) {
 						cell1.setCellValue(record1.getR42_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2405,6 +2999,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(42);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR43_customer_name() != null) {
 						cell1.setCellValue(record1.getR43_customer_name());
 
@@ -2413,6 +3010,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR43_institutional_sector() != null)
 						cell1.setCellValue(record1.getR43_institutional_sector());
 					else {
@@ -2421,6 +3021,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR43_type_of_account() != null)
 						cell1.setCellValue(record1.getR43_type_of_account());
 					else {
@@ -2429,6 +3032,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR43_interest_rate() != null) {
 						cell1.setCellValue(record1.getR43_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2438,6 +3044,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR43_amount() != null) {
 						cell1.setCellValue(record1.getR43_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2447,6 +3056,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR43_total_deposit() != null) {
 						cell1.setCellValue(record1.getR43_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2459,6 +3071,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(43);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR44_customer_name() != null) {
 						cell1.setCellValue(record1.getR44_customer_name());
 
@@ -2468,6 +3083,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR44_institutional_sector() != null)
 						cell1.setCellValue(record1.getR44_institutional_sector());
 					else {
@@ -2476,6 +3094,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR44_type_of_account() != null)
 						cell1.setCellValue(record1.getR44_type_of_account());
 					else {
@@ -2484,6 +3105,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR44_interest_rate() != null) {
 						cell1.setCellValue(record1.getR44_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2493,6 +3117,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR44_amount() != null) {
 						cell1.setCellValue(record1.getR44_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2502,6 +3129,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR44_total_deposit() != null) {
 						cell1.setCellValue(record1.getR44_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2514,6 +3144,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(44);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR45_customer_name() != null) {
 						cell1.setCellValue(record1.getR45_customer_name());
 
@@ -2523,6 +3156,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR45_institutional_sector() != null)
 						cell1.setCellValue(record1.getR45_institutional_sector());
 					else {
@@ -2531,6 +3167,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR45_type_of_account() != null)
 						cell1.setCellValue(record1.getR45_type_of_account());
 					else {
@@ -2539,6 +3178,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR45_interest_rate() != null) {
 						cell1.setCellValue(record1.getR45_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2548,6 +3190,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR45_amount() != null) {
 						cell1.setCellValue(record1.getR45_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2557,6 +3202,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR45_total_deposit() != null) {
 						cell1.setCellValue(record1.getR45_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2569,6 +3217,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(45);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR46_customer_name() != null) {
 						cell1.setCellValue(record1.getR46_customer_name());
 
@@ -2578,6 +3229,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR46_institutional_sector() != null)
 						cell1.setCellValue(record1.getR46_institutional_sector());
 					else {
@@ -2586,6 +3240,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR46_type_of_account() != null)
 						cell1.setCellValue(record1.getR46_type_of_account());
 					else {
@@ -2594,6 +3251,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR46_interest_rate() != null) {
 						cell1.setCellValue(record1.getR46_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2603,6 +3263,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR46_amount() != null) {
 						cell1.setCellValue(record1.getR46_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2612,6 +3275,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR46_total_deposit() != null) {
 						cell1.setCellValue(record1.getR46_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2624,6 +3290,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(46);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR47_customer_name() != null) {
 						cell1.setCellValue(record1.getR47_customer_name());
 
@@ -2633,6 +3302,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR47_institutional_sector() != null)
 						cell1.setCellValue(record1.getR47_institutional_sector());
 					else {
@@ -2641,6 +3313,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR47_type_of_account() != null)
 						cell1.setCellValue(record1.getR47_type_of_account());
 					else {
@@ -2649,6 +3324,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR47_interest_rate() != null) {
 						cell1.setCellValue(record1.getR47_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2658,6 +3336,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR47_amount() != null) {
 						cell1.setCellValue(record1.getR47_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2667,6 +3348,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR47_total_deposit() != null) {
 						cell1.setCellValue(record1.getR47_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2679,6 +3363,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(47);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR48_customer_name() != null) {
 						cell1.setCellValue(record1.getR48_customer_name());
 
@@ -2688,6 +3375,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR48_institutional_sector() != null)
 						cell1.setCellValue(record1.getR48_institutional_sector());
 					else {
@@ -2696,6 +3386,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR48_type_of_account() != null)
 						cell1.setCellValue(record1.getR48_type_of_account());
 					else {
@@ -2704,6 +3397,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR48_interest_rate() != null) {
 						cell1.setCellValue(record1.getR48_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2713,6 +3409,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR48_amount() != null) {
 						cell1.setCellValue(record1.getR48_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2722,6 +3421,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR48_total_deposit() != null) {
 						cell1.setCellValue(record1.getR48_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2734,6 +3436,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(48);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR49_customer_name() != null) {
 						cell1.setCellValue(record1.getR49_customer_name());
 
@@ -2743,6 +3448,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR49_institutional_sector() != null)
 						cell1.setCellValue(record1.getR49_institutional_sector());
 					else {
@@ -2751,6 +3459,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR49_type_of_account() != null)
 						cell1.setCellValue(record1.getR49_type_of_account());
 					else {
@@ -2759,6 +3470,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR49_interest_rate() != null) {
 						cell1.setCellValue(record1.getR49_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2768,6 +3482,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR49_amount() != null) {
 						cell1.setCellValue(record1.getR49_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2777,6 +3494,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR49_total_deposit() != null) {
 						cell1.setCellValue(record1.getR49_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2789,6 +3509,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(49);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR50_customer_name() != null) {
 						cell1.setCellValue(record1.getR50_customer_name());
 
@@ -2798,6 +3521,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR50_institutional_sector() != null)
 						cell1.setCellValue(record1.getR50_institutional_sector());
 					else {
@@ -2806,6 +3532,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR50_type_of_account() != null)
 						cell1.setCellValue(record1.getR50_type_of_account());
 					else {
@@ -2814,6 +3543,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR50_interest_rate() != null) {
 						cell1.setCellValue(record1.getR50_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2823,6 +3555,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR50_amount() != null) {
 						cell1.setCellValue(record1.getR50_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2832,6 +3567,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR50_total_deposit() != null) {
 						cell1.setCellValue(record1.getR50_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2844,6 +3582,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(50);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR51_customer_name() != null) {
 						cell1.setCellValue(record1.getR51_customer_name());
 
@@ -2853,6 +3594,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR51_institutional_sector() != null)
 						cell1.setCellValue(record1.getR51_institutional_sector());
 					else {
@@ -2861,6 +3605,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR51_type_of_account() != null)
 						cell1.setCellValue(record1.getR51_type_of_account());
 					else {
@@ -2869,6 +3616,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR51_interest_rate() != null) {
 						cell1.setCellValue(record1.getR51_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2878,6 +3628,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR51_amount() != null) {
 						cell1.setCellValue(record1.getR51_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2887,6 +3640,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR51_total_deposit() != null) {
 						cell1.setCellValue(record1.getR51_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2899,6 +3655,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(51);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR52_customer_name() != null) {
 						cell1.setCellValue(record1.getR52_customer_name());
 
@@ -2907,6 +3666,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR52_institutional_sector() != null)
 						cell1.setCellValue(record1.getR52_institutional_sector());
 					else {
@@ -2915,6 +3677,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR52_type_of_account() != null)
 						cell1.setCellValue(record1.getR52_type_of_account());
 					else {
@@ -2923,6 +3688,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR52_interest_rate() != null) {
 						cell1.setCellValue(record1.getR52_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2932,6 +3700,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR52_amount() != null) {
 						cell1.setCellValue(record1.getR52_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2941,6 +3712,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR52_total_deposit() != null) {
 						cell1.setCellValue(record1.getR52_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2953,6 +3727,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(52);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR53_customer_name() != null) {
 						cell1.setCellValue(record1.getR53_customer_name());
 
@@ -2961,6 +3738,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR53_institutional_sector() != null)
 						cell1.setCellValue(record1.getR53_institutional_sector());
 					else {
@@ -2969,6 +3749,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR53_type_of_account() != null)
 						cell1.setCellValue(record1.getR53_type_of_account());
 					else {
@@ -2977,6 +3760,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR53_interest_rate() != null) {
 						cell1.setCellValue(record1.getR53_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2986,6 +3772,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR53_amount() != null) {
 						cell1.setCellValue(record1.getR53_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -2995,6 +3784,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR53_total_deposit() != null) {
 						cell1.setCellValue(record1.getR53_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3007,6 +3799,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(53);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR54_customer_name() != null) {
 						cell1.setCellValue(record1.getR54_customer_name());
 
@@ -3016,6 +3811,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR54_institutional_sector() != null)
 						cell1.setCellValue(record1.getR54_institutional_sector());
 					else {
@@ -3024,6 +3822,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR54_type_of_account() != null)
 						cell1.setCellValue(record1.getR54_type_of_account());
 					else {
@@ -3032,6 +3833,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR54_interest_rate() != null) {
 						cell1.setCellValue(record1.getR54_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3041,6 +3845,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR54_amount() != null) {
 						cell1.setCellValue(record1.getR54_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3050,6 +3857,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR54_total_deposit() != null) {
 						cell1.setCellValue(record1.getR54_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3062,6 +3872,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(54);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR55_customer_name() != null) {
 						cell1.setCellValue(record1.getR55_customer_name());
 
@@ -3071,6 +3884,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR55_institutional_sector() != null)
 						cell1.setCellValue(record1.getR55_institutional_sector());
 					else {
@@ -3079,6 +3895,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR55_type_of_account() != null)
 						cell1.setCellValue(record1.getR55_type_of_account());
 					else {
@@ -3087,6 +3906,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR55_interest_rate() != null) {
 						cell1.setCellValue(record1.getR55_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3096,6 +3918,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR55_amount() != null) {
 						cell1.setCellValue(record1.getR55_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3105,6 +3930,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR55_total_deposit() != null) {
 						cell1.setCellValue(record1.getR55_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3117,6 +3945,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(55);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR56_customer_name() != null) {
 						cell1.setCellValue(record1.getR56_customer_name());
 
@@ -3125,6 +3956,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR56_institutional_sector() != null)
 						cell1.setCellValue(record1.getR56_institutional_sector());
 					else {
@@ -3133,6 +3967,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR56_type_of_account() != null)
 						cell1.setCellValue(record1.getR56_type_of_account());
 					else {
@@ -3141,6 +3978,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR56_interest_rate() != null) {
 						cell1.setCellValue(record1.getR56_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3150,6 +3990,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR56_amount() != null) {
 						cell1.setCellValue(record1.getR56_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3159,6 +4002,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR56_total_deposit() != null) {
 						cell1.setCellValue(record1.getR56_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3171,6 +4017,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(56);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR57_customer_name() != null) {
 						cell1.setCellValue(record1.getR57_customer_name());
 
@@ -3180,6 +4029,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR57_institutional_sector() != null)
 						cell1.setCellValue(record1.getR57_institutional_sector());
 					else {
@@ -3188,6 +4040,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR57_type_of_account() != null)
 						cell1.setCellValue(record1.getR57_type_of_account());
 					else {
@@ -3196,6 +4051,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR57_interest_rate() != null) {
 						cell1.setCellValue(record1.getR57_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3205,6 +4063,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR57_amount() != null) {
 						cell1.setCellValue(record1.getR57_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3214,6 +4075,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR57_total_deposit() != null) {
 						cell1.setCellValue(record1.getR57_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3226,6 +4090,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(57);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR58_customer_name() != null) {
 						cell1.setCellValue(record1.getR58_customer_name());
 
@@ -3235,6 +4102,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR58_institutional_sector() != null)
 						cell1.setCellValue(record1.getR58_institutional_sector());
 					else {
@@ -3243,6 +4113,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR58_type_of_account() != null)
 						cell1.setCellValue(record1.getR58_type_of_account());
 					else {
@@ -3251,6 +4124,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR58_interest_rate() != null) {
 						cell1.setCellValue(record1.getR58_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3260,6 +4136,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR58_amount() != null) {
 						cell1.setCellValue(record1.getR58_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3269,6 +4148,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR58_total_deposit() != null) {
 						cell1.setCellValue(record1.getR58_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3281,6 +4163,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(58);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR59_customer_name() != null) {
 						cell1.setCellValue(record1.getR59_customer_name());
 
@@ -3290,6 +4175,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR59_institutional_sector() != null)
 						cell1.setCellValue(record1.getR59_institutional_sector());
 					else {
@@ -3298,6 +4186,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR59_type_of_account() != null)
 						cell1.setCellValue(record1.getR59_type_of_account());
 					else {
@@ -3306,6 +4197,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR59_interest_rate() != null) {
 						cell1.setCellValue(record1.getR59_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3315,6 +4209,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR59_amount() != null) {
 						cell1.setCellValue(record1.getR59_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3324,6 +4221,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR59_total_deposit() != null) {
 						cell1.setCellValue(record1.getR59_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3336,6 +4236,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(59);
 
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR60_customer_name() != null) {
 						cell1.setCellValue(record1.getR60_customer_name());
 
@@ -3345,6 +4248,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR60_institutional_sector() != null)
 						cell1.setCellValue(record1.getR60_institutional_sector());
 					else {
@@ -3353,6 +4259,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR60_type_of_account() != null)
 						cell1.setCellValue(record1.getR60_type_of_account());
 					else {
@@ -3361,6 +4270,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR60_interest_rate() != null) {
 						cell1.setCellValue(record1.getR60_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3370,6 +4282,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR60_amount() != null) {
 						cell1.setCellValue(record1.getR60_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3379,6 +4294,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR60_total_deposit() != null) {
 						cell1.setCellValue(record1.getR60_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3390,6 +4308,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(60);
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR61_institutional_sector() != null)
 						cell1.setCellValue(record1.getR61_institutional_sector());
 					else {
@@ -3398,6 +4319,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR61_type_of_account() != null)
 						cell1.setCellValue(record1.getR61_type_of_account());
 					else {
@@ -3406,6 +4330,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR61_interest_rate() != null) {
 						cell1.setCellValue(record1.getR61_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3415,6 +4342,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR61_amount() != null) {
 						cell1.setCellValue(record1.getR61_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3424,6 +4354,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR61_total_deposit() != null) {
 						cell1.setCellValue(record1.getR61_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3436,6 +4369,9 @@ public class BRRS_M_DEP4_ReportService {
 					row = sheet.getRow(61);
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR62_institutional_sector() != null)
 						cell1.setCellValue(record1.getR62_institutional_sector());
 					else {
@@ -3444,6 +4380,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR62_type_of_account() != null)
 						cell1.setCellValue(record1.getR62_type_of_account());
 					else {
@@ -3452,6 +4391,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR62_interest_rate() != null) {
 						cell1.setCellValue(record1.getR62_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3461,6 +4403,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR62_amount() != null) {
 						cell1.setCellValue(record1.getR62_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3470,6 +4415,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR62_total_deposit() != null) {
 						cell1.setCellValue(record1.getR62_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3481,23 +4429,54 @@ public class BRRS_M_DEP4_ReportService {
 					// R63
 					row = sheet.getRow(62);
 
+					if (row == null) {
+						row = sheet.createRow(62);
+					}
+
+					// R63 - Column C
 					cell1 = row.getCell(2);
-					if (record1.getR63_institutional_sector() != null)
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
+
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
+
+					if (record1.getR63_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR63_institutional_sector());
-					else {
+					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
 
+					// R63 - Column D
 					cell1 = row.getCell(3);
-					if (record1.getR63_type_of_account() != null)
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
+
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
+
+					if (record1.getR63_type_of_account() != null) {
 						cell1.setCellValue(record1.getR63_type_of_account());
-					else {
+					} else {
 						cell1.setCellValue("");
 						cell1.setCellStyle(textStyle);
 					}
 
+					// R63 - Column E
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
+
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
+
 					if (record1.getR63_interest_rate() != null) {
 						cell1.setCellValue(record1.getR63_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3506,7 +4485,16 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 
+					// R63 - Column F
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
+
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
+
 					if (record1.getR63_amount() != null) {
 						cell1.setCellValue(record1.getR63_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3515,7 +4503,16 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 
+					// R63 - Column G
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
+
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
+
 					if (record1.getR63_total_deposit() != null) {
 						cell1.setCellValue(record1.getR63_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3527,7 +4524,18 @@ public class BRRS_M_DEP4_ReportService {
 					// R64
 					row = sheet.getRow(63);
 
+					if (row == null) {
+						row = sheet.createRow(63);
+					}
+
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
+
 					if (record1.getR64_institutional_sector() != null)
 						cell1.setCellValue(record1.getR64_institutional_sector());
 					else {
@@ -3536,6 +4544,13 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
+
 					if (record1.getR64_type_of_account() != null)
 						cell1.setCellValue(record1.getR64_type_of_account());
 					else {
@@ -3544,6 +4559,13 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
+
 					if (record1.getR64_interest_rate() != null) {
 						cell1.setCellValue(record1.getR64_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3553,6 +4575,13 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
+
 					if (record1.getR64_amount() != null) {
 						cell1.setCellValue(record1.getR64_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3562,6 +4591,13 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
+
 					if (record1.getR64_total_deposit() != null) {
 						cell1.setCellValue(record1.getR64_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3572,8 +4608,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R65
 					row = sheet.getRow(64);
+					if (row == null) {
+						row = sheet.createRow(64);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR65_institutional_sector() != null)
 						cell1.setCellValue(record1.getR65_institutional_sector());
 					else {
@@ -3582,6 +4624,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR65_type_of_account() != null)
 						cell1.setCellValue(record1.getR65_type_of_account());
 					else {
@@ -3590,6 +4635,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR65_interest_rate() != null) {
 						cell1.setCellValue(record1.getR65_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3599,6 +4647,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR65_amount() != null) {
 						cell1.setCellValue(record1.getR65_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3608,6 +4659,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR65_total_deposit() != null) {
 						cell1.setCellValue(record1.getR65_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3618,8 +4672,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R66
 					row = sheet.getRow(65);
+					if (row == null) {
+						row = sheet.createRow(65);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR66_institutional_sector() != null)
 						cell1.setCellValue(record1.getR66_institutional_sector());
 					else {
@@ -3628,6 +4688,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR66_type_of_account() != null)
 						cell1.setCellValue(record1.getR66_type_of_account());
 					else {
@@ -3636,6 +4699,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR66_interest_rate() != null) {
 						cell1.setCellValue(record1.getR66_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3645,6 +4711,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR66_amount() != null) {
 						cell1.setCellValue(record1.getR66_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3654,6 +4723,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR66_total_deposit() != null) {
 						cell1.setCellValue(record1.getR66_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3664,8 +4736,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R67
 					row = sheet.getRow(66);
+					if (row == null) {
+						row = sheet.createRow(66);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR67_institutional_sector() != null)
 						cell1.setCellValue(record1.getR67_institutional_sector());
 					else {
@@ -3674,6 +4752,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR67_type_of_account() != null)
 						cell1.setCellValue(record1.getR67_type_of_account());
 					else {
@@ -3682,6 +4763,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR67_interest_rate() != null) {
 						cell1.setCellValue(record1.getR67_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3691,6 +4775,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR67_amount() != null) {
 						cell1.setCellValue(record1.getR67_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3700,6 +4787,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR67_total_deposit() != null) {
 						cell1.setCellValue(record1.getR67_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3710,8 +4800,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R68
 					row = sheet.getRow(67);
+					if (row == null) {
+						row = sheet.createRow(67);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR68_institutional_sector() != null)
 						cell1.setCellValue(record1.getR68_institutional_sector());
 					else {
@@ -3720,6 +4816,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR68_type_of_account() != null)
 						cell1.setCellValue(record1.getR68_type_of_account());
 					else {
@@ -3728,6 +4827,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR68_interest_rate() != null) {
 						cell1.setCellValue(record1.getR68_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3737,6 +4839,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR68_amount() != null) {
 						cell1.setCellValue(record1.getR68_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3746,6 +4851,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR68_total_deposit() != null) {
 						cell1.setCellValue(record1.getR68_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3756,8 +4864,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R69
 					row = sheet.getRow(68);
+					if (row == null) {
+						row = sheet.createRow(68);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR69_institutional_sector() != null)
 						cell1.setCellValue(record1.getR69_institutional_sector());
 					else {
@@ -3766,6 +4880,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR69_type_of_account() != null)
 						cell1.setCellValue(record1.getR69_type_of_account());
 					else {
@@ -3774,6 +4891,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR69_interest_rate() != null) {
 						cell1.setCellValue(record1.getR69_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3783,6 +4903,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR69_amount() != null) {
 						cell1.setCellValue(record1.getR69_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3792,6 +4915,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR69_total_deposit() != null) {
 						cell1.setCellValue(record1.getR69_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3802,8 +4928,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R70
 					row = sheet.getRow(69);
+					if (row == null) {
+						row = sheet.createRow(69);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR70_institutional_sector() != null)
 						cell1.setCellValue(record1.getR70_institutional_sector());
 					else {
@@ -3812,6 +4944,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR70_type_of_account() != null)
 						cell1.setCellValue(record1.getR70_type_of_account());
 					else {
@@ -3820,6 +4955,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR70_interest_rate() != null) {
 						cell1.setCellValue(record1.getR70_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3829,6 +4967,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR70_amount() != null) {
 						cell1.setCellValue(record1.getR70_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3838,6 +4979,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR70_total_deposit() != null) {
 						cell1.setCellValue(record1.getR70_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3847,8 +4991,14 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R71
 					row = sheet.getRow(70);
+					if (row == null) {
+						row = sheet.createRow(70);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR71_institutional_sector() != null)
 						cell1.setCellValue(record1.getR71_institutional_sector());
 					else {
@@ -3857,6 +5007,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR71_type_of_account() != null)
 						cell1.setCellValue(record1.getR71_type_of_account());
 					else {
@@ -3865,6 +5018,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR71_interest_rate() != null) {
 						cell1.setCellValue(record1.getR71_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3874,6 +5030,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR71_amount() != null) {
 						cell1.setCellValue(record1.getR71_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3883,6 +5042,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR71_total_deposit() != null) {
 						cell1.setCellValue(record1.getR71_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3893,8 +5055,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R72
 					row = sheet.getRow(71);
+					if (row == null) {
+						row = sheet.createRow(71);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR72_institutional_sector() != null)
 						cell1.setCellValue(record1.getR72_institutional_sector());
 					else {
@@ -3903,6 +5071,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR72_type_of_account() != null)
 						cell1.setCellValue(record1.getR72_type_of_account());
 					else {
@@ -3911,6 +5082,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR72_interest_rate() != null) {
 						cell1.setCellValue(record1.getR72_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3920,6 +5094,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR72_amount() != null) {
 						cell1.setCellValue(record1.getR72_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3929,6 +5106,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR72_total_deposit() != null) {
 						cell1.setCellValue(record1.getR72_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3939,8 +5119,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R73
 					row = sheet.getRow(72);
+					if (row == null) {
+						row = sheet.createRow(72);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR73_institutional_sector() != null)
 						cell1.setCellValue(record1.getR73_institutional_sector());
 					else {
@@ -3949,6 +5135,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR73_type_of_account() != null)
 						cell1.setCellValue(record1.getR73_type_of_account());
 					else {
@@ -3957,6 +5146,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR73_interest_rate() != null) {
 						cell1.setCellValue(record1.getR73_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3966,6 +5158,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR73_amount() != null) {
 						cell1.setCellValue(record1.getR73_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3975,6 +5170,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR73_total_deposit() != null) {
 						cell1.setCellValue(record1.getR73_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -3985,8 +5183,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R74
 					row = sheet.getRow(73);
+					if (row == null) {
+						row = sheet.createRow(73);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR74_institutional_sector() != null)
 						cell1.setCellValue(record1.getR74_institutional_sector());
 					else {
@@ -3995,6 +5199,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR74_type_of_account() != null)
 						cell1.setCellValue(record1.getR74_type_of_account());
 					else {
@@ -4003,6 +5210,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR74_interest_rate() != null) {
 						cell1.setCellValue(record1.getR74_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4012,6 +5222,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR74_amount() != null) {
 						cell1.setCellValue(record1.getR74_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4021,6 +5234,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR74_total_deposit() != null) {
 						cell1.setCellValue(record1.getR74_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4031,8 +5247,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R75
 					row = sheet.getRow(74);
+					if (row == null) {
+						row = sheet.createRow(74);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR75_institutional_sector() != null)
 						cell1.setCellValue(record1.getR75_institutional_sector());
 					else {
@@ -4041,6 +5263,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR75_type_of_account() != null)
 						cell1.setCellValue(record1.getR75_type_of_account());
 					else {
@@ -4049,6 +5274,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR75_interest_rate() != null) {
 						cell1.setCellValue(record1.getR75_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4058,6 +5286,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR75_amount() != null) {
 						cell1.setCellValue(record1.getR75_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4067,6 +5298,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR75_total_deposit() != null) {
 						cell1.setCellValue(record1.getR75_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4077,8 +5311,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R76
 					row = sheet.getRow(75);
+					if (row == null) {
+						row = sheet.createRow(75);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR76_institutional_sector() != null)
 						cell1.setCellValue(record1.getR76_institutional_sector());
 					else {
@@ -4087,6 +5327,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR76_type_of_account() != null)
 						cell1.setCellValue(record1.getR76_type_of_account());
 					else {
@@ -4095,6 +5338,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR76_interest_rate() != null) {
 						cell1.setCellValue(record1.getR76_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4104,6 +5350,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR76_amount() != null) {
 						cell1.setCellValue(record1.getR76_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4113,6 +5362,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR76_total_deposit() != null) {
 						cell1.setCellValue(record1.getR76_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4123,8 +5375,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R77
 					row = sheet.getRow(76);
+					if (row == null) {
+						row = sheet.createRow(76);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR77_institutional_sector() != null)
 						cell1.setCellValue(record1.getR77_institutional_sector());
 					else {
@@ -4133,6 +5391,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR77_type_of_account() != null)
 						cell1.setCellValue(record1.getR77_type_of_account());
 					else {
@@ -4141,6 +5402,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR77_interest_rate() != null) {
 						cell1.setCellValue(record1.getR77_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4150,6 +5414,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR77_amount() != null) {
 						cell1.setCellValue(record1.getR77_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4159,6 +5426,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR77_total_deposit() != null) {
 						cell1.setCellValue(record1.getR77_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4169,8 +5439,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R78
 					row = sheet.getRow(77);
+					if (row == null) {
+						row = sheet.createRow(77);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR78_institutional_sector() != null)
 						cell1.setCellValue(record1.getR78_institutional_sector());
 					else {
@@ -4179,6 +5455,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR78_type_of_account() != null)
 						cell1.setCellValue(record1.getR78_type_of_account());
 					else {
@@ -4187,6 +5466,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR78_interest_rate() != null) {
 						cell1.setCellValue(record1.getR78_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4196,6 +5478,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR78_amount() != null) {
 						cell1.setCellValue(record1.getR78_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4205,6 +5490,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR78_total_deposit() != null) {
 						cell1.setCellValue(record1.getR78_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4215,8 +5503,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R79
 					row = sheet.getRow(78);
+					if (row == null) {
+						row = sheet.createRow(78);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR79_institutional_sector() != null)
 						cell1.setCellValue(record1.getR79_institutional_sector());
 					else {
@@ -4225,6 +5519,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR79_type_of_account() != null)
 						cell1.setCellValue(record1.getR79_type_of_account());
 					else {
@@ -4233,6 +5530,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR79_interest_rate() != null) {
 						cell1.setCellValue(record1.getR79_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4242,6 +5542,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR79_amount() != null) {
 						cell1.setCellValue(record1.getR79_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4251,6 +5554,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR79_total_deposit() != null) {
 						cell1.setCellValue(record1.getR79_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4261,8 +5567,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R80
 					row = sheet.getRow(79);
+					if (row == null) {
+						row = sheet.createRow(79);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR80_institutional_sector() != null)
 						cell1.setCellValue(record1.getR80_institutional_sector());
 					else {
@@ -4271,6 +5583,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR80_type_of_account() != null)
 						cell1.setCellValue(record1.getR80_type_of_account());
 					else {
@@ -4279,6 +5594,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR80_interest_rate() != null) {
 						cell1.setCellValue(record1.getR80_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4288,6 +5606,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR80_amount() != null) {
 						cell1.setCellValue(record1.getR80_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4297,6 +5618,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR80_total_deposit() != null) {
 						cell1.setCellValue(record1.getR80_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4307,8 +5631,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R81
 					row = sheet.getRow(80);
+					if (row == null) {
+						row = sheet.createRow(80);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR81_institutional_sector() != null)
 						cell1.setCellValue(record1.getR81_institutional_sector());
 					else {
@@ -4317,6 +5647,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR81_type_of_account() != null)
 						cell1.setCellValue(record1.getR81_type_of_account());
 					else {
@@ -4325,6 +5658,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR81_interest_rate() != null) {
 						cell1.setCellValue(record1.getR81_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4334,6 +5670,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR81_amount() != null) {
 						cell1.setCellValue(record1.getR81_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4343,6 +5682,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR81_total_deposit() != null) {
 						cell1.setCellValue(record1.getR81_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4353,8 +5695,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R82
 					row = sheet.getRow(81);
+					if (row == null) {
+						row = sheet.createRow(81);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR82_institutional_sector() != null)
 						cell1.setCellValue(record1.getR82_institutional_sector());
 					else {
@@ -4363,6 +5711,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR82_type_of_account() != null)
 						cell1.setCellValue(record1.getR82_type_of_account());
 					else {
@@ -4371,6 +5722,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR82_interest_rate() != null) {
 						cell1.setCellValue(record1.getR82_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4380,6 +5734,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR82_amount() != null) {
 						cell1.setCellValue(record1.getR82_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4389,6 +5746,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR82_total_deposit() != null) {
 						cell1.setCellValue(record1.getR82_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4399,8 +5759,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R83
 					row = sheet.getRow(82);
+					if (row == null) {
+						row = sheet.createRow(82);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR83_institutional_sector() != null)
 						cell1.setCellValue(record1.getR83_institutional_sector());
 					else {
@@ -4409,6 +5775,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR83_type_of_account() != null)
 						cell1.setCellValue(record1.getR83_type_of_account());
 					else {
@@ -4417,6 +5786,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR83_interest_rate() != null) {
 						cell1.setCellValue(record1.getR83_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4426,6 +5798,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR83_amount() != null) {
 						cell1.setCellValue(record1.getR83_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4435,6 +5810,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR83_total_deposit() != null) {
 						cell1.setCellValue(record1.getR83_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4445,8 +5823,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R84
 					row = sheet.getRow(83);
+					if (row == null) {
+						row = sheet.createRow(83);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR84_institutional_sector() != null)
 						cell1.setCellValue(record1.getR84_institutional_sector());
 					else {
@@ -4455,6 +5839,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR84_type_of_account() != null)
 						cell1.setCellValue(record1.getR84_type_of_account());
 					else {
@@ -4463,6 +5850,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR84_interest_rate() != null) {
 						cell1.setCellValue(record1.getR84_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4472,6 +5862,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR84_amount() != null) {
 						cell1.setCellValue(record1.getR84_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4481,6 +5874,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR84_total_deposit() != null) {
 						cell1.setCellValue(record1.getR84_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4491,8 +5887,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R85
 					row = sheet.getRow(84);
+					if (row == null) {
+						row = sheet.createRow(84);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR85_institutional_sector() != null)
 						cell1.setCellValue(record1.getR85_institutional_sector());
 					else {
@@ -4501,6 +5903,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR85_type_of_account() != null)
 						cell1.setCellValue(record1.getR85_type_of_account());
 					else {
@@ -4509,6 +5914,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR85_interest_rate() != null) {
 						cell1.setCellValue(record1.getR85_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4518,6 +5926,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR85_amount() != null) {
 						cell1.setCellValue(record1.getR85_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4527,6 +5938,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR85_total_deposit() != null) {
 						cell1.setCellValue(record1.getR85_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4537,8 +5951,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R86
 					row = sheet.getRow(85);
+					if (row == null) {
+						row = sheet.createRow(85);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR86_institutional_sector() != null)
 						cell1.setCellValue(record1.getR86_institutional_sector());
 					else {
@@ -4547,6 +5967,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR86_type_of_account() != null)
 						cell1.setCellValue(record1.getR86_type_of_account());
 					else {
@@ -4555,6 +5978,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR86_interest_rate() != null) {
 						cell1.setCellValue(record1.getR86_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4564,6 +5990,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR86_amount() != null) {
 						cell1.setCellValue(record1.getR86_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4573,6 +6002,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR86_total_deposit() != null) {
 						cell1.setCellValue(record1.getR86_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4583,8 +6015,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R87
 					row = sheet.getRow(86);
+					if (row == null) {
+						row = sheet.createRow(86);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR87_institutional_sector() != null)
 						cell1.setCellValue(record1.getR87_institutional_sector());
 					else {
@@ -4593,6 +6031,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR87_type_of_account() != null)
 						cell1.setCellValue(record1.getR87_type_of_account());
 					else {
@@ -4601,6 +6042,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR87_interest_rate() != null) {
 						cell1.setCellValue(record1.getR87_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4610,6 +6054,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR87_amount() != null) {
 						cell1.setCellValue(record1.getR87_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4619,6 +6066,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR87_total_deposit() != null) {
 						cell1.setCellValue(record1.getR87_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4629,8 +6079,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R88
 					row = sheet.getRow(87);
+					if (row == null) {
+						row = sheet.createRow(87);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR88_institutional_sector() != null)
 						cell1.setCellValue(record1.getR88_institutional_sector());
 					else {
@@ -4639,6 +6095,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR88_type_of_account() != null)
 						cell1.setCellValue(record1.getR88_type_of_account());
 					else {
@@ -4647,6 +6106,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR88_interest_rate() != null) {
 						cell1.setCellValue(record1.getR88_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4656,6 +6118,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR88_amount() != null) {
 						cell1.setCellValue(record1.getR88_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4665,6 +6130,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR88_total_deposit() != null) {
 						cell1.setCellValue(record1.getR88_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4675,8 +6143,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R89
 					row = sheet.getRow(88);
+					if (row == null) {
+						row = sheet.createRow(88);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR89_institutional_sector() != null)
 						cell1.setCellValue(record1.getR89_institutional_sector());
 					else {
@@ -4685,6 +6159,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR89_type_of_account() != null)
 						cell1.setCellValue(record1.getR89_type_of_account());
 					else {
@@ -4693,6 +6170,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR89_interest_rate() != null) {
 						cell1.setCellValue(record1.getR89_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4702,6 +6182,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR89_amount() != null) {
 						cell1.setCellValue(record1.getR89_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4711,6 +6194,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR89_total_deposit() != null) {
 						cell1.setCellValue(record1.getR89_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4721,8 +6207,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R90
 					row = sheet.getRow(89);
+					if (row == null) {
+						row = sheet.createRow(89);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR90_institutional_sector() != null)
 						cell1.setCellValue(record1.getR90_institutional_sector());
 					else {
@@ -4731,6 +6223,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR90_type_of_account() != null)
 						cell1.setCellValue(record1.getR90_type_of_account());
 					else {
@@ -4739,6 +6234,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR90_interest_rate() != null) {
 						cell1.setCellValue(record1.getR90_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4748,6 +6246,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR90_amount() != null) {
 						cell1.setCellValue(record1.getR90_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4757,6 +6258,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR90_total_deposit() != null) {
 						cell1.setCellValue(record1.getR90_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4766,8 +6270,14 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R91
 					row = sheet.getRow(90);
+					if (row == null) {
+						row = sheet.createRow(90);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR91_institutional_sector() != null)
 						cell1.setCellValue(record1.getR91_institutional_sector());
 					else {
@@ -4776,6 +6286,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR91_type_of_account() != null)
 						cell1.setCellValue(record1.getR91_type_of_account());
 					else {
@@ -4784,6 +6297,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR91_interest_rate() != null) {
 						cell1.setCellValue(record1.getR91_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4793,6 +6309,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR91_amount() != null) {
 						cell1.setCellValue(record1.getR91_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4802,6 +6321,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR91_total_deposit() != null) {
 						cell1.setCellValue(record1.getR91_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4812,8 +6334,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R92
 					row = sheet.getRow(91);
+					if (row == null) {
+						row = sheet.createRow(91);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR92_institutional_sector() != null)
 						cell1.setCellValue(record1.getR92_institutional_sector());
 					else {
@@ -4822,6 +6350,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR92_type_of_account() != null)
 						cell1.setCellValue(record1.getR92_type_of_account());
 					else {
@@ -4830,6 +6361,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR92_interest_rate() != null) {
 						cell1.setCellValue(record1.getR92_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4839,6 +6373,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR92_amount() != null) {
 						cell1.setCellValue(record1.getR92_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4848,6 +6385,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR92_total_deposit() != null) {
 						cell1.setCellValue(record1.getR92_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4858,8 +6398,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R93
 					row = sheet.getRow(92);
+					if (row == null) {
+						row = sheet.createRow(92);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR93_institutional_sector() != null)
 						cell1.setCellValue(record1.getR93_institutional_sector());
 					else {
@@ -4868,6 +6414,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR93_type_of_account() != null)
 						cell1.setCellValue(record1.getR93_type_of_account());
 					else {
@@ -4876,6 +6425,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR93_interest_rate() != null) {
 						cell1.setCellValue(record1.getR93_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4885,6 +6437,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR93_amount() != null) {
 						cell1.setCellValue(record1.getR93_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4894,6 +6449,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR93_total_deposit() != null) {
 						cell1.setCellValue(record1.getR93_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4904,8 +6462,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R94
 					row = sheet.getRow(93);
+					if (row == null) {
+						row = sheet.createRow(93);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR94_institutional_sector() != null)
 						cell1.setCellValue(record1.getR94_institutional_sector());
 					else {
@@ -4914,6 +6478,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR94_type_of_account() != null)
 						cell1.setCellValue(record1.getR94_type_of_account());
 					else {
@@ -4922,6 +6489,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR94_interest_rate() != null) {
 						cell1.setCellValue(record1.getR94_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4931,6 +6501,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR94_amount() != null) {
 						cell1.setCellValue(record1.getR94_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4940,6 +6513,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR94_total_deposit() != null) {
 						cell1.setCellValue(record1.getR94_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4950,8 +6526,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R95
 					row = sheet.getRow(94);
+					if (row == null) {
+						row = sheet.createRow(94);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR95_institutional_sector() != null)
 						cell1.setCellValue(record1.getR95_institutional_sector());
 					else {
@@ -4960,6 +6542,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR95_type_of_account() != null)
 						cell1.setCellValue(record1.getR95_type_of_account());
 					else {
@@ -4968,6 +6553,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR95_interest_rate() != null) {
 						cell1.setCellValue(record1.getR95_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4977,6 +6565,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR95_amount() != null) {
 						cell1.setCellValue(record1.getR95_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4986,6 +6577,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR95_total_deposit() != null) {
 						cell1.setCellValue(record1.getR95_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -4996,8 +6590,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R96
 					row = sheet.getRow(95);
+					if (row == null) {
+						row = sheet.createRow(95);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR96_institutional_sector() != null)
 						cell1.setCellValue(record1.getR96_institutional_sector());
 					else {
@@ -5006,6 +6606,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR96_type_of_account() != null)
 						cell1.setCellValue(record1.getR96_type_of_account());
 					else {
@@ -5014,6 +6617,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR96_interest_rate() != null) {
 						cell1.setCellValue(record1.getR96_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5023,6 +6629,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR96_amount() != null) {
 						cell1.setCellValue(record1.getR96_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5032,6 +6641,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR96_total_deposit() != null) {
 						cell1.setCellValue(record1.getR96_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5042,8 +6654,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R97
 					row = sheet.getRow(96);
+					if (row == null) {
+						row = sheet.createRow(96);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR97_institutional_sector() != null)
 						cell1.setCellValue(record1.getR97_institutional_sector());
 					else {
@@ -5052,6 +6670,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR97_type_of_account() != null)
 						cell1.setCellValue(record1.getR97_type_of_account());
 					else {
@@ -5060,6 +6681,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR97_interest_rate() != null) {
 						cell1.setCellValue(record1.getR97_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5069,6 +6693,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR97_amount() != null) {
 						cell1.setCellValue(record1.getR97_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5078,6 +6705,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR97_total_deposit() != null) {
 						cell1.setCellValue(record1.getR97_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5088,8 +6718,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R98
 					row = sheet.getRow(97);
+					if (row == null) {
+						row = sheet.createRow(97);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR98_institutional_sector() != null)
 						cell1.setCellValue(record1.getR98_institutional_sector());
 					else {
@@ -5098,6 +6734,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR98_type_of_account() != null)
 						cell1.setCellValue(record1.getR98_type_of_account());
 					else {
@@ -5106,6 +6745,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR98_interest_rate() != null) {
 						cell1.setCellValue(record1.getR98_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5115,6 +6757,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR98_amount() != null) {
 						cell1.setCellValue(record1.getR98_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5124,6 +6769,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR98_total_deposit() != null) {
 						cell1.setCellValue(record1.getR98_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5134,8 +6782,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R99
 					row = sheet.getRow(98);
+					if (row == null) {
+						row = sheet.createRow(98);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR99_institutional_sector() != null)
 						cell1.setCellValue(record1.getR99_institutional_sector());
 					else {
@@ -5144,6 +6798,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR99_type_of_account() != null)
 						cell1.setCellValue(record1.getR99_type_of_account());
 					else {
@@ -5152,6 +6809,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR99_interest_rate() != null) {
 						cell1.setCellValue(record1.getR99_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5161,6 +6821,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR99_amount() != null) {
 						cell1.setCellValue(record1.getR99_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5170,6 +6833,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR99_total_deposit() != null) {
 						cell1.setCellValue(record1.getR99_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5180,8 +6846,14 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R100
 					row = sheet.getRow(99);
+					if (row == null) {
+						row = sheet.createRow(99);
+					}
 
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR100_institutional_sector() != null)
 						cell1.setCellValue(record1.getR100_institutional_sector());
 					else {
@@ -5190,6 +6862,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR100_type_of_account() != null)
 						cell1.setCellValue(record1.getR100_type_of_account());
 					else {
@@ -5198,6 +6873,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR100_interest_rate() != null) {
 						cell1.setCellValue(record1.getR100_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5207,6 +6885,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR100_amount() != null) {
 						cell1.setCellValue(record1.getR100_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -5216,6 +6897,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR100_total_deposit() != null) {
 						cell1.setCellValue(record1.getR100_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35494,6 +37178,8 @@ public class BRRS_M_DEP4_ReportService {
 				ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
 			Sheet sheet = workbook.getSheetAt(0);
+			logger.info("M_DEP4 Email Excel template sheet: {}, physical rows: {}", sheet.getSheetName(),
+					sheet.getPhysicalNumberOfRows());
 
 			// --- Style Definitions ---
 			CreationHelper createHelper = workbook.getCreationHelper();
@@ -35529,6 +37215,14 @@ public class BRRS_M_DEP4_ReportService {
 			int startRow = 6;
 
 			if (!dataList1.isEmpty()) {
+				if (dataList2.size() < dataList1.size() || dataList3.size() < dataList1.size()) {
+					throw new IllegalStateException("M_DEP4 Excel data mismatch: SUMMARYTABLE1=" + dataList1.size()
+							+ ", SUMMARYTABLE2=" + dataList2.size() + ", SUMMARYTABLE3=" + dataList3.size());
+				}
+
+				logger.info("M_DEP4 Email Excel data counts: TABLE1={}, TABLE2={}, TABLE3={}", dataList1.size(),
+						dataList2.size(), dataList3.size());
+
 				for (int i = 0; i < dataList1.size(); i++) {
 
 					M_DEP4_Summary_Entity1 record1 = dataList1.get(i);
@@ -35544,6 +37238,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// REPORT_DATE
 					row = sheet.getRow(6);
+					if (row == null) {
+						row = sheet.createRow(6);
+					}
 					Cell cell1 = row.getCell(1);
 					if (cell1 == null) {
 						cell1 = row.createCell(1);
@@ -35561,7 +37258,19 @@ public class BRRS_M_DEP4_ReportService {
 
 					row = sheet.getRow(9);
 
+					if (row == null) {
+
+						row = sheet.createRow(9);
+
+					}
+
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR10_customer_name() != null) {
 						cell1.setCellValue(record1.getR10_customer_name());
 
@@ -35571,6 +37280,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR10_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR10_institutional_sector());
 
@@ -35580,6 +37295,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR10_type_of_account() != null) {
 						cell1.setCellValue(record1.getR10_type_of_account());
 
@@ -35590,6 +37311,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR10_interest_rate() != null) {
 						cell1.setCellValue(record1.getR10_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35600,6 +37327,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR10_amount() != null) {
 						cell1.setCellValue(record1.getR10_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35610,6 +37340,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR10_total_deposit() != null) {
 						cell1.setCellValue(record1.getR10_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35622,7 +37355,13 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R11
 					row = sheet.getRow(10);
+					if (row == null) {
+						row = sheet.createRow(10);
+					}
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR11_customer_name() != null) {
 						cell1.setCellValue(record1.getR11_customer_name());
 
@@ -35631,6 +37370,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR11_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR11_institutional_sector());
 
@@ -35640,6 +37382,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR11_type_of_account() != null) {
 						cell1.setCellValue(record1.getR11_type_of_account());
 
@@ -35650,6 +37398,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR11_interest_rate() != null) {
 						cell1.setCellValue(record1.getR11_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35660,6 +37414,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR11_amount() != null) {
 						cell1.setCellValue(record1.getR11_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35670,6 +37427,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR11_total_deposit() != null) {
 						cell1.setCellValue(record1.getR11_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35682,7 +37442,13 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R12
 					row = sheet.getRow(11);
+					if (row == null) {
+						row = sheet.createRow(11);
+					}
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR12_customer_name() != null) {
 						cell1.setCellValue(record1.getR12_customer_name());
 
@@ -35691,6 +37457,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR12_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR12_institutional_sector());
 
@@ -35700,6 +37469,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR12_type_of_account() != null) {
 						cell1.setCellValue(record1.getR12_type_of_account());
 
@@ -35710,6 +37485,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR12_interest_rate() != null) {
 						cell1.setCellValue(record1.getR12_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35720,6 +37501,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR12_amount() != null) {
 						cell1.setCellValue(record1.getR12_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35730,6 +37514,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					}
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR12_total_deposit() != null) {
 						cell1.setCellValue(record1.getR12_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35742,8 +37529,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13
 					row = sheet.getRow(12);
+					if (row == null) {
+						row = sheet.createRow(12);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR13_customer_name() != null) {
 						cell1.setCellValue(record1.getR13_customer_name());
 
@@ -35753,6 +37549,9 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R13_institutional_sector
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR13_institutional_sector() != null) {
 						cell1.setCellValue(record1.getR13_institutional_sector());
 					} else {
@@ -35762,6 +37561,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_type_of_account
 					cell1 = row.getCell(3);
+					if (cell1 == null) {
+						cell1 = row.createCell(3);
+					}
 					if (record1.getR13_type_of_account() != null) {
 						cell1.setCellValue(record1.getR13_type_of_account());
 					} else {
@@ -35771,6 +37573,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_interest_rate
 					cell1 = row.getCell(4);
+					if (cell1 == null) {
+						cell1 = row.createCell(4);
+					}
 					if (record1.getR13_interest_rate() != null) {
 						cell1.setCellValue(record1.getR13_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35781,6 +37586,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_amount
 					cell1 = row.getCell(5);
+					if (cell1 == null) {
+						cell1 = row.createCell(5);
+					}
 					if (record1.getR13_amount() != null) {
 						cell1.setCellValue(record1.getR13_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35791,6 +37599,9 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R13_total_deposit
 					cell1 = row.getCell(6);
+					if (cell1 == null) {
+						cell1 = row.createCell(6);
+					}
 					if (record1.getR13_total_deposit() != null) {
 						cell1.setCellValue(record1.getR13_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35803,8 +37614,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R14
 					row = sheet.getRow(13);
+					if (row == null) {
+						row = sheet.createRow(13);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR14_customer_name() != null) {
 						cell1.setCellValue(record1.getR14_customer_name());
 
@@ -35814,6 +37634,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR14_institutional_sector() != null)
 						cell1.setCellValue(record1.getR14_institutional_sector());
 					else {
@@ -35822,6 +37648,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR14_type_of_account() != null)
 						cell1.setCellValue(record1.getR14_type_of_account());
 					else {
@@ -35830,6 +37662,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR14_interest_rate() != null) {
 						cell1.setCellValue(record1.getR14_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35839,6 +37677,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR14_amount() != null) {
 						cell1.setCellValue(record1.getR14_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35848,6 +37692,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR14_total_deposit() != null) {
 						cell1.setCellValue(record1.getR14_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35858,8 +37708,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R15
 					row = sheet.getRow(14);
+					if (row == null) {
+						row = sheet.createRow(14);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR15_customer_name() != null) {
 						cell1.setCellValue(record1.getR15_customer_name());
 
@@ -35869,6 +37728,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR15_institutional_sector() != null)
 						cell1.setCellValue(record1.getR15_institutional_sector());
 					else {
@@ -35877,6 +37742,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR15_type_of_account() != null)
 						cell1.setCellValue(record1.getR15_type_of_account());
 					else {
@@ -35885,6 +37756,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR15_interest_rate() != null) {
 						cell1.setCellValue(record1.getR15_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35894,6 +37771,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR15_amount() != null) {
 						cell1.setCellValue(record1.getR15_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35903,6 +37786,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR15_total_deposit() != null) {
 						cell1.setCellValue(record1.getR15_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35913,8 +37802,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R16
 					row = sheet.getRow(15);
+					if (row == null) {
+						row = sheet.createRow(15);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR16_customer_name() != null) {
 						cell1.setCellValue(record1.getR16_customer_name());
 
@@ -35924,6 +37822,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR16_institutional_sector() != null)
 						cell1.setCellValue(record1.getR16_institutional_sector());
 					else {
@@ -35932,6 +37836,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR16_type_of_account() != null)
 						cell1.setCellValue(record1.getR16_type_of_account());
 					else {
@@ -35940,6 +37850,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR16_interest_rate() != null) {
 						cell1.setCellValue(record1.getR16_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35949,6 +37865,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR16_amount() != null) {
 						cell1.setCellValue(record1.getR16_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35958,6 +37880,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR16_total_deposit() != null) {
 						cell1.setCellValue(record1.getR16_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -35968,7 +37896,13 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R17
 					row = sheet.getRow(16);
+					if (row == null) {
+						row = sheet.createRow(16);
+					}
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR17_customer_name() != null) {
 						cell1.setCellValue(record1.getR17_customer_name());
 
@@ -35977,6 +37911,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR17_institutional_sector() != null)
 						cell1.setCellValue(record1.getR17_institutional_sector());
 					else {
@@ -35985,6 +37922,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR17_type_of_account() != null)
 						cell1.setCellValue(record1.getR17_type_of_account());
 					else {
@@ -35993,6 +37936,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR17_interest_rate() != null) {
 						cell1.setCellValue(record1.getR17_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36002,6 +37951,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR17_amount() != null) {
 						cell1.setCellValue(record1.getR17_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36011,6 +37966,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR17_total_deposit() != null) {
 						cell1.setCellValue(record1.getR17_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36021,8 +37982,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R18
 					row = sheet.getRow(17);
+					if (row == null) {
+						row = sheet.createRow(17);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR18_customer_name() != null) {
 						cell1.setCellValue(record1.getR18_customer_name());
 
@@ -36032,6 +38002,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR18_institutional_sector() != null)
 						cell1.setCellValue(record1.getR18_institutional_sector());
 					else {
@@ -36040,6 +38016,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR18_type_of_account() != null)
 						cell1.setCellValue(record1.getR18_type_of_account());
 					else {
@@ -36048,6 +38030,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR18_interest_rate() != null) {
 						cell1.setCellValue(record1.getR18_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36057,6 +38045,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR18_amount() != null) {
 						cell1.setCellValue(record1.getR18_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36066,6 +38060,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR18_total_deposit() != null) {
 						cell1.setCellValue(record1.getR18_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36076,8 +38076,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R19
 					row = sheet.getRow(18);
+					if (row == null) {
+						row = sheet.createRow(18);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR19_customer_name() != null) {
 						cell1.setCellValue(record1.getR19_customer_name());
 
@@ -36087,6 +38096,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR19_institutional_sector() != null)
 						cell1.setCellValue(record1.getR19_institutional_sector());
 					else {
@@ -36095,6 +38110,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR19_type_of_account() != null)
 						cell1.setCellValue(record1.getR19_type_of_account());
 					else {
@@ -36103,6 +38124,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR19_interest_rate() != null) {
 						cell1.setCellValue(record1.getR19_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36112,6 +38139,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR19_amount() != null) {
 						cell1.setCellValue(record1.getR19_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36121,6 +38154,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR19_total_deposit() != null) {
 						cell1.setCellValue(record1.getR19_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36131,8 +38170,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R20
 					row = sheet.getRow(19);
+					if (row == null) {
+						row = sheet.createRow(19);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR20_customer_name() != null) {
 						cell1.setCellValue(record1.getR20_customer_name());
 
@@ -36142,6 +38190,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR20_institutional_sector() != null)
 						cell1.setCellValue(record1.getR20_institutional_sector());
 					else {
@@ -36150,6 +38204,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR20_type_of_account() != null)
 						cell1.setCellValue(record1.getR20_type_of_account());
 					else {
@@ -36158,6 +38218,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR20_interest_rate() != null) {
 						cell1.setCellValue(record1.getR20_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36167,6 +38233,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR20_amount() != null) {
 						cell1.setCellValue(record1.getR20_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36176,6 +38248,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR20_total_deposit() != null) {
 						cell1.setCellValue(record1.getR20_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36186,8 +38264,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R21
 					row = sheet.getRow(20);
+					if (row == null) {
+						row = sheet.createRow(20);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR21_customer_name() != null) {
 						cell1.setCellValue(record1.getR21_customer_name());
 
@@ -36197,6 +38284,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR21_institutional_sector() != null)
 						cell1.setCellValue(record1.getR21_institutional_sector());
 					else {
@@ -36205,6 +38298,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR21_type_of_account() != null)
 						cell1.setCellValue(record1.getR21_type_of_account());
 					else {
@@ -36213,6 +38312,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR21_interest_rate() != null) {
 						cell1.setCellValue(record1.getR21_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36222,6 +38327,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR21_amount() != null) {
 						cell1.setCellValue(record1.getR21_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36231,6 +38342,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR21_total_deposit() != null) {
 						cell1.setCellValue(record1.getR21_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36241,8 +38358,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R22
 					row = sheet.getRow(21);
+					if (row == null) {
+						row = sheet.createRow(21);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR22_customer_name() != null) {
 						cell1.setCellValue(record1.getR22_customer_name());
 
@@ -36252,6 +38378,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR22_institutional_sector() != null)
 						cell1.setCellValue(record1.getR22_institutional_sector());
 					else {
@@ -36260,6 +38392,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR22_type_of_account() != null)
 						cell1.setCellValue(record1.getR22_type_of_account());
 					else {
@@ -36268,6 +38406,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR22_interest_rate() != null) {
 						cell1.setCellValue(record1.getR22_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36277,6 +38421,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR22_amount() != null) {
 						cell1.setCellValue(record1.getR22_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36286,6 +38436,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR22_total_deposit() != null) {
 						cell1.setCellValue(record1.getR22_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36296,8 +38452,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R23
 					row = sheet.getRow(22);
+					if (row == null) {
+						row = sheet.createRow(22);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR24_customer_name() != null) {
 						cell1.setCellValue(record1.getR24_customer_name());
 
@@ -36307,6 +38472,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR23_institutional_sector() != null)
 						cell1.setCellValue(record1.getR23_institutional_sector());
 					else {
@@ -36315,6 +38486,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR23_type_of_account() != null)
 						cell1.setCellValue(record1.getR23_type_of_account());
 					else {
@@ -36323,6 +38500,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR23_interest_rate() != null) {
 						cell1.setCellValue(record1.getR23_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36332,6 +38515,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR23_amount() != null) {
 						cell1.setCellValue(record1.getR23_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36341,6 +38530,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR23_total_deposit() != null) {
 						cell1.setCellValue(record1.getR23_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36351,8 +38546,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R24
 					row = sheet.getRow(23);
+					if (row == null) {
+						row = sheet.createRow(23);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR24_customer_name() != null) {
 						cell1.setCellValue(record1.getR24_customer_name());
 
@@ -36362,6 +38566,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR24_institutional_sector() != null)
 						cell1.setCellValue(record1.getR24_institutional_sector());
 					else {
@@ -36370,6 +38580,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR24_type_of_account() != null)
 						cell1.setCellValue(record1.getR24_type_of_account());
 					else {
@@ -36378,6 +38594,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR24_interest_rate() != null) {
 						cell1.setCellValue(record1.getR24_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36387,6 +38609,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR24_amount() != null) {
 						cell1.setCellValue(record1.getR24_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36396,6 +38624,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR24_total_deposit() != null) {
 						cell1.setCellValue(record1.getR24_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36406,8 +38640,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R25
 					row = sheet.getRow(24);
+					if (row == null) {
+						row = sheet.createRow(24);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR25_customer_name() != null) {
 						cell1.setCellValue(record1.getR25_customer_name());
 
@@ -36417,6 +38660,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR25_institutional_sector() != null)
 						cell1.setCellValue(record1.getR25_institutional_sector());
 					else {
@@ -36425,6 +38674,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR25_type_of_account() != null)
 						cell1.setCellValue(record1.getR25_type_of_account());
 					else {
@@ -36433,6 +38688,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR25_interest_rate() != null) {
 						cell1.setCellValue(record1.getR25_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36442,6 +38703,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR25_amount() != null) {
 						cell1.setCellValue(record1.getR25_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36451,6 +38718,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR25_total_deposit() != null) {
 						cell1.setCellValue(record1.getR25_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36461,8 +38734,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R26
 					row = sheet.getRow(25);
+					if (row == null) {
+						row = sheet.createRow(25);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR26_customer_name() != null) {
 						cell1.setCellValue(record1.getR26_customer_name());
 
@@ -36472,6 +38754,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR26_institutional_sector() != null)
 						cell1.setCellValue(record1.getR26_institutional_sector());
 					else {
@@ -36480,6 +38768,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR26_type_of_account() != null)
 						cell1.setCellValue(record1.getR26_type_of_account());
 					else {
@@ -36488,6 +38782,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR26_interest_rate() != null) {
 						cell1.setCellValue(record1.getR26_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36497,6 +38797,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR26_amount() != null) {
 						cell1.setCellValue(record1.getR26_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36506,6 +38812,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR26_total_deposit() != null) {
 						cell1.setCellValue(record1.getR26_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36516,8 +38828,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R27
 					row = sheet.getRow(26);
+					if (row == null) {
+						row = sheet.createRow(26);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR27_customer_name() != null) {
 						cell1.setCellValue(record1.getR27_customer_name());
 
@@ -36527,6 +38848,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR27_institutional_sector() != null)
 						cell1.setCellValue(record1.getR27_institutional_sector());
 					else {
@@ -36535,6 +38862,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR27_type_of_account() != null)
 						cell1.setCellValue(record1.getR27_type_of_account());
 					else {
@@ -36543,6 +38876,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR27_interest_rate() != null) {
 						cell1.setCellValue(record1.getR27_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36552,6 +38891,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR27_amount() != null) {
 						cell1.setCellValue(record1.getR27_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36561,6 +38906,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR27_total_deposit() != null) {
 						cell1.setCellValue(record1.getR27_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36571,8 +38922,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R28
 					row = sheet.getRow(27);
+					if (row == null) {
+						row = sheet.createRow(27);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR28_customer_name() != null) {
 						cell1.setCellValue(record1.getR28_customer_name());
 
@@ -36582,6 +38942,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR28_institutional_sector() != null)
 						cell1.setCellValue(record1.getR28_institutional_sector());
 					else {
@@ -36590,6 +38956,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR28_type_of_account() != null)
 						cell1.setCellValue(record1.getR28_type_of_account());
 					else {
@@ -36598,6 +38970,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR28_interest_rate() != null) {
 						cell1.setCellValue(record1.getR28_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36607,6 +38985,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR28_amount() != null) {
 						cell1.setCellValue(record1.getR28_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36616,6 +39000,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR28_total_deposit() != null) {
 						cell1.setCellValue(record1.getR28_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36626,8 +39016,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R29
 					row = sheet.getRow(28);
+					if (row == null) {
+						row = sheet.createRow(28);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR29_customer_name() != null) {
 						cell1.setCellValue(record1.getR29_customer_name());
 
@@ -36637,6 +39036,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR29_institutional_sector() != null)
 						cell1.setCellValue(record1.getR29_institutional_sector());
 					else {
@@ -36645,6 +39050,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR29_type_of_account() != null)
 						cell1.setCellValue(record1.getR29_type_of_account());
 					else {
@@ -36653,6 +39064,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR29_interest_rate() != null) {
 						cell1.setCellValue(record1.getR29_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36662,6 +39079,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR29_amount() != null) {
 						cell1.setCellValue(record1.getR29_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36671,6 +39094,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR29_total_deposit() != null) {
 						cell1.setCellValue(record1.getR29_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36681,8 +39110,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R30
 					row = sheet.getRow(29);
+					if (row == null) {
+						row = sheet.createRow(29);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR30_customer_name() != null) {
 						cell1.setCellValue(record1.getR30_customer_name());
 
@@ -36692,6 +39130,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR30_institutional_sector() != null)
 						cell1.setCellValue(record1.getR30_institutional_sector());
 					else {
@@ -36700,6 +39144,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR30_type_of_account() != null)
 						cell1.setCellValue(record1.getR30_type_of_account());
 					else {
@@ -36708,6 +39158,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR30_interest_rate() != null) {
 						cell1.setCellValue(record1.getR30_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36717,6 +39173,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR30_amount() != null) {
 						cell1.setCellValue(record1.getR30_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36726,6 +39188,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR30_total_deposit() != null) {
 						cell1.setCellValue(record1.getR30_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36736,8 +39204,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R31
 					row = sheet.getRow(30);
+					if (row == null) {
+						row = sheet.createRow(30);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR31_customer_name() != null) {
 						cell1.setCellValue(record1.getR31_customer_name());
 
@@ -36747,6 +39224,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR31_institutional_sector() != null)
 						cell1.setCellValue(record1.getR31_institutional_sector());
 					else {
@@ -36755,6 +39238,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR31_type_of_account() != null)
 						cell1.setCellValue(record1.getR31_type_of_account());
 					else {
@@ -36763,6 +39252,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR31_interest_rate() != null) {
 						cell1.setCellValue(record1.getR31_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36772,6 +39267,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR31_amount() != null) {
 						cell1.setCellValue(record1.getR31_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36781,6 +39282,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR31_total_deposit() != null) {
 						cell1.setCellValue(record1.getR31_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36791,8 +39298,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R32
 					row = sheet.getRow(31);
+					if (row == null) {
+						row = sheet.createRow(31);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR32_customer_name() != null) {
 						cell1.setCellValue(record1.getR32_customer_name());
 
@@ -36802,6 +39318,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR32_institutional_sector() != null)
 						cell1.setCellValue(record1.getR32_institutional_sector());
 					else {
@@ -36810,6 +39332,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR32_type_of_account() != null)
 						cell1.setCellValue(record1.getR32_type_of_account());
 					else {
@@ -36818,6 +39346,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR32_interest_rate() != null) {
 						cell1.setCellValue(record1.getR32_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36827,6 +39361,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR32_amount() != null) {
 						cell1.setCellValue(record1.getR32_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36836,6 +39376,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR32_total_deposit() != null) {
 						cell1.setCellValue(record1.getR32_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36846,8 +39392,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R33
 					row = sheet.getRow(32);
+					if (row == null) {
+						row = sheet.createRow(32);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR33_customer_name() != null) {
 						cell1.setCellValue(record1.getR33_customer_name());
 
@@ -36857,6 +39412,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR33_institutional_sector() != null)
 						cell1.setCellValue(record1.getR33_institutional_sector());
 					else {
@@ -36865,6 +39426,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR33_type_of_account() != null)
 						cell1.setCellValue(record1.getR33_type_of_account());
 					else {
@@ -36873,6 +39440,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR33_interest_rate() != null) {
 						cell1.setCellValue(record1.getR33_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36882,6 +39455,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR33_amount() != null) {
 						cell1.setCellValue(record1.getR33_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36891,6 +39470,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR33_total_deposit() != null) {
 						cell1.setCellValue(record1.getR33_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36901,8 +39486,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R34
 					row = sheet.getRow(33);
+					if (row == null) {
+						row = sheet.createRow(33);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR34_customer_name() != null) {
 						cell1.setCellValue(record1.getR34_customer_name());
 
@@ -36912,6 +39506,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR34_institutional_sector() != null)
 						cell1.setCellValue(record1.getR34_institutional_sector());
 					else {
@@ -36920,6 +39520,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR34_type_of_account() != null)
 						cell1.setCellValue(record1.getR34_type_of_account());
 					else {
@@ -36928,6 +39534,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR34_interest_rate() != null) {
 						cell1.setCellValue(record1.getR34_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36937,6 +39549,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR34_amount() != null) {
 						cell1.setCellValue(record1.getR34_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36946,6 +39564,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR34_total_deposit() != null) {
 						cell1.setCellValue(record1.getR34_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36956,7 +39580,13 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R35
 					row = sheet.getRow(34);
+					if (row == null) {
+						row = sheet.createRow(34);
+					}
 					cell1 = row.getCell(1);
+					if (cell1 == null) {
+						cell1 = row.createCell(1);
+					}
 					if (record1.getR35_customer_name() != null) {
 						cell1.setCellValue(record1.getR35_customer_name());
 
@@ -36966,6 +39596,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR35_institutional_sector() != null)
 						cell1.setCellValue(record1.getR35_institutional_sector());
 					else {
@@ -36974,6 +39610,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR35_type_of_account() != null)
 						cell1.setCellValue(record1.getR35_type_of_account());
 					else {
@@ -36982,6 +39624,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR35_interest_rate() != null) {
 						cell1.setCellValue(record1.getR35_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -36991,6 +39639,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR35_amount() != null) {
 						cell1.setCellValue(record1.getR35_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37000,6 +39654,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR35_total_deposit() != null) {
 						cell1.setCellValue(record1.getR35_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37010,8 +39670,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R36
 					row = sheet.getRow(35);
+					if (row == null) {
+						row = sheet.createRow(35);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR36_customer_name() != null) {
 						cell1.setCellValue(record1.getR36_customer_name());
 
@@ -37021,6 +39690,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR36_institutional_sector() != null)
 						cell1.setCellValue(record1.getR36_institutional_sector());
 					else {
@@ -37029,6 +39704,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR36_type_of_account() != null)
 						cell1.setCellValue(record1.getR36_type_of_account());
 					else {
@@ -37037,6 +39718,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR36_interest_rate() != null) {
 						cell1.setCellValue(record1.getR36_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37046,6 +39733,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR36_amount() != null) {
 						cell1.setCellValue(record1.getR36_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37055,6 +39748,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR36_total_deposit() != null) {
 						cell1.setCellValue(record1.getR36_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37065,8 +39764,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R37
 					row = sheet.getRow(36);
+					if (row == null) {
+						row = sheet.createRow(36);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR37_customer_name() != null) {
 						cell1.setCellValue(record1.getR37_customer_name());
 
@@ -37076,6 +39784,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR37_institutional_sector() != null)
 						cell1.setCellValue(record1.getR37_institutional_sector());
 					else {
@@ -37084,6 +39798,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR37_type_of_account() != null)
 						cell1.setCellValue(record1.getR37_type_of_account());
 					else {
@@ -37092,6 +39812,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR37_interest_rate() != null) {
 						cell1.setCellValue(record1.getR37_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37101,6 +39827,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR37_amount() != null) {
 						cell1.setCellValue(record1.getR37_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37110,6 +39842,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR37_total_deposit() != null) {
 						cell1.setCellValue(record1.getR37_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37120,8 +39858,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R38
 					row = sheet.getRow(37);
+					if (row == null) {
+						row = sheet.createRow(37);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR38_customer_name() != null) {
 						cell1.setCellValue(record1.getR38_customer_name());
 
@@ -37131,6 +39878,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR38_institutional_sector() != null)
 						cell1.setCellValue(record1.getR38_institutional_sector());
 					else {
@@ -37139,6 +39892,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR38_type_of_account() != null)
 						cell1.setCellValue(record1.getR38_type_of_account());
 					else {
@@ -37147,6 +39906,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR38_interest_rate() != null) {
 						cell1.setCellValue(record1.getR38_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37156,6 +39921,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR38_amount() != null) {
 						cell1.setCellValue(record1.getR38_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37165,6 +39936,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR38_total_deposit() != null) {
 						cell1.setCellValue(record1.getR38_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37175,8 +39952,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R39
 					row = sheet.getRow(38);
+					if (row == null) {
+						row = sheet.createRow(38);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR39_customer_name() != null) {
 						cell1.setCellValue(record1.getR39_customer_name());
 
@@ -37186,6 +39972,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR39_institutional_sector() != null)
 						cell1.setCellValue(record1.getR39_institutional_sector());
 					else {
@@ -37194,6 +39986,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR39_type_of_account() != null)
 						cell1.setCellValue(record1.getR39_type_of_account());
 					else {
@@ -37202,6 +40000,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR39_interest_rate() != null) {
 						cell1.setCellValue(record1.getR39_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37211,6 +40015,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR39_amount() != null) {
 						cell1.setCellValue(record1.getR39_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37220,6 +40030,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR39_total_deposit() != null) {
 						cell1.setCellValue(record1.getR39_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37230,8 +40046,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R40
 					row = sheet.getRow(39);
+					if (row == null) {
+						row = sheet.createRow(39);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR40_customer_name() != null) {
 						cell1.setCellValue(record1.getR40_customer_name());
 
@@ -37241,6 +40066,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR40_institutional_sector() != null)
 						cell1.setCellValue(record1.getR40_institutional_sector());
 					else {
@@ -37249,6 +40080,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR40_type_of_account() != null)
 						cell1.setCellValue(record1.getR40_type_of_account());
 					else {
@@ -37257,6 +40094,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR40_interest_rate() != null) {
 						cell1.setCellValue(record1.getR40_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37266,6 +40109,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR40_amount() != null) {
 						cell1.setCellValue(record1.getR40_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37275,6 +40124,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR40_total_deposit() != null) {
 						cell1.setCellValue(record1.getR40_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37285,8 +40140,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R41
 					row = sheet.getRow(40);
+					if (row == null) {
+						row = sheet.createRow(40);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR41_customer_name() != null) {
 						cell1.setCellValue(record1.getR41_customer_name());
 
@@ -37295,6 +40159,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR41_institutional_sector() != null)
 						cell1.setCellValue(record1.getR41_institutional_sector());
 					else {
@@ -37303,6 +40170,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR41_type_of_account() != null)
 						cell1.setCellValue(record1.getR41_type_of_account());
 					else {
@@ -37311,6 +40184,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR41_interest_rate() != null) {
 						cell1.setCellValue(record1.getR41_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37320,6 +40199,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR41_amount() != null) {
 						cell1.setCellValue(record1.getR41_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37329,6 +40214,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR41_total_deposit() != null) {
 						cell1.setCellValue(record1.getR41_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37339,8 +40230,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R42
 					row = sheet.getRow(41);
+					if (row == null) {
+						row = sheet.createRow(41);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR42_customer_name() != null) {
 						cell1.setCellValue(record1.getR42_customer_name());
 
@@ -37349,6 +40249,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR42_institutional_sector() != null)
 						cell1.setCellValue(record1.getR42_institutional_sector());
 					else {
@@ -37357,6 +40260,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR42_type_of_account() != null)
 						cell1.setCellValue(record1.getR42_type_of_account());
 					else {
@@ -37365,6 +40274,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR42_interest_rate() != null) {
 						cell1.setCellValue(record1.getR42_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37374,6 +40289,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR42_amount() != null) {
 						cell1.setCellValue(record1.getR42_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37383,6 +40304,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR42_total_deposit() != null) {
 						cell1.setCellValue(record1.getR42_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37393,8 +40320,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R43
 					row = sheet.getRow(42);
+					if (row == null) {
+						row = sheet.createRow(42);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR43_customer_name() != null) {
 						cell1.setCellValue(record1.getR43_customer_name());
 
@@ -37403,6 +40339,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR43_institutional_sector() != null)
 						cell1.setCellValue(record1.getR43_institutional_sector());
 					else {
@@ -37411,6 +40350,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR43_type_of_account() != null)
 						cell1.setCellValue(record1.getR43_type_of_account());
 					else {
@@ -37419,6 +40364,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR43_interest_rate() != null) {
 						cell1.setCellValue(record1.getR43_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37428,6 +40379,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR43_amount() != null) {
 						cell1.setCellValue(record1.getR43_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37437,6 +40394,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR43_total_deposit() != null) {
 						cell1.setCellValue(record1.getR43_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37447,8 +40410,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R44
 					row = sheet.getRow(43);
+					if (row == null) {
+						row = sheet.createRow(43);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR44_customer_name() != null) {
 						cell1.setCellValue(record1.getR44_customer_name());
 
@@ -37458,6 +40430,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR44_institutional_sector() != null)
 						cell1.setCellValue(record1.getR44_institutional_sector());
 					else {
@@ -37466,6 +40444,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR44_type_of_account() != null)
 						cell1.setCellValue(record1.getR44_type_of_account());
 					else {
@@ -37474,6 +40458,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR44_interest_rate() != null) {
 						cell1.setCellValue(record1.getR44_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37483,6 +40473,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR44_amount() != null) {
 						cell1.setCellValue(record1.getR44_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37492,6 +40488,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR44_total_deposit() != null) {
 						cell1.setCellValue(record1.getR44_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37502,8 +40504,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R45
 					row = sheet.getRow(44);
+					if (row == null) {
+						row = sheet.createRow(44);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR45_customer_name() != null) {
 						cell1.setCellValue(record1.getR45_customer_name());
 
@@ -37513,6 +40524,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR45_institutional_sector() != null)
 						cell1.setCellValue(record1.getR45_institutional_sector());
 					else {
@@ -37521,6 +40538,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR45_type_of_account() != null)
 						cell1.setCellValue(record1.getR45_type_of_account());
 					else {
@@ -37529,6 +40552,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR45_interest_rate() != null) {
 						cell1.setCellValue(record1.getR45_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37538,6 +40567,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR45_amount() != null) {
 						cell1.setCellValue(record1.getR45_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37547,6 +40582,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR45_total_deposit() != null) {
 						cell1.setCellValue(record1.getR45_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37557,8 +40598,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R46
 					row = sheet.getRow(45);
+					if (row == null) {
+						row = sheet.createRow(45);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR46_customer_name() != null) {
 						cell1.setCellValue(record1.getR46_customer_name());
 
@@ -37568,6 +40618,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR46_institutional_sector() != null)
 						cell1.setCellValue(record1.getR46_institutional_sector());
 					else {
@@ -37576,6 +40632,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR46_type_of_account() != null)
 						cell1.setCellValue(record1.getR46_type_of_account());
 					else {
@@ -37584,6 +40646,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR46_interest_rate() != null) {
 						cell1.setCellValue(record1.getR46_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37593,6 +40661,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR46_amount() != null) {
 						cell1.setCellValue(record1.getR46_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37602,6 +40676,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR46_total_deposit() != null) {
 						cell1.setCellValue(record1.getR46_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37612,8 +40692,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R47
 					row = sheet.getRow(46);
+					if (row == null) {
+						row = sheet.createRow(46);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR47_customer_name() != null) {
 						cell1.setCellValue(record1.getR47_customer_name());
 
@@ -37623,6 +40712,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR47_institutional_sector() != null)
 						cell1.setCellValue(record1.getR47_institutional_sector());
 					else {
@@ -37631,6 +40726,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR47_type_of_account() != null)
 						cell1.setCellValue(record1.getR47_type_of_account());
 					else {
@@ -37639,6 +40740,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR47_interest_rate() != null) {
 						cell1.setCellValue(record1.getR47_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37648,6 +40755,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR47_amount() != null) {
 						cell1.setCellValue(record1.getR47_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37657,6 +40770,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR47_total_deposit() != null) {
 						cell1.setCellValue(record1.getR47_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37667,8 +40786,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R48
 					row = sheet.getRow(47);
+					if (row == null) {
+						row = sheet.createRow(47);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR48_customer_name() != null) {
 						cell1.setCellValue(record1.getR48_customer_name());
 
@@ -37678,6 +40806,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR48_institutional_sector() != null)
 						cell1.setCellValue(record1.getR48_institutional_sector());
 					else {
@@ -37686,6 +40820,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR48_type_of_account() != null)
 						cell1.setCellValue(record1.getR48_type_of_account());
 					else {
@@ -37694,6 +40834,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR48_interest_rate() != null) {
 						cell1.setCellValue(record1.getR48_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37703,6 +40849,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR48_amount() != null) {
 						cell1.setCellValue(record1.getR48_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37712,6 +40864,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR48_total_deposit() != null) {
 						cell1.setCellValue(record1.getR48_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37722,8 +40880,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R49
 					row = sheet.getRow(48);
+					if (row == null) {
+						row = sheet.createRow(48);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR49_customer_name() != null) {
 						cell1.setCellValue(record1.getR49_customer_name());
 
@@ -37733,6 +40900,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR49_institutional_sector() != null)
 						cell1.setCellValue(record1.getR49_institutional_sector());
 					else {
@@ -37741,6 +40914,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR49_type_of_account() != null)
 						cell1.setCellValue(record1.getR49_type_of_account());
 					else {
@@ -37749,6 +40928,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR49_interest_rate() != null) {
 						cell1.setCellValue(record1.getR49_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37758,6 +40943,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR49_amount() != null) {
 						cell1.setCellValue(record1.getR49_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37767,6 +40958,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR49_total_deposit() != null) {
 						cell1.setCellValue(record1.getR49_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37777,8 +40974,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R50
 					row = sheet.getRow(49);
+					if (row == null) {
+						row = sheet.createRow(49);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR50_customer_name() != null) {
 						cell1.setCellValue(record1.getR50_customer_name());
 
@@ -37788,6 +40994,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR50_institutional_sector() != null)
 						cell1.setCellValue(record1.getR50_institutional_sector());
 					else {
@@ -37796,6 +41008,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR50_type_of_account() != null)
 						cell1.setCellValue(record1.getR50_type_of_account());
 					else {
@@ -37804,6 +41022,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR50_interest_rate() != null) {
 						cell1.setCellValue(record1.getR50_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37813,6 +41037,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR50_amount() != null) {
 						cell1.setCellValue(record1.getR50_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37822,6 +41052,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR50_total_deposit() != null) {
 						cell1.setCellValue(record1.getR50_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37832,8 +41068,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R51
 					row = sheet.getRow(50);
+					if (row == null) {
+						row = sheet.createRow(50);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR51_customer_name() != null) {
 						cell1.setCellValue(record1.getR51_customer_name());
 
@@ -37843,6 +41088,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR51_institutional_sector() != null)
 						cell1.setCellValue(record1.getR51_institutional_sector());
 					else {
@@ -37851,6 +41102,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR51_type_of_account() != null)
 						cell1.setCellValue(record1.getR51_type_of_account());
 					else {
@@ -37859,6 +41116,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR51_interest_rate() != null) {
 						cell1.setCellValue(record1.getR51_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37868,6 +41131,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR51_amount() != null) {
 						cell1.setCellValue(record1.getR51_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37877,6 +41146,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR51_total_deposit() != null) {
 						cell1.setCellValue(record1.getR51_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37887,8 +41162,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R52
 					row = sheet.getRow(51);
+					if (row == null) {
+						row = sheet.createRow(51);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR52_customer_name() != null) {
 						cell1.setCellValue(record1.getR52_customer_name());
 
@@ -37897,6 +41181,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR52_institutional_sector() != null)
 						cell1.setCellValue(record1.getR52_institutional_sector());
 					else {
@@ -37905,6 +41192,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR52_type_of_account() != null)
 						cell1.setCellValue(record1.getR52_type_of_account());
 					else {
@@ -37913,6 +41206,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR52_interest_rate() != null) {
 						cell1.setCellValue(record1.getR52_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37922,6 +41221,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR52_amount() != null) {
 						cell1.setCellValue(record1.getR52_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37931,6 +41236,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR52_total_deposit() != null) {
 						cell1.setCellValue(record1.getR52_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37941,8 +41252,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R53
 					row = sheet.getRow(52);
+					if (row == null) {
+						row = sheet.createRow(52);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR53_customer_name() != null) {
 						cell1.setCellValue(record1.getR53_customer_name());
 
@@ -37951,6 +41271,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR53_institutional_sector() != null)
 						cell1.setCellValue(record1.getR53_institutional_sector());
 					else {
@@ -37959,6 +41282,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR53_type_of_account() != null)
 						cell1.setCellValue(record1.getR53_type_of_account());
 					else {
@@ -37967,6 +41296,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR53_interest_rate() != null) {
 						cell1.setCellValue(record1.getR53_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37976,6 +41311,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR53_amount() != null) {
 						cell1.setCellValue(record1.getR53_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37985,6 +41326,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR53_total_deposit() != null) {
 						cell1.setCellValue(record1.getR53_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -37995,8 +41342,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R54
 					row = sheet.getRow(53);
+					if (row == null) {
+						row = sheet.createRow(53);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR54_customer_name() != null) {
 						cell1.setCellValue(record1.getR54_customer_name());
 
@@ -38006,6 +41362,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR54_institutional_sector() != null)
 						cell1.setCellValue(record1.getR54_institutional_sector());
 					else {
@@ -38014,6 +41376,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR54_type_of_account() != null)
 						cell1.setCellValue(record1.getR54_type_of_account());
 					else {
@@ -38022,6 +41390,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR54_interest_rate() != null) {
 						cell1.setCellValue(record1.getR54_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38031,6 +41405,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR54_amount() != null) {
 						cell1.setCellValue(record1.getR54_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38040,6 +41420,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR54_total_deposit() != null) {
 						cell1.setCellValue(record1.getR54_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38050,8 +41436,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R55
 					row = sheet.getRow(54);
+					if (row == null) {
+						row = sheet.createRow(54);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR55_customer_name() != null) {
 						cell1.setCellValue(record1.getR55_customer_name());
 
@@ -38061,6 +41456,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR55_institutional_sector() != null)
 						cell1.setCellValue(record1.getR55_institutional_sector());
 					else {
@@ -38069,6 +41470,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR55_type_of_account() != null)
 						cell1.setCellValue(record1.getR55_type_of_account());
 					else {
@@ -38077,6 +41484,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR55_interest_rate() != null) {
 						cell1.setCellValue(record1.getR55_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38086,6 +41499,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR55_amount() != null) {
 						cell1.setCellValue(record1.getR55_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38095,6 +41514,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR55_total_deposit() != null) {
 						cell1.setCellValue(record1.getR55_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38105,8 +41530,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R56
 					row = sheet.getRow(55);
+					if (row == null) {
+						row = sheet.createRow(55);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR56_customer_name() != null) {
 						cell1.setCellValue(record1.getR56_customer_name());
 
@@ -38115,6 +41549,9 @@ public class BRRS_M_DEP4_ReportService {
 						cell1.setCellStyle(textStyle);
 					}
 					cell1 = row.getCell(2);
+					if (cell1 == null) {
+						cell1 = row.createCell(2);
+					}
 					if (record1.getR56_institutional_sector() != null)
 						cell1.setCellValue(record1.getR56_institutional_sector());
 					else {
@@ -38123,6 +41560,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR56_type_of_account() != null)
 						cell1.setCellValue(record1.getR56_type_of_account());
 					else {
@@ -38131,6 +41574,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR56_interest_rate() != null) {
 						cell1.setCellValue(record1.getR56_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38140,6 +41589,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR56_amount() != null) {
 						cell1.setCellValue(record1.getR56_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38149,6 +41604,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR56_total_deposit() != null) {
 						cell1.setCellValue(record1.getR56_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38159,8 +41620,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R57
 					row = sheet.getRow(56);
+					if (row == null) {
+						row = sheet.createRow(56);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR57_customer_name() != null) {
 						cell1.setCellValue(record1.getR57_customer_name());
 
@@ -38170,6 +41640,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR57_institutional_sector() != null)
 						cell1.setCellValue(record1.getR57_institutional_sector());
 					else {
@@ -38178,6 +41654,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR57_type_of_account() != null)
 						cell1.setCellValue(record1.getR57_type_of_account());
 					else {
@@ -38186,6 +41668,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR57_interest_rate() != null) {
 						cell1.setCellValue(record1.getR57_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38195,6 +41683,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR57_amount() != null) {
 						cell1.setCellValue(record1.getR57_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38204,6 +41698,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR57_total_deposit() != null) {
 						cell1.setCellValue(record1.getR57_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38214,8 +41714,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R58
 					row = sheet.getRow(57);
+					if (row == null) {
+						row = sheet.createRow(57);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR58_customer_name() != null) {
 						cell1.setCellValue(record1.getR58_customer_name());
 
@@ -38225,6 +41734,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR58_institutional_sector() != null)
 						cell1.setCellValue(record1.getR58_institutional_sector());
 					else {
@@ -38233,6 +41748,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR58_type_of_account() != null)
 						cell1.setCellValue(record1.getR58_type_of_account());
 					else {
@@ -38241,6 +41762,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR58_interest_rate() != null) {
 						cell1.setCellValue(record1.getR58_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38250,6 +41777,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR58_amount() != null) {
 						cell1.setCellValue(record1.getR58_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38259,6 +41792,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR58_total_deposit() != null) {
 						cell1.setCellValue(record1.getR58_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38269,8 +41808,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R59
 					row = sheet.getRow(58);
+					if (row == null) {
+						row = sheet.createRow(58);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR59_customer_name() != null) {
 						cell1.setCellValue(record1.getR59_customer_name());
 
@@ -38280,6 +41828,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR59_institutional_sector() != null)
 						cell1.setCellValue(record1.getR59_institutional_sector());
 					else {
@@ -38288,6 +41842,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR59_type_of_account() != null)
 						cell1.setCellValue(record1.getR59_type_of_account());
 					else {
@@ -38296,6 +41856,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR59_interest_rate() != null) {
 						cell1.setCellValue(record1.getR59_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38305,6 +41871,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR59_amount() != null) {
 						cell1.setCellValue(record1.getR59_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38314,6 +41886,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR59_total_deposit() != null) {
 						cell1.setCellValue(record1.getR59_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38324,8 +41902,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R60
 					row = sheet.getRow(59);
+					if (row == null) {
+						row = sheet.createRow(59);
+					}
 
 					cell1 = row.getCell(1);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(1);
+
+					}
 					if (record1.getR60_customer_name() != null) {
 						cell1.setCellValue(record1.getR60_customer_name());
 
@@ -38335,6 +41922,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR60_institutional_sector() != null)
 						cell1.setCellValue(record1.getR60_institutional_sector());
 					else {
@@ -38343,6 +41936,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR60_type_of_account() != null)
 						cell1.setCellValue(record1.getR60_type_of_account());
 					else {
@@ -38351,6 +41950,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR60_interest_rate() != null) {
 						cell1.setCellValue(record1.getR60_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38360,6 +41965,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR60_amount() != null) {
 						cell1.setCellValue(record1.getR60_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38369,6 +41980,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR60_total_deposit() != null) {
 						cell1.setCellValue(record1.getR60_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38379,8 +41996,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R61
 					row = sheet.getRow(60);
+					if (row == null) {
+						row = sheet.createRow(60);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR61_institutional_sector() != null)
 						cell1.setCellValue(record1.getR61_institutional_sector());
 					else {
@@ -38389,6 +42015,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR61_type_of_account() != null)
 						cell1.setCellValue(record1.getR61_type_of_account());
 					else {
@@ -38397,6 +42029,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR61_interest_rate() != null) {
 						cell1.setCellValue(record1.getR61_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38406,6 +42044,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR61_amount() != null) {
 						cell1.setCellValue(record1.getR61_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38415,6 +42059,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR61_total_deposit() != null) {
 						cell1.setCellValue(record1.getR61_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38425,8 +42075,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R62
 					row = sheet.getRow(61);
+					if (row == null) {
+						row = sheet.createRow(61);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR62_institutional_sector() != null)
 						cell1.setCellValue(record1.getR62_institutional_sector());
 					else {
@@ -38435,6 +42094,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR62_type_of_account() != null)
 						cell1.setCellValue(record1.getR62_type_of_account());
 					else {
@@ -38443,6 +42108,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR62_interest_rate() != null) {
 						cell1.setCellValue(record1.getR62_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38452,6 +42123,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR62_amount() != null) {
 						cell1.setCellValue(record1.getR62_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38461,6 +42138,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR62_total_deposit() != null) {
 						cell1.setCellValue(record1.getR62_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38471,8 +42154,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R63
 					row = sheet.getRow(62);
+					if (row == null) {
+						row = sheet.createRow(62);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR63_institutional_sector() != null)
 						cell1.setCellValue(record1.getR63_institutional_sector());
 					else {
@@ -38481,6 +42173,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR63_type_of_account() != null)
 						cell1.setCellValue(record1.getR63_type_of_account());
 					else {
@@ -38489,6 +42187,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR63_interest_rate() != null) {
 						cell1.setCellValue(record1.getR63_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38498,6 +42202,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR63_amount() != null) {
 						cell1.setCellValue(record1.getR63_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38507,6 +42217,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR63_total_deposit() != null) {
 						cell1.setCellValue(record1.getR63_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38517,8 +42233,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R64
 					row = sheet.getRow(63);
+					if (row == null) {
+						row = sheet.createRow(63);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR64_institutional_sector() != null)
 						cell1.setCellValue(record1.getR64_institutional_sector());
 					else {
@@ -38527,6 +42252,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR64_type_of_account() != null)
 						cell1.setCellValue(record1.getR64_type_of_account());
 					else {
@@ -38535,6 +42266,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR64_interest_rate() != null) {
 						cell1.setCellValue(record1.getR64_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38544,6 +42281,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR64_amount() != null) {
 						cell1.setCellValue(record1.getR64_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38553,6 +42296,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR64_total_deposit() != null) {
 						cell1.setCellValue(record1.getR64_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38563,8 +42312,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R65
 					row = sheet.getRow(64);
+					if (row == null) {
+						row = sheet.createRow(64);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR65_institutional_sector() != null)
 						cell1.setCellValue(record1.getR65_institutional_sector());
 					else {
@@ -38573,6 +42331,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR65_type_of_account() != null)
 						cell1.setCellValue(record1.getR65_type_of_account());
 					else {
@@ -38581,6 +42345,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR65_interest_rate() != null) {
 						cell1.setCellValue(record1.getR65_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38590,6 +42360,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR65_amount() != null) {
 						cell1.setCellValue(record1.getR65_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38599,6 +42375,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR65_total_deposit() != null) {
 						cell1.setCellValue(record1.getR65_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38609,8 +42391,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R66
 					row = sheet.getRow(65);
+					if (row == null) {
+						row = sheet.createRow(65);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR66_institutional_sector() != null)
 						cell1.setCellValue(record1.getR66_institutional_sector());
 					else {
@@ -38619,6 +42410,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR66_type_of_account() != null)
 						cell1.setCellValue(record1.getR66_type_of_account());
 					else {
@@ -38627,6 +42424,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR66_interest_rate() != null) {
 						cell1.setCellValue(record1.getR66_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38636,6 +42439,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR66_amount() != null) {
 						cell1.setCellValue(record1.getR66_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38645,6 +42454,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR66_total_deposit() != null) {
 						cell1.setCellValue(record1.getR66_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38655,8 +42470,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R67
 					row = sheet.getRow(66);
+					if (row == null) {
+						row = sheet.createRow(66);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR67_institutional_sector() != null)
 						cell1.setCellValue(record1.getR67_institutional_sector());
 					else {
@@ -38665,6 +42489,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR67_type_of_account() != null)
 						cell1.setCellValue(record1.getR67_type_of_account());
 					else {
@@ -38673,6 +42503,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR67_interest_rate() != null) {
 						cell1.setCellValue(record1.getR67_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38682,6 +42518,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR67_amount() != null) {
 						cell1.setCellValue(record1.getR67_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38691,6 +42533,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR67_total_deposit() != null) {
 						cell1.setCellValue(record1.getR67_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38701,8 +42549,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R68
 					row = sheet.getRow(67);
+					if (row == null) {
+						row = sheet.createRow(67);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR68_institutional_sector() != null)
 						cell1.setCellValue(record1.getR68_institutional_sector());
 					else {
@@ -38711,6 +42568,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR68_type_of_account() != null)
 						cell1.setCellValue(record1.getR68_type_of_account());
 					else {
@@ -38719,6 +42582,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR68_interest_rate() != null) {
 						cell1.setCellValue(record1.getR68_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38728,6 +42597,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR68_amount() != null) {
 						cell1.setCellValue(record1.getR68_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38737,6 +42612,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR68_total_deposit() != null) {
 						cell1.setCellValue(record1.getR68_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38747,8 +42628,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R69
 					row = sheet.getRow(68);
+					if (row == null) {
+						row = sheet.createRow(68);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR69_institutional_sector() != null)
 						cell1.setCellValue(record1.getR69_institutional_sector());
 					else {
@@ -38757,6 +42647,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR69_type_of_account() != null)
 						cell1.setCellValue(record1.getR69_type_of_account());
 					else {
@@ -38765,6 +42661,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR69_interest_rate() != null) {
 						cell1.setCellValue(record1.getR69_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38774,6 +42676,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR69_amount() != null) {
 						cell1.setCellValue(record1.getR69_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38783,6 +42691,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR69_total_deposit() != null) {
 						cell1.setCellValue(record1.getR69_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38793,8 +42707,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R70
 					row = sheet.getRow(69);
+					if (row == null) {
+						row = sheet.createRow(69);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR70_institutional_sector() != null)
 						cell1.setCellValue(record1.getR70_institutional_sector());
 					else {
@@ -38803,6 +42726,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR70_type_of_account() != null)
 						cell1.setCellValue(record1.getR70_type_of_account());
 					else {
@@ -38811,6 +42740,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR70_interest_rate() != null) {
 						cell1.setCellValue(record1.getR70_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38820,6 +42755,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR70_amount() != null) {
 						cell1.setCellValue(record1.getR70_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38829,6 +42770,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR70_total_deposit() != null) {
 						cell1.setCellValue(record1.getR70_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38838,8 +42785,17 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R71
 					row = sheet.getRow(70);
+					if (row == null) {
+						row = sheet.createRow(70);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR71_institutional_sector() != null)
 						cell1.setCellValue(record1.getR71_institutional_sector());
 					else {
@@ -38848,6 +42804,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR71_type_of_account() != null)
 						cell1.setCellValue(record1.getR71_type_of_account());
 					else {
@@ -38856,6 +42818,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR71_interest_rate() != null) {
 						cell1.setCellValue(record1.getR71_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38865,6 +42833,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR71_amount() != null) {
 						cell1.setCellValue(record1.getR71_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38874,6 +42848,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR71_total_deposit() != null) {
 						cell1.setCellValue(record1.getR71_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38884,8 +42864,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R72
 					row = sheet.getRow(71);
+					if (row == null) {
+						row = sheet.createRow(71);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR72_institutional_sector() != null)
 						cell1.setCellValue(record1.getR72_institutional_sector());
 					else {
@@ -38894,6 +42883,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR72_type_of_account() != null)
 						cell1.setCellValue(record1.getR72_type_of_account());
 					else {
@@ -38902,6 +42897,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR72_interest_rate() != null) {
 						cell1.setCellValue(record1.getR72_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38911,6 +42912,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR72_amount() != null) {
 						cell1.setCellValue(record1.getR72_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38920,6 +42927,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR72_total_deposit() != null) {
 						cell1.setCellValue(record1.getR72_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38930,8 +42943,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R73
 					row = sheet.getRow(72);
+					if (row == null) {
+						row = sheet.createRow(72);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR73_institutional_sector() != null)
 						cell1.setCellValue(record1.getR73_institutional_sector());
 					else {
@@ -38940,6 +42962,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR73_type_of_account() != null)
 						cell1.setCellValue(record1.getR73_type_of_account());
 					else {
@@ -38948,6 +42976,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR73_interest_rate() != null) {
 						cell1.setCellValue(record1.getR73_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38957,6 +42991,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR73_amount() != null) {
 						cell1.setCellValue(record1.getR73_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38966,6 +43006,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR73_total_deposit() != null) {
 						cell1.setCellValue(record1.getR73_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -38976,8 +43022,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R74
 					row = sheet.getRow(73);
+					if (row == null) {
+						row = sheet.createRow(73);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR74_institutional_sector() != null)
 						cell1.setCellValue(record1.getR74_institutional_sector());
 					else {
@@ -38986,6 +43041,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR74_type_of_account() != null)
 						cell1.setCellValue(record1.getR74_type_of_account());
 					else {
@@ -38994,6 +43055,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR74_interest_rate() != null) {
 						cell1.setCellValue(record1.getR74_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39003,6 +43070,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR74_amount() != null) {
 						cell1.setCellValue(record1.getR74_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39012,6 +43085,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR74_total_deposit() != null) {
 						cell1.setCellValue(record1.getR74_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39022,8 +43101,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R75
 					row = sheet.getRow(74);
+					if (row == null) {
+						row = sheet.createRow(74);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR75_institutional_sector() != null)
 						cell1.setCellValue(record1.getR75_institutional_sector());
 					else {
@@ -39032,6 +43120,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR75_type_of_account() != null)
 						cell1.setCellValue(record1.getR75_type_of_account());
 					else {
@@ -39040,6 +43134,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR75_interest_rate() != null) {
 						cell1.setCellValue(record1.getR75_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39049,6 +43149,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR75_amount() != null) {
 						cell1.setCellValue(record1.getR75_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39058,6 +43164,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR75_total_deposit() != null) {
 						cell1.setCellValue(record1.getR75_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39068,8 +43180,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R76
 					row = sheet.getRow(75);
+					if (row == null) {
+						row = sheet.createRow(75);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR76_institutional_sector() != null)
 						cell1.setCellValue(record1.getR76_institutional_sector());
 					else {
@@ -39078,6 +43199,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR76_type_of_account() != null)
 						cell1.setCellValue(record1.getR76_type_of_account());
 					else {
@@ -39086,6 +43213,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR76_interest_rate() != null) {
 						cell1.setCellValue(record1.getR76_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39095,6 +43228,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR76_amount() != null) {
 						cell1.setCellValue(record1.getR76_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39104,6 +43243,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR76_total_deposit() != null) {
 						cell1.setCellValue(record1.getR76_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39114,8 +43259,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R77
 					row = sheet.getRow(76);
+					if (row == null) {
+						row = sheet.createRow(76);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR77_institutional_sector() != null)
 						cell1.setCellValue(record1.getR77_institutional_sector());
 					else {
@@ -39124,6 +43278,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR77_type_of_account() != null)
 						cell1.setCellValue(record1.getR77_type_of_account());
 					else {
@@ -39132,6 +43292,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR77_interest_rate() != null) {
 						cell1.setCellValue(record1.getR77_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39141,6 +43307,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR77_amount() != null) {
 						cell1.setCellValue(record1.getR77_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39150,6 +43322,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR77_total_deposit() != null) {
 						cell1.setCellValue(record1.getR77_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39160,8 +43338,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R78
 					row = sheet.getRow(77);
+					if (row == null) {
+						row = sheet.createRow(77);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR78_institutional_sector() != null)
 						cell1.setCellValue(record1.getR78_institutional_sector());
 					else {
@@ -39170,6 +43357,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR78_type_of_account() != null)
 						cell1.setCellValue(record1.getR78_type_of_account());
 					else {
@@ -39178,6 +43371,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR78_interest_rate() != null) {
 						cell1.setCellValue(record1.getR78_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39187,6 +43386,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR78_amount() != null) {
 						cell1.setCellValue(record1.getR78_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39196,6 +43401,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR78_total_deposit() != null) {
 						cell1.setCellValue(record1.getR78_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39206,8 +43417,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R79
 					row = sheet.getRow(78);
+					if (row == null) {
+						row = sheet.createRow(78);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR79_institutional_sector() != null)
 						cell1.setCellValue(record1.getR79_institutional_sector());
 					else {
@@ -39216,6 +43436,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR79_type_of_account() != null)
 						cell1.setCellValue(record1.getR79_type_of_account());
 					else {
@@ -39224,6 +43450,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR79_interest_rate() != null) {
 						cell1.setCellValue(record1.getR79_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39233,6 +43465,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR79_amount() != null) {
 						cell1.setCellValue(record1.getR79_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39242,6 +43480,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR79_total_deposit() != null) {
 						cell1.setCellValue(record1.getR79_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39252,8 +43496,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R80
 					row = sheet.getRow(79);
+					if (row == null) {
+						row = sheet.createRow(79);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR80_institutional_sector() != null)
 						cell1.setCellValue(record1.getR80_institutional_sector());
 					else {
@@ -39262,6 +43515,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR80_type_of_account() != null)
 						cell1.setCellValue(record1.getR80_type_of_account());
 					else {
@@ -39270,6 +43529,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR80_interest_rate() != null) {
 						cell1.setCellValue(record1.getR80_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39279,6 +43544,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR80_amount() != null) {
 						cell1.setCellValue(record1.getR80_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39288,6 +43559,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR80_total_deposit() != null) {
 						cell1.setCellValue(record1.getR80_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39298,8 +43575,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R81
 					row = sheet.getRow(80);
+					if (row == null) {
+						row = sheet.createRow(80);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR81_institutional_sector() != null)
 						cell1.setCellValue(record1.getR81_institutional_sector());
 					else {
@@ -39308,6 +43594,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR81_type_of_account() != null)
 						cell1.setCellValue(record1.getR81_type_of_account());
 					else {
@@ -39316,6 +43608,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR81_interest_rate() != null) {
 						cell1.setCellValue(record1.getR81_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39325,6 +43623,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR81_amount() != null) {
 						cell1.setCellValue(record1.getR81_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39334,6 +43638,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR81_total_deposit() != null) {
 						cell1.setCellValue(record1.getR81_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39344,8 +43654,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R82
 					row = sheet.getRow(81);
+					if (row == null) {
+						row = sheet.createRow(81);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR82_institutional_sector() != null)
 						cell1.setCellValue(record1.getR82_institutional_sector());
 					else {
@@ -39354,6 +43673,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR82_type_of_account() != null)
 						cell1.setCellValue(record1.getR82_type_of_account());
 					else {
@@ -39362,6 +43687,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR82_interest_rate() != null) {
 						cell1.setCellValue(record1.getR82_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39371,6 +43702,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR82_amount() != null) {
 						cell1.setCellValue(record1.getR82_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39380,6 +43717,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR82_total_deposit() != null) {
 						cell1.setCellValue(record1.getR82_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39390,8 +43733,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R83
 					row = sheet.getRow(82);
+					if (row == null) {
+						row = sheet.createRow(82);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR83_institutional_sector() != null)
 						cell1.setCellValue(record1.getR83_institutional_sector());
 					else {
@@ -39400,6 +43752,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR83_type_of_account() != null)
 						cell1.setCellValue(record1.getR83_type_of_account());
 					else {
@@ -39408,6 +43766,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR83_interest_rate() != null) {
 						cell1.setCellValue(record1.getR83_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39417,6 +43781,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR83_amount() != null) {
 						cell1.setCellValue(record1.getR83_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39426,6 +43796,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR83_total_deposit() != null) {
 						cell1.setCellValue(record1.getR83_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39436,8 +43812,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R84
 					row = sheet.getRow(83);
+					if (row == null) {
+						row = sheet.createRow(83);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR84_institutional_sector() != null)
 						cell1.setCellValue(record1.getR84_institutional_sector());
 					else {
@@ -39446,6 +43831,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR84_type_of_account() != null)
 						cell1.setCellValue(record1.getR84_type_of_account());
 					else {
@@ -39454,6 +43845,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR84_interest_rate() != null) {
 						cell1.setCellValue(record1.getR84_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39463,6 +43860,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR84_amount() != null) {
 						cell1.setCellValue(record1.getR84_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39472,6 +43875,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR84_total_deposit() != null) {
 						cell1.setCellValue(record1.getR84_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39482,8 +43891,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R85
 					row = sheet.getRow(84);
+					if (row == null) {
+						row = sheet.createRow(84);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR85_institutional_sector() != null)
 						cell1.setCellValue(record1.getR85_institutional_sector());
 					else {
@@ -39492,6 +43910,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR85_type_of_account() != null)
 						cell1.setCellValue(record1.getR85_type_of_account());
 					else {
@@ -39500,6 +43924,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR85_interest_rate() != null) {
 						cell1.setCellValue(record1.getR85_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39509,6 +43939,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR85_amount() != null) {
 						cell1.setCellValue(record1.getR85_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39518,6 +43954,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR85_total_deposit() != null) {
 						cell1.setCellValue(record1.getR85_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39528,8 +43970,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R86
 					row = sheet.getRow(85);
+					if (row == null) {
+						row = sheet.createRow(85);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR86_institutional_sector() != null)
 						cell1.setCellValue(record1.getR86_institutional_sector());
 					else {
@@ -39538,6 +43989,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR86_type_of_account() != null)
 						cell1.setCellValue(record1.getR86_type_of_account());
 					else {
@@ -39546,6 +44003,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR86_interest_rate() != null) {
 						cell1.setCellValue(record1.getR86_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39555,6 +44018,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR86_amount() != null) {
 						cell1.setCellValue(record1.getR86_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39564,6 +44033,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR86_total_deposit() != null) {
 						cell1.setCellValue(record1.getR86_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39574,8 +44049,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R87
 					row = sheet.getRow(86);
+					if (row == null) {
+						row = sheet.createRow(86);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR87_institutional_sector() != null)
 						cell1.setCellValue(record1.getR87_institutional_sector());
 					else {
@@ -39584,6 +44068,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR87_type_of_account() != null)
 						cell1.setCellValue(record1.getR87_type_of_account());
 					else {
@@ -39592,6 +44082,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR87_interest_rate() != null) {
 						cell1.setCellValue(record1.getR87_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39601,6 +44097,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR87_amount() != null) {
 						cell1.setCellValue(record1.getR87_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39610,6 +44112,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR87_total_deposit() != null) {
 						cell1.setCellValue(record1.getR87_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39620,8 +44128,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R88
 					row = sheet.getRow(87);
+					if (row == null) {
+						row = sheet.createRow(87);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR88_institutional_sector() != null)
 						cell1.setCellValue(record1.getR88_institutional_sector());
 					else {
@@ -39630,6 +44147,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR88_type_of_account() != null)
 						cell1.setCellValue(record1.getR88_type_of_account());
 					else {
@@ -39638,6 +44161,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR88_interest_rate() != null) {
 						cell1.setCellValue(record1.getR88_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39647,6 +44176,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR88_amount() != null) {
 						cell1.setCellValue(record1.getR88_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39656,6 +44191,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR88_total_deposit() != null) {
 						cell1.setCellValue(record1.getR88_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39666,8 +44207,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R89
 					row = sheet.getRow(88);
+					if (row == null) {
+						row = sheet.createRow(88);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR89_institutional_sector() != null)
 						cell1.setCellValue(record1.getR89_institutional_sector());
 					else {
@@ -39676,6 +44226,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR89_type_of_account() != null)
 						cell1.setCellValue(record1.getR89_type_of_account());
 					else {
@@ -39684,6 +44240,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR89_interest_rate() != null) {
 						cell1.setCellValue(record1.getR89_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39693,6 +44255,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR89_amount() != null) {
 						cell1.setCellValue(record1.getR89_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39702,6 +44270,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR89_total_deposit() != null) {
 						cell1.setCellValue(record1.getR89_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39712,8 +44286,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R90
 					row = sheet.getRow(89);
+					if (row == null) {
+						row = sheet.createRow(89);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR90_institutional_sector() != null)
 						cell1.setCellValue(record1.getR90_institutional_sector());
 					else {
@@ -39722,6 +44305,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR90_type_of_account() != null)
 						cell1.setCellValue(record1.getR90_type_of_account());
 					else {
@@ -39730,6 +44319,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR90_interest_rate() != null) {
 						cell1.setCellValue(record1.getR90_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39739,6 +44334,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR90_amount() != null) {
 						cell1.setCellValue(record1.getR90_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39748,6 +44349,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR90_total_deposit() != null) {
 						cell1.setCellValue(record1.getR90_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39757,8 +44364,17 @@ public class BRRS_M_DEP4_ReportService {
 					}
 					// R91
 					row = sheet.getRow(90);
+					if (row == null) {
+						row = sheet.createRow(90);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR91_institutional_sector() != null)
 						cell1.setCellValue(record1.getR91_institutional_sector());
 					else {
@@ -39767,6 +44383,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR91_type_of_account() != null)
 						cell1.setCellValue(record1.getR91_type_of_account());
 					else {
@@ -39775,6 +44397,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR91_interest_rate() != null) {
 						cell1.setCellValue(record1.getR91_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39784,6 +44412,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR91_amount() != null) {
 						cell1.setCellValue(record1.getR91_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39793,6 +44427,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR91_total_deposit() != null) {
 						cell1.setCellValue(record1.getR91_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39803,8 +44443,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R92
 					row = sheet.getRow(91);
+					if (row == null) {
+						row = sheet.createRow(91);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR92_institutional_sector() != null)
 						cell1.setCellValue(record1.getR92_institutional_sector());
 					else {
@@ -39813,6 +44462,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR92_type_of_account() != null)
 						cell1.setCellValue(record1.getR92_type_of_account());
 					else {
@@ -39821,6 +44476,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR92_interest_rate() != null) {
 						cell1.setCellValue(record1.getR92_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39830,6 +44491,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR92_amount() != null) {
 						cell1.setCellValue(record1.getR92_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39839,6 +44506,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR92_total_deposit() != null) {
 						cell1.setCellValue(record1.getR92_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39849,8 +44522,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R93
 					row = sheet.getRow(92);
+					if (row == null) {
+						row = sheet.createRow(92);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR93_institutional_sector() != null)
 						cell1.setCellValue(record1.getR93_institutional_sector());
 					else {
@@ -39859,6 +44541,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR93_type_of_account() != null)
 						cell1.setCellValue(record1.getR93_type_of_account());
 					else {
@@ -39867,6 +44555,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR93_interest_rate() != null) {
 						cell1.setCellValue(record1.getR93_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39876,6 +44570,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR93_amount() != null) {
 						cell1.setCellValue(record1.getR93_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39885,6 +44585,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR93_total_deposit() != null) {
 						cell1.setCellValue(record1.getR93_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39895,8 +44601,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R94
 					row = sheet.getRow(93);
+					if (row == null) {
+						row = sheet.createRow(93);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR94_institutional_sector() != null)
 						cell1.setCellValue(record1.getR94_institutional_sector());
 					else {
@@ -39905,6 +44620,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR94_type_of_account() != null)
 						cell1.setCellValue(record1.getR94_type_of_account());
 					else {
@@ -39913,6 +44634,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR94_interest_rate() != null) {
 						cell1.setCellValue(record1.getR94_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39922,6 +44649,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR94_amount() != null) {
 						cell1.setCellValue(record1.getR94_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39931,6 +44664,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR94_total_deposit() != null) {
 						cell1.setCellValue(record1.getR94_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39941,8 +44680,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R95
 					row = sheet.getRow(94);
+					if (row == null) {
+						row = sheet.createRow(94);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR95_institutional_sector() != null)
 						cell1.setCellValue(record1.getR95_institutional_sector());
 					else {
@@ -39951,6 +44699,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR95_type_of_account() != null)
 						cell1.setCellValue(record1.getR95_type_of_account());
 					else {
@@ -39959,6 +44713,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR95_interest_rate() != null) {
 						cell1.setCellValue(record1.getR95_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39968,6 +44728,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR95_amount() != null) {
 						cell1.setCellValue(record1.getR95_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39977,6 +44743,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR95_total_deposit() != null) {
 						cell1.setCellValue(record1.getR95_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -39987,8 +44759,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R96
 					row = sheet.getRow(95);
+					if (row == null) {
+						row = sheet.createRow(95);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR96_institutional_sector() != null)
 						cell1.setCellValue(record1.getR96_institutional_sector());
 					else {
@@ -39997,6 +44778,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR96_type_of_account() != null)
 						cell1.setCellValue(record1.getR96_type_of_account());
 					else {
@@ -40005,6 +44792,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR96_interest_rate() != null) {
 						cell1.setCellValue(record1.getR96_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40014,6 +44807,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR96_amount() != null) {
 						cell1.setCellValue(record1.getR96_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40023,6 +44822,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR96_total_deposit() != null) {
 						cell1.setCellValue(record1.getR96_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40033,8 +44838,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R97
 					row = sheet.getRow(96);
+					if (row == null) {
+						row = sheet.createRow(96);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR97_institutional_sector() != null)
 						cell1.setCellValue(record1.getR97_institutional_sector());
 					else {
@@ -40043,6 +44857,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR97_type_of_account() != null)
 						cell1.setCellValue(record1.getR97_type_of_account());
 					else {
@@ -40051,6 +44871,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR97_interest_rate() != null) {
 						cell1.setCellValue(record1.getR97_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40060,6 +44886,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR97_amount() != null) {
 						cell1.setCellValue(record1.getR97_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40069,6 +44901,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR97_total_deposit() != null) {
 						cell1.setCellValue(record1.getR97_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40079,8 +44917,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R98
 					row = sheet.getRow(97);
+					if (row == null) {
+						row = sheet.createRow(97);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR98_institutional_sector() != null)
 						cell1.setCellValue(record1.getR98_institutional_sector());
 					else {
@@ -40089,6 +44936,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR98_type_of_account() != null)
 						cell1.setCellValue(record1.getR98_type_of_account());
 					else {
@@ -40097,6 +44950,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR98_interest_rate() != null) {
 						cell1.setCellValue(record1.getR98_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40106,6 +44965,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR98_amount() != null) {
 						cell1.setCellValue(record1.getR98_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40115,6 +44980,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR98_total_deposit() != null) {
 						cell1.setCellValue(record1.getR98_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40125,8 +44996,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R99
 					row = sheet.getRow(98);
+					if (row == null) {
+						row = sheet.createRow(98);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR99_institutional_sector() != null)
 						cell1.setCellValue(record1.getR99_institutional_sector());
 					else {
@@ -40135,6 +45015,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR99_type_of_account() != null)
 						cell1.setCellValue(record1.getR99_type_of_account());
 					else {
@@ -40143,6 +45029,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR99_interest_rate() != null) {
 						cell1.setCellValue(record1.getR99_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40152,6 +45044,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR99_amount() != null) {
 						cell1.setCellValue(record1.getR99_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40161,6 +45059,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR99_total_deposit() != null) {
 						cell1.setCellValue(record1.getR99_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40171,8 +45075,17 @@ public class BRRS_M_DEP4_ReportService {
 
 					// R100
 					row = sheet.getRow(99);
+					if (row == null) {
+						row = sheet.createRow(99);
+					}
 
 					cell1 = row.getCell(2);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(2);
+
+					}
 					if (record1.getR100_institutional_sector() != null)
 						cell1.setCellValue(record1.getR100_institutional_sector());
 					else {
@@ -40181,6 +45094,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(3);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(3);
+
+					}
 					if (record1.getR100_type_of_account() != null)
 						cell1.setCellValue(record1.getR100_type_of_account());
 					else {
@@ -40189,6 +45108,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(4);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(4);
+
+					}
 					if (record1.getR100_interest_rate() != null) {
 						cell1.setCellValue(record1.getR100_interest_rate().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40198,6 +45123,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(5);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(5);
+
+					}
 					if (record1.getR100_amount() != null) {
 						cell1.setCellValue(record1.getR100_amount().doubleValue());
 						cell1.setCellStyle(numberStyle);
@@ -40207,6 +45138,12 @@ public class BRRS_M_DEP4_ReportService {
 					}
 
 					cell1 = row.getCell(6);
+
+					if (cell1 == null) {
+
+						cell1 = row.createCell(6);
+
+					}
 					if (record1.getR100_total_deposit() != null) {
 						cell1.setCellValue(record1.getR100_total_deposit().doubleValue());
 						cell1.setCellStyle(numberStyle);

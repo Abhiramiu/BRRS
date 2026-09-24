@@ -157,7 +157,7 @@ public class RegulatoryReportServices {
 
 	@Autowired
 	BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
-	
+
 	@Autowired
 	BRRS_SLS_INR_ReportService BRRS_SLS_INR_reportservice;
 
@@ -501,8 +501,8 @@ public class RegulatoryReportServices {
 			break;
 
 		case "SLS_INR":
-			repsummary = BRRS_SLS_INR_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version, req, md);
+			repsummary = BRRS_SLS_INR_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version, req, md);
 			break;
 		case "SLS_WORKING":
 			repsummary = BRRS_SLS_WORKING_reportservice.getSLSView(reportId, fromdate, todate, currency, dtltype,
@@ -1329,7 +1329,7 @@ public class RegulatoryReportServices {
 			repdetail = BRRS_SLS_INPUT_SHT_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
 			break;
-			
+
 		case "SLS_INR":
 			repdetail = BRRS_SLS_INR_reportservice.getSLScurrentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter, type, version, req1, md);
@@ -2182,7 +2182,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "SLS_INR":
 			try {
 				repfile = BRRS_SLS_INR_reportservice.getSLSExcel(filename, reportId, fromdate, todate, currency,
@@ -2627,11 +2627,11 @@ public class RegulatoryReportServices {
 
 		case "M_DEP4":
 			try {
-
 				repfile = BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel(filename, reportId, fromdate, todate, currency,
 						dtltype, type, format, version);
-			} catch (Exception e) { // TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("M_DEP4 Excel generation failed for todate={}: {}", todate, e.getMessage(), e);
+				throw new RuntimeException("Failed to generate M_DEP4 report: " + e.getMessage(), e);
 			}
 			break;
 
@@ -3318,7 +3318,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
-			
+
 		case "SLS_INR":
 			try {
 				archivalData = BRRS_SLS_INR_reportservice.getSLSArchival();
@@ -6589,8 +6589,8 @@ public class RegulatoryReportServices {
 					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 				case "SLS_INR":
-					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate,
-							currency, dtltype, type, version);
+					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate, currency,
+							dtltype, type, version);
 				case "SLS_WORKING":
 					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
@@ -8499,12 +8499,11 @@ public class RegulatoryReportServices {
 				logger.error("SLS: PDF generation failed", e);
 				return new byte[0];
 			}
-			
-			
+
 		case "SLS_INR":
 			try {
-				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportId, fromdate, todate,
-						currency, dtltype, null, null);
+				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportId, fromdate, todate, currency,
+						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("SLS: No Excel data found for PDF generation → todate={}", todate);
