@@ -136,6 +136,7 @@ import com.bornfire.brrs.services.BRRS_M_LA1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LCR_ReportService;
+import com.bornfire.brrs.services.BRRS_NSFR_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LA3_ReportService.M_LA3_Summary_Entity2;
 import com.bornfire.brrs.services.BRRS_M_LA4_ReportService;
 import com.bornfire.brrs.services.BRRS_M_LARADV_ReportService;
@@ -3853,6 +3854,8 @@ public class BRRS_ReportsController {
 
 	@Autowired
 	BRRS_M_LCR_ReportService BRRS_M_LCR_ReportService;
+	
+	
 
 	@RequestMapping(value = "/M_LCRupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -3874,6 +3877,30 @@ public class BRRS_ReportsController {
 		}
 	}
 
+	@Autowired
+	BRRS_NSFR_ReportService BRRS_NSFR_ReportService;
+	
+	@RequestMapping(value = "/NSFRupdate", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateReportNSFR(
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_NSFR_ReportService.NSFR_Summary_Entity request) {
+
+		try {
+			System.out.println("came to NSFR update controller");
+
+			request.setReport_date(asondate);
+
+			BRRS_NSFR_ReportService.updateReport(request);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+	
+	
 	@RequestMapping(value = "/M_BOPupdate", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(

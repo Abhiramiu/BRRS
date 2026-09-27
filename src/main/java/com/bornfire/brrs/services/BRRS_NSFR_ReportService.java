@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,9 +41,11 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
@@ -55,10 +58,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.services.BRRS_M_LCR_ReportService.M_LCR_Summary_Entity;
 
 @Service
 @Transactional
@@ -73,6 +79,9 @@ public class BRRS_NSFR_ReportService {
 
 	@Autowired
 	SessionFactory sessionFactory;
+	
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	 // =====================================================
     // ENTITY MANAGER (Acts like Repository)
@@ -95,6 +104,17 @@ public class BRRS_NSFR_ReportService {
                 new NSFRRowMapper()
         );
     }
+    
+    /**
+	 * Find summary by report date (single record)
+	 */
+	@Transactional
+	public NSFR_Summary_Entity findSummaryByReportDate(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_NSFR_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		List<NSFR_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
+				new NSFRRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
 
     // =========================================================
     // GET REPORT_DATE + REPORT_VERSION
@@ -2372,53 +2392,102 @@ public class NSFR_Archival_Detail_Entity {
 }
 	   
     		   
-    		   
+/**
+ * Find summary by report date (single record)
+ */
+		   
 		   
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
 	public ModelAndView getNSFRView(String reportId, String fromdate, String todate, String currency, String dtltype,
-			Pageable pageable, String type,  BigDecimal version) {
-		ModelAndView mv = new ModelAndView();
+	        Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
-		if (type.equals("ARCHIVAL") & version != null) {
-			List<NSFR_Archival_Summary_Entity> T1Master = new ArrayList();
-//			List<NSFR_Manual_Archival_Summary_Entity> T2Master = new ArrayList<NSFR_Manual_Archival_Summary_Entity>();
+	    ModelAndView mv = new ModelAndView();
 
-			try {
-				 Date dt = dateformat.parse(todate);
+	    Session hs = sessionFactory.getCurrentSession();
 
-				T1Master = getdatabydateListarchival(dt, version);
-			 System.out.println("Archival Summary size = " + T1Master.size());
-			 } catch (Exception e) {
-		            e.printStackTrace();
-		        }
+	    int pageSize = pageable.getPageSize();
+	    int currentPage = pageable.getPageNumber();
+	    int startItem = currentPage * pageSize;
 
-			mv.addObject("reportsummary", T1Master);
-         
-		} else {
-			List<NSFR_Summary_Entity> T1Master = new ArrayList<NSFR_Summary_Entity>();
-					try {
-						 Date dt = dateformat.parse(todate);
+	    if (req1 != null && req1.getSession() != null) {
 
-				
-				 T1Master = getDataByDate(dt);
-				
+	        String userid = (String) req1.getSession().getAttribute("USERID");
 
-					 } catch (Exception e) {
-				            e.printStackTrace();
-				        }
-					
-			mv.addObject("reportsummary", T1Master);
-           
-		}
+	        logger.info("User Id Maker and Checker: {}", userid);
 
-		// T1rep = t1CurProdServiceRepo.getT1CurProdServices(d1);
-		mv.setViewName("BRRS/NSFR");
-		mv.addObject("displaymode", "summary");
-		System.out.println("scv" + mv.getViewName());
-		return mv;
+	        String role = userProfileRep.getUserRole(userid);
+
+	        if (md != null) {
+	            md.addAttribute("role", role);
+	        }
+
+	        mv.addObject("role", role);
+
+	        logger.info("Role: {}", role);
+	    }
+
+	    logger.info("getNSFRView called - type: {}, version: {}, todate: {}",
+	            type, version, todate);
+
+	    if (type != null && type.equals("ARCHIVAL") && version != null) {
+
+	        logger.info("Fetching ARCHIVAL summary for date: {}, version: {}",
+	                todate, version);
+
+	        List<NSFR_Archival_Summary_Entity> T1Master = new ArrayList<>();
+
+	        try {
+
+	            Date d1 = dateformat.parse(todate);
+
+	            // Using JDBC method for archival data
+	            T1Master = getdatabydateListarchival(d1, version);
+
+	            logger.info("Archival records found: {}", T1Master.size());
+
+	        } catch (ParseException e) {
+
+	            logger.error("Error parsing date: {}", todate, e);
+
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+	        mv.addObject("displaymode", "archivalSummary");
+
+	    } else {
+
+	        logger.info("Fetching NORMAL summary for date: {}", todate);
+
+	        List<NSFR_Summary_Entity> T1Master = new ArrayList<>();
+
+	        try {
+
+	            Date d1 = dateformat.parse(todate);
+
+	            // Using JDBC method for normal data
+	            T1Master = getDataByDate(d1);
+
+	            logger.info("Normal records found: {}", T1Master.size());
+
+	        } catch (ParseException e) {
+
+	            logger.error("Error parsing date: {}", todate, e);
+
+	            e.printStackTrace();
+	        }
+
+	        mv.addObject("reportsummary", T1Master);
+	        mv.addObject("displaymode", "summary");
+	    }
+
+	    mv.setViewName("BRRS/NSFR");
+
+	    logger.info("View name set to: BRRS/NSFR");
+
+	    return mv;
 	}
-
 
 
 	public ModelAndView getNSFRcurrentDtl(String reportId, String fromdate, String todate,
@@ -4070,7 +4139,93 @@ if (record.getR60_TOTAL_AMOUNT_BOB() != null) {
 	}
 
 
+	@Transactional
+	public void updateReport(NSFR_Summary_Entity updatedEntity) {
+		logger.info("Came to NSFR Update");
+		logger.info("Report Date: {}", updatedEntity.getReport_date());
 
+		// Fetch existing summary record for audit
+		NSFR_Summary_Entity existingSummary = findSummaryByReportDate(updatedEntity.getReport_date());
+
+		if (existingSummary == null) {
+			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		}
+
+		// Audit old copy
+		NSFR_Summary_Entity oldcopy = new NSFR_Summary_Entity();
+		BeanUtils.copyProperties(existingSummary, oldcopy);
+
+		try {
+			
+
+			if (updatedEntity.getR13_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR13_TOTAL_AMOUNT_BOB(updatedEntity.getR13_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R13_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR13_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR17_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR17_TOTAL_AMOUNT_BOB(updatedEntity.getR17_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R17_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR17_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR18_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR18_TOTAL_AMOUNT_BOB(updatedEntity.getR18_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R18_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR18_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR20_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR20_TOTAL_AMOUNT_BOB(updatedEntity.getR20_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R20_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR20_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR21_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR21_TOTAL_AMOUNT_BOB(updatedEntity.getR21_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R21_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR21_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR22_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR22_TOTAL_AMOUNT_BOB(updatedEntity.getR22_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R22_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR22_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR27_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR27_TOTAL_AMOUNT_BOB(updatedEntity.getR27_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R27_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR27_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR29_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR29_TOTAL_AMOUNT_BOB(updatedEntity.getR29_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R29_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR29_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+			
+			if (updatedEntity.getR31_TOTAL_AMOUNT_BOB() != null) {
+				existingSummary.setR31_TOTAL_AMOUNT_BOB(updatedEntity.getR31_TOTAL_AMOUNT_BOB());
+				String sql = "UPDATE BRRS_NSFR_SUMMARYTABLE SET R31_TOTAL_AMOUNT_BOB = ? WHERE REPORT_DATE = ?";
+				jdbcTemplate.update(sql, updatedEntity.getR31_TOTAL_AMOUNT_BOB(), updatedEntity.getReport_date());
+			}
+
+			
+			// Audit only if changes found
+			String changes = auditService.getChanges(oldcopy, existingSummary);
+			if (!changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
+						"NSFR Summary Screen", "BRRS_NSFR_SUMMARY");
+			}
+
+			logger.info("NSFRSummary Update Completed");
+		} catch (Exception e) {
+			logger.error("Error while updating NSFR fields", e);
+			throw new RuntimeException("Error while updating NSFR fields", e);
+		}
+	}
 
 
 	public ModelAndView updateDetailEdit(String SNO, String formMode) {

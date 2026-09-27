@@ -830,124 +830,124 @@ function cancelModify() {
           location.reload();
       }, 300);
  }
- </script>
  
- <script>
+ // Show Modify (enable manual entry inputs)
+ 		function showmodify(btn) {
+ 			$("#R13_TOTAL_AMOUNT_BOB, #R17_TOTAL_AMOUNT_BOB, #R18_TOTAL_AMOUNT_BOB,#R20_TOTAL_AMOUNT_BOB,#R21_TOTAL_AMOUNT_BOB,#R22_TOTAL_AMOUNT_BOB,#R27_TOTAL_AMOUNT_BOB,#R29_TOTAL_AMOUNT_BOB,#R31_TOTAL_AMOUNT_BOB,")
+ 				.removeAttr("readonly")
+ 				.removeAttr("disabled")
+ 				.css("background-color", "#d3d3d3");
 
- 	// ============================================================
- 	// SHOW MODIFY
- 	// ============================================================
- 	function showmodify(btn) {
-
- 		console.log("NSFR Modify button clicked");
-
- 		// Enable only the editable NSFR fields
- 		$("#R13_TOTAL_AMOUNT_BOB, " +
- 		  "#R17_TOTAL_AMOUNT_BOB, " +
- 		  "#R18_TOTAL_AMOUNT_BOB, " +
- 		  "#R20_TOTAL_AMOUNT_BOB, " +
- 		  "#R21_TOTAL_AMOUNT_BOB, " +
- 		  "#R22_TOTAL_AMOUNT_BOB, " +
- 		  "#R27_TOTAL_AMOUNT_BOB, " +
- 		  "#R29_TOTAL_AMOUNT_BOB, " +
- 		  "#R31_TOTAL_AMOUNT_BOB")
- 			.removeAttr("readonly")
- 			.removeAttr("disabled")
- 			.css("background-color", "#d3d3d3");
-
- 		// Show Submit button
- 		$("#submitButton").show();
-
- 		// Show Cancel button
- 		$("#cancelRecord").show();
-
- 		// Hide Modify button
- 		$(btn).hide();
- 	}
-
-
- 	// ============================================================
- 	// CANCEL MODIFY
- 	// ============================================================
- 	function cancelModify() {
-
- 		if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-
- 			$('#loader').modal('show');
-
- 			setTimeout(function () {
- 				location.reload();
- 			}, 300);
+ 			// Toggle buttons
+ 			$("#submitButton").show();
+ 			$("#cancelRecord").show();
+ 			$(btn).hide();
  		}
- 	}
+
+ 		// Cancel / Reset function
+ 		function cancelModify() {
+ 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+ 				location.reload();
+ 			}
+ 		}
 
 
- 	// ============================================================
- 	// FORM SUBMISSION VIA AJAX
- 	// ============================================================
-	// Form submission via AJAX
+ <!-- 
 	// Form submission via AJAX
 	function fileuploads(btn) {
-	    try {
-	        const asondate = btn.getAttribute("data-todate");
+		try {
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
 
-	        $('#loader').modal('show');
+			// Show loader
+			$('#loader').modal('show');
 
-	        // Remove commas
-	        $("#fileupload input[type='text']").each(function () {
-	            const val = $(this).val();
+			// Remove commas
+			$("#fileupload input[type='text']").each(function () {
+				const val = $(this).val();
 
-	            if (val && val.includes(",")) {
-	                $(this).val(val.replace(/,/g, ''));
-	            }
-	        });
+				if (val && val.includes(",")) {
+					$(this).val(val.replace(/,/g, ''));
+				}
+			});
 
-	        if ($("#fileupload").length && typeof $("#fileupload").valid === "function") {
-	            if (!$("#fileupload").valid()) {
-	                $('#loader').modal('hide');
-	                return;
-	            }
-	        }
+			// Validate form
+			if ($("#fileupload").length && typeof $("#fileupload").valid === "function") {
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+			}
 
-	        const formData = $('#fileupload').serialize()
-	            + '&asondate=' + encodeURIComponent(asondate);
+			// Build FormData
+			const formData = new FormData();
 
-	        // NSFR Update API
-	        let apiUrl = './NSFRupdate';
+			formData.append("asondate", asondate);
+			formData.append("type", type);
 
-	        $.ajax({
-	            url: apiUrl,
-	            type: 'POST',
-	            data: formData,
-	            dataType: 'text',
+			$('#fileupload').find(':input').each(function () {
 
-	            success: function (response) {
-	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(response);
-	                $("#resultModal").modal("show");
-	            },
+				const name = $(this).attr('name');
 
-	            error: function (jqXHR) {
-	                console.log("Error response:", jqXHR.responseText);
+				if (name) {
+					formData.append(name, $(this).val());
+				}
+			});
 
-	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text(
-	                    "Update failed: " +
-	                    (jqXHR.responseText || "Unknown error")
-	                );
+			// AJAX submission
+			$.ajax({
+				url: './NSFRupdateAll',
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				dataType: 'text',
 
-	                $("#resultModal").modal("show");
-	            },
+				success: function (response) {
 
-	            complete: function () {
-	                $('#loader').modal('hide');
-	            }
-	        });
+					$("#resultModalLabel").text("BRRS");
 
-	    } catch (error) {
-	        $('#loader').modal('hide');
-	        console.error("Error during NSFR update:", error);
-	    }
+					$("#resultModalBody").text(
+						response || "Updated Successfully."
+					);
+
+					$("#resultModal").modal("show");
+				},
+
+				error: function (jqXHR) {
+
+					console.error("Error response:", jqXHR.responseText);
+
+					$("#resultModalLabel").text("Error");
+
+					$("#resultModalBody").text(
+						"Update failed: " +
+						(jqXHR.responseText || "Unknown error")
+					);
+
+					$("#resultModal").modal("show");
+				},
+
+				complete: function () {
+
+					$('#loader').modal('hide');
+				}
+			});
+
+		} catch (error) {
+
+			console.error("Error during NSFR update:", error);
+
+			$('#loader').modal('hide');
+
+			$("#resultModalLabel").text("Error");
+
+			$("#resultModalBody").text(
+				"Unexpected error occurred. Check console."
+			);
+
+			$("#resultModal").modal("show");
+		}
 	}
  </script>
  
@@ -2397,16 +2397,11 @@ function cancelModify() {
        </div>
        </div>
 	   <div style="text-align: center; margin-top: 10px;">
-		<button id="submitButton"
-			type="button"
-			class="custom-tab-btn Show_input"
-			form="fileupload"
-			th:attr="data-todate=${asondate},data-type=${type}"
-			onclick="fileuploads(this);"
-			style="display: none;">
-			Submit
-		</button>
-		</div>
+	   							<button id="submitButton" type="button"
+	   								class="custom-tab-btn Show_input" form="fileupload"
+	   								th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+	   								style="display: none;">Submit</button>
+	   						</div>
     </form>
   </div>
  </div>

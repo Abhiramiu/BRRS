@@ -987,7 +987,7 @@ public class RegulatoryReportServices {
 
 		case "NSFR":
 			repsummary = BRRS_NSFR_ReportService.getNSFRView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version);
+					type, version, req, md);
 
 			break;
 
