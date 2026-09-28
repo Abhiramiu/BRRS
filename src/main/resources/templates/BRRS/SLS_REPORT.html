@@ -2009,6 +2009,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<td Style="background-color: #b3b6b9;text-align: left;"></td>
 										<th colspan="2" Style="background-color: #b3b6b9;text-align: left;">C.</th>
+										<td Style="background-color:#b3b6b9; text-align: left;" th:text="${report.R70_PRODUCT}"></td>
 										<td style="text-align:right;background-color:#c1e4f7" th:text="${#numbers.formatDecimal(report.R70_DAY1, 0, 'COMMA', 2, 'POINT')}" ></td>
 																				<td style="text-align:right;background-color:#c1e4f7" th:text="${#numbers.formatDecimal(report.R70_DAY2_7, 0, 'COMMA', 2, 'POINT')}"></td>
 																				<td style="text-align:right;background-color:#c1e4f7" th:text="${#numbers.formatDecimal(report.R70_DAY8_14, 0, 'COMMA', 2, 'POINT')}"></td>
