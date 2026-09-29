@@ -3591,15 +3591,19 @@ public class RegulatoryReportServices {
 			System.out.println("Fetched FORMAT_II archival data: " + format2List.size());
 			break;
 
+//		case "FORMAT_I":
+//			try {
+//				archivalData = brrs_format_I_reportservice.getFORMAT_IArchival();
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			break;
 		case "FORMAT_I":
-			try {
-				archivalData = brrs_format_I_reportservice.getFORMAT_IArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			List<Object[]> format1List = brrs_format_I_reportservice.getFORMAT_IArchival();
+			archivalData.addAll(format1List);
+			System.out.println("Fetched FORMAT_I archival data: " + format1List.size());
 			break;
-
 		case "M_P_L":
 
 			try {

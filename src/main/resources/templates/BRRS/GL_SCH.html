@@ -906,6 +906,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 			readonlyIds.push("R243_NET_AMT_BWP2");
 			readonlyIds.push("R245_NET_AMT_BWP2");
 
+
 			// Product fields for required rows
 			[61, 103, 130, 139, 241, 243, 245].forEach(r => {
 				readonlyIds.push(`R${r}_PRODUCT`);
@@ -913,17 +914,14 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 			// Make all .Show_input editable except the ones in readonlyIds
 			$(".Show_input").each(function () {
+
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
 				}
+
 			});
 
-
-
-
-
-
-			//Row numbers needed
+			// Row numbers needed (FULL ROWS ONLY)
 			const rows = [61, 103, 130, 139, 241, 243, 245];
 
 			// Field suffixes
@@ -937,28 +935,47 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 			// Apply gray background using iteration
 			rows.forEach(r => {
+
 				fields.forEach(f => {
 
-					// ❌ Skip R61_FIG_BAL_BWP2, R61_AMT_ADJ_BWP2, and R61_NET_AMT_BWP1
 					if (r === 61 && (f === "FIG_BAL_BWP2" || f === "AMT_ADJ_BWP2")) {
 						return;
 					}
 
 					const selector = `#R${r}_${f}`;
+
 					if ($(selector).length) {
 						$(selector).css("background-color", "#d3d3d3");
 					}
 				});
+
 			});
 
+			// Additional individual columns only
+			[
+				"R59_AMT_ADJ_BWP1",
 
+				"R89_BAL_SUB_BWP1",
+				"R89_BAL_ACT_SUB_BWP1",
 
+				"R91_BAL_SUB_BWP1",
+				"R91_BAL_ACT_SUB_BWP1",
 
+				"R138_BAL_SUB_BWP1",
+				"R138_BAL_SUB_BWP2",
+				"R138_BAL_ACT_SUB_BWP1",
+				"R138_BAL_ACT_SUB_BWP2",
 
+				"R141_BAL_SUB_BWP2",
+				"R141_BAL_ACT_SUB_BWP2"
 
+			].forEach(id => {
 
+				if ($("#" + id).length) {
+					$("#" + id).css("background-color", "#d3d3d3");
+				}
 
-
+			});
 			// Toggle buttons
 			$("#submitButton, #btnBack_edit, #cancelRecord").show();
 			$("#btnBack").hide();
@@ -1032,617 +1049,236 @@ PURPOSE		: BRRS GL_SCH REPORT
 			}
 		}
 
-		/* ================= CALCULATION FUNCTION ================= */
 		function calculateTotals() {
-
-			/* -------- FIXED UPDATE R59 WHEN R61 CHANGES -------- */
-
-			let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
-
-			// store original R59 in hidden field OR data attribute
-			let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
-
-			//first time store original value
-			if (baseR59 === undefined) {
-				baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
-				$("#R59_FIG_BAL_BWP1").data("base", baseR59);
-			}
-
-			let updatedR59 = baseR59 + r61;
-
-			setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
-
-
-			/* ------------------ R59 NET CALCULATION ------------------ */
-			let r59_net_amt_bwp1 =
-				getCellValue("#R59_FIG_BAL_BWP1") +
-				getCellValue("#R59_AMT_ADJ_BWP1");
-
-			setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
-
-			/* ------------------ R61 CALCULATION ------------------ */
-			let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
-				getCellValue("#R60_FIG_BAL_BWP1") -
-				getCellValue("#R61_FIG_BAL_BWP1");
-			setCellValue("#R61_FIG_BAL_BWP2", g61);
-
-			let r61_amt_adj_bwp2 = getCellValue("#R59_AMT_ADJ_BWP1") +
-				getCellValue("#R60_AMT_ADJ_BWP1") -
-				getCellValue("#R61_AMT_ADJ_BWP1");
-			setCellValue("#R61_AMT_ADJ_BWP2", r61_amt_adj_bwp2);
-
-			let r61_net_bwp1 = getCellValue("#R61_FIG_BAL_BWP1") +
-				getCellValue("#R61_AMT_ADJ_BWP1");
-			setCellValue("#R61_NET_AMT_BWP1", r61_net_bwp1);
-
-			let r61_net_bwp2 = getCellValue("#R59_NET_AMT_BWP1") +
-				getCellValue("#R60_NET_AMT_BWP1") -
-				getCellValue("#R61_NET_AMT_BWP1");
-			setCellValue("#R61_NET_AMT_BWP2", r61_net_bwp2);
-
-			let r61_bal_sub_bwp2 = getCellValue("#R59_BAL_SUB_BWP1") +
-				getCellValue("#R60_BAL_SUB_BWP1") -
-				getCellValue("#R61_BAL_SUB_BWP1");
-			setCellValue("#R61_BAL_SUB_BWP2", r61_bal_sub_bwp2);
-
-			let r61_bal_act_sub_bwp2 = getCellValue("#R59_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R60_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R61_BAL_ACT_SUB_BWP1");
-			setCellValue("#R61_BAL_ACT_SUB_BWP2", r61_bal_act_sub_bwp2);
-
-			/* ------------------ R103 CALCULATION ------------------ */
-			let r103_net_bwp2 = getCellValue("#R103_FIG_BAL_BWP2") -
-				getCellValue("#R103_AMT_ADJ_BWP2");
-			setCellValue("#R103_NET_AMT_BWP2", r103_net_bwp2);
-
-			/* ------------------ R130 CALCULATION ------------------ */
-			let r130_fig_bal_bwp2 = getCellValue("#R129_FIG_BAL_BWP1") +
-				getCellValue("#R130_FIG_BAL_BWP1");
-			setCellValue("#R130_FIG_BAL_BWP2", r130_fig_bal_bwp2);
-
-			let r130_amt_adj_bwp2 = getCellValue("#R129_AMT_ADJ_BWP1") +
-				getCellValue("#R130_AMT_ADJ_BWP1");
-			setCellValue("#R130_AMT_ADJ_BWP2", r130_amt_adj_bwp2);
-
-			let r130_net_bwp1 = getCellValue("#R130_FIG_BAL_BWP1") +
-				getCellValue("#R130_AMT_ADJ_BWP1");
-			setCellValue("#R130_NET_AMT_BWP1", r130_net_bwp1);
-
-			let r130_net_bwp2 = getCellValue("#R129_NET_AMT_BWP1") +
-				getCellValue("#R130_NET_AMT_BWP1");
-			setCellValue("#R130_NET_AMT_BWP2", r130_net_bwp2);
-
-			// ✅ NEW CALCULATION: R130_BAL_SUB_BWP2
-			let r130_bal_sub_bwp2 = getCellValue("#R129_BAL_SUB_BWP1") +
-				getCellValue("#R130_BAL_SUB_BWP1");
-			setCellValue("#R130_BAL_SUB_BWP2", r130_bal_sub_bwp2);
-
-			// ------------------ R130_BAL_ACT_SUB_BWP2 ------------------
-			// R130_BAL_ACT_SUB_BWP2 = R129_BAL_ACT_SUB_BWP1 + R130_BAL_ACT_SUB_BWP1
-			let r130_bal_act_sub_bwp2 =
-				getCellValue("#R129_BAL_ACT_SUB_BWP1") +
-				getCellValue("#R130_BAL_ACT_SUB_BWP1");
-
-			setCellValue("#R130_BAL_ACT_SUB_BWP2", r130_bal_act_sub_bwp2);
-
-			let r135_FIG_BAL_BWP2 =
-				getCellValue("#R130_FIG_BAL_BWP2") +
-				getCellValue("#R134_FIG_BAL_BWP2");
-
-			setCellValue("#R135_FIG_BAL_BWP2", r135_FIG_BAL_BWP2);
-
-			let r135_NET_AMT_BWP2 =
-				getCellValue("#R130_NET_AMT_BWP2") +
-				getCellValue("#R134_NET_AMT_BWP2");
-
-			setCellValue("#R135_NET_AMT_BWP2", r135_NET_AMT_BWP2);
-
-			//------------------ R139_NET_AMT_BWP1 ------------------
-			//R139_NET_AMT_BWP1 = R139_FIG_BAL_BWP1 + R139_AMT_ADJ_BWP1
-			let r139_net_amt_bwp1 =
-				getCellValue("#R139_FIG_BAL_BWP1") -
-				getCellValue("#R139_AMT_ADJ_BWP1");
-
-			setCellValue("#R139_NET_AMT_BWP1", r139_net_amt_bwp1);
-
-			//------------------ R241_NET_AMT_BWP2 ------------------
-			//R241_NET_AMT_BWP2 = R241_FIG_BAL_BWP2 - R241_AMT_ADJ_BWP2
-			let r241_net_amt_bwp2 =
-				getCellValue("#R241_FIG_BAL_BWP2") -
-				getCellValue("#R241_AMT_ADJ_BWP2");
-
-			setCellValue("#R241_NET_AMT_BWP2", r241_net_amt_bwp2);
-
-
-			//------------------ R243_NET_AMT_BWP2 ------------------
-			//R243_NET_AMT_BWP2 = R243_FIG_BAL_BWP2 - R243_AMT_ADJ_BWP2
-			let r243_net_amt_bwp2 =
-				getCellValue("#R243_FIG_BAL_BWP2") -
-				getCellValue("#R243_AMT_ADJ_BWP2");
-
-			setCellValue("#R243_NET_AMT_BWP2", r243_net_amt_bwp2);
-
-			//------------------ R245_NET_AMT_BWP2 ------------------
-			//R245_NET_AMT_BWP2 = R245_FIG_BAL_BWP2 - R245_AMT_ADJ_BWP2
-			let r245_net_amt_bwp2 =
-				getCellValue("#R245_FIG_BAL_BWP2") -
-				getCellValue("#R245_AMT_ADJ_BWP2");
-
-			setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
-
-			//	V_R135_BAL_ACT_SUB_BWP2 := V_R130_BAL_ACT_SUB_BWP2;
-			let r135_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R130_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R135_BAL_ACT_SUB_BWP2", r135_BAL_ACT_SUB_BWP2);
-
-			//------------------ R66_FIG_BAL_BWP2 ------------------
-			//	let R66_FIG_BAL_BWP2 =
-			//		getCellValue("#R37_FIG_BAL_BWP2") +
-			//		getCellValue("#R41_FIG_BAL_BWP2") +
-			//		getCellValue("#R45_FIG_BAL_BWP2") +
-			//		getCellValue("#R49_FIG_BAL_BWP2") +
-			//		getCellValue("#R53_FIG_BAL_BWP2") +
-			//	getCellValue("#R57_FIG_BAL_BWP2") +
-			///	getCellValue("#R61_FIG_BAL_BWP2") +
-			//	getCellValue("#R65_FIG_BAL_BWP2");
-
-			//setCellValue("#R66_FIG_BAL_BWP2", R66_FIG_BAL_BWP2);
-
-
-			//------------------ R66_AMT_ADJ_BWP2 ------------------
-			/* ----------let R66_AMT_ADJ_BWP2 =
-				getCellValue("#R37_AMT_ADJ_BWP2") +
-				getCellValue("#R41_AMT_ADJ_BWP2") +
-				getCellValue("#R45_AMT_ADJ_BWP2") +
-				getCellValue("#R49_AMT_ADJ_BWP2") +
-				getCellValue("#R53_AMT_ADJ_BWP2") +
-				getCellValue("#R57_AMT_ADJ_BWP2") +
-				getCellValue("#R61_AMT_ADJ_BWP2") +
-				getCellValue("#R65_AMT_ADJ_BWP2");
-
-			setCellValue("#R66_AMT_ADJ_BWP2", R66_AMT_ADJ_BWP2);
-
-
-			//------------------ R66_NET_AMT_BWP2 ------------------
-			let R66_NET_AMT_BWP2 =
-				getCellValue("#R37_NET_AMT_BWP2") +
-				getCellValue("#R41_NET_AMT_BWP2") +
-				getCellValue("#R45_NET_AMT_BWP2") +
-				getCellValue("#R49_NET_AMT_BWP2") +
-				getCellValue("#R53_NET_AMT_BWP2") +
-				getCellValue("#R57_NET_AMT_BWP2") +
-				getCellValue("#R61_NET_AMT_BWP2") +
-				getCellValue("#R65_NET_AMT_BWP2");
-
-			setCellValue("#R66_NET_AMT_BWP2", R66_NET_AMT_BWP2);
-
-			//------------------ R66_BAL_SUB_BWP2 ------------------
-			let R66_BAL_SUB_BWP2 =
-				getCellValue("#R37_BAL_SUB_BWP2") +
-				getCellValue("#R41_BAL_SUB_BWP2") +
-				getCellValue("#R45_BAL_SUB_BWP2") +
-				getCellValue("#R49_BAL_SUB_BWP2") +
-				getCellValue("#R53_BAL_SUB_BWP2") +
-				getCellValue("#R57_BAL_SUB_BWP2") +
-				getCellValue("#R61_BAL_SUB_BWP2") +
-				getCellValue("#R65_BAL_SUB_BWP2");
-
-			setCellValue("#R66_BAL_SUB_BWP2", R66_BAL_SUB_BWP2);
-
-			//------------------ R66_BAL_ACT_SUB_BWP2 ------------------
-			let R66_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R37_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R41_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R45_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R49_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R53_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R57_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R61_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R65_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R66_BAL_ACT_SUB_BWP2", R66_BAL_ACT_SUB_BWP2);
-
-
-			//------------------ R108_FIG_BAL_BWP2 ------------------
-			let R108_FIG_BAL_BWP2 =
-				getCellValue("#R102_FIG_BAL_BWP2") +
-				getCellValue("#R103_FIG_BAL_BWP2") +
-				getCellValue("#R104_FIG_BAL_BWP2") +
-				getCellValue("#R105_FIG_BAL_BWP2") +
-				getCellValue("#R106_FIG_BAL_BWP2") +
-				getCellValue("#R107_FIG_BAL_BWP2");
-
-			setCellValue("#R108_FIG_BAL_BWP2", R108_FIG_BAL_BWP2);
-
-			// R108_AMT_ADJ_BWP2
-			let R108_AMT_ADJ_BWP2 =
-				getCellValue("#R102_AMT_ADJ_BWP2") +
-				getCellValue("#R103_AMT_ADJ_BWP2") +
-				getCellValue("#R104_AMT_ADJ_BWP2") +
-				getCellValue("#R105_AMT_ADJ_BWP2") +
-				getCellValue("#R106_AMT_ADJ_BWP2") +
-				getCellValue("#R107_AMT_ADJ_BWP2");
-
-			setCellValue("#R108_AMT_ADJ_BWP2", R108_AMT_ADJ_BWP2);
-
-			// R108_NET_AMT_BWP2
-			let R108_NET_AMT_BWP2 =
-				getCellValue("#R102_NET_AMT_BWP2") +
-				getCellValue("#R103_NET_AMT_BWP2") +
-				getCellValue("#R104_NET_AMT_BWP2") +
-				getCellValue("#R105_NET_AMT_BWP2") +
-				getCellValue("#R106_NET_AMT_BWP2") +
-				getCellValue("#R107_NET_AMT_BWP2");
-
-			setCellValue("#R108_NET_AMT_BWP2", R108_NET_AMT_BWP2);
-
-			// R108_BAL_SUB_BWP2
-			let R108_BAL_SUB_BWP2 =
-				getCellValue("#R102_BAL_SUB_BWP2") +
-				getCellValue("#R103_BAL_SUB_BWP2") +
-				getCellValue("#R104_BAL_SUB_BWP2") +
-				getCellValue("#R105_BAL_SUB_BWP2") +
-				getCellValue("#R106_BAL_SUB_BWP2") +
-				getCellValue("#R107_BAL_SUB_BWP2");
-
-			setCellValue("#R108_BAL_SUB_BWP2", R108_BAL_SUB_BWP2);
-
-			// R108_BAL_ACT_SUB_BWP2
-			let R108_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R102_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R103_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R104_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R105_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R106_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R107_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R108_BAL_ACT_SUB_BWP2", R108_BAL_ACT_SUB_BWP2);
-
-			//------------------ R141_FIG_BAL_BWP2 ------------------
-			let R141_FIG_BAL_BWP2 =
-				getCellValue("#R138_FIG_BAL_BWP1") +
-				getCellValue("#R139_FIG_BAL_BWP1") +
-				getCellValue("#R140_FIG_BAL_BWP1");
-
-			setCellValue("#R141_FIG_BAL_BWP2", R141_FIG_BAL_BWP2);
-
-			//------------------ R141_AMT_ADJ_BWP2 ------------------
-			let R141_AMT_ADJ_BWP2 =
-				getCellValue("#R138_AMT_ADJ_BWP1") +
-				getCellValue("#R139_AMT_ADJ_BWP1") +
-				getCellValue("#R140_AMT_ADJ_BWP1");
-
-			setCellValue("#R141_AMT_ADJ_BWP2", R141_AMT_ADJ_BWP2);
-
-
-			//------------------ R141_NET_AMT_BWP2 ------------------
-			let R141_NET_AMT_BWP2 =
-				getCellValue("#R138_NET_AMT_BWP1") +
-				getCellValue("#R139_NET_AMT_BWP1") +
-				getCellValue("#R140_NET_AMT_BWP1");
-
-			setCellValue("#R141_NET_AMT_BWP2", R141_NET_AMT_BWP2);
-
-
-
-			//------------------ R141_BAL_SUB_BWP2 ------------------
-			let R141_BAL_SUB_BWP2 =
-				getCellValue("#R138_BAL_SUB_BWP2") +
-				getCellValue("#R139_BAL_SUB_BWP2");
-
-			setCellValue("#R141_BAL_SUB_BWP2", R141_BAL_SUB_BWP2);
-
-
-			//------------------ R141_BAL_ACT_SUB_BWP2 ------------------
-			let R141_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R138_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R139_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R141_BAL_ACT_SUB_BWP2", R141_BAL_ACT_SUB_BWP2);
-
-
-			//------------------ R142_FIG_BAL_BWP2 ------------------
-			let R142_FIG_BAL_BWP2 =
-				getCellValue("#R135_FIG_BAL_BWP2") +
-				getCellValue("#R141_FIG_BAL_BWP2");
-
-			setCellValue("#R142_FIG_BAL_BWP2", R142_FIG_BAL_BWP2);
-
-
-			//------------------ R142_AMT_ADJ_BWP2 ------------------
-			let R142_AMT_ADJ_BWP2 =
-				getCellValue("#R135_AMT_ADJ_BWP2") +
-				getCellValue("#R141_AMT_ADJ_BWP2");
-
-			setCellValue("#R142_AMT_ADJ_BWP2", R142_AMT_ADJ_BWP2);
-
-
-			//------------------ R142_NET_AMT_BWP1 ------------------
+		    let r61 = getCellValue("#R61_FIG_BAL_BWP1") || 0;
+		    let baseR59 = $("#R59_FIG_BAL_BWP1").data("base");
+
+		    if (baseR59 === undefined) {
+		        baseR59 = getCellValue("#R59_FIG_BAL_BWP1") || 0;
+		        $("#R59_FIG_BAL_BWP1").data("base", baseR59);
+		    }
+
+		    let updatedR59 = baseR59 + r61;
+		    setCellValue("#R59_FIG_BAL_BWP1", updatedR59);
+
+		    let r59_net_amt_bwp1 =
+		        getCellValue("#R59_FIG_BAL_BWP1") +
+		        getCellValue("#R59_AMT_ADJ_BWP1");
+		    setCellValue("#R59_NET_AMT_BWP1", r59_net_amt_bwp1);
+
+		    let g61 = getCellValue("#R59_FIG_BAL_BWP1") +
+		        getCellValue("#R60_FIG_BAL_BWP1") -
+		        getCellValue("#R61_FIG_BAL_BWP1");
+		    setCellValue("#R61_FIG_BAL_BWP2", g61);
+
+		    let r61_amt_adj_bwp2 = getCellValue("#R59_AMT_ADJ_BWP1") +
+		        getCellValue("#R60_AMT_ADJ_BWP1") -
+		        getCellValue("#R61_AMT_ADJ_BWP1");
+		    setCellValue("#R61_AMT_ADJ_BWP2", r61_amt_adj_bwp2);
+
+		    let r61_net_bwp1 = getCellValue("#R61_FIG_BAL_BWP1") +
+		        getCellValue("#R61_AMT_ADJ_BWP1");
+		    setCellValue("#R61_NET_AMT_BWP1", r61_net_bwp1);
+
+		    let r61_net_bwp2 = getCellValue("#R59_NET_AMT_BWP1") +
+		        getCellValue("#R60_NET_AMT_BWP1") -
+		        getCellValue("#R61_NET_AMT_BWP1");
+		    setCellValue("#R61_NET_AMT_BWP2", r61_net_bwp2);
+
+		    let r61_bal_sub_bwp2 = getCellValue("#R59_BAL_SUB_BWP1") +
+		        getCellValue("#R60_BAL_SUB_BWP1") -
+		        getCellValue("#R61_BAL_SUB_BWP1");
+		    setCellValue("#R61_BAL_SUB_BWP2", r61_bal_sub_bwp2);
+
+		    let r61_bal_act_sub_bwp2 = getCellValue("#R59_BAL_ACT_SUB_BWP1") +
+		        getCellValue("#R60_BAL_ACT_SUB_BWP1") +
+		        getCellValue("#R61_BAL_ACT_SUB_BWP1");
+		    setCellValue("#R61_BAL_ACT_SUB_BWP2", r61_bal_act_sub_bwp2);
+
+		    let r103_net_bwp2 = getCellValue("#R103_FIG_BAL_BWP2") -
+		        getCellValue("#R103_AMT_ADJ_BWP2");
+		    setCellValue("#R103_NET_AMT_BWP2", r103_net_bwp2);
+
+		    let r130_fig_bal_bwp2 = getCellValue("#R129_FIG_BAL_BWP1") +
+		        getCellValue("#R130_FIG_BAL_BWP1");
+		    setCellValue("#R130_FIG_BAL_BWP2", r130_fig_bal_bwp2);
+
+		    let r130_amt_adj_bwp2 = getCellValue("#R129_AMT_ADJ_BWP1") +
+		        getCellValue("#R130_AMT_ADJ_BWP1");
+		    setCellValue("#R130_AMT_ADJ_BWP2", r130_amt_adj_bwp2);
+
+		    let r130_net_bwp1 = getCellValue("#R130_FIG_BAL_BWP1") +
+		        getCellValue("#R130_AMT_ADJ_BWP1");
+		    setCellValue("#R130_NET_AMT_BWP1", r130_net_bwp1);
+
+		    let r130_net_bwp2 = getCellValue("#R129_NET_AMT_BWP1") +
+		        getCellValue("#R130_NET_AMT_BWP1");
+		    setCellValue("#R130_NET_AMT_BWP2", r130_net_bwp2);
+
+		    let r130_bal_sub_bwp2 = getCellValue("#R129_BAL_SUB_BWP1") +
+		        getCellValue("#R130_BAL_SUB_BWP1");
+		    setCellValue("#R130_BAL_SUB_BWP2", r130_bal_sub_bwp2);
+
+		    let r130_bal_act_sub_bwp2 =
+		        getCellValue("#R129_BAL_ACT_SUB_BWP1") +
+		        getCellValue("#R130_BAL_ACT_SUB_BWP1");
+		    setCellValue("#R130_BAL_ACT_SUB_BWP2", r130_bal_act_sub_bwp2);
+
+		    let r135_FIG_BAL_BWP2 =
+		        getCellValue("#R130_FIG_BAL_BWP2") +
+		        getCellValue("#R134_FIG_BAL_BWP2");
+		    setCellValue("#R135_FIG_BAL_BWP2", r135_FIG_BAL_BWP2);
+
+		    let r135_NET_AMT_BWP2 =
+		        getCellValue("#R130_NET_AMT_BWP2") +
+		        getCellValue("#R134_NET_AMT_BWP2");
+		    setCellValue("#R135_NET_AMT_BWP2", r135_NET_AMT_BWP2);
+
+		    let r139_net_amt_bwp1 =
+		        getCellValue("#R139_FIG_BAL_BWP1") -
+		        getCellValue("#R139_AMT_ADJ_BWP1");
+		    setCellValue("#R139_NET_AMT_BWP1", r139_net_amt_bwp1);
+
+		    let r241_net_amt_bwp2 =
+		        getCellValue("#R241_FIG_BAL_BWP2") -
+		        getCellValue("#R241_AMT_ADJ_BWP2");
+		    setCellValue("#R241_NET_AMT_BWP2", r241_net_amt_bwp2);
+
+		    let r243_net_amt_bwp2 =
+		        getCellValue("#R243_FIG_BAL_BWP2") -
+		        getCellValue("#R243_AMT_ADJ_BWP2");
+		    setCellValue("#R243_NET_AMT_BWP2", r243_net_amt_bwp2);
+
+		    let r245_net_amt_bwp2 =
+		        getCellValue("#R245_FIG_BAL_BWP2") -
+		        getCellValue("#R245_AMT_ADJ_BWP2");
+		    setCellValue("#R245_NET_AMT_BWP2", r245_net_amt_bwp2);
+
+		    let r135_BAL_ACT_SUB_BWP2 =
+		        getCellValue("#R130_BAL_ACT_SUB_BWP2");
+		    setCellValue("#R135_BAL_ACT_SUB_BWP2", r135_BAL_ACT_SUB_BWP2);
+
+		    let R66_AMT_ADJ_BWP2 =
+		        getCellValue("#R37_AMT_ADJ_BWP2") +
+		        getCellValue("#R41_AMT_ADJ_BWP2") +
+		        getCellValue("#R45_AMT_ADJ_BWP2") +
+		        getCellValue("#R49_AMT_ADJ_BWP2") +
+		        getCellValue("#R53_AMT_ADJ_BWP2") +
+		        getCellValue("#R57_AMT_ADJ_BWP2") +
+		        getCellValue("#R61_AMT_ADJ_BWP2") +
+		        getCellValue("#R65_AMT_ADJ_BWP2");
+		    setCellValue("#R66_AMT_ADJ_BWP2", R66_AMT_ADJ_BWP2);
+
+		    let R66_NET_AMT_BWP2 =
+		        getCellValue("#R37_NET_AMT_BWP2") +
+		        getCellValue("#R41_NET_AMT_BWP2") +
+		        getCellValue("#R45_NET_AMT_BWP2") +
+		        getCellValue("#R49_NET_AMT_BWP2") +
+		        getCellValue("#R53_NET_AMT_BWP2") +
+		        getCellValue("#R57_NET_AMT_BWP2") +
+		        getCellValue("#R61_NET_AMT_BWP2") +
+		        getCellValue("#R65_NET_AMT_BWP2");
+		    setCellValue("#R66_NET_AMT_BWP2", R66_NET_AMT_BWP2);
+
+		    // --- CORrected R141 CALCULATIONS (Using BWP2 / Columns E, G, I, K, M mapped IDs) ---
+		    let R141_FIG_BAL_BWP2 =
+		        getCellValue("#R138_FIG_BAL_BWP1") +
+		        getCellValue("#R139_FIG_BAL_BWP1") +
+		        getCellValue("#R140_FIG_BAL_BWP1");
+		    setCellValue("#R141_FIG_BAL_BWP2", R141_FIG_BAL_BWP2);
+
+		    let R141_AMT_ADJ_BWP2 =
+		        getCellValue("#R138_AMT_ADJ_BWP2") +
+		        getCellValue("#R139_AMT_ADJ_BWP2") +
+		        getCellValue("#R140_AMT_ADJ_BWP2");
+		    setCellValue("#R141_AMT_ADJ_BWP2", R141_AMT_ADJ_BWP2);
+
+		
+		    let R141_NET_AMT_BWP2 =
+		        getCellValue("#R138_NET_AMT_BWP1") +
+		        getCellValue("#R139_NET_AMT_BWP1") +
+		        getCellValue("#R140_NET_AMT_BWP1");
+		    setCellValue("#R141_NET_AMT_BWP2", R141_NET_AMT_BWP2);
+
+		/*    let R141_BAL_SUB_BWP2 =
+		        getCellValue("#R138_BAL_SUB_BWP2") +
+		        getCellValue("#R139_BAL_SUB_BWP2") +
+		        getCellValue("#R140_BAL_SUB_BWP2");
+		    setCellValue("#R141_BAL_SUB_BWP2", R141_BAL_SUB_BWP2);*/
+
+		    let R142_BAL_ACT_SUB_BWP2 =
+		        getCellValue("#R135_BAL_ACT_SUB_BWP2") +
+		        getCellValue("#R141_BAL_ACT_SUB_BWP2");
+		    setCellValue("#R142_BAL_ACT_SUB_BWP2", R142_BAL_ACT_SUB_BWP2);
+
+		    // --- CORrected R142 CALCULATIONS ---
+		    let R142_FIG_BAL_BWP2 =
+		        getCellValue("#R135_FIG_BAL_BWP2") +
+		        getCellValue("#R141_FIG_BAL_BWP2");
+		    setCellValue("#R142_FIG_BAL_BWP2", R142_FIG_BAL_BWP2);
+
+		    let R142_AMT_ADJ_BWP2 =
+		        getCellValue("#R135_AMT_ADJ_BWP2") +
+		        getCellValue("#R141_AMT_ADJ_BWP2");
+		    setCellValue("#R142_AMT_ADJ_BWP2", R142_AMT_ADJ_BWP2);
+
+		    let R142_NET_AMT_BWP2 =
+		        getCellValue("#R135_NET_AMT_BWP2") +
+		        getCellValue("#R141_NET_AMT_BWP2");
+		    setCellValue("#R142_NET_AMT_BWP2", R142_NET_AMT_BWP2);
+			let R135_BAL_SUB_BWP2 =
+			    getCellValue("#R130_BAL_SUB_BWP2") +
+			    getCellValue("#R134_BAL_SUB_BWP2");
+			setCellValue("#R135_BAL_SUB_BWP2", R135_BAL_SUB_BWP2);
+		    let R142_BAL_SUB_BWP2 =
+		        getCellValue("#R135_BAL_SUB_BWP2") +
+		        getCellValue("#R141_BAL_SUB_BWP2");
+		    setCellValue("#R142_BAL_SUB_BWP2", R142_BAL_SUB_BWP2);
+
+		    let R134_BAL_SUB_BWP2 =
+		        getCellValue("#R133_BAL_SUB_BWP1") +
+		        getCellValue("#R134_BAL_SUB_BWP1");
+		    setCellValue("#R134_BAL_SUB_BWP2", R134_BAL_SUB_BWP2);
+
+
+
+		    let R90_BAL_SUB_BWP2 =
+		        getCellValue("#R88_BAL_SUB_BWP1") +
+		        getCellValue("#R89_BAL_SUB_BWP1") +
+		        getCellValue("#R90_BAL_SUB_BWP1");
+		    setCellValue("#R90_BAL_SUB_BWP2", R90_BAL_SUB_BWP2);
+
+		    let R91_BAL_SUB_BWP2 =
+		        getCellValue("#R91_BAL_SUB_BWP1");
+		    setCellValue("#R91_BAL_SUB_BWP2", R91_BAL_SUB_BWP2);
+
+		    let R91_BAL_ACT_SUB_BWP2 =
+		        getCellValue("#R91_BAL_ACT_SUB_BWP1") +
+		        getCellValue("#R89_BAL_ACT_SUB_BWP1");
+		    setCellValue("#R91_BAL_ACT_SUB_BWP2", R91_BAL_ACT_SUB_BWP2);
+
+		    let R92_BAL_SUB_BWP2 =
+		        getCellValue("#R91_BAL_SUB_BWP2") +
+		        getCellValue("#R90_BAL_SUB_BWP2");
+		    setCellValue("#R92_BAL_SUB_BWP2", R92_BAL_SUB_BWP2);
+
+		    let R92_BAL_ACT_SUB_BWP2 =
+		        getCellValue("#R90_BAL_ACT_SUB_BWP2") +
+		        getCellValue("#R91_BAL_ACT_SUB_BWP2");
+		    setCellValue("#R92_BAL_ACT_SUB_BWP2", R92_BAL_ACT_SUB_BWP2);
+			
 			let R142_NET_AMT_BWP1 =
-				getCellValue("#R138_NET_AMT_BWP1") +
-				getCellValue("#R139_NET_AMT_BWP1");
-
-			setCellValue("#R142_NET_AMT_BWP1", R142_NET_AMT_BWP1);
-
-
-			//------------------ R142_NET_AMT_BWP2 ------------------
-			let R142_NET_AMT_BWP2 =
-				getCellValue("#R135_NET_AMT_BWP2") +
-				getCellValue("#R141_NET_AMT_BWP2");
-
-			setCellValue("#R142_NET_AMT_BWP2", R142_NET_AMT_BWP2);
-
-
-			//------------------ R142_BAL_SUB_BWP2 ------------------
-			let R142_BAL_SUB_BWP2 =
-				getCellValue("#R135_BAL_SUB_BWP2") +
-				getCellValue("#R141_BAL_SUB_BWP2");
-
-			setCellValue("#R142_BAL_SUB_BWP2", R142_BAL_SUB_BWP2);
-
-			//------------------ R142_BAL_ACT_SUB_BWP2 ------------------
-			let R142_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R135_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R141_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R142_BAL_ACT_SUB_BWP2", R142_BAL_ACT_SUB_BWP2);
-
-
-			//------------------ R248_FIG_BAL_BWP2 ------------------
-			// R248 = SUM(R241 to R247)
-
-			let R248_FIG_BAL_BWP2 =
-				getCellValue("#R241_FIG_BAL_BWP2") +
-				getCellValue("#R242_FIG_BAL_BWP2") +
-				getCellValue("#R243_FIG_BAL_BWP2") +
-				getCellValue("#R244_FIG_BAL_BWP2") +
-				getCellValue("#R245_FIG_BAL_BWP2") +
-				getCellValue("#R246_FIG_BAL_BWP2") +
-				getCellValue("#R247_FIG_BAL_BWP2");
-
-			setCellValue("#R248_FIG_BAL_BWP2", R248_FIG_BAL_BWP2);
-
-
-			//------------------ R248_AMT_ADJ_BWP2 ------------------
-			// R248 = SUM(R241 to R247)
-
-			let R248_AMT_ADJ_BWP2 =
-				getCellValue("#R241_AMT_ADJ_BWP2") +
-				getCellValue("#R242_AMT_ADJ_BWP2") +
-				getCellValue("#R243_AMT_ADJ_BWP2") +
-				getCellValue("#R244_AMT_ADJ_BWP2") +
-				getCellValue("#R245_AMT_ADJ_BWP2") +
-				getCellValue("#R246_AMT_ADJ_BWP2") +
-				getCellValue("#R247_AMT_ADJ_BWP2");
-
-			setCellValue("#R248_AMT_ADJ_BWP2", R248_AMT_ADJ_BWP2);
-
-
-			//------------------ R248_NET_AMT_BWP2 ------------------
-			// R248 = SUM(R241 to R247)
-
-			let R248_NET_AMT_BWP2 =
-				getCellValue("#R241_NET_AMT_BWP2") +
-				getCellValue("#R242_NET_AMT_BWP2") +
-				getCellValue("#R243_NET_AMT_BWP2") +
-				getCellValue("#R244_NET_AMT_BWP2") +
-				getCellValue("#R245_NET_AMT_BWP2") +
-				getCellValue("#R246_NET_AMT_BWP2") +
-				getCellValue("#R247_NET_AMT_BWP2");
-
-			setCellValue("#R248_NET_AMT_BWP2", R248_NET_AMT_BWP2);
-
-
-			//------------------ R248_BAL_SUB_BWP2 ------------------
-			// R248 = SUM(R241 to R247)
-
-			let V_R248_BAL_SUB_BWP2 =
-				getCellValue("#R241_BAL_SUB_BWP2") +
-				getCellValue("#R242_BAL_SUB_BWP2") +
-				getCellValue("#R243_BAL_SUB_BWP2") +
-				getCellValue("#R244_BAL_SUB_BWP2") +
-				getCellValue("#R245_BAL_SUB_BWP2") +
-				getCellValue("#R246_BAL_SUB_BWP2") +
-				getCellValue("#R247_BAL_SUB_BWP2");
-
-			setCellValue("#R248_BAL_SUB_BWP2", V_R248_BAL_SUB_BWP2);
-
-
-			//------------------ R248_BAL_ACT_SUB_BWP2 ------------------
-			// R248 = SUM(R241 to R247)
-
-			let V_R248_BAL_ACT_SUB_BWP2 =
-				getCellValue("#R241_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R242_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R243_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R244_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R245_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R246_BAL_ACT_SUB_BWP2") +
-				getCellValue("#R247_BAL_ACT_SUB_BWP2");
-
-			setCellValue("#R248_BAL_ACT_SUB_BWP2", V_R248_BAL_ACT_SUB_BWP2);
-----*/
+				        getCellValue("#R138_NET_AMT_BWP1") +
+				        getCellValue("#R139_NET_AMT_BWP1");
+				    setCellValue("#R142_NET_AMT_BWP1", R142_NET_AMT_BWP1);
 		}
 
-		//--------------------------------------
-		// EVENT LISTENERS
-		//--------------------------------------
 		$(document).ready(function () {
+		    calculateTotals();
 
-			// Initial calculation on page load
-			calculateTotals();
-
-			// R61 manual fields
-			$("#R61_FIG_BAL_BWP1, #R61_AMT_ADJ_BWP1, #R61_BAL_SUB_BWP1, #R61_BAL_ACT_SUB_BWP1, #R59_FIG_BAL_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R59_FIG_BAL_BWP1, #R59_AMT_ADJ_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			// R103 manual fields
-			$("#R103_FIG_BAL_BWP2, #R103_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			// R130 manual fields
-			$("#R130_FIG_BAL_BWP1, #R130_AMT_ADJ_BWP1, #R130_BAL_SUB_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R130_BAL_ACT_SUB_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R139_FIG_BAL_BWP1, #R139_AMT_ADJ_BWP1").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			$("#R241_FIG_BAL_BWP2, #R241_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-			$("#R243_FIG_BAL_BWP2, #R243_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-
-			$("#R245_FIG_BAL_BWP2, #R245_AMT_ADJ_BWP2").on("input change keyup", function () {
-				calculateTotals();
-			});
-
-			/* ----------	// R66 dependent fields
-				$("#R37_FIG_BAL_BWP2, #R41_FIG_BAL_BWP2, #R45_FIG_BAL_BWP2, #R49_FIG_BAL_BWP2, #R53_FIG_BAL_BWP2, #R57_FIG_BAL_BWP2, #R61_FIG_BAL_BWP2, #R65_FIG_BAL_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-				// R66 AMT_ADJ dependent fields
-				$("#R37_AMT_ADJ_BWP2, #R41_AMT_ADJ_BWP2, #R45_AMT_ADJ_BWP2, #R49_AMT_ADJ_BWP2, #R53_AMT_ADJ_BWP2, #R57_AMT_ADJ_BWP2, #R61_AMT_ADJ_BWP2, #R65_AMT_ADJ_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				// R66 NET dependent fields
-				$("#R37_NET_AMT_BWP2, #R41_NET_AMT_BWP2, #R45_NET_AMT_BWP2, #R49_NET_AMT_BWP2, #R53_NET_AMT_BWP2, #R57_NET_AMT_BWP2, #R61_NET_AMT_BWP2, #R65_NET_AMT_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				// R66 BAL_SUB dependent fields
-				$("#R37_BAL_SUB_BWP2, #R41_BAL_SUB_BWP2, #R45_BAL_SUB_BWP2, #R49_BAL_SUB_BWP2, #R53_BAL_SUB_BWP2, #R57_BAL_SUB_BWP2, #R61_BAL_SUB_BWP2, #R65_BAL_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				// R66 BAL_ACT_SUB dependent fields
-				$("#R37_BAL_ACT_SUB_BWP2, #R41_BAL_ACT_SUB_BWP2, #R45_BAL_ACT_SUB_BWP2, #R49_BAL_ACT_SUB_BWP2, #R53_BAL_ACT_SUB_BWP2, #R57_BAL_ACT_SUB_BWP2, #R61_BAL_ACT_SUB_BWP2, #R65_BAL_ACT_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R102_FIG_BAL_BWP2, #R103_FIG_BAL_BWP2, #R104_FIG_BAL_BWP2, #R105_FIG_BAL_BWP2, #R106_FIG_BAL_BWP2, #R107_FIG_BAL_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-	
-				$("#R102_AMT_ADJ_BWP2, #R103_AMT_ADJ_BWP2, #R104_AMT_ADJ_BWP2, #R105_AMT_ADJ_BWP2, #R106_AMT_ADJ_BWP2, #R107_AMT_ADJ_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R102_NET_AMT_BWP2, #R103_NET_AMT_BWP2, #R104_NET_AMT_BWP2, #R105_NET_AMT_BWP2, #R106_NET_AMT_BWP2, #R107_NET_AMT_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R102_BAL_SUB_BWP2, #R103_BAL_SUB_BWP2, #R104_BAL_SUB_BWP2, #R105_BAL_SUB_BWP2, #R106_BAL_SUB_BWP2, #R107_BAL_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R102_BAL_ACT_SUB_BWP2, #R103_BAL_ACT_SUB_BWP2, #R104_BAL_ACT_SUB_BWP2, #R105_BAL_ACT_SUB_BWP2, #R106_BAL_ACT_SUB_BWP2, #R107_BAL_ACT_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R138_FIG_BAL_BWP1, #R139_FIG_BAL_BWP1, #R140_FIG_BAL_BWP1")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				$("#R138_AMT_ADJ_BWP1, #R139_AMT_ADJ_BWP1, #R140_AMT_ADJ_BWP1").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R138_NET_AMT_BWP1, #R139_NET_AMT_BWP1, #R140_NET_AMT_BWP1").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R138_BAL_SUB_BWP2, #R139_BAL_SUB_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R138_BAL_ACT_SUB_BWP2, #R139_BAL_ACT_SUB_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R135_FIG_BAL_BWP2, #R141_FIG_BAL_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R135_AMT_ADJ_BWP2, #R141_AMT_ADJ_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R138_NET_AMT_BWP1, #R139_NET_AMT_BWP1").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R135_NET_AMT_BWP2, #R141_NET_AMT_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R135_BAL_SUB_BWP2, #R141_BAL_SUB_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				$("#R135_BAL_ACT_SUB_BWP2, #R141_BAL_ACT_SUB_BWP2").on("input change keyup", function () {
-					calculateTotals();
-				});
-	
-				// R248 dependent fields
-				$("#R241_FIG_BAL_BWP2, #R242_FIG_BAL_BWP2, #R243_FIG_BAL_BWP2, #R244_FIG_BAL_BWP2, #R245_FIG_BAL_BWP2, #R246_FIG_BAL_BWP2, #R247_FIG_BAL_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				// R248 AMT dependent fields
-				$("#R241_AMT_ADJ_BWP2, #R242_AMT_ADJ_BWP2, #R243_AMT_ADJ_BWP2, #R244_AMT_ADJ_BWP2, #R245_AMT_ADJ_BWP2, #R246_AMT_ADJ_BWP2, #R247_AMT_ADJ_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-	
-				// R248 NET dependent fields
-				$("#R241_NET_AMT_BWP2, #R242_NET_AMT_BWP2, #R243_NET_AMT_BWP2, #R244_NET_AMT_BWP2, #R245_NET_AMT_BWP2, #R246_NET_AMT_BWP2, #R247_NET_AMT_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-				// R248 BAL_SUB dependent fields
-				$("#R241_BAL_SUB_BWP2, #R242_BAL_SUB_BWP2, #R243_BAL_SUB_BWP2, #R244_BAL_SUB_BWP2, #R245_BAL_SUB_BWP2, #R246_BAL_SUB_BWP2, #R247_BAL_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					});
-	
-	
-				// R248 BAL_ACT_SUB dependent fields
-				$("#R241_BAL_ACT_SUB_BWP2, #R242_BAL_ACT_SUB_BWP2, #R243_BAL_ACT_SUB_BWP2, #R244_BAL_ACT_SUB_BWP2, #R245_BAL_ACT_SUB_BWP2, #R246_BAL_ACT_SUB_BWP2, #R247_BAL_ACT_SUB_BWP2")
-					.on("input change keyup", function () {
-						calculateTotals();
-					}); ----*/
+		    $(document).on("input change keyup", "input, select, textarea", function () {
+		        calculateTotals();
+		    });
 		});
 	</script>
 
@@ -5122,10 +4758,12 @@ PURPOSE		: BRRS GL_SCH REPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
 
-											<tr>
+											<tr th:each="report : ${reportsummary}">
+
 												<!-- C -->
 												<td style="width: 10px;font-weight: bold;"></td>
-												<td style="text-align: left; padding-left: 20px; "
+
+												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report?.R59_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -5143,11 +4781,15 @@ PURPOSE		: BRRS GL_SCH REPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<!-- F -->
-												<td th:text="${#numbers.formatDecimal(report.R59_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
-													id="R59_AMT_ADJ_BWP1" class="R59_AMT_ADJ_BWP1"
-													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R59', ColumnId='C4'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td id="ROW59"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R59_AMT_ADJ_BWP1 != null)
+											                           ? #numbers.formatDecimal(reportsummary3[0].R59_AMT_ADJ_BWP1, 1, 'COMMA', 0, 'POINT')
+											                           : '0'}" id="R59_AMT_ADJ_BWP1" name="R59_AMT_ADJ_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 												<!-- G -->
 												<td th:text="${#numbers.formatDecimal(report.R59_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
@@ -5158,7 +4800,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 												<!-- H -->
 												<td th:text="${#numbers.formatDecimal(report.R59_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
-													id="R59_NET_AMT_BWP1" name="R59_NET_AMT_BWP1" class=" green-cell"
+													id="R59_NET_AMT_BWP1" name="R59_NET_AMT_BWP1" class="green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
 												<!-- I -->
@@ -5195,8 +4837,8 @@ PURPOSE		: BRRS GL_SCH REPORT
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R59', ColumnId='C11'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-											</tr>
 
+											</tr>
 											<tr>
 												<!-- C -->
 												<td style="width: 10px;font-weight: bold;"></td>
@@ -7049,81 +6691,168 @@ PURPOSE		: BRRS GL_SCH REPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
 
-											<tr>
-												<!-- C -->
+											<!--	<tr>
+												 C 
 												<td style="font-weight: bold;width:10px"></td>
 												<td style="text-align: left; padding-left: 20px; "
 													th:text="${report?.R89_PRODUCT ?: ''}"></td>
 
-												<!-- D -->
+												 D 
 												<td th:text="${#numbers.formatDecimal(report.R89_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_FIG_BAL_BWP1" class="R89_FIG_BAL_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- E -->
+												 E 
 												<td th:text="${#numbers.formatDecimal(report.R89_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_FIG_BAL_BWP2" class="R89_FIG_BAL_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- F -->
+												 F 
 												<td th:text="${#numbers.formatDecimal(report.R89_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_AMT_ADJ_BWP1" class="R89_AMT_ADJ_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- G -->
+												 G 
 												<td th:text="${#numbers.formatDecimal(report.R89_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_AMT_ADJ_BWP2" class="R89_AMT_ADJ_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C5'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- H -->
+												 H 
 												<td th:text="${#numbers.formatDecimal(report.R89_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_NET_AMT_BWP1" name="R89_NET_AMT_BWP1" class=" green-cell"
 													style="text-align: right; width: 390px"></td>
 
-												<!-- I -->
+												 I 
 												<td th:text="${#numbers.formatDecimal(report.R89_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_NET_AMT_BWP2" class="R89_NET_AMT_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C7'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- J -->
+												 J 
 												<td th:text="${#numbers.formatDecimal(report.R89_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_BAL_SUB_BWP1" class="R89_BAL_SUB_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C8'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- K -->
+												 K 
 												<td th:text="${#numbers.formatDecimal(report.R89_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_BAL_SUB_BWP2" class="R89_BAL_SUB_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C9'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- L -->
+												 L 
 												<td th:text="${#numbers.formatDecimal(report.R89_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_BAL_ACT_SUB_BWP1" class="R89_BAL_ACT_SUB_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C10'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- M -->
+												 M 
 												<td th:text="${#numbers.formatDecimal(report.R89_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R89_BAL_ACT_SUB_BWP2" class="R89_BAL_ACT_SUB_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R89', ColumnId='C11'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-											</tr>
+											</tr>-->
+											<tr th:each="report : ${reportsummary}">
 
+												<!-- C -->
+												<td style="width: 10px;font-weight: bold;"></td>
+
+												<td style="text-align: left; padding-left: 20px;"
+													th:text="${report?.R89_PRODUCT ?: ''}"></td>
+
+												<!-- D -->
+												<td th:text="${#numbers.formatDecimal(report.R89_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_FIG_BAL_BWP1" class="R89_FIG_BAL_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- E -->
+												<td th:text="${#numbers.formatDecimal(report.R89_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_FIG_BAL_BWP2" class="R89_FIG_BAL_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- F -->
+												<td th:text="${#numbers.formatDecimal(report.R89_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_AMT_ADJ_BWP1" class="R89_AMT_ADJ_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- G -->
+												<td th:text="${#numbers.formatDecimal(report.R89_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_AMT_ADJ_BWP2" class="R89_AMT_ADJ_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- H -->
+												<td th:text="${#numbers.formatDecimal(report.R89_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_NET_AMT_BWP1" name="R89_NET_AMT_BWP1" class="green-cell"
+													style="text-align: right; width: 390px;padding-right:7px"></td>
+
+												<!-- I -->
+												<td th:text="${#numbers.formatDecimal(report.R89_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_NET_AMT_BWP2" class="R89_NET_AMT_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- J -->
+												<td id="ROW89"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R89_BAL_SUB_BWP1 != null)
+																					                           ? #numbers.formatDecimal(reportsummary3[0].R89_BAL_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																					                           : '0'}" id="R89_BAL_SUB_BWP1" name="R89_BAL_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<!-- K -->
+												<td th:text="${#numbers.formatDecimal(report.R89_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_BAL_SUB_BWP2" class="R89_BAL_SUB_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- L -->
+												<td id="ROW89"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R89_BAL_ACT_SUB_BWP1 != null)
+																					                           ? #numbers.formatDecimal(reportsummary3[0].R89_BAL_ACT_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																					                           : '0'}" id="R89_BAL_ACT_SUB_BWP1" name="R89_BAL_ACT_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+												<!-- M -->
+												<td th:text="${#numbers.formatDecimal(report.R89_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R89_BAL_ACT_SUB_BWP2" class="R89_BAL_ACT_SUB_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R89', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											</tr>
 											<tr>
 												<!-- C -->
 												<td style="font-weight: bold;width:10px"></td>
@@ -7190,73 +6919,160 @@ PURPOSE		: BRRS GL_SCH REPORT
 													th:attr="RowId='R90', ColumnId='C11'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
+											<tr th:each="report : ${reportsummary}">
 
-											<tr>
 												<!-- C -->
+												<td style="width: 10px;font-weight: bold;"></td>
+
+												<td style="text-align: left; padding-left: 20px;"
+													th:text="${report?.R91_PRODUCT ?: ''}"></td>
+
+												<!-- D -->
+												<td th:text="${#numbers.formatDecimal(report.R91_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_FIG_BAL_BWP1" class="R91_FIG_BAL_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- E -->
+												<td th:text="${#numbers.formatDecimal(report.R91_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_FIG_BAL_BWP2" class="R91_FIG_BAL_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- F -->
+												<td th:text="${#numbers.formatDecimal(report.R91_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_AMT_ADJ_BWP1" class="R91_AMT_ADJ_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- G -->
+												<td th:text="${#numbers.formatDecimal(report.R91_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_AMT_ADJ_BWP2" class="R91_AMT_ADJ_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- H -->
+												<td th:text="${#numbers.formatDecimal(report.R91_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_NET_AMT_BWP1" name="R91_NET_AMT_BWP1" class="green-cell"
+													style="text-align: right; width: 390px;padding-right:7px"></td>
+
+												<!-- I -->
+												<td th:text="${#numbers.formatDecimal(report.R91_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_NET_AMT_BWP2" class="R91_NET_AMT_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- J -->
+												<td id="ROW89"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R91_BAL_SUB_BWP1 != null)
+																					                           ? #numbers.formatDecimal(reportsummary3[0].R91_BAL_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																					                           : '0'}" id="R91_BAL_SUB_BWP1" name="R91_BAL_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<!-- K -->
+												<td th:text="${#numbers.formatDecimal(report.R91_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_BAL_SUB_BWP2" class="R91_BAL_SUB_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- L -->
+												<td id="ROW89"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R91_BAL_ACT_SUB_BWP1 != null)
+																					                           ? #numbers.formatDecimal(reportsummary3[0].R91_BAL_ACT_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																					                           : '0'}" id="R91_BAL_ACT_SUB_BWP1" name="R91_BAL_ACT_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
+
+												<!-- M -->
+												<td th:text="${#numbers.formatDecimal(report.R91_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R91_BAL_ACT_SUB_BWP2" class="R91_BAL_ACT_SUB_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R91', ColumnId='C11'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											</tr>
+											<!--		<tr>
+												 C 
 												<td style="font-weight: bold;">II</td>
 												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
 													th:text="${report?.R91_PRODUCT ?: ''}"></td>
 
-												<!-- D -->
+												 D 
 												<td th:text="${#numbers.formatDecimal(report.R91_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_FIG_BAL_BWP1" class="R91_FIG_BAL_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R91', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- E -->
+												 E 
 												<td th:text="${#numbers.formatDecimal(report.R91_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_FIG_BAL_BWP2" name="R91_FIG_BAL_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px"></td>
 
-												<!-- F -->
+												 F 
 												<td th:text="${#numbers.formatDecimal(report.R91_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_AMT_ADJ_BWP1" class="R91_AMT_ADJ_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R91', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- G -->
+												 G 
 												<td th:text="${#numbers.formatDecimal(report.R91_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_AMT_ADJ_BWP2" class="R91_AMT_ADJ_BWP2"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R91', ColumnId='C5'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- H -->
+												 H 
 												<td th:text="${#numbers.formatDecimal(report.R91_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_NET_AMT_BWP1" name="R91_NET_AMT_BWP1" class=" green-cell"
 													style="text-align: right; width: 390px"></td>
 
-												<!-- I -->
+												 I 
 												<td th:text="${#numbers.formatDecimal(report.R91_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_NET_AMT_BWP2" name="R91_NET_AMT_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px"></td>
 
-												<!-- J -->
+												 J 
 												<td th:text="${#numbers.formatDecimal(report.R91_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_BAL_SUB_BWP1" class="R91_BAL_SUB_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R91', ColumnId='C8'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- K -->
+												 K 
 												<td th:text="${#numbers.formatDecimal(report.R91_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_BAL_SUB_BWP2" name="R91_BAL_SUB_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px"></td>
 
-												<!-- L -->
+												 L 
 												<td th:text="${#numbers.formatDecimal(report.R91_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_BAL_ACT_SUB_BWP1" class="R91_BAL_ACT_SUB_BWP1"
 													style="text-align: right; width: 390px"
 													th:attr="RowId='R91', ColumnId='C10'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- M -->
+												 M 
 												<td th:text="${#numbers.formatDecimal(report.R91_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R91_BAL_ACT_SUB_BWP2" name="R91_BAL_ACT_SUB_BWP2"
 													class=" green-cell" style="text-align: right; width: 390px"></td>
-											</tr>
+											</tr>-->
 
 											<tr>
 												<!-- C -->
@@ -9424,10 +9240,12 @@ PURPOSE		: BRRS GL_SCH REPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
 
-											<tr>
+											<tr th:each="report : ${reportsummary1}">
+
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; padding-left: 20px; "
+												<td style="width: 10px;font-weight: bold;"></td>
+
+												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report?.R138_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
@@ -9448,7 +9266,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 												<td th:text="${#numbers.formatDecimal(report.R138_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R138_AMT_ADJ_BWP1" class="R138_AMT_ADJ_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R138', ColumnId='C4'"
+													th:attr="RowId='R138', ColumnId='C9'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<!-- G -->
@@ -9460,7 +9278,7 @@ PURPOSE		: BRRS GL_SCH REPORT
 
 												<!-- H -->
 												<td th:text="${#numbers.formatDecimal(report.R138_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
-													id="R138_NET_AMT_BWP1" name="R138_NET_AMT_BWP1" class=" green-cell"
+													id="R138_NET_AMT_BWP1" name="R138_NET_AMT_BWP1" class="green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
 												<!-- I -->
@@ -9471,32 +9289,55 @@ PURPOSE		: BRRS GL_SCH REPORT
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<!-- J -->
-												<td th:text="${#numbers.formatDecimal(report.R138_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
-													id="R138_BAL_SUB_BWP1" class="R138_BAL_SUB_BWP1"
-													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R138', ColumnId='C8'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td id="ROW138"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R138_BAL_SUB_BWP1 != null)
+																														                           ? #numbers.formatDecimal(reportsummary3[0].R138_BAL_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																														                           : '0'}" id="R138_BAL_SUB_BWP1" name="R138_BAL_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
 
 												<!-- K -->
-												<td th:text="${#numbers.formatDecimal(report.R138_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
-													id="R138_BAL_SUB_BWP2" class="R138_BAL_SUB_BWP2"
-													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R138', ColumnId='C9'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td id="ROW138"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R138_BAL_SUB_BWP2 != null)
+																														                           ? #numbers.formatDecimal(reportsummary3[0].R138_BAL_SUB_BWP2, 1, 'COMMA', 0, 'POINT')
+																														                           : '0'}" id="R138_BAL_SUB_BWP2" name="R138_BAL_SUB_BWP2"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
 
 												<!-- L -->
-												<td th:text="${#numbers.formatDecimal(report.R138_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
-													id="R138_BAL_ACT_SUB_BWP1" class="R138_BAL_ACT_SUB_BWP1"
-													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R138', ColumnId='C10'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td id="ROW138"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R138_BAL_ACT_SUB_BWP1 != null)
+																														                           ? #numbers.formatDecimal(reportsummary3[0].R138_BAL_ACT_SUB_BWP1, 1, 'COMMA', 0, 'POINT')
+																														                           : '0'}" id="R138_BAL_ACT_SUB_BWP1"
+														name="R138_BAL_ACT_SUB_BWP1"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+
+
 
 												<!-- M -->
-												<td th:text="${#numbers.formatDecimal(report.R138_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
-													id="R138_BAL_ACT_SUB_BWP2" class="R138_BAL_ACT_SUB_BWP2"
-													style="text-align: right; width: 390px;padding-right:7px"
-													th:attr="RowId='R138', ColumnId='C11'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												<td id="ROW138"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R138_BAL_ACT_SUB_BWP2 != null)
+																														                           ? #numbers.formatDecimal(reportsummary3[0].R138_BAL_ACT_SUB_BWP2, 1, 'COMMA', 0, 'POINT')
+																														                           : '0'}" id="R138_BAL_ACT_SUB_BWP2"
+														name="R138_BAL_ACT_SUB_BWP2"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
 											</tr>
 
 											<tr th:each="report1 : ${reportsummary3}">
@@ -9684,74 +9525,163 @@ PURPOSE		: BRRS GL_SCH REPORT
 													th:attr="RowId='R140', ColumnId='C11'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 											</tr>
+											<tr th:each="report1 : ${reportsummary1}">
 
-											<tr>
 												<!-- C -->
-												<td style="font-weight: bold;width:10px"></td>
-												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
-													th:text="${report?.R141_PRODUCT ?: ''}"></td>
+												<td style="width: 10px;font-weight: bold;"></td>
+
+												<td style="text-align: left; padding-left: 20px;"
+													th:text="${report1?.R141_PRODUCT ?: ''}"></td>
 
 												<!-- D -->
-												<td th:text="${#numbers.formatDecimal(report.R141_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
+												<td th:text="${#numbers.formatDecimal(report1.R141_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_FIG_BAL_BWP1" class="R141_FIG_BAL_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R141', ColumnId='C2'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
 												<!-- E -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_FIG_BAL_BWP2" class="R141_FIG_BAL_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C3'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- F -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_AMT_ADJ_BWP1" class="R141_AMT_ADJ_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C9'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- G -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_AMT_ADJ_BWP2" class="R141_AMT_ADJ_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C5'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- H -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_NET_AMT_BWP1" name="R141_NET_AMT_BWP1" class="green-cell"
+													style="text-align: right; width: 390px;padding-right:7px"></td>
+
+												<!-- I -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_NET_AMT_BWP2" class="R141_NET_AMT_BWP2"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- J -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_BAL_SUB_BWP1" class="R141_BAL_SUB_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												<!-- K -->
+												<td id="ROW141"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R141_BAL_SUB_BWP2 != null)
+																																											                           ? #numbers.formatDecimal(reportsummary3[0].R141_BAL_SUB_BWP2, 1, 'COMMA', 0, 'POINT')
+																																											                           : '0'}" id="R141_BAL_SUB_BWP2"
+														name="R141_BAL_SUB_BWP2"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+												<!-- L -->
+												<td th:text="${#numbers.formatDecimal(report1.R141_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_BAL_ACT_SUB_BWP1" class="R141_BAL_ACT_SUB_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C7'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+
+
+
+												<!-- M -->
+												<td id="ROW141"
+													style="font-weight: bold; text-align: right; padding-left: 20px; width: 200px;">
+
+													<input class="display-input Show_input" type="text" th:value="${(reportsummary3 != null and !#lists.isEmpty(reportsummary3) and reportsummary3[0].R141_BAL_ACT_SUB_BWP2 != null)
+																																											                           ? #numbers.formatDecimal(reportsummary3[0].R141_BAL_ACT_SUB_BWP2, 1, 'COMMA', 0, 'POINT')
+																																											                           : '0'}" id="R141_BAL_ACT_SUB_BWP2"
+														name="R141_BAL_ACT_SUB_BWP2"
+														style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
+														readonly />
+												</td>
+
+											</tr>
+											<!--	<tr>
+												 C 
+												<td style="font-weight: bold;width:10px"></td>
+												<td style="text-align: left; font-weight: bold; padding-left: 20px; "
+													th:text="${report?.R141_PRODUCT ?: ''}"></td>
+
+												 D 
+												<td th:text="${#numbers.formatDecimal(report.R141_FIG_BAL_BWP1, 0, 'COMMA', 0, 'POINT')}"
+													id="R141_FIG_BAL_BWP1" class="R141_FIG_BAL_BWP1"
+													style="text-align: right; width: 390px;padding-right:7px"
+													th:attr="RowId='R141', ColumnId='C2'"
+													onclick="showdetailsbyRowAndColumn(this)"></td>
+
+												 E 
 												<td th:text="${#numbers.formatDecimal(report.R141_FIG_BAL_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_FIG_BAL_BWP2" name="R141_FIG_BAL_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
-												<!-- F -->
+												 F 
 												<td th:text="${#numbers.formatDecimal(report.R141_AMT_ADJ_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_AMT_ADJ_BWP1" class="R141_AMT_ADJ_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R141', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- G -->
+												 G 
 												<td th:text="${#numbers.formatDecimal(report.R141_AMT_ADJ_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_AMT_ADJ_BWP2" name="R141_AMT_ADJ_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
-												<!-- H -->
+												 H 
 												<td th:text="${#numbers.formatDecimal(report.R141_NET_AMT_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_NET_AMT_BWP1" class="R141_NET_AMT_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R141', ColumnId='C6'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- I -->
+												 I 
 												<td th:text="${#numbers.formatDecimal(report.R141_NET_AMT_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_NET_AMT_BWP2" name="R141_NET_AMT_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
-												<!-- J -->
+												 J 
 												<td th:text="${#numbers.formatDecimal(report.R141_BAL_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_BAL_SUB_BWP1" class="R141_BAL_SUB_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R141', ColumnId='C8'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- K -->
+												 K 
 												<td th:text="${#numbers.formatDecimal(report.R141_BAL_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_BAL_SUB_BWP2" name="R141_BAL_SUB_BWP2" class=" green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
 
-												<!-- L -->
+												 L 
 												<td th:text="${#numbers.formatDecimal(report.R141_BAL_ACT_SUB_BWP1, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_BAL_ACT_SUB_BWP1" class="R141_BAL_ACT_SUB_BWP1"
 													style="text-align: right; width: 390px;padding-right:7px"
 													th:attr="RowId='R141', ColumnId='C10'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
 
-												<!-- M -->
+												 M 
 												<td th:text="${#numbers.formatDecimal(report.R141_BAL_ACT_SUB_BWP2, 0, 'COMMA', 0, 'POINT')}"
 													id="R141_BAL_ACT_SUB_BWP2" name="R141_BAL_ACT_SUB_BWP2"
 													class=" green-cell"
 													style="text-align: right; width: 390px;padding-right:7px"></td>
-											</tr>
+											</tr>-->
 
 											<tr>
 												<!-- C -->

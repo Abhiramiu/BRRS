@@ -4073,12 +4073,40 @@ public class BRRS_FORMAT_I_ReportService {
 
 	}
 
-	public List<Object> getFORMAT_IArchival() {
+//	public List<Object> getFORMAT_IArchival() {
+//
+//		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_FORMAT_I_ARCHIVALTABLE_SUMMARY"
+//				+ "ORDER BY REPORT_VERSION";
+//		return jdbcTemplate.query(sql,
+//				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+//	}
+	public List<Object[]> getFORMAT_IArchival() {
+		List<Object[]> archivalList = new ArrayList<>();
 
-		String sql = "SELECT REPORT_DATE, REPORT_VERSION " + "FROM BRRS_FORMAT_I_ARCHIVALTABLE_SUMMARY"
-				+ "ORDER BY REPORT_VERSION";
-		return jdbcTemplate.query(sql,
-				(rs, rowNum) -> new Object[] { rs.getDate("REPORT_DATE"), rs.getBigDecimal("REPORT_VERSION") });
+		try {
+
+			List<FORMAT_I_Archival_Summary_Entity> repoData = getdatabydateListWithVersion1();
+
+			if (repoData != null && !repoData.isEmpty()) {
+				for (FORMAT_I_Archival_Summary_Entity entity : repoData) {
+					Object[] row = new Object[] { entity.getREPORT_DATE(), entity.getREPORT_VERSION(),
+							entity.getREPORT_RESUBDATE() };
+					archivalList.add(row);
+				}
+
+				System.out.println("Fetched " + archivalList.size() + " archival records");
+				FORMAT_I_Archival_Summary_Entity first = repoData.get(0);
+				System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+			} else {
+				System.out.println("No archival data found.");
+			}
+
+		} catch (Exception e) {
+			System.err.println("Error fetching  FORMAT_I  Archival data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return archivalList;
 	}
 
 	public byte[] getFORMAT_IDetailExcel(String filename, String fromdate, String todate, String currency,
