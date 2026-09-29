@@ -528,7 +528,7 @@ $(window).on('beforeunload', function() {
 
 				var Callurl;
 				$('#loader').modal('show');
-				Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+				Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(dtltype=${dtltype},fromdate=${fromdate},todate=${todate},type=${type},asondate=${asondate},version=${version},currency=${currency})}]]*/
 					location.href = Callurl;
 				console.log(Callurl);
 				/*  $.ajax({
@@ -556,7 +556,7 @@ $(window).on('beforeunload', function() {
 			function showsummary() {
 				var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
 				loader.show();
-				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+				var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report',fromdate=${fromdate},todate=${todate},type=${type},asondate=${asondate},version=${version},currency=${currency})}]]*/
 					location.href = Callurl;
 
 			}
@@ -708,7 +708,7 @@ function showdetailsbyRowAndColumn(a) {
             $('#loader').modal('show');
 
             // Build dynamic URL
-            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+            var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(dtltype=${dtltype},fromdate=${fromdate},todate=${todate},type=${type},asondate=${asondate},version=${version},currency=${currency})}]]*/ "";
             Callurl += "&filter=" + encodeURIComponent(reportLable + "," + reportAddlCriteria1);
 
             location.href = Callurl;
@@ -1012,10 +1012,10 @@ function cancelModify() {
 			getAmountValue("#r25_amount_2");
 		setAmountValue("#r26_amount_2", r26);
 
-		// R35 = R31 + R32 - R33 - R34
+		// R35 = R31 + R32 + R33 - R34
 		const r35 =
 			getAmountValue("#r31_amount_2") +
-			getAmountValue("#r32_amount_2") -
+			getAmountValue("#r32_amount_2") +
 			getAmountValue("#r33_amount_2") -
 			getAmountValue("#r34_amount_2");
 		setAmountValue("#r35_amount_2", r35);
@@ -1180,6 +1180,29 @@ function cancelModify() {
 
 	    const asondate = btn.getAttribute("data-todate");
 	    const type = btn.getAttribute("data-type");
+	    const version = btn.getAttribute("data-version");
+	    let userAnswer = null;
+
+	    if (type === 'RESUB' && !$('#confirmModal').data('answered')) {
+	        $('#confirmModal').modal('show');
+
+	        $('#btnConfirmYes').off('click').on('click', function () {
+	            $('#confirmModal').modal('hide');
+	            $('#confirmModal').data('answered', 'YES');
+	            fileuploads(btn);
+	        });
+
+	        $('#btnConfirmNo').off('click').on('click', function () {
+	            $('#confirmModal').modal('hide');
+	            $('#confirmModal').data('answered', 'NO');
+	            fileuploads(btn);
+	        });
+
+	        return;
+	    }
+
+	    userAnswer = $('#confirmModal').data('answered');
+	    $('#confirmModal').data('answered', null);
 
 	    $('#loader').modal('show');
 
@@ -1202,7 +1225,17 @@ function cancelModify() {
 	        const formData = new FormData();
 
 	        formData.append("asondate", asondate);
-	        formData.append("type", type);
+	        if (type) {
+	            formData.append("type", type);
+	        }
+	        if (version) {
+	            formData.append("version", version);
+	        }
+	        if (userAnswer === 'NO') {
+	            formData.append("entry", "NO");
+	        } else if (userAnswer === 'YES') {
+	            formData.append("entry", "YES");
+	        }
 
 	        $("#fileupload").find(":input").each(function () {
 
@@ -1229,16 +1262,30 @@ function cancelModify() {
 	            dataType: 'text',
 
 	            success: function (response) {
+	                $('#loader').modal('hide');
 
-	                $("#resultModalLabel").text("BRRS");
-
-	                $("#resultModalBody").text(response);
-
-	                $("#resultModal").modal("show");
+	                if (response && response.toLowerCase().includes('success')) {
+	                    if (userAnswer === 'NO') {
+	                        let title = 'Success';
+	                        let message = response;
+	                        document.getElementById('resultModalLabel2').innerText = title;
+	                        document.getElementById('resultModalBody2').innerText = message;
+	                        const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+	                        modal.show();
+	                    } else {
+	                        $("#resultModalLabel").text("BRRS");
+	                        $("#resultModalBody").text(response);
+	                        $("#resultModal").modal("show");
+	                    }
+	                } else {
+	                    $("#resultModalLabel").text("Information");
+	                    $("#resultModalBody").text(response || 'No data updated.');
+	                    $("#resultModal").modal("show");
+	                }
 	            },
 
 	            error: function (jqXHR) {
-
+	                $('#loader').modal('hide');
 	                console.error("Error response:", jqXHR.responseText);
 
 	                $("#resultModalLabel").text("Error");
@@ -1388,7 +1435,7 @@ function cancelModify() {
 				const allowdetail = /*[[${allowdetail}]]*/ 'NO';	
 					const type = /*[[${type}]]*/ '';	
 			    /*<![CDATA[*/
-			    const reportId = /*[[${reportid}]]*/ null;
+			    const reportId = /*[[${reportid}]]*/ 'M_CA2';
 			    /*]]>*/
 			</script>
 
@@ -1405,9 +1452,10 @@ function cancelModify() {
 				const acctNo = elem.getAttribute("data-acctNo");
 				const SNO = elem.getAttribute("data-SNo");
 				const asondate = elem.getAttribute("data-asondate");
+				const targetRptId = reportId || 'M_CA2';
 
 				location.href =
-					`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
+					`/BRRS/Reports/${targetRptId}/Detailspage?formmode=${mode}&SNO=${SNO}&acctNo=${acctNo}&asondate=${asondate}&type=${type}`;
 
 
 			}
@@ -1447,8 +1495,10 @@ function cancelModify() {
 
 				$('#loader').modal('show');
 
+				const targetRptId = reportId || 'M_CA2';
+
 				$.ajax({
-					url: '/BRRS/Reports/' + reportId + '/update',
+					url: '/BRRS/Reports/' + targetRptId + '/update',
 					type: 'POST',
 					data: formData,
 
@@ -1474,9 +1524,10 @@ function cancelModify() {
 						}
 					},
 
-					error: function () {
+					error: function (xhr) {
 						$('#loader').modal('hide');
-						showResultModalDU('Error', 'Failed to update record. Please try again.');
+						let errMsg = (xhr && xhr.responseText) ? xhr.responseText : 'Failed to update record. Please try again.';
+						showResultModalDU('Error', errMsg);
 					}
 				});
 			}
@@ -1495,8 +1546,10 @@ function cancelModify() {
 
 				$('#loader').modal('show');
 
+				const targetRptId = reportId || 'M_CA2';
+
 				$.ajax({
-					url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+					url: '/BRRS/Reports/' + targetRptId + '/regenprocedure',
 					type: 'POST',
 					data: formData,
 
@@ -1515,15 +1568,16 @@ function cancelModify() {
 						}
 					},
 
-					error: function () {
+					error: function (xhr) {
 						$('#loader').modal('hide');
-						showResultModalDU('Error', 'Failed to process request. Please try again.');
+						let errMsg = (xhr && xhr.responseText) ? xhr.responseText : 'Failed to process request. Please try again.';
+						showResultModalDU('Error', errMsg);
 					}
 				});
 			}
 
 			function redirecttoarchlist() {
-				window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
+				window.location.href = '/BRRS/Resubmission?rptcode=' + (reportId || 'M_CA2');
 			}
 			function showResultModalDU(title, message) {
 				document.getElementById('resultModalLabel1').innerText = title;
@@ -1651,6 +1705,10 @@ function cancelModify() {
 
 
         <!-- Summary / Details -->
+        <button type="button" class="custom-tab-btn"
+                onclick="regenerateProcedure()"
+                th:if="${displaymode == 'Details' and type == 'RESUB' and allowdetail == 'YES'}">Regenerate</button>
+
         <button class="custom-tab-btn" th:if="${displaymode == 'Details'}" onclick="showsummary();">
             Summary
         </button>
@@ -1663,7 +1721,7 @@ function cancelModify() {
         <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
-                th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary' and (type != 'RESUB' or allowdetail == 'YES')}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
@@ -2180,7 +2238,8 @@ function cancelModify() {
 							            class="custom-tab-btn Show_input"
 							            form="fileupload"
 							            th:attr="data-todate=${asondate},
-							                     data-type=${type}"
+							                     data-type=${type},
+							                     data-version=${version}"
 							            onclick="fileuploads(this);"
 							            style="display:none;">
 
@@ -2210,7 +2269,7 @@ function cancelModify() {
 							<table class="table table-striped table-bordered table-hover" id="reportdetail">
 							 <thead class="thead-light">
             <tr>
-               <th></th>
+               <th th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}"></th>
 		<th style="width: 60px; text-align:center;">S No</th>
 		<th>CUST ID</th>
 		<th>ACCT NO</th>
@@ -2225,10 +2284,11 @@ function cancelModify() {
 
         <tbody style="font-family: Arial;">
             <tr th:each="report, srlno: ${reportdetails}">
-				<td>
+				<td th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}">
 																<a data-toggle="tooltip" class="editrec"
 																	title="Click to Edit this Record">
-																	<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
+																	<i class="fas fa-edit" th:attr="data-SNo=${report.sno != null ? report.sno : report.acctNumber},
+																										            data-acctNo=${report.acctNumber},
 																										            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
 																										            data-type=${type}" onclick="openDetail(this, 'edit')">
 																	</i>
@@ -2322,7 +2382,7 @@ function cancelModify() {
 			        <label class="col-sm-2">Report Date</label>
 			        <div class="col-sm-3">
 			          <input type="date" name="reportDate" class="form-control form-control-sm"
-			                 th:value="${#dates.format(Data.reportDate, 'yyyy-MM-dd')}" readonly/>
+			                 th:value="${Data != null && Data.reportDate != null ? #dates.format(Data.reportDate, 'yyyy-MM-dd') : ''}" readonly/>
 			        </div>
 			      </div>
 				  

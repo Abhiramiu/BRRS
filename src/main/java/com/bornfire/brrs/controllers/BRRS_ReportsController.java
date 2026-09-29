@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -839,20 +840,23 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_CA2_Summary_Entity request1
-
-	) {
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
+			@ModelAttribute M_CA2_Summary_Entity request1) {
 		try {
-			System.out.println("Came to single controller");
+			System.out.println("Came to MCA2updateAll controller: type=" + type + ", version=" + version + ", entry=" + entry);
 
 			// set date into entities
 			request1.setReport_date(asondate);
+			if (version != null && !version.isEmpty()) {
+				request1.setReport_version(version);
+			}
 
 			// call services
-			brrs_m_ca2_reportservice.updateReport(request1);
+			ResponseEntity<?> response = brrs_m_ca2_reportservice.updateReport(request1, type, version, entry);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4314,53 +4318,53 @@ public class BRRS_ReportsController {
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
 			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity1 request1,
-			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity2 request2) {
+			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity2 request2,
+			HttpServletRequest req) {
 		try {
-			System.out.println("Came to single controller");
+			System.out.println("Came to M_ISupdateAll controller: type=" + type + ", version=" + version + ", entry=" + entry);
+
+			if (asondate == null && req != null) {
+				String rawDate = req.getParameter("asondate");
+				if (rawDate != null && !rawDate.trim().isEmpty()) {
+					String[] formats = { "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd", "dd-MMM-yyyy", "yyyy/MM/dd" };
+					for (String fmt : formats) {
+						try {
+							asondate = new SimpleDateFormat(fmt).parse(rawDate.trim());
+							break;
+						} catch (Exception ignored) {
+						}
+					}
+				}
+			}
 
 			// set date into all entities
-			request1.setReport_date(asondate);
-			request2.setReport_date(asondate);
+			if (request1 != null) {
+				request1.setReport_date(asondate);
+				if (version != null && !version.isEmpty()) {
+					request1.setReport_version(version);
+				}
+			}
+			if (request2 != null) {
+				request2.setReport_date(asondate);
+				if (version != null && !version.isEmpty()) {
+					request2.setReport_version(version);
+				}
+			}
 
 			// call services
-			M_IS_Service.MISUpdate1(request1);
-			M_IS_Service.MISUpdate2(request2);
+			ResponseEntity<?> response = M_IS_Service.updateReport(request1, request2, type, version, entry);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
 
-	@RequestMapping(value = "/UpdateM_ISReSub", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity1 request1,
-			@ModelAttribute BRRS_M_IS_ReportService.M_IS_Summary_Entity2 request2, HttpServletRequest req) {
-
-		try {
-			System.out.println("Came to M_IS Resub Controller");
-
-			if (asondate != null) {
-				request1.setReport_date(asondate);
-				request2.setReport_date(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			}
-
-			// Call service
-			M_IS_Service.updateReportReSub(request1, request2);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("M_IS Resubmission Update Failed: " + e.getMessage());
-		}
-	}
 
 	/*
 	 * @RequestMapping(value = "/UpdateM_OB_ReSub", method = { RequestMethod.GET,
@@ -5165,19 +5169,46 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_FASupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_FAS_Summary_Entity request) {
+			@RequestParam(value = "asondate", required = false) String asondateStr,
+			@RequestParam(value = "todate", required = false) String todateStr,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
+			@ModelAttribute M_FAS_Summary_Entity request,
+			HttpServletRequest req) {
 
 		try {
-			System.out.println("came to single controller");
+			System.out.println("came to M_FASupdateAll controller: type=" + type + ", version=" + version + ", entry=" + entry + ", asondate=" + asondateStr);
 
-			// ? set the asondate into entity
-			request.setReportDate(asondate);
+			Date parsedDate = null;
+			String dateStr = (asondateStr != null && !asondateStr.trim().isEmpty()) ? asondateStr : todateStr;
+			if (dateStr == null || dateStr.trim().isEmpty()) {
+				dateStr = req.getParameter("asondate");
+			}
+			if (dateStr != null && !dateStr.trim().isEmpty()) {
+				String[] patterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(dateStr.trim());
+						break;
+					} catch (Exception ignored) {}
+				}
+			}
+
+			if (parsedDate != null) {
+				request.setReportDate(parsedDate);
+			}
+
+			if (version != null && !version.isEmpty()) {
+				try {
+					request.setReportVersion(new BigDecimal(version));
+				} catch (Exception ex) {}
+			}
 
 			// call services
-			brrs_M_FAS_reportservice.updateReport1(request);
+			ResponseEntity<?> response = brrs_M_FAS_reportservice.updateReport(request, type, version, entry);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

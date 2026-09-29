@@ -4400,7 +4400,7 @@ public class RegulatoryReportServices {
 
 			case "M_IS":
 				modelAndView = BRRS_M_IS_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"));
+						request.getParameter("formmode"), request.getParameter("type"), request);
 				break;
 
 			case "M_LA1":
@@ -4437,7 +4437,7 @@ public class RegulatoryReportServices {
 
 			case "M_CA2":
 				modelAndView = BRRS_M_CA2_reportservice.getViewOrEditPage(request.getParameter("SNO"),
-						request.getParameter("formmode"), request.getParameter("type"));
+						request.getParameter("formmode"), request.getParameter("type"), request);
 				break;
 
 //			case "M_OR1":
@@ -4517,7 +4517,7 @@ public class RegulatoryReportServices {
 
 			case "M_FAS":
 				modelAndView = BRRS_M_FAS_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+						request.getParameter("formmode"), request.getParameter("type"), request);
 				break;
 
 			case "Q_SMME_LA":
@@ -4801,6 +4801,14 @@ public class RegulatoryReportServices {
 				break;
 			case "M_CA2":
 				response = BRRS_M_CA2_reportservice.callregenprocedure(request);
+				break;
+
+			case "M_IS":
+				response = BRRS_M_IS_reportservice.callregenprocedure(request);
+				break;
+
+			case "M_FAS":
+				response = BRRS_M_FAS_reportservice.callregenprocedure(request);
 				break;
 
 			case "M_LIQ":
@@ -6084,6 +6092,7 @@ public class RegulatoryReportServices {
 				e.printStackTrace();
 			}
 			break;
+
 		default:
 			System.out.println("Unsupported report code: " + rptcode);
 		}
