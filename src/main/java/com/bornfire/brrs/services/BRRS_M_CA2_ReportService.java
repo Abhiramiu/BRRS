@@ -179,22 +179,17 @@ public class BRRS_M_CA2_ReportService {
 		return findBySnoArch(acctNumber);
 	}
 	
-	// ─── Find current detail by SNO ────────────────────────────────────────────
+	// ─── Find current detail by SNO / ACCT_NUMBER ─────────────────────────────
 	public M_CA2_Detail_Entity findBySno(String sno) {
 		if (sno == null || sno.trim().isEmpty()) {
 			return null;
 		}
 		try {
-			String sql = "SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE SNO = ?";
-			return jdbcTemplate.queryForObject(sql, new Object[] { sno.trim() }, new M_CA2DetailRowMapper());
-		} catch (Exception e1) {
-			try {
-				String sql = "SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE ACCT_NUMBER = ?";
-				List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { sno.trim() }, new M_CA2DetailRowMapper());
-				return (list != null && !list.isEmpty()) ? list.get(0) : null;
-			} catch (Exception ignored) {
-				return null;
-			}
+			String sql = "SELECT * FROM BRRS_M_CA2_DETAILTABLE WHERE ACCT_NUMBER = ?";
+			List<M_CA2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { sno.trim() }, new M_CA2DetailRowMapper());
+			return (list != null && !list.isEmpty()) ? list.get(0) : null;
+		} catch (Exception ignored) {
+			return null;
 		}
 	}
 	
@@ -1983,21 +1978,13 @@ public class BRRS_M_CA2_ReportService {
 
 				} else {
 
-					if (existing.getSno() != null) {
-						jdbcTemplate.update(
-								"UPDATE BRRS_M_CA2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE SNO = ?",
-								existing.getAcctName(),
-								existing.getAcctBalanceInPula(),
-								existing.getSno());
-					} else {
-						jdbcTemplate.update(
-								"UPDATE BRRS_M_CA2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?",
-								existing.getAcctName(),
-								existing.getAcctBalanceInPula(),
-								existing.getAcctNumber());
-					}
+					jdbcTemplate.update(
+							"UPDATE BRRS_M_CA2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ? WHERE ACCT_NUMBER = ?",
+							existing.getAcctName(),
+							existing.getAcctBalanceInPula(),
+							existing.getAcctNumber());
 
-					String auditId = (existing.getSno() != null) ? String.valueOf(existing.getSno()) : existing.getAcctNumber();
+					String auditId = existing.getAcctNumber();
 					try {
 						auditService.compareEntitiesmanual(
 								oldcopy,
