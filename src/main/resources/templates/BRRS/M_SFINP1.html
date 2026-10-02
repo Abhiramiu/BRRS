@@ -1472,7 +1472,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
@@ -1485,8 +1485,8 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or displaymode == 'detail'
-								          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${(displaymode == 'summary' or displaymode == 'detail'
+								          or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" th:attr="data-reportid=${reportid},
 								             data-asondate=${asondate},
 								             data-fromdate=${fromdate},
 								             data-todate=${todate},
@@ -1532,7 +1532,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary')and role != 'M' }">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -2307,7 +2307,7 @@ PURPOSE		: BRRS_M_SFINP1REPORT
 								<tbody style="font-family: Arial;">
 									<tr th:each="report ,srlno: ${reportdetails}">
 										<td>
-											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record" th:if="${role == 'M'}">
 												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
 																								                            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
 																								                            data-type=${type}" onclick="openDetail(this, 'edit')"></i>
