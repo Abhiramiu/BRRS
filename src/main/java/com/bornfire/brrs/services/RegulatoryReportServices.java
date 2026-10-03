@@ -3240,12 +3240,10 @@ public class RegulatoryReportServices {
 			break;
 
 		case "M_PI":
-			try {
-				archivalData = BRRS_M_PI_reportservice.getM_PIArchival();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+			List<Object[]> M_PIList = BRRS_M_PI_reportservice.getM_PIArchival();
+			archivalData.addAll(M_PIList);
+			System.out.println("Fetched M_PI archival data: " + M_PIList.size());
 			break;
 
 		case "M_LA1":

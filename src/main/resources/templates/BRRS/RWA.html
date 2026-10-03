@@ -74,13 +74,6 @@ PURPOSE  : BRRSREPORT
  border-color: #0c0c0c;
 }
 
-.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
-  (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
- {
- color: #fff;
- background-color: #cc000000;
- border-color: #161617;
-}
 
 #finusertb {
  width: 460px;
@@ -3131,9 +3124,7 @@ function cancelModify() {
      </td>
     <td style="text-align:left;font-weight: bold;"> </td>
     <td id="R97_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R97_BOOK_VALUE,1,'COMMA',0,'POINT')}"
-        style="text-align: right; width: 200px;"
-        th:attr="reportLable='R97', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align: right; width: 200px;">
     </td>
     <td id="R97_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R97_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3161,9 +3152,7 @@ function cancelModify() {
      </td>
     <td style="text-align:left;font-weight: bold;"> </td>
     <td id="R98_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R98_BOOK_VALUE,1,'COMMA',0,'POINT')}"
-        style="text-align: right; width: 200px;"
-        th:attr="reportLable='R98', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align: right; width: 200px;">
     </td>
     <td id="R98_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R98_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3177,7 +3166,7 @@ function cancelModify() {
     <td id="R98_RW" th:text="${#numbers.formatDecimal(reportsummary.R98_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R98', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+     >
     </td>
     <td id="R98_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R98_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3221,9 +3210,7 @@ function cancelModify() {
     </td>
     <td style="text-align:left;font-weight: bold;"> </td>
     <td id="R100_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R100_BOOK_VALUE,1,'COMMA',0,'POINT')}"
-        style="text-align: right; width: 200px;"
-        th:attr="reportLable='R100', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align: right; width: 200px;">
     </td>
     <td id="R100_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R100_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3237,7 +3224,7 @@ function cancelModify() {
     <td id="R100_RW" th:text="${#numbers.formatDecimal(reportsummary.R100_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R100', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+    >
     </td>
     <td id="R100_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R100_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3403,7 +3390,7 @@ function cancelModify() {
     <td id="R106_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R106_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R106', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R106_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R106_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3477,7 +3464,7 @@ function cancelModify() {
     <td id="R108_RW" th:text="${#numbers.formatDecimal(reportsummary.R108_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R108', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+>
     </td>
     <td id="R108_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R108_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3492,17 +3479,16 @@ function cancelModify() {
     <td style="text-align:left;font-weight: bold;"> </td>
     <td id="R109_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R109_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
-        th:attr="reportLable='R109', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R109_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R109_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R109', reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R109_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R109_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
-        th:attr="reportLable='R109', reportAddlCriteria1='C4'">
+        >
     </td>
     <td id="R109_RW" th:text="${#numbers.formatDecimal(reportsummary.R109_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3763,7 +3749,7 @@ function cancelModify() {
     <td id="R118_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R118_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R118', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+       >
     </td>
     <td id="R118_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R118_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3775,9 +3761,7 @@ function cancelModify() {
         th:attr="reportLable='R118', reportAddlCriteria1='C4'">
     </td>
     <td id="R118_RW" th:text="${#numbers.formatDecimal(reportsummary.R118_RW,1,'COMMA',0,'POINT')}"
-        style="text-align: right; width: 200px;"
-        th:attr="reportLable='R118', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align: right; width: 200px;">
     </td>
     <td id="R118_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R118_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3802,12 +3786,12 @@ function cancelModify() {
     <td id="R120_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R120_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R120', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R120_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R120_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R120', reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+      >
     </td>
     <td id="R120_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R120_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3952,7 +3936,7 @@ function cancelModify() {
     <td id="R125_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R125_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R125', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R125_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R125_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3966,7 +3950,7 @@ function cancelModify() {
     <td id="R125_RW" th:text="${#numbers.formatDecimal(reportsummary.R125_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R125', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+       >
     </td>
     <td id="R125_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R125_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -3991,7 +3975,7 @@ function cancelModify() {
     <td id="R127_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R127_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R127', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R127_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R127_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -4028,9 +4012,7 @@ function cancelModify() {
      </td>
     <td style="text-align:left;font-weight: bold;"> </td>
     <td id="R129_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R129_BOOK_VALUE,1,'COMMA',0,'POINT')}"
-        style="text-align: right; width: 200px;"
-        th:attr="reportLable='R129', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        style="text-align: right; width: 200px;">
     </td>
     <td id="R129_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R129_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -4044,7 +4026,7 @@ function cancelModify() {
     <td id="R129_RW" th:text="${#numbers.formatDecimal(reportsummary.R129_RW,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R129', reportAddlCriteria1='C5'"
-        onclick="showdetailsbyRowAndColumn(this)">
+      >
     </td>
     <td id="R129_RISK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R129_RISK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -4060,12 +4042,12 @@ function cancelModify() {
     <td id="R130_BOOK_VALUE" th:text="${#numbers.formatDecimal(reportsummary.R130_BOOK_VALUE,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R130', reportAddlCriteria1='C2'"
-        onclick="showdetailsbyRowAndColumn(this)">
+      >
     </td>
     <td id="R130_MARGINS" th:text="${#numbers.formatDecimal(reportsummary.R130_MARGINS,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
         th:attr="reportLable='R130', reportAddlCriteria1='C3'"
-        onclick="showdetailsbyRowAndColumn(this)">
+        >
     </td>
     <td id="R130_BOOK_VALUE_NET" th:text="${#numbers.formatDecimal(reportsummary.R130_BOOK_VALUE_NET,1,'COMMA',0,'POINT')}"
         style="text-align: right; width: 200px;"
@@ -4494,10 +4476,6 @@ div.dataTables_wrapper div.dataTables_info {
     width: inherit !important;
     background-color: #D8D8D8; /* set header color */
     
-}
- */
- */  
 </style>
 
 </html>
-

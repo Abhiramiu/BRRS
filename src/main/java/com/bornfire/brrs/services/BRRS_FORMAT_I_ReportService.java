@@ -3086,8 +3086,8 @@ public class BRRS_FORMAT_I_ReportService {
 						cellF.setCellStyle(textStyle);
 					}
 
-					// Column E
-					Cell cellG = row.createCell(2);
+					// Column D
+					Cell cellG = row.createCell(4);
 					if (record.getR12_balance_statement() != null) {
 						cellG.setCellValue(record.getR12_balance_statement().doubleValue());
 						cellG.setCellStyle(numberStyle);
@@ -3119,7 +3119,7 @@ public class BRRS_FORMAT_I_ReportService {
 					}
 
 					// Column D
-					cellG = row.createCell(2);
+					cellG = row.createCell(4);
 					if (record.getR13_balance_statement() != null) {
 						cellG.setCellValue(record.getR13_balance_statement().doubleValue());
 						cellG.setCellStyle(numberStyle);
@@ -3599,7 +3599,7 @@ public class BRRS_FORMAT_I_ReportService {
 			numberStyle.setFont(font);
 // --- End of Style Definitions ---
 
-			int startRow = 12;
+			int startRow = 11;
 
 			if (!dataList.isEmpty()) {
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3632,8 +3632,8 @@ public class BRRS_FORMAT_I_ReportService {
 						cellF.setCellStyle(textStyle);
 					}
 
-					// Column E
-					Cell cellG = row.createCell(2);
+					// Column D
+					Cell cellG = row.createCell(4);
 					if (record.getR12_balance_statement() != null) {
 						cellG.setCellValue(record.getR12_balance_statement().doubleValue());
 						cellG.setCellStyle(numberStyle);

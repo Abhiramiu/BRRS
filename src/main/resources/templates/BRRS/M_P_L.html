@@ -456,14 +456,9 @@ PURPOSE  : BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-
-			var Callurl;
-			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
-			console.log(Callurl);
-
-		}
+				isDetailsModal = true; // mark that this modal is from Details
+				showResultModal('BRRS', 'Interlinking Values Not Available Detail Page');
+			}
 
 		function showsummary() {
 					var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});

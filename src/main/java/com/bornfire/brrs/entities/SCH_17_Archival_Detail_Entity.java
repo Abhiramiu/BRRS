@@ -87,6 +87,16 @@ public class SCH_17_Archival_Detail_Entity {
 
 	@Column(name = "DEL_FLG")
 	private Character delFlg;
+	
+	@Column(name = "AVERAGE", precision = 24, scale = 3)
+	private BigDecimal average;
+	public BigDecimal getAverage() {
+	    return average;
+	}
+
+	public void setAverage(BigDecimal average) {
+	    this.average = average;
+	}
 
 	public String getCustId() {
 		return custId;

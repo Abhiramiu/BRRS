@@ -17,6 +17,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.Column;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -41,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -146,7 +150,13 @@ public class BRRS_M_PI_ReportService {
 		String sql = "UPDATE BRRS_M_PI_DETAILTABLE SET ACCT_NAME=?, ACCT_BALANCE_IN_PULA=? WHERE ACCT_NUMBER=?";
 		jdbcTemplate.update(sql, entity.getAcctName(), entity.getAcctBalanceInpula(), entity.getAcctNumber());
 	}
+	public List<M_PI_Archival_Summary_Entity> getdatabydateListWithVersion() {
 
+String sql = "SELECT * FROM BRRS_M_PI_ARCHIVALTABLE_SUMMARY " + "WHERE REPORT_VERSION IS NOT NULL "
+	+ "ORDER BY REPORT_VERSION ASC";
+
+return jdbcTemplate.query(sql, new M_PIArchivalSummaryRowMapper());
+}
 	// ──────────────────────────────────────────────────────────────────────────
 
 	public ModelAndView getM_PIView(String reportId, String fromdate, String todate, String currency,
@@ -1170,21 +1180,36 @@ return new byte[0];
 }
 	
 	
-	public List<Object> getM_PIArchival() {
-		List<Object> M_PIArchivallist = new ArrayList<>();
-		try {
-			M_PIArchivallist = getManualArchivalVersionList();
-			M_PIArchivallist = getManualArchivalVersionList();
-			System.out.println("countser" + M_PIArchivallist.size());
-		} catch (Exception e) {
-			// Log the exception
-			System.err.println("Error fetching M_PI Archival data: " + e.getMessage());
-			e.printStackTrace();
+	public List<Object[]> getM_PIArchival() {
+	    List<Object[]> archivalList = new ArrayList<>();
 
-			// Optionally, you can rethrow it or return empty list
-			// throw new RuntimeException("Failed to fetch data", e);
-		}
-		return M_PIArchivallist;
+	    try {
+
+	        List<M_PI_Archival_Summary_Entity> repoData = getdatabydateListWithVersion();
+
+	        if (repoData != null && !repoData.isEmpty()) {
+	            for (M_PI_Archival_Summary_Entity entity : repoData) {
+	                Object[] row = new Object[] {
+	                        entity.getREPORT_DATE(),
+	                        entity.getREPORT_VERSION()
+	                };
+	                archivalList.add(row);
+	            }
+
+	            System.out.println("Fetched " + archivalList.size() + " archival records");
+	            M_PI_Archival_Summary_Entity first = repoData.get(0);
+	            System.out.println("Latest archival version: " + first.getREPORT_VERSION());
+
+	        } else {
+	            System.out.println("No archival data found.");
+	        }
+
+	    } catch (Exception e) {
+	        System.err.println("Error fetching M_PI Archival data: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
+	    return archivalList;
 	}
 
 	public byte[] getExcelM_PIARCHIVAL(String filename, String reportId, String fromdate, String todate,
@@ -3658,6 +3683,9 @@ return new byte[0];
 	}
 
 	public static class M_PI_Archival_Summary_Entity {
+		@Id
+		@Temporal(TemporalType.DATE)
+		@Column(name = "REPORT_DATE")
 		private Date REPORT_DATE;
 		private BigDecimal REPORT_VERSION;
 		private String REPORT_FREQUENCY;

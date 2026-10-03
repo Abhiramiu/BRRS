@@ -68,13 +68,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
-		.show>.btn-primary.dropdown-toggle {
-			color: #fff;
-			background-color: #cc000000;
-			border-color: #161617;
-		}
+	
 
 		#finusertb {
 			width: 460px;
@@ -310,32 +304,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			transition: 0.3s ease;
 		}
 
-		/* When input or select is focused or has a value, move the label up */
-		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
-			top: -8px;
-			font-size: 1rem;
-			color: #007bff;
-		}
-
-		/* Hover effect when the input/select is focused */
-		.form-control:focus:hover~.form-legend {
-			color: #0056b3;
-			/* Darker shade of blue on hover */
-		}
-
-		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
-			color: #aaa;
-			/* Normal label color */
-		}
-
-		.table-cell tbody td:hover {
-			background-color: #f0f0f0;
-			/* Hover color for cell */
-			cursor: pointer;
-			/* Optional: pointer cursor */
-		}
 
 		.table-bordered td,
 		.table-bordered th {
@@ -1340,8 +1308,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r14_product ?: ''}"></td>
 
 												<td style="text-align: right; " th:text="${report?.r14_amt ?: ''}"
-													th:attr="RowId='R14', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 
 												<td style="text-align: right; padding-right:10px; "
@@ -1370,8 +1337,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 												</td>
 
 												<td style="text-align: right;" th:text="${report?.r15_amt ?: ''}"
-													th:attr="RowId='R15', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)">
+													>
 												</td>
 
 												<td style="text-align: right; padding-right:10px;"
@@ -1400,8 +1366,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 												</td>
 
 												<td style="text-align: right;" th:text="${report?.r16_amt ?: ''}"
-													th:attr="RowId='R16', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)">
+												>
 												</td>
 
 												<td style="text-align: right; padding-right:10px;"
@@ -1429,8 +1394,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r17_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r17_amt ?: ''}"
-													th:attr="RowId='R17', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+												></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r17_amt_sub_add ?: ''}"
@@ -1452,8 +1416,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r18_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r18_amt ?: ''}"
-													th:attr="RowId='R18', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r18_amt_sub_add ?: ''}"
@@ -1475,8 +1438,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r19_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r19_amt ?: ''}"
-													th:attr="RowId='R19', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r19_amt_sub_add ?: ''}"
@@ -1498,8 +1460,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r20_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r20_amt ?: ''}"
-													th:attr="RowId='R20', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r20_amt_sub_add ?: ''}"
@@ -1595,8 +1556,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r24_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r24_amt ?: ''}"
-													th:attr="RowId='R24', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r24_amt_sub_add ?: ''}"
@@ -1619,8 +1579,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 
 												<td id="r25_amt" style="text-align: right;"
 													th:text="${report?.r25_amt ?: ''}"
-													th:attr="RowId='R25', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td id="r25_amt_sub_add" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r25_amt_sub_add ?: ''}"
@@ -1670,8 +1629,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													th:text="${report?.r27_product ?: ''}"></td>
 
 												<td style="text-align: right;" th:text="${report?.r27_amt ?: ''}"
-													th:attr="RowId='R27', ColumnId='C2'"
-													onclick="showdetailsbyRowAndColumn(this)"></td>
+													></td>
 
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r27_amt_sub_add ?: ''}"
