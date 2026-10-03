@@ -342,15 +342,46 @@ PURPOSE		: BWRBRREPORT
 			// hide loader on back/forward nav
 			$('#loader').modal('hide');
 		});
+
 		$(window).on('beforeunload', function () {
 			// hide loader on leaving page
 			$('#loader').modal('hide');
 		});
 
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
+		$(document).ready(function () {
+			Maker_Checker_Function();
+		});
+
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					// ✅ Checkers → hide Modify button
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+				}
+			});
+		}
+
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
 		}
+
 		function back() {
 			$("#loader").modal("toggle");
 			window.history.back();
@@ -406,29 +437,22 @@ PURPOSE		: BWRBRREPORT
 			showResultModal('Alert', 'Development in progress');
 
 		}
+
 		function closemodel() {
-			function closemodel() {
-				const modalElement = document.getElementById('resultModal');
-				const modal = bootstrap.Modal.getInstance(modalElement);
-				modal.hide();
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			if (modal) modal.hide();
 
-				const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = (document.getElementById("resultModalBody").innerText || "").toLowerCase();
 
-				if (message.includes("resubmission")) {
-					window.history.back();
-				} else {
-					location.reload();
-				}
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
 			}
 		}
 
 	</script>
-
-
-
-
-
-
 
 
 	<script>
@@ -492,41 +516,41 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -535,16 +559,21 @@ PURPOSE		: BWRBRREPORT
 			// Show the modal
 			$('#resultModal').modal('show');
 		}
+
+
+
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
+			// ✅ Prevent double-trigger if already in edit mode
+			if ($(btn).is(":hidden")) return;
+
 			// ✅ List of IDs that should ALWAYS remain readonly
 			var readonlyIds = [
 				"R19_UNSECURED_PORTION_NPL", "R19_PERFORMING_EXPOSURE", "R19_NON_PERFORMING", "R19_SPECIFIC_PROV",
 				"R13_UNSECURED_PORTION_NPL", "R14_UNSECURED_PORTION_NPL", "R15_UNSECURED_PORTION_NPL",
 				"R17_UNSECURED_PORTION_NPL", "R18_UNSECURED_PORTION_NPL", "R13_PRODUCT", "R14_PRODUCT", "R15_PRODUCT",
-				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL","R16_TOTAL","R16_SPECIFIC_PROV","R16_NON_PERFORMING","R16_PERFORMING_EXPOSURE","R16_UNSECURED_PORTION_NPL"
+				"R17_PRODUCT", "R18_PRODUCT", "R19_PRODUCT", "R13_TOTAL", "R19_TOTAL", "R16_TOTAL", "R16_SPECIFIC_PROV", "R16_NON_PERFORMING", "R16_PERFORMING_EXPOSURE", "R16_UNSECURED_PORTION_NPL"
 			];
-			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
 
 			// ✅ Make all .Show_input editable except the ones in readonlyIds
 			$(".Show_input").each(function () {
@@ -553,6 +582,17 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 
+			// ✅ Helper: force YELLOW with !important (overrides inline white bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// Highlight editable fields for rows 13–18 (skip row 16)
 			for (let i = 13; i <= 18; i++) {
 
 				if (i === 16) continue; // skip 16
@@ -564,53 +604,33 @@ PURPOSE		: BWRBRREPORT
 					"_TOTAL"
 				];
 
-				// your logic here
-
-
 				fields.forEach(field => {
 
-					// Skip ONLY _TOTAL in R13 and R15
-					if ((i === 13 || i === 15 || i == 18) && field === "_TOTAL") {
-						return; // skip this one only
+					// Skip ONLY _TOTAL in R13, R15, R18
+					if ((i === 13 || i === 15 || i === 18) && field === "_TOTAL") {
+						return;
 					}
 
-					let selector = `#R${i}${field}`;
-
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-
+					paintYellow(`#R${i}${field}`);
 				});
-
-				// ✅ Toggle buttons visibility
-				$("#submitButton").show();
-				$("#cancelRecord").show();
-				$(btn).hide(); // hide the clicked Modify button
 			}
+
+			// ✅ Toggle buttons visibility (OUTSIDE loop now)
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+			$(btn).hide();
 		}
+
+
+
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
+				// ✅ Reload restores everything cleanly
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
-
-
-
-
 	</script>
 
 	<script>
@@ -923,7 +943,8 @@ PURPOSE		: BWRBRREPORT
 
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -931,56 +952,52 @@ PURPOSE		: BWRBRREPORT
 
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+						<button type="button" class="custom-tab-btn " id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-							               data-asondate=${asondate},
-							               data-fromdate=${fromdate},
-							               data-todate=${todate},
-							               data-currency=${currency}, 
-							               data-dtltype=${dtltype},
-							               data-filename='M_SRWA12E.xlsx',
-							               data-type=${type},
-							               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								               data-asondate=${asondate},
+								               data-fromdate=${fromdate},
+								               data-todate=${todate},
+								               data-currency=${currency}, 
+								               data-dtltype=${dtltype},
+								               data-filename='M_SRWA12E.xlsx',
+								               data-type=${type},
+								               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
-												          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
-												             data-asondate=${asondate},
-												             data-fromdate=${fromdate},
-												             data-todate=${todate},
-												             data-currency=${currency},
-												             data-dtltype='email',
-												             data-filename='EMAIL_M_SRWA_12E.xlsx',
-												             data-type=${type},
-															 data-format='email',
-												             data-version=${version != null ? version : ''}">
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
+							th:attr="data-reportid=${reportid},
+													             data-asondate=${asondate},
+													             data-fromdate=${fromdate},
+													             data-todate=${todate},
+													             data-currency=${currency},
+													             data-dtltype='email',
+													             data-filename='EMAIL_M_SRWA_12E.xlsx',
+													             data-type=${type},
+																 data-format='email',
+													             data-version=${version != null ? version : ''}">
 							<i class="fa fa-download"></i> Email
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -1243,8 +1260,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td style="text-align: right; font-weight: normal;"
-													>
+												<td style="text-align: right; font-weight: normal;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_PERFORMING_EXPOSURE != null ? #numbers.formatDecimal(report.R16_PERFORMING_EXPOSURE, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R16_PERFORMING_EXPOSURE" name="R16_PERFORMING_EXPOSURE"
@@ -1252,8 +1268,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td style="text-align: right; font-weight: normal;"
-													>
+												<td style="text-align: right; font-weight: normal;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_NON_PERFORMING != null ? #numbers.formatDecimal(report.R16_NON_PERFORMING, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R16_NON_PERFORMING" name="R16_NON_PERFORMING"
@@ -1261,8 +1276,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td style="text-align: right; font-weight: normal;"
-													>
+												<td style="text-align: right; font-weight: normal;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_SPECIFIC_PROV != null ? #numbers.formatDecimal(report.R16_SPECIFIC_PROV, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R16_SPECIFIC_PROV" name="R16_SPECIFIC_PROV"
@@ -1270,8 +1284,8 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 
-												<td style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;"
-													>
+												<td
+													style="background-color: rgb(107, 122, 143);font-weight: bold;color: white;padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R16_UNSECURED_PORTION_NPL != null ? #numbers.formatDecimal(R16_UNSECURED_PORTION_NPL, 1, 'COMMA', 0, 'POINT') : '0'}"
 														id="R16_UNSECURED_PORTION_NPL" name="R16_UNSECURED_PORTION_NPL"

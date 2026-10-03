@@ -365,7 +365,7 @@ PURPOSE		: BRRS MANUAL REPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -373,14 +373,17 @@ PURPOSE		: BRRS MANUAL REPORT
 				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
 
+					// ✅ Checkers → hide Modify button
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -508,41 +511,41 @@ PURPOSE		: BRRS MANUAL REPORT
 		}
 
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
-		
+
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
 
@@ -562,21 +565,24 @@ PURPOSE		: BRRS MANUAL REPORT
 	</script>
 
 
-
-
-
-
-
-
 	<script>
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
-
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger if already in edit mode
+			if ($(btn).is(":hidden")) return;
 
 			// Make all editable fields editable 
 			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
+			// ✅ Helper: force YELLOW with !important (overrides inline white bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
 
 			// Highlight editable fields for rows 11 to 60
 			for (let i = 11; i <= 60; i++) {
@@ -586,16 +592,13 @@ PURPOSE		: BRRS MANUAL REPORT
 				];
 
 				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).css({"background-color": "#d3d3d3"}); // Highlight
-					}
+					paintYellow(`#r${i}_${field}`);
 				});
 			}
 
 			// Show buttons
 			$("#submitButton").show();
-			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
+			$("#cancelRecord").show();
 
 			// Hide the clicked Modify button
 			$(btn).hide();
@@ -605,22 +608,12 @@ PURPOSE		: BRRS MANUAL REPORT
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
+				// ✅ Reload restores everything cleanly
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
+
 
 
 
@@ -737,8 +730,8 @@ PURPOSE		: BRRS MANUAL REPORT
 				isDetailsModal = false;
 			}
 		}
-</script>
-		<!--// This is the main function that orchestrates the entire form submission process.
+	</script>
+	<!--// This is the main function that orchestrates the entire form submission process.
 		// It is triggered by the "Update" button click.
 		// Make the function global so onclick="fileuploads(this)" can see it
 		window.fileuploads = function (btn) {
@@ -851,102 +844,102 @@ PURPOSE		: BRRS MANUAL REPORT
 
 	</script>-->
 	<script>
-	function fileuploads(btn) {
+		function fileuploads(btn) {
 
-	    try {
+			try {
 
-	        const asondate = btn.getAttribute("data-todate");
+				const asondate = btn.getAttribute("data-todate");
 
-	        $('#loader').modal('show');
+				$('#loader').modal('show');
 
-	        if (typeof calculateTotals === "function") {
-	            calculateTotals();
-	        }
+				if (typeof calculateTotals === "function") {
+					calculateTotals();
+				}
 
-	        // Remove commas
-	        $("#fileupload input[type='text']").each(function () {
-	            const val = $(this).val();
-	            if (val && val.includes(",")) {
-	                $(this).val(val.replace(/,/g, ''));
-	            }
-	        });
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
+				});
 
-	        if (!$("#fileupload").valid()) {
-	            $('#loader').modal('hide');
-	            return;
-	        }
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
 
-	        // Get type from URL
-	        const urlParams = new URLSearchParams(window.location.search);
-	        const urlType = urlParams.get("type");
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type");
 
-	        const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
 
-	        // Use SERIALIZE
-	        const formData =
-	            $('#fileupload').serialize()
-	            + '&asondate=' + encodeURIComponent(asondate)
-	            + '&type=' + encodeURIComponent(urlType || '');
+				// Use SERIALIZE
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate)
+					+ '&type=' + encodeURIComponent(urlType || '');
 
-	        console.log("Form data prepared");
-	        console.log("URL TYPE:", urlType);
-	        console.log("IS RESUB:", isResub);
+				console.log("Form data prepared");
+				console.log("URL TYPE:", urlType);
+				console.log("IS RESUB:", isResub);
 
-	        let apiUrl = './M_SRWA_12GupdateAll';
-	        if (isResub) {
-	            apiUrl = './UpdateM_SRWA_12G_ReSub';
-	        }
+				let apiUrl = './M_SRWA_12GupdateAll';
+				if (isResub) {
+					apiUrl = './UpdateM_SRWA_12G_ReSub';
+				}
 
-	        $.ajax({
-	            url: apiUrl,
-	            type: 'POST',
-	            data: formData,
-	            dataType: 'text',
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
 
-	            success: function (response) {
+					success: function (response) {
 
-	                $("#resultModalLabel").text("BRRS");
-	                $("#resultModalBody").text(response);
-	                $("#resultModal").modal("show");
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
 
-	                // Properly bind modal hidden event
-	                $("#resultModal")
-	                    .off("hidden.bs.modal")
-	                    .on("hidden.bs.modal", function () {
+						// Properly bind modal hidden event
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
 
-	                        if (isResub) {
+								if (isResub) {
 
-	                            if (window.previousUrl && window.previousUrl !== "") {
-	                                window.location.href = window.previousUrl;
-	                            } else {
-	                                window.location.href = "/BRRS/Resubmission?rptcode=M_SRWA_12G"; // ✅ removed space
-	                            }
-	                        }
-	                    });
-	            },
+									if (window.previousUrl && window.previousUrl !== "") {
+										window.location.href = window.previousUrl;
+									} else {
+										window.location.href = "/BRRS/Resubmission?rptcode=M_SRWA_12G"; // ✅ removed space
+									}
+								}
+							});
+					},
 
-	            error: function (jqXHR) {
+					error: function (jqXHR) {
 
-	                console.log("Error response:", jqXHR.responseText);
+						console.log("Error response:", jqXHR.responseText);
 
-	                $("#resultModalLabel").text("Error");
-	                $("#resultModalBody").text(
-	                    "Update failed: " +
-	                    (jqXHR.responseText || "Unknown error")
-	                );
-	                $("#resultModal").modal("show");
-	            },
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
 
-	            complete: function () {
-	                $('#loader').modal('hide');
-	            }
-	        });
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
 
-	    } catch (error) {
-	        $('#loader').modal('hide');
-	        console.error("Error during file upload:", error);
-	    }
-	}
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
+		}
 	</script>
 </head>
 
@@ -989,11 +982,11 @@ PURPOSE		: BRRS MANUAL REPORT
 
 					<div class="custom-tab-btn-group nav-buttons"
 						style="display: flex; color: white; align-items: center;">
-					
+
 						<span class="white-text"
-													style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
-														th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
-												</span>
+							style="color: white !important; font-size: 16px; margin-right: 20px;">Report Date: <span
+								th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
+						</span>
 
 						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
@@ -1007,7 +1000,8 @@ PURPOSE		: BRRS MANUAL REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1015,64 +1009,56 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-
-
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn" id="btn-format"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'Details' and role != 'M')}"
 							th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_SRWA_12G.xlsx',
-                     data-type=${type},
-					 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
+							data-asondate=${asondate}, 
+							data-fromdate=${fromdate}, 
+							data-todate=${todate}, 
+							data-currency=${currency},  
+							data-dtltype=${dtltype}, 
+							data-filename='M_SRWA_12G.xlsx',
+							data-type=${type},
+							data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
 							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+						<button type="button" class="custom-tab-btn " id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'Details' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='EMAIL_M_SRWA_12G.xlsx',
-            data-type=${type},
-            data-format='email',
-            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							data-asondate=${asondate},
+							data-fromdate=${fromdate},
+							data-todate=${todate},
+							data-currency=${currency}, 
+							data-dtltype=${dtltype},
+							data-filename='EMAIL_M_SRWA_12G.xlsx',
+							data-type=${type},
+							data-format='email',
+							data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>

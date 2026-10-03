@@ -326,7 +326,7 @@ PURPOSE		: BRFREPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -334,14 +334,17 @@ PURPOSE		: BRFREPORT
 				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
 
+					// ✅ Checkers → hide Modify button (if present)
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, #btn-detail, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -487,41 +490,41 @@ PURPOSE		: BRFREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -885,8 +888,9 @@ PURPOSE		: BRFREPORT
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or  displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<!-- Download - EXCEL(FORMAT) -->
+						<button type="button" class="custom-tab-btn" id="btn-format"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid}, 
 											                     data-asondate=${asondate}, 
 											                     data-fromdate=${fromdate}, 
@@ -901,9 +905,8 @@ PURPOSE		: BRFREPORT
 						</button>
 
 						<!-- Download – EMAIL -->
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn " id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 											            data-asondate=${asondate},
 											            data-fromdate=${fromdate},
@@ -918,35 +921,29 @@ PURPOSE		: BRFREPORT
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
 						</div>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+						<button type="button" class="custom-tab-btn" id="btn-detail"
 							th:if="${role != 'M' and displaymode == 'Details'}" onclick="startReport(this);" th:attr="
 																											    data-fromdate=${fromdate},
 																											    data-todate=${todate},
@@ -958,10 +955,6 @@ PURPOSE		: BRFREPORT
 																											  ">
 							<i class="fa fa-download"></i>
 						</button>
-
-
-
-
 					</div>
 
 				</div>
@@ -1142,10 +1135,14 @@ PURPOSE		: BRFREPORT
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report: ${reportdetails}">
-											<td><a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record"> <i class="fas fa-edit"
+											<td>
+												<a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record"
+													th:if="${role == 'M' or role == 'MAN'}">
+													<i class="fas fa-edit" style="color: black; cursor: pointer;"
 														onclick="editRecord(this)"></i>
-												</a></td>
+												</a>
+											</td>
 											<td th:text="${report.cust_id}"></td>
 											<td th:text="${report.acct_number}"></td>
 											<td th:text="${report.acct_name}"></td>

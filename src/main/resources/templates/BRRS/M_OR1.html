@@ -494,7 +494,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -502,14 +502,17 @@ PURPOSE		: BRRS_M_CA2REPORT
 				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
 
+					// ✅ Checkers → hide Modify button
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -746,29 +749,30 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 
 	<script>
+
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger if already in edit mode
+			if ($(btn).is(":hidden")) return;
 
 			const readonlyIds = [
 				"r22_gross_income", "r35_gross_income", "r48_gross_income", "r50_aggregate_gross_income", "r52_aggregate_gross_income",
-				, "r54_aggregate_gross_income", "r56_risk_weight_factor"
-
-
-
-
+				"r54_aggregate_gross_income", "r56_risk_weight_factor"
 			];
 
-			// 🔹 Enable editing for all inputs except formula ones
-			$(".show_input, .display-input").each(function () {
+			// ✅ Enable editing for all inputs except formula ones + paint YELLOW
+			// FIXED SELECTOR: .Show_input (uppercase) matching HTML; exclude .Show_inputnonEditable
+			$(".Show_input").not(".Show_inputnonEditable").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly")
-						.removeAttr("disabled")
-						.css({"background-color": "#d3d3d3"}); // light yellow for editable
+					$(this).removeAttr("readonly").removeAttr("disabled");
+
+					// ✅ Force YELLOW with !important (overrides inline white bg)
+					$(this).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
 				}
 			});
-
 
 			// Toggle buttons
 			$("#submitButton, #btnBack_edit").show();
@@ -784,42 +788,8 @@ PURPOSE		: BRRS_M_CA2REPORT
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
+				// ✅ Reload restores everything cleanly
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				for (let i = 11; i <= 37; i++) {
-					$("#R" + i + "_EQUITY").hide();
-					$("#R" + i + "_BONDS").hide();
-					$("#R" + i + "_BOBCS").hide();
-					$("#R" + i + "_TREASURY_BILLS").hide();
-					$("#R" + i + "_REPURCHASE_AGREEMENTS").hide();
-					$("#R" + i + "_COMMERCIAL_PAPER").hide();
-					$("#R" + i + "_CERTIFICATES_OF_DEPOSITS").hide();
-					$("#R" + i + "_PLEDGED_ASSETS").hide();
-					$("#R" + i + "_OTHER_SPECIFY").hide();
-
-
-					$("#R" + i + "_EQUITY").show();
-					$("#R" + i + "_BONDS").show();
-					$("#R" + i + "_BOBCS").show();
-					$("#R" + i + "_TREASURY_BILLS").show();
-					$("#R" + i + "_REPURCHASE_AGREEMENTS").show();
-					$("#R" + i + "_COMMERCIAL_PAPER").show();
-					$("#R" + i + "_CERTIFICATES_OF_DEPOSITS").show();
-					$("#R" + i + "_PLEDGED_ASSETS").show();
-					$("#R" + i + "_OTHER_SPECIFY").show();
-				}
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
@@ -1497,51 +1467,52 @@ PURPOSE		: BRRS_M_CA2REPORT
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
 							th:if="${dtltype eq 'detail'}">Summary</button>
 
+
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+
+
+						<button type="button" class="custom-tab-btn " id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resub') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-							           data-asondate=${asondate},
-							           data-fromdate=${fromdate},
-							           data-todate=${todate},
-							           data-currency=${currency}, 
-							           data-dtltype=${dtltype},
-							           data-filename='M_OR1.xlsx',
-							           data-type=${type},
-							           data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								           data-asondate=${asondate},
+								           data-fromdate=${fromdate},
+								           data-todate=${todate},
+								           data-currency=${currency}, 
+								           data-dtltype=${dtltype},
+								           data-filename='M_OR1.xlsx',
+								           data-type=${type},
+								           data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn " id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resub') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-							    data-asondate=${asondate},
-							    data-fromdate=${fromdate},
-							    data-todate=${todate},
-							    data-currency=${currency}, 
-							    data-dtltype=${dtltype},
-							    data-filename='EMAIL_M_OR1.xlsx',
-							    data-type=${type},
-							    data-format='email',
-							    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								    data-asondate=${asondate},
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+								    data-currency=${currency}, 
+								    data-dtltype=${dtltype},
+								    data-filename='EMAIL_M_OR1.xlsx',
+								    data-type=${type},
+								    data-format='email',
+								    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>

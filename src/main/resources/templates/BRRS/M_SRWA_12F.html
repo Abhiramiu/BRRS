@@ -343,7 +343,7 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -351,14 +351,17 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
 
+					// ✅ Checkers → hide Modify button
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -487,41 +490,41 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 
@@ -649,18 +652,18 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 
 		function closemodel() {
-				    const modalElement = document.getElementById('resultModal');
-				    const modal = bootstrap.Modal.getInstance(modalElement);
-				    modal.hide();
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+			modal.hide();
 
-				    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-				    if (message.includes("resubmission")) {
-				        window.history.back();
-				    } else {
-				        location.reload();
-				    }
-				}
+			if (message.includes("resubmission")) {
+				window.history.back();
+			} else {
+				location.reload();
+			}
+		}
 	</script>
 
 
@@ -669,8 +672,8 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 
 
 		function showmodify(btn) {
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger if already in edit mode
+			if ($(btn).is(":hidden")) return;
 
 			const readonlyIds = [
 				"R11_RISK_WEIGHTED_AMT",
@@ -705,55 +708,37 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				"R37_EXPOSURE_AMT",
 				"R37_RISK_WEIGHT",
 				"R37_NAME_OF_CORPORATE"
-
 			];
 
-			// 🔹 Enable editing for all inputs except formula ones
-			$(".show_input, .display-input").each(function () {
+			// 🔹 Enable editing for all inputs except formula ones + paint YELLOW
+			$(".Show_input").not(".Show_inputnonEditable").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly")
-						.removeAttr("disabled")
-						.css({"background-color": "#d3d3d3"}); // light yellow for editable
+					$(this).removeAttr("readonly").removeAttr("disabled");
+
+					// ✅ Force YELLOW with !important (overrides inline white bg)
+					$(this).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
 				}
 			});
 
-
-
-
 			// Toggle buttons
 			$("#submitButton").show();
-
-			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
 
-			// Optionally hide the clicked Modify button
+			// Hide the clicked Modify button
 			$(btn).hide();
 		}
 
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
+				// ✅ Reload restores everything cleanly
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
-
-
-
 
 	</script>
 
@@ -1030,7 +1015,8 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
        th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' " id="addRecord">Modify</button> -->
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -1040,59 +1026,54 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn " id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-                   data-asondate=${asondate},
-                   data-fromdate=${fromdate},
-                   data-todate=${todate},
-                   data-currency=${currency}, 
-                   data-dtltype=${dtltype},
-                   data-filename='M_SRWA_12F.xlsx',
-                   data-type=${type},
-                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+							data-asondate=${asondate},
+							data-fromdate=${fromdate},
+							data-todate=${todate},
+							data-currency=${currency}, 
+							data-dtltype=${dtltype},
+							data-filename='M_SRWA_12F.xlsx',
+							data-type=${type},
+							data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<button type="button" class="custom-tab-btn " id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-            data-asondate=${asondate},
-            data-fromdate=${fromdate},
-            data-todate=${todate},
-            data-currency=${currency}, 
-            data-dtltype=${dtltype},
-            data-filename='EMAIL_M_SRWA_12F.xlsx',
-             data-format='email',
-			 data-type=${type},
-            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+								data-asondate=${asondate},
+								data-fromdate=${fromdate},
+								data-todate=${todate},
+								data-currency=${currency}, 
+								data-dtltype=${dtltype},
+								data-filename='EMAIL_M_SRWA_12F.xlsx',
+								 data-format='email',
+								 data-type=${type},
+								data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>

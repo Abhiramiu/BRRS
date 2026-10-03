@@ -353,7 +353,7 @@ PURPOSE		: BWRBRREPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
@@ -361,14 +361,17 @@ PURPOSE		: BWRBRREPORT
 				success: function (roleId) {
 					// console.log("User Role ID:", roleId);
 
+					// ✅ Checkers → hide Modify button
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -377,7 +380,6 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -493,41 +495,41 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -550,6 +552,9 @@ PURPOSE		: BWRBRREPORT
 
 	<script>
 		function showmodify(btn) {
+			// ✅ Prevent double-trigger if already in edit mode
+			if ($(btn).is(":hidden")) return;
+
 			// IDs that must always stay readonly
 			var readonlyIds = [
 				"R81_PRODUCT",
@@ -573,6 +578,16 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 
+			// ✅ Helper: force YELLOW with !important (overrides inline white bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
 			// Change background color for R12–R80 range fields
 			for (let i = 12; i <= 80; i++) {
 
@@ -592,12 +607,7 @@ PURPOSE		: BWRBRREPORT
 				];
 
 				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {
-						$(selector).css({
-							"background-color": "#d3d3d3"
-						});
-					}
+					paintYellow(`#R${i}_${field}`);
 				});
 			}
 
@@ -611,21 +621,8 @@ PURPOSE		: BWRBRREPORT
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
+				// ✅ Reload restores everything cleanly
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
 			// ❌ If user clicks CANCEL, nothing happens
 		}
@@ -864,7 +861,8 @@ PURPOSE		: BWRBRREPORT
 							Modify
 						</button> -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -872,56 +870,57 @@ PURPOSE		: BWRBRREPORT
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<!-- FORMAT DOWNLOAD -->
+						<button type="button" class="custom-tab-btn " id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
 							th:attr="data-reportid=${reportid},
-                   data-asondate=${asondate},
-                   data-fromdate=${fromdate},
-                   data-todate=${todate},
-                   data-currency=${currency}, 
-                   data-dtltype=${dtltype},
-                   data-filename='M_SRWA_12H.xlsx',
-                   data-type=${type},
-                   data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
+						data-asondate=${asondate},
+						data-fromdate=${fromdate},
+						data-todate=${todate},
+						data-currency=${currency}, 
+						data-dtltype=${dtltype},
+						data-filename='M_SRWA_12H.xlsx',
+						data-type=${type},
+						data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') 
-						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
-						             data-asondate=${asondate},
-						             data-fromdate=${fromdate},
-						             data-todate=${todate},
-						             data-currency=${currency},
-						             data-dtltype='email',
-						             data-filename='EMAIL_M_SRWA_12H.xlsx',
-						             data-type=${type},
-									 data-format='email',
-						             data-version=${version != null ? version : ''}">
+
+
+						<!-- EMAIL DOWNLOAD-->
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') or (displaymode == 'detail' and role != 'M')}"
+							th:attr="data-reportid=${reportid},
+							             data-asondate=${asondate},
+							             data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-currency=${currency},
+							             data-dtltype='email',
+							             data-filename='EMAIL_M_SRWA_12H.xlsx',
+							             data-type=${type},
+										 data-format='email',
+							             data-version=${version != null ? version : ''}">
 							<i class="fa fa-download"></i> Email
 						</button>
-						
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
