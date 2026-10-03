@@ -578,111 +578,7 @@ PURPOSE		: BRRS REPORT
 		};
 
 
-		function downloadfile(button) {
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-			var version = button.getAttribute('data-version');
-			var format = button.getAttribute('data-format');
-
-		    if (format === null) {
-		        format = '';   // treat as null
-		    }
-
-		    $('#loader').modal('show');
-
-		    $.ajax({
-		        url: './downloadExcel?reportid=' + reportid +
-		            '&fromdate=' + fromdate +
-		            '&asondate=' + asondate +
-		            '&todate=' + todate +
-		            '&currency=' + currency +
-		            '&subreportid=' + subreportid +
-		            '&secid=' + secid +
-		            '&filename=' + filename +
-		            '&type=' + type +
-		            '&version=' + version  +
-					'&format=' + format,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
-
-		        success: function (data) {
-		            if (data && data.size > 100) {
-
-		                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-		                const url = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-
-		                a.style.display = 'none';
-		                a.href = url;
-		                a.download = filename;
-
-		                document.body.appendChild(a);
-		                a.click();
-
-		                window.URL.revokeObjectURL(url);
-		                document.body.removeChild(a);
-
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
-
-		        error: function (jqXHR, textStatus, errorThrown) {
-		            console.error("Download failed:", textStatus, errorThrown);
-		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		        },
-
-		        complete: function () {
-		            // 🔥 Always hide loader (success/error/all cases)
-		            $('#loader').modal('hide');
-		        }
-		    });
-		}
 		
-		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
-
-		    $('#loader').modal('show');
-
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
-
-		    window.location.href = url;
-
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
-		}
-
-		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
-
-		    $('#loader').modal('show');
-
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
-
-		    window.location.href = url;
-
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
-		}
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
@@ -1363,8 +1259,113 @@ PURPOSE		: BRRS REPORT
 
 </head>
 
+<script>
+	function downloadfile(button) {
+			    var reportid = button.getAttribute('data-reportid');
+			    var asondate = button.getAttribute('data-asondate');
+			    var fromdate = button.getAttribute('data-fromdate');
+			    var todate = button.getAttribute('data-todate');
+			    var currency = button.getAttribute('data-currency');
+			    var subreportid = button.getAttribute('data-subreportid');
+			    var secid = button.getAttribute('data-secid');
+			    var dtltype = button.getAttribute('data-dtltype');
+			    var filename = button.getAttribute('data-filename');
+			    var type = button.getAttribute('data-type');
+				var version = button.getAttribute('data-version');
+				var format = button.getAttribute('data-format');
 
+			    if (format === null) {
+			        format = '';   // treat as null
+			    }
 
+			    $('#loader').modal('show');
+
+			    $.ajax({
+			        url: './downloadExcel?reportid=' + reportid +
+			            '&fromdate=' + fromdate +
+			            '&asondate=' + asondate +
+			            '&todate=' + todate +
+			            '&currency=' + currency +
+			            '&subreportid=' + subreportid +
+			            '&secid=' + secid +
+			            '&filename=' + filename +
+			            '&type=' + type +
+			            '&version=' + version  +
+						'&format=' + format,
+			        type: 'GET',
+			        xhrFields: { responseType: 'blob' },
+
+			        success: function (data) {
+			            if (data && data.size > 100) {
+
+			                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+			                const url = window.URL.createObjectURL(blob);
+			                const a = document.createElement('a');
+
+			                a.style.display = 'none';
+			                a.href = url;
+			                a.download = filename;
+
+			                document.body.appendChild(a);
+			                a.click();
+
+			                window.URL.revokeObjectURL(url);
+			                document.body.removeChild(a);
+
+			                showResultModal('BRRS', filename + ' downloaded successfully.');
+			            } else {
+			                showResultModal('Information', 'No data was available to create a download.');
+			            }
+			        },
+
+			        error: function (jqXHR, textStatus, errorThrown) {
+			            console.error("Download failed:", textStatus, errorThrown);
+			            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+			        },
+
+			        complete: function () {
+			            // 🔥 Always hide loader (success/error/all cases)
+			            $('#loader').modal('hide');
+			        }
+			    });
+			}
+			
+			function downloadSummaryPdf(element) {
+			    var reportid = element.getAttribute('data-reportid');
+			    var fromdate = element.getAttribute('data-fromdate');
+			    var todate   = element.getAttribute('data-todate');
+
+			    $('#loader').modal('show');
+
+			    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+			            + '?fromdate=' + encodeURIComponent(fromdate)
+			            + '&todate='   + encodeURIComponent(todate);
+
+			    window.location.href = url;
+
+			    setTimeout(function () {
+			        $('#loader').modal('hide');
+			    }, 2000);
+			}
+
+			function emailDownloadSummaryPdf(element) {
+			    var reportid = element.getAttribute('data-reportid');
+			    var fromdate = element.getAttribute('data-fromdate');
+			    var todate   = element.getAttribute('data-todate');
+
+			    $('#loader').modal('show');
+
+			    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+			            + '?fromdate=' + encodeURIComponent(fromdate)
+			            + '&todate='   + encodeURIComponent(todate);
+
+			    window.location.href = url;
+
+			    setTimeout(function () {
+			        $('#loader').modal('hide');
+			    }, 2000);
+			}
+</script>
 <title>M_LIQ</title>
 
 <body>
