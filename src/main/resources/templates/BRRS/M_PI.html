@@ -1790,7 +1790,7 @@ $(document).ready(function () {
 								<tbody style="font-family: Arial;">
 									<tr th:each="report, srlno : ${reportdetails}">
 										<td>
-											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record" th:if="${role == 'M'}">
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
 																						data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 													onclick="openDetail(this, 'edit')"></i>

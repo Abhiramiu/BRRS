@@ -1429,7 +1429,7 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
   id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
@@ -2146,7 +2146,7 @@ PURPOSE		: BRRS REPORT
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
-																														<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+																														<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 																															<i class="fas fa-edit" th:attr="data-SNo=${report.sno},
 																															            data-asondate=${#dates.format(report.report_date, 'dd-MM-yyyy')},
 																															            data-type=${type}" onclick="openDetail(this, 'edit')">
