@@ -1029,23 +1029,25 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
-data-asondate=${asondate},
-data-fromdate=${fromdate},
-data-todate=${todate},
-data-currency=${currency}, 
-data-dtltype=${dtltype},
-data-filename='M_PLL.xlsx',
- data-type=${type},
-data-format='email',
-data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}" 
+							th:attr="data-reportid=${reportid},
+									data-asondate=${asondate},
+									data-fromdate=${fromdate},
+									data-todate=${todate},
+									data-currency=${currency}, 
+									data-dtltype=${dtltype},
+									data-filename='M_PLL.xlsx',
+									 data-type=${type},
+									data-format='email',
+									data-version=${version != null ? version : ''}" 
+							style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 
 						</button>
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -1060,12 +1062,12 @@ data-version=${version != null ? version : ''}" style="font-family: Arial; font-
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='M_PLLDetail',
-			data-type=${type},
-			data-version=${version}
-		  ">
+								    data-fromdate=${fromdate},
+								    data-todate=${todate},
+								    data-filename='M_PLLDetail',
+									data-type=${type},
+									data-version=${version}
+								  ">
 							<i class="fa fa-download"></i>
 						</button>
 					</div>
@@ -1559,7 +1561,7 @@ data-version=${version != null ? version : ''}" style="font-family: Arial; font-
 								<tbody style="font-family: Arial;">
 									<tr th:each="report, srlno : ${reportdetails}">
 										<td>
-											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record"  th:if="${role == 'M' or role == 'MAN'}">
 												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
 											                    data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 													onclick="openMPLLDetail(this, 'edit')">

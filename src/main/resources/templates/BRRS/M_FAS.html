@@ -1240,7 +1240,7 @@ PURPOSE		: BRRSREPORT
 				if ($(selector).length) {
 					$(selector)[0].style.setProperty(
 						"background-color",
-						"#d3d3d3",
+						"#ffef00",
 						"important"
 					);
 				}
@@ -1267,7 +1267,7 @@ PURPOSE		: BRRSREPORT
 					if ($(selector).length) {
 						$(selector)[0].style.setProperty(
 							"background-color",
-							"#d3d3d3",
+							"#ffef00",
 							"important"
 						);
 					}
@@ -1396,7 +1396,7 @@ PURPOSE		: BRRSREPORT
 							th:if="${displaymode == 'summary'}">Details</button>
 						<!-- Modify Button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and (type != 'RESUB' or allowdetail == 'YES') and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and (type != 'RESUB' or allowdetail == 'YES') and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">
 							Modify
@@ -1409,7 +1409,7 @@ PURPOSE		: BRRSREPORT
 							onclick="regenerateProcedure()">Regenerate</button>
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' }" th:attr="data-reportid=${reportid},
+							onclick="downloadfile(this)" th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid},
 			                 data-asondate=${asondate},
 			                 data-fromdate=${fromdate},
 			                 data-todate=${todate},
@@ -1422,7 +1422,7 @@ PURPOSE		: BRRSREPORT
 						</button>
 
 						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid},
+							th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid},
 			  	             data-asondate=${asondate},
 			  	             data-fromdate=${fromdate},
 			  	             data-todate=${todate},
@@ -1451,7 +1451,7 @@ PURPOSE		: BRRSREPORT
 						
 						<!-- Download – PDF -->
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -2072,7 +2072,7 @@ PURPOSE		: BRRSREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}">
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
+													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

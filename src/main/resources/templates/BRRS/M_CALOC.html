@@ -1297,7 +1297,7 @@ PURPOSE		: BWRBRREPORT
 
 						<button type="button" class="custom-tab-btn" 
 								onclick="downloadfile(this)" 
-								th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" 
+								th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" 
 								th:attr="data-reportid=${reportid},
 							             data-asondate=${asondate},
 							             data-fromdate=${fromdate},

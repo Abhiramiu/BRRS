@@ -658,7 +658,7 @@ label.error {
 				const inputId = this.id;
 				if (!readonlyIds.includes(inputId)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
-					$(this).css({"background-color": "#d3d3d3"}); // highlight editable
+					$(this).css({"background-color": "#ffef00"}); // highlight editable
 				}
 			});
 			// ✅ Show submit and cancel buttons
@@ -1633,7 +1633,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 							th:if="${displaymode == 'summary'}">Details</button>
 
 						<button class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
+							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">Modify</button>
 
@@ -1645,7 +1645,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary'}"
+							th:if="${displaymode == 'summary' and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
@@ -1660,7 +1660,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 						</button>
 						<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' }"
+							th:if="${displaymode == 'summary' and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
@@ -1678,7 +1678,7 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -3692,12 +3692,14 @@ table.dataTable th.dt-type-numeric:nth-child(6) {
 										<tr th:each="report, srlno : ${reportdetails}">
 
 											<td><a data-toggle="tooltip" class="editrec"
-												title="Click to Edit this Record"> <i
-													class="fas fa-edit"
-													th:attr="data-SNo=${report.sno},
-																														            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
-																														            data-type=${type}"
-													onclick="openDetail(this, 'edit')"> </i>
+												title="Click to Edit this Record"
+												th:if="${role == 'M' or role == 'MAN'}"> 
+												<i class="fas fa-edit"
+												   th:attr="data-SNo=${report.sno},
+												            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+												            data-type=${type}"
+												   onclick="openDetail(this, 'edit')"> 
+											   </i>
 
 											</a></td>
 											<td th:text="${srlno.index + 1}"></td>

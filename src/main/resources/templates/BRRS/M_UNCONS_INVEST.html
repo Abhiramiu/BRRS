@@ -625,7 +625,7 @@ PURPOSE		: BWRBRREPORT
 
 					let selector = `#r${i}_${field}`;
 					if ($(selector).length) {
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
@@ -645,12 +645,12 @@ PURPOSE		: BWRBRREPORT
 				fields.forEach(field => {
 					let selector = `#r${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
 
-			$("#r29_fair_value").css({"background-color": "#d3d3d3"});
+			$("#r29_fair_value").css({"background-color": "#ffef00"});
 
 			for (let i = 35; i <= 38; i++) {
 				let fields = [
@@ -667,7 +667,7 @@ PURPOSE		: BWRBRREPORT
 					let selector = `#r${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
 						$(selector).css({
-							"background-color": "#d3d3d3"
+							"background-color": "#ffef00"
 						});
 
 					}
@@ -884,11 +884,11 @@ PURPOSE		: BWRBRREPORT
 						<!--<button type="button" class="custom-tab-btn"
         onclick="showmodify(this);"
         title="Click to EDIT Records"
-		th:if="${type != 'ARCHIVAL'}"
+		th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'}"
         th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
         id="addRecord">Modify</button>-->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -901,7 +901,7 @@ PURPOSE		: BWRBRREPORT
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 		                   data-asondate=${asondate},
 		                   data-fromdate=${fromdate},
@@ -915,7 +915,7 @@ PURPOSE		: BWRBRREPORT
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary'or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 		            data-asondate=${asondate},
 		            data-fromdate=${fromdate},
@@ -931,7 +931,7 @@ PURPOSE		: BWRBRREPORT
 						</button>
 
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF

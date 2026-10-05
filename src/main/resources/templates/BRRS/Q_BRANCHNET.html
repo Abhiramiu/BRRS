@@ -624,7 +624,7 @@ PURPOSE		: BWRBRREPORT
 						// Convert to lowercase to match actual IDs (e.g., "r40_opening_no_of_cards")
 						let selector = `#r${i}${field}`;
 						if ($(selector).length) {
-							$(selector).css("background-color", "#d3d3d3");
+							$(selector).css("background-color", "#ffef00");
 						}
 					});
 				}
@@ -1093,12 +1093,12 @@ PURPOSE		: BWRBRREPORT
 							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 						<!-- Modify button -->
 						<!-- <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-                            title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'}"
+                            title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'}"
                             th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
                             id="addRecord">Modify</button> -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
 							id="addRecord">
 							Modify
@@ -1106,8 +1106,9 @@ PURPOSE		: BWRBRREPORT
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
-					   					          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+							onclick="downloadfile(this)" 
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" 
+							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
                    data-todate=${todate},
@@ -1119,8 +1120,9 @@ PURPOSE		: BWRBRREPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
-												          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+							onclick="downloadfile(this)" 
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" 
+							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
             data-todate=${todate},
@@ -1136,7 +1138,7 @@ PURPOSE		: BWRBRREPORT
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
