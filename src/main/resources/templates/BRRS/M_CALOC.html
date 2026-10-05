@@ -560,7 +560,7 @@ PURPOSE		: BWRBRREPORT
 					let selector = `#R${i}_${field}`; // ✅ use backticks for template literals
 					if ($(selector).length) {
 						$(selector).css({
-							"background-color": "#d3d3d3"
+							"background-color": "#ffef00"
 						});
 					}
 				});
@@ -1278,39 +1278,42 @@ PURPOSE		: BWRBRREPORT
 
 
 						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid},
-						   					               data-asondate=${asondate},
-						   					               data-fromdate=${fromdate},
-						   					               data-todate=${todate},
-						   					               data-currency=${currency}, 
-						   					               data-dtltype=${dtltype},
-						   					               data-filename='M_CALOC.xlsx',
-						   					               data-type=${type},
-						   					               data-version=${version != null ? version : ''}"
-							style="font-family: Arial;font-weight: bold;">
+						<button type="button" class="custom-tab-btn " 
+								id="custom-tab-btnAdd"
+								onclick="downloadfile(this)"
+								th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
+								th:attr="data-reportid=${reportid},
+	   					                 data-asondate=${asondate},
+	   					                 data-fromdate=${fromdate},
+	   					                 data-todate=${todate},
+	   					                 data-currency=${currency}, 
+	   					                 data-dtltype=${dtltype},
+	   					                 data-filename='M_CALOC.xlsx',
+	   					                 data-type=${type},
+	   					                 data-version=${version != null ? version : ''}"
+								style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
-						   						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
-						   						             data-asondate=${asondate},
-						   						             data-fromdate=${fromdate},
-						   						             data-todate=${todate},
-						   						             data-currency=${currency},
-						   						             data-dtltype='email',
-						   						             data-filename='EMAIL_M_CALOC.xlsx',
-						   						             data-type=${type},
-						   									 data-format='email',
-						   						             data-version=${version != null ? version : ''}">
+						<button type="button" class="custom-tab-btn" 
+								onclick="downloadfile(this)" 
+								th:if="${displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}" 
+								th:attr="data-reportid=${reportid},
+							             data-asondate=${asondate},
+							             data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-currency=${currency},
+							             data-dtltype='email',
+							             data-filename='EMAIL_M_CALOC.xlsx',
+							             data-type=${type},
+										 data-format='email',
+							             data-version=${version != null ? version : ''}">
 							<i class="fa fa-download"></i> Email
 						</button>
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -1329,13 +1332,12 @@ PURPOSE		: BWRBRREPORT
 							</div>
 						</div>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-												    data-fromdate=${fromdate},
-												    data-todate=${todate},
-												    data-filename='M_CALOCDetail',
-						                data-type=${type},
-								            data-version=${version}
-												  ">
+							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" 
+							th:attr="data-fromdate=${fromdate},
+								     data-todate=${todate},
+								     data-filename='M_CALOCDetail',
+						             data-type=${type},
+								     data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -12397,7 +12399,8 @@ PURPOSE		: BWRBRREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
+													title="Click to Edit this Record"
+													 th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

@@ -789,7 +789,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -803,7 +803,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -817,7 +817,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -831,7 +831,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -845,7 +845,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -859,7 +859,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -873,7 +873,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -887,7 +887,7 @@ function showmodify(btn) {
         fields.forEach(field => {
             let selector = `#R${i}_${field}`; // ✅ use backticks for template literal
             if ($(selector).length) { // check if element exists
-                $(selector).css({ "background-color": "#d3d3d3" });
+                $(selector).css({ "background-color": "#ffef00" });
             }
         });
     }
@@ -4251,7 +4251,7 @@ alert(version)
 						<!-- Modify button -->
 						 <button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${role == 'M' and displaymode == 'summary' or displaymode == 'resubSummary' }"							
+							th:if="${(role == 'M' or role == 'MAN') and (displaymode == 'summary' or displaymode == 'resubSummary')}"							
 							id="addRecord">
 							Modify
 						</button>
@@ -4260,8 +4260,9 @@ alert(version)
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
+							
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'details' and role != 'M') }" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'summary' or displaymode == 'details') and role != 'M'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -4275,7 +4276,7 @@ alert(version)
 						</button>
 						
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and (role == 'M' or role == 'MAN')}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -4306,7 +4307,7 @@ alert(version)
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 							
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'resubDetails' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'resubDetails' or displaymode == 'resubSummary') and role != 'M'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -4319,7 +4320,7 @@ alert(version)
 							<i class="fa fa-download"></i>
 						</button>
 						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'resubDetails' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'resubDetails' or displaymode == 'resubSummary') and role != 'M'}" th:attr="data-reportid=${reportid},
 								    data-asondate=${asondate},
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
@@ -4337,7 +4338,7 @@ alert(version)
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 							
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'archivalSummary' or displaymode == 'archivalDetails'}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'archivalSummary' or displaymode == 'archivalDetails') and role != 'M'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -4350,7 +4351,7 @@ alert(version)
 							<i class="fa fa-download"></i>
 						</button>
 						 <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'archivalSummary' or displaymode == 'archivalDetails'}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'archivalSummary' or displaymode == 'archivalDetails') and role != 'M'}" th:attr="data-reportid=${reportid},
 								    data-asondate=${asondate},
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
@@ -4365,7 +4366,7 @@ alert(version)
 						</button>
 						
                         <button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'details' and role != 'M')}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'summary' or displaymode == 'details') and role != 'M'}" th:attr="data-reportid=${reportid},
 								    data-asondate=${asondate},
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},

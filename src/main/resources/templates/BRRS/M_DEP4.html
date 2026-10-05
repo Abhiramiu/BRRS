@@ -1088,7 +1088,7 @@ PURPOSE		: BRRSREPORT
 						<!-- Modify button -->
 						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${type == 'RESUB' or type=='BRRS' and type != 'ARCHIVAL'}"
+							th:if="${(type == 'RESUB' or type=='BRRS') and type != 'ARCHIVAL' and (role == 'M' or role == 'MAN')}"
 							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit' "
 							id="addRecord">
 							Modify
@@ -1099,7 +1099,7 @@ PURPOSE		: BRRSREPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+							th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1114,7 +1114,7 @@ PURPOSE		: BRRSREPORT
 						<!-- Download – EMAIL -->
 												<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 													onclick="downloadfile(this)"
-													th:if="${displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+													th:if="${(displaymode == 'summary' or displaymode == 'resubSummary'or displaymode == 'resubDetail') and role != 'M'}"
 													th:attr="data-reportid=${reportid},
 										            data-asondate=${asondate},
 										            data-fromdate=${fromdate},
@@ -1131,7 +1131,7 @@ PURPOSE		: BRRSREPORT
 												</button>
 												
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -7662,7 +7662,8 @@ PURPOSE		: BRRSREPORT
 																<tbody style="font-family: Arial;">
 																	<tr th:each="report, srlno : ${reportdetails}">
 																		<td>
-																			<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
+																			<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record"
+																				 th:if="${role == 'M' or role == 'MAN'}">
 																				<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber},
 																														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
 																					onclick="openDetail(this, 'edit')"></i>

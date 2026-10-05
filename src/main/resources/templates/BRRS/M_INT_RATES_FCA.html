@@ -677,7 +677,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly")
 						.removeAttr("disabled")
-						.css({"background-color": "#d3d3d3"}); // light yellow for editable
+						.css({"background-color": "#ffef00"}); // light yellow for editable
 				}
 			});
 
@@ -1037,7 +1037,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1045,7 +1045,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1060,7 +1060,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')  or displaymode == 'resub'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1076,7 +1076,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 						</button>
 						
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M' }">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF

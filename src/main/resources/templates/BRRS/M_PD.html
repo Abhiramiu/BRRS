@@ -813,7 +813,7 @@ function showmodify(btn) {
             if ($(selector).length) {
                 // Setting to white usually indicates "Editable". 
                 // Use "#d3d3d3" if you specifically want them gray.
-                $(selector).css("background-color", "#d3d3d3"); 
+                $(selector).css("background-color", "#ffef00"); 
             }
         });
     }
@@ -2718,7 +2718,7 @@ function closemodels() {
         <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
-                th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
@@ -2733,7 +2733,7 @@ function closemodels() {
 
         <!-- Download button - Summary -->
         <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'summary'}"
+            th:if="${displaymode == 'summary' and role != 'M'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -2749,7 +2749,7 @@ function closemodels() {
         
         	<button type="button" class="custom-tab-btn "
 							id="custom-tab-btnAdd" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'resub'}"
+							th:if="${(displaymode == 'summary' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -2767,7 +2767,7 @@ function closemodels() {
 						
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -10868,7 +10868,8 @@ function closemodels() {
 										<tr th:each="report, srlno : ${reportdetails}">
 										<td>
 									<a data-toggle="tooltip" class="editrec"
-									title="Click to Edit this Record">
+									title="Click to Edit this Record" 
+									th:if="${role == 'M' or role == 'MAN'}">
 								<i class="fas fa-edit" style="color: black; cursor:pointer;"
 								th:attr="data-acctNo=${report.acctNumber},
 								data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

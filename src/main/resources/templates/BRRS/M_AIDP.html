@@ -736,7 +736,7 @@ PURPOSE		: BWRBRREPORT
 				fields.forEach(field => {
 					let selector = `#R${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
@@ -757,7 +757,7 @@ PURPOSE		: BWRBRREPORT
 				fields.forEach(field => {
 					let selector = `#R${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
@@ -778,7 +778,7 @@ PURPOSE		: BWRBRREPORT
 				fields.forEach(field => {
 					let selector = `#R${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
@@ -800,7 +800,7 @@ PURPOSE		: BWRBRREPORT
 				fields.forEach(field => {
 					let selector = `#R${i}_${field}`;
 					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#d3d3d3"});
+						$(selector).css({"background-color": "#ffef00"});
 					}
 				});
 			}
@@ -1396,7 +1396,7 @@ PURPOSE		: BWRBRREPORT
 
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn addedit" onclick="showmodify(this);"
-							title="Click to EDIT Records" id="addRecord" th:if="${role == 'M' and displaymode == 'summary' 
+							title="Click to EDIT Records" id="addRecord" th:if="${(role == 'M' or role == 'MAN') and displaymode == 'summary' 
 						                and type != 'ARCHIVAL' 
 						                and session.PERMISSIONS == 'W'}">
 							Modify
@@ -1408,7 +1408,7 @@ PURPOSE		: BWRBRREPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'summary' or displaymode == 'detail') and role != 'M'}" th:attr="data-reportid=${reportid},
                    				 data-asondate=${asondate},
                    				 data-fromdate=${fromdate},
                     				 data-todate=${todate},
@@ -1421,7 +1421,7 @@ PURPOSE		: BWRBRREPORT
 						</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd" style="white-space: nowrap;"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')}" th:attr="data-reportid=${reportid},
+							th:if="${(displaymode == 'summary' or displaymode == 'detail') and role != 'M'}" th:attr="data-reportid=${reportid},
 						                   				 data-asondate=${asondate},
 						                   				 data-fromdate=${fromdate},
 						                    				 data-todate=${todate},
@@ -1435,7 +1435,7 @@ PURPOSE		: BWRBRREPORT
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -1472,7 +1472,7 @@ PURPOSE		: BWRBRREPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
 								    data-fromdate=${fromdate},
 								    data-todate=${todate},
 									data-currency=${currency},  
