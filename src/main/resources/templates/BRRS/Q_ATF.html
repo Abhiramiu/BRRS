@@ -526,12 +526,12 @@ PURPOSE		: BRRS REPORT
 		function showmodify(btn) {
 			if ($(btn).is(":hidden")) return;
 
-			// ✅ Helper: force YELLOW #ffef00 with !important
+			// ✅ Helper: force YELLOW #FFF59D with !important
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			}
@@ -1733,16 +1733,20 @@ ranges.forEach(range => {
 
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
-							id="addRecord">Modify</button>
+						<!-- 	<button type="button" class="custom-tab-btn"
+														onclick="showmodify(this);" title="Click to EDIT Records"
+													
+														th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+														th:if="${type != 'ARCHIVAL'}"
+													
+														id="addRecord">Modify</button>
+
+													Cancel button (hidden initially)
+													<button type="button" class="custom-tab-btn"
+														title="Cancel editing" id="cancelRecord"
+														onclick="cancelModify();" style="display: none;">Cancel</button> -->
 
 
-						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
 
@@ -3295,7 +3299,7 @@ ranges.forEach(range => {
 								<div class="col-sm-3">
 									<input type="number" step="0.01" th:field="*{acctBalanceInpula}"
 										class="form-control form-control-sm editable-field"
-										style="text-align: right; background-color: #ffef00 !important;" />
+										style="text-align: right; background-color: #FFF59D !important;" />
 								</div>
 							</div>
 

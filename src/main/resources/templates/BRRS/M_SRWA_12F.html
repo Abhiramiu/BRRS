@@ -718,7 +718,7 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 					// ✅ Force YELLOW with !important (overrides inline white bg)
 					$(this).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			});
@@ -2605,10 +2605,11 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
-										onclick="fileupload_all(this);" style="display: none;">
-										Submit</button>
+									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+										th:attr="data-todate=${asondate},data-reporttype=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
 								</div>
 							</form>
 						</div>

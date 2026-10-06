@@ -610,7 +610,8 @@ PURPOSE		: BWRBRREPORT
 			var readonlyIds = [
 				// 8A — Staff Complement labels (R9-R15)
 				"R9_STAFF_COMPLEMENT", "R10_STAFF_COMPLEMENT", "R11_STAFF_COMPLEMENT",
-				"R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R15_STAFF_COMPLEMENT",
+				"R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R14_STAFF_COMPLEMENT",
+				"R15_STAFF_COMPLEMENT",
 				// 8B — Senior Management Compensation labels (R21-R28)
 				"R21_SENIOR_MANAGEMENT_COMPENSATION", "R22_SENIOR_MANAGEMENT_COMPENSATION",
 				"R23_SENIOR_MANAGEMENT_COMPENSATION", "R24_SENIOR_MANAGEMENT_COMPENSATION",
@@ -630,21 +631,22 @@ PURPOSE		: BWRBRREPORT
 				"R38_INTEREST_RATE"
 			];
 
-			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline bg)
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline bg)
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			}
 
-			// ✅ Enable editable inputs + paint YELLOW in one pass
-			$(".Show_input").each(function () {
+
+			// ✅ Only paint <input> elements, never <button>
+			$("input.Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
-					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
+					paintYellow("#" + this.id);
 				}
 			});
 

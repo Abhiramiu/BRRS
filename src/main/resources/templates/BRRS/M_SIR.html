@@ -699,6 +699,14 @@ PURPOSE		: BRFREPORT
 			"r33_capital_6m", "r33_capital_6to24m", "r33_capital_gt24m",
 			"r35_tot_spec_risk_ch",
 
+			// ---- ✅ NEW: Non-editable Amount fields (locked rows) ----
+			// Corporate Firms, Securities Firms and Foreign PSE (Row 1)
+			"r12_amt_6m", "r12_amt_6to24m", "r12_amt_gt24m",
+			// Foreign Banking institutions1 (Row 7)
+			"r18_amt_6m", "r18_amt_6to24m", "r18_amt_gt24m",
+			// Foreign Sovereigns (Row 16)
+			"r27_amt_6m", "r27_amt_6to24m", "r27_amt_gt24m",
+
 			// ---- Auto-calculated Risk fields (must stay readonly) ----
 			"r13_risk_6m", "r13_risk_6to24m", "r13_risk_gt24m",
 			"r14_risk_6m", "r14_risk_6to24m", "r14_risk_gt24m",
@@ -735,12 +743,12 @@ PURPOSE		: BRFREPORT
 		function showmodify(btn) {
 			if ($(btn).is(":hidden")) return;
 
-			// ✅ Helper: force YELLOW #ffef00 with !important
+			// ✅ Helper: force YELLOW #FFF59D with !important
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			}
@@ -751,7 +759,7 @@ PURPOSE		: BRFREPORT
 			$(".show_input, .Show_input, .display-input").not(".nonEditable").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
-					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
+					paintYellow("#" + this.id);   // ✅ YELLOW #FFF59D
 				}
 			});
 
@@ -3422,10 +3430,11 @@ PURPOSE		: BRFREPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+										th:attr="data-todate=${asondate},data-reporttype=${type}"
 										onclick="fileuploads(this);" style="display: none;">
 										Submit
+									</button>
 								</div>
 							</form>
 						</div>

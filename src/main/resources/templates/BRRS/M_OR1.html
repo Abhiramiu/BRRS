@@ -769,7 +769,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 					// ✅ Force YELLOW with !important (overrides inline white bg)
 					$(this).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			});
@@ -2368,9 +2368,11 @@ PURPOSE		: BRRS_M_CA2REPORT
 								</div>
 								<div style="text-align: center;  background-color: white">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
+									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+										th:attr="data-todate=${asondate},data-reporttype=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
 								</div>
 							</form>
 

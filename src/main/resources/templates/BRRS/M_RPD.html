@@ -211,15 +211,13 @@ PURPOSE		: BRFREPORT
 		}
 
 		/* When input or select is focused or has a value, move the label up */
-	
+
 
 		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
 			color: #0056b3;
 			/* Darker shade of blue on hover */
 		}
-
-
 	</style>
 
 	<style>
@@ -457,16 +455,16 @@ PURPOSE		: BRFREPORT
 					'&secid=' + secid +
 					'&filename=' + filename +
 					'&type=' + type +
-					'&format='+ format +
+					'&format=' + format +
 					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
-					responseType: 'blob'        
+					responseType: 'blob'
 				},
 				success: function (data) {
-					
+
 					$('#loader').modal('hide');
-					
+
 					if (data && data.size > 100) {
 						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
 						const url = window.URL.createObjectURL(blob);
@@ -491,41 +489,41 @@ PURPOSE		: BRFREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -720,7 +718,7 @@ PURPOSE		: BRFREPORT
 		// ==============================
 		// ✅ Enable Editing
 		// ==============================
-			
+
 		function showmodify(btn) {
 			console.log("Button Clicked!")
 			for (let i = 11; i <= 450; i++) {
@@ -732,7 +730,7 @@ PURPOSE		: BRFREPORT
 					$(`#R${i}${suffix}`)
 						.prop("readonly", false)
 						.prop("disabled", false)
-						.css({"background-color": "#ffef00"});
+						.css({"background-color": "#FFF59D"});
 				});
 			}
 
@@ -771,14 +769,14 @@ PURPOSE		: BRFREPORT
 			groupRanges.forEach(([start, end, row]) => {
 				let g = {limit: 0, out: 0, exc: 0, cur: 0, val: 0};
 				for (let i = start; i <= end; i++) {
-					
+
 					g.limit += parseNumber($("#R" + i + "_APPROVED_LIMIT").val());
 					g.out += parseNumber($("#R" + i + "_OUTSTANDING_AMOUNT").val());
 					g.exc += parseNumber($("#R" + i + "_EXCESS_OVER_CEILING").val());
 					g.cur += parseNumber($("#R" + i + "_CURRENT_PROVISIONS").val());
 					g.val += parseNumber($("#R" + i + "_VALUE").val());
 				}
-				console.log("EXCESS_OVER_CEILING = "+ start +" = "+ end +" = "+ g.exc) 
+				console.log("EXCESS_OVER_CEILING = " + start + " = " + end + " = " + g.exc)
 				// Write subtotal
 				/* $("#R" + row + "_APPROVED_LIMIT").val(formatNumber(g.limit));
 				$("#R" + row + "_OUTSTANDING_AMOUNT").val(formatNumber(g.out));
@@ -793,7 +791,7 @@ PURPOSE		: BRFREPORT
 				grandTotals.cur += g.cur;
 				grandTotals.val += g.val;
 			});
-      console.log()
+			console.log()
 			// Write grand total (R451)
 			$("#R451_APPROVED_LIMIT").val(formatNumber(grandTotals.limit));
 			$("#R451_OUTSTANDING_AMOUNT").val(formatNumber(grandTotals.out));
@@ -876,8 +874,8 @@ PURPOSE		: BRFREPORT
 				const numericFields = [
 					"_APPROVED_LIMIT", "_OUTSTANDING_AMOUNT", "_EXCESS_OVER_CEILING",
 					"_CURRENT_PROVISIONS", "_VALUE",
-					 "_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-					"_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" 
+					"_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+					"_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT"
 				];
 
 				if (numericFields.some(suffix => id.endsWith(suffix))) {
@@ -919,46 +917,46 @@ PURPOSE		: BRFREPORT
 					$('#loader').modal('hide');
 				}
 			}); */
-			
+
 			let apiUrl;
 			let successMessage;
 			let redirectUrl;
 
 			if (type && type.toUpperCase() === 'RESUB') {
-			    apiUrl = './UpdateM_RPD_ReSub';
-			    successMessage = "Resub Modified Successfully.";
-			    redirectUrl ='/BRRS/Resubmission?rptcode=M_RPD';   // 🔹 change this to your RESUB page
+				apiUrl = './UpdateM_RPD_ReSub';
+				successMessage = "Resub Modified Successfully.";
+				redirectUrl = '/BRRS/Resubmission?rptcode=M_RPD';   // 🔹 change this to your RESUB page
 			} else {
-			    apiUrl = './M_RPDupdateAll';
-			    successMessage = "Modified Successfully.";
-			    redirectUrl = '/BRRS/BRRSValidations?rptcode=M_RPD&todate='+asondate  // 🔹 change this to your normal page
+				apiUrl = './M_RPDupdateAll';
+				successMessage = "Modified Successfully.";
+				redirectUrl = '/BRRS/BRRSValidations?rptcode=M_RPD&todate=' + asondate  // 🔹 change this to your normal page
 			}
 
 			$.ajax({
-			    url: apiUrl,
-			    type: 'POST',
-			    data: formData,
-			    dataType: 'text',
+				url: apiUrl,
+				type: 'POST',
+				data: formData,
+				dataType: 'text',
 
-			    success: function (response) {
-			        $('#loader').modal('hide');
+				success: function (response) {
+					$('#loader').modal('hide');
 
-			        $("#resultModalLabel").text("BRRS");
-			        $("#resultModalBody").text(successMessage);
-			        $("#resultModal").modal("show");
+					$("#resultModalLabel").text("BRRS");
+					$("#resultModalBody").text(successMessage);
+					$("#resultModal").modal("show");
 
-			        $("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
-			            window.location.href = redirectUrl;   // 🔥 redirect instead of reload
-			        });
-			    },
+					$("#resultModal").off("hidden.bs.modal").on("hidden.bs.modal", function () {
+						window.location.href = redirectUrl;   // 🔥 redirect instead of reload
+					});
+				},
 
-			    error: function (jqXHR) {
-			        $('#loader').modal('hide');
+				error: function (jqXHR) {
+					$('#loader').modal('hide');
 
-			        $("#resultModalLabel").text("⚠️ Error");
-			        $("#resultModalBody").text("Update failed. Please check console.");
-			        $("#resultModal").modal("show");
-			    }
+					$("#resultModalLabel").text("⚠️ Error");
+					$("#resultModalBody").text("Update failed. Please check console.");
+					$("#resultModal").modal("show");
+				}
 			});
 		}
 
@@ -1075,7 +1073,6 @@ PURPOSE		: BRFREPORT
 		#reportdetails {
 			border-collapse: collapse;
 		}
-		
 	</style>
 	<script th:inline="javascript">
 		$(document).ready(function () {
@@ -1119,7 +1116,7 @@ PURPOSE		: BRFREPORT
 	</script>
 	<script type="text/javascript">
 
-		$(document).ready(function () {		
+		$(document).ready(function () {
 			var value = $("#selectedTab").val();
 			alert(value);
 		})
@@ -1162,36 +1159,36 @@ PURPOSE		: BRFREPORT
 						</span>
 
 						<!-- Buttons -->
-										<input type="hidden" id="selectedTab" th:value="${displaymode}">
-										<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
-											th:if="${displaymode == 'Details'}">Summary</button>
-										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
-											th:if="${displaymode == 'summary'}">Details</button>
+						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
+							th:if="${displaymode == 'Details'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
+							th:if="${displaymode == 'summary'}">Details</button>
 
-                                       <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryArc();"
-											th:if="${displaymode == 'DetailsArc'}">Summary</button>
-										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetailsArc();"
-											th:if="${displaymode == 'summaryArc'}">Details</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary"
+							onclick="showsummaryArc();" th:if="${displaymode == 'DetailsArc'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails"
+							onclick="showdetailsArc();" th:if="${displaymode == 'summaryArc'}">Details</button>
 
-                                         <button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummaryResub();"
-											th:if="${displaymode == 'DetailsResub'}">Summary</button>
-										<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetailsResub();"
-											th:if="${displaymode == 'summaryResub'}">Details</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary"
+							onclick="showsummaryResub();" th:if="${displaymode == 'DetailsResub'}">Summary</button>
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails"
+							onclick="showdetailsResub();" th:if="${displaymode == 'summaryResub'}">Details</button>
 
 
 
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
 							th:if="${(role == 'M' or role == 'MAN') and (displaymode == 'summary' or displaymode == 'summaryResub') }"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
-										<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
-											onclick="cancelModify();" style="display: none;">Cancel</button>
-										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-											onclick="downloadfile(this)"
-											th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub') and role != 'M'}"
-											th:attr="data-reportid=${reportid},
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub') and role != 'M'}"
+							th:attr="data-reportid=${reportid},
 											                   data-asondate=${asondate},
 											                   data-fromdate=${fromdate},
 											                   data-todate=${todate},
@@ -1200,13 +1197,13 @@ PURPOSE		: BRFREPORT
 											                   data-filename='M_RPD.xlsx',
 											                   data-type=${type},
 											                   data-version=${version != null ? version : ''}"
-											style="font-family: Arial;font-weight: bold;">
-											<i class="fa fa-download"></i> Format
-										</button>
-										<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-											onclick="downloadfile(this)"
-											th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub') and role != 'M'}"
-											th:attr="data-reportid=${reportid},
+							style="font-family: Arial;font-weight: bold;">
+							<i class="fa fa-download"></i> Format
+						</button>
+						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
+							onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub') and role != 'M'}"
+							th:attr="data-reportid=${reportid},
 											            data-asondate=${asondate},
 											            data-fromdate=${fromdate},
 											            data-todate=${todate},
@@ -1216,79 +1213,73 @@ PURPOSE		: BRFREPORT
 														data-type=${type},
 											            data-format='email',
 											            data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
-											<i class="fa fa-download"></i> Email
+							<i class="fa fa-download"></i> Email
 
-										</button>
-										
-										<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-											 th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
-											<button type="button" class="custom-tab-btn dropdown-toggle"
-												data-toggle="dropdown">
-												<i class="fa fa-download"></i> PDF
-											</button>
-											<div class="dropdown-menu" >
-												<a href="#"
-												   class="nav-link"
-											 	   th:attr=	"data-reportid=${reportid},
+						</button>
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
+								<i class="fa fa-download"></i> PDF
+							</button>
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 															 data-fromdate=${fromdate},
-															 data-todate=${todate}"
-												   onclick="downloadSummaryPdf(this);">
-													<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
-												</a>
-												<div class="dropdown-divider"></div>
-												<a href="#"
-												   class="nav-link"
-												   th:attr="data-reportid=${reportid},
+															 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+								</a>
+								<div class="dropdown-divider"></div>
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 															data-fromdate=${fromdate},
-															data-todate=${todate}"
-												   onclick="emailDownloadSummaryPdf(this);">
-													<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
-												</a>
-											</div>
-										</div>
+															data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
+									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+								</a>
+							</div>
+						</div>
 
-									</div>
-								</div>
+					</div>
+				</div>
 
-								<p th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
+				<p th:if="${displaymode == 'summary' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold; 
 														color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
 														margin-top:10px; margin-bottom:10px;padding: 5px;">Summary View - M_RPD</p>
 
-								<!-- Detail text -->
-								<p th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
+				<!-- Detail text -->
+				<p th:if="${displaymode == 'Details' and type != 'ARCHIVAL'}" style="text-align: left; font-weight: bold;
 													 color: white;  font-size: 20px;  background-color: rgb(107, 122, 143); 
 													 margin-top:10px; margin-bottom:10px;padding: 5px;">Detail View - M_RPD</p>
 
-								<p th:if="${type == 'ARCHIVAL' and displaymode == 'summaryArc'}" style="text-align: left; font-weight: bold; 
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'summaryArc'}" style="text-align: left; font-weight: bold; 
 								          color: white; font-size: 20px;
 								          background-color: rgb(107, 122, 143); 
 								          margin-top:10px; margin-bottom:10px; padding: 5px;">
-									Archival Summary View - M_RPD
-								</p>
+					Archival Summary View - M_RPD
+				</p>
 
-								<p th:if="${type == 'ARCHIVAL' and displaymode == 'DetailsArc'}" style="text-align: left; font-weight: bold;
+				<p th:if="${type == 'ARCHIVAL' and displaymode == 'DetailsArc'}" style="text-align: left; font-weight: bold;
 								          color: white; font-size: 20px;
 								          background-color: rgb(107, 122, 143); 
 								          margin-top:10px; margin-bottom:10px; padding: 5px;">
-									Archival Detail View - M_RPD
-								</p>
+					Archival Detail View - M_RPD
+				</p>
 
-								<p th:if="${type == 'RESUB' and displaymode == 'summaryResub'}" style="text-align: left; font-weight: bold; 
+				<p th:if="${type == 'RESUB' and displaymode == 'summaryResub'}" style="text-align: left; font-weight: bold; 
 														          color: white; font-size: 20px;
 														          background-color: rgb(107, 122, 143); 
 														          margin-top:10px; margin-bottom:10px; padding: 5px;">
-									Resubmission Summary View - M_RPD
-								</p>
+					Resubmission Summary View - M_RPD
+				</p>
 
-								<p th:if="${type == 'RESUB' and displaymode == 'DetailsResub'}" style="text-align: left; font-weight: bold;
+				<p th:if="${type == 'RESUB' and displaymode == 'DetailsResub'}" style="text-align: left; font-weight: bold;
 														          color: white; font-size: 20px;
 														          background-color: rgb(107, 122, 143); 
 														          margin-top:10px; margin-bottom:10px; padding: 5px;">
-									Resubmission Detail View - M_RPD
-								</p>
+					Resubmission Detail View - M_RPD
+				</p>
 
-								<div
-									th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}">
+				<div
+					th:if="${displaymode == 'summary' or displaymode == 'Details'or displaymode == 'summaryArc' or displaymode == 'DetailsArc' or  displaymode == 'summaryResub' or displaymode == 'DetailsResub'}">
 
 					<div class="row">
 						<div class="col-sm-12">
@@ -1301,17 +1292,26 @@ PURPOSE		: BRFREPORT
 										<thead>
 											<tr style="text-align: center;">
 												<th style="background-color: #D8D8D8; text-align: left;">Group</th>
-												<th style="background-color: #D8D8D8; text-align: left;">Names of insider borrower(s) including
+												<th style="background-color: #D8D8D8; text-align: left;">Names of
+													insider borrower(s) including
 													related interests of the borrower(s)</th>
-												<th style="background-color: #D8D8D8; text-align: left;">Type of Facility</th>
-												<th style="background-color: #D8D8D8; text-align: right;">Approved Limit</th>
-												<th style="background-color: #D8D8D8; text-align: right;">Outstanding Amount</th>
-												<th style="background-color: #D8D8D8; text-align: right;">Excess Over Ceiling</th>
-												<th style="background-color: #D8D8D8; text-align: left;">Loan Performance Classification</th>
-												<th style="background-color: #D8D8D8; text-align: right;">Current Provisions</th>
-												<th style="background-color: #D8D8D8; text-align: left;">Description</th>
+												<th style="background-color: #D8D8D8; text-align: left;">Type of
+													Facility</th>
+												<th style="background-color: #D8D8D8; text-align: right;">Approved Limit
+												</th>
+												<th style="background-color: #D8D8D8; text-align: right;">Outstanding
+													Amount</th>
+												<th style="background-color: #D8D8D8; text-align: right;">Excess Over
+													Ceiling</th>
+												<th style="background-color: #D8D8D8; text-align: left;">Loan
+													Performance Classification</th>
+												<th style="background-color: #D8D8D8; text-align: right;">Current
+													Provisions</th>
+												<th style="background-color: #D8D8D8; text-align: left;">Description
+												</th>
 												<th style="background-color: #D8D8D8; text-align: right;">Value</th>
-												<th style="background-color: #D8D8D8; text-align: right;">Interest Rate</th>
+												<th style="background-color: #D8D8D8; text-align: right;">Interest Rate
+												</th>
 											</tr>
 										</thead>
 

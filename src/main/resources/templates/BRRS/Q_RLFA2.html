@@ -626,21 +626,21 @@ PURPOSE		: BRRS MANUAL REPORT
 				"r64_sche_fore_ass"
 			];
 
-			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline bg)
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline bg)
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			}
 
-			// ✅ Enable + paint YELLOW in one pass
-			$(".Show_input").each(function () {
+			// ✅ Only paint <input> elements, never <button>
+			$("input.Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
-					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
+					paintYellow("#" + this.id);
 				}
 			});
 

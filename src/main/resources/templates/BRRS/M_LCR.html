@@ -430,81 +430,81 @@ PURPOSE		: BRRS_M_LCRREPORT
 
 		function downloadfile(button) {
 
-		    var reportid = button.getAttribute('data-reportid');
-		    var asondate = button.getAttribute('data-asondate');
-		    var fromdate = button.getAttribute('data-fromdate');
-		    var todate = button.getAttribute('data-todate');
-		    var currency = button.getAttribute('data-currency');
-		    var subreportid = button.getAttribute('data-subreportid');
-		    var secid = button.getAttribute('data-secid');
-		    var dtltype = button.getAttribute('data-dtltype');
-		    var filename = button.getAttribute('data-filename');
-		    var type = button.getAttribute('data-type');
-		    var version = button.getAttribute('data-version');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
 
-		    // ✅ Bootstrap 5 loader modal
-		    var loader = new bootstrap.Modal(
-		        document.getElementById('loader'),
-		        { backdrop: 'static', keyboard: false }
-		    );
-		    loader.show();
+			// ✅ Bootstrap 5 loader modal
+			var loader = new bootstrap.Modal(
+				document.getElementById('loader'),
+				{backdrop: 'static', keyboard: false}
+			);
+			loader.show();
 
-		    // ✅ Build URL safely
-		    var url = './downloadExcel?' +
-		        'reportid=' + encodeURIComponent(reportid) +
-		        '&fromdate=' + encodeURIComponent(fromdate) +
-		        '&asondate=' + encodeURIComponent(asondate) +
-		        '&todate=' + encodeURIComponent(todate) +
-		        '&currency=' + encodeURIComponent(currency) +
-		        '&subreportid=' + encodeURIComponent(subreportid) +
-		        '&secid=' + encodeURIComponent(secid) +
-		        '&filename=' + encodeURIComponent(filename) +
-		        '&type=' + encodeURIComponent(type);
+			// ✅ Build URL safely
+			var url = './downloadExcel?' +
+				'reportid=' + encodeURIComponent(reportid) +
+				'&fromdate=' + encodeURIComponent(fromdate) +
+				'&asondate=' + encodeURIComponent(asondate) +
+				'&todate=' + encodeURIComponent(todate) +
+				'&currency=' + encodeURIComponent(currency) +
+				'&subreportid=' + encodeURIComponent(subreportid) +
+				'&secid=' + encodeURIComponent(secid) +
+				'&filename=' + encodeURIComponent(filename) +
+				'&type=' + encodeURIComponent(type);
 
-		    // ✅ Append version only if present
-		    if (version && version.trim() !== '') {
-		        url += '&version=' + encodeURIComponent(version);
-		    }
+			// ✅ Append version only if present
+			if (version && version.trim() !== '') {
+				url += '&version=' + encodeURIComponent(version);
+			}
 
-		    $.ajax({
-		        url: url,
-		        type: 'GET',
-		        xhrFields: { responseType: 'blob' },
+			$.ajax({
+				url: url,
+				type: 'GET',
+				xhrFields: {responseType: 'blob'},
 
-		        success: function (data) {
-		            if (data && data.size > 100) {
-		                const blob = new Blob([data], {
-		                    type: 'application/vnd.ms-excel'
-		                });
+				success: function (data) {
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {
+							type: 'application/vnd.ms-excel'
+						});
 
-		                const downloadUrl = window.URL.createObjectURL(blob);
-		                const a = document.createElement('a');
-		                a.style.display = 'none';
-		                a.href = downloadUrl;
-		                a.download = filename;
+						const downloadUrl = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = downloadUrl;
+						a.download = filename;
 
-		                document.body.appendChild(a);
-		                a.click();
+						document.body.appendChild(a);
+						a.click();
 
-		                window.URL.revokeObjectURL(downloadUrl);
-		                document.body.removeChild(a);
+						window.URL.revokeObjectURL(downloadUrl);
+						document.body.removeChild(a);
 
-		                showResultModal('BRRS', filename + ' downloaded successfully.');
-		            } else {
-		                showResultModal('Information', 'No data was available to create a download.');
-		            }
-		        },
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
 
-		        error: function (jqXHR, textStatus, errorThrown) {
-		            console.error('Download failed:', textStatus, errorThrown);
-		            showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
-		        },
+				error: function (jqXHR, textStatus, errorThrown) {
+					console.error('Download failed:', textStatus, errorThrown);
+					showResultModal('Error', 'An error occurred while downloading the file. Please try again.');
+				},
 
-		        complete: function () {
-		            // 🔥 ALWAYS hide loader
-		            loader.hide();
-		        }
-		    });
+				complete: function () {
+					// 🔥 ALWAYS hide loader
+					loader.hide();
+				}
+			});
 		}
 
 
@@ -695,7 +695,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 			$("#r14_bob_total_amount, #r31_bob_total_amount, #r38_bob_total_amount")
 				.removeAttr("readonly")
 				.removeAttr("disabled")
-				.css("background-color", "#d3d3d3");
+				.css("background-color", "#FFF59D");
 
 			// Toggle buttons
 			$("#submitButton").show();
@@ -807,12 +807,14 @@ PURPOSE		: BRRS_M_LCRREPORT
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
-			#reportdetails td:nth-child(7),
+
+		#reportdetails td:nth-child(7),
 		.dataTables_scrollHeadInner table th:nth-child(7) {
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
-			#reportdetails td:nth-child(8),
+
+		#reportdetails td:nth-child(8),
 		.dataTables_scrollHeadInner table th:nth-child(8) {
 			text-align: right !important;
 			padding-right: 10px !important;
@@ -936,19 +938,19 @@ PURPOSE		: BRRS_M_LCRREPORT
 
 	<script>
 		function openMPLLDetail(elem, mode) {
-		    var type = elem.getAttribute('data-type');
-		    if (type === "ARCHIVAL") {
-		        showResultModal('BRRS', "Archived Data cannot be modified");
-		        return;
-		    }
+			var type = elem.getAttribute('data-type');
+			if (type === "ARCHIVAL") {
+				showResultModal('BRRS', "Archived Data cannot be modified");
+				return;
+			}
 
-		    const acctNo = elem.getAttribute("data-acctNo");
-		    const asondate = elem.getAttribute("data-asondate");
-		    // Capture the clickedRow context
-		    const clickedRow = elem.getAttribute("data-clickedRow"); 
+			const acctNo = elem.getAttribute("data-acctNo");
+			const asondate = elem.getAttribute("data-asondate");
+			// Capture the clickedRow context
+			const clickedRow = elem.getAttribute("data-clickedRow");
 
-		    // Add clickedRow to the URL parameters
-		    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&clickedRow=${clickedRow}`;
+			// Add clickedRow to the URL parameters
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&clickedRow=${clickedRow}`;
 		}
 	</script>
 
@@ -1059,22 +1061,18 @@ PURPOSE		: BRRS_M_LCRREPORT
 							th:if="${displaymode == 'summary'}">Details</button>
 
 						<!-- Modify button -->
-						<button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
-						<button type="button" class="custom-tab-btn"
-							title="Cancel editing" id="cancelRecord"
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-						<button type="button"
-        class="custom-tab-btn"
-        id="custom-tab-btnAdd"
-        th:if="${displaymode == 'summary'}"
-        th:attr="
+						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
+							th:if="${(displaymode == 'summary') and role != 'M'}" th:attr="
             data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1084,13 +1082,12 @@ PURPOSE		: BRRS_M_LCRREPORT
             data-filename='M_LCR.xlsx',
             data-type=${type},
             data-version=${version != null ? version : ''}
-        "
-        onclick="downloadfile(this);">
-    <i class="fa fa-download"></i>
-</button>
+        " onclick="downloadfile(this);">
+							<i class="fa fa-download"></i>
+						</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							th:if="${(displaymode == 'Details') and role != 'M'}" onclick="startReport(this);" th:attr="
 		    data-fromdate=${fromdate},
 		    data-todate=${todate},
 		    data-filename='M_LCRDetail',
@@ -1109,1258 +1106,1264 @@ PURPOSE		: BRRS_M_LCRREPORT
 					<div class="col-sm-12">
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 						<form action="#" method="POST" id="fileupload">
-						<div class="table-wrapper table-responsive scrollable-table-container"
-							style="border-right: 1px solid #dee2e6;max-height:650px; overflow-y: auto;">
-							<table class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
-								id="reports">
-
-								<thead border="1" cellspacing="0" cellpadding="6"
-									style="border-collapse: collapse; text-align:center; font-family: Arial;">
-
-									<!-- Row 1 -->
-									<tr style="font-weight: bold;">
-										<td colspan="2"
-											style="width:300px; background-color:#D8D8D8; text-align: left; "> </td>
-										<td rowspan="89" style="width:40px; background-color:#A9A9A9;"></td>
-										<td colspan="3"
-											style="background-color: #D8D8D8 ; text-align: left; padding-left: 30px;">
-											Amount (P'000)</td>
-									</tr>
-
-									<!-- Row 2 -->
-									<tr style="font-weight: bold;">
-										<td style="width:60px; padding: 5px; background-color: #D8D8D8 ;">Line no.</td>
-										<td style="width:250px; padding: 5px; background-color: #D8D8D8 ;">Item</td>
-										<td colspan="3"
-											style="text-align: center;background-color: #D8D8D8 ; padding: 5px;">BANK OF
-											BARODA</td>
-									</tr>
-
-									<tr style="height: 40px; border-color:35px solid black !important;">
-										<td rowspan="2" style="background-color: #D8D8D8 ;"></td>
-										<td rowspan="2" style="background-color: #D8D8D8 ;"></td>
-										<td style="background-color: #D8D8D8 ;"></td>
-										<td colspan="2" style="background-color: #D8D8D8 ;"></td>
-									</tr>
-
-									<!-- Row 3 -->
-									<tr
-										style="background-color:#D8D8D8; font-weight: bold; border-top-color:25px solid black !important; ">
-										<td
-											style="width:200px; padding-top: 10px; text-align: right; background-color: #D8D8D8;">
-											Factor (to be
-											multiplied against total amount)</td>
-										<td
-											style="width:180px; padding-top: 10px; text-align: right; background-color: #D8D8D8;">
-											Total Amount P'000</td>
-										<td
-											style="width:150px; background-color:#D8D8D8; padding-top: 10px; text-align: right;">
-											With Factor Applied</td>
-									</tr>
-
-								</thead>
-
-
-
-								<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
-
-									<tr>
-										<td style=" padding-left:4px; text-align: center;"> 1 </td>
-										<td style=" font-weight: bold; " th:text="${report.r10_product}"></td>
-
-										<td rowspan="89" style="width:40px; background-color:#A9A9A9;"></td>
-										<td style="background-color: rgb(255, 255, 255) ;"></td>
-										<td style="background-color: rgb(255, 255, 255) ;"></td>
-										<td style="background-color: rgb(255, 255, 255) ;"></td>
-									</tr>
-
-									<tr>
-										<td style=" padding-left:4px; text-align: center;"> 2 </td>
-										<td style=" font-weight: bold; " th:text="${report.r11_product}"></td>
-
-
-										<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.r11_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; font-weight: bold;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r11_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-
-										<td style="text-align:right; font-weight: bold; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r11_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-
-									</tr>
-
-									<tr>
-										<td style=" padding-left:4px; text-align: center;"> 3 </td>
-										<td style=" " th:text="${report.r12_product}"></td>
-
-
-										<td style="text-align:right;"
-											th:text="${#numbers.formatDecimal(report.r12_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r12_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R12', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-
-										<td style="text-align:right; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r12_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-
-									</tr>
-
-									<tr>
-										<td style=" padding-left:4px; text-align: center;"> 4 </td>
-										<td style="  white-space: normal;" th:text="${report.r13_product}"></td>
-
-
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r13_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r13_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R13', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r13_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 5 </td>
-										<td style="  white-space: normal;" th:text="${report.r14_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r14_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:attr="reportLable='R14', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)">
-											<input class="display-input Show_input" type="text"
-												th:value="${report.r14_bob_total_amount != null ? #numbers.formatDecimal(report.r14_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
-												id="r14_bob_total_amount" name="r14_bob_total_amount"
-												style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r14_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 6 </td>
-										<td style="  white-space: normal;" th:text="${report.r15_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r15_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r15_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R15', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r15_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 7 </td>
-										<td style="font-weight: bold;   white-space: normal;"
-											th:text="${report.r16_product}"></td>
-										<td style="text-align:right; vertical-align: middle; background-color: #BFBFBF ;"
-											th:text="${#numbers.formatDecimal(report.r16_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r16_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r16_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> </td>
-										<td style="font-weight: bold;   white-space: normal;"
-											th:text="${report.r17_product}"></td>
-										<td style="text-align:right; vertical-align: middle;background-color: #BFBFBF ;"
-											th:text="${#numbers.formatDecimal(report.r17_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255); font-weight: bold;"
-											th:text="${#numbers.formatDecimal(report.r17_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255); font-weight: bold;"
-											th:text="${#numbers.formatDecimal(report.r17_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> </td>
-										<td style=" font-weight: bold;  white-space: normal;background-color:#FFA500;"
-											th:text="${report.r18_product}"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r18_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r18_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r18_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 8 </td>
-										<td style=" font-weight: bold;  white-space: normal;"
-											th:text="${report.r19_product}"></td>
-										<td style="text-align:right; vertical-align: middle;background-color: #BFBFBF;"
-											th:text="${#numbers.formatDecimal(report.r19_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r19_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r19_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 9 </td>
-										<td style="  white-space: normal;" th:text="${report.r20_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r20_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r20_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R20', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r20_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 10 </td>
-										<td style="  white-space: normal;" th:text="${report.r21_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r21_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r21_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R21', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r21_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R21', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> </td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r22_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r22_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r22_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r22_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> 11 </td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r23_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r23_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r23_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r23_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;"> </td>
-										<td style="font-weight: bold;  white-space: normal;background-color:#FFA500;"
-											th:text="${report.r24_product}"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r24_amount_factor,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R24', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r24_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R24', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);background-color:#FFA500;"
-											th:text="${#numbers.formatDecimal(report.r24_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R24', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<td style="padding-left:4px; text-align: center;"> 12 </td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<tr>
-
-									</tr>
-
-									<tr>
-										<td
-											style="background-color: #D9D9D9 ; padding-left:4px; text-align: center;">
-											13 </td>
-										<td style="background-color: #D9D9D9 ; font-weight: bold; "
-											th:text="${report.r26_product}"></td>
-
-
-										<td style="background-color: #D9D9D9 ;"></td>
-										<td style="background-color: #D9D9D9 ;"></td>
-										<td style="background-color: #D9D9D9 ;"></td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">14</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r27_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r27_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r27_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r27_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td rowspan="3" style="padding-left:4px; text-align: center;">15</td>
-										<td style="  white-space: normal;" th:text="${report.r28_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r28_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r28_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r28_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r29_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r29_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r29_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R29', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r29_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="  white-space: normal;" th:text="${report.r30_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r30_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r30_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R30', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r30_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">16</td>
-										<td style="  white-space: normal;" th:text="${report.r31_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r31_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:attr="reportLable='R31', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)">
-											<input class="display-input Show_input" type="text"
-												th:value="${report.r31_bob_total_amount != null ? #numbers.formatDecimal(report.r31_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
-												id="r31_bob_total_amount" name="r31_bob_total_amount"
-												style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r31_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">17</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r32_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r32_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r32_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r32_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td rowspan="3" style="padding-left:4px; text-align: center;">18</td>
-										<td style="  white-space: normal;" th:text="${report.r33_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r33_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r33_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r33_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r34_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r34_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r34_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R34', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r34_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r35_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r35_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r35_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R35', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r35_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">19</td>
-										<td style="  white-space: normal;" th:text="${report.r36_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r36_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r36_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R36', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r36_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">20</td>
-										<td style="  white-space: normal;" th:text="${report.r37_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r37_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r37_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R37', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r37_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">21</td>
-										<td style="  white-space: normal;" th:text="${report.r38_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r38_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:attr="reportLable='R38', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)">
-											<input class="display-input Show_input" type="text"
-												th:value="${report.r38_bob_total_amount != null ? #numbers.formatDecimal(report.r38_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
-												id="r38_bob_total_amount" name="r38_bob_total_amount"
-												style="background-color: #FFFF00; width: 100%; height: 28px; border-color: transparent; text-align: right;" readonly />
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);;"
-											th:text="${#numbers.formatDecimal(report.r38_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">22</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r39_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r39_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r39_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r39_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">23</td>
-										<td style="  white-space: normal;" th:text="${report.r40_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r40_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r40_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r40_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">24</td>
-										<td style="  white-space: normal;" th:text="${report.r41_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r41_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r41_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r41_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">25</td>
-										<td style="  white-space: normal;" th:text="${report.r42_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r42_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r42_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R42', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r42_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">26</td>
-										<td style="  white-space: normal;" th:text="${report.r43_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r43_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r43_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R43', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r43_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">27</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r44_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r44_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r44_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r44_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">28</td>
-										<td style="  white-space: normal;" th:text="${report.r45_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r45_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r45_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r45_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">29</td>
-										<td style="  white-space: normal;" th:text="${report.r46_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r46_amount_factor,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R46', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r46_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R46', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r46_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R46', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">30</td>
-										<td style="  white-space: normal;" th:text="${report.r47_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r47_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r47_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R47', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r47_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R47', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">31</td>
-										<td style="  white-space: normal;" th:text="${report.r48_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r48_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r48_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R48', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r48_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R48', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">32</td>
-										<td style="  white-space: normal;" th:text="${report.r49_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r49_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r49_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R49', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r49_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R49', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">33</td>
-										<td style="  white-space: normal;" th:text="${report.r50_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r50_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r50_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R50', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r50_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R50', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-
-									<tr>
-										<td rowspan="3" style="padding-left:4px; text-align: center;">34</td>
-										<td style="  white-space: normal;" th:text="${report.r51_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r51_amount_factor,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R51', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r51_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R51', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r51_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R51', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r52_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r52_amount_factor,1,'COMMA',0,'POINT')}+ '%'"
-											th:attr="reportLable='R52', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r52_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R52', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r52_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R52', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r53_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r53_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r53_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R53', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:black;"
-											th:text="${#numbers.formatDecimal(report.r53_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R53', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td rowspan="10" style="padding-left:4px; text-align: center;"> </td>
-										<td style="  white-space: normal;" th:text="${report.r54_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r54_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r54_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r54_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r55_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r55_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r55_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R55', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r55_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r56_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r56_amount_factor,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R56', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r56_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R56', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r56_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R56', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r57_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r57_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r57_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R57', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r57_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r58_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r58_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r58_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R58', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r58_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R58', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r59_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r59_amount_factor,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R59', reportAddlCriteria1='C3'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r59_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R59', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r59_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R59', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r60_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r60_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r60_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R60', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r60_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R60', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r61_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r61_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r61_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R61', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r61_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R61', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r62_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r62_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r62_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R62', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r62_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R62', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r63_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r63_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r63_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R63', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r63_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R63', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td rowspan="4" style="padding-left:4px; text-align: center;">35</td>
-										<td style="  white-space: normal;" th:text="${report.r64_product}"></td>
-										<td style="text-align:right; vertical-align: middle;">National Discretion (0-5%)
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r64_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r64_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r65_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r65_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r65_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R65', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r65_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r66_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r66_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r66_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R66', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r66_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R66', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r67_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r67_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r67_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R67', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r67_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R67', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">36</td>
-										<td style="  white-space: normal;" th:text="${report.r68_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r68_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r68_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R68', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r68_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R68', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">37</td>
-										<td style="  white-space: normal;" th:text="${report.r69_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r69_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r69_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R69', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r69_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R69', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-									<tr>
-										<td style="padding-left:4px; text-align: center;">38</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r70_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r70_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r70_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r70_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									</tr>
-									<td style="padding-left:4px; text-align: center;"> 39 </td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<td style="background-color: white ;"></td>
-									<tr>
-
-									<tr>
-										<td
-											style="background-color: #D9D9D9 ; padding-left:4px; text-align: center;">
-											40 </td>
-										<td style="background-color: #D9D9D9 ; font-weight: bold; "
-											th:text="${report.r72_product}"></td>
-
-
-										<td style="background-color: #D9D9D9 ;"></td>
-										<td style="background-color: #D9D9D9 ;"></td>
-										<td style="background-color: #D9D9D9 ;"></td>
-									</tr>
-
-									<tr>
-										<td rowspan="3" style="padding-left:4px; text-align: center;">41</td>
-										<td style="  white-space: normal;" th:text="${report.r73_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r73_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r73_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r73_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r74_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r74_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r74_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R74', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r74_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r75_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r75_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r75_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R75', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r75_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">42</td>
-										<td style="  white-space: normal;" th:text="${report.r76_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r76_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r76_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R76', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r76_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">43</td>
-										<td style="  white-space: normal;" th:text="${report.r77_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r77_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r77_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R77', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r77_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">44</td>
-										<td style="  white-space: normal;" th:text="${report.r78_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r78_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r78_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R78', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r78_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">45</td>
-										<td style="  white-space: normal;" th:text="${report.r79_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r79_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r79_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R79', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r79_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td rowspan="4" style="padding-left:4px; text-align: center;">46</td>
-										<td style="  white-space: normal;" th:text="${report.r80_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r80_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r80_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r80_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r81_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r81_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r81_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R81', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r81_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal; padding-left:30px;"
-											th:text="${report.r82_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r82_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r82_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R82', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r82_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-
-										<td style="  white-space: normal;" th:text="${report.r83_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r83_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
-											th:text="${#numbers.formatDecimal(report.r83_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R83', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r83_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">47</td>
-										<td style="  white-space: normal;" th:text="${report.r84_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r84_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r84_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R84', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r84_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R84', reportAddlCriteria1='C5'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">48</td>
-										<td style="  white-space: normal;" th:text="${report.r85_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r85_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r85_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R85', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r85_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">49</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r86_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r86_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r86_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r86_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">50</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r87_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r87_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r87_bob_total_amount,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r87_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">51</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r88_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r88_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r88_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R88', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r88_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
-										</td>
-									</tr>
-
-									<tr>
-										<td style="padding-left:4px; text-align: center;">52</td>
-										<td style="font-weight: bold;  white-space: normal;"
-											th:text="${report.r89_product}"></td>
-										<td style="text-align:right; vertical-align: middle;"
-											th:text="${#numbers.formatDecimal(report.r89_amount_factor,1,'COMMA',0,'POINT')}">
-										</td>
-										<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
-											th:text="${#numbers.formatDecimal(report.r89_bob_total_amount,1,'COMMA',0,'POINT')}"
-											th:attr="reportLable='R89', reportAddlCriteria1='C4'"
-											onclick="showdetailsbyRowAndColumn(this)"></td>
-										<td style="text-align:right; vertical-align: middle; background-color:rgb(107, 122, 143);color: white;"
-											th:text="${#numbers.formatDecimal(report.r89_bob_with_factor_applied,1,'COMMA',0,'POINT')}+ '%'">
-										</td>
-									</tr>
-
-								</tbody>
-							</table>
-						</div>
-						<div style="text-align: center; margin-top: 10px;">
-							<button id="submitButton" type="button"
-								class="custom-tab-btn Show_input" form="fileupload"
-								th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-								style="display: none;">Submit</button>
-						</div>
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right: 1px solid #dee2e6;max-height:650px; overflow-y: auto;">
+								<table
+									class="sticky-header-table table table-bordered table-cell table-sm table-condensed"
+									id="reports">
+
+									<thead border="1" cellspacing="0" cellpadding="6"
+										style="border-collapse: collapse; text-align:center; font-family: Arial;">
+
+										<!-- Row 1 -->
+										<tr style="font-weight: bold;">
+											<td colspan="2"
+												style="width:300px; background-color:#D8D8D8; text-align: left; "> </td>
+											<td rowspan="89" style="width:40px; background-color:#A9A9A9;"></td>
+											<td colspan="3"
+												style="background-color: #D8D8D8 ; text-align: left; padding-left: 30px;">
+												Amount (P'000)</td>
+										</tr>
+
+										<!-- Row 2 -->
+										<tr style="font-weight: bold;">
+											<td style="width:60px; padding: 5px; background-color: #D8D8D8 ;">Line no.
+											</td>
+											<td style="width:250px; padding: 5px; background-color: #D8D8D8 ;">Item</td>
+											<td colspan="3"
+												style="text-align: center;background-color: #D8D8D8 ; padding: 5px;">
+												BANK OF
+												BARODA</td>
+										</tr>
+
+										<tr style="height: 40px; border-color:35px solid black !important;">
+											<td rowspan="2" style="background-color: #D8D8D8 ;"></td>
+											<td rowspan="2" style="background-color: #D8D8D8 ;"></td>
+											<td style="background-color: #D8D8D8 ;"></td>
+											<td colspan="2" style="background-color: #D8D8D8 ;"></td>
+										</tr>
+
+										<!-- Row 3 -->
+										<tr
+											style="background-color:#D8D8D8; font-weight: bold; border-top-color:25px solid black !important; ">
+											<td
+												style="width:200px; padding-top: 10px; text-align: right; background-color: #D8D8D8;">
+												Factor (to be
+												multiplied against total amount)</td>
+											<td
+												style="width:180px; padding-top: 10px; text-align: right; background-color: #D8D8D8;">
+												Total Amount P'000</td>
+											<td
+												style="width:150px; background-color:#D8D8D8; padding-top: 10px; text-align: right;">
+												With Factor Applied</td>
+										</tr>
+
+									</thead>
+
+
+
+									<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
+
+										<tr>
+											<td style=" padding-left:4px; text-align: center;"> 1 </td>
+											<td style=" font-weight: bold; " th:text="${report.r10_product}"></td>
+
+											<td rowspan="89" style="width:40px; background-color:#A9A9A9;"></td>
+											<td style="background-color: rgb(255, 255, 255) ;"></td>
+											<td style="background-color: rgb(255, 255, 255) ;"></td>
+											<td style="background-color: rgb(255, 255, 255) ;"></td>
+										</tr>
+
+										<tr>
+											<td style=" padding-left:4px; text-align: center;"> 2 </td>
+											<td style=" font-weight: bold; " th:text="${report.r11_product}"></td>
+
+
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.r11_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; font-weight: bold;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r11_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+
+											<td style="text-align:right; font-weight: bold; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r11_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+
+										</tr>
+
+										<tr>
+											<td style=" padding-left:4px; text-align: center;"> 3 </td>
+											<td style=" " th:text="${report.r12_product}"></td>
+
+
+											<td style="text-align:right;"
+												th:text="${#numbers.formatDecimal(report.r12_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r12_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R12', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											<td style="text-align:right; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r12_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+
+										</tr>
+
+										<tr>
+											<td style=" padding-left:4px; text-align: center;"> 4 </td>
+											<td style="  white-space: normal;" th:text="${report.r13_product}"></td>
+
+
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r13_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r13_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R13', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r13_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 5 </td>
+											<td style="  white-space: normal;" th:text="${report.r14_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r14_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:attr="reportLable='R14', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+												<input class="display-input Show_input" type="text"
+													th:value="${report.r14_bob_total_amount != null ? #numbers.formatDecimal(report.r14_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+													id="r14_bob_total_amount" name="r14_bob_total_amount"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r14_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 6 </td>
+											<td style="  white-space: normal;" th:text="${report.r15_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r15_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r15_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R15', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r15_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 7 </td>
+											<td style="font-weight: bold;   white-space: normal;"
+												th:text="${report.r16_product}"></td>
+											<td style="text-align:right; vertical-align: middle; background-color: #BFBFBF ;"
+												th:text="${#numbers.formatDecimal(report.r16_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r16_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r16_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> </td>
+											<td style="font-weight: bold;   white-space: normal;"
+												th:text="${report.r17_product}"></td>
+											<td style="text-align:right; vertical-align: middle;background-color: #BFBFBF ;"
+												th:text="${#numbers.formatDecimal(report.r17_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255); font-weight: bold;"
+												th:text="${#numbers.formatDecimal(report.r17_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255); font-weight: bold;"
+												th:text="${#numbers.formatDecimal(report.r17_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> </td>
+											<td style=" font-weight: bold;  white-space: normal;background-color:#FFA500;"
+												th:text="${report.r18_product}"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r18_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r18_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r18_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 8 </td>
+											<td style=" font-weight: bold;  white-space: normal;"
+												th:text="${report.r19_product}"></td>
+											<td style="text-align:right; vertical-align: middle;background-color: #BFBFBF;"
+												th:text="${#numbers.formatDecimal(report.r19_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r19_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r19_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 9 </td>
+											<td style="  white-space: normal;" th:text="${report.r20_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r20_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r20_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R20', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r20_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 10 </td>
+											<td style="  white-space: normal;" th:text="${report.r21_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r21_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r21_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R21', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r21_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R21', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> </td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r22_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r22_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r22_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r22_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> 11 </td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r23_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r23_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r23_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r23_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;"> </td>
+											<td style="font-weight: bold;  white-space: normal;background-color:#FFA500;"
+												th:text="${report.r24_product}"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r24_amount_factor,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R24', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r24_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R24', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);background-color:#FFA500;"
+												th:text="${#numbers.formatDecimal(report.r24_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R24', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<td style="padding-left:4px; text-align: center;"> 12 </td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<tr>
+
+										</tr>
+
+										<tr>
+											<td
+												style="background-color: #D9D9D9 ; padding-left:4px; text-align: center;">
+												13 </td>
+											<td style="background-color: #D9D9D9 ; font-weight: bold; "
+												th:text="${report.r26_product}"></td>
+
+
+											<td style="background-color: #D9D9D9 ;"></td>
+											<td style="background-color: #D9D9D9 ;"></td>
+											<td style="background-color: #D9D9D9 ;"></td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">14</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r27_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r27_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r27_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r27_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td rowspan="3" style="padding-left:4px; text-align: center;">15</td>
+											<td style="  white-space: normal;" th:text="${report.r28_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r28_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r28_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r28_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r29_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r29_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r29_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R29', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r29_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="  white-space: normal;" th:text="${report.r30_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r30_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r30_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R30', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r30_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">16</td>
+											<td style="  white-space: normal;" th:text="${report.r31_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r31_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:attr="reportLable='R31', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+												<input class="display-input Show_input" type="text"
+													th:value="${report.r31_bob_total_amount != null ? #numbers.formatDecimal(report.r31_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+													id="r31_bob_total_amount" name="r31_bob_total_amount"
+													style="background-color: #FFFFFF; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r31_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">17</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r32_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r32_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r32_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r32_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td rowspan="3" style="padding-left:4px; text-align: center;">18</td>
+											<td style="  white-space: normal;" th:text="${report.r33_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r33_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r33_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r33_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r34_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r34_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r34_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R34', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r34_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r35_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r35_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r35_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R35', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r35_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">19</td>
+											<td style="  white-space: normal;" th:text="${report.r36_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r36_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r36_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R36', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r36_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">20</td>
+											<td style="  white-space: normal;" th:text="${report.r37_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r37_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r37_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R37', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r37_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">21</td>
+											<td style="  white-space: normal;" th:text="${report.r38_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r38_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:attr="reportLable='R38', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)">
+												<input class="display-input Show_input" type="text"
+													th:value="${report.r38_bob_total_amount != null ? #numbers.formatDecimal(report.r38_bob_total_amount,1,'COMMA',0,'POINT') : '0'}"
+													id="r38_bob_total_amount" name="r38_bob_total_amount"
+													style="background-color: #FFFF00; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);;"
+												th:text="${#numbers.formatDecimal(report.r38_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">22</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r39_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r39_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r39_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r39_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">23</td>
+											<td style="  white-space: normal;" th:text="${report.r40_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r40_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r40_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r40_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">24</td>
+											<td style="  white-space: normal;" th:text="${report.r41_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r41_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r41_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r41_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">25</td>
+											<td style="  white-space: normal;" th:text="${report.r42_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r42_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r42_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R42', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r42_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">26</td>
+											<td style="  white-space: normal;" th:text="${report.r43_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r43_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r43_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R43', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r43_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">27</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r44_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r44_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r44_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r44_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">28</td>
+											<td style="  white-space: normal;" th:text="${report.r45_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r45_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r45_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r45_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">29</td>
+											<td style="  white-space: normal;" th:text="${report.r46_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r46_amount_factor,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R46', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r46_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R46', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r46_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R46', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">30</td>
+											<td style="  white-space: normal;" th:text="${report.r47_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r47_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r47_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R47', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r47_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R47', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">31</td>
+											<td style="  white-space: normal;" th:text="${report.r48_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r48_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r48_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R48', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r48_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R48', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">32</td>
+											<td style="  white-space: normal;" th:text="${report.r49_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r49_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r49_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R49', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r49_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R49', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">33</td>
+											<td style="  white-space: normal;" th:text="${report.r50_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r50_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r50_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R50', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r50_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R50', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr>
+											<td rowspan="3" style="padding-left:4px; text-align: center;">34</td>
+											<td style="  white-space: normal;" th:text="${report.r51_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r51_amount_factor,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R51', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r51_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R51', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r51_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R51', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r52_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r52_amount_factor,1,'COMMA',0,'POINT')}+ '%'"
+												th:attr="reportLable='R52', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r52_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R52', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r52_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R52', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r53_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r53_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r53_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R53', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:black;"
+												th:text="${#numbers.formatDecimal(report.r53_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R53', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td rowspan="10" style="padding-left:4px; text-align: center;"> </td>
+											<td style="  white-space: normal;" th:text="${report.r54_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r54_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r54_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r54_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r55_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r55_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r55_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R55', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r55_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r56_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r56_amount_factor,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R56', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r56_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R56', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r56_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R56', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r57_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r57_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r57_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R57', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r57_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r58_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r58_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r58_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R58', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r58_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R58', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r59_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r59_amount_factor,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R59', reportAddlCriteria1='C3'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r59_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R59', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r59_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R59', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r60_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r60_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r60_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R60', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r60_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R60', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r61_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r61_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r61_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R61', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r61_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R61', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r62_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r62_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r62_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R62', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r62_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R62', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r63_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r63_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r63_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R63', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r63_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R63', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td rowspan="4" style="padding-left:4px; text-align: center;">35</td>
+											<td style="  white-space: normal;" th:text="${report.r64_product}"></td>
+											<td style="text-align:right; vertical-align: middle;">National Discretion
+												(0-5%)
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r64_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r64_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r65_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r65_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r65_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R65', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r65_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r66_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r66_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r66_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R66', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r66_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R66', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r67_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r67_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r67_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R67', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r67_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R67', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">36</td>
+											<td style="  white-space: normal;" th:text="${report.r68_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r68_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r68_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R68', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r68_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R68', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">37</td>
+											<td style="  white-space: normal;" th:text="${report.r69_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r69_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r69_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R69', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r69_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R69', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+										<tr>
+											<td style="padding-left:4px; text-align: center;">38</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r70_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r70_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r70_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r70_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										</tr>
+										<td style="padding-left:4px; text-align: center;"> 39 </td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<td style="background-color: white ;"></td>
+										<tr>
+
+										<tr>
+											<td
+												style="background-color: #D9D9D9 ; padding-left:4px; text-align: center;">
+												40 </td>
+											<td style="background-color: #D9D9D9 ; font-weight: bold; "
+												th:text="${report.r72_product}"></td>
+
+
+											<td style="background-color: #D9D9D9 ;"></td>
+											<td style="background-color: #D9D9D9 ;"></td>
+											<td style="background-color: #D9D9D9 ;"></td>
+										</tr>
+
+										<tr>
+											<td rowspan="3" style="padding-left:4px; text-align: center;">41</td>
+											<td style="  white-space: normal;" th:text="${report.r73_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r73_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r73_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r73_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r74_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r74_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r74_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R74', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r74_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r75_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r75_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r75_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R75', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r75_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">42</td>
+											<td style="  white-space: normal;" th:text="${report.r76_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r76_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r76_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R76', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle;background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r76_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">43</td>
+											<td style="  white-space: normal;" th:text="${report.r77_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r77_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r77_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R77', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r77_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">44</td>
+											<td style="  white-space: normal;" th:text="${report.r78_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r78_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r78_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R78', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r78_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">45</td>
+											<td style="  white-space: normal;" th:text="${report.r79_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r79_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r79_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R79', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r79_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td rowspan="4" style="padding-left:4px; text-align: center;">46</td>
+											<td style="  white-space: normal;" th:text="${report.r80_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r80_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r80_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r80_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r81_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r81_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle;background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r81_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R81', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r81_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal; padding-left:30px;"
+												th:text="${report.r82_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r82_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r82_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R82', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r82_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+
+											<td style="  white-space: normal;" th:text="${report.r83_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r83_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: #FFFF00;"
+												th:text="${#numbers.formatDecimal(report.r83_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R83', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r83_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">47</td>
+											<td style="  white-space: normal;" th:text="${report.r84_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r84_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r84_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R84', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r84_bob_with_factor_applied,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R84', reportAddlCriteria1='C5'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">48</td>
+											<td style="  white-space: normal;" th:text="${report.r85_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r85_amount_factor,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r85_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R85', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r85_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">49</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r86_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r86_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r86_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r86_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">50</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r87_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r87_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r87_bob_total_amount,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="font-weight: bold;text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r87_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">51</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r88_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r88_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r88_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R88', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r88_bob_with_factor_applied,1,'COMMA',0,'POINT')}">
+											</td>
+										</tr>
+
+										<tr>
+											<td style="padding-left:4px; text-align: center;">52</td>
+											<td style="font-weight: bold;  white-space: normal;"
+												th:text="${report.r89_product}"></td>
+											<td style="text-align:right; vertical-align: middle;"
+												th:text="${#numbers.formatDecimal(report.r89_amount_factor,1,'COMMA',0,'POINT')}">
+											</td>
+											<td style="text-align:right; vertical-align: middle; background-color: rgb(255, 255, 255);"
+												th:text="${#numbers.formatDecimal(report.r89_bob_total_amount,1,'COMMA',0,'POINT')}"
+												th:attr="reportLable='R89', reportAddlCriteria1='C4'"
+												onclick="showdetailsbyRowAndColumn(this)"></td>
+											<td style="text-align:right; vertical-align: middle; background-color:rgb(107, 122, 143);color: white;"
+												th:text="${#numbers.formatDecimal(report.r89_bob_with_factor_applied,1,'COMMA',0,'POINT')}+ '%'">
+											</td>
+										</tr>
+
+									</tbody>
+								</table>
+							</div>
+							<div style="text-align: center; margin-top: 10px;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+									style="display: none;">Submit</button>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -2392,12 +2395,10 @@ PURPOSE		: BRRS_M_LCRREPORT
 									<tr th:each="report, srlno : ${reportdetails}">
 										<td>
 											<a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-												<i class="fas fa-edit" style="color: black; cursor:pointer;" 
-												   th:attr="data-acctNo=${report.acctNumber}, 
+												<i class="fas fa-edit" style="color: black; cursor:pointer;" th:attr="data-acctNo=${report.acctNumber}, 
 												            data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
 												            data-type=${type},
-												            data-clickedRow=${clickedRow}" 
-												   onclick="openMPLLDetail(this, 'edit')">
+												            data-clickedRow=${clickedRow}" onclick="openMPLLDetail(this, 'edit')">
 												</i>
 											</a>
 										</td>
@@ -2417,8 +2418,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 										<td style="text-align:right;"
 											th:text="${#numbers.formatDecimal(report.creditequivalent,1,'COMMA',0,'POINT')}">
 										</td>
-										<td style="text-align:left;" 
-										    th:text="${clickedRow == 'R38' ? report.reportLabel3 : 
+										<td style="text-align:left;" th:text="${clickedRow == 'R38' ? report.reportLabel3 : 
 										             (clickedRow == 'R37' || clickedRow == 'R81' || clickedRow == 'R82' || clickedRow == 'R83') ? report.reportLabel2 : 
 										             report.reportLabel}">
 										</td>
@@ -2488,7 +2488,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 							<label class="col-sm-2 col-form-label">Debit Equivalent</label>
 							<div class="col-sm-3">
 								<input type="number" step="0.01" th:field="*{debitequivalent}"
-									class="form-control form-control-sm" style="text-align:right;" readonly/>
+									class="form-control form-control-sm" style="text-align:right;" readonly />
 							</div>
 
 							<div class="col-sm-1"></div>
@@ -2496,7 +2496,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 							<label class="col-sm-2 col-form-label">Credit Equivalent</label>
 							<div class="col-sm-3">
 								<input type="number" step="0.01" th:field="*{creditequivalent}"
-									class="form-control form-control-sm" style="text-align:right;" readonly/>
+									class="form-control form-control-sm" style="text-align:right;" readonly />
 							</div>
 						</div>
 
@@ -2504,16 +2504,15 @@ PURPOSE		: BRRS_M_LCRREPORT
 						<div class="row formline mt-2">
 							<label class="col-sm-2 col-form-label">EMI</label>
 							<div class="col-sm-3">
-								<input type="text" th:field="*{emi}" class="form-control form-control-sm" readonly/>
+								<input type="text" th:field="*{emi}" class="form-control form-control-sm" readonly />
 							</div>
 
 							<div class="col-sm-1"></div>
 
 							<label class="col-sm-2 col-form-label">Row ID</label>
 							<div class="col-sm-3">
-							    <!-- Use ${param.clickedRow} to read directly from the URL -->
-							    <input type="text" class="form-control form-control-sm" readonly 
-							           th:value="${param.clickedRow[0] == 'R38' ? Data.reportLabel3 : 
+								<!-- Use ${param.clickedRow} to read directly from the URL -->
+								<input type="text" class="form-control form-control-sm" readonly th:value="${param.clickedRow[0] == 'R38' ? Data.reportLabel3 : 
 							                    (param.clickedRow[0] == 'R37' || param.clickedRow[0] == 'R81' || param.clickedRow[0] == 'R82') ? Data.reportLabel2 : 
 							                    Data.reportLabel}" />
 							</div>
@@ -2525,8 +2524,7 @@ PURPOSE		: BRRS_M_LCRREPORT
 						<div class="row formline mt-2">
 							<label class="col-sm-2 col-form-label">Column ID</label>
 							<div class="col-sm-3">
-							    <input type="text" class="form-control form-control-sm" readonly 
-							           th:value="${param.clickedRow[0] == 'R38' ? Data.reportAddlCriteria3 : 
+								<input type="text" class="form-control form-control-sm" readonly th:value="${param.clickedRow[0] == 'R38' ? Data.reportAddlCriteria3 : 
 							                    (param.clickedRow[0] == 'R37' || param.clickedRow[0] == 'R81' || param.clickedRow[0] == 'R82') ? Data.reportAddlCriteria2 : 
 							                    Data.reportAddlCriteria1}" />
 							</div>

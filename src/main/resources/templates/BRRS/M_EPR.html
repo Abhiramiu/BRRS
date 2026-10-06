@@ -484,12 +484,12 @@ PURPOSE		: BRRS REPORT
 
 			readonlyIds.push("r23_net_pos_gen_mar_ris");
 
-			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline style)
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline style)
 			function paintYellow(selector) {
 				if ($(selector).length) {
 					$(selector).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			}
@@ -498,7 +498,7 @@ PURPOSE		: BRRS REPORT
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
-					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
+					paintYellow("#" + this.id);   // ✅ YELLOW #FFF59D
 				}
 			});
 
@@ -3255,9 +3255,11 @@ PURPOSE		: BRRS REPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-										style="display: none;">Submit</button>
+									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+										th:attr="data-todate=${asondate},data-reporttype=${type}"
+										onclick="fileuploads(this);" style="display: none;">
+										Submit
+									</button>
 								</div>
 
 							</form>
