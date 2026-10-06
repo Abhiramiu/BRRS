@@ -570,7 +570,7 @@ PURPOSE		: BRRSREPORT
 					// ✅ Force YELLOW with !important (overrides inline white bg)
 					$(this).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			});
@@ -579,7 +579,7 @@ PURPOSE		: BRRSREPORT
 			$('input[type="date"]').removeAttr("readonly")
 				.attr("style", function (idx, s) {
 					return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-						+ ";background-color: #ffef00 !important;";
+						+ ";background-color: #FFF59D !important;";
 				});
 
 			$("#submitButton, #cancelRecord").show();

@@ -75,8 +75,8 @@ PURPOSE		: BRFREPORT
 			border-color: #0c0c0c;
 		}
 
-		.btn-primary:not (:disabled):not (.disabled).active,
-		.btn-primary:not (:disabled):not (.disabled):active,
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
 		.show>.btn-primary.dropdown-toggle {
 			color: #fff;
 			background-color: #cc000000;
@@ -219,7 +219,7 @@ PURPOSE		: BRFREPORT
 
 		/* When input or select is focused or has a value, move the label up */
 		.form-control:focus~.form-legend,
-		.form-control:not (:placeholder-shown)~.form-legend {
+		.form-control:not(:placeholder-shown)~.form-legend {
 			top: -8px;
 			font-size: 1rem;
 			color: #007bff;
@@ -232,7 +232,7 @@ PURPOSE		: BRFREPORT
 		}
 
 		/* Ensure the label returns to the normal color after focus or hover is removed */
-		.form-control:not (:focus)~.form-legend {
+		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
 			/* Normal label color */
 		}
@@ -376,13 +376,13 @@ PURPOSE		: BRFREPORT
 		        type=${type},
 		        asondate=${asondate},
 		        version=${version}
-		    )}]]*/;
+		    )}]]*/
 			location.href = Callurl;
 
 		}
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 			location.href = Callurl;
 		}
 
@@ -394,7 +394,7 @@ PURPOSE		: BRFREPORT
 				todate=${todate}, 
 				type='RESUB', 
 				asondate=${asondate},
-				version=${version})}]]*/;
+				version=${version})}]]*/
 			location.href = Callurl;
 		}
 	</script>
@@ -730,7 +730,7 @@ PURPOSE		: BRFREPORT
 					// ✅ Force YELLOW with !important (overrides inline white bg)
 					$(this).attr("style", function (idx, s) {
 						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
-							+ ";background-color: #ffef00 !important;";
+							+ ";background-color: #FFF59D !important;";
 					});
 				}
 			});
