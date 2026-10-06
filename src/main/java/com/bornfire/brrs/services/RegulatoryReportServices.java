@@ -772,8 +772,8 @@ public class RegulatoryReportServices {
 
 		case "FORMAT_II":
 
-			repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype,
-					pageable, type, version);
+			repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype, pageable,
+					type, version, req, md);
 
 			break;
 
@@ -1579,8 +1579,8 @@ public class RegulatoryReportServices {
 
 		case "FORMAT_II":
 
-			repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency,
-					dtltype, pageable, Filter, type, version);
+			repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter, type, version, req1, md);
 			break;
 
 		case "MDISB1":
@@ -6047,6 +6047,18 @@ public class RegulatoryReportServices {
 				System.out.println("Resubmission data fetched for FORMAT_III: " + resubList.size());
 			} catch (Exception e) {
 				System.err.println("Error fetching resubmission data for FORMAT_III: " + e.getMessage());
+				e.printStackTrace();
+			}
+			break;
+
+			
+		case "FORMAT_II":
+			try {
+				List<Object[]> resubList = brrs_format_II_reportservice.getFORMAT_IIResub();
+				resubmissionData.addAll(resubList);
+				System.out.println("Resubmission data fetched for M_CA2: " + resubList.size());
+			} catch (Exception e) {
+				System.err.println("Error fetching resubmission data for M_CA2: " + e.getMessage());
 				e.printStackTrace();
 			}
 			break;

@@ -3,7 +3,7 @@
 <!-- 
 CREATED BY	: ISHWARYA 
 CREATED ON	: 16.12.2025
-PURPOSE		: BRRS FORMAT_II  REPORT
+PURPOSE		: BRRS FORMAT_II  REPORT (with ARCHIVAL / RESUB support, modelled on M_CA2)
 -->
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
@@ -20,13 +20,10 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
-
-
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 
-	<!-- ✅ jQuery Validation -->
+	<!-- jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
 
@@ -37,8 +34,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-
-
 
 	<style>
 		.btns {
@@ -68,8 +63,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			border-color: #0c0c0c;
 		}
 
-	
-
 		#finusertb {
 			width: 460px;
 		}
@@ -89,8 +82,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			cursor: pointer;
 		}
 
-		/* 🚌 Bus display style box */
-		/* 🚌 Bus display style box */
+		/* Bus display style box */
 		.boards {
 			transform: translateY(6px);
 			background-color: rgb(107, 122, 143);
@@ -100,13 +92,11 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			overflow: hidden;
 			white-space: nowrap;
 			flex: 1;
-			/* ✅ makes it take available space dynamically */
 			min-width: 200px;
 			box-shadow: 0 0 10px rgb(107, 122, 143);
 			position: relative;
 		}
 
-		/* ✨ Scrolling animation */
 		.scrolling-text {
 			display: inline-block;
 			font-family: "Courier New", monospace;
@@ -115,7 +105,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			animation: scroll-left 10s linear infinite;
 		}
 
-		/* Animation keyframes */
 		@keyframes scroll-left {
 			0% {
 				transform: translateX(100%);
@@ -127,15 +116,12 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		}
 	</style>
 
-
 	<style>
-		/* Keep the header fixed and aligned */
 		.dataTables_scrollHeadInner,
 		.dataTables_scrollBody table {
 			width: 100% !important;
 		}
 
-		/* Prevent thead shrinking at zoom */
 		.dataTables_scrollHeadInner table {
 			width: 100% !important;
 			min-width: 100% !important;
@@ -158,29 +144,16 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			text-align: left !important;
 		}
 
-		/* Right-align header (6th column = ACCT BALANCE) */
 		table.dataTable th.dt-type-numeric:nth-child(6) {
 			text-align: right !important;
 		}
 
-		/* Right-align data (6th column = ACCT BALANCE) */
 		#reportdetails td:nth-child(6),
 		.dataTables_scrollHeadInner table th:nth-child(6) {
 			text-align: right !important;
 			padding-right: 10px !important;
 		}
 	</style>
-
-
-
-
-
-
-
-
-
-
-
 
 	<style>
 		div span {
@@ -197,20 +170,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			font-size: 22px;
 			color: #fff;
 			font-weight: 600;
-		}
-
-		.nav-tabs .nav-link {
-			font-weight: 500;
-			border: 1px solid #dee2e6;
-			border-bottom: none;
-			border-radius: 4px 4px 0 0;
-			background-color: #f1f1f1;
-			margin-right: 5px;
-		}
-
-		.nav-tabs .nav-link.active {
-			background-color: #ffffff;
-			border-color: #dee2e6 #dee2e6 #ffffff;
 		}
 
 		.table-responsive {
@@ -233,25 +192,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			background-color: #FFFFFF;
 		}
 
-		.card-footer {
-			padding: 10px;
-			border-top: 1px solid #ccc;
-		}
-
-		.btn-xs {
-			padding: 4px 12px;
-			font-size: 14px;
-			border-radius: 4px;
-		}
-
-		#BRFvalidation th,
-		#usertable td {
-			vertical-align: middle;
-			text-align: left;
-			font-size: 16px;
-			font-family: Arial;
-		}
-
 		.fa-edit:hover {
 			color: #28a745;
 			transform: scale(1.1);
@@ -264,7 +204,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			text-overflow: ellipsis;
 		}
 	</style>
-
 
 	<style>
 		.form-group {
@@ -291,45 +230,21 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			border-color: #007bff;
 		}
 
-		.form-legend {
-			position: absolute;
-			top: 50%;
-			left: 15px;
-			transform: translateY(-50%);
-			font-size: 1rem;
-			color: #aaa;
-			background: white;
-			padding: 0 5px;
-			pointer-events: none;
-			transition: 0.3s ease;
-		}
-
-
 		.table-bordered td,
 		.table-bordered th {
 			border: 1px solid #000 !important;
 		}
-	</style>
 
-	<style>
-		/* Red border for invalid inputs */
 		input.error,
 		select.error {
 			border: 2px solid red !important;
 		}
 
-		/* Error message style */
 		label.error {
 			color: red;
 			font-size: 0.85em;
 			margin-top: 5px;
 			display: block;
-		}
-
-		.underline {
-			text-decoration: underline;
-			color: #08a6f1;
-			cursor: pointer;
 		}
 
 		.left-arrow-circle {
@@ -369,78 +284,80 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		}
 	</style>
 
+	<!-- Page level values coming from the controller -->
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
+		const reportId = /*[[${reportid}]]*/ 'FORMAT_II';
+		/*]]>*/
+	</script>
 
 	<script th:inline="javascript">
-
 		$(document).ready(function () {
-			// hide loader on normal load
 			$('#loader').modal('hide');
+			Maker_Checker_Function();
 		});
 
 		$(window).on('pageshow', function () {
-			// hide loader on back/forward nav
 			$('#loader').modal('hide');
 		});
 
 		$(window).on('beforeunload', function () {
-			// hide loader on leaving page
 			$('#loader').modal('hide');
 		});
 
-
+		// Maker-Checker: Checkers cannot modify, Makers cannot download
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					// Checkers -> hide Modify button
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
+					// Makers -> hide all download buttons
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+						document.querySelectorAll("#btn-format, #btn-detail").forEach(el => el.style.display = "none");
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+				}
+			});
+		}
 
 		function home() {
 			$("#loader").modal("toggle");
-			location.href = 'Dashboard'
+			location.href = 'Dashboard';
 		}
 
 		function back() {
 			$("#loader").modal("toggle");
-
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		//to fetch summary from the database - called from the summary button
+		// Summary -> Details
 		function showdetails() {
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 
-			var Callurl;
 			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
+			var Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
 				location.href = Callurl;
-			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide'); 
-				 },
-				 error: function () {
-					   $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				   
-				 }
-			 }); */
 		}
 
+		// Details -> Summary
 		function showsummary() {
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type},version=${version}, asondate=${asondate})}]]*/
+			$('#loader').modal('show');
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, version=${version}, asondate=${asondate})}]]*/
 				location.href = Callurl;
-
 		}
 	</script>
-
-
 
 	<script th:inline="javascript">
 		$(document).ready(function () {
@@ -454,167 +371,180 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 				lengthChange: false,
 				ordering: true,
 				pageLength: 100,
-				fixedHeader: true, // ✅ You can simply set it to true
-				// ✅ Column width settings
+				fixedHeader: true,
 				columnDefs: [
-					{width: "60px", targets: 0},   // Edit icon column
-					{width: "150px", targets: 1},  // S No column
-					{width: "300px", targets: 7}    // S No column
+					{width: "60px", targets: 0},
+					{width: "150px", targets: 1},
+					{width: "300px", targets: 7}
 				],
-
 				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
 			});
 
-			// ✅ Fix alignment on resize / zoom
 			$(window).on('resize', function () {
 				table.columns.adjust().draw(false);
 			});
 
-			// ✅ Fix initial misalignment if loaded at non-100% zoom
 			setTimeout(function () {
 				table.columns.adjust().draw(false);
 			}, 500);
 		});
 	</script>
 
-
-	<script>
-		function editRecord(icon) {
-			const row = icon.closest('tr');
-			const provisionInput = row.querySelector('.provision-field');
-
-			// Enable only provision field for editing
-			provisionInput.removeAttribute('readonly');
-			provisionInput.focus();
-
-			// Highlight editable cell
-			provisionInput.style.backgroundColor = '#fff8e1';
-
-			// Show submit button
-			document.getElementById('submitButton').style.display = 'inline-block';
-		}
-
-
-
-	</script>
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-		const reportId = /*[[${reportid}]]*/ null;
-		/*]]>*/
-	</script>
-
+	<!-- Detail row -> Edit page -->
 	<script>
 		function openformat_IIDetail(elem, mode) {
 
-			var type = elem.getAttribute('data-type');
+			var elemType = elem.getAttribute('data-type');
 
-			if (type === "ARCHIVAL") {
+			if (elemType === "ARCHIVAL") {
 				showResultModal('BRRS', "Archived Data cannot be modified");
 				return;
 			}
 
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
+			const targetRptId = reportId || 'FORMAT_II';
 
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href = `/BRRS/Reports/${targetRptId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&type=${elemType}`;
 		}
 	</script>
 
-
-
-
+	<!-- Detail edit page: update / regenerate -->
 	<script>
+		let previousUrl = document.referrer;
+
 		function submitFROMAT_IIUpdate() {
-			const formData = $('#format_IIDetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#format_IIDetailForm').serialize();
+			let userAnswer = null;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			// RESUB -> ask Modify / Regenerate
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-			// Show loader while processing
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitFROMAT_IIUpdate();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitFROMAT_IIUpdate();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
+
 			$('#loader').modal('show');
 
+			const targetRptId = reportId || 'FORMAT_II';
+
 			$.ajax({
-				url: `/BRRS/Reports/${reportId}/update`,
+				url: '/BRRS/Reports/' + targetRptId + '/update',
 				type: 'POST',
 				data: formData,
+
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// Show message via modal
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModal('BRRS', response);
+						if (userAnswer === 'NO') {
+							showResultModal2('Success', response);
+						} else {
+							showResultModalDU('Success', response);
+						}
 					} else {
-						showResultModal('Information', response || 'No data updated.');
+						showResultModalDU('Information', response || 'No data updated.');
 					}
-
-					// ✅ Redirect back to the previous page after short delay
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							// fallback: just go back if referrer not found
-							window.history.back();
-						}
-					}, 1500);
 				},
-				error: function (xhr, status, error) {
+
+				error: function (xhr) {
 					$('#loader').modal('hide');
-					console.error("Update error:", error);
-
-					showResultModal('Error', 'Failed to update record. Please try again.');
-
-					// ✅ On error also return to previous page after delay
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back();
-						}
-					}, 1500);
+					let errMsg = (xhr && xhr.responseText) ? xhr.responseText : 'Failed to update record. Please try again.';
+					showResultModalDU('Error', errMsg);
 				}
 			});
 		}
 
+		// Regenerate from the Details page (RESUB, highest version only)
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+			let cleanDate = rawDate.replace(/['"]/g, '');
+
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+
+			$('#loader').modal('show');
+
+			const targetRptId = reportId || 'FORMAT_II';
+
+			$.ajax({
+				url: '/BRRS/Reports/' + targetRptId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						showResultModal2('Success', response);
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function (xhr) {
+					$('#loader').modal('hide');
+					let errMsg = (xhr && xhr.responseText) ? xhr.responseText : 'Failed to process request. Please try again.';
+					showResultModalDU('Error', errMsg);
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + (reportId || 'FORMAT_II');
+		}
+
+		function redirectBack() {
+			if (previousUrl) {
+				window.location.href = previousUrl;
+			} else {
+				window.history.back();
+			}
+		}
 	</script>
 
-
-
-
-
-
-
-
-
-
 	<script>
-
 		function activateTab(tabName) {
-			// Remove 'active' from all buttons
 			document.querySelectorAll('.custom-tab-btn').forEach(btn => {
 				btn.classList.remove('active');
 			});
 
-			// Add 'active' to selected button
 			if (tabName === 'summary') {
-				document.getElementById('custom-tab-btnSummary').classList.add('active');
+				var s = document.getElementById('custom-tab-btnSummary');
+				if (s) s.classList.add('active');
 			} else if (tabName === 'Details') {
-				document.getElementById('custom-tab-btnDetails').classList.add('active');
+				var d = document.getElementById('custom-tab-btnDetails');
+				if (d) d.classList.add('active');
 			}
 		}
 
 		window.onload = function () {
-			/* setTimeout(function() {
-				var selectedTab = document.getElementById("selectedTab").value;
-				alert(selectedTab);
-				activateTab(selectedTab);
-			}, 10000); */ // 10,000 milliseconds = 10 seconds
-
 			var selectedTab = document.getElementById("selectedTab").value;
 			activateTab(selectedTab);
 		};
-
 
 		function downloadfile(button) {
 			var reportid = button.getAttribute('data-reportid');
@@ -626,12 +556,10 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			var secid = button.getAttribute('data-secid');
 			var dtltype = button.getAttribute('data-dtltype');
 			var filename = button.getAttribute('data-filename');
-			var type = button.getAttribute('data-type');
+			var btnType = button.getAttribute('data-type');
 			var version = button.getAttribute('data-version');
 
-
-			var loader = new bootstrap.Modal(document.getElementById('loader'), {backdrop: 'static', keyboard: false});
-			loader.show();
+			$('#loader').modal('show');
 
 			$.ajax({
 				url: './downloadExcel?reportid=' + reportid +
@@ -642,7 +570,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 					'&subreportid=' + subreportid +
 					'&secid=' + secid +
 					'&filename=' + filename +
-					'&type=' + type +
+					'&type=' + btnType +
 					'&version=' + version,
 				type: 'GET',
 				xhrFields: {
@@ -678,29 +606,46 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 
 		function editRecord() {
 			showResultModal('Alert', 'Development in progress');
-
 		}
+
+		// Hide modals only
 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
+		}
 
+		// Hide modals and reload the page (used after a Modify on the summary)
+		function closemodels() {
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
+
+			setTimeout(function () {
+				location.reload();
+			}, 300);
 		}
 
 		function showResultModal(title, message) {
-			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
 			$('#resultModalBody').text(message);
-
-			// Show the modal
 			$('#resultModal').modal('show');
 		}
 
+		// Result modal for the Detail edit page (OK -> back)
+		function showResultModalDU(title, message) {
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
+			$('#resultModal1').modal('show');
+		}
+
+		// Result modal after Regenerate (OK -> resubmission list)
+		function showResultModal2(title, message) {
+			$('#resultModalLabel2').text(title);
+			$('#resultModalBody2').text(message);
+			$('#resultModal2').modal('show');
+		}
 	</script>
 
-
-
 	<script>
-
 		function startReport(button) {
 			const alertMsg = document.getElementById("alertMessage");
 
@@ -709,7 +654,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			const todate = button.getAttribute('data-todate');
 			const currency = button.getAttribute('data-currency');
 			const dtltype = button.getAttribute('data-dtltype');
-			const type = button.getAttribute('data-type');
+			const btnType = button.getAttribute('data-type');
 			const version = button.getAttribute('data-version');
 
 			const sessionfilename = sessionStorage.getItem("filename");
@@ -729,13 +674,12 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 				+ '&todate=' + encodeURIComponent(todate)
 				+ '&currency=' + encodeURIComponent(currency)
 				+ '&dtltype=' + encodeURIComponent(dtltype)
-				+ '&type=' + encodeURIComponent(type)
+				+ '&type=' + encodeURIComponent(btnType)
 				+ '&version=' + encodeURIComponent(version);
 
 			fetch(downloadUrl)
 				.then(res => res.text())
 				.then(jobId => {
-
 					alertMsg.innerHTML = 'Request received. Job ID: ' + jobId;
 					showAlert();
 
@@ -766,7 +710,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 					} else if (status === "PROCESSING") {
 						alertMsg.innerHTML = 'Report processing...';
 						showAlert();
-
 						setTimeout(() => checkReport(jobId), 4000);
 
 					} else if (status === "ERROR") {
@@ -780,7 +723,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		}
 
 		function downloadDetailfile(jobId, filename) {
-
 			$.ajax({
 				url: '/BRRS/Reports/downloaddetailExcel?jobId=' + jobId + '&filename=' + filename,
 				type: 'GET',
@@ -807,12 +749,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 				}
 			});
 		}
-
 	</script>
-
-
-
-
 
 	<script th:inline="javascript">
 		function showdetailsbyRowAndColumn(a) {
@@ -821,105 +758,55 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			var cellValue = a.textContent || a.innerText;
 
 			if (cellValue !== '0') {
-				// Set dynamic message in modal (instead of confirm)
 				document.getElementById("cellresultModalLabel").innerText =
 					"Do you want to open details for Row: " + rowId + " and Column: " + columnId + "?";
 
-				// Show custom Bootstrap modal
 				$('#cellresultModal').modal('show');
 
-				// Handle Yes button
 				document.querySelector('.yes-btn').onclick = function () {
 					$('#cellresultModal').modal('hide');
-
-					// Show loader
-					const loader = bootstrap.Modal.getOrCreateInstance(document.getElementById('loader'), {
-						backdrop: 'static',
-						keyboard: false
-					});
 					$('#loader').modal('show');
 
-					// Build dynamic URL
 					var Callurl = /*[[@{'/Reports/' + ${reportid} + '/Details'(asondate=${asondate}, fromdate=${fromdate}, todate=${todate}, currency=${currency}, dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
 					Callurl += "&filter=" + encodeURIComponent(rowId + "," + columnId);
 
 					location.href = Callurl;
 				};
 			} else {
-				// Use your custom alert modal instead of window.alert
 				showResultModal("Alert", "No Records available for this selected cell.");
 			}
 		}
 	</script>
 
-
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+		// Show Modify (enable inputs)
 		function showmodify(btn) {
-			// IDs that should always remain readonly
+			if ($(btn).is(":hidden")) return;
+
 			$(".Show_input").removeAttr("readonly").removeAttr("disabled");
 
-
-
-			//Apply gray background 
-			[
-				"#r21_amt", "#r25_amt_sub_del"
-			].forEach(selector => {
+			// highlight the editable cells
+			["#r21_amt", "#r25_amt_sub_del"].forEach(selector => {
 				if ($(selector).length) {
-					$(selector).css("background-color", "#d3d3d3");
+					$(selector).css("background-color", "#ffef00");
 				}
 			});
 
-
-
-
-
-
-			// Toggle buttons
 			$("#submitButton, #btnBack_edit, #cancelRecord").show();
 			$("#btnBack").hide();
 
-			// Hide the clicked Modify button
 			$(btn).hide();
 		}
 
-
-		//Cancel / Reset function
+		// Cancel / Reset
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
-			// ❌ If user clicks CANCEL, nothing happens
-
 		}
-
-
-
 	</script>
 
-
 	<script>
-		//--------------------------------------
-		// COMMON VALUE GETTER
-		//--------------------------------------
 		function getCellValue(selector) {
 			let el = $(selector);
 			if (!el.length) return 0;
@@ -928,9 +815,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			return parseFloat((val || "0").replace(/,/g, "")) || 0;
 		}
 
-		//--------------------------------------
-		// COMMON VALUE SETTER (US FORMAT)
-		//--------------------------------------
 		function setCellValue(selector, value) {
 			let el = $(selector);
 			if (!el.length) return;
@@ -947,13 +831,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 			}
 		}
 
-		//--------------------------------------
-		// TOTAL CALCULATION FUNCTION
-		//--------------------------------------
 		function calculateTotals() {
-
-			/* ================= G COLUMN ================= */
-
 			// G23 = G25
 			let g23 = getCellValue("#r25_amt_sub_del");
 			setCellValue("#r23_amt_sub_del", g23);
@@ -964,88 +842,87 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 				getCellValue("#r25_amt_sub_del") +
 				getCellValue("#r26_amt_sub_del") -
 				getCellValue("#r27_amt_sub_del");
-
 			setCellValue("#r28_amt_sub_del", g28);
-
-			/* ================= H COLUMN ================= */
 
 			// H25 = E25 + F25 - G25
 			let h25 =
 				getCellValue("#r25_amt") +
 				getCellValue("#r25_amt_sub_add") -
 				getCellValue("#r25_amt_sub_del");
-
 			setCellValue("#r25_amt_total", h25);
 		}
 
-		//--------------------------------------
-		// EVENT LISTENERS
-		//--------------------------------------
 		$(document).ready(function () {
-
-			calculateTotals(); // initial load
+			calculateTotals();
 
 			$(
-				// Row 25 drivers
-				"#r25_amt, " +
-				"#r25_amt_sub_add, " +
-				"#r25_amt_sub_del, " +
-				// G-column dependencies
+				"#r25_amt, #r25_amt_sub_add, #r25_amt_sub_del, " +
 				"#r24_amt_sub_del, #r26_amt_sub_del, #r27_amt_sub_del"
 			).on("input change keyup", calculateTotals);
-
 		});
 	</script>
 
-
-
-
-
-
-
-
+	<!-- Summary submit (Modify / Regenerate for RESUB) -->
 	<script>
-
-
-		// This function is for closing the modal after an action is complete.
-		// It hides the result and loader modals and reloads the page.
-		function closemodel() {
-			$("#resultModal").modal("hide");
-			$('#loader').modal('hide');
-
-			// Reload the page after a short delay to ensure the modal animation completes smoothly.
-			setTimeout(function () {
-				location.reload();
-			}, 300);
-		}
-
 		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
 
-			// Show loader
+			const asondate = btn.getAttribute("data-todate");
+			const btnType = btn.getAttribute("data-type");
+			const version = btn.getAttribute("data-version");
+			let userAnswer = null;
+
+			// RESUB -> ask Modify / Regenerate first
+			if (btnType === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
+
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					fileuploads(btn);
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					fileuploads(btn);
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			$('#confirmModal').data('answered', null);
+
 			$('#loader').modal('show');
 
 			try {
-				// ✅ Step 1: Calculate totals
-				/*  calculateR14Totals(); */
 				calculateTotals();
 
-				// ✅ Step 2: Remove commas from all text inputs
+				// Remove commas
 				$("#fileupload input[type='text']").each(function () {
 					$(this).val($(this).val().replace(/,/g, ''));
 				});
 
-				// ✅ Step 3: Validate form
+				// Validate
 				if (!$("#fileupload").valid()) {
 					$('#loader').modal('hide');
 					return;
 				}
 
-				// ✅ Step 4: Build FormData
+				// Build FormData
 				const formData = new FormData();
 				formData.append("asondate", asondate);
-				formData.append("type", type);
+				if (btnType) {
+					formData.append("type", btnType);
+				}
+				if (version) {
+					formData.append("version", version);
+				}
+				if (userAnswer === 'NO') {
+					formData.append("entry", "NO");
+				} else if (userAnswer === 'YES') {
+					formData.append("entry", "YES");
+				}
 
 				$('#fileupload').find(':input').each(function () {
 					const name = $(this).attr('name');
@@ -1054,7 +931,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 					}
 				});
 
-				// ✅ Step 5: AJAX submission
 				$.ajax({
 					url: './FORMAT_IIupdateAll',
 					type: 'POST',
@@ -1062,47 +938,49 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 					processData: false,
 					contentType: false,
 					dataType: 'text',
-					success: function () {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
-						$("#resultModal").modal("show");
+
+					success: function (response) {
+						$('#loader').modal('hide');
+
+						if (response && response.toLowerCase().includes('success')) {
+							if (userAnswer === 'NO') {
+								showResultModal2('Success', response);
+							} else {
+								$("#resultModalLabel").text("BRRS");
+								$("#resultModalBody").text(response);
+								$("#resultModal").modal("show");
+							}
+						} else {
+							$("#resultModalLabel").text("Information");
+							$("#resultModalBody").text(response || 'No data updated.');
+							$("#resultModal").modal("show");
+						}
 					},
+
 					error: function (jqXHR) {
+						$('#loader').modal('hide');
 						console.error("Error response:", jqXHR.responseText);
 						$("#resultModalLabel").text("Error");
-						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModalBody").text("Update failed. Check console.");
 						$("#resultModal").modal("show");
 					},
+
 					complete: function () {
 						$('#loader').modal('hide');
 					}
 				});
 
 			} catch (error) {
-				console.error("Error in fileuploads function:", error);
+				console.error("Error in fileuploads:", error);
 				$('#loader').modal('hide');
 				$("#resultModalLabel").text("Error");
-				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModalBody").text("Unexpected error occurred.");
 				$("#resultModal").modal("show");
 			}
 		}
-
-
-
-
-
 	</script>
 
-
-
-
-
-
-
-
 </head>
-
-
 
 <title>FORMAT_II</title>
 
@@ -1116,7 +994,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 				<div class="card-header"
 					style="background-color: rgb(107, 122, 143); display: flex; align-items: center; justify-content: space-between;">
 					<div style="display: flex; align-items: center;" onclick="back();">
-						<!-- ⬅️ Left circular arrow -->
+						<!-- Left circular arrow -->
 						<div class="left-arrow-circle">
 							<i class="fa fa-arrow-left"></i>
 						</div>
@@ -1126,57 +1004,47 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 							style="font-family: arial; font-size: 20px; font-weight: bold; color: white; margin: 0 10px; ">
 							STATEMENT OF CAPITAL INVESTED BY BANK OF BARODA IN ITS SUBSIDIARIES</h5>
 
-
 						<!-- Moving bus-board text -->
 						<div class="boards">
 							<p class="scrolling-text">Bank of Baroda(Botswana)Ltd</p>
 						</div>
-
-
-
-
-
 					</div>
 
 					<div class="custom-tab-btn-group nav-buttons"
-						style="display: flex; color: white; align-items: center;">
-						<!-- 📅 Date -->
+						style="display: flex; color: white; align-items: center; gap: 8px;">
+						<!-- Date -->
 						<span class="white-text" style="color: white !important; font-size: 16px; margin-right: 20px;">
 							Report Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
 
-						<!-- Buttons -->
 						<input type="hidden" id="selectedTab" th:value="${displaymode}">
+
+						<!-- Regenerate (Details page, RESUB, highest version only) -->
+						<button type="button" class="custom-tab-btn" onclick="regenerateProcedure()"
+							th:if="${displaymode == 'Details' and type == 'RESUB' and allowdetail == 'YES'}">Regenerate</button>
+
+						<!-- Summary / Details -->
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary();"
 							th:if="${displaymode == 'Details'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 
-
-
-
-						<!-- Modify button -->
-						<!-- <button type="button" class="custom-tab-btn"
-							onclick="showmodify(this);" title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button>  -->
+						<!-- Modify -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
-                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+							title="Click to EDIT Records"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary' and (type != 'RESUB' or allowdetail == 'YES')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">
 							Modify
 						</button>
-						<!-- Cancel button (hidden initially) -->
+
+						<!-- Cancel (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-
-
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+						<!-- Download - Summary -->
+						<button type="button" class="custom-tab-btn" id="btn-format"
+							th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
                      				 data-todate=${todate}, 
@@ -1187,25 +1055,25 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+
+						<!-- Download - Details -->
+						<button type="button" class="custom-tab-btn" id="btn-detail"
+							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
 						    data-filename='FORMAT_II',
-						 data-type=${type},
-					data-version=${version}  ">
+						    data-type=${type},
+						    data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 
 					</div>
 				</div>
 
-
-
+				<!-- ======================= SUMMARY ======================= -->
 				<div th:if="${displaymode == 'summary'}">
 					<div class="row">
 						<div class="col-sm-12">
-
 
 							<form action="#" method="POST" id="fileupload">
 								<div class="table-wrapper table-responsive scrollable-table-container"
@@ -1220,19 +1088,13 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Particulars
 												</th>
-
 												<th colspan="4"
 													style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Amount As On
 												</th>
-
-
-
-
 											</tr>
 
 											<tr style="background-color: #b3b6b9">
-												<!--01.04.2025-->
 												<th rowspan="2"
 													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Current Financial Year
@@ -1241,171 +1103,98 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 													style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Subsequent
 												</th>
-												<!--30.06.2025-->
 												<th rowspan="2"
 													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Total as at Current Month
 												</th>
-
-
-
 											</tr>
 
-
-
 											<tr style="background-color: #b3b6b9">
-												<!--Addition As on  30.06.2025-->
 												<th
 													style="text-align: center; background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Addition as of the Current Month
 												</th>
-												<!--Deletion As on   30.06.2025		-->
 												<th
 													style="text-align: center;  background-color: #D8D8D8;  padding: 10px; font-weight:bold;  color: #000000;">
 													Deletion As of the Current Month
 												</th>
-
-
-
 											</tr>
-
-
 										</thead>
-
 
 										<tbody th:each="report: ${reportsummary}" style="font-family: Arial;">
 
-
-
 											<tr>
-
-
-
-
-												<td style="text-align: left; font-weight:bold;   "></td>
-
-												<td style="text-align: right; "></td>
-
-
-												<td style="text-align: right; padding-right:10px; "></td>
-
-
-												<td style="text-align: right; padding-right:10px; "></td>
-
-												<td style="text-align: right; padding-right:10px; "></td>
-
-
-
+												<td style="text-align: left; font-weight:bold;"></td>
+												<td style="text-align: right;"></td>
+												<td style="text-align: right; padding-right:10px;"></td>
+												<td style="text-align: right; padding-right:10px;"></td>
+												<td style="text-align: right; padding-right:10px;"></td>
 											</tr>
 
-
+											<!-- R14 -->
 											<tr>
-
-
-
-
-												<td style="text-align: left;  padding-left:40px;  "
+												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r14_product ?: ''}"></td>
-
-												<td style="text-align: right; " th:text="${report?.r14_amt ?: ''}"
-													></td>
-
-
-												<td style="text-align: right; padding-right:10px; "
+												<td style="text-align: right;" th:text="${report?.r14_amt ?: ''}"></td>
+												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r14_amt_sub_add ?: ''}"
 													th:attr="RowId='R14', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-
-												<td style="text-align: right; padding-right:10px; "
+												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r14_amt_sub_del ?: ''}"
 													th:attr="RowId='R14', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<td class="green-cell" style="text-align: right; padding-right:10px; "
+												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r14_amt_total ?: ''}"></td>
-
-
-
 											</tr>
 
-
+											<!-- R15 -->
 											<tr>
-
 												<td style="text-align: left; padding-left:70px;"
-													th:text="${report?.r15_product ?: ''}">
-												</td>
-
-												<td style="text-align: right;" th:text="${report?.r15_amt ?: ''}"
-													>
-												</td>
-
+													th:text="${report?.r15_product ?: ''}"></td>
+												<td style="text-align: right;" th:text="${report?.r15_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r15_amt_sub_add ?: ''}"
 													th:attr="RowId='R15', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)">
-												</td>
-
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r15_amt_sub_del ?: ''}"
 													th:attr="RowId='R15', ColumnId='C4'"
-													onclick="showdetailsbyRowAndColumn(this)">
-												</td>
-
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
-													th:text="${report?.r15_amt_total ?: ''}">
-												</td>
-
+													th:text="${report?.r15_amt_total ?: ''}"></td>
 											</tr>
 
-
+											<!-- R16 -->
 											<tr>
-
 												<td style="text-align: left; padding-left:40px;"
-													th:text="${report?.r16_product ?: ''}">
-												</td>
-
-												<td style="text-align: right;" th:text="${report?.r16_amt ?: ''}"
-												>
-												</td>
-
+													th:text="${report?.r16_product ?: ''}"></td>
+												<td style="text-align: right;" th:text="${report?.r16_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r16_amt_sub_add ?: ''}"
 													th:attr="RowId='R16', ColumnId='C3'"
-													onclick="showdetailsbyRowAndColumn(this)">
-												</td>
-
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r16_amt_sub_del ?: ''}"
 													th:attr="RowId='R16', ColumnId='C4'"
-													onclick="showdetailsbyRowAndColumn(this)">
-												</td>
-
+													onclick="showdetailsbyRowAndColumn(this)"></td>
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
-													th:text="${report?.r16_amt_total ?: ''}">
-												</td>
-
+													th:text="${report?.r16_amt_total ?: ''}"></td>
 											</tr>
-
 
 											<!-- R17 -->
 											<tr>
 												<td style="text-align: left;  font-weight:bold;"
 													th:text="${report?.r17_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r17_amt ?: ''}"
-												></td>
-
+												<td style="text-align: right;" th:text="${report?.r17_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r17_amt_sub_add ?: ''}"
 													th:attr="RowId='R17', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r17_amt_sub_del ?: ''}"
 													th:attr="RowId='R17', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r17_amt_total ?: ''}"></td>
 											</tr>
@@ -1414,20 +1203,15 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r18_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r18_amt ?: ''}"
-													></td>
-
+												<td style="text-align: right;" th:text="${report?.r18_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r18_amt_sub_add ?: ''}"
 													th:attr="RowId='R18', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r18_amt_sub_del ?: ''}"
 													th:attr="RowId='R18', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r18_amt_total ?: ''}"></td>
 											</tr>
@@ -1436,20 +1220,15 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r19_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r19_amt ?: ''}"
-													></td>
-
+												<td style="text-align: right;" th:text="${report?.r19_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r19_amt_sub_add ?: ''}"
 													th:attr="RowId='R19', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r19_amt_sub_del ?: ''}"
 													th:attr="RowId='R19', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r19_amt_total ?: ''}"></td>
 											</tr>
@@ -1458,35 +1237,23 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r20_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r20_amt ?: ''}"
-													></td>
-
+												<td style="text-align: right;" th:text="${report?.r20_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r20_amt_sub_add ?: ''}"
 													th:attr="RowId='R20', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r20_amt_sub_del ?: ''}"
 													th:attr="RowId='R20', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r20_amt_total ?: ''}"></td>
 											</tr>
 
-											<!-- R21 -->
+											<!-- R21 (R21_AMT editable) -->
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r21_product ?: ''}"></td>
-
-												<!-- <td style="text-align: right;"
-        th:text="${report?.r21_amt ?: ''}"
-        th:attr="RowId='R21', ColumnId='C2'"
-        onclick="showdetailsbyRowAndColumn(this)"></td> -->
-
-
 												<td id="ROW21"
 													style=" font-weight: bold; text-align: right;   width: 200px;">
 													<input class="display-input Show_input" type="text"
@@ -1494,20 +1261,14 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 														id="r21_amt" name="r21_amt"
 														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
 														readonly /></td>
-
-
-
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r21_amt_sub_add ?: ''}"
 													th:attr="RowId='R21', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r21_amt_sub_del ?: ''}"
 													th:attr="RowId='R21', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r21_amt_total ?: ''}"
 													th:attr="RowId='R21', ColumnId='C5'"
@@ -1516,36 +1277,24 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 
 											<!-- R22 -->
 											<tr>
-												<td style="text-align: left; padding-left:70px;"
-												></td>
-
-												<td style="text-align: right;" ></td>
-
-												<td style="text-align: right; padding:16px;"
-												></td>
-
-												<td style="text-align: right; padding:16px;"
-													></td>
-
-												<td style="text-align: right; padding:16px;"
-													></td>
+												<td style="text-align: left; padding-left:70px;"></td>
+												<td style="text-align: right;"></td>
+												<td style="text-align: right; padding:16px;"></td>
+												<td style="text-align: right; padding:16px;"></td>
+												<td style="text-align: right; padding:16px;"></td>
 											</tr>
 
 											<!-- R23 -->
 											<tr>
 												<td style="text-align: left; font-weight:bold;"
 													th:text="${report?.r23_product ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right;"
 													th:text="${report?.r23_amt ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r23_amt_sub_add ?: ''}"></td>
-
 												<td id="r23_amt_sub_del" class="green-cell"
 													style="text-align: right; padding-right:10px;"
 													th:text="${report?.r23_amt_sub_del ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r23_amt_total ?: ''}"></td>
 											</tr>
@@ -1554,44 +1303,29 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r24_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r24_amt ?: ''}"
-													></td>
-
+												<td style="text-align: right;" th:text="${report?.r24_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r24_amt_sub_add ?: ''}"
 													th:attr="RowId='R24', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td id="r24_amt_sub_del" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r24_amt_sub_del ?: ''}"
 													th:attr="RowId='R24', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r24_amt_total ?: ''}"></td>
 											</tr>
 
-											<!-- R25 -->
+											<!-- R25 (R25_AMT_SUB_DEL editable) -->
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r25_product ?: ''}"></td>
-
 												<td id="r25_amt" style="text-align: right;"
-													th:text="${report?.r25_amt ?: ''}"
-													></td>
-
+													th:text="${report?.r25_amt ?: ''}"></td>
 												<td id="r25_amt_sub_add" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r25_amt_sub_add ?: ''}"
 													th:attr="RowId='R25', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
-												<!--  <td style="text-align: right; padding-right:10px;"
-        th:text="${report?.r25_amt_sub_del ?: ''}"
-        th:attr="RowId='R25', ColumnId='C4'"
-        onclick="showdetailsbyRowAndColumn(this)"></td> -->
-
-
 												<td id="ROW25"
 													style=" font-weight: bold; text-align: right; width: 200px;"><input
 														class="display-input Show_input" type="text"
@@ -1599,8 +1333,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 														id="r25_amt_sub_del" name="r25_amt_sub_del"
 														style="background-color: #FFFFFF; width:180px; height: 28px; border-color: transparent; text-align: right;"
 														readonly /></td>
-
-
 												<td id="r25_amt_total" class="green-cell"
 													style="text-align: right; padding-right:10px;"
 													th:text="${report?.r25_amt_total ?: ''}"></td>
@@ -1608,39 +1340,26 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 
 											<!-- R26 -->
 											<tr>
-												<td style="text-align: left; padding-left:40px;"
-												></td>
-
-												<td style="text-align: right;" ></td>
-
-												<td style="text-align: right; padding:16px;"
-													></td>
-
-												<td id="r26_amt_sub_del" style="text-align: right; padding:16px;"
-													></td>
-
-												<td style="text-align: right; padding:16px;"
-												></td>
+												<td style="text-align: left; padding-left:40px;"></td>
+												<td style="text-align: right;"></td>
+												<td style="text-align: right; padding:16px;"></td>
+												<td id="r26_amt_sub_del" style="text-align: right; padding:16px;"></td>
+												<td style="text-align: right; padding:16px;"></td>
 											</tr>
 
 											<!-- R27 -->
 											<tr>
 												<td style="text-align: left; padding-left:40px;"
 													th:text="${report?.r27_product ?: ''}"></td>
-
-												<td style="text-align: right;" th:text="${report?.r27_amt ?: ''}"
-													></td>
-
+												<td style="text-align: right;" th:text="${report?.r27_amt ?: ''}"></td>
 												<td style="text-align: right; padding-right:10px;"
 													th:text="${report?.r27_amt_sub_add ?: ''}"
 													th:attr="RowId='R27', ColumnId='C3'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td id="r27_amt_sub_del" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r27_amt_sub_del ?: ''}"
 													th:attr="RowId='R27', ColumnId='C4'"
 													onclick="showdetailsbyRowAndColumn(this)"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r27_amt_total ?: ''}"></td>
 											</tr>
@@ -1649,46 +1368,36 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<tr>
 												<td style="text-align: left; font-weight:bold; padding-left:40px;"
 													th:text="${report?.r28_product ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right;"
 													th:text="${report?.r28_amt ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r28_amt_sub_add ?: ''}"></td>
-
 												<td id="r28_amt_sub_del" class="green-cell"
 													style="text-align: right; padding-right:10px;"
 													th:text="${report?.r28_amt_sub_del ?: ''}"></td>
-
 												<td class="green-cell" style="text-align: right; padding-right:10px;"
 													th:text="${report?.r28_amt_total ?: ''}"></td>
 											</tr>
 
-
-
-
-
 										</tbody>
-
-
 									</table>
-
 								</div>
 
+								<!-- Submit: carries date, type and version -->
 								<div style="text-align: center; margin-top: 10px;">
-
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										form="fileupload" th:attr="data-todate=${asondate},
+										data-type=${type},
+										data-version=${version}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 
-
 							</form>
-
 						</div>
 					</div>
 				</div>
 
+				<!-- ======================= DETAILS ======================= -->
 				<div th:if="${displaymode == 'Details'}">
 					<div class="row">
 						<div class="col-sm-12">
@@ -1706,58 +1415,43 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 											<th>REPORT ADDL CRITERIA1</th>
 											<th>REPORT_DATE</th>
 										</tr>
-
 									</thead>
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
-												<a data-toggle="tooltip" class="editrec"
+												<!-- edit icon hidden for ARCHIVAL and for non-highest RESUB versions -->
+												<a th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}"
+													data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
-																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"
+														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},
+														data-type=${type}"
 														onclick="openformat_IIDetail(this, 'edit')"></i>
-
 												</a>
 											</td>
-
 
 											<td th:text="${srlno.index + 1}"></td>
 											<td th:text="${report.custId}"></td>
 											<td th:text="${report.acctNumber}"></td>
 											<td th:text="${report.acctName}"></td>
-
 											<td style="text-align:right !important;"
 												th:text="${#numbers.formatDecimal(report.acctBalanceInpula, 1, 'COMMA', 0, 'POINT')}">
 											</td>
-
-
 											<td th:text="${report.reportLabel}"></td>
 											<td th:text="${report.reportAddlCriteria_1}"></td>
 											<td th:text="${#dates.format(report.reportDate, 'dd-MM-yyyy')}"></td>
 										</tr>
 									</tbody>
 								</table>
-
-							</div>
-
-							<!-- Submit Button -->
-							<div style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-									onclick="updateform();" style="display: none;">
-									Submit
-								</button>
 							</div>
 						</div>
 					</div>
 				</div>
 
-
-				<!-- FORMATE II Detail Form Screen -->
+				<!-- ======================= DETAIL EDIT FORM ======================= -->
 				<div th:if="${formmode == 'edit'}" class="card">
-
-
 					<div class="card-body">
 						<form th:object="${formate_IIData}" method="post" id="format_IIDetailForm">
 							<div class="row formline" style="margin-top:10px;">
@@ -1812,31 +1506,26 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 								<label class="col-sm-2">Report Date</label>
 								<div class="col-sm-3">
 									<input type="date" name="reportDate" class="form-control form-control-sm" readonly
-										th:value="${#dates.format(formate_IIData.reportDate, 'yyyy-MM-dd')}" />
+										th:value="${formate_IIData != null and formate_IIData.reportDate != null ? #dates.format(formate_IIData.reportDate, 'yyyy-MM-dd') : ''}" />
 								</div>
 							</div>
+
+							<!-- hidden type so the service knows ARCHIVAL / RESUB / current -->
+							<input type="hidden" th:value="${type}" name="type" />
 
 							<div style="text-align:center; margin-top:20px;">
 								<button type="button" class="custom-tab-btn" th:if="${formmode == 'edit'}"
 									onclick="submitFROMAT_IIUpdate()">Update</button>
-
 							</div>
 						</form>
 					</div>
 				</div>
 
 			</div>
-
-
-
 		</div>
-
-
-
 	</div>
 
-
-
+	<!-- Loader -->
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
 			<div class="modal-content" style="background: transparent;">
@@ -1851,42 +1540,84 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		</div>
 	</div>
 
-
-
-	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<!-- Result modal (Modify on summary) - OK reloads the page -->
 	<div class="modal fade" id="resultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<!-- Your custom styled header -->
 				<div class="menu-title-header">
-					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-						<!-- Title will be set by JavaScript -->
-					</div>
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;"></div>
 				</div>
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="resultModalBody"></p>
-					<!-- Your custom styled button -->
-					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Custom Cellresult Modal -->
+	<!-- Result modal (Edit in Detail page) - OK goes back -->
+	<div class="modal fade" id="resultModal1" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirectBack()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result modal (after Regenerate) - OK goes to resubmission list -->
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel2" style="text-align: center; color: white;"></div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Confirm modal for RESUB: Modify / Regenerate -->
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+							data-dismiss="modal">Modify</button>
+						<button type="button" id="btnConfirmNo" class="custom-tab-btn"
+							data-dismiss="modal">Regenerate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Cell result modal -->
 	<div class="modal fade" id="cellresultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-
-				<!-- Custom header -->
 				<div class="menu-title-header"
 					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
 					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
-						want to
-						open the report?</div>
+						want to open the report?</div>
 				</div>
-
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
 						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
 						Cancel</button>
 					<button type="button" class="custom-tab-btn yes-btn"
@@ -1897,26 +1628,15 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		</div>
 	</div>
 
-
-
 </body>
 
-
-
-
-
-
 <style>
-	/* Your existing CSS - this is the correct approach */
 	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
 		max-height: 520px;
-		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
 	}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
 	.scrollable-table-container thead tr:nth-child(1) {
 		position: sticky;
 		top: 0;
@@ -1927,7 +1647,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 	.scrollable-table-container thead tr:nth-child(2) {
 		position: sticky;
 		top: 36px;
-		/* adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 4;
 	}
@@ -1935,43 +1654,20 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 	.scrollable-table-container thead tr:nth-child(3) {
 		position: sticky;
 		top: 72px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 3;
 	}
 
-	.scrollable-table-container thead tr:nth-child(4) {
-		position: sticky;
-		top: 100px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 2;
-	}
-
-	.scrollable-table-container thead tr:nth-child(5) {
-		position: sticky;
-		top: 135px;
-		/* Adjust based on row height */
-		background-color: #b3b6b9;
-		z-index: 1;
-	}
-</style>
-
-
-<style>
 	.inner {
 		max-height: 600px;
-		/* Adjust height as needed */
 		overflow: auto;
 		border: 1px solid #dee2e6;
 	}
 
-	/* Sticky thead */
 	#reports thead th {
 		position: sticky;
 		top: 0;
 		background-color: #f8f9fa;
-		/* Match Bootstrap thead-light */
 		z-index: 2;
 	}
 
@@ -1982,7 +1678,6 @@ PURPOSE		: BRRS FORMAT_II  REPORT
 		margin-top: 10px;
 	}
 
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
 	div.dataTables_wrapper div.dataTables_info {
 		float: left !important;
 		margin-top: 10px;

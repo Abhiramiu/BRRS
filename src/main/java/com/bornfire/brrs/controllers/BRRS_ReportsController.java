@@ -3771,20 +3771,33 @@ public class BRRS_ReportsController {
 
 	@RequestMapping(value = "/FORMAT_IIupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReport(
+	public ResponseEntity<String> updateAllReports(
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_FORMAT_II_ReportService.FORMAT_II_Summary_Entity request) {
-
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
+			@ModelAttribute BRRS_FORMAT_II_ReportService.FORMAT_II_Summary_Entity request1) {
 		try {
-			System.out.println("came to single controller");
+			System.out.println("Came to FORMAT_IIupdateAll controller: type=" + type + ", version=" + version
+					+ ", entry=" + entry);
 
-			// ? set the asondate into entity
-			request.setReport_date(asondate);
+			// set date into entity
+			request1.setReport_date(asondate);
 
-			// call services
-			brrs_FORMAT_II_reportservice.updateReport(request);
+			// version arrives as String, entity expects BigDecimal
+			if (version != null && !version.trim().isEmpty()) {
+				try {
+					request1.setReport_version(new java.math.BigDecimal(version.trim()));
+				} catch (NumberFormatException nfe) {
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+							.body("Invalid version value: " + version);
+				}
+			}
 
-			return ResponseEntity.ok("Modified Successfully.");
+			// call service
+			ResponseEntity<?> response = brrs_FORMAT_II_reportservice.updateReport(request1, type, version, entry);
+
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
