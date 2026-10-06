@@ -327,10 +327,10 @@ PURPOSE		: BRFREPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
-
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
@@ -668,61 +668,101 @@ PURPOSE		: BRFREPORT
 		}
 	</script>
 	<script>
+
 		// ========================
-		// ✅ List of fields that should always remain readonly
+		// ✅ Readonly fields (auto-calculated). MUST match HTML case exactly.
+		// These stay locked even in edit mode.
 		// ========================
 		const readonlyIds = [
-			"r12_product", "r12_amt_6m", "r12_amt_6to24m", "r12_amt_gt24m",
-			"r12_capital_6m", "r12_capital_6to24m", "r12_capital_gt24m", "r13_product", "r13_capital_6m", "r13_capital_6to24m", "r13_capital_gt24m",
-			"r13_risk_6m", "r13_risk_6to24m", "r13_risk_gt24m", "r14_product", "r14_capital_6m", "r14_capital_6to24m", "r14_capital_gt24m",
-			"r14_risk_6m", "r14_risk_6to24m", "r14_risk_gt24m", "r15_product", "r15_capital_6m", "r15_capital_6to24m", "r15_capital_gt24m",
-			"r15_risk_6m", "r15_risk_6to24m", "r15_risk_gt24m", "r16_product", "r16_capital_6m", "r16_capital_6to24m", "r16_capital_gt24m",
-			"r16_risk_6m", "r16_risk_6to24m", "r16_risk_gt24m", "r17_product", "r18_amt_6m", "r18_amt_6to24m", "r18_amt_gt24m", "r17_capital_6m", "r17_capital_6to24m", "r17_capital_gt24m",
-			"r17_risk_6m", "r17_risk_6to24m", "r17_risk_gt24m", "r18_product", "r18_capital_6m", "r18_capital_6to24m", "r18_capital_gt24m",
-			"r18_capital_6m", "r18_capital_6to24m", "r18_capital_gt24m", "r19_product", "r19_capital_6m", "r19_capital_6to24m", "r19_capital_gt24m",
-			"r19_risk_6m", "r19_risk_6to24m", "r19_risk_gt24m", "r20_product", "r20_capital_6m", "r20_capital_6to24m", "r20_capital_gt24m",
-			"r20_risk_6m", "r20_risk_6to24m", "r20_risk_gt24m", "r21_product", "r21_capital_6m", "r21_capital_6to24m", "r21_capital_gt24m",
-			"r21_risk_6m", "r21_risk_6to24m", "r21_risk_gt24m", "r22_product", "r22_capital_6m", "r22_capital_6to24m", "r22_capital_gt24m",
-			"r22_risk_6m", "r22_risk_6to24m", "r22_risk_gt24m", "r23_product", "r23_capital_6m", "r23_capital_6to24m", "r23_capital_gt24m",
-			"r23_risk_6m", "r23_risk_6to24m", "r23_risk_gt24m", "r24_product", "r24_capital_6m", "r24_capital_6to24m", "r24_capital_gt24m",
-			"r24_risk_6m", "r24_risk_6to24m", "r24_risk_gt24m", "r25_product", "r25_capital_6m", "r25_capital_6to24m", "r25_capital_gt24m",
-			"r25_risk_6m", "r25_risk_6to24m", "r25_risk_gt24m", "r26_product", "r26_capital_6m", "r26_capital_6to24m", "r26_capital_gt24m",
-			"r26_risk_6m", "r26_risk_6to24m", "r26_risk_gt24m", "r27_product", "r27_amt_6m", "r27_amt_6to24m", "r27_amt_gt24m", "r27_capital_6m", "r27_capital_6to24m", "r27_capital_gt24m",
-			"r27_capital_6m", "r27_capital_6to24m", "r27_capital_gt24m", "r28_product", "r28_capital_6m", "r28_capital_6to24m", "r28_capital_gt24m",
-			"r28_risk_6m", "r28_risk_6to24m", "r28_risk_gt24m", "r29_product", "r29_capital_6m", "r29_capital_6to24m", "r29_capital_gt24m",
-			"r29_risk_6m", "r29_risk_6to24m", "r29_risk_gt24m", "r30_product", "r30_capital_6m", "r30_capital_6to24m", "r30_capital_gt24m",
-			"r30_risk_6m", "r30_risk_6to24m", "r30_risk_gt24m", "r31_product", "r31_capital_6m", "r31_capital_6to24m", "r31_capital_gt24m",
-			"r31_risk_6m", "r31_risk_6to24m", "r31_risk_gt24m", "r32_product", "r32_capital_6m", "r32_capital_6to24m", "r32_capital_gt24m",
-			"r32_risk_6m", "r32_risk_6to24m", "r32_risk_gt24m", "r33_product", "r33_capital_6m", "r33_capital_6to24m", "r33_capital_gt24m",
+			// ---- Auto-calculated Capital fields (must stay readonly) ----
+			"r12_capital_6m", "r12_capital_6to24m", "r12_capital_gt24m",
+			"r13_capital_6m", "r13_capital_6to24m", "r13_capital_gt24m",
+			"r14_capital_6m", "r14_capital_6to24m", "r14_capital_gt24m",
+			"r15_capital_6m", "r15_capital_6to24m", "r15_capital_gt24m",
+			"r16_capital_6m", "r16_capital_6to24m", "r16_capital_gt24m",
+			"r17_capital_6m", "r17_capital_6to24m", "r17_capital_gt24m",
+			"r18_capital_6m", "r18_capital_6to24m", "r18_capital_gt24m",
+			"r19_capital_6m", "r19_capital_6to24m", "r19_capital_gt24m",
+			"r20_capital_6m", "r20_capital_6to24m", "r20_capital_gt24m",
+			"r21_capital_6m", "r21_capital_6to24m", "r21_capital_gt24m",
+			"r22_capital_6m", "r22_capital_6to24m", "r22_capital_gt24m",
+			"r23_capital_6m", "r23_capital_6to24m", "r23_capital_gt24m",
+			"r24_capital_6m", "r24_capital_6to24m", "r24_capital_gt24m",
+			"r25_capital_6m", "r25_capital_6to24m", "r25_capital_gt24m",
+			"r26_capital_6m", "r26_capital_6to24m", "r26_capital_gt24m",
+			"r27_capital_6m", "r27_capital_6to24m", "r27_capital_gt24m",
+			"r28_capital_6m", "r28_capital_6to24m", "r28_capital_gt24m",
+			"r29_capital_6m", "r29_capital_6to24m", "r29_capital_gt24m",
+			"r30_capital_6m", "r30_capital_6to24m", "r30_capital_gt24m",
+			"r31_capital_6m", "r31_capital_6to24m", "r31_capital_gt24m",
+			"r32_capital_6m", "r32_capital_6to24m", "r32_capital_gt24m",
 			"r33_capital_6m", "r33_capital_6to24m", "r33_capital_gt24m",
-			"r35_tot_spec_risk_ch"
+			"r35_tot_spec_risk_ch",
+
+			// ---- Auto-calculated Risk fields (must stay readonly) ----
+			"r13_risk_6m", "r13_risk_6to24m", "r13_risk_gt24m",
+			"r14_risk_6m", "r14_risk_6to24m", "r14_risk_gt24m",
+			"r15_risk_6m", "r15_risk_6to24m", "r15_risk_gt24m",
+			"r16_risk_6m", "r16_risk_6to24m", "r16_risk_gt24m",
+			"r17_risk_6m", "r17_risk_6to24m", "r17_risk_gt24m",
+			"r18_risk_6m", "r18_risk_6to24m", "r18_risk_gt24m",
+			"r19_risk_6m", "r19_risk_6to24m", "r19_risk_gt24m",
+			"r20_risk_6m", "r20_risk_6to24m", "r20_risk_gt24m",
+			"r21_risk_6m", "r21_risk_6to24m", "r21_risk_gt24m",
+			"r22_risk_6m", "r22_risk_6to24m", "r22_risk_gt24m",
+			"r23_risk_6m", "r23_risk_6to24m", "r23_risk_gt24m",
+			"r24_risk_6m", "r24_risk_6to24m", "r24_risk_gt24m",
+			"r25_risk_6m", "r25_risk_6to24m", "r25_risk_gt24m",
+			"r26_risk_6m", "r26_risk_6to24m", "r26_risk_gt24m",
+			"r27_risk_6m", "r27_risk_6to24m", "r27_risk_gt24m",
+			"r28_risk_6m", "r28_risk_6to24m", "r28_risk_gt24m",
+			"r29_risk_6m", "r29_risk_6to24m", "r29_risk_gt24m",
+			"r30_risk_6m", "r30_risk_6to24m", "r30_risk_gt24m",
+			"r31_risk_6m", "r31_risk_6to24m", "r31_risk_gt24m",
+			"r32_risk_6m", "r32_risk_6to24m", "r32_risk_gt24m",
+
+			// ---- Product labels (never editable) ----
+			"r12_product", "r13_product", "r14_product", "r15_product", "r16_product",
+			"r17_product", "r18_product", "r19_product", "r20_product", "r21_product",
+			"r22_product", "r23_product", "r24_product", "r25_product", "r26_product",
+			"r27_product", "r28_product", "r29_product", "r30_product", "r31_product",
+			"r32_product", "r33_product"
 		];
 
 		// ========================
-		// ✅ Modify / Cancel logic
+		// ✅ Modify / Cancel logic (M_CA3 pattern)
 		// ========================
 		function showmodify(btn) {
-			$(".show_input").each(function () {
+			if ($(btn).is(":hidden")) return;
+
+			// ✅ Helper: force YELLOW #ffef00 with !important
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable editable inputs and paint them YELLOW
+			//    - .not(".nonEditable") skips product labels
+			//    - readonlyIds check skips auto-calc capital/risk fields
+			$(".show_input, .Show_input, .display-input").not(".nonEditable").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly").removeAttr("disabled").css({"background-color": "#d3d3d3"});
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
 				}
 			});
 
-			// Toggle buttons
 			$("#submitButton").show();
 			$("#cancelRecord").show();
-			$(btn).hide(); // hide the clicked Modify buttonton
+			$(btn).hide();
 		}
+
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// Reloads the page → resets everything
-				location.reload();
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-				$("#cancelRecord").hide();
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone
 			}
 		}
 
@@ -1215,6 +1255,9 @@ PURPOSE		: BRFREPORT
 							th:if="${displaymode == 'detail' or displaymode == 'resubDetail'}">Summary</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
+
+
+
 						<!-- Modify button -->
 
 						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
@@ -1224,21 +1267,25 @@ PURPOSE		: BRFREPORT
 			id="addRecord">
 			Modify
 		</button>-->
+
+
+
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
-							id="addRecord">
-							Modify
-						</button>
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
+
+
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							               data-asondate=${asondate},
 							               data-fromdate=${fromdate},
@@ -1250,9 +1297,10 @@ PURPOSE		: BRFREPORT
 							               data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
@@ -1264,12 +1312,13 @@ PURPOSE		: BRFREPORT
 									data-format='email',
 							        data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
-
 						</button>
+
+
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -1441,8 +1490,8 @@ PURPOSE		: BRFREPORT
 													<td style="text-align: center;
 			">1</td>
 
-													<td id="ROW12" style="font-weight: bold;"><input
-															class="display-input Show_input " type="text"
+													<td id="ROW12" style="font-weight: bold;"> <input
+															class="display-input Show_input nonEditable" type="text"
 															th:value="'Corporate Firms, Securities Firms and Foreign Public Sector Entities'"
 															id="r12_product" name="r12_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"
@@ -1970,7 +2019,7 @@ PURPOSE		: BRFREPORT
 					">7</td>
 
 													<td id="ROW18" style="font-weight: bold;">
-														<input class="display-input Show_input" type="text"
+														<input class="display-input Show_input nonEditable" type="text"
 															th:value="'Foreign Banking institutions1'" id="r18_product"
 															name="r18_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight:bold"
@@ -2756,7 +2805,7 @@ PURPOSE		: BRFREPORT
 													<td style="text-align: center;">16</td>
 
 													<td id="ROW27" style="font-weight: bold;">
-														<input class="display-input Show_input" type="text"
+														<input class="display-input Show_input nonEditable" type="text"
 															th:value="'Foreign Sovereigns '" id="r27_product"
 															name="r27_product"
 															style="background-color: #FFFFFF; width: 790px; height: 28px; border-color: transparent; text-align: left;font-weight: bold;"

@@ -381,8 +381,9 @@ PURPOSE		: BRRS MANUAL REPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -508,41 +509,41 @@ PURPOSE		: BRRS MANUAL REPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -570,72 +571,72 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
-		function showmodify(btn) {
-			$(".Show_input").removeAttr("readonly").removeAttr("disabled").css({
-				"background-color": "#d3d3d3", // Set light gray background
 
+		function showmodify(btn) {
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
+
+			// ---- Editable fields (only the source data columns) ----
+			const editableRows = [10, 11, 12, 13, 14, 15, 16];
+			const editableColumns = [
+				"TOTAL_LONG_POS",
+				"TOTAL_SHORT_POS",
+				"GROSS_OPEN_POS"
+			];
+
+			// ---- Readonly IDs (auto-calculated / labels / totals) ----
+			const readonlyIds = [];
+			// Auto-calc columns for rows 10–16
+			editableRows.forEach(i => {
+				readonlyIds.push(
+					`R${i}_CAPITAL_CHARGE_BASIS_RISK`,
+					`R${i}_NET_OPEN_POS`,
+					`R${i}_CAPITAL_CHARGE_DIR_RISK`,
+					`R${i}_TOTAL_CAPITAL_CHARGE`
+				);
+			});
+			// Product label fields
+			readonlyIds.push("R10_PRODUCT", "R11_PRODUCT");
+			// R17 total row (auto-sum)
+			[
+				"R17_TOTAL_LONG_POS", "R17_TOTAL_SHORT_POS", "R17_GROSS_OPEN_POS",
+				"R17_CAPITAL_CHARGE_BASIS_RISK", "R17_NET_OPEN_POS",
+				"R17_CAPITAL_CHARGE_DIR_RISK", "R17_TOTAL_CAPITAL_CHARGE",
+				"R17_CHARGE_BASIS_RISK", "R17_CHARGE_DIR_RISK"
+			].forEach(id => readonlyIds.push(id));
+
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline style)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable AND paint YELLOW — only the editable source data columns
+			editableRows.forEach(i => {
+				editableColumns.forEach(col => {
+					const selector = "#R" + i + "_" + col;
+					const $el = $(selector);
+					if ($el.length && !readonlyIds.includes($el.attr("id"))) {
+						$el.removeAttr("readonly").removeAttr("disabled");
+						paintYellow(selector);   // ✅ YELLOW #ffef00
+					}
+				});
 			});
 
-			//     for (let i = 10; i <= 17; i++) {
-			//         $("#R" + i + "_TOTAL_LONG_POS_TEXT").hide();
-			//         $("#R" + i + "_TOTAL_SHORT_POS_TEXT").hide();
-			//         $("#R" + i + "_GROSS_OPEN_POS_TEXT").hide();
-			//         $("#R" + i + "_CHARGE_BASIS_RISK_TEXT").hide();
-			//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK_TEXT").hide();
-			//         $("#R" + i + "_NET_OPEN_POS_TEXT").hide();
-			//         $("#R" + i + "_CHARGE_DIR_RISK_TEXT").hide();   
-			//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK_TEXT").hide();
-			//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE_TEXT").hide();
-
-			//         $("#R" + i + "_TOTAL_LONG_POS").show();
-			//         $("#R" + i + "_TOTAL_SHORT_POS").show();
-			//         $("#R" + i + "_GROSS_OPEN_POS").show();
-			//         $("#R" + i + "_CHARGE_BASIS_RISK").show();
-			//         $("#R" + i + "_CAPITAL_CHARGE_BASIS_RISK").show();
-			//         $("#R" + i + "_NET_OPEN_POS").show();
-			//         $("#R" + i + "_CHARGE_DIR_RISK").show();
-			//         $("#R" + i + "_CAPITAL_CHARGE_DIR_RISK").show();
-			//         $("#R" + i + "_TOTAL_CAPITAL_CHARGE").show();
-
-			//     }
-
-			/*// Toggle buttons
-			$("#submitButton, #btnBack_edit").show();
-			$("#btnBack").hide();
-
-			// Show Cancel button only when Modify is clicked
-			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
-			$(btn).hide();*/
-			// Show buttons
-
+			// ✅ Toggle buttons
 			$("#submitButton").show();
-			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
-
-			// Hide the clicked Modify button
+			$("#cancelRecord").show();
 			$(btn).hide();
 		}
 
-		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
 
 
@@ -1072,7 +1073,9 @@ PURPOSE		: BRRS MANUAL REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1080,12 +1083,8 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-
-
-
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn" id="btn-format"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1099,9 +1098,9 @@ PURPOSE		: BRRS MANUAL REPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1115,29 +1114,24 @@ PURPOSE		: BRRS MANUAL REPORT
 							<i class="fa fa-download"></i> Email
 
 						</button>
-						
+
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
 							<div class="dropdown-menu">
-								<a href="#" class="nav-link"
-									th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-									onclick="downloadSummaryPdf(this);"> <i
-									class="fa fa-file-pdf text-danger"></i> FORMAT PDF
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);"> <i class="fa fa-file-pdf text-danger"></i>
+									FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#" class="nav-link"
-									th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-									onclick="emailDownloadSummaryPdf(this);"> <i
-									class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);"> <i class="fa fa-file-pdf text-danger"></i>
+									EMAIL PDF
 								</a>
 							</div>
 						</div>

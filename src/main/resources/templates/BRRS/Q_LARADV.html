@@ -364,24 +364,35 @@ PURPOSE		: BRRS MANUAL REPORT
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
-
+					// ✅ Checkers → hide Modify buttons (top-level + per-row) + Add New Record
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						// Top-level Modify (if it exists)
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+
+						// Per-row Modify links (class="btn btn-sm btn-botswana-orange")
+						document.querySelectorAll(".btn-botswana-orange").forEach(el => {
+							el.style.display = "none";
+						});
+
+						// Add New Record link
+						document.querySelectorAll('a[href*="/BRRS_Q_LARADV/add"]').forEach(el => {
+							el.style.display = "none";
+						});
 					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-email, #btn-format, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
-
 				},
-				error: function (err) {
-					console.error("Error fetching role:", err);
-				}
+				error: function (err) {console.error("Error fetching role:", err);}
 			});
 		}
+
+
 
 
 		function home() {
@@ -732,11 +743,7 @@ PURPOSE		: BRRS MANUAL REPORT
 	</script>
 
 	<script>
-		function closemodel() {
-			$('#alert').modal('hide');
-			$('#resultModal').modal('hide');
 
-		}
 
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
@@ -851,8 +858,8 @@ PURPOSE		: BRRS MANUAL REPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != '') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -869,7 +876,7 @@ PURPOSE		: BRRS MANUAL REPORT
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -882,8 +889,8 @@ PURPOSE		: BRRS MANUAL REPORT
 							</div>
 						</div>
 
-						<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}" class="custom-tab-btn"
-							th:href="@{/Reports/BRRS_Q_LARADV/add(asondate=${asondate})}">
+						<a th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and (role == 'M' or role == 'MAN')}"
+							class="custom-tab-btn" th:href="@{/Reports/BRRS_Q_LARADV/add(asondate=${asondate})}">
 							Add New Record
 						</a>
 					</div>
@@ -952,12 +959,10 @@ PURPOSE		: BRRS MANUAL REPORT
 
 										<td>
 
-											<a th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+											<a th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and (role == 'M' or role == 'MAN')}"
 												th:attr="id=${data?.sno}" class="btn btn-sm btn-botswana-orange"
 												onclick="edit_btn_submit(this)">
-
 												Modify
-
 											</a>
 
 										</td>
@@ -1007,73 +1012,77 @@ PURPOSE		: BRRS MANUAL REPORT
 
 								<div class="row">
 
-
-
 									<div class="col-md-4 mb-3">
 										<label>Customer Group Name</label>
-										<input type="text" th:field="*{customerGroupName}" class="form-control" />
+										<input type="text" th:field="*{customerGroupName}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 
 									<div class="col-md-4 mb-3">
 										<label>Facility Type</label>
-										<input type="text" th:field="*{facilityType}" class="form-control" />
+										<input type="text" th:field="*{facilityType}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Original Amount</label>
 										<input type="number" step="0.01" th:field="*{originalAmount}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Outstanding Balance</label>
 										<input type="number" step="0.01" th:field="*{utilisationOutstandingBalance}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Effective Date</label>
 										<input type="text" id="effectiveDate" th:field="*{effectiveDate}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Repayment Period</label>
-										<input type="text" th:field="*{repaymentPeriod}" class="form-control" />
+										<input type="text" th:field="*{repaymentPeriod}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Performance Status</label>
-										<input type="text" th:field="*{performanceStatus}" class="form-control" />
+										<input type="text" th:field="*{performanceStatus}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Type of Security</label>
-										<input type="text" th:field="*{securityDetails}" class="form-control" />
+										<input type="text" th:field="*{securityDetails}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Board Approval</label>
-										<input type="text" th:field="*{boardApproval}" class="form-control" />
+										<input type="text" th:field="*{boardApproval}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Interest Rate</label>
-										<input type="number" step="0.01" th:field="*{interestRate}"
-											class="form-control" />
+										<input type="number" step="0.01" th:field="*{interestRate}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Outstanding Balance %</label>
 										<input type="number" step="0.01" th:field="*{outstandingBalancePercent}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Limit %</label>
-										<input type="number" step="0.01" th:field="*{limitPercent}"
-											class="form-control" />
+										<input type="number" step="0.01" th:field="*{limitPercent}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
@@ -1081,20 +1090,14 @@ PURPOSE		: BRRS MANUAL REPORT
 										<input type="text" th:field="*{reportDate}" class="form-control" readonly />
 									</div>
 
-
-
 								</div>
 
 							</div>
 
 							<div class="card-footer text-center">
-
 								<button type="button" class="custom-tab-btn" onclick="saveQlaradv()">
-
 									Submit
-
 								</button>
-
 							</div>
 
 						</div>
@@ -1127,70 +1130,75 @@ PURPOSE		: BRRS MANUAL REPORT
 
 									<div class="col-md-4 mb-3">
 										<label>Customer Group Name</label>
-										<input type="text" th:field="*{customerGroupName}" class="form-control" />
+										<input type="text" th:field="*{customerGroupName}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
-
 
 
 									<div class="col-md-4 mb-3">
 										<label>Facility Type</label>
-										<input type="text" th:field="*{facilityType}" class="form-control" />
+										<input type="text" th:field="*{facilityType}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Original Amount</label>
 										<input type="number" step="0.01" th:field="*{originalAmount}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Outstanding Balance</label>
 										<input type="number" step="0.01" th:field="*{utilisationOutstandingBalance}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Effective Date</label>
 										<input type="text" th:field="*{effectiveDate}" id="effectiveDate"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Repayment Period</label>
-										<input type="text" th:field="*{repaymentPeriod}" class="form-control" />
+										<input type="text" th:field="*{repaymentPeriod}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Performance Status</label>
-										<input type="text" th:field="*{performanceStatus}" class="form-control" />
+										<input type="text" th:field="*{performanceStatus}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Type of Security</label>
-										<input type="text" th:field="*{securityDetails}" class="form-control" />
+										<input type="text" th:field="*{securityDetails}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Board Approval</label>
-										<input type="text" th:field="*{boardApproval}" class="form-control" />
+										<input type="text" th:field="*{boardApproval}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Interest Rate</label>
-										<input type="number" step="0.01" th:field="*{interestRate}"
-											class="form-control" />
+										<input type="number" step="0.01" th:field="*{interestRate}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Outstanding Balance %</label>
 										<input type="number" step="0.01" th:field="*{outstandingBalancePercent}"
-											class="form-control" />
+											class="form-control" style="background-color: #ffef00 !important;" />
 									</div>
 
 									<div class="col-md-4 mb-3">
 										<label>Limit %</label>
-										<input type="number" step="0.01" th:field="*{limitPercent}"
-											class="form-control" />
+										<input type="number" step="0.01" th:field="*{limitPercent}" class="form-control"
+											style="background-color: #ffef00 !important;" />
 									</div>
 
 								</div>
@@ -1198,11 +1206,9 @@ PURPOSE		: BRRS MANUAL REPORT
 							</div>
 
 							<div class="card-footer text-center">
-
 								<button type="button" class="custom-tab-btn" onclick="updateQlaradv()">
 									Update
 								</button>
-
 							</div>
 
 						</div>

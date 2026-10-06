@@ -360,6 +360,9 @@ PURPOSE		: BRRS REPORT
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Maker-Checker: Checkers cannot modify, Makers cannot download
+			Maker_Checker_Function();
 		});
 
 		$(window).on('pageshow', function () {
@@ -372,33 +375,53 @@ PURPOSE		: BRRS REPORT
 			$('#loader').modal('hide');
 		});
 
+		// ✅ Maker-Checker role-based UI control
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					// ✅ Checkers → hide Modify button
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+					}
 
+					// ✅ Makers → hide ALL download buttons + PDF dropdown
+					if (roleId === "ADM-M" || roleId === "USR-M") {
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+				}
+			});
+		}
 
 		function home() {
 			$("#loader").modal("toggle");
-			location.href = 'Dashboard'
+			location.href = 'Dashboard';
 		}
 
 		function back() {
 			$("#loader").modal("toggle");
-
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
-		//to fetch summary from the database - called from the summary button
+		// ---- Summary / Details navigation ----
 		function showdetails() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid}(
-			        dtltype='detail',
-			        fromdate=${fromdate},
-			        todate=${todate},
-			        type=${type},
-			        asondate=${asondate},
-			        version=${version}
-			    )}]]*/
+	                dtltype='detail',
+	                fromdate=${fromdate},
+	                todate=${todate},
+	                type=${type},
+	                asondate=${asondate},
+	                version=${version}
+	            )}]]*/
 				location.href = Callurl;
-
 		}
 
 		function showsummary() {
@@ -406,15 +429,16 @@ PURPOSE		: BRRS REPORT
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
 				location.href = Callurl;
 		}
+
 		function showsummaryResub() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (
-					dtltype='report', 
-					fromdate=${fromdate}, 
-					todate=${todate}, 
-					type='RESUB', 
-					asondate=${asondate},
-					version=${version})}]]*/
+	                dtltype='report',
+	                fromdate=${fromdate},
+	                todate=${todate},
+	                type='RESUB',
+	                asondate=${asondate},
+	                version=${version})}]]*/
 				location.href = Callurl;
 		}
 	</script>
@@ -720,118 +744,53 @@ PURPOSE		: BRRS REPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+
 		function showmodify(btn) {
-			// IDs that should always remain readonly
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
 
-
-			// Columns to remain readonly
+			// ---- Readonly IDs (auto-calculated / labels) ----
 			var readonlyColumnsR12 = [
-				"pula",
-				"usd",
-				"zar",
-				"gbp",
-				"euro",
-				"jpy",
-				"rupee",
-				"renminbi",
-				"other",
-				"tot_cap_req"
+				"pula", "usd", "zar", "gbp", "euro", "jpy", "rupee", "renminbi", "other", "tot_cap_req"
 			];
-
 			var readonlyCurrencyColumns = ["currency"];
 
-			// Generate readonly IDs
 			var readonlyIds = [];
-
-			// R12 numeric columns
-			readonlyColumnsR12.forEach(col => {
-				readonlyIds.push(`r12_${col}`);
-			});
-
-			// R9's "Total capital required" is mapped from FXR, not manual — keep it locked too
+			readonlyColumnsR12.forEach(col => readonlyIds.push(`r12_${col}`));
 			readonlyIds.push("r9_tot_cap_req");
-
-			// R9–R12 currency columns
 			for (let i = 9; i <= 12; i++) {
-				readonlyCurrencyColumns.forEach(col => {
-					readonlyIds.push(`r${i}_${col}`);
-				});
+				readonlyCurrencyColumns.forEach(col => readonlyIds.push(`r${i}_${col}`));
 			}
 
-			// Make all .Show_input editable except the readonlyIds
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline style)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable editable inputs and paint them YELLOW
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
 				}
 			});
 
-
-
-			//Apply gray background for rows R9–R11, specific columns
-			for (let i = 9; i <= 11; i++) {
-
-				let columns = [
-					"pula",
-					"usd",
-					"zar",
-					"gbp",
-					"euro",
-					"jpy",
-					"rupee",
-					"renminbi",
-					"other",
-					"tot_cap_req"
-				];
-
-				columns.forEach(col => {
-
-					if (i === 9 && col === "tot_cap_req") return; // mapped from FXR — stays locked, no gray highlight
-
-
-					let selector = `#r${i}_${col}`;
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-				});
-			}
-
-
-
-
-			// Toggle buttons
-			$("#submitButton, #btnBack_edit, #cancelRecord").show();
-			$("#btnBack").hide();
-
-			// Hide the clicked Modify button
+			// ✅ Toggle buttons (removed non-existent #btnBack_edit / #btnBack)
+			$("#submitButton").show();
+			$("#cancelRecord").show();
 			$(btn).hide();
 		}
 
 
-		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
-
 		}
 
 
@@ -1172,8 +1131,9 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1183,8 +1143,8 @@ PURPOSE		: BRRS REPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+						<button type="button" class="custom-tab-btn" id="btn-format"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
@@ -1196,9 +1156,10 @@ PURPOSE		: BRRS REPORT
 					    			 data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'Details' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1216,7 +1177,7 @@ PURPOSE		: BRRS REPORT
 						<!-- Download – PDF -->
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>

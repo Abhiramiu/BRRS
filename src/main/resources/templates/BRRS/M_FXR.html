@@ -335,8 +335,9 @@ PURPOSE		: BRRSREPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -461,41 +462,41 @@ PURPOSE		: BRRSREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
-		
+
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -520,77 +521,54 @@ PURPOSE		: BRRSREPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+
 		function showmodify(btn) {
-			// Make all inputs editable
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
+
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline style)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Step 1: Enable all editable fields (skip .nonEditable)
 			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
-
-			// Highlight editable fields for rows 10 to 16
-			for (let i = 10; i <= 16; i++) {
+			// ✅ Step 2: Paint editable fields YELLOW — FX table (rows 11–16)
+			for (let i = 11; i <= 16; i++) {
 				let fields = [
 					"net_spot_position", "net_forward_position", "guarantees",
 					"net_future_inc_or_exp", "net_delta_wei_fx_opt_posi", "other_items",
 					"net_long_position", "net_short_position"
 				];
-
 				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).css({"background-color": "#d3d3d3"}); // Highlight
-					}
+					paintYellow(`#r${i}_${field}`);
 				});
 			}
-			// Highlight editable fields for rows 21 to 22
+
+			// ✅ Step 3: Paint editable fields YELLOW — Gold table (rows 21–22)
 			for (let i = 21; i <= 22; i++) {
-				let fields = [
-					"long", "short"
-				];
-
-				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).css({"background-color": "#d3d3d3"}); // Highlight
-					}
+				["long", "short"].forEach(field => {
+					paintYellow(`#r${i}_${field}`);
 				});
 			}
 
-
-			// Highlight editable fields for rows 21 to 22
-			let selector = "#r30_capital_require";
-			if ($(selector).length) { // Check if element exists
-				$(selector).css({"background-color": "#d3d3d3"}); // Highlight
-			}
-
-			// Show buttons
+			// ✅ Step 4: Toggle buttons
 			$("#submitButton").show();
-			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
-
-			// Hide the clicked Modify button
+			$("#cancelRecord").show();
 			$(btn).hide();
 		}
 
 
-		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
 
 
@@ -983,26 +961,23 @@ PURPOSE		: BRRSREPORT
 							th:if="${displaymode == 'summary'or displaymode == 'resubSummary'}">Details</button>
 
 
-						<!-- Modify button
-<button type="button" class="custom-tab-btn"
-        onclick="showmodify(this);"
-        title="Click to EDIT Records"th:if="${type != 'ARCHIVAL'}" 
-        th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-        id="addRecord">Modify</button> -->
+
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${role == 'M' and type != 'ARCHIVAL'} and ${dtltype != 'detail'}"
-							th:classappend="${session.PERMISSIONS == 'W'} and ${dtltype == 'report'} ? 'addedit'"
-							id="addRecord">
-							Modify
-						</button>
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							id="addRecord">Modify</button>
+
+
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
                    data-asondate=${asondate},
                    data-fromdate=${fromdate},
@@ -1014,9 +989,11 @@ PURPOSE		: BRRSREPORT
                    data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
+
+
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
             data-asondate=${asondate},
             data-fromdate=${fromdate},
@@ -1028,32 +1005,26 @@ PURPOSE		: BRRSREPORT
 			        data-format='email',
             data-version=${version != null ? version : ''}" style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Email
-
 						</button>
-						
+
+
 						<!-- Download – PDF -->
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>

@@ -434,8 +434,9 @@ PURPOSE		: BWRBRREPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -600,114 +601,65 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 	<script>
-		function showmodify(btn) {
-			// ✅ List of IDs that should ALWAYS remain readonly
-			var readonlyIds = [
-				"R9_STAFF_COMPLEMENT", "R10_STAFF_COMPLEMENT", "R11_STAFF_COMPLEMENT", "R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R15_STAFF_COMPLEMENT",
-				"R21_SENIOR_MANAGEMENT_COMPENSATION", "R22_SENIOR_MANAGEMENT_COMPENSATION", "R23_SENIOR_MANAGEMENT_COMPENSATION", "R24_STR21_SENIOR_MANAGEMENT_COMPENSATIONAFF_COMPLEMENT", "R25_SENIOR_MANAGEMENT_COMPENSATION", "R26_SENIOR_MANAGEMENT_COMPENSATION", "R27_SENIOR_MANAGEMENT_COMPENSATION", "R28_SENIOR_MANAGEMENT_COMPENSATION",
-				"R33_STAFF_LOANS", "R34_STAFF_LOANS", "R35_STAFF_LOANS", "R36_STAFF_LOANS", "R37_STAFF_LOANS", "R38_STAFF_LOANS",
-				"R15_LOCAL", "R15_EXPARIATES", "R9_TOTAL", "R10_TOTAL", "R11_TOTAL", "R12_TOTAL",
-				"R13_TOTAL", "R14_TOTAL", "R15_TOTAL", "R28_LOCAL", "R28_EXPARIATES", "R21_TOTAL",
-				"R22_TOTAL", "R23_TOTAL", "R24_TOTAL", "R25_TOTAL", "R26_TOTAL", "R27_TOTAL", "R28_TOTAL",
-				"R38_ORIGINAL_AMT", "R38_BALANCE_OUTSTANDING", "R38_NO_OF_ACS"
-			];
-			//"R33_INTEREST_RATE", "R34_INTEREST_RATE", "RR35_INTEREST_RATE35_STAFF_LOANS", "R36_INTEREST_RATE", "R37_INTEREST_RATE", "R38_INTEREST_RATE",
 
-			// ✅ Make all .Show_input editable except the ones in readonlyIds
+		function showmodify(btn) {
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
+
+			// ✅ List of IDs that should ALWAYS remain readonly (sum rows + labels)
+			var readonlyIds = [
+				// 8A — Staff Complement labels (R9-R15)
+				"R9_STAFF_COMPLEMENT", "R10_STAFF_COMPLEMENT", "R11_STAFF_COMPLEMENT",
+				"R12_STAFF_COMPLEMENT", "R13_STAFF_COMPLEMENT", "R15_STAFF_COMPLEMENT",
+				// 8B — Senior Management Compensation labels (R21-R28)
+				"R21_SENIOR_MANAGEMENT_COMPENSATION", "R22_SENIOR_MANAGEMENT_COMPENSATION",
+				"R23_SENIOR_MANAGEMENT_COMPENSATION", "R24_SENIOR_MANAGEMENT_COMPENSATION",
+				"R25_SENIOR_MANAGEMENT_COMPENSATION", "R26_SENIOR_MANAGEMENT_COMPENSATION",
+				"R27_SENIOR_MANAGEMENT_COMPENSATION", "R28_SENIOR_MANAGEMENT_COMPENSATION",
+				// 8C — Staff Loans labels (R33-R38)
+				"R33_STAFF_LOANS", "R34_STAFF_LOANS", "R35_STAFF_LOANS",
+				"R36_STAFF_LOANS", "R37_STAFF_LOANS", "R38_STAFF_LOANS",
+				// Totals (auto-calculated)
+				"R15_LOCAL", "R15_EXPARIATES", "R15_TOTAL",
+				"R9_TOTAL", "R10_TOTAL", "R11_TOTAL", "R12_TOTAL",
+				"R13_TOTAL", "R14_TOTAL",
+				"R28_LOCAL", "R28_EXPARIATES",
+				"R21_TOTAL", "R22_TOTAL", "R23_TOTAL", "R24_TOTAL",
+				"R25_TOTAL", "R26_TOTAL", "R27_TOTAL", "R28_TOTAL",
+				"R38_ORIGINAL_AMT", "R38_BALANCE_OUTSTANDING", "R38_NO_OF_ACS",
+				"R38_INTEREST_RATE"
+			];
+
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable editable inputs + paint YELLOW in one pass
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).prop("readonly", false).prop("disabled", false);
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
 				}
 			});
 
-			// ✅ Change background color for R9–R37 range fields
-			for (let i = 9; i <= 14; i++) {
-				let fields = [
-
-					"_LOCAL",
-					"_EXPARIATES"
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}${field}`;
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-				});
-			}
-			for (let i = 21; i <= 27; i++) {
-				let fields = [
-
-					"_LOCAL",
-					"_EXPARIATES"
-				];
-
-				fields.forEach(field => {
-					let selector = `#R${i}${field}`;
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-				});
-			}
-			for (let i = 33; i <= 37; i++) {
-				let fields = [
-					// "_LOCAL",
-					// "_EXPARIATES",
-
-					"_ORIGINAL_AMT",
-					"_BALANCE_OUTSTANDING",
-					"_NO_OF_ACS"
-				];
-
-
-				fields.forEach(field => {
-					let selector = `#R${i}${field}`;
-					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
-					}
-				});
-
-				for (let i = 33; i <= 38; i++) {
-					let fields = [
-						"_INTEREST_RATE"
-					];
-
-
-					fields.forEach(field => {
-						let selector = `#R${i}${field}`;
-						if ($(selector).length) {
-							$(selector).css("background-color", "#d3d3d3");
-						}
-					});
-				}
-
-				// ✅ Toggle buttons visibility
-				$("#submitButton").show();
-				$("#cancelRecord").show();
-				$(btn).hide(); // hide the clicked Modify button
-			}
+			// ✅ Toggle buttons (once, outside any loop)
+			$("#submitButton").show();
+			$("#cancelRecord").show();
+			$(btn).hide();
 		}
-		//Cancel / Reset function
+
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
+
 	</script>
 
 
@@ -791,20 +743,20 @@ PURPOSE		: BWRBRREPORT
 		});
 
 		function closemodel() {
-		    const modalElement = document.getElementById('resultModal');
-		    const modal = bootstrap.Modal.getInstance(modalElement);
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
 
-		    if (modal) {
-		        modal.hide();
-		    }
+			if (modal) {
+				modal.hide();
+			}
 
-		    const message = document.getElementById("resultModalBody").innerText.toLowerCase();
+			const message = document.getElementById("resultModalBody").innerText.toLowerCase();
 
-		    if (message.includes("resubmission")) {
-		        window.location.href = document.referrer;
-		    } else {
-		        location.reload();
-		    }
+			if (message.includes("resubmission")) {
+				window.location.href = document.referrer;
+			} else {
+				location.reload();
+			}
 		}
 
 	</SCRIPT>
@@ -1046,19 +998,22 @@ PURPOSE		: BWRBRREPORT
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnSummary" onclick="showsummary()"
 							th:if="${dtltype eq 'detail'}">Summary</button>
 
+
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit'"
-							th:if="${role == 'M' and type != 'ARCHIVAL' and dtltype ne 'detail'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+
+
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							           data-asondate=${asondate},
 							           data-fromdate=${fromdate},
@@ -1071,9 +1026,8 @@ PURPOSE		: BWRBRREPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							    data-asondate=${asondate},
 							    data-fromdate=${fromdate},
@@ -1090,7 +1044,7 @@ PURPOSE		: BWRBRREPORT
 
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>

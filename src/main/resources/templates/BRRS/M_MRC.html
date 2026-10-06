@@ -418,7 +418,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 			text-align: right !important;
 		}
 	</style>
-<!--
+	<!--
 	<script th:inline="javascript">
 		$(document).ready(function () {
 			var table = $('#reportdetails').DataTable({
@@ -492,8 +492,9 @@ PURPOSE		: BRRS_M_CA2REPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -803,55 +804,55 @@ PURPOSE		: BRRS_M_CA2REPORT
 		}
 
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function emailDownloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/emailDownloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
-		
+
 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
 
 		}
 		function closemodel() {
-							$("#resultModal").modal("hide");
-							$('#loader').modal('hide');
+			$("#resultModal").modal("hide");
+			$('#loader').modal('hide');
 
-							// Reload the page after a short delay to ensure the modal animation completes smoothly.
-							setTimeout(function () {
-								location.reload();
-							}, 300);
-						}
+			// Reload the page after a short delay to ensure the modal animation completes smoothly.
+			setTimeout(function () {
+				location.reload();
+			}, 300);
+		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -877,54 +878,48 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 	<script>
 		function showmodify(btn) {
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
 
+			// ⚠️ IMPORTANT: IDs must MATCH case exactly as in HTML
 			const readonlyIds = [
-				"r22_gross_income", "r35_gross_income", "r48_gross_income", "r50_aggregate_gross_income", "r51_aggregate_gross_income", "r52_aggregate_gross_income",
-				, "r53_aggregate_gross_income", "r54_aggregate_gross_income", "r55_risk_weight_factor", "r56_risk_weight_factor"
-
-
-
-
+				"R22_TOTAL", "R35_TOTAL", "R48_TOTAL",
+				"R50_TOTAL", "R51_TOTAL", "R52_TOTAL",
+				"R53_TOTAL", "R54_TOTAL",
+				"R55_TOTAL", "R56_TOTAL",
+				"R34_TOTAL",   // auto-calculated (R32 × R33)
+				"R34_TOTAL_HIDDEN"
 			];
 
-			// 🔹 Enable editing for all inputs except formula ones
-			$(".show_input, .display-input").each(function () {
+			// ✅ Helper: force YELLOW #ffef00 with !important (overrides inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable editable inputs and paint them YELLOW
+			$(".Show_input, .display-input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly")
-						.removeAttr("disabled")
-						.css({"background-color": "#d3d3d3"}); // light yellow for editable
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00, not grey
 				}
 			});
 
-
-			// ✅ Show action buttons
+			// ✅ Toggle buttons
 			$("#submitButton").show();
 			$("#cancelRecord").show();
-
-			// ✅ Hide Modify button that was clicked
 			$(btn).hide();
 		}
 
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
 
 	</script>
@@ -976,7 +971,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
-		
+
 
 
 		function fileuploads(btn) {
@@ -1071,24 +1066,24 @@ PURPOSE		: BRRS_M_CA2REPORT
 	</script>
 
 	<script>
-	function openDetail(elem, mode) {
+		function openDetail(elem, mode) {
 
-	    const type = elem.getAttribute("data-type");
-	    const acctNo = elem.getAttribute("data-acctNo");
-	    const asondate = elem.getAttribute("data-asondate");
+			const type = elem.getAttribute("data-type");
+			const acctNo = elem.getAttribute("data-acctNo");
+			const asondate = elem.getAttribute("data-asondate");
 
-	    if (type === "ARCHIVAL") {
-	        showResultModal('BRRS', "Archived Data cannot be modified");
-	        return;
-	    }
+			if (type === "ARCHIVAL") {
+				showResultModal('BRRS', "Archived Data cannot be modified");
+				return;
+			}
 
-	    if (!acctNo || acctNo === "null") {
-	        showResultModal('BRRS', "Reference Link Value Cannot be Modify");
-	        return;
-	    }
+			if (!acctNo || acctNo === "null") {
+				showResultModal('BRRS', "Reference Link Value Cannot be Modify");
+				return;
+			}
 
-	    location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
-	}
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+		}
 	</script>
 
 	<script>
@@ -1335,24 +1330,22 @@ PURPOSE		: BRRS_M_CA2REPORT
 							Details
 						</button>
 
-						<!-- Modify -->
-						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${role == 'M'  and type != 'ARCHIVAL' and displaymode == 'summary'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+						<!-- Modify button -->
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
+							title="Click to EDIT Records"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
 
-						<!-- Cancel -->
-						<button class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
-							onclick="cancelModify();">
-							Cancel
-						</button>
+
+						<!-- Cancel button (hidden initially) -->
+						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 						<!-- Download button - Summary -->
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid},
-													                   data-asondate=${asondate},
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
+							th:attr="data-reportid=${reportid}, data-asondate=${asondate},
 													                   data-fromdate=${fromdate},
 													                   data-todate=${todate},
 													                   data-currency=${currency}, 
@@ -1363,8 +1356,11 @@ PURPOSE		: BRRS_M_CA2REPORT
 							style="font-family: Arial;font-weight: bold;">
 							<i class="fa fa-download"></i> Format
 						</button>
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M')
-																			          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid},
+
+
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
+							th:attr="data-reportid=${reportid},
 																			             data-asondate=${asondate},
 																			             data-fromdate=${fromdate},
 																			             data-todate=${todate},
@@ -1377,35 +1373,31 @@ PURPOSE		: BRRS_M_CA2REPORT
 							<i class="fa fa-download"></i> Email
 						</button>
 
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+
+						<div class="nav-item dropdown PDF-download-menu"
+							style="list-style: none; display: inline-block;"
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
-								<a href="#"
-								   class="nav-link"
-								   th:attr="data-reportid=${reportid},
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											data-fromdate=${fromdate},
-											data-todate=${todate}"
-								   onclick="emailDownloadSummaryPdf(this);">
+											data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
 						</div>
 
 						<!-- Download button - Details -->
-						<button type="button" class="custom-tab-btn" th:if="${role != 'M' and  displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn"
+							th:if="${role != 'M' and  displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1465,7 +1457,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="text-align: left; padding-left: 20px; "
 													th:text="${report.R10_PRODUCT }"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-											
 													th:text="${report.R10_TOTAL != null ? #numbers.formatDecimal(report.R10_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 
@@ -1477,7 +1468,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report.R11_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-													
 													th:text="${report.R11_TOTAL != null ? #numbers.formatDecimal(report.R11_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>
@@ -1530,7 +1520,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report.R16_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-													
 													th:text="${report.R16_TOTAL != null ? #numbers.formatDecimal(report.R16_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>
@@ -1649,7 +1638,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report.R27_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-													
 													th:text="${report.R27_TOTAL != null ? #numbers.formatDecimal(report.R27_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>
@@ -1692,12 +1680,11 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 
 											<tr>
-												<td style="padding-left: 20px; text-align: center; "
-													></td>
+												<td style="padding-left: 20px; text-align: center; "></td>
 												<td style="text-align: left; padding-left: 20px;"
 													th:text="${report.R31_PRODUCT}"></td>
-												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;padding: 15px; "
-													>
+												<td
+													style="background-color: rgb(107, 122, 143); color: white; text-align: right;padding: 15px; ">
 												</td>
 											</tr>
 
@@ -1707,8 +1694,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="font-weight:bold;text-align: left;"
 													th:text="${report.R32_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-												id="R32_TOTAL"
-													name="R32_TOTAL"
+													id="R32_TOTAL" name="R32_TOTAL"
 													th:text="${report.R32_TOTAL != null ? #numbers.formatDecimal(report.R32_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>
@@ -1739,8 +1725,7 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 												<td style="background-color: rgb(107, 122, 143); 
 												           color: white; 
-												           text-align: right;"
-													id="R34_TOTAL">
+												           text-align: right;" id="R34_TOTAL">
 
 													<span th:text="${report.R34_TOTAL != null ? 
 													       #numbers.formatDecimal(report.R34_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
@@ -1748,10 +1733,8 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 												</td>
 
-												<input type="hidden"
-													   id="R34_TOTAL_HIDDEN"
-													   name="R34_TOTAL"
-													   th:value="${report.R34_TOTAL}">
+												<input type="hidden" id="R34_TOTAL_HIDDEN" name="R34_TOTAL"
+													th:value="${report.R34_TOTAL}">
 											</tr>
 
 
@@ -1767,7 +1750,6 @@ PURPOSE		: BRRS_M_CA2REPORT
 												<td style="font-weight:bold;text-align: left; "
 													th:text="${report.R36_PRODUCT}"></td>
 												<td style="background-color: rgb(107, 122, 143); color: white; text-align: right;"
-											
 													th:text="${report.R36_TOTAL != null ? #numbers.formatDecimal(report.R36_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}">
 												</td>
 											</tr>
@@ -1791,70 +1773,69 @@ PURPOSE		: BRRS_M_CA2REPORT
 					</div>
 				</div>
 
-		<div th:if="${displaymode == 'Details'}">
-				<div class="row">
-					<div class="col-sm-12" style="max-height: 90vh;">
-						<div class="table-container" style="border-right: 1px solid #dee2e6;">
-							<table class="table table-striped table-bordered table-hover" id="reportdetails">
-								<thead class="thead-light">
+				<div th:if="${displaymode == 'Details'}">
+					<div class="row">
+						<div class="col-sm-12" style="max-height: 90vh;">
+							<div class="table-container" style="border-right: 1px solid #dee2e6;">
+								<table class="table table-striped table-bordered table-hover" id="reportdetails">
+									<thead class="thead-light">
 
-									<tr>
-										<th></th>
-										<th>S No</th>
-										<th>CUST ID</th>
-										<th>ACCT NUMBER</th>
-										<th>ACCT NAME</th>
-										<th style="text-align: left;width: 250px;">ACCT BALANCE IN PULA</th>
-										<th >REPORT LABEL</th>
-										<th>REPORT ADDL CRITERIA 1</th>
-										<th>REPORT DATE</th>
-									</tr>
+										<tr>
+											<th></th>
+											<th>S No</th>
+											<th>CUST ID</th>
+											<th>ACCT NUMBER</th>
+											<th>ACCT NAME</th>
+											<th style="text-align: left;width: 250px;">ACCT BALANCE IN PULA</th>
+											<th>REPORT LABEL</th>
+											<th>REPORT ADDL CRITERIA 1</th>
+											<th>REPORT DATE</th>
+										</tr>
 
-								</thead>
+									</thead>
 
-								<tbody style="font-family: Arial;">
-									<tr th:each="report, srlno : ${reportdetails}">
-										<td><a data-toggle="tooltip" class="editrec" title="Click to Edit this Record">
-											<i class="fas fa-edit"
-											   style="color: black; cursor: pointer;"
-											   th:attr="data-acctNo=${report.acctNumber},
+									<tbody style="font-family: Arial;">
+										<tr th:each="report, srlno : ${reportdetails}">
+											<td><a data-toggle="tooltip" class="editrec"
+													title="Click to Edit this Record">
+													<i class="fas fa-edit" style="color: black; cursor: pointer;"
+														th:attr="data-acctNo=${report.acctNumber},
 											            data-asondate=${#dates.format(report.reportDate,'dd-MM-yyyy')},
-											            data-type=${type}"
-											   onclick="openDetail(this, 'edit')">
-											</i>
+											            data-type=${type}" onclick="openDetail(this, 'edit')">
+													</i>
 
-											</a></td>
-										<td th:text="${srlno.index + 1}"></td>
-										<td th:text="${report.custId != null ? report.custId : '-'}"></td>
-										<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
-										<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
-										<td style="text-align:right;"
-											th:text="${report.acctBalanceInpula != null ? #numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT') : '0'}">
-										</td>
+												</a></td>
+											<td th:text="${srlno.index + 1}"></td>
+											<td th:text="${report.custId != null ? report.custId : '-'}"></td>
+											<td th:text="${report.acctNumber != null ? report.acctNumber : '-'}"></td>
+											<td th:text="${report.acctName != null ? report.acctName : '-'}"></td>
+											<td style="text-align:right;"
+												th:text="${report.acctBalanceInpula != null ? #numbers.formatDecimal(report.acctBalanceInpula,1,'COMMA',0,'POINT') : '0'}">
+											</td>
 
-										<td style="text-align: left;"
-											th:text="${report.reportLabel != null ? report.reportLabel : '-'}"></td>
-										<td
-											th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
-										</td>
-										<td
-											th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}">
-										</td>
-									</tr>
-								</tbody>
-							</table>
+											<td style="text-align: left;"
+												th:text="${report.reportLabel != null ? report.reportLabel : '-'}"></td>
+											<td
+												th:text="${report.reportAddlCriteria1 != null ? report.reportAddlCriteria1 : '-'}">
+											</td>
+											<td
+												th:text="${report.reportDate != null ? #dates.format(report.reportDate, 'dd-MM-yyyy') : '-'}">
+											</td>
+										</tr>
+									</tbody>
+								</table>
 
-						</div>
+							</div>
 
-						<!-- Submit Button -->
-						<div style="text-align: center; margin-top: 15px; background-color: white;">
-							<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-								onclick="updateform();" style="display: none;">Submit</button>
+							<!-- Submit Button -->
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									onclick="updateform();" style="display: none;">Submit</button>
+							</div>
 						</div>
 					</div>
-				</div>
 
-			</div>
+				</div>
 
 			</div>
 
@@ -1956,44 +1937,43 @@ PURPOSE		: BRRS_M_CA2REPORT
 
 
 	<!-- Custom Alert/Result Modal (Matches your existing style) -->
-				<div class="modal fade" id="resultModal">
-					<div class="modal-dialog modal-dialog-centered">
-						<div class="modal-content">
-							<!-- Your custom styled header -->
-							<div class="menu-title-header">
-								<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-									<!-- Title will be set by JavaScript -->
-								</div>
-							</div>
-							<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-								<p id="resultModalBody"></p>
-								<!-- Your custom styled button -->
-								<button type="button" class="custom-tab-btn" onclick="closemodel()"
-									data-dismiss="modal">Ok</button>
-							</div>
-						</div>
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
 					</div>
 				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
-				<div class="modal fade" id="resultModal1">
-						<div class="modal-dialog modal-dialog-centered">
-							<div class="modal-content">
-								<!-- Your custom styled header -->
-								<div class="menu-title-header">
-									<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
-										<!-- Title will be set by JavaScript -->
-									</div>
-								</div>
-								<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-									<p id="resultModalBody1"></p>
-									<!-- Your custom styled button -->
-									<button type="button" class="custom-tab-btn" onclick="closemodels()"
-										data-dismiss="modal">Ok</button>
-								</div>
-							</div>
-						</div>
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
 					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Custom Cellresult Modal -->
 	<div class="modal fade" id="cellresultModal">

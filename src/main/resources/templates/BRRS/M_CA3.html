@@ -1041,8 +1041,7 @@ PURPOSE		: BRRS MANUAL REPORT
 						<!-- Format Download -->
 						<button type="button" class="custom-tab-btn" id="btn-format"
 							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
-							th:attr="data-reportid=${reportid}, 
-data-asondate=${asondate}, 
+							th:attr="data-reportid=${reportid}, data-asondate=${asondate}, 
 data-fromdate=${fromdate}, 
 data-todate=${todate}, 
 data-currency=${currency},  

@@ -385,10 +385,10 @@ PURPOSE		: BRRS REPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
-
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
@@ -450,111 +450,55 @@ PURPOSE		: BRRS REPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+
 		function showmodify(btn) {
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
 
-
-
+			// ---- Readonly IDs (auto-calculated sum rows + labels) ----
 			var readonlyIds = [];
 
-			// 🔸 r10, r14, r28, r37, r40, r43, r48, r52, r56, r63 
+			// Sum rows — these are auto-calculated
 			const specificRows = [10, 14, 28, 37, 40, 43, 48, 52, 56, 63];
 			const specificCols = ["collateral_amount", "carrying_amount", "no_of_accts"];
-
 			specificRows.forEach(i => {
-				specificCols.forEach(col => {
-					readonlyIds.push(`r${i}_${col}`);
-				});
+				specificCols.forEach(col => readonlyIds.push(`r${i}_${col}`));
 			});
 
-			// 🔸 r10–r63 → rene_loans
+			// Label fields
 			for (let i = 10; i <= 63; i++) {
 				readonlyIds.push(`r${i}_rene_loans`);
 			}
 
-			// 🔸 Make all .Show_input editable except those in readonlyIds
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// ✅ Enable editable inputs + paint YELLOW in one pass
 			$(".Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);   // ✅ YELLOW #ffef00
 				}
 			});
 
-
-
-
-			// ✅ Apply gray background for specified row ranges and columns
-			$(document).ready(function () {
-				const targetColumns = [
-					"collateral_amount",
-					"carrying_amount",
-					"no_of_accts"
-				];
-
-				// Define all target row ranges
-				const targetRanges = [
-					[11, 13],
-					[15, 27],
-					[29, 36],
-					[38, 39],
-					[41, 42],
-					[44, 47],
-					[49, 51],
-					[53, 55],
-					[57, 62]
-				];
-
-				// Loop through each range
-				targetRanges.forEach(([start, end]) => {
-					for (let i = start; i <= end; i++) {
-						targetColumns.forEach(col => {
-							const selector = `#r${i}_${col}`;
-							if ($(selector).length) {
-								$(selector).css("background-color", "#d3d3d3");
-							}
-						});
-					}
-				});
-			});
-
-			$("#r48_new_column_collateral_amount,#r48_new_column_no_of_accts,#r48_new_column_carrying_amount").css("background-color", "#d3d3d3");
-			$("#r27_new_column_collateral_amount,#r27_new_column_no_of_accts,#r27_new_column_carrying_amount").css("background-color", "#d3d3d3");
-			$("#r42_new_column_collateral_amount,#r42_new_column_no_of_accts,#r42_new_column_carrying_amount").css("background-color", "#d3d3d3");
-
-			// Toggle buttons 
-
+			// ✅ Toggle buttons
 			$("#submitButton").show();
 			$("#cancelRecord").show();
 			$(btn).hide();
-			// hide the clicked Modify button
 		}
 
-		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
-
 		}
-
 
 
 	</script>
@@ -608,66 +552,66 @@ PURPOSE		: BRRS REPORT
 
 
 		function downloadfile(button) {
-			    var reportid = button.getAttribute('data-reportid');
-			    var asondate = button.getAttribute('data-asondate');
-			    var fromdate = button.getAttribute('data-fromdate');
-			    var todate = button.getAttribute('data-todate');
-			    var currency = button.getAttribute('data-currency');
-			    var subreportid = button.getAttribute('data-subreportid');
-			    var secid = button.getAttribute('data-secid');
-			    var dtltype = button.getAttribute('data-dtltype');
-			    var filename = button.getAttribute('data-filename');
-			    var type = button.getAttribute('data-type');
-			    var version = button.getAttribute('data-version');
-			    var format = button.getAttribute('data-format');
+			var reportid = button.getAttribute('data-reportid');
+			var asondate = button.getAttribute('data-asondate');
+			var fromdate = button.getAttribute('data-fromdate');
+			var todate = button.getAttribute('data-todate');
+			var currency = button.getAttribute('data-currency');
+			var subreportid = button.getAttribute('data-subreportid');
+			var secid = button.getAttribute('data-secid');
+			var dtltype = button.getAttribute('data-dtltype');
+			var filename = button.getAttribute('data-filename');
+			var type = button.getAttribute('data-type');
+			var version = button.getAttribute('data-version');
+			var format = button.getAttribute('data-format');
 
-			    if (format === null) {
-			        format = '';   // treat as null
-			    }
-
-			    $('#loader').modal('show');
-
-			    $.ajax({
-			        url: './downloadExcel?reportid=' + reportid +
-			             '&fromdate=' + fromdate +
-			             '&asondate=' + asondate +
-			             '&todate=' + todate +
-			             '&currency=' + currency +
-			             '&subreportid=' + subreportid +
-			             '&secid=' + secid +
-			             '&filename=' + filename +
-			             '&type=' + type +
-			             '&version=' + version +
-			             '&format=' + format,
-			        type: 'GET',
-			        xhrFields: {
-			            responseType: 'blob'
-			        },
-			        success: function (data) {
-			            $('#loader').modal('hide');
-			            if (data && data.size > 100) {
-			                const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
-			                const url = window.URL.createObjectURL(blob);
-			                const a = document.createElement('a');
-			                a.style.display = 'none';
-			                a.href = url;
-			                a.download = filename;
-			                document.body.appendChild(a);
-			                a.click();
-			                window.URL.revokeObjectURL(url);
-			                document.body.removeChild(a);
-			                showResultModal('BRRS', filename + ' downloaded successfully.');
-			            } else {
-			                showResultModal('Information', 'No data was available to create a download.');
-			            }
-			        },
-			        error: function () {
-			            $('#loader').modal('hide');
-			            showResultModal('Error', 'An error occurred while downloading the file.');
-			        }
-			    });
+			if (format === null) {
+				format = '';   // treat as null
 			}
-			
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './downloadExcel?reportid=' + reportid +
+					'&fromdate=' + fromdate +
+					'&asondate=' + asondate +
+					'&todate=' + todate +
+					'&currency=' + currency +
+					'&subreportid=' + subreportid +
+					'&secid=' + secid +
+					'&filename=' + filename +
+					'&type=' + type +
+					'&version=' + version +
+					'&format=' + format,
+				type: 'GET',
+				xhrFields: {
+					responseType: 'blob'
+				},
+				success: function (data) {
+					$('#loader').modal('hide');
+					if (data && data.size > 100) {
+						const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+						const url = window.URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.style.display = 'none';
+						a.href = url;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						window.URL.revokeObjectURL(url);
+						document.body.removeChild(a);
+						showResultModal('BRRS', filename + ' downloaded successfully.');
+					} else {
+						showResultModal('Information', 'No data was available to create a download.');
+					}
+				},
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModal('Error', 'An error occurred while downloading the file.');
+				}
+			});
+		}
+
 		function downloadSummaryPdf(element) {
 			var reportid = element.getAttribute('data-reportid');
 			var fromdate = element.getAttribute('data-fromdate');
@@ -1282,8 +1226,9 @@ PURPOSE		: BRRS REPORT
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -1291,13 +1236,8 @@ PURPOSE		: BRRS REPORT
 
 
 
-
-
-
-
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 						                   data-asondate=${asondate},
 						                   data-fromdate=${fromdate},
@@ -1311,9 +1251,8 @@ PURPOSE		: BRRS REPORT
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
-							onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M') or displaymode == 'resub'}"
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'detail' or displaymode == 'resub') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 						            data-asondate=${asondate},
 						            data-fromdate=${fromdate},
@@ -1325,11 +1264,12 @@ PURPOSE		: BRRS REPORT
 						            data-format='email',
 						            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> Email
-
 						</button>
+
+
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>

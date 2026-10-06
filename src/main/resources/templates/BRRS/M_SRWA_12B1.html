@@ -393,8 +393,9 @@ PURPOSE		: BRRS_M_SRWA_12B_REPORT
 					}
 
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll(
+							"#btn-format, #btn-email, .PDF-download-menu"
+						).forEach(el => el.style.display = "none");
 					}
 
 				},
@@ -607,255 +608,147 @@ PURPOSE		: BRRS_M_SRWA_12B_REPORT
 
 	</script>
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+
+		// ==========================================
+		// ✅ Show Modify (enable inputs & highlight YELLOW)
+		// ==========================================
 		function showmodify(btn) {
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
+
+			// ✅ Helper: force YELLOW #ffef00 with !important (beats inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #ffef00 !important;";
+					});
+				}
+			}
+
+			// Lock everything first
 			$(".Show_input").prop("readonly", true).prop("disabled", true);
 
+			// ---- Common field lists ----
+			const commonFields = [
+				"exp_bef_crm",
+				"spec_prov_past_due_exp",
+				"amt_eli_bal_sheet_net",
+				"exp_eli_noncol_exp_crm_subapr",
+				"guan_noncol_exp_crm_subapr",
+				"cre_deri_noncol_exp_crm_subapr",
+				"riskweights_rwa_noncol_exp_crm_subapr",
+				"value",
+				"expeli_colexp_crm_comapr",
+				"exp_aft_voladj_colexp_crm_comapr",
+				"cash_efc_haircuts_colexp_crm_comapr",
+				"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
+				"debt_secu_efc_haircuts_colexp_crm_comapr",
+				"equities_efc_haircuts_colexp_crm_comapr",
+				"u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
+			];
 
-			// Highlight editable fields for rows 15 to 51
+			const offbalFields = [
+				"nom_prin_amt",
+				"cre_con_fac",
+				"ceaeli_coun_bi_net",
+				"ceaeli_crm_subapr",
+				"guan_noncol_offbal_exp_crm_subapr",
+				"cre_deri_noncol_offbal_exp_crm_subapr",
+				"ceaeli_colexp_crm_comapr",
+				"cea_aft_voladj_colexp_crm_comapr",
+				"cash_elifin_col_haircuts_colexp_crm_comapr",
+				"tresbills_elifin_col_haircuts_colexp_crm_comapr",
+				"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
+				"equitis_elifin_col_haircuts_colexp_crm_comapr",
+				"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
+			];
+
+			// ---- Row-range 1: 15–50 (skip locked rows) ----
+			const skip1 = [21, 34, 49, 25, 26, 27, 38, 39, 41, 42];
 			for (let i = 15; i <= 50; i++) {
-
-				if (i == 21 || i == 34 || i == 49 || i == 25 || i == 26 || i == 27 || i == 38 || i == 39 || i == 41 || i == 42) {
-					continue;
-				}
-				let fields = [
-					"exp_bef_crm",
-					"spec_prov_past_due_exp",
-					"amt_eli_bal_sheet_net",
-					"exp_eli_noncol_exp_crm_subapr",
-					"guan_noncol_exp_crm_subapr",
-					"cre_deri_noncol_exp_crm_subapr",
-					"riskweights_rwa_noncol_exp_crm_subapr",
-					"value",
-					"expeli_colexp_crm_comapr",
-					"exp_aft_voladj_colexp_crm_comapr",
-					"cash_efc_haircuts_colexp_crm_comapr",
-					"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-					"debt_secu_efc_haircuts_colexp_crm_comapr",
-					"equities_efc_haircuts_colexp_crm_comapr",
-					"u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
-				];
-
-				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).prop("readonly", false)
-							.prop("disabled", false).css({"background-color": "#d3d3d3"}); // Highlight
+				if (skip1.includes(i)) continue;
+				commonFields.forEach(field => {
+					const selector = `#r${i}_${field}`;
+					const $el = $(selector);
+					if ($el.length) {
+						$el.prop("readonly", false).prop("disabled", false);
+						paintYellow(selector);   // ✅ YELLOW #ffef00
 					}
 				});
 			}
 
+			// ---- Row-range 2: 51–89 (skip locked rows) ----
+			const skip2 = [53, 54, 55, 66, 67, 68, 78, 85, 74, 79, 80, 89];
 			for (let i = 51; i <= 89; i++) {
-
-				if (i == 53 || i == 54 || i == 55 || i == 66 || i == 67 || i == 68 || i == 78 || i == 85 || i == 74 || i == 79 || i == 80 || i == 89) {
-					continue;
-				}
-
-				let fields = [
-					"exp_bef_crm",
-					"spec_prov_past_due_exp",
-					"amt_eli_bal_sheet_net",
-					"exp_eli_noncol_exp_crm_subapr",
-					"guan_noncol_exp_crm_subapr",
-					"cre_deri_noncol_exp_crm_subapr",
-					"riskweights_rwa_noncol_exp_crm_subapr",
-					"value",
-					"expeli_colexp_crm_comapr",
-					"exp_aft_voladj_colexp_crm_comapr",
-					"cash_efc_haircuts_colexp_crm_comapr",
-					"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-					"debt_secu_efc_haircuts_colexp_crm_comapr",
-					"equities_efc_haircuts_colexp_crm_comapr",
-					"u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
-				];
-
-				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).prop("readonly", false)
-							.prop("disabled", false).css({"background-color": "#d3d3d3"}); // Highlight
+				if (skip2.includes(i)) continue;
+				commonFields.forEach(field => {
+					const selector = `#r${i}_${field}`;
+					const $el = $(selector);
+					if ($el.length) {
+						$el.prop("readonly", false).prop("disabled", false);
+						paintYellow(selector);   // ✅ YELLOW #ffef00
 					}
 				});
 			}
 
-
+			// ---- Row-range 3: 92–129 (skip locked rows) ----
+			const skip3 = [94, 98, 99, 100, 104, 110, 111, 112, 114, 118, 119, 128, 129];
 			for (let i = 92; i <= 129; i++) {
-
-				if (i == 94 || i == 98 || i == 99 || i == 100 || i == 104 || i == 110 || i == 111 || i == 112 || i == 114 || i == 118 || i == 119 || i == 128 || i == 129) {
-					continue;
-				}
-
-				let fields = ["exp_bef_crm",
-					"spec_prov_past_due_exp",
-					"amt_eli_bal_sheet_net",
-					"exp_eli_noncol_exp_crm_subapr",
-					"guan_noncol_exp_crm_subapr",
-					"cre_deri_noncol_exp_crm_subapr",
-					"riskweights_rwa_noncol_exp_crm_subapr",
-					"value",
-					"expeli_colexp_crm_comapr",
-					"exp_aft_voladj_colexp_crm_comapr",
-					"cash_efc_haircuts_colexp_crm_comapr",
-					"tresbills_bot_bob_efc_haircuts_colexp_crm_comapr",
-					"debt_secu_efc_haircuts_colexp_crm_comapr",
-					"equities_efc_haircuts_colexp_crm_comapr",
-					"u_trust_m_funds_efc_haircuts_colexp_crm_comapr"
-				];
-
-				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).prop("readonly", false)
-							.prop("disabled", false).css({"background-color": "#d3d3d3"}); // Highlight
+				if (skip3.includes(i)) continue;
+				commonFields.forEach(field => {
+					const selector = `#r${i}_${field}`;
+					const $el = $(selector);
+					if ($el.length) {
+						$el.prop("readonly", false).prop("disabled", false);
+						paintYellow(selector);   // ✅ YELLOW #ffef00
 					}
 				});
 			}
 
-			let selector = "#r129_last_value";
-			if ($(selector).length) { // Check if element exists
-				$(selector).prop("readonly", false)
-					.prop("disabled", false).css({"background-color": "#d3d3d3"}); // Highlight
+			// ---- Special field: r129_last_value ----
+			const lastValSel = "#r129_last_value";
+			if ($(lastValSel).length) {
+				$(lastValSel).prop("readonly", false).prop("disabled", false);
+				paintYellow(lastValSel);   // ✅ YELLOW #ffef00
 			}
 
+			// ---- Row-range 4: 139–244 (skip locked rows) ----
+			const skip4 = [139, 147, 157, 165, 173, 181, 189, 213, 221, 229, 237];
 			for (let i = 139; i <= 244; i++) {
-
-				if (i == 139 || i == 147 || i == 157 || i == 165 || i == 173 || i == 181 || i == 189 || i == 213 || i == 221 || i == 229 || i == 237) {
-					continue;
-				}
-
-				let fields = ["nom_prin_amt",
-					"cre_con_fac",
-					"ceaeli_coun_bi_net",
-					"ceaeli_crm_subapr",
-					"guan_noncol_offbal_exp_crm_subapr",
-					"cre_deri_noncol_offbal_exp_crm_subapr",
-					"ceaeli_colexp_crm_comapr",
-					"cea_aft_voladj_colexp_crm_comapr",
-					"cash_elifin_col_haircuts_colexp_crm_comapr",
-					"tresbills_elifin_col_haircuts_colexp_crm_comapr",
-					"debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-					"equitis_elifin_col_haircuts_colexp_crm_comapr",
-					"u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr"
-				];
-
-				fields.forEach(field => {
-					let selector = `#r${i}_${field}`; // ✅ Corrected: backticks for template literal
-					if ($(selector).length) {        // Check if element exists
-						$(selector).prop("readonly", false)
-							.prop("disabled", false).css({"background-color": "#d3d3d3"}); // Highlight
+				if (skip4.includes(i)) continue;
+				offbalFields.forEach(field => {
+					const selector = `#r${i}_${field}`;
+					const $el = $(selector);
+					if ($el.length) {
+						$el.prop("readonly", false).prop("disabled", false);
+						paintYellow(selector);   // ✅ YELLOW #ffef00
 					}
 				});
 			}
 
+			// ---- Email column (dynamic) ----
+			$(".new_email_column").each(function () {
+				$(this).prop("readonly", false).prop("disabled", false);
+				paintYellow("#" + this.id || ".new_email_column");
+			});
 
-
-
-			$(".new_email_column").prop("readonly", false)
-				.prop("disabled", false).css({"background-color": "#d3d3d3"});
-
-			/*
-			// Define your row ranges and suffix lists
-			const rowRanges = [
-				{ start: 15, end: 129 },   // first range
-				{ start: 140, end: 244 }   // second range
-			];
-		
-			const suffixes1 = [
-				"_exp_bef_crm", "_spec_prov_past_due_exp", "_amt_eli_bal_sheet_net",
-				"_tot_exp_aft_net", "_exp_eli_noncol_exp_crm_subapr", "_guan_noncol_exp_crm_subapr",
-				"_cre_deri_noncol_exp_crm_subapr", "_exp_cov_crm_noncol_exp_crm_subapr",
-				"_eliexp_notcov_crm_noncol_exp_crm_subapr", "_riskweights_rwa_noncol_exp_crm_subapr",
-				"_rwa_cov_crm_rwa_noncol_exp_crm_subapr", "_rw_oricount_rwa_noncol_exp_crm_subapr",
-				"_rwa_notcov_crm_rwa_noncol_exp_crm_subapr", "_value", "_expeli_colexp_crm_comapr",
-				"_exp_aft_voladj_colexp_crm_comapr", "_cash_efc_haircuts_colexp_crm_comapr",
-				"_tresbills_bot_bob_efc_haircuts_colexp_crm_comapr", "_debt_secu_efc_haircuts_colexp_crm_comapr",
-				"_equities_efc_haircuts_colexp_crm_comapr", "_u_trust_m_funds_efc_haircuts_colexp_crm_comapr",
-				"_totcol_aft_hc_efc_haircuts_colexp_crm_comapr", "_exp_efc_haircuts_colexp_crm_comapr",
-				"_rwa_exp_notcov_crm_rwa", "_unsecu_exp_credit_risk_rwa", "_rwa_unsecu_exp_rwa", "_tot_rwa"
-			];
-		
-			const suffixes2 = [
-				"_nom_prin_amt", "_cre_con_fac", "_cre_equ_amt", "_ceaeli_coun_bi_net",
-				"_cea_aft_net", "_ceaeli_crm_subapr", "_guan_noncol_offbal_exp_crm_subapr",
-				"_cre_deri_noncol_offbal_exp_crm_subapr", "_exp_covcrm_noncol_offbal_exp_crm_subapr",
-				"_exp_notcovcrm_noncol_offbal_exp_crm_subapr", "_rwa_exp_rwa_noncol_offbal_exp_crm_subapr",
-				"_rwa_exp_notcov_rwa_noncol_offbal_exp_crm_subapr", "_ceaeli_colexp_crm_comapr",
-				"_cea_aft_voladj_colexp_crm_comapr", "_cash_elifin_col_haircuts_colexp_crm_comapr",
-				"_tresbills_elifin_col_haircuts_colexp_crm_comapr", "_debt_secu_elifin_col_haircuts_colexp_crm_comapr",
-				"_equitis_elifin_col_haircuts_colexp_crm_comapr", "_u_trust_m_funds_elifin_col_haircuts_colexp_crm_comapr",
-				"_totcol_aft_hc_elifin_col_haircuts_colexp_crm_comapr", "_cea_aftcrm_elifin_col_haircuts_colexp_crm_comapr",
-				"_rwa_cea_notcov_crm_rwa", "_unsecu_cea_credit_risk_rwa", "_rwa_unsecu_cea_rwa", "_tot_rwa"
-			];
-		
-			// 🎯 Loop for first set of rows (15–129) with suffixes1
-			for (let i = rowRanges[0].start; i <= rowRanges[0].end; i++) {
-				suffixes1.forEach(suffix => {
-					const selector = `#r${i}${suffix}`;
-					if ($(selector).length) {
-						$(selector).css({ "background-color": "#d3d3d3" });
-					}
-				});
-			}
-		
-			// 🎯 Loop for second set of rows (140–244) with suffixes2
-			for (let i = rowRanges[1].start; i <= rowRanges[1].end; i++) {
-				suffixes2.forEach(suffix => {
-					const selector = `#r${i}${suffix}`;
-					if ($(selector).length) {
-						$(selector).css({ "background-color": "#d3d3d3" });
-					}
-				});
-			}
-		
-			// 🎯 Add single special field highlight (r129_last_value)
-			const specialCell = "#r129_last_value";
-			if ($(specialCell).length) {
-				$(specialCell).css({ "background-color": "#d3d3d3" });
-			}    
-		    
-			*/
-			// Toggle buttons
-			//$("#submitButton").show();
+			// ---- Toggle buttons ----
 			$("#submitButton").prop("disabled", false).show();
-
-			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
 			$(btn).hide();
 		}
 
 
-		//Cancel / Reset function
+		// ==========================================
+		// ✅ Cancel / Reset
+		// ==========================================
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").prop("readonly", true).prop("disabled", true);
-
-				/*  for (let i = 11; i <= 50; i++) {
-					  $("#R" + i + "_TYPE_OF_ACC_TEXT").show();
-					  $("#R" + i + "_PURPOSE_TEXT").show();
-					  $("#R" + i + "_CURRENCY_TEXT").show();
-		  
-					  $("#R" + i + "_TYPE_OF_ACC").hide();
-					  $("#R" + i + "_PURPOSE").hide();
-					  $("#R" + i + "_CURRENCY").hide();
-				  }*/
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
+
 	</script>
 	<SCRIPT>
 		//Calculating Totals for 15'th row
@@ -26323,59 +26216,66 @@ function showdetailsbyRowAndColumn(a) {
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${ role == 'M' and type != 'ARCHIVAL' and displaymode == 'summary' }"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
+							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and dtltype ne 'detail'}"
 							id="addRecord">Modify</button>
+
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 
-
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd nnnnn" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' )
-																						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='M_SRWA_12B.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
+						<!-- Format Download -->
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this);"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
+							th:attr="data-reportid=${reportid},
+							             data-asondate=${asondate},
+							             data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-currency=${currency},
+							             data-dtltype=${dtltype},
+							             data-filename='M_SRWA_12B.xlsx',
+							             data-type=${type},
+							             data-version=${version}">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary' or (displaymode == 'detail' and role != 'M' )
-																						          or displaymode == 'resubSummary' or displaymode == 'resubDetail'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${'email'}, 
-					 data-format='email',
-                     data-filename='M_SRWA_12B_EMAIL.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
+
+						<!-- Email Download -->
+						<button type="button" class="custom-tab-btn" id="btn-email" onclick="downloadfile(this);"
+							th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') and role != 'M'}"
+							th:attr="data-reportid=${reportid},
+							             data-asondate=${asondate},
+							             data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-currency=${currency},
+							             data-dtltype='email',
+							             data-format='email',
+							             data-filename='M_SRWA_12B_EMAIL.xlsx',
+							             data-type=${type},
+							             data-version=${version}">
 							<i class="fa fa-download"></i> Email
 						</button>
 
+
+						<!-- PDF Download dropdown -->
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
 							<div class="dropdown-menu">
 								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
-							 data-fromdate=${fromdate},
-							 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
+							                     data-fromdate=${fromdate},
+							                     data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 								<div class="dropdown-divider"></div>
 								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
-							data-fromdate=${fromdate},
-							data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
+							                     data-fromdate=${fromdate},
+							                     data-todate=${todate}" onclick="emailDownloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
 								</a>
 							</div>
@@ -77981,16 +77881,18 @@ px; background-color:lightgrey;"></th>
 														</script> -->
 
 <style>
-	/* Your existing CSS - this is the correct approach */
+	/* ==========================================
+														       ✅ Scrollable table container
+														       ========================================== */
 	.scrollable-table-container {
-		/* This is the key: it creates the scroll context */
 		min-height: 630px;
-		/* Or a suitable height like 80vh for responsive design */
 		overflow-y: auto;
 		border: 1px solid #ccc;
 	}
 
-	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	/* ==========================================
+														       ✅ Sticky headers (multi-row thead)
+														       ========================================== */
 	.scrollable-table-container thead tr:nth-child(1) th {
 		position: sticky;
 		top: 0;
@@ -78001,7 +77903,6 @@ px; background-color:lightgrey;"></th>
 	.scrollable-table-container thead tr:nth-child(2) th {
 		position: sticky;
 		top: 36px;
-		/* adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 4;
 	}
@@ -78009,7 +77910,6 @@ px; background-color:lightgrey;"></th>
 	.scrollable-table-container thead tr:nth-child(3) th {
 		position: sticky;
 		top: 72px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 3;
 	}
@@ -78017,7 +77917,6 @@ px; background-color:lightgrey;"></th>
 	.scrollable-table-container thead tr:nth-child(4) th {
 		position: sticky;
 		top: 100px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 2;
 	}
@@ -78025,34 +77924,32 @@ px; background-color:lightgrey;"></th>
 	.scrollable-table-container thead tr:nth-child(5) th {
 		position: sticky;
 		top: 135px;
-		/* Adjust based on row height */
 		background-color: #b3b6b9;
 		z-index: 1;
 	}
-</style>
 
-
-<style>
+	/* ==========================================
+														       ✅ Inner wrapper
+														       ========================================== */
 	.inner {
 		max-height: 600px;
-		/* Adjust height as needed */
 		overflow: auto;
 		border: 1px solid #dee2e6;
 	}
 
-	/* Sticky thead */
+	/* ==========================================
+														       ✅ Sticky #reports thead
+														       ========================================== */
 	#reports thead th {
 		position: sticky;
 		top: 0;
 		background-color: #D8D8D8;
-		/* Match Bootstrap thead-light */
 		z-index: 2;
-
-
-
 	}
 
-
+	/* ==========================================
+														       ✅ DataTables pagination / info
+														       ========================================== */
 	div.dataTables_wrapper div.dataTables_paginate {
 		text-align: right !important;
 		float: right !important;
@@ -78060,7 +77957,6 @@ px; background-color:lightgrey;"></th>
 		margin-top: 10px;
 	}
 
-	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
 	div.dataTables_wrapper div.dataTables_info {
 		float: left !important;
 		margin-top: 10px;
@@ -78083,20 +77979,24 @@ px; background-color:lightgrey;"></th>
 		color: #2a4a5c;
 	}
 
+	/* ==========================================
+														       ✅ Misc
+														       ========================================== */
 	.form-select {
 		display: inline-block;
 		width: auto;
 	}
 
-	}
-
+	/* ==========================================
+														       ✅ Fallback: header row background
+														       (merged from bottom of your original)
+														       ========================================== */
 	.scrollable-table-container thead tr:nth-child(1),
 	.scrollable-table-container thead tr:nth-child(2),
 	.scrollable-table-container thead tr:nth-child(3),
 	.scrollable-table-container thead tr:nth-child(4),
 	.scrollable-table-container thead tr:nth-child(5) {
 		background-color: #D8D8D8;
-		/* set header color */
 	}
 </style>
 
