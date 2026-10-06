@@ -623,7 +623,7 @@ function showmodify(btn) {
         columns.forEach(col => {
             let selector = `#r${i}_${col}`;
             if ($(selector).length) {
-                $(selector).css("background-color", "#ffef00");
+                $(selector).css("background-color", "#FFF59D");
             }
         });
     }
@@ -631,7 +631,7 @@ function showmodify(btn) {
     // Apply gray background to only r10_tot_amt and r11_tot_amt
     ["#r10_tot_amt", "#r11_tot_amt"].forEach(selector => {
         if ($(selector).length) {
-            $(selector).css("background-color", "#ffef00");
+            $(selector).css("background-color", "#FFF59D");
         }
     });
 
