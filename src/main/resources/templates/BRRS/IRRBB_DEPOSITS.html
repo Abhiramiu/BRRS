@@ -360,24 +360,24 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// Maker-Checker: Checkers cannot modify, Makers cannot download
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
-
+					// Checkers -> hide Modify button
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
+						const modifyBtn = document.getElementById("modifyBtn");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						const addRecord = document.getElementById("addRecord");
+						if (addRecord) addRecord.style.display = "none";
 					}
 
+					// Makers -> hide all download buttons
 					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+						document.querySelectorAll("#btn-format, #btn-detail, .PDF-download-menu, #btn-pdf, #custom-tab-btnAdd").forEach(el => el.style.display = "none");
 					}
-
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
@@ -830,8 +830,8 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 							th:if="${displaymode == 'resubSummary'}">Details</button>
 
 						<!-- FORMAT Download Button -->
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
+						<button type="button" class="custom-tab-btn" id="btn-format" onclick="downloadfile(this)"
+							th:if="${(displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary') and role != 'M'}"
 							th:attr="data-reportid=${reportid},
 							        data-asondate=${asondate},
 							        data-fromdate=${fromdate},
@@ -846,9 +846,9 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 						</button>
 
 						<!-- PDF Download Dropdown -->
-						<div class="nav-item dropdown PDF-download-menu"
+						<div class="nav-item dropdown PDF-download-menu" id="btn-pdf"
 							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'Details' or displaymode == 'archivalSummary'}">
+							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'Details' or displaymode == 'archivalSummary') and role != 'M'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown"
 								style="font-family: Arial; font-weight: bold;">
 								<i class="fa fa-download"></i> PDF
@@ -870,7 +870,8 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 
 						<!-- MODIFY / CANCEL BUTTONS-->
 						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary'}"
+							th:if="${(role == 'M' or role == 'MAN') and (displaymode == 'summary' or displaymode == 'resubSummary')}"
+							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							title="Click to EDIT Records">
 							Modify
 						</button>
@@ -1767,7 +1768,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 				$('input.editable-cell').each(function () {
 					$(this).removeAttr('readonly');
 					$(this).css({
-						'background-color': '#d3d3d3',
+						'background-color': '#FFF59D',
 						'border': 'none',
 						'outline': 'none',
 						'padding': '2px 5px'
@@ -1777,7 +1778,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 				$('select.editable-cell').each(function () {
 					$(this).removeAttr('disabled');
 					$(this).css({
-						'background-color': '#d3d3d3',
+						'background-color': '#FFF59D',
 						'border': 'none',
 						'outline': 'none',
 						'padding': '2px 5px',
@@ -1889,7 +1890,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 </body>
 
 <style>
-	/* Table Hover & Cell Styling from M_SIR */
+	/* Table Hover & Cell Styling */
 	.table-hover tbody tr:hover {
 		background-color: #f3f6f9 !important;
 	}
@@ -1980,9 +1981,9 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 		min-width: 130px !important;
 	}
 
-	/* Editable Cell Styling matching M_SIR (#d3d3d3 background color, seamless inner cell border) */
+	/* Editable Cell Styling (#FFF59D background color, seamless inner cell border) */
 	input.editable-cell:not([readonly]) {
-		background-color: #d3d3d3 !important;
+		background-color: #FFF59D !important;
 		border: none !important;
 		outline: none !important;
 		padding: 2px 5px !important;
@@ -2001,7 +2002,7 @@ PURPOSE		: BRRS IRRBB DEPOSITS REPORT
 	}
 
 	select.editable-cell:not(:disabled) {
-		background-color: #d3d3d3 !important;
+		background-color: #FFF59D !important;
 		border: none !important;
 		outline: none !important;
 		padding: 2px 5px !important;

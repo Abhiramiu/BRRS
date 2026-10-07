@@ -118,6 +118,34 @@ div.dataTables_wrapper div.dataTables_info {
 </style>
 
 <script>
+    $(document).ready(function () {
+        Maker_Checker_Function();
+    });
+
+    // Maker-Checker: Checkers cannot modify, Makers cannot download
+    function Maker_Checker_Function() {
+        $.ajax({
+            url: "/BRRS/getUserRole",
+            type: "GET",
+            success: function (roleId) {
+                // Checkers -> hide Modify / Add buttons
+                if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+                    const modifyBtn = document.getElementById("addRecord");
+                    if (modifyBtn) modifyBtn.style.display = "none";
+                    document.querySelectorAll("#addRecord, .btn-warning, .btn-primary, a[href*='/add']").forEach(el => el.style.display = "none");
+                }
+
+                // Makers -> hide all download buttons
+                if (roleId === "ADM-M" || roleId === "USR-M") {
+                    document.querySelectorAll(".dl-split-wrap, .dl-main-btn, .dl-caret-btn, #btn-format, #btn-detail, #custom-tab-btnAdd").forEach(el => el.style.display = "none");
+                }
+            },
+            error: function (err) {
+                console.error("Error fetching role:", err);
+            }
+        });
+    }
+
     function back() {
         $("#loader").modal("toggle");
         window.history.back();
@@ -320,7 +348,7 @@ div.dataTables_wrapper div.dataTables_info {
                     <input type="hidden" id="hdnArchiveMode" th:value="${archiveMode}"/>
 
                     <!-- Add New Record button — summary page only, hide in archive/resub mode -->
-                    <a th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}"
+                    <a th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true and (role == 'M' or role == 'MAN')}"
                        th:href="@{/Reports/IRRBB_BORROWINGS/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
                        class="custom-tab-btn">
                         Add New Record
@@ -338,12 +366,12 @@ div.dataTables_wrapper div.dataTables_info {
 
                     <!-- Header Modify placeholder -->
                     <button type="button" class="custom-tab-btn"
-                            th:if="${displaymode == 'summary' and archiveMode != true}"
+                            th:if="${displaymode == 'summary' and archiveMode != true and (role == 'M' or role == 'MAN')}"
                             id="addRecord"
                             title="Use the Modify button on each row">Modify</button>
 
                     <!-- Download split button — live summary -->
-                    <div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true}" class="dl-split-wrap" id="dlSumWrap">
+                    <div th:if="${displaymode == 'summary' and archiveMode != true and resubMode != true and role != 'M'}" class="dl-split-wrap" id="dlSumWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadSummaryExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -356,7 +384,7 @@ div.dataTables_wrapper div.dataTables_info {
                     </div>
 
                     <!-- Download split button — live detail -->
-                    <div th:if="${displaymode == 'detail' and archiveMode != true and resubMode != true}" class="dl-split-wrap" id="dlDetWrap">
+                    <div th:if="${displaymode == 'detail' and archiveMode != true and resubMode != true and role != 'M'}" class="dl-split-wrap" id="dlDetWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadDetailExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -369,7 +397,7 @@ div.dataTables_wrapper div.dataTables_info {
                     </div>
 
                     <!-- Download split button — archive summary -->
-                    <div th:if="${archiveMode == true and displaymode == 'summary'}" class="dl-split-wrap" id="dlArchSumWrap">
+                    <div th:if="${archiveMode == true and displaymode == 'summary' and role != 'M'}" class="dl-split-wrap" id="dlArchSumWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveSummaryExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -382,7 +410,7 @@ div.dataTables_wrapper div.dataTables_info {
                     </div>
 
                     <!-- Download split button — archive detail -->
-                    <div th:if="${archiveMode == true and displaymode == 'detail'}" class="dl-split-wrap" id="dlArchDetWrap">
+                    <div th:if="${archiveMode == true and displaymode == 'detail' and role != 'M'}" class="dl-split-wrap" id="dlArchDetWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadArchiveDetailExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -395,7 +423,7 @@ div.dataTables_wrapper div.dataTables_info {
                     </div>
 
                     <!-- Download split button — resub summary -->
-                    <div th:if="${resubMode == true and displaymode == 'summary'}" class="dl-split-wrap" id="dlResubSumWrap">
+                    <div th:if="${resubMode == true and displaymode == 'summary' and role != 'M'}" class="dl-split-wrap" id="dlResubSumWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadResubSummaryExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -408,7 +436,7 @@ div.dataTables_wrapper div.dataTables_info {
                     </div>
 
                     <!-- Download split button — resub detail -->
-                    <div th:if="${resubMode == true and displaymode == 'detail'}" class="dl-split-wrap" id="dlResubDetWrap">
+                    <div th:if="${resubMode == true and displaymode == 'detail' and role != 'M'}" class="dl-split-wrap" id="dlResubDetWrap">
                         <button class="custom-tab-btn dl-main-btn" onclick="downloadResubDetailExcel()">
                             <i class="fa fa-download"></i> Download
                         </button>
@@ -453,7 +481,7 @@ div.dataTables_wrapper div.dataTables_info {
                         <table class="table table-bordered table-hover table-sm" id="irrbbBorrowingsTbl">
                             <thead>
                                 <tr>
-                                    <th th:if="${archiveMode != true}"></th>
+                                    <th th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}"></th>
                                     <th>S.No</th>
                                     <th>Customer ID</th>
                                     <th>Account Number</th>
@@ -478,7 +506,7 @@ div.dataTables_wrapper div.dataTables_info {
                             </thead>
                             <tbody>
                                 <tr th:each="data : ${reportsummary}">
-                                    <td th:if="${archiveMode != true}">
+                                    <td th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}">
                                         <a th:if="${resubMode != true}"
                                            th:href="@{/Reports/IRRBB_BORROWINGS/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
                                            class="btn btn-warning btn-sm">Modify</a>
@@ -517,7 +545,7 @@ div.dataTables_wrapper div.dataTables_info {
             <!-- DETAIL TABLE                                           -->
             <!-- ===================================================== -->
             <div th:if="${displaymode == 'detail'}">
-                <div th:if="${archiveMode != true and resubMode != true}" style="padding:8px 15px;">
+                <div th:if="${archiveMode != true and resubMode != true and (role == 'M' or role == 'MAN')}" style="padding:8px 15px;">
                     <a th:href="@{/Reports/IRRBB_BORROWINGS/detail/add(asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
                        class="btn btn-primary btn-sm">Add New Record</a>
                 </div>
@@ -526,7 +554,7 @@ div.dataTables_wrapper div.dataTables_info {
                         <table class="table table-bordered table-hover table-sm" id="irrbbBorrowingsDetailTbl">
                             <thead>
                                 <tr>
-                                    <th th:if="${archiveMode != true}"></th>
+                                    <th th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}"></th>
                                     <th>S.No</th>
                                     <th>Customer ID</th>
                                     <th>Account Number</th>
@@ -551,7 +579,7 @@ div.dataTables_wrapper div.dataTables_info {
                             </thead>
                             <tbody>
                                 <tr th:each="data : ${reportdetail}">
-                                    <td th:if="${archiveMode != true}">
+                                    <td th:if="${archiveMode != true and (role == 'M' or role == 'MAN')}">
                                         <a th:if="${resubMode != true}"
                                            th:href="@{/Reports/IRRBB_BORROWINGS/detail/modify/{id}(id=${data.sno},asondate=${asondate},fromdate=${fromdate},todate=${todate})}"
                                            class="btn btn-warning btn-sm">Modify</a>

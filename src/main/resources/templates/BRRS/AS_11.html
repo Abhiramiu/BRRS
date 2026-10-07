@@ -798,7 +798,7 @@ PURPOSE		: BRRSREPORT
 							el[0].style.setProperty("color", "#FFFFFF", "important");
 						} else {
 							// Default editable
-							el[0].style.setProperty("background-color", "#d3d3d3", "important");
+							el[0].style.setProperty("background-color", "#FFF59D", "important");
 							el[0].style.setProperty("color", "#000000", "important");
 						}
 					}
@@ -1570,7 +1570,7 @@ PURPOSE		: BRRSREPORT
 						</button>
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
+							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'
                 and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">
@@ -1579,7 +1579,7 @@ PURPOSE		: BRRSREPORT
 
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
                      data-todate=${todate}, 
@@ -1591,7 +1591,7 @@ PURPOSE		: BRRSREPORT
 							<i class="fa fa-download"></i>
 						</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
 						    data-filename='AS_11Detail',
@@ -7608,7 +7608,7 @@ PURPOSE		: BRRSREPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
+													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 														data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

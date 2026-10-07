@@ -1073,7 +1073,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 																				</button>-->
 
 																				<!-- Download button - Summary -->
-																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
 														                     data-asondate=${asondate}, 
 														                     data-fromdate=${fromdate}, 
 														                     data-todate=${todate}, 
@@ -1086,7 +1086,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 																				</button>
 
 																				<!-- Download button - Details -->
-																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
+																				<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details' and role != 'M'}" th:attr="data-reportid=${reportid}, 
 														                     data-asondate=${asondate}, 
 														                     data-fromdate=${fromdate}, 
 														                     data-todate=${todate}, 

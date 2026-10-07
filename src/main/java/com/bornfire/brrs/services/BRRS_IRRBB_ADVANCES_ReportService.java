@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import java.math.BigDecimal;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -32,7 +34,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Component
@@ -45,6 +50,9 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -1414,9 +1422,15 @@ public class BRRS_IRRBB_ADVANCES_ReportService {
 	// ===========================================================
 
 	public ModelAndView getBRRS_IRRBB_ADVANCES_View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		mv.addObject("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
 
 		System.out.println("IRRBB_ADVANCES View Called");
 		System.out.println("Type = " + type);

@@ -743,7 +743,7 @@ function showmodify(btn) {
     rows1.forEach(r => {
         fields1.forEach(f => {
             const selector = `#R${r}_${f}`;
-            if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
+            if ($(selector).length) $(selector).css("background-color", "#FFF59D");
         });
     });
 
@@ -1136,7 +1136,7 @@ function calculateAll() {
         <button class="custom-tab-btn"
                 onclick="showmodify(this);"
                 title="Click to EDIT Records"
-                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
+                th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
                 th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
                 id="addRecord">Modify</button>
 
@@ -1155,7 +1155,7 @@ function calculateAll() {
  
         <!-- Download button - Summary -->
         <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'summary'}"
+            th:if="${displaymode == 'summary' and role != 'M'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -1171,7 +1171,7 @@ function calculateAll() {
 
         <!-- Download button - Details -->
         <button type="button" class="custom-tab-btn"
-            th:if="${displaymode == 'Details'}"
+            th:if="${displaymode == 'Details' and role != 'M'}"
             th:attr="data-reportid=${reportid}, 
                      data-asondate=${asondate}, 
                      data-fromdate=${fromdate}, 
@@ -2196,7 +2196,7 @@ Outstanding unsecured advances as a % of total Outstanding <br> advances (in per
                   <tr th:each="report, srlno : ${reportdetails}">
                    <td>
                     <a data-toggle="tooltip" class="editrec"
-                     title="Click to Edit this Record">
+                     title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
                      <i class="fas fa-edit" style="color: black; cursor:pointer;"
                       th:attr="data-acctNo=${report.acctNumber},
                       data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

@@ -1146,22 +1146,22 @@ public class RegulatoryReportServices {
 
 		case "IRRBB_BORROWINGS":
 			repsummary = BRRS_IRRBB_BORROWINGS_reportservice.getBRRS_IRRBB_BORROWINGS_View(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
+					currency, dtltype, pageable, type, version, req, md);
 			break;
 
 		case "IRRBB_PLACEMENTS":
 			repsummary = BRRS_IRRBB_PLACEMENTS_reportservice.getBRRS_IRRBB_PLACEMENTS_View(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
+					currency, dtltype, pageable, type, version, req, md);
 			break;
 
 		case "IRRBB_ADV":
 			repsummary = BRRS_IRRBB_ADVANCES_reportservice.getBRRS_IRRBB_ADVANCES_View(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
+					currency, dtltype, pageable, type, version, req, md);
 			break;
 
 		case "IRRBB_DEPOSITS":
 			repsummary = BRRS_IRRBB_DEPOSITS_reportservice.getBRRS_IRRBB_DEPOSITS_View(reportId, fromdate, todate,
-					currency, dtltype, pageable, type, version);
+					currency, dtltype, pageable, type, version, req, md);
 			break;
 
 		case "UFCE_RETAILADV":

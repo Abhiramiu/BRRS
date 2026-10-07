@@ -33,9 +33,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.bornfire.brrs.entities.UserProfileRep;
 
 @Service
 @Transactional
@@ -51,6 +54,9 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 
 	@Autowired
 	private AuditService auditService;
+
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	SimpleDateFormat dateformat = new SimpleDateFormat("dd-MMM-yyyy");
 
@@ -138,9 +144,16 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 	// ── UNIFIED VIEW HELPER (supports NORMAL / ARCHIVAL / RESUB) ─
 
 	public ModelAndView getBRRS_IRRBB_PLACEMENTS_View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, Pageable pageable, String type, BigDecimal version) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
+
+		String userid = (String) req1.getSession().getAttribute("USERID");
+		String role = userProfileRep.getUserRole(userid);
+		md.addAttribute("role", role);
+		mv.addObject("role", role);
+		System.out.println("User Id Maker and Checker: " + userid + ", Role: " + role);
+
 		try {
 			Date d1 = dateformat.parse(todate);
 
@@ -294,6 +307,19 @@ public class BRRS_IRRBB_PLACEMENTS_ReportService {
 			mv.addObject("asondate", asondate);
 			mv.addObject("fromdate", fromdate);
 			mv.addObject("todate", todate);
+
+			try {
+				ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+				if (attrs != null && attrs.getRequest() != null) {
+					String userid = (String) attrs.getRequest().getSession().getAttribute("USERID");
+					if (userid != null) {
+						String role = userProfileRep.getUserRole(userid);
+						mv.addObject("role", role);
+					}
+				}
+			} catch (Exception e) {
+				logger.warn("Could not retrieve role in getIRRBB_PLACEMENTS_DetailView: {}", e.getMessage());
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

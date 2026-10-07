@@ -914,7 +914,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 
 		//Apply gray background only to r73_amount
 		if ($("#r73_amount").length) {
-			$("#r73_amount").css("background-color", "#d3d3d3");
+			$("#r73_amount").css("background-color", "#FFF59D");
 		}
 
 
@@ -1161,7 +1161,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 						<!-- 	<button type="button" class="custom-tab-btn"
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
+							th:if="${type != 'ARCHIVAL' and (role == 'M' or role == 'MAN')}" id="addRecord">Modify</button> -->
 							
 							
 							
@@ -1169,7 +1169,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 						<!-- Modify button -->
 						
 						<!--<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
+							title="Click to EDIT Records" th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL'
                 and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">
@@ -1185,7 +1185,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
+							th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid}, 
                     				 data-asondate=${asondate}, 
                     				 data-fromdate=${fromdate}, 
                      				 data-todate=${todate}, 
@@ -1197,7 +1197,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 							<i class="fa fa-download"></i>
 						</button>
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
+							th:if="${displaymode == 'Details' and role != 'M'}" onclick="startReport(this);" th:attr="
 						    data-fromdate=${fromdate},
 						    data-todate=${todate},
 						    data-filename='DTAX_Detail',
@@ -2468,7 +2468,7 @@ PURPOSE		: BRRS DEFERRED TAC PULA CFS REPORT
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<a data-toggle="tooltip" class="editrec"
-													title="Click to Edit this Record">
+													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
 														th:attr="data-acctNo=${report.acctNumber},
 																							data-asondate=${#dates.format(report.reportDate, 'dd-MM-yyyy')},data-type=${type}"

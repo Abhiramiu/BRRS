@@ -788,7 +788,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT (with ARCHIVAL / RESUB support, modelled on M_
 			// highlight the editable cells
 			["#r21_amt", "#r25_amt_sub_del"].forEach(selector => {
 				if ($(selector).length) {
-					$(selector).css("background-color", "#ffef00");
+					$(selector).css("background-color", "#FFF59D");
 				}
 			});
 
@@ -1421,7 +1421,7 @@ PURPOSE		: BRRS FORMAT_II  REPORT (with ARCHIVAL / RESUB support, modelled on M_
 										<tr th:each="report, srlno : ${reportdetails}">
 											<td>
 												<!-- edit icon hidden for ARCHIVAL and for non-highest RESUB versions -->
-												<a th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}"
+												<a th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}"
 													data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
