@@ -131,12 +131,12 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 				transform: translateX(-100%);
 			}
 		}
-		
-		
+
+
 		.table-bordereds td,
-		      .table-bordereds th {
-		          border: 1px solid #dfe0e3;
-		      }
+		.table-bordereds th {
+			border: 1px solid #dfe0e3;
+		}
 	</style>
 
 
@@ -413,6 +413,13 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			//    They will be re-shown below for Checker / Manager profiles
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
 
 		$(window).on('pageshow', function () {
@@ -425,7 +432,47 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 			$('#loader').modal('hide');
 		});
 
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)  → hide Modify, show Download
+		//    - Maker   (M)          → show Modify, hide Download
+		//    - Manager (MAN)        → show BOTH Modify + Download
+		// ========================
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					console.log("User Role ID:", roleId);
 
+					// ✅ Checker → hide Modify, show Download
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn").show();
+					}
+					// ✅ Maker → show Modify, hide Download
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
+						// Modify button already visible from HTML
+					}
+					// ✅ Manager → show BOTH Modify + Download
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+						// Modify button already visible from HTML
+					}
+					// ✅ Any other role → show all (safe fallback)
+					else {
+						$(".download-btn").show();
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+					// Safe fallback — show downloads
+					$(".download-btn").show();
+				}
+			});
+		}
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -911,61 +958,38 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 
 
 	<script>
-		// Show Modify (enable inputs & dropdowns)
+
+		// Show Modify (enable only editable inputs & apply yellow highlight)
 		function showmodify(btn) {
-			// IDs that should always remain readonly
-			$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			if ($(btn).is(":hidden")) return;
 
-
-
-
-			//Apply gray background only to r73_amount
-			if ($("#r73_amount").length) {
-				$("#r73_amount").css("background-color", "#d3d3d3");
+			// ✅ Helper: force YELLOW #FFF59D with !important (overrides inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #FFF59D !important;";
+					});
+				}
 			}
 
+			// ✅ Only editable input is r73_amount — enable & paint yellow
+			if ($("#r73_amount").length) {
+				$("#r73_amount").removeAttr("readonly").removeAttr("disabled");
+				paintYellow("#r73_amount");
+			}
 
-
-
-
-
-			// Toggle buttons
-			$("#submitButton, #btnBack_edit, #cancelRecord").show();
-			$("#btnBack").hide();
-
-			// Hide the clicked Modify button
+			// ✅ Toggle buttons
+			$("#submitButton, #cancelRecord").show();
 			$(btn).hide();
 		}
 
-
-		//Cancel / Reset function
+		// Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
-			// ❌ If user clicks CANCEL, nothing happens
-
 		}
-
-
 
 	</script>
 
@@ -1169,10 +1193,12 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 							onclick="showmodify(this);" title="Click to EDIT Records"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
 							th:if="${type != 'ARCHIVAL'}" id="addRecord">Modify</button> -->
-						<!-- Modify button -->
+
+						<!-- Modify button (show for anyone except Checker) -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
-                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' 
+							        and role != 'C' and role != 'ADM-C' and role != 'USR-C'
+							        and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">
 							Modify
@@ -1186,25 +1212,28 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='B_III_CETD.xlsx',
-					 				 data-type=${type},
-					    			  data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
+						<!-- ✅ Summary Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='B_III_CETD.xlsx',
+						             data-type=${type},
+						             data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='B_III_CETD_DETAIL',
-						 data-type=${type},
-					data-version=${version}  ">
+
+						<!-- ✅ Detail Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}"
+							onclick="startReport(this);" th:attr="data-fromdate=${fromdate},
+						             data-todate=${todate},
+						             data-filename='B_III_CETD_DETAIL',
+						             data-type=${type},
+						             data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -1977,8 +2006,8 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+										th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 
@@ -2046,8 +2075,8 @@ PURPOSE		: BRRS BASEL_III_COM_EQUITY_DISC  REPORT
 
 							<!-- Submit Button -->
 							<div style="text-align: center; margin-top: 15px; background-color: white;">
-								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-									onclick="updateform();" style="display: none;">
+								<button id="submitButton" type="button" class="custom-tab-btn" onclick="updateform();"
+									style="display: none;">
 									Submit
 								</button>
 							</div>

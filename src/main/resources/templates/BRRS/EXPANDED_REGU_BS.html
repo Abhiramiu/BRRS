@@ -354,10 +354,54 @@ PURPOSE		: BRRSREPORT
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 		let isDetailsModal = false;
+
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
+
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → show Download
+		//    - Maker   (M / MGR)       → hide Download
+		//    - Manager (MAN / USR-MAN) → show Download
+		// ========================
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					console.log("User Role ID:", roleId);
+
+					// ✅ Checker → show Download
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						$(".download-btn").show();
+					}
+					// ✅ Maker → hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
+					}
+					// ✅ Manager → show Download
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+					$(".download-btn").show();
+				}
+			});
+		}
 
 		$(window).on('pageshow', function () {
 			// hide loader on back/forward nav
@@ -1052,7 +1096,7 @@ PURPOSE		: BRRSREPORT
 				fields.forEach(field => {
 					let selector = `#r${i}${field}`;
 					if ($(selector).length) {
-						$(selector).css("background-color", "#d3d3d3");
+						$(selector).css("background-color", "#FFF59D");
 					}
 				});
 			}
@@ -1063,7 +1107,7 @@ PURPOSE		: BRRSREPORT
 				let selector = `#r12${field}`;
 				if ($(selector).length) {
 					$(selector).prop("readonly", false).prop("disabled", false)
-						.css("background-color", "#d3d3d3");
+						.css("background-color", "#FFF59D");
 				}
 			});
 
@@ -1289,26 +1333,30 @@ PURPOSE		: BRRSREPORT
                             id="addRecord">Modify</button> -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='Expanded_Regu_BS.xlsx',
-					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+
+
+						<!-- ✅ Summary Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+							             data-asondate=${asondate}, 
+							             data-fromdate=${fromdate}, 
+							             data-todate=${todate}, 
+							             data-currency=${currency},  
+							             data-dtltype=${dtltype}, 
+							             data-filename='Expanded_Regu_BS.xlsx',
+							             data-type=${type},
+							             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='EXPANDED_REGU_BS',
-                data-type=${type},
-		            data-version=${version}
-						  ">
+
+						<!-- ✅ Detail Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}"
+							onclick="startReport(this);" th:attr="data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-filename='EXPANDED_REGU_BS',
+							             data-type=${type},
+							             data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 

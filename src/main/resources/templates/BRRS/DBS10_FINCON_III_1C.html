@@ -315,8 +315,8 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 
 		#reports tbody td input.display-input:focus,
 		#reports tbody td input.display-input:not([readonly]) {
-			
-			background-color: #d3d3d3 !important;
+
+			background-color: #FFF59D !important;
 			border-radius: 3px;
 		}
 
@@ -377,8 +377,15 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 	</style>
 
 	<script th:inline="javascript">
+
 		$(document).ready(function () {
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
 
 		$(window).on('pageshow', function () {
@@ -389,27 +396,41 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 			$('#loader').modal('hide');
 		});
 
-		$(document).ready(function () {
-			Maker_Checker_Function();
-		});
-
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → hide Modify, show Download
+		//    - Maker   (M / MGR)       → show Modify, hide Download
+		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
+		// ========================
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
+					console.log("User Role ID:", roleId);
+
+					// ✅ Checker → hide Modify, show Download
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn").show();
 					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Maker → show Modify, hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
+					}
+					// ✅ Manager → show BOTH
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
 					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn").show();
 				}
 			});
 		}
@@ -435,7 +456,6 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
 				location.href = Callurl;
 			console.log(Callurl);
-
 		}
 
 		function showsummary() {
@@ -644,48 +664,48 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 
 	<script>
 		function showmodify(btn) {
-		    // Enable all input fields with class .Show_input except non-editable ones
-		    $(".Show_input").not(".nonEditable")
-		        .removeAttr("readonly")
-		        .removeAttr("disabled");
+			// Enable all input fields with class .Show_input except non-editable ones
+			$(".Show_input").not(".nonEditable")
+				.removeAttr("readonly")
+				.removeAttr("disabled");
 
-		    // Array of row numbers (r8 to r14)
-		    const rows = [8, 9, 10, 11, 12, 13, 14];
+			// Array of row numbers (r8 to r14)
+			const rows = [8, 9, 10, 11, 12, 13, 14];
 
-		    // Fields corresponding to each row
-		    const fields = [
-		        "short_term_amt",
-		        "equity",
-		        "bonds_amt",
-		        "cp_amt",
-		        "cd_amt",
-		        "tier_amt",
-		        "unit_amt",
-		        "venture_amt",
-		        "ptc_amt",
-		        "purchase_amt",
-		        "other_amt"
-		    ];
+			// Fields corresponding to each row
+			const fields = [
+				"short_term_amt",
+				"equity",
+				"bonds_amt",
+				"cp_amt",
+				"cd_amt",
+				"tier_amt",
+				"unit_amt",
+				"venture_amt",
+				"ptc_amt",
+				"purchase_amt",
+				"other_amt"
+			];
 
-		    // Apply grey background color to matching fields across all targeted rows
-		    rows.forEach(r => {
-		        fields.forEach(f => {
-		            const selector = `#r${r}_${f}`;
+			// Apply grey background color to matching fields across all targeted rows
+			rows.forEach(r => {
+				fields.forEach(f => {
+					const selector = `#r${r}_${f}`;
 
-		            if ($(selector).length) {
-		               $(selector).attr("style", "background-color: #d3d3d3 !important;");
-		            }
-		        });
-		    });
+					if ($(selector).length) {
+						$(selector).attr("style", "background-color: #FFF59D !important;");
+					}
+				});
+			});
 
-		    // Show action buttons
-		    $("#submitButton").show();
-		    $("#cancelRecord").show();
+			// Show action buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
 
-		    // Hide clicked modify button
-		    $(btn).hide();
+			// Hide clicked modify button
+			$(btn).hide();
 		}
-		
+
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
 				location.reload();
@@ -1073,36 +1093,40 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1CREPORT
 						</button>-->
 
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
-							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL'
-							                and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
+							title="Click to EDIT Records" th:if="${type != 'ARCHIVAL' 
+						        and role != 'C' and role != 'ADM-C' and role != 'USR-C'
+						        and !#strings.contains(#httpServletRequest.requestURI, '/Details')}"
 							th:classappend="${session.PERMISSIONS == 'W' and dtltype == 'report'} ? 'addedit' : ''"
 							id="addRecord">
 							Modify
 						</button>
+
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='DBS10_FINCON_III_1C.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
+
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+							             data-asondate=${asondate}, 
+							             data-fromdate=${fromdate}, 
+							             data-todate=${todate}, 
+							             data-currency=${currency},  
+							             data-dtltype=${dtltype}, 
+							             data-filename='DBS10_FINCON_III_1C.xlsx',
+							             data-type=${type},
+							             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-		    data-fromdate=${fromdate},
-		    data-todate=${todate},
-		    data-filename='DBS10_FINCON_III_1CDetail',
-			data-type=${type},
-			data-version=${version}
-		  ">
+
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}"
+							onclick="startReport(this);" th:attr="data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-filename='DBS10_FINCON_III_1CDetail',
+							             data-type=${type},
+							             data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
+
 					</div>
 				</div>
 			</div>

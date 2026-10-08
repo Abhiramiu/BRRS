@@ -219,6 +219,11 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 		$(document).ready(function () {
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker)
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
 			Maker_Checker_Function();
 		});
 
@@ -226,23 +231,39 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			$('#loader').modal('hide');
 		});
 
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → show Download
+		//    - Maker   (M / MGR)       → hide Download
+		//    - Manager (MAN / USR-MAN) → show Download
+		// ========================
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
-					}
+					console.log("User Role ID:", roleId);
 
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Checker → show Download
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						$(".download-btn").show();
+					}
+					// ✅ Maker → hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
+					}
+					// ✅ Manager → show Download
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
 					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn").show();
 				}
 			});
 		}
@@ -610,20 +631,20 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
 						<!-- Excel Download for Summary View -->
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}" th:attr="data-reportid=${reportid}, 
-							data-asondate=${asondate}, 
-							data-fromdate=${fromdate}, 
-							data-todate=${todate}, 
-							data-currency=${currency},  
-							data-dtltype=${dtltype}, 
-							data-filename='DBS10_FINCON_III_1B.xlsx',
-							data-type=${type},
-							data-version=${version}" onclick="downloadfile(this);">
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary" th:if="${(displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary') 
+						             and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='DBS10_FINCON_III_1B.xlsx',
+						             data-type=${type},
+						             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 
-					
+
 					</div>
 				</div>
 			</div>
@@ -649,34 +670,39 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 				Archival Detail View - DBS10_FINCON_III_1B (Read Only)
 			</h1>
 
-			<h1 th:if="${displaymode == 'resubSummary'}" 
+			<h1 th:if="${displaymode == 'resubSummary'}"
 				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
 				Resubmission Summary View - DBS10_FINCON_III_1B
 			</h1>
 
-			<h1 th:if="${displaymode == 'resubDetail'}" 
+			<h1 th:if="${displaymode == 'resubDetail'}"
 				style="text-align: left; font-family: arial; font-weight: bold; color: white; font-size: 20px; background-color: rgb(107, 122, 143); margin-top: 10px; margin-bottom: 10px; padding: 10px 0 10px 15px;">
 				Resubmission Detail View - DBS10_FINCON_III_1B
 			</h1>
 
 			<!-- TABLE FOR ALL SUMMARY & DETAIL MODES -->
-			<div class="col-12" th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetail' or displaymode == 'resubSummary' or displaymode == 'resubDetail'}">
+			<div class="col-12"
+				th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'archivalSummary' or displaymode == 'archivalDetail' or displaymode == 'resubSummary' or displaymode == 'resubDetail'}">
 				<div class="row">
 					<form action="#" method="POST" id="fileupload" style="width:100%;">
 						<div class="col-sm-12">
 
-							<div style="background-color: #C0C0C0; font-weight: bold; padding: 4px 8px; margin-bottom: 5px; font-size: 14px;">
+							<div
+								style="background-color: #C0C0C0; font-weight: bold; padding: 4px 8px; margin-bottom: 5px; font-size: 14px;">
 								Monetary items present in the return should be reported ₹ in Crores
 							</div>
 
-							<div class="table-wrapper table-responsive scrollable-table-container" style="border-right:1px solid #dee2e6; max-height:600px; overflow-y:auto;">
+							<div class="table-wrapper table-responsive scrollable-table-container"
+								style="border-right:1px solid #dee2e6; max-height:600px; overflow-y:auto;">
 
-								<table class="sticky-header-table table table-bordered table-sm table-condensed" id="reports" style="font-family: Arial, sans-serif; font-size: 13px;">
+								<table class="sticky-header-table table table-bordered table-sm table-condensed"
+									id="reports" style="font-family: Arial, sans-serif; font-size: 13px;">
 
 									<thead style="text-align:center;">
 										<!-- TITLE ROW -->
 										<tr>
-											<th colspan="10" style="background-color: #FFD700; color: #000000; font-weight: bold; text-align: left; font-size: 14px; padding: 6px; border: 1px solid #000000;">
+											<th colspan="10"
+												style="background-color: #FFD700; color: #000000; font-weight: bold; text-align: left; font-size: 14px; padding: 6px; border: 1px solid #000000;">
 												(1)(b)(i) Details of FB (Capital) intra-group transactions with a
 												threshold limit of Rs.10 crore and above relating to each of the
 												transaction-types ( i.e. Loans extended, Deposit placed,
@@ -688,31 +714,42 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 										<!-- HEADER ROW 1 -->
 										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; border: 1px solid #000000;">
 												Transaction<br>Serial Number</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Name of SFIs</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
 												Name of Counter party</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Nature of Transactions</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
 												Original issuer of the paper/ security, if applicable</th>
-											<th colspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 13px; font-weight: bold; border: 1px solid #000000;">
+											<th colspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 13px; font-weight: bold; border: 1px solid #000000;">
 												Date of Transactions</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 10px; border: 1px solid #000000;">
 												Tenor of the Transactions (in days)</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 14px; font-weight: bold; border: 1px solid #000000;">
 												Amount</th>
-											<th rowspan="2" style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
+											<th rowspan="2"
+												style="background-color: #FFD700; color: #000000; vertical-align: middle; font-size: 9px; border: 1px solid #000000;">
 												Return / yield on the investment (in %)</th>
 										</tr>
 
 										<!-- HEADER ROW 2 -->
 										<tr style="background-color: #FFD700; color: #000000; vertical-align: middle;">
-											<th style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+											<th
+												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
 												Beginning DateYYYY-MM-DD</th>
-											<th style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
+											<th
+												style="background-color: #FFD700; color: #000000; border: 1px solid #000000; font-size: 11px;">
 												Ending DateYYYY-MM-DD</th>
 										</tr>
 
@@ -745,9 +782,11 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 											<td th:text="${report.orgIssue}"></td>
 
-											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;"></td>
 
-											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;"></td>
 
 											<td th:text="${report.tenorOfTrans}" style="text-align: right;"></td>
 
@@ -770,9 +809,11 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 
 											<td th:text="${report.orgIssue}"></td>
 
-											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+											<td th:text="${report.dateOfTrnsBegin != null ? #dates.format(report.dateOfTrnsBegin, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;"></td>
 
-											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}" style="background-color: #F8BE8E;"></td>
+											<td th:text="${report.dateOfTrnsEnd != null ? #dates.format(report.dateOfTrnsEnd, 'yyyy-MM-dd') : ''}"
+												style="background-color: #F8BE8E;"></td>
 
 											<td th:text="${report.tenorOfTrans}" style="text-align: right;"></td>
 
@@ -809,7 +850,8 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 			<div class="modal-content" style="background: transparent; border:none;">
 				<div class="modal-body" style="text-align: center">
 					<div>
-						<img th:src="@{/images/loader.gif}" id="bfirelogo" style="width: 153px; height: auto; background-color: transparent;" alt="Loading...">
+						<img th:src="@{/images/loader.gif}" id="bfirelogo"
+							style="width: 153px; height: auto; background-color: transparent;" alt="Loading...">
 					</div>
 				</div>
 			</div>
@@ -835,17 +877,20 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 	<div class="modal fade" id="cellresultModal">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="menu-title-header" style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
+				<div class="menu-title-header"
+					style="background-color:#6c7a91; padding: 8px; border-radius:5px 5px 0 0;">
 					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">
 						Do you want to open the report?
 					</div>
 				</div>
 
 				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal" style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
+						style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;">
 						Cancel
 					</button>
-					<button type="button" class="custom-tab-btn yes-btn" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">
 						Yes
 					</button>
 				</div>
@@ -857,8 +902,10 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 	<div class="modal fade" id="uploadFileModal" tabindex="-1" role="dialog" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-				<div class="menu-title-header" style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0;font-weight: bold;">
-					<h5 class="modal-title text-white text-center" id="uploadModalLabel">Upload Placement / Borrowing Data</h5>
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 10px; border-radius: 5px 5px 0 0;font-weight: bold;">
+					<h5 class="modal-title text-white text-center" id="uploadModalLabel">Upload Placement / Borrowing
+						Data</h5>
 				</div>
 				<form id="placementUploadForm" enctype="multipart/form-data">
 					<div class="modal-body">
@@ -868,31 +915,41 @@ PURPOSE		: BRRS_DBS10_FINCON_III_1BREPORT
 							<label style="font-weight: bold; color: #333;">Select Category Option:</label>
 							<div class="d-flex align-items-center mt-1">
 								<div class="custom-control custom-radio mr-4">
-									<input type="radio" id="categoryBorrowing" name="fileCategory" value="Borrowing" class="custom-control-input" checked>
-									<label class="custom-control-label" for="categoryBorrowing" style="font-weight: 600; cursor: pointer;">Borrowing</label>
+									<input type="radio" id="categoryBorrowing" name="fileCategory" value="Borrowing"
+										class="custom-control-input" checked>
+									<label class="custom-control-label" for="categoryBorrowing"
+										style="font-weight: 600; cursor: pointer;">Borrowing</label>
 								</div>
 								<div class="custom-control custom-radio">
-									<input type="radio" id="categoryPlacement" name="fileCategory" value="Placement" class="custom-control-input">
-									<label class="custom-control-label" for="categoryPlacement" style="font-weight: 600; cursor: pointer;">Placement</label>
+									<input type="radio" id="categoryPlacement" name="fileCategory" value="Placement"
+										class="custom-control-input">
+									<label class="custom-control-label" for="categoryPlacement"
+										style="font-weight: 600; cursor: pointer;">Placement</label>
 								</div>
 							</div>
 						</div>
 
 						<div class="form-group text-left">
 							<label for="uploadDate" style="font-weight: bold; color: #333;">Select Date:</label>
-							<input type="date" class="form-control" id="uploadDate" name="asondate" required th:value="${asondate}">
+							<input type="date" class="form-control" id="uploadDate" name="asondate" required
+								th:value="${asondate}">
 						</div>
 
 						<div class="form-group text-left">
 							<label for="excelFile" style="font-weight: bold; color: #333;">Select Excel File:</label>
-							<input type="file" class="form-control-file border p-1" id="excelFile" name="file" accept=".xlsx, .xls" required>
-							<small class="form-text text-muted">File name must contain the selected word (e.g., <code>Borrowing_Data.xlsx</code> or <code>Placement_Data.xlsx</code>).</small>
+							<input type="file" class="form-control-file border p-1" id="excelFile" name="file"
+								accept=".xlsx, .xls" required>
+							<small class="form-text text-muted">File name must contain the selected word (e.g.,
+								<code>Borrowing_Data.xlsx</code> or <code>Placement_Data.xlsx</code>).</small>
 						</div>
 
 					</div>
 					<div class="modal-footer" style="justify-content: center;">
-						<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal" style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;" onclick="location.reload();">Cancel</button>
-						<button type="button" class="custom-tab-btn yes-btn" onclick="submitExcelUpload();" style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
+						<button type="button" class="custom-tab-btn cancel-btn" data-dismiss="modal"
+							style="margin-right:10px; border:2px solid #6c7a91; background:white; color:black; border-radius:20px; padding:5px 15px;"
+							onclick="location.reload();">Cancel</button>
+						<button type="button" class="custom-tab-btn yes-btn" onclick="submitExcelUpload();"
+							style="background:#6c7a91; color:white; border:none; border-radius:20px; padding:5px 20px;">Upload</button>
 					</div>
 				</form>
 			</div>

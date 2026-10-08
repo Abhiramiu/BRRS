@@ -174,8 +174,16 @@ PURPOSE		: BRRS LOAN LIST UFCE REPORT
 		var reportid = /*[[${reportid}]]*/ 'LOAN_LIST_UFCE';
 
 		$(document).ready(function () {
+			// hide loader on normal load
 			$('#loader').modal('hide');
 
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn, .PDF-download-menu").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
+
+			// ✅ Step 3: Initialize DataTables
 			var tableIds = ['#loanlistTable', '#loanlistDetailTable', '#archivalTable', '#archivalDetailTable', '#resubTable', '#resubDetailTable'];
 			tableIds.forEach(function (id) {
 				if ($(id).length) {
@@ -199,8 +207,53 @@ PURPOSE		: BRRS LOAN LIST UFCE REPORT
 		});
 
 		$(window).on('pageshow', function () {
+			// hide loader on back/forward nav
 			$('#loader').modal('hide');
 		});
+
+		$(window).on('beforeunload', function () {
+			// hide loader on leaving page
+			$('#loader').modal('hide');
+		});
+
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → hide Modify, show Download
+		//    - Maker   (M / MGR)       → show Modify, hide Download
+		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
+		// ========================
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					console.log("User Role ID:", roleId);
+
+					// ✅ Checker → hide Modify, show Download
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						const modifyBtn = document.getElementById("addRecord");
+						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn, .PDF-download-menu").show();
+					}
+					// ✅ Maker → show Modify, hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn, .PDF-download-menu").hide();
+					}
+					// ✅ Manager → show BOTH
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn, .PDF-download-menu").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn, .PDF-download-menu").show();
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+					$(".download-btn, .PDF-download-menu").show();
+				}
+			});
+		}
 
 		function home() {
 			$("#loader").modal("toggle");
@@ -392,6 +445,7 @@ PURPOSE		: BRRS LOAN LIST UFCE REPORT
 		function closemodel() {
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
+			$('#loader').modal('hide');
 		}
 
 		function showResultModal(title, message) {
@@ -453,24 +507,24 @@ PURPOSE		: BRRS LOAN LIST UFCE REPORT
 							th:if="${displaymode == 'resubSummary'}">Details</button>
 
 						<!-- FORMAT Download Button -->
-						<button type="button" class="custom-tab-btn" onclick="downloadfile(this)"
-							th:if="${displaymode == 'summary'  or displaymode == 'archivalSummary' or displaymode == 'resubSummary'}"
-							th:attr="data-reportid=${reportid},
-									data-asondate=${asondate},
-									data-fromdate=${fromdate},
-									data-todate=${todate},
-									data-currency=${currency}, 
-									data-dtltype=${dtltype},
-									data-filename='LOAN_LIST_UFCE.xlsx',
-									data-type=${type},
-									data-format='email',
-									data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
+						<button type="button" class="custom-tab-btn download-btn" onclick="downloadfile(this)" th:if="${(displaymode == 'summary' or displaymode == 'archivalSummary' or displaymode == 'resubSummary')
+						             and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid},
+						            data-asondate=${asondate},
+						            data-fromdate=${fromdate},
+						            data-todate=${todate},
+						            data-currency=${currency}, 
+						            data-dtltype=${dtltype},
+						            data-filename='LOAN_LIST_UFCE.xlsx',
+						            data-type=${type},
+						            data-format='email',
+						            data-version=${version != null ? version : ''}" style="font-family: Arial; font-weight: bold;">
 							<i class="fa fa-download"></i> FORMAT
 						</button>
 
 						<!-- PDF Download Dropdown (M_BOP style) -->
-						<div class="nav-item dropdown PDF-download-menu"
-							style="list-style: none; display: inline-block;" th:if="${displaymode == 'summary'}">
+						<div class="nav-item dropdown PDF-download-menu download-btn"
+							style="list-style: none; display: inline-block;" th:if="${(displaymode == 'summary' or displaymode == 'resubSummary' or displaymode == 'archivalSummary')
+						             and role != 'M' and role != 'MGR'}">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown"
 								style="font-family: Arial; font-weight: bold;">
 								<i class="fa fa-download"></i> PDF
@@ -485,7 +539,7 @@ PURPOSE		: BRRS LOAN LIST UFCE REPORT
 								<a href="#" class="nav-link"
 									th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
 									onclick="emailDownloadSummaryPdf(this);">
-									<i class="fa fa-file-pdf text-danger"></i> EMAIL PDF
+									<i class="fa fa-envelope text-primary"></i> EMAIL PDF
 								</a>
 							</div>
 						</div>

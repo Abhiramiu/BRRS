@@ -415,21 +415,30 @@ PURPOSE  : BRRSREPORT
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
+					console.log("User Role ID:", roleId);
 
+					// ✅ Checker → hide Modify, show Download
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn").show();
 					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Maker → show Modify, hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
 					}
-
+					// ✅ Manager → show BOTH
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
+					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn").show();
 				}
 			});
 		}
@@ -745,496 +754,496 @@ PURPOSE  : BRRSREPORT
 
 
 
- 
-<script>
-function showmodify(btn) {
-    // Enable editable fields
-    $(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
-    // ===== GROUP 1 =====
-	let rows1 = [
-	    13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56,
-	    60, 61, 67, 68, 69, 71, 74, 88, 90, 91, 102, 104,
-	    107, 108, 110, 111, 112, 113,119,120,121,122,123,124
-	];
-    let fields1 = ["AMOUNT"];
+	<script>
+		function showmodify(btn) {
+			// Enable editable fields
+			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
 
-    rows1.forEach(r => {
-        fields1.forEach(f => {
-            const selector = `#R${r}_${f}`;
-            if ($(selector).length) $(selector).css("background-color", "#d3d3d3");
-        });
-    });
+			// ===== GROUP 1 =====
+			let rows1 = [
+				13, 18, 19, 27, 29, 32, 42, 48, 49, 52, 53, 54, 55, 56,
+				60, 61, 67, 68, 69, 71, 74, 88, 90, 91, 102, 104,
+				107, 108, 110, 111, 112, 113, 119, 120, 121, 122, 123, 124
+			];
+			let fields1 = ["AMOUNT"];
 
+			rows1.forEach(r => {
+				fields1.forEach(f => {
+					const selector = `#R${r}_${f}`;
+					if ($(selector).length) $(selector).css("background-color", "#FFF59D");
+				});
+			});
 
 
-    // Show buttons
-    $("#submitButton").show();
-    $("#cancelRecord").show();
 
-    // Hide the modify button clicked
-    $(btn).hide();
-}
+			// Show buttons
+			$("#submitButton").show();
+			$("#cancelRecord").show();
 
+			// Hide the modify button clicked
+			$(btn).hide();
+		}
 
-//Cancel / Reset function
-function cancelModify() {
-    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-        // ✅ Only when user clicks YES
-        location.reload();
-        
-        $(".Show_input").attr("readonly", true).attr("disabled", true);
 
-        $("#submitButton, #btnBack_edit").hide();
-        $("#btnBack").show();
+		//Cancel / Reset function
+		function cancelModify() {
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				// ✅ Only when user clicks YES
+				location.reload();
 
-        // Hide Cancel button again
-        $("#cancelRecord").hide();
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-        // Show all Modify buttons
-        $("#addRecord").show();
-    }
-    // ❌ If user clicks CANCEL, nothing happens
-}
+				$("#submitButton, #btnBack_edit").hide();
+				$("#btnBack").show();
 
-</script>
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
 
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+			// ❌ If user clicks CANCEL, nothing happens
+		}
 
-<script>
+	</script>
 
-$(document).ready(function () {
 
-    calculateAll();
+	<script>
 
-    $("#fileupload").on("input change", "input", function () {
-        calculateAll();
-    });
+		$(document).ready(function () {
 
-});
+			calculateAll();
 
+			$("#fileupload").on("input change", "input", function () {
+				calculateAll();
+			});
 
-function getValue(id) {
+		});
 
-    const el = $("#" + id);
-    let value = "";
 
-    if (el.is("input")) {
-        value = el.val();
-    } else {
-        value = el.text();
-    }
+		function getValue(id) {
 
-    return parseFloat((value || "0").replace(/,/g, "")) || 0;
-}
+			const el = $("#" + id);
+			let value = "";
 
+			if (el.is("input")) {
+				value = el.val();
+			} else {
+				value = el.text();
+			}
 
-function setValue(id, value) {
+			return parseFloat((value || "0").replace(/,/g, "")) || 0;
+		}
 
-    const formatted = Number(value || 0).toLocaleString('en-US', {
-        maximumFractionDigits: 0
-    });
 
-    const el = $("#" + id);
+		function setValue(id, value) {
 
-    if (el.is("input")) {
-        el.val(formatted);
-    } else {
-        el.text(formatted);
-    }
-}
+			const formatted = Number(value || 0).toLocaleString('en-US', {
+				maximumFractionDigits: 0
+			});
 
+			const el = $("#" + id);
 
-/* =========================================================
-   R11 = R12 - R13
-   ========================================================= */
-function calculateR11() {
-
-    setValue(
-        "R11_AMOUNT",
-        getValue("R12_AMOUNT") -
-        getValue("R13_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R15 = R11 - R14
-   ========================================================= */
-function calculateR15() {
-
-    setValue(
-        "R15_AMOUNT",
-        getValue("R11_AMOUNT") -
-        getValue("R14_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R16 = R17 + R18 + R19 + R20
-   ========================================================= */
-function calculateR16() {
-
-    setValue(
-        "R16_AMOUNT",
-        getValue("R17_AMOUNT") +
-        getValue("R18_AMOUNT") +
-        getValue("R19_AMOUNT") +
-        getValue("R20_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R21 = R15 + R16
-   ========================================================= */
-function calculateR21() {
-
-    setValue(
-        "R21_AMOUNT",
-        getValue("R15_AMOUNT") +
-        getValue("R16_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R22 = R23 + R24
-   ========================================================= */
-function calculateR22() {
-
-    setValue(
-        "R22_AMOUNT",
-        getValue("R23_AMOUNT") +
-        getValue("R24_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R25 = R26 + R27
-   ========================================================= */
-function calculateR25() {
-
-    setValue(
-        "R25_AMOUNT",
-        getValue("R26_AMOUNT") +
-        getValue("R27_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R28 = R21 - (R22 + R25)
-   ========================================================= */
-function calculateR28() {
-
-    setValue(
-        "R28_AMOUNT",
-        getValue("R21_AMOUNT") -
-        (
-            getValue("R22_AMOUNT") +
-            getValue("R25_AMOUNT")
-        )
-    );
-}
-
-
-/* =========================================================
-   R31 = R28 - (R29 + R30)
-   ========================================================= */
-function calculateR31() {
-
-    setValue(
-        "R31_AMOUNT",
-        getValue("R28_AMOUNT") -
-        (
-            getValue("R29_AMOUNT") +
-            getValue("R30_AMOUNT")
-        )
-    );
-}
-
-
-/* =========================================================
-   R33 = R31 - R32
-   ========================================================= */
-function calculateR33() {
-
-    setValue(
-        "R33_AMOUNT",
-        getValue("R31_AMOUNT") -
-        getValue("R32_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R51 = R52 + R53 + R54 + R55 + R56
-   ========================================================= */
-function calculateR51() {
-
-    setValue(
-        "R51_AMOUNT",
-        getValue("R52_AMOUNT") +
-        getValue("R53_AMOUNT") +
-        getValue("R54_AMOUNT") +
-        getValue("R55_AMOUNT") +
-        getValue("R56_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R50 = R51 + R57
-   ========================================================= */
-function calculateR50() {
-
-    setValue(
-        "R50_AMOUNT",
-        getValue("R51_AMOUNT") +
-        getValue("R57_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R47 = R48 + R49
-   ========================================================= */
-function calculateR47() {
-
-    setValue(
-        "R47_AMOUNT",
-        getValue("R48_AMOUNT") +
-        getValue("R49_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R46 = R47 + R50
-   ========================================================= */
-function calculateR46() {
-
-    setValue(
-        "R46_AMOUNT",
-        getValue("R47_AMOUNT") +
-        getValue("R50_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R45 = R46 - R58
-   ========================================================= */
-function calculateR45() {
-
-    setValue(
-        "R45_AMOUNT",
-        getValue("R46_AMOUNT") -
-        getValue("R58_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R43 = R44 + R45 + R59 + R60 + R61 + R62
-   ========================================================= */
-function calculateR43() {
-
-    setValue(
-        "R43_AMOUNT",
-        getValue("R44_AMOUNT") +
-        getValue("R45_AMOUNT") +
-        getValue("R59_AMOUNT") +
-        getValue("R60_AMOUNT") +
-        getValue("R61_AMOUNT") +
-        getValue("R62_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R41 = R42 + R43
-   ========================================================= */
-function calculateR41() {
-
-    setValue(
-        "R41_AMOUNT",
-        getValue("R42_AMOUNT") +
-        getValue("R43_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R66 = R67 + R68
-   ========================================================= */
-function calculateR66() {
-
-    setValue(
-        "R66_AMOUNT",
-        getValue("R67_AMOUNT") +
-        getValue("R68_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R64 = R65 + R66 + R69
-   ========================================================= */
-function calculateR64() {
-
-    setValue(
-        "R64_AMOUNT",
-        getValue("R65_AMOUNT") +
-        getValue("R66_AMOUNT") +
-        getValue("R69_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R73 = R64 + R70 + R71 + R72
-   ========================================================= */
-function calculateR73() {
-
-    setValue(
-        "R73_AMOUNT",
-        getValue("R64_AMOUNT") +
-        getValue("R70_AMOUNT") +
-        getValue("R71_AMOUNT") +
-        getValue("R72_AMOUNT")
-    );
-}
-
-
-/* =========================================================
-   R63 = R73 + R74 + R75
-   ========================================================= */
-function calculateR63() {
-
-    setValue(
-        "R63_AMOUNT",
-        getValue("R73_AMOUNT") +
-        getValue("R74_AMOUNT") +
-        getValue("R75_AMOUNT")
-    );
-}
+			if (el.is("input")) {
+				el.val(formatted);
+			} else {
+				el.text(formatted);
+			}
+		}
 
 
-/* =========================================================
-   R77 = R63 + R76
-   ========================================================= */
-function calculateR77() {
+		/* =========================================================
+		   R11 = R12 - R13
+		   ========================================================= */
+		function calculateR11() {
+
+			setValue(
+				"R11_AMOUNT",
+				getValue("R12_AMOUNT") -
+				getValue("R13_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R15 = R11 - R14
+		   ========================================================= */
+		function calculateR15() {
+
+			setValue(
+				"R15_AMOUNT",
+				getValue("R11_AMOUNT") -
+				getValue("R14_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R16 = R17 + R18 + R19 + R20
+		   ========================================================= */
+		function calculateR16() {
+
+			setValue(
+				"R16_AMOUNT",
+				getValue("R17_AMOUNT") +
+				getValue("R18_AMOUNT") +
+				getValue("R19_AMOUNT") +
+				getValue("R20_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R21 = R15 + R16
+		   ========================================================= */
+		function calculateR21() {
+
+			setValue(
+				"R21_AMOUNT",
+				getValue("R15_AMOUNT") +
+				getValue("R16_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R22 = R23 + R24
+		   ========================================================= */
+		function calculateR22() {
+
+			setValue(
+				"R22_AMOUNT",
+				getValue("R23_AMOUNT") +
+				getValue("R24_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R25 = R26 + R27
+		   ========================================================= */
+		function calculateR25() {
+
+			setValue(
+				"R25_AMOUNT",
+				getValue("R26_AMOUNT") +
+				getValue("R27_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R28 = R21 - (R22 + R25)
+		   ========================================================= */
+		function calculateR28() {
+
+			setValue(
+				"R28_AMOUNT",
+				getValue("R21_AMOUNT") -
+				(
+					getValue("R22_AMOUNT") +
+					getValue("R25_AMOUNT")
+				)
+			);
+		}
+
+
+		/* =========================================================
+		   R31 = R28 - (R29 + R30)
+		   ========================================================= */
+		function calculateR31() {
+
+			setValue(
+				"R31_AMOUNT",
+				getValue("R28_AMOUNT") -
+				(
+					getValue("R29_AMOUNT") +
+					getValue("R30_AMOUNT")
+				)
+			);
+		}
+
+
+		/* =========================================================
+		   R33 = R31 - R32
+		   ========================================================= */
+		function calculateR33() {
+
+			setValue(
+				"R33_AMOUNT",
+				getValue("R31_AMOUNT") -
+				getValue("R32_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R51 = R52 + R53 + R54 + R55 + R56
+		   ========================================================= */
+		function calculateR51() {
+
+			setValue(
+				"R51_AMOUNT",
+				getValue("R52_AMOUNT") +
+				getValue("R53_AMOUNT") +
+				getValue("R54_AMOUNT") +
+				getValue("R55_AMOUNT") +
+				getValue("R56_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R50 = R51 + R57
+		   ========================================================= */
+		function calculateR50() {
+
+			setValue(
+				"R50_AMOUNT",
+				getValue("R51_AMOUNT") +
+				getValue("R57_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R47 = R48 + R49
+		   ========================================================= */
+		function calculateR47() {
+
+			setValue(
+				"R47_AMOUNT",
+				getValue("R48_AMOUNT") +
+				getValue("R49_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R46 = R47 + R50
+		   ========================================================= */
+		function calculateR46() {
+
+			setValue(
+				"R46_AMOUNT",
+				getValue("R47_AMOUNT") +
+				getValue("R50_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R45 = R46 - R58
+		   ========================================================= */
+		function calculateR45() {
+
+			setValue(
+				"R45_AMOUNT",
+				getValue("R46_AMOUNT") -
+				getValue("R58_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R43 = R44 + R45 + R59 + R60 + R61 + R62
+		   ========================================================= */
+		function calculateR43() {
+
+			setValue(
+				"R43_AMOUNT",
+				getValue("R44_AMOUNT") +
+				getValue("R45_AMOUNT") +
+				getValue("R59_AMOUNT") +
+				getValue("R60_AMOUNT") +
+				getValue("R61_AMOUNT") +
+				getValue("R62_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R41 = R42 + R43
+		   ========================================================= */
+		function calculateR41() {
+
+			setValue(
+				"R41_AMOUNT",
+				getValue("R42_AMOUNT") +
+				getValue("R43_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R66 = R67 + R68
+		   ========================================================= */
+		function calculateR66() {
+
+			setValue(
+				"R66_AMOUNT",
+				getValue("R67_AMOUNT") +
+				getValue("R68_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R64 = R65 + R66 + R69
+		   ========================================================= */
+		function calculateR64() {
+
+			setValue(
+				"R64_AMOUNT",
+				getValue("R65_AMOUNT") +
+				getValue("R66_AMOUNT") +
+				getValue("R69_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R73 = R64 + R70 + R71 + R72
+		   ========================================================= */
+		function calculateR73() {
+
+			setValue(
+				"R73_AMOUNT",
+				getValue("R64_AMOUNT") +
+				getValue("R70_AMOUNT") +
+				getValue("R71_AMOUNT") +
+				getValue("R72_AMOUNT")
+			);
+		}
+
+
+		/* =========================================================
+		   R63 = R73 + R74 + R75
+		   ========================================================= */
+		function calculateR63() {
+
+			setValue(
+				"R63_AMOUNT",
+				getValue("R73_AMOUNT") +
+				getValue("R74_AMOUNT") +
+				getValue("R75_AMOUNT")
+			);
+		}
 
-    setValue(
-        "R77_AMOUNT",
-        getValue("R63_AMOUNT") +
-        getValue("R76_AMOUNT")
-    );
-}
 
+		/* =========================================================
+		   R77 = R63 + R76
+		   ========================================================= */
+		function calculateR77() {
 
-/* =========================================================
-   R92 = R86 + R89 + R90 - R91
-   ========================================================= */
-function calculateR92() {
+			setValue(
+				"R77_AMOUNT",
+				getValue("R63_AMOUNT") +
+				getValue("R76_AMOUNT")
+			);
+		}
 
-    setValue(
-        "R92_AMOUNT",
-        getValue("R86_AMOUNT") +
-        getValue("R89_AMOUNT") +
-        getValue("R90_AMOUNT") -
-        getValue("R91_AMOUNT")
-    );
-}
 
+		/* =========================================================
+		   R92 = R86 + R89 + R90 - R91
+		   ========================================================= */
+		function calculateR92() {
 
-/* =========================================================
-   R109 = R110 + R111 + R112 + R113 + R114
-   ========================================================= */
-function calculateR109() {
+			setValue(
+				"R92_AMOUNT",
+				getValue("R86_AMOUNT") +
+				getValue("R89_AMOUNT") +
+				getValue("R90_AMOUNT") -
+				getValue("R91_AMOUNT")
+			);
+		}
 
-    setValue(
-        "R109_AMOUNT",
-        getValue("R110_AMOUNT") +
-        getValue("R111_AMOUNT") +
-        getValue("R112_AMOUNT") +
-        getValue("R113_AMOUNT") +
-        getValue("R114_AMOUNT")
-    );
-}
 
+		/* =========================================================
+		   R109 = R110 + R111 + R112 + R113 + R114
+		   ========================================================= */
+		function calculateR109() {
 
-/* =========================================================
-   CALCULATE ALL
-   ========================================================= */
-function calculateAll() {
+			setValue(
+				"R109_AMOUNT",
+				getValue("R110_AMOUNT") +
+				getValue("R111_AMOUNT") +
+				getValue("R112_AMOUNT") +
+				getValue("R113_AMOUNT") +
+				getValue("R114_AMOUNT")
+			);
+		}
 
-    /* ----- First Section ----- */
 
-    calculateR11();
+		/* =========================================================
+		   CALCULATE ALL
+		   ========================================================= */
+		function calculateAll() {
 
-    calculateR15();
+			/* ----- First Section ----- */
 
-    calculateR16();
+			calculateR11();
 
-    calculateR21();
+			calculateR15();
 
-    calculateR22();
+			calculateR16();
 
-    calculateR25();
+			calculateR21();
 
-    calculateR28();
+			calculateR22();
 
-    calculateR31();
+			calculateR25();
 
-    calculateR33();
+			calculateR28();
 
+			calculateR31();
 
-    /* ----- R41 Section ----- */
+			calculateR33();
 
-    calculateR51();
 
-    calculateR50();
+			/* ----- R41 Section ----- */
 
-    calculateR47();
+			calculateR51();
 
-    calculateR46();
+			calculateR50();
 
-    calculateR45();
+			calculateR47();
 
-    calculateR43();
+			calculateR46();
 
-    calculateR41();
+			calculateR45();
 
+			calculateR43();
 
-    /* ----- R63 Section ----- */
+			calculateR41();
 
-    calculateR66();
 
-    calculateR64();
+			/* ----- R63 Section ----- */
 
-    calculateR73();
+			calculateR66();
 
-    calculateR63();
+			calculateR64();
 
-    calculateR77();
+			calculateR73();
 
+			calculateR63();
 
-    /* ----- R92 Section ----- */
+			calculateR77();
 
-    calculateR92();
 
+			/* ----- R92 Section ----- */
 
-    /* ----- R109 Section ----- */
+			calculateR92();
 
-    calculateR109();
 
-}
+			/* ----- R109 Section ----- */
 
-</script>
+			calculateR109();
+
+		}
+
+	</script>
 
 
 	<script>
@@ -1254,71 +1263,71 @@ function calculateAll() {
 
 
 		function fileuploads(btn) {
-						const asondate = btn.getAttribute("data-todate");
-						const type = btn.getAttribute("data-type");
-		
-						// Show loader
-						$('#loader').modal('show');
-		
-						try {
-							// ✅ Step 1: Calculate totals
-							calculateAll();
-		
-							// ✅ Step 2: Remove commas from all text inputs
-							$("#fileupload input[type='text']").each(function () {
-								$(this).val($(this).val().replace(/,/g, ''));
-							});
-		
-							// ✅ Step 3: Validate form
-							if (!$("#fileupload").valid()) {
-								$('#loader').modal('hide');
-								return;
-							}
-		
-							// ✅ Step 4: Build FormData
-							const formData = new FormData();
-							formData.append("asondate", asondate);
-							formData.append("type", type);
-		
-							$('#fileupload').find(':input').each(function () {
-								const name = $(this).attr('name');
-								if (name) {
-									formData.append(name, $(this).val());
-								}
-							});
-		
-							// ✅ Step 5: AJAX submission
-							$.ajax({
-								url: './FSIupdateAll',
-								type: 'POST',
-								data: formData,
-								processData: false,
-								contentType: false,
-								dataType: 'text',
-								success: function () {
-									$("#resultModalLabel").text("BRRS");
-									$("#resultModalBody").text(" Modified Successfully.");
-									$("#resultModal").modal("show");
-								},
-								error: function (jqXHR) {
-									console.error("Error response:", jqXHR.responseText);
-									$("#resultModalLabel").text("Error");
-									$("#resultModalBody").text("Update failed. Check console for details.");
-									$("#resultModal").modal("show");
-								},
-								complete: function () {
-									$('#loader').modal('hide');
-								}
-							});
-		
-						} catch (error) {
-							console.error("Error in fileuploads function:", error);
-							$('#loader').modal('hide');
-							$("#resultModalLabel").text("Error");
-							$("#resultModalBody").text("Unexpected error occurred. Check console.");
-							$("#resultModal").modal("show");
-						}
-					} 
+			const asondate = btn.getAttribute("data-todate");
+			const type = btn.getAttribute("data-type");
+
+			// Show loader
+			$('#loader').modal('show');
+
+			try {
+				// ✅ Step 1: Calculate totals
+				calculateAll();
+
+				// ✅ Step 2: Remove commas from all text inputs
+				$("#fileupload input[type='text']").each(function () {
+					$(this).val($(this).val().replace(/,/g, ''));
+				});
+
+				// ✅ Step 3: Validate form
+				if (!$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+
+				// ✅ Step 4: Build FormData
+				const formData = new FormData();
+				formData.append("asondate", asondate);
+				formData.append("type", type);
+
+				$('#fileupload').find(':input').each(function () {
+					const name = $(this).attr('name');
+					if (name) {
+						formData.append(name, $(this).val());
+					}
+				});
+
+				// ✅ Step 5: AJAX submission
+				$.ajax({
+					url: './FSIupdateAll',
+					type: 'POST',
+					data: formData,
+					processData: false,
+					contentType: false,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(" Modified Successfully.");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text("Update failed. Check console for details.");
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				console.error("Error in fileuploads function:", error);
+				$('#loader').modal('hide');
+				$("#resultModalLabel").text("Error");
+				$("#resultModalBody").text("Unexpected error occurred. Check console.");
+				$("#resultModal").modal("show");
+			}
+		}
 
 	</script>
 
@@ -1619,45 +1628,42 @@ function calculateAll() {
 						</button>
 
 						<!-- Modify -->
-						     <button class="custom-tab-btn"
-                onclick="showmodify(this);"
-                title="Click to EDIT Records"
-                th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-                th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
-                id="addRecord">Modify</button>
+						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary' and role != 'C' and role != 'ADM-C' and role != 'USR-C'}"
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+							id="addRecord">Modify</button>
 
-       <!-- Cancel-->
-        <button class="custom-tab-btn"
-                style="display:none;"
-                title="Cancel editing"
-                id="cancelRecord"
-                onclick="cancelModify();">
-            Cancel
-        </button> 
+						<!-- Cancel-->
+						<button class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();">
+							Cancel
+						</button>
 
 						<!-- Download button - Summary -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='FSI.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='FSI.xlsx',
+						             data-type=${type},
+						             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 
 						<!-- Download button - Details -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='FSIDetail',
-                     data-type=${type},
-                     data-version=${version}" onclick="startReport(this)">
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='FSIDetail',
+						             data-type=${type},
+						             data-version=${version}" onclick="startReport(this)">
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -1718,18 +1724,16 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:20px;">(ii) Less provisions for
 												accrued interest on nonperforming assets</td>
-												
-												<td id="R13_AMOUNT_INPUT"
-													    style="text-align: right; width: 200px; padding-left: 10px;">
-													    <input class="display-input Show_input"
-													           type="text"
-													           th:value="${reportsummary.R13_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R13_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-													           id="R13_AMOUNT"
-													           name="R13_AMOUNT"
-													           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-													           readonly />
-													</td>
-												
+
+											<td id="R13_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R13_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R13_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R13_AMOUNT" name="R13_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+
 											<!--<td id="R13_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R13_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -1782,17 +1786,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:20px;">(ii)Gains or losses on
 												financial instruments</td>
-												<td id="R18_AMOUNT_INPUT"
-																									    style="text-align: right; width: 200px; padding-left: 10px;">
-																									    <input class="display-input Show_input"
-																									           type="text"
-																									           th:value="${reportsummary.R18_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R18_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																									           id="R18_AMOUNT"
-																									           name="R18_AMOUNT"
-																									           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																									           readonly />
-																									</td>
-												
+											<td id="R18_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R18_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R18_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R18_AMOUNT" name="R18_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+
 											<!--<td id="R18_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R18_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -1803,17 +1805,15 @@ function calculateAll() {
 										<!-- R19 -->
 										<tr>
 											<td style="text-align:left; padding-left:20px;">(iii)Pro-rated earnings</td>
-											
+
 											<td id="R19_AMOUNT_INPUT"
-																								    style="text-align: right; width: 200px; padding-left: 10px;">
-																								    <input class="display-input Show_input"
-																								           type="text"
-																								           th:value="${reportsummary.R19_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R19_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																								           id="R19_AMOUNT"
-																								           name="R19_AMOUNT"
-																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																								           readonly />
-																								</td>		
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R19_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R19_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R19_AMOUNT" name="R19_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R19_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R19_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -1894,17 +1894,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:20px;">(ii)Other financial asset
 												provisions</td>
-												
-												<td id="R27_AMOUNT_INPUT"
-													    style="text-align: right; width: 200px; padding-left: 10px;">
-													    <input class="display-input Show_input"
-													           type="text"
-													           th:value="${reportsummary.R27_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R27_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-													           id="R27_AMOUNT"
-													           name="R27_AMOUNT"
-													           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-													           readonly />
-													</td>
+
+											<td id="R27_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R27_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R27_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R27_AMOUNT" name="R27_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R27_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R27_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -1926,17 +1924,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">9.Extraordinary items (+/-)
 											</td>
-											
+
 											<td id="R29_AMOUNT_INPUT"
-												    style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input"
-												           type="text"
-												           th:value="${reportsummary.R29_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R29_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R29_AMOUNT"
-												           name="R29_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R29_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R29_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R29_AMOUNT" name="R29_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R29_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R29_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -1968,15 +1964,13 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">12.Dividends payable</td>
 											<td id="R32_AMOUNT_INPUT"
-												    style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input"
-												           type="text"
-												           th:value="${reportsummary.R32_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R32_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R32_AMOUNT"
-												           name="R32_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R32_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R32_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R32_AMOUNT" name="R32_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R32_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R32_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2029,18 +2023,16 @@ function calculateAll() {
 										<!-- R42 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">15.Nonfinancial assets</td>
-											
+
 											<td id="R42_AMOUNT_INPUT"
-												    style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input"
-												           type="text"
-												           th:value="${reportsummary.R42_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R42_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R42_AMOUNT"
-												           name="R42_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
-											
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R42_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R42_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R42_AMOUNT" name="R42_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+
 											<!--<td id="R42_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R42_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2101,16 +2093,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:80px;">(i.i.i)Resident</td>
 											<td id="R48_AMOUNT"
-																								    style="text-align: right; width: 200px; padding-left: 10px;">
-																								    <input class="display-input Show_input"
-																								           type="text"
-																								           th:value="${reportsummary.R48_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R48_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																								           id="R48_AMOUNT"
-																								           name="R48_AMOUNT"
-																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																								           readonly />
-																								</td>
-											
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R48_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R48_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R48_AMOUNT" name="R48_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+
 											<!--<td id="R48_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R48_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2121,13 +2111,14 @@ function calculateAll() {
 										<!-- R49 -->
 										<tr>
 											<td style="text-align:left; padding-left:80px;">(i.i.ii)Nonresident</td>
-											
-											<td id="R49_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R49_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R49_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R49_AMOUNT" name="R49_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+
+											<td id="R49_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R49_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R49_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R49_AMOUNT" name="R49_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R49_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R49_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2158,12 +2149,13 @@ function calculateAll() {
 										<!-- R52 -->
 										<tr>
 											<td style="text-align:left; padding-left:90px;">(i.ii.i.i)Central bank</td>
-											<td id="R52_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R52_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R52_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R52_AMOUNT" name="R52_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R52_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R52_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R52_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R52_AMOUNT" name="R52_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R52_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R52_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2175,12 +2167,13 @@ function calculateAll() {
 										<!-- R53 -->
 										<tr>
 											<td style="text-align:left; padding-left:90px;">(i.ii.i.ii)Government</td>
-											<td id="R53_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R53_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R53_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R53_AMOUNT" name="R53_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R53_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R53_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R53_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R53_AMOUNT" name="R53_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R53_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R53_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2193,13 +2186,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:90px;">(i.ii.i.iii)Other financial
 												corporations</td>
-												<td id="R54_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R54_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R54_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R54_AMOUNT" name="R54_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R54_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R54_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R54_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R54_AMOUNT" name="R54_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R54_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R54_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2211,13 +2205,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:90px;"> (i.ii.i.iv)Nonfinancial
 												corporations incl PSUs</td>
-												<td id="R55_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R55_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R55_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R55_AMOUNT" name="R55_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R55_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R55_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R55_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R55_AMOUNT" name="R55_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R55_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R55_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2229,14 +2224,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:90px;"> (i.ii.i.v)Other domestic
 												sectors</td>
-												<td id="R56_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R56_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R56_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R56_AMOUNT" name="R56_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
-										<!--	<td id="R56_AMOUNT"
+											<td id="R56_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R56_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R56_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R56_AMOUNT" name="R56_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<!--	<td id="R56_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R56_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R56', reportAddlCriteria1='C2'"
@@ -2277,13 +2273,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">20. Equity and investment
 												fund shares</td>
-												<td id="R60_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R60_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R60_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R60_AMOUNT" name="R60_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R60_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R60_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R60_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R60_AMOUNT" name="R60_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R60_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R60_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2296,12 +2293,13 @@ function calculateAll() {
 											<td style="text-align:left; padding-left:10px;">21. Financial derivatives1
 											</td>
 
-											<td id="R61_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R61_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R61_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R61_AMOUNT" name="R61_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R61_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R61_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R61_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R61_AMOUNT" name="R61_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R61_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R61_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2363,12 +2361,13 @@ function calculateAll() {
 										<!-- R67 -->
 										<tr>
 											<td style="text-align:left; padding-left:70px;">(ii.i)Resident</td>
-											<td id="R67_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R67_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R67_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R67_AMOUNT" name="R67_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R67_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R67_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R67_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R67_AMOUNT" name="R67_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R67_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R67_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2380,12 +2379,13 @@ function calculateAll() {
 										<!-- R68 -->
 										<tr>
 											<td style="text-align:left; padding-left:80px;">(ii.ii)Nonresident</td>
-											<td id="R68_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R68_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R68_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R68_AMOUNT" name="R68_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R68_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R68_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R68_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R68_AMOUNT" name="R68_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R68_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R68_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2399,13 +2399,14 @@ function calculateAll() {
 											<td style="text-align:left; padding-left:50px;"> (iii). Other currency and
 												deposits</td>
 
-												<td id="R69_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R69_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R69_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R69_AMOUNT" name="R69_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R69_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R69_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R69_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R69_AMOUNT" name="R69_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R69_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R69_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2426,12 +2427,13 @@ function calculateAll() {
 										<!-- R71 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">26. Debt securities</td>
-											<td id="R71_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R71_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R71_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R71_AMOUNT" name="R71_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R71_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R71_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R71_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R71_AMOUNT" name="R71_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R71_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R71_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2464,14 +2466,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">29. Financial derivatives
 												and employee stock options</td>
-												<td id="R74_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R74_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R74_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R74_AMOUNT" name="R74_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
-										<!--	<td id="R74_AMOUNT"
+											<td id="R74_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R74_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R74_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R74_AMOUNT" name="R74_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<!--	<td id="R74_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R74_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R74', reportAddlCriteria1='C2'"
@@ -2570,13 +2573,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">35. Additional Tier 1 (AT1)
 												capital less corresponding supervisory deductions4</td>
-												<td id="R88_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R88_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R88_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R88_AMOUNT" name="R88_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R88_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R88_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R88_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R88_AMOUNT" name="R88_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R88_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R88_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2598,12 +2602,13 @@ function calculateAll() {
 										<!-- R90 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">37. Tier 3 capital</td>
-											<td id="R90_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R90_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R90_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R90_AMOUNT" name="R90_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R90_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R90_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R90_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R90_AMOUNT" name="R90_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R90_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R90_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2616,13 +2621,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">38. Other supervisory
 												deductions5</td>
-												<td id="R91_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R91_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R91_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R91_AMOUNT" name="R91_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R91_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R91_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R91_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R91_AMOUNT" name="R91_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R91_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R91_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2736,12 +2742,13 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">48. Short-term liabilities
 											</td>
-											<td id="R102_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R102_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R102_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R102_AMOUNT" name="R102_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R102_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R102_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R102_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R102_AMOUNT" name="R102_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R102_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R102_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2791,12 +2798,13 @@ function calculateAll() {
 										<!-- R107 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">(i) Domestic economy</td>
-											<td id="R107_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R107_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R107_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R107_AMOUNT" name="R107_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R107_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R107_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R107_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R107_AMOUNT" name="R107_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R107_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R107_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2808,12 +2816,13 @@ function calculateAll() {
 										<!-- R108 -->
 										<tr>
 											<td style="text-align:left; padding-left:10px;">(ii) Advanced economies</td>
-											<td id="R108_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-											    <input class="display-input Show_input" type="text"
-											           th:value="${reportsummary.R108_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R108_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-											           id="R108_AMOUNT" name="R108_AMOUNT"
-											           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-											           readonly />
+											<td id="R108_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R108_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R108_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R108_AMOUNT" name="R108_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
 											</td>
 											<!--<td id="R108_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R108_AMOUNT,1,'COMMA',0,'POINT')}"
@@ -2836,14 +2845,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;"> iii.i. Emerging and
 												developing Asia</td>
-												<td id="R110_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R110_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R110_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R110_AMOUNT" name="R110_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
-										<!--	<td id="R110_AMOUNT"
+											<td id="R110_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R110_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R110_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R110_AMOUNT" name="R110_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
+											<!--	<td id="R110_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R110_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
 												th:attr="reportLabel='R110', reportAddlCriteria1='C2'"
@@ -2854,13 +2864,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;"> iii.ii. Emerging and
 												developing Europe</td>
-												<td id="R111_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R111_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R111_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R111_AMOUNT" name="R111_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R111_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R111_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R111_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R111_AMOUNT" name="R111_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R111_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R111_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2872,13 +2883,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;"> iii.iii. Latin America and
 												the Caribbean</td>
-												<td id="R112_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R112_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R112_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R112_AMOUNT" name="R112_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R112_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R112_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R112_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R112_AMOUNT" name="R112_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R112_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R112_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2891,13 +2903,14 @@ function calculateAll() {
 											<td style="text-align:left; padding-left:10px;"> iii.iv. Middle East and
 												Central Asia</td>
 
-												<td id="R113_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-												    <input class="display-input Show_input" type="text"
-												           th:value="${reportsummary.R113_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R113_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-												           id="R113_AMOUNT" name="R113_AMOUNT"
-												           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-												           readonly />
-												</td>
+											<td id="R113_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R113_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R113_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R113_AMOUNT" name="R113_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R113_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R113_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2964,14 +2977,15 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">57. Credit to the private
 												sector</td>
-												
-												<td id="R119_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																								    <input class="display-input Show_input" type="text"
-																								           th:value="${reportsummary.R119_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R119_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																								           id="R119_AMOUNT" name="R119_AMOUNT"
-																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																								           readonly />
-																								</td>
+
+											<td id="R119_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R119_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R119_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R119_AMOUNT" name="R119_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R119_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R119_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -2983,13 +2997,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">58. Loan concentration by
 												economic activity</td>
-												<td id="R120_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																								    <input class="display-input Show_input" type="text"
-																								           th:value="${reportsummary.R120_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R120_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																								           id="R120_AMOUNT" name="R120_AMOUNT"
-																								           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																								           readonly />
-																								</td>
+											<td id="R120_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R120_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R120_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R120_AMOUNT" name="R120_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R120_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R120_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -3001,13 +3016,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">59. Reference lending rates
 											</td>
-											<td id="R121_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																							    <input class="display-input Show_input" type="text"
-																							           th:value="${reportsummary.R121_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R121_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																							           id="R121_AMOUNT" name="R121_AMOUNT"
-																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																							           readonly />
-																							</td>
+											<td id="R121_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R121_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R121_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R121_AMOUNT" name="R121_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R121_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R121_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -3019,13 +3035,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">60. Reference deposit rates
 											</td>
-											<td id="R122_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																							    <input class="display-input Show_input" type="text"
-																							           th:value="${reportsummary.R122_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R122_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																							           id="R122_AMOUNT" name="R122_AMOUNT"
-																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																							           readonly />
-																							</td>
+											<td id="R122_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R122_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R122_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R122_AMOUNT" name="R122_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R122_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R122_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -3037,13 +3054,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left; padding-left:10px;">61. Highest interbank rate
 											</td>
-											<td id="R123_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																							    <input class="display-input Show_input" type="text"
-																							           th:value="${reportsummary.R123_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R123_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																							           id="R123_AMOUNT" name="R123_AMOUNT"
-																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																							           readonly />
-																							</td>
+											<td id="R123_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R123_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R123_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R123_AMOUNT" name="R123_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R123_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R123_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -3055,13 +3073,14 @@ function calculateAll() {
 										<tr>
 											<td style="text-align:left;padding-left:10px;">62. Lowest interbank rate
 											</td>
-											<td id="R124_AMOUNT_INPUT" style="text-align: right; width: 200px; padding-left: 10px;">
-																							    <input class="display-input Show_input" type="text"
-																							           th:value="${reportsummary.R124_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R124_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
-																							           id="R124_AMOUNT" name="R124_AMOUNT"
-																							           style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
-																							           readonly />
-																							</td>
+											<td id="R124_AMOUNT_INPUT"
+												style="text-align: right; width: 200px; padding-left: 10px;">
+												<input class="display-input Show_input" type="text"
+													th:value="${reportsummary.R124_AMOUNT != null ? #numbers.formatDecimal(reportsummary.R124_AMOUNT, 1, 'COMMA', 0, 'POINT') : '0'}"
+													id="R124_AMOUNT" name="R124_AMOUNT"
+													style="background-color: #FFFFFF; width: 180px; margin-left: 10px; height: 28px; border-color: transparent; text-align: right;"
+													readonly />
+											</td>
 											<!--<td id="R124_AMOUNT"
 												th:text="${#numbers.formatDecimal(reportsummary.R124_AMOUNT,1,'COMMA',0,'POINT')}"
 												style="text-align: right; width: 200px;"
@@ -3130,14 +3149,13 @@ function calculateAll() {
 								</table>
 
 							</div>
-							
+
 							<div style="text-align: center;  background-color: white;  padding:15px;">
 
-							           <button id="submitButton" type="button"
-							            class="custom-tab-btn Show_input" form="fileupload"
-							            th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
-							            style="display: none;">Submit</button>
-							          </div> 
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+									style="display: none;">Submit</button>
+							</div>
 					</div>
 					</form>
 				</div>

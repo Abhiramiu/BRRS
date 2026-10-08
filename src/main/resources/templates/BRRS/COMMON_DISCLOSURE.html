@@ -350,16 +350,60 @@ PURPOSE		: BRRSREPORT
 		});
 	</script>
 	<script th:inline="javascript">
-	const allowdetail = /*[[${allowdetail}]]*/ 'NO';	
-	const type = /*[[${type}]]*/ '';	
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
 		/*<![CDATA[*/
 		const reportId = /*[[${reportid}]]*/ null;
 		/*]]>*/
 		let isDetailsModal = false;
+
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
+
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → show Download
+		//    - Maker   (M / MGR)       → hide Download
+		//    - Manager (MAN / USR-MAN) → show Download
+		// ========================
+		function Maker_Checker_Function() {
+			$.ajax({
+				url: "/BRRS/getUserRole",
+				type: "GET",
+				success: function (roleId) {
+					console.log("User Role ID:", roleId);
+
+					// ✅ Checker → show Download
+					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+						$(".download-btn").show();
+					}
+					// ✅ Maker → hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
+					}
+					// ✅ Manager → show Download
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
+					}
+				},
+				error: function (err) {
+					console.error("Error fetching role:", err);
+					$(".download-btn").show();
+				}
+			});
+		}
 
 		$(window).on('pageshow', function () {
 			// hide loader on back/forward nav
@@ -386,9 +430,9 @@ PURPOSE		: BRRSREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-			if ((type === "RESUB" || type === "ARCHIVAL" )&& allowdetail === "NO") { 
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
 				showResultModal("Information", "Detail page is only available for highest report version only");
-								return;
+				return;
 			}
 
 			var Callurl;
@@ -638,10 +682,10 @@ PURPOSE		: BRRSREPORT
 
 			location.href =
 				`/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&SNO=${SNO}&asondate=${asondate}&type=${type}`;
-				
-				
+
+
 		}
-		
+
 		function downloadDetailfile(jobId, filename) {
 
 			$.ajax({
@@ -725,115 +769,115 @@ PURPOSE		: BRRSREPORT
 		let previousUrl = document.referrer;
 
 		function submitCommon_DisclosureUpdate() {
-		    let formData = $('#Common_DisclosureDetailForm').serialize();
-		    let userAnswer = null;
+			let formData = $('#Common_DisclosureDetailForm').serialize();
+			let userAnswer = null;
 
-		    if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
-		        $('#confirmModal').modal('show');
-		        
-		        $('#btnConfirmYes').off('click').on('click', function() { 
-		            $('#confirmModal').modal('hide');
-		            $('#confirmModal').data('answered', 'YES');
-		            submitCommon_DisclosureUpdate(); 
-		        });
-		        
-		        $('#btnConfirmNo').off('click').on('click', function() { 
-		            $('#confirmModal').modal('hide');
-		            $('#confirmModal').data('answered', 'NO');
-		            submitCommon_DisclosureUpdate(); 
-		        });
-		        
-		        return; 
-		    }
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-		    userAnswer = $('#confirmModal').data('answered');
-		    if (userAnswer === 'NO') {
-		        formData += '&entry=NO';
-		    }
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitCommon_DisclosureUpdate();
+				});
 
-		    $('#confirmModal').data('answered', null);
-		    
-		    $('#loader').modal('show');
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitCommon_DisclosureUpdate();
+				});
 
-		    $.ajax({
-		        url: '/BRRS/Reports/' + reportId + '/update',
-		        type: 'POST',
-		        data: formData,
+				return;
+			}
 
-		        success: function (response) {
-		            $('#loader').modal('hide');
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
 
-		            if (response && response.toLowerCase().includes('success')) {
-		                
-		                if (userAnswer === 'NO') {
-		                	let title = 'Success'; 
-		                    let message = response;
-		                    document.getElementById('resultModalLabel2').innerText = title;
-		                    document.getElementById('resultModalBody2').innerText = message;
-		                    
-		                    const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
-		                    modal.show();
-		                } else {
-		                    showResultModalDU('Success', response);
-		                }
+			$('#confirmModal').data('answered', null);
 
-		            } else {
-		                showResultModalDU('Information', response || 'No data updated.');
-		            }
-		        },
+			$('#loader').modal('show');
 
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModalDU('Error', 'Failed to update record. Please try again.');
-		        }
-		    });
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/update',
+				type: 'POST',
+				data: formData,
+
+				success: function (response) {
+					$('#loader').modal('hide');
+
+					if (response && response.toLowerCase().includes('success')) {
+
+						if (userAnswer === 'NO') {
+							let title = 'Success';
+							let message = response;
+							document.getElementById('resultModalLabel2').innerText = title;
+							document.getElementById('resultModalBody2').innerText = message;
+
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
+						} else {
+							showResultModalDU('Success', response);
+						}
+
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to update record. Please try again.');
+				}
+			});
 		}
 		function regenerateProcedure() {
 			let rawDate = /*[[${todate}]]*/ 'fallback-string';
 
-		    let cleanDate = rawDate.replace(/['"]/g, ''); 
+			let cleanDate = rawDate.replace(/['"]/g, '');
 
-		    let formattedDate = cleanDate;
-		    let dateParts = cleanDate.split(/[\/\-]/);
-		    
-		    if (dateParts.length === 3) {
-		        formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
-		    }
-		    let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
 
-		    $('#loader').modal('show');
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
 
-		    $.ajax({
-		        url: '/BRRS/Reports/' + reportId + '/regenprocedure',
-		        type: 'POST',
-		        data: formData,
+			$('#loader').modal('show');
 
-		        success: function (response) {
-		            $('#loader').modal('hide');
-		            if (response && response.toLowerCase().includes('success')) {
-		            	let title = 'Success'; 
-		                let message = response;
-		            	 document.getElementById('resultModalLabel2').innerText = title;
-		                    document.getElementById('resultModalBody2').innerText = message;
-		                    
-		                    const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
-		                    modal.show();
-		            } else {
-		                showResultModalDU('Information', response || 'No data updated.');            
-		            }
-		        },
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
 
-		        error: function () {
-		            $('#loader').modal('hide');
-		            showResultModalDU('Error', 'Failed to process request. Please try again.');
-		        }
-		    });
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						let title = 'Success';
+						let message = response;
+						document.getElementById('resultModalLabel2').innerText = title;
+						document.getElementById('resultModalBody2').innerText = message;
+
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModalDU('Information', response || 'No data updated.');
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+					showResultModalDU('Error', 'Failed to process request. Please try again.');
+				}
+			});
 		}
 
-		function redirecttoarchlist(){
-			window.location.href = '/BRRS/Resubmission?rptcode='+ reportId; 
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + reportId;
 		}
-		
+
 		function showResultModalDU(title, message) {
 			document.getElementById('resultModalLabel1').innerText = title;
 			document.getElementById('resultModalBody1').innerText = message;
@@ -848,7 +892,7 @@ PURPOSE		: BRRSREPORT
 			} else {
 				window.history.back();
 			}
-		}		
+		}
 		function showResultModal(title, message) {
 			// Set the text for the modal elements
 			$('#resultModalLabel').text(title);
@@ -1122,8 +1166,7 @@ PURPOSE		: BRRSREPORT
 							style="color: white !important; font-size: 16px; margin-right: 20px;">Report
 							Date: <span th:text="${#strings.replace(asondate, '/', '-')}">2025-07-04</span>
 						</span>
-						<button type="button" class="custom-tab-btn"
-							onclick="regenerateProcedure()"
+						<button type="button" class="custom-tab-btn" onclick="regenerateProcedure()"
 							th:if="${displaymode == 'Details' and type == 'RESUB' }">Regenerate</button>
 
 						<!-- Buttons -->
@@ -1143,26 +1186,32 @@ PURPOSE		: BRRSREPORT
                             id="addRecord">Modify</button> -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                    				 data-asondate=${asondate}, 
-                    				 data-fromdate=${fromdate}, 
-                     				 data-todate=${todate}, 
-                     				 data-currency=${currency},  
-                     				 data-dtltype=${dtltype}, 
-                     				 data-filename='Common_Disclosure.xlsx',
-					 				  data-type=${type},
-					    			 data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
+
+
+						<!-- ✅ Summary Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+							             data-asondate=${asondate}, 
+							             data-fromdate=${fromdate}, 
+							             data-todate=${todate}, 
+							             data-currency=${currency},  
+							             data-dtltype=${dtltype}, 
+							             data-filename='Common_Disclosure.xlsx',
+							             data-type=${type},
+							             data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-						    data-fromdate=${fromdate},
-						    data-todate=${todate},
-						    data-filename='COMMON_DISCLOSUREDetail',
-                data-type=${type},
-		            data-version=${version}
-						  ">
+
+
+
+						<!-- ✅ Detail Download button -->
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}"
+							onclick="startReport(this);" th:attr="data-fromdate=${fromdate},
+							             data-todate=${todate},
+							             data-filename='COMMON_DISCLOSUREDetail',
+							             data-type=${type},
+							             data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 
@@ -1443,10 +1492,9 @@ PURPOSE		: BRRSREPORT
 						<div class="col-sm-1"></div>
 
 						<div class="col-sm-3">
-							<input type="hidden" th:field="*{sno}"
-								class="form-control form-control-sm" readonly /> <input
-								type="hidden" th:value="${type}" name="type"
-								class="form-control form-control-sm" readonly />
+							<input type="hidden" th:field="*{sno}" class="form-control form-control-sm" readonly />
+							<input type="hidden" th:value="${type}" name="type" class="form-control form-control-sm"
+								readonly />
 						</div>
 					</div>
 
@@ -1541,21 +1589,17 @@ PURPOSE		: BRRSREPORT
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="menu-title-header">
-					<div class="modal-title" id="confirmModalLabel"
-						style="text-align: center; color: white;">Confirmation</div>
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
 				</div>
-				<div class="modal-body"
-					style="text-align: center; font-size: 1.1rem;">
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
 					<p id="confirmModalBody">Would you like to make further modifications?</p>
 
-					<div
-						style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
-						<div
-							style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
 							<button type="button" id="btnConfirmYes" class="custom-tab-btn"
 								data-dismiss="modal">Modify</button>
-							<button type="button" id="btnConfirmNo" class="custom-tab-btn"
-								data-dismiss="modal" >
+							<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
 								Regenerate</button>
 						</div>
 					</div>
@@ -1564,7 +1608,7 @@ PURPOSE		: BRRSREPORT
 		</div>
 	</div>
 
-<div class="modal fade" id="resultModal2" tabindex="-1">
+	<div class="modal fade" id="resultModal2" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="menu-title-header">

@@ -338,74 +338,89 @@ PURPOSE		: BDISB2 BRRSREPORT
 
 	<script th:inline="javascript">
 		let isDetailsModal = false;
+
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn, .PDF-download-menu").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
+
 		$(window).on('pageshow', function () {
 			// hide loader on back/forward nav
 			$('#loader').modal('hide');
 		});
+
 		$(window).on('beforeunload', function () {
 			// hide loader on leaving page
 			$('#loader').modal('hide');
 		});
 
-
-
-		$(document).ready(function () {
-			Maker_Checker_Function();
-		});
-
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → hide Modify, show Download
+		//    - Maker   (M / MGR)       → show Modify, hide Download
+		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
+		// ========================
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
+					console.log("User Role ID:", roleId);
 
+					// ✅ Checker → hide Modify, show Download
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn, .PDF-download-menu").show();
 					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Maker → show Modify, hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn, .PDF-download-menu").hide();
 					}
-
+					// ✅ Manager → show BOTH
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn, .PDF-download-menu").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn, .PDF-download-menu").show();
+					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn, .PDF-download-menu").show();
 				}
 			});
 		}
 
-
-
 		function home() {
 			$("#loader").modal("toggle");
-			location.href = 'Dashboard'
+			location.href = 'Dashboard';
 		}
+
 		function back() {
 			$("#loader").modal("toggle");
 			window.history.back();
 		}
 
-		//to fetch summary from the database - called from the summary button
+		//to fetch details from the database - called from the Details button
 		function showdetails() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid}(
-					        dtltype='detail',
-					        fromdate=${fromdate},
-					        todate=${todate},
-					        type=${type},
-					        asondate=${asondate},
-					        version=${version}
-					    )}]]*/
+	                    dtltype='detail',
+	                    fromdate=${fromdate},
+	                    todate=${todate},
+	                    type=${type},
+	                    asondate=${asondate},
+	                    version=${version}
+	                )}]]*/
 				location.href = Callurl;
-
 		}
 
 		function showsummary() {
@@ -413,9 +428,8 @@ PURPOSE		: BDISB2 BRRSREPORT
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
 				location.href = Callurl;
 		}
-
-
 	</script>
+
 	<script>
 		function activateTab(tabName) {
 			// Remove 'active' from all buttons
@@ -501,23 +515,23 @@ PURPOSE		: BDISB2 BRRSREPORT
 				}
 			});
 		}
-		
+
 		function downloadSummaryPdf(element) {
-		    var reportid = element.getAttribute('data-reportid');
-		    var fromdate = element.getAttribute('data-fromdate');
-		    var todate   = element.getAttribute('data-todate');
+			var reportid = element.getAttribute('data-reportid');
+			var fromdate = element.getAttribute('data-fromdate');
+			var todate = element.getAttribute('data-todate');
 
-		    $('#loader').modal('show');
+			$('#loader').modal('show');
 
-		    var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
-		            + '?fromdate=' + encodeURIComponent(fromdate)
-		            + '&todate='   + encodeURIComponent(todate);
+			var url = '/BRRS/Reports/' + reportid + '/downloadSummaryPdf'
+				+ '?fromdate=' + encodeURIComponent(fromdate)
+				+ '&todate=' + encodeURIComponent(todate);
 
-		    window.location.href = url;
+			window.location.href = url;
 
-		    setTimeout(function () {
-		        $('#loader').modal('hide');
-		    }, 2000);
+			setTimeout(function () {
+				$('#loader').modal('hide');
+			}, 2000);
 		}
 
 		function editRecord() {
@@ -912,8 +926,8 @@ PURPOSE		: BDISB2 BRRSREPORT
 						<!-- Modify button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit "
-							th:if="${type != 'ARCHIVAL' and dtltype ne 'detail'}" id="addRecord">Modify</button>
+							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit " th:if="${type != 'ARCHIVAL' and dtltype ne 'detail' 
+						             and role != 'C' and role != 'ADM-C' and role != 'USR-C'}" id="addRecord">Modify</button>
 
 						<!-- Cancel button (hidden initially) -->
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
@@ -921,42 +935,38 @@ PURPOSE		: BDISB2 BRRSREPORT
 
 
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary'or displaymode == 'resubDetail'}"
-							th:attr="data-reportid=${reportid}, 
-																				                     data-asondate=${asondate}, 
-																				                     data-fromdate=${fromdate}, 
-																				                     data-todate=${todate}, 
-																				                     data-currency=${currency},  
-																				                     data-dtltype=${dtltype}, 
-																				                     data-filename='BDISB2.xlsx',
-																				                     data-type=${type},
-																									 data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
+						<button type="button" class="custom-tab-btn download-btn" id="custom-tab-btnAdd" th:if="${(displaymode == 'summary' or displaymode == 'Details' or displaymode == 'resubSummary' or displaymode == 'resubDetail') 
+							             and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+							             data-asondate=${asondate}, 
+							             data-fromdate=${fromdate}, 
+							             data-todate=${todate}, 
+							             data-currency=${currency},  
+							             data-dtltype=${dtltype}, 
+							             data-filename='BDISB2.xlsx',
+							             data-type=${type},
+							             data-version=${version != null ? version : ''} " onclick="downloadfile(this);"
 							style="font-family: Arial; font-weight: bold;font-size: 14px;">
 							<i class="fa fa-download"></i> Format
 						</button>
 
 
 
-						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
-							<button type="button" class="custom-tab-btn dropdown-toggle"
-								data-toggle="dropdown">
+						<div class="nav-item dropdown PDF-download-menu download-btn"
+							style="list-style: none; display: inline-block;" th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') 
+							              and role != 'M' and role != 'MGR' }">
+							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
-							<div class="dropdown-menu" >
-								<a href="#"
-								   class="nav-link"
-							 	   th:attr=	"data-reportid=${reportid},
+							<div class="dropdown-menu">
+								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
-											 data-todate=${todate}"
-								   onclick="downloadSummaryPdf(this);">
+											 data-todate=${todate}" onclick="downloadSummaryPdf(this);">
 									<i class="fa fa-file-pdf text-danger"></i> FORMAT PDF
 								</a>
 							</div>
 						</div>
 
-						
+
 
 					</div>
 
@@ -2210,103 +2220,103 @@ PURPOSE		: BDISB2 BRRSREPORT
 											</tr>
 
 										</tbody>
-																			</table>
+									</table>
 
 
 
 
-																		</div>
-																		<div style="text-align: center; margin-top: 10px;">
+								</div>
+								<div style="text-align: center; margin-top: 10px;">
 
-																			<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-																				form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
-																				onclick="fileuploads_all(this);" style="display: none;">
-																				Submit</button>
-																		</div>
-																	</form>
-
-
-																							</div>
-																						</div>
-																					</div>
+									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										onclick="fileuploads_all(this);" style="display: none;">
+										Submit</button>
+								</div>
+							</form>
 
 
-
-																				</div>
+						</div>
+					</div>
+				</div>
 
 
 
-																			</div>
+			</div>
 
 
 
-																		</div>
+		</div>
 
 
 
-																		<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
-																			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-																				<div class="modal-content" style="background: transparent;">
-																					<div class="modal-body" style="text-align: center">
-																						<div>
-																							<img th:src=@{/images/loader.gif} id="bfirelogo"
-																								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
-																								alt="Bornfire">
-																						</div>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
+	</div>
 
 
 
-																		<!-- Custom Alert/Result Modal (Matches your existing style) -->
-																		<div class="modal fade" id="resultModal">
-																			<div class="modal-dialog modal-dialog-centered">
-																				<div class="modal-content">
-																					<!-- Your custom styled header -->
-																					<div class="menu-title-header">
-																						<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
-																							<!-- Title will be set by JavaScript -->
-																						</div>
-																					</div>
-																					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																						<p id="resultModalBody"></p>
-																						<!-- Your custom styled button -->
-																						<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
+	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content" style="background: transparent;">
+				<div class="modal-body" style="text-align: center">
+					<div>
+						<img th:src=@{/images/loader.gif} id="bfirelogo"
+							style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+							alt="Bornfire">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 
-																		<!-- Custom Cellresult Modal -->
-																		<div class="modal fade" id="cellresultModal">
-																			<div class="modal-dialog modal-dialog-centered">
-																				<div class="modal-content">
 
-																					<!-- Custom header -->
-																					<div class="menu-title-header"
-																						style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
-																						<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
-																							want to
-																							open the report?</div>
-																					</div>
+	<!-- Custom Alert/Result Modal (Matches your existing style) -->
+	<div class="modal fade" id="resultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodel()" data-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-																					<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
-																						<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
-																							style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
-																							Cancel</button>
-																						<button type="button" class="custom-tab-btn yes-btn"
-																							style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
-																							Yes</button>
-																					</div>
-																				</div>
-																			</div>
-																		</div>
 
-																	</body>
-																	<!-- < script >
+	<!-- Custom Cellresult Modal -->
+	<div class="modal fade" id="cellresultModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+
+				<!-- Custom header -->
+				<div class="menu-title-header"
+					style="background-color: #6c7a91; padding: 8px; border-radius: 5px 5px 0 0;">
+					<div class="modal-title" id="cellresultModalLabel" style="text-align: center; color: white;">Do you
+						want to
+						open the report?</div>
+				</div>
+
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<button type="button" class="custom-tab-btn cancel-btn" data-bs-dismiss="modal"
+						style="margin-right: 10px; border: 2px solid #6c7a91; background: white; color: black; border-radius: 20px; padding: 5px 15px;">
+						Cancel</button>
+					<button type="button" class="custom-tab-btn yes-btn"
+						style="background: #6c7a91; color: white; border: none; border-radius: 20px; padding: 5px 20px;">
+						Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<!-- < script >
 																				$(document).ready(function () {
 																					$('#BRFvalidation').DataTable({
 																						"paging": true,
@@ -2334,112 +2344,112 @@ PURPOSE		: BDISB2 BRRSREPORT
 																	</script > -->
 
 
-																	<style>
-																		/* Your existing CSS - this is the correct approach */
-																		.scrollable-table-container {
-																			/* This is the key: it creates the scroll context */
-																			max-height: 600px;
-																			/* Or a suitable height like 80vh for responsive design */
-																			overflow-y: auto;
-																			border: 1px solid #ccc;
-																		}
+<style>
+	/* Your existing CSS - this is the correct approach */
+	.scrollable-table-container {
+		/* This is the key: it creates the scroll context */
+		max-height: 600px;
+		/* Or a suitable height like 80vh for responsive design */
+		overflow-y: auto;
+		border: 1px solid #ccc;
+	}
 
-																		/* Your existing sticky header CSS, targeting the tr elements within the thead */
-																		.scrollable-table-container thead tr:nth-child(1) {
-																			position: sticky;
-																			top: 0;
-																			background-color: #b3b6b9;
-																			z-index: 5;
-																		}
+	/* Your existing sticky header CSS, targeting the tr elements within the thead */
+	.scrollable-table-container thead tr:nth-child(1) {
+		position: sticky;
+		top: 0;
+		background-color: #b3b6b9;
+		z-index: 5;
+	}
 
-																		.scrollable-table-container thead tr:nth-child(2) {
-																			position: sticky;
-																			top: 36px;
-																			/* adjust based on row height */
-																			background-color: #b3b6b9;
-																			z-index: 4;
-																		}
+	.scrollable-table-container thead tr:nth-child(2) {
+		position: sticky;
+		top: 36px;
+		/* adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 4;
+	}
 
-																		.scrollable-table-container thead tr:nth-child(3) {
-																			position: sticky;
-																			top: 72px;
-																			/* Adjust based on row height */
-																			background-color: #b3b6b9;
-																			z-index: 3;
-																		}
+	.scrollable-table-container thead tr:nth-child(3) {
+		position: sticky;
+		top: 72px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 3;
+	}
 
-																		.scrollable-table-container thead tr:nth-child(4) {
-																			position: sticky;
-																			top: 100px;
-																			/* Adjust based on row height */
-																			background-color: #b3b6b9;
-																			z-index: 2;
-																		}
+	.scrollable-table-container thead tr:nth-child(4) {
+		position: sticky;
+		top: 100px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 2;
+	}
 
-																		.scrollable-table-container thead tr:nth-child(5) {
-																			position: sticky;
-																			top: 135px;
-																			/* Adjust based on row height */
-																			background-color: #b3b6b9;
-																			z-index: 1;
-																		}
-																	</style>
-
-
-																	<style>
-																		.inner {
-																			max-height: 600px;
-																			/* Adjust height as needed */
-																			overflow: auto;
-																			border: 1px solid #dee2e6;
-																		}
-
-																		/* Sticky thead */
-																		#reports thead th {
-																			position: sticky;
-																			top: 0;
-																			background-color: #f8f9fa;
-																			/* Match Bootstrap thead-light */
-																			z-index: 2;
-																		}
-
-																		div.dataTables_wrapper div.dataTables_paginate {
-																			text-align: right !important;
-																			float: right !important;
-																			width: auto;
-																			margin-top: 10px;
-																		}
-
-																		/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
-																		div.dataTables_wrapper div.dataTables_info {
-																			float: left !important;
-																			margin-top: 10px;
-																		}
-
-																		.pagination {
-																			margin: 0;
-																		}
-
-																		.page-item.active .page-link {
-																			background-color: #386276;
-																			border-color: #386276;
-																		}
-
-																		.page-link {
-																			color: #386276;
-																		}
-
-																		.page-link:hover {
-																			color: #2a4a5c;
-																		}
-
-																		.form-select {
-																			display: inline-block;
-																			width: auto;
-																		}
-																	</style>
+	.scrollable-table-container thead tr:nth-child(5) {
+		position: sticky;
+		top: 135px;
+		/* Adjust based on row height */
+		background-color: #b3b6b9;
+		z-index: 1;
+	}
+</style>
 
 
+<style>
+	.inner {
+		max-height: 600px;
+		/* Adjust height as needed */
+		overflow: auto;
+		border: 1px solid #dee2e6;
+	}
+
+	/* Sticky thead */
+	#reports thead th {
+		position: sticky;
+		top: 0;
+		background-color: #f8f9fa;
+		/* Match Bootstrap thead-light */
+		z-index: 2;
+	}
+
+	div.dataTables_wrapper div.dataTables_paginate {
+		text-align: right !important;
+		float: right !important;
+		width: auto;
+		margin-top: 10px;
+	}
+
+	/* Ensure info text (e.g., "Showing 1 to X") stays on the left */
+	div.dataTables_wrapper div.dataTables_info {
+		float: left !important;
+		margin-top: 10px;
+	}
+
+	.pagination {
+		margin: 0;
+	}
+
+	.page-item.active .page-link {
+		background-color: #386276;
+		border-color: #386276;
+	}
+
+	.page-link {
+		color: #386276;
+	}
+
+	.page-link:hover {
+		color: #2a4a5c;
+	}
+
+	.form-select {
+		display: inline-block;
+		width: auto;
+	}
+</style>
 
 
-																	</html>
+
+
+</html>

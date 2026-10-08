@@ -406,30 +406,57 @@ PURPOSE  : BRRSREPORT
 
 
 		$(document).ready(function () {
+			// hide loader on normal load
+			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker)
+			$(".download-btn").hide();
+
+			// ✅ Step 2: Check role and apply visibility rules
 			Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		$(window).on('pageshow', function () {
+			$('#loader').modal('hide');
+		});
+
+		$(window).on('beforeunload', function () {
+			$('#loader').modal('hide');
+		});
+
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → show Download
+		//    - Maker   (M / MGR)       → hide Download
+		//    - Manager (MAN / USR-MAN) → show Download
+		// ========================
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
+					console.log("User Role ID:", roleId);
 
+					// ✅ Checker → show Download
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn").show();
 					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Maker → hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn").hide();
 					}
-
+					// ✅ Manager → show Download
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn").show();
+					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn").show();
 				}
 			});
 		}
@@ -1142,24 +1169,26 @@ PURPOSE  : BRRSREPORT
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnDetails" onclick="showdetails();"
 							th:if="${displaymode == 'summary'}">Details</button>
 
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-						                     data-asondate=${asondate}, 
-						                     data-fromdate=${fromdate}, 
-						                     data-todate=${todate}, 
-						                     data-currency=${currency},  
-						                     data-dtltype=${dtltype}, 
-						                     data-filename='ADISB2.xlsx',
-						                     data-type=${type},
-						                     data-version=${version}" onclick="downloadfile(this);">
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-format"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" th:attr="data-reportid=${reportid}, 
+							             data-asondate=${asondate}, 
+							             data-fromdate=${fromdate}, 
+							             data-todate=${todate}, 
+							             data-currency=${currency},  
+							             data-dtltype=${dtltype}, 
+							             data-filename='ADISB2.xlsx',
+							             data-type=${type},
+							             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i> Format
 						</button>
 
-						<div class="nav-item dropdown PDF-download-menu"
-							style="list-style: none; display: inline-block;"
-							th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+						<div class="nav-item dropdown PDF-download-menu download-btn"
+							style="list-style: none; display: inline-block;" th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') 
+							             and role != 'M' and role != 'MGR' }">
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
+
 							<div class="dropdown-menu">
 								<a href="#" class="nav-link" th:attr="data-reportid=${reportid},
 											 data-fromdate=${fromdate},
@@ -1169,16 +1198,15 @@ PURPOSE  : BRRSREPORT
 							</div>
 						</div>
 
-						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
-							th:if="${displaymode == 'Details'}" onclick="startReport(this);" th:attr="
-										    data-fromdate=${fromdate},
-										    data-todate=${todate},
-											data-currency=${currency},  
-														data-dtltype=${dtltype}, 
-										    data-filename='ADISB2Detail',
-											data-type=${type},
-														data-version=${version}
-										  ">
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+							th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}"
+							onclick="startReport(this);" th:attr="data-fromdate=${fromdate},
+						             data-todate=${todate},
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='ADISB2Detail',
+						             data-type=${type},
+						             data-version=${version}">
 							<i class="fa fa-download"></i>
 						</button>
 					</div>

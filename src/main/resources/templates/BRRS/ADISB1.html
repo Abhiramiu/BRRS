@@ -405,32 +405,50 @@ PURPOSE  : BRRSREPORT
 
 
 		$(document).ready(function () {
-			Maker_Checker_Function();
+		    // ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker)
+		    $(".download-btn, .PDF-download-menu").hide();
+
+		    // ✅ Step 2: Check role and apply visibility rules
+		    Maker_Checker_Function();
 		});
 
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → hide Modify, show Download
+		//    - Maker   (M / MGR)       → show Modify, hide Download
+		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
+		// ========================
 		function Maker_Checker_Function() {
-			$.ajax({
-				url: "/BRRS/getUserRole",
-				type: "GET",
-				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
+		    $.ajax({
+		        url: "/BRRS/getUserRole",
+		        type: "GET",
+		        success: function (roleId) {
+		            console.log("User Role ID:", roleId);
 
-					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
-						if (modifyBtn) modifyBtn.style.display = "none";
-					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
-					}
-
-				},
-				error: function (err) {
-					console.error("Error fetching role:", err);
-				}
-			});
+		            // ✅ Checker → hide Modify, show Download
+		            if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
+		                const modifyBtn = document.getElementById("addRecord");
+		                if (modifyBtn) modifyBtn.style.display = "none";
+		                $(".download-btn, .PDF-download-menu").show();
+		            }
+		            // ✅ Maker → show Modify, hide Download (MGR = Maker)
+		            else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+		                $(".download-btn, .PDF-download-menu").hide();
+		            }
+		            // ✅ Manager → show BOTH
+		            else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+		                $(".download-btn, .PDF-download-menu").show();
+		            }
+		            // ✅ Any other role → show all
+		            else {
+		                $(".download-btn, .PDF-download-menu").show();
+		            }
+		        },
+		        error: function (err) {
+		            console.error("Error fetching role:", err);
+		            $(".download-btn, .PDF-download-menu").show();
+		        }
+		    });
 		}
 
 
@@ -812,29 +830,12 @@ PURPOSE  : BRRSREPORT
 
 		//Cancel / Reset function
 		function cancelModify() {
-			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
-			}
-			// ❌ If user clicks CANCEL, nothing happens
+		    if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+		        location.reload();  // reload is enough — no need for the manual reset
+		    }
 		}
 
 	</script>
-
-
-
-
 
 	<script>
 
@@ -1220,9 +1221,10 @@ function fileuploads(btn) {
 
 						<!-- Modify -->
 						<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-							th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
-							id="addRecord">Modify</button>
+						    th:if="${type != 'ARCHIVAL' and displaymode == 'summary' 
+						             and role != 'C' and role != 'ADM-C' and role != 'USR-C'}"
+						    th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
+						    id="addRecord">Modify</button>
 
 						<!-- Cancel -->
 						<button class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
@@ -1231,20 +1233,24 @@ function fileuploads(btn) {
 						</button>
 
 						<!-- Download button - Summary -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='ADISB1.xlsx',
-                     data-type=${type},
-                     data-version=${version}" onclick="downloadfile(this);">
-							<i class="fa fa-download"></i> Format
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-summary"
+						    th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" 
+						    th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='ADISB1.xlsx',
+						             data-type=${type},
+						             data-version=${version}" 
+						    onclick="downloadfile(this);">
+						    <i class="fa fa-download"></i> Format
 						</button>
 						
 						<div class="nav-item dropdown PDF-download-menu" style="list-style: none; display: inline-block;"
-							 th:if="${displaymode == 'summary' or displaymode == 'resubSummary' }">
+						     th:if="${(displaymode == 'summary' or displaymode == 'resubSummary') 
+						             and role != 'M' and role != 'MGR' }">
 							<button type="button" class="custom-tab-btn dropdown-toggle"
 								data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
@@ -1262,16 +1268,19 @@ function fileuploads(btn) {
 						</div>
 
 						<!-- Download button - Details -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'Details'}" th:attr="data-reportid=${reportid}, 
-                     data-asondate=${asondate}, 
-                     data-fromdate=${fromdate}, 
-                     data-todate=${todate}, 
-                     data-currency=${currency},  
-                     data-dtltype=${dtltype}, 
-                     data-filename='ADISB1Detail',
-                     data-type=${type},
-                     data-version=${version}" onclick="startReport(this)">
-							<i class="fa fa-download"></i>
+						<button type="button" class="custom-tab-btn download-btn" id="btn-download-detail"
+						    th:if="${displaymode == 'Details' and role != 'M' and role != 'MGR'}" 
+						    th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='ADISB1Detail',
+						             data-type=${type},
+						             data-version=${version}" 
+						    onclick="startReport(this)">
+						    <i class="fa fa-download"></i>
 						</button>
 
 					</div>

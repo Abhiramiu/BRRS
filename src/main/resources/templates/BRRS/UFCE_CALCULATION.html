@@ -315,8 +315,6 @@
 	</style>
 
 
-
-
 	<script th:inline="javascript">
 
 		// Global report id used by showsummary()/showdetails()/archival & resub nav functions below
@@ -325,6 +323,12 @@
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
+
+			// ✅ Step 1: Immediately hide download buttons (prevents flicker for Maker profile)
+			$(".download-btn, .PDF-download-menu").hide();
+
+			// ✅ Step 2: Check logged-in user role and apply visibility rules
+			Maker_Checker_Function();
 		});
 
 		$(window).on('pageshow', function () {
@@ -337,32 +341,41 @@
 			$('#loader').modal('hide');
 		});
 
-
-		$(document).ready(function () {
-			Maker_Checker_Function();
-		});
-
-		// if logged user is a Checker, checker cannot modify, if user is maker , then maker cant download
+		// ========================
+		// ✅ Maker-Checker role handling
+		//    - Checker (C / AUDIT)     → hide Modify, show Download
+		//    - Maker   (M / MGR)       → show Modify, hide Download
+		//    - Manager (MAN / USR-MAN) → show BOTH Modify + Download
+		// ========================
 		function Maker_Checker_Function() {
 			$.ajax({
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
+					console.log("User Role ID:", roleId);
 
+					// ✅ Checker → hide Modify, show Download
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
-						const modifyBtn = document.getElementById("addRecord");
+						const modifyBtn = document.getElementById("modifyBtn");
 						if (modifyBtn) modifyBtn.style.display = "none";
+						$(".download-btn, .PDF-download-menu").show();
 					}
-
-					if (roleId === "ADM-M" || roleId === "USR-M") {
-						const button = document.getElementById("custom-tab-btnAdd");
-						if (button) button.style.display = "none";
+					// ✅ Maker → show Modify, hide Download (MGR = Maker)
+					else if (roleId === "ADM-M" || roleId === "USR-M" || roleId === "MGR") {
+						$(".download-btn, .PDF-download-menu").hide();
 					}
-
+					// ✅ Manager → show BOTH
+					else if (roleId === "ADM-MAN" || roleId === "USR-MAN" || roleId === "MAN") {
+						$(".download-btn, .PDF-download-menu").show();
+					}
+					// ✅ Any other role → show all
+					else {
+						$(".download-btn, .PDF-download-menu").show();
+					}
 				},
 				error: function (err) {
 					console.error("Error fetching role:", err);
+					$(".download-btn, .PDF-download-menu").show();
 				}
 			});
 		}
@@ -625,10 +638,10 @@
 		}
 
 		function closemodel() {
-			// Hide the modals
+
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
-
+			$('#loader').modal('hide');
 		}
 
 
@@ -1295,9 +1308,8 @@
 
 
 						<!-- MODIFY / CANCEL BUTTONS -->
-						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();"
-							th:if="${displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'resubSummary'}"
-							title="Click to EDIT Records">
+						<button type="button" class="custom-tab-btn" id="modifyBtn" onclick="enableInlineEdit();" th:if="${(displaymode == 'summary' or displaymode == 'normalSummaryWithVersion' or displaymode == 'resubSummary')
+						             and role != 'C' and role != 'ADM-C' and role != 'USR-C'}" title="Click to EDIT Records">
 							Modify
 						</button>
 
@@ -1307,22 +1319,23 @@
 						</button>
 
 						<!-- Download button - Summary (Excel) -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download Excel" th:attr="data-reportid=${reportid}, 
-														                     data-asondate=${asondate}, 
-														                     data-fromdate=${fromdate}, 
-														                     data-todate=${todate}, 
-														                     data-currency=${currency},  
-														                     data-dtltype=${dtltype}, 
-														                     data-filename='UFCE_CALCULATION.xlsx',
-														                     data-type=${type},
-														                     data-version=${version}" onclick="downloadfile(this);">
+						<button type="button" class="custom-tab-btn download-btn"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" title="Download Excel"
+							th:attr="data-reportid=${reportid}, 
+						             data-asondate=${asondate}, 
+						             data-fromdate=${fromdate}, 
+						             data-todate=${todate}, 
+						             data-currency=${currency},  
+						             data-dtltype=${dtltype}, 
+						             data-filename='UFCE_CALCULATION.xlsx',
+						             data-type=${type},
+						             data-version=${version}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i>
 						</button>
 
 						<!-- Download button - Summary (PDF) -->
-						<button type="button" class="custom-tab-btn" th:if="${displaymode == 'summary'}"
-							title="Download PDF"
+						<button type="button" class="custom-tab-btn download-btn"
+							th:if="${displaymode == 'summary' and role != 'M' and role != 'MGR'}" title="Download PDF"
 							th:attr="data-reportid=${reportid}, data-fromdate=${fromdate}, data-todate=${todate}"
 							onclick="downloadSummaryPdf(this);">
 							<i class="fa fa-file-pdf"></i>
