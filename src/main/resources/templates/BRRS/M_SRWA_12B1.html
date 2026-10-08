@@ -424,38 +424,38 @@ PURPOSE		: BRRS_M_SRWA_12B_REPORT
 		function showdetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'detail'}, asondate=${asondate})}]]*/
-			// showResultModal('BRRS', 'Details page not available for Manual Report');
-			location.href = Callurl;
+				// showResultModal('BRRS', 'Details page not available for Manual Report');
+				location.href = Callurl;
 		}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'summary'}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showArchivalsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
 		function showArchivaldetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'ARCHIVAL'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showResubsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='summary', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showResubdetail() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='detail', fromdate=${fromdate}, todate=${todate}, type=${'RESUB'}, asondate=${asondate}, version=${version ?: ''})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -728,9 +728,13 @@ PURPOSE		: BRRS_M_SRWA_12B_REPORT
 			}
 
 			// ---- Email column (dynamic) ----
+			// Only MANUAL ENTRY cells (same fields as commonFields) are unlocked + coloured.
+			// Calculation cells (gray) and fixed cells (e.g. rw_oricount) stay locked and keep their colour.
 			$(".new_email_column").each(function () {
+				const field = this.id.replace(/^r\d+_new_colum_/, "");
+				if (!commonFields.includes(field)) return;
 				$(this).prop("readonly", false).prop("disabled", false);
-				paintYellow("#" + this.id || ".new_email_column");
+				paintYellow("#" + this.id);
 			});
 
 			// ---- Toggle buttons ----

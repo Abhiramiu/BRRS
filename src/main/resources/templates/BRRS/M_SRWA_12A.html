@@ -720,7 +720,7 @@ PURPOSE		: BRRS REPORT
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 
@@ -1011,82 +1011,141 @@ PURPOSE		: BRRS REPORT
 				}
 			});
 
-			//--- Apply YELLOW background for rows 19–133 ---
-			const skipCells = [
-				"#r19_expo_crm",
-				"#r60_expo_crm",
-				"#r63_expo_crm",
-				"#r87_expo_crm",
-				"#r92_expo_crm",
-				"#r96_expo_crm",
-				"#r117_expo_crm",
-				"#r124_expo_crm",
-				"#r129_expo_crm",
-				"#r131_expo_crm"
-			];
-
-			for (let i = 19; i <= 133; i++) {
-				let columns = [
-					"expo_crm",
-					"spe_pro_expo",
-					"amt_elig_sht_net",
-					"crm_sub_non_col_guar",
-					"crm_sub_non_col_cre_der",
-					"crm_sub_col_elig_cash",
-					"crm_sub_col_elig_trea_bills",
-					"crm_sub_col_elig_deb_sec",
-					"crm_sub_col_elig_equi",
-					"crm_sub_col_elig_unit_tru",
-					"crm_sub_rwa_ris_crm",
-					"crm_comp_col_expo_elig",
-					"crm_comp_col_elig_expo_vol_adj",
-					"crm_comp_col_elig_fin_hai"
-				];
-
-				columns.forEach(col => {
-					let selector = `#r${i}_${col}`;
-					if (skipCells.includes(selector)) return;
-					paintYellow(selector);
-				});
-			}
-
-			//--- Apply YELLOW background for grouped ranges (CEA section) ---
-			const ranges = [
-				[146, 152], [154, 162], [164, 170], [172, 178], [180, 186],
-				[188, 194], [196, 202], [204, 210], [212, 218],
-				[220, 226], [228, 234], [236, 242], [244, 250]
-			];
-
-			const ceaColumns = [
-				"nom_pri_amt",
-				"cea_elig_coun_bilt_net",
-				"crm_sub_app_cea_elig",
-				"crm_sub_app_non_col_guar_elig",
-				"crm_sub_app_non_col_cre_der",
-				"crm_sub_app_col_elig_cash",
-				"crm_sub_app_col_elig_tre_bills",
-				"crm_sub_app_col_elig_deb_sec",
-				"crm_sub_app_col_elig_euiq",
-				"crm_sub_app_col_elig_uni_tru",
-				"crm_com_app_col_elig_crm",
-				"crm_com_app_col_cea_elig_crm",
-				"crm_com_app_col_elig_cea_vol_adj",
-				"crm_com_app_col_elig_fin_hai"
-			];
-
-			ranges.forEach(([start, end]) => {
-				for (let i = start; i <= end; i++) {
-					ceaColumns.forEach(col => {
-						if (
-							(i === 158 && col === "nom_pri_amt") ||
-							(i === 158 && col === "crm_sub_app_col_elig_cash")
-						) return;
-
-						const selector = `#r${i}_${col}`;
-						paintYellow(selector);
-					});
+			//--- Apply YELLOW only to MANUAL ENTRY cells (classification taken from SRWA12A_TEMPLATE) ---
+			// Calculation cells (gray / green-cell) and Mapping/Linking cells are never painted.
+			// Each entry = every listed row x every listed column. Row numbers match the id="r<row>_<column>" inputs.
+			const manualEntryMap = [
+				{
+					rows: [19, 60, 63, 87, 92, 96, 117, 129, 131],
+					cols: [
+						"spe_pro_expo",
+						"amt_elig_sht_net",
+						"crm_sub_non_col_guar",
+						"crm_sub_non_col_cre_der",
+						"crm_sub_col_elig_cash",
+						"crm_sub_col_elig_trea_bills",
+						"crm_sub_col_elig_deb_sec",
+						"crm_sub_col_elig_equi",
+						"crm_sub_col_elig_unit_tru",
+						"crm_sub_rwa_ris_crm",
+						"crm_comp_col_expo_elig",
+						"crm_comp_col_elig_expo_vol_adj",
+						"crm_comp_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [
+						20, 21, 22, 23, 26, 27, 28, 32, 33, 34, 35, 36, 39, 40, 41, 44, 61, 62, 67, 68, 69, 73,
+						74, 75, 76, 77, 79, 80, 81, 85, 86, 88, 90, 91, 97, 99, 100, 101, 105, 106, 107, 109,
+						110, 111, 112, 113, 119, 120, 121, 125, 126, 127, 128, 130
+					],
+					cols: [
+						"expo_crm",
+						"spe_pro_expo",
+						"amt_elig_sht_net",
+						"crm_sub_non_col_guar",
+						"crm_sub_non_col_cre_der",
+						"crm_sub_col_elig_cash",
+						"crm_sub_col_elig_trea_bills",
+						"crm_sub_col_elig_deb_sec",
+						"crm_sub_col_elig_equi",
+						"crm_sub_col_elig_unit_tru",
+						"crm_sub_rwa_ris_crm",
+						"crm_comp_col_expo_elig",
+						"crm_comp_col_elig_expo_vol_adj",
+						"crm_comp_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [47, 48, 49, 50, 51, 54, 55, 56],
+					cols: [
+						"expo_crm",
+						"spe_pro_expo",
+						"amt_elig_sht_net",
+						"crm_sub_non_col_guar",
+						"crm_sub_non_col_cre_der",
+						"crm_sub_col_elig_cash",
+						"crm_sub_col_elig_trea_bills",
+						"crm_sub_col_elig_deb_sec",
+						"crm_sub_col_elig_equi",
+						"crm_sub_col_elig_unit_tru",
+						"crm_comp_col_expo_elig",
+						"crm_comp_col_elig_expo_vol_adj",
+						"crm_comp_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [89, 98],
+					cols: [
+						"crm_sub_rwa_ris_crm",
+						"crm_comp_col_expo_elig",
+						"crm_comp_col_elig_expo_vol_adj",
+						"crm_comp_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [124],
+					cols: [
+						"crm_sub_non_col_guar",
+						"crm_sub_non_col_cre_der",
+						"crm_sub_col_elig_cash",
+						"crm_sub_col_elig_trea_bills",
+						"crm_sub_col_elig_deb_sec",
+						"crm_sub_col_elig_equi",
+						"crm_sub_col_elig_unit_tru",
+						"crm_sub_rwa_ris_crm",
+						"crm_comp_col_expo_elig",
+						"crm_comp_col_elig_expo_vol_adj",
+						"crm_comp_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [
+						146, 147, 148, 149, 150, 151, 152, 154, 155, 156, 157, 159, 160, 161, 162, 164, 165, 166,
+						167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 180, 181, 182, 183, 184, 185, 186,
+						188, 189, 190, 191, 192, 193, 194, 196, 197, 198, 199, 200, 201, 202, 204, 205, 206, 207,
+						208, 209, 210, 212, 213, 214, 215, 216, 217, 218, 220, 221, 222, 223, 224, 225, 226, 228,
+						229, 230, 231, 232, 233, 234, 236, 237, 238, 239, 240, 241, 242, 244, 245, 246, 247, 248,
+						249, 250
+					],
+					cols: [
+						"nom_pri_amt",
+						"cea_elig_coun_bilt_net",
+						"crm_sub_app_non_col_guar_elig",
+						"crm_sub_app_non_col_cre_der",
+						"crm_sub_app_col_elig_cash",
+						"crm_sub_app_col_elig_tre_bills",
+						"crm_sub_app_col_elig_deb_sec",
+						"crm_sub_app_col_elig_euiq",
+						"crm_sub_app_col_elig_uni_tru",
+						"crm_com_app_col_cea_elig_crm",
+						"crm_com_app_col_elig_cea_vol_adj",
+						"crm_com_app_col_elig_fin_hai",
+					]
+				},
+				{
+					rows: [158],
+					cols: [
+						"cea_elig_coun_bilt_net",
+						"crm_sub_app_non_col_guar_elig",
+						"crm_sub_app_non_col_cre_der",
+						"crm_sub_app_col_elig_tre_bills",
+						"crm_sub_app_col_elig_deb_sec",
+						"crm_sub_app_col_elig_euiq",
+						"crm_sub_app_col_elig_uni_tru",
+						"crm_com_app_col_cea_elig_crm",
+						"crm_com_app_col_elig_cea_vol_adj",
+						"crm_com_app_col_elig_fin_hai",
+					]
 				}
+			];
+
+			manualEntryMap.forEach(({rows, cols}) => {
+				rows.forEach(row => {
+					cols.forEach(col => paintYellow(`#r${row}_${col}`));
+				});
 			});
+
 
 			// Toggle buttons
 			$("#submitButton").show();
@@ -18318,10 +18377,10 @@ PURPOSE		: BRRS REPORT
 
 										<tr style="background-color: #ffef00">
 
-											<td style="background-color: #FFFFFFF;"></td>
+											<td style="background-color: #FFFFFFF"></td>
 
 											<th
-												style="text-align: center; background-color: #FFFFFFF; font-weight: bold;">
+												style="text-align: center; background-color: #FFFFFFF; font-weight: bold">
 												Performing
 												Loans</th>
 

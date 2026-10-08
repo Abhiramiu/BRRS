@@ -377,13 +377,13 @@ PURPOSE		: BRFREPORT
 		        asondate=${asondate},
 		        version=${version}
 		    )}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 
 		}
 		function showsummary() {
 			$('#loader').modal('show');
 			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 
 		function showsummaryResub() {
@@ -395,7 +395,7 @@ PURPOSE		: BRFREPORT
 				type='RESUB', 
 				asondate=${asondate},
 				version=${version})}]]*/
-			location.href = Callurl;
+				location.href = Callurl;
 		}
 	</script>
 
@@ -1339,7 +1339,7 @@ PURPOSE		: BRFREPORT
 
 												<td id="ROW19" style="font-weight: bold;"><input
 														class="display-input show_input" type="text"
-														th:value="${#strings.defaultString(report.r19_product, 'N/A')}"
+														th:value="${#strings.defaultString(report.r19_product, 'First Day of Year 1 through Year 1 end')}"
 														id="r19_product" name="r19_product"
 														style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
 														readonly /></td>
@@ -1365,7 +1365,7 @@ PURPOSE		: BRFREPORT
 
 												<td id="ROW20" style="font-weight: bold;"><input
 														class="display-input show_input" type="text"
-														th:value="${#strings.defaultString(report.r20_product, 'N/A')}"
+														th:value="${#strings.defaultString(report.r20_product, 'First Day of Year 2 through Year 2 end')}"
 														id="r20_product" name="r20_product"
 														style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
 														readonly /></td>
@@ -1391,7 +1391,7 @@ PURPOSE		: BRFREPORT
 
 												<td id="ROW21" style="font-weight: bold;"><input
 														class="display-input show_input" type="text"
-														th:value="${#strings.defaultString(report.r21_product, 'N/A')}"
+														th:value="${#strings.defaultString(report.r21_product, 'First Day of Year 3 Through Year 3 end')}"
 														id="r21_product" name="r21_product"
 														style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 20px; font-weight: bold;"
 														readonly /></td>
@@ -1418,13 +1418,13 @@ PURPOSE		: BRFREPORT
 
 												<td id="ROW22" style="font-weight: bold;"><input
 														class="display-input show_input" type="text"
-														th:value="${#strings.defaultString(report.r22_product, 'N/A')}"
+														th:value="${#strings.defaultString(report.r22_product, 'First Day of Year 4 and thereafter')}"
 														id="r22_product" name="r22_product"
 														style="background-color: #FFFFFF; width: 500px; height: 28px; border-color: transparent; text-align: left; padding-left: 1%; font-weight: bold;"
 														readonly /></td>
 
-												<td id="ROW22" style="text-align: center;"><span
-														th:text="${report.r22_cap_year4}"></span></td>
+												<td id="ROW22" style="text-align: center;"><span th:text="0"></span>
+												</td>
 
 												<td id="ROW22"
 													style="padding-left: 20px; font-weight: bold; background-color: rgb(107, 122, 143); color: white;">
