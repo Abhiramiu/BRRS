@@ -570,7 +570,7 @@ public class BRRS_M_SECA_ReportService {
 		try {
 			// 1. Loop from R15 to R50 and copy fields
 			for (int i = 14; i <= 57; i++) {
-				if (i == 17 || i == 32 || i == 35 || i == 36 || i == 38 || i == 43 || i == 47 || i == 51) {
+				if (i == 17 || i == 32 || i == 35 || i == 38 || i == 43 || i == 47 || i == 51) {
 					continue;
 				}
 				String prefix = "R" + i + "_";
@@ -592,36 +592,6 @@ public class BRRS_M_SECA_ReportService {
 
 						setter.invoke(existing, newValue);
 						setterDet.invoke(existingDetail, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-			for (int i = 36; i <= 36; i++) {
-//	    		if (i == 17 || i == 32 || i == 35 || i == 36 || i == 38 || i == 43 || i == 47 || i == 51) {
-//	            continue;}
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "EQUITY", "TRES_BILLS", "REPURCHASE_AGREE", "COM_PAPER", "CERT_OF_DEP",
-						"PLEDGED_ASSET", "OTHER" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-
-						Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method setterDet = M_SECA_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						setter.invoke(existing, newValue);
-						setterDet.invoke(existingDetail, newValue);
-
 					} catch (NoSuchMethodException e) {
 						// Skip missing fields
 						continue;

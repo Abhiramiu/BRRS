@@ -202622,6 +202622,7 @@ public class BRRS_M_NOSVOS_ReportService {
 		// ============================================================
 		mv.setViewName("BRRS/M_NOSVOS");
 		mv.addObject("displaymode", displayMode);
+		mv.addObject("role", role);
 
 		logger.info("View set to: {}, displayMode: {}", mv.getViewName(), displayMode);
 		return mv;

@@ -976,7 +976,7 @@ function showmodify(btn) {
 
     // Highlight editable fields for rows 11 to 60
     for (let i = 14; i <= 57; i++) {
-    if ([17, 32, 35, 36, 38, 43, 47, 51].includes(i)) continue;
+    if ([17, 32, 35, 38, 43, 47, 51].includes(i)) continue;
 
     let fields = ["EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE",
     	"CERT_OF_DEP", "COM_PAPER", "PLEDGED_ASSET", "OTHER"];
@@ -987,18 +987,6 @@ function showmodify(btn) {
         }
     });
 }
-    for (let i = 36; i <= 36; i++) {
-        //if ([36].includes(i)) continue;
-
-        let fields = ["EQUITY", "TRES_BILLS", "REPURCHASE_AGREE",
-        	"CERT_OF_DEP", "COM_PAPER", "PLEDGED_ASSET", "OTHER"];
-        fields.forEach(field => {
-            let selector = `#R${i}_${field}`;
-            if ($(selector).length) {
-                $(selector).css({ "background-color": "#FFF59D" });
-            }
-        });
-    }
 
 
     // Show buttons
@@ -1455,11 +1443,8 @@ function cancelModify() {
 
 	        let C2 = parseFloat($("#R36_EQUITY").val().replace(/,/g, "")) || 0;
 	        //let C3 = parseFloat($("#R36_BONDS").val().replace(/,/g, "")) || 0;
-	let C3 = parseFloat($("#R36_BONDS").is("input") ?
-			$("#R36_BONDS").val().replace(/,/g, "") : $("#R36_BONDS").text().replace(/,/g, "")) || 0;
-		//let C4 = parseFloat($("#R36_BOBC").val().replace(/,/g, "")) || 0;
-		let C4 = parseFloat($("#R36_BOBC").is("input") ?
-				$("#R36_BOBC").val().replace(/,/g, "") : $("#R36_BOBC").text().replace(/,/g, "")) || 0;
+		let C3 = parseFloat($("#R36_BONDS").val().replace(/,/g, "")) || 0;
+		let C4 = parseFloat($("#R36_BOBC").val().replace(/,/g, "")) || 0;
 	        let C5 = parseFloat($("#R36_TRES_BILLS").val().replace(/,/g, "")) || 0;
 	        let C6 = parseFloat($("#R36_REPURCHASE_AGREE").val().replace(/,/g, "")) || 0;
 	        let C7 = parseFloat($("#R36_COM_PAPER").val().replace(/,/g, "")) || 0;
@@ -1939,7 +1924,7 @@ function cancelModify() {
 	calculateR34Totals(); // Calculate once on load
 
 	// --- Event Listeners for Row 36 ---
-	const r36_source_fields = ["#R36_EQUITY", "#R36_TRES_BILLS", "#R36_REPURCHASE_AGREE", "#R36_COM_PAPER", "#R36_CERT_OF_DEP", "#R36_PLEDGED_ASSET", "#R36_OTHER"];
+	const r36_source_fields = ["#R36_EQUITY", "#R36_BONDS", "#R36_BOBC", "#R36_TRES_BILLS", "#R36_REPURCHASE_AGREE", "#R36_COM_PAPER", "#R36_CERT_OF_DEP", "#R36_PLEDGED_ASSET", "#R36_OTHER"];
 	$(r36_source_fields.join(', ')).on("input", calculateR36Totals);
 	calculateR36Totals(); // Calculate once on load
 
@@ -2556,23 +2541,11 @@ function cancelModify() {
 	    calculateR35Totals();
 
 	 // Recalculate whenever R36–R57 values change
-		for (let i = 37; i <= 57; i++) {
+		for (let i = 36; i <= 57; i++) {
 			if ([38, 43, 47, 51].includes(i)) continue;
 
 			// Attach the listener to all 9 columns for the current row
 			$("#R" + i + "_EQUITY, #R" + i + "_BONDS, #R" + i + "_BOBC, #R" + i + "_TRES_BILLS, #R"
-					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
-					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
-				
-				calculateR35Totals();
-			
-			});
-		}
-		for (let i = 36; i <= 36; i++) {
-			//if ([38, 43, 47, 51].includes(i)) continue;
-
-			// Attach the listener to all 9 columns for the current row
-			$("#R" + i + "_EQUITY, #R" + i + "_TRES_BILLS, #R"
 					+ i + "_REPURCHASE_AGREE, #R" + i + "_COM_PAPER, #R" + i + "_CERT_OF_DEP, #R"
 					+ i + "_PLEDGED_ASSET, #R" + i + "_OTHER").on("input", function() {
 				
@@ -3191,12 +3164,10 @@ function fileuploads(btn) {
                  
              <td id="ROW13" style="font-weight: bold;"><input
 			class="display-input Show_input " type="text"
-			th:value="${report.R13_PRODUCT != null ? report.R13_PRODUCT : 'N/A'}"
+			th:value="${report.R13_PRODUCT != null ? report.R13_PRODUCT : '1.  Non-financial institutional units (sum of lines (i) to (vi)):'}"
 			id="R13_PRODUCT" name="R13_PRODUCT"
-			style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-			readonly />
-		1.  Non-financial institutional units (sum of lines (i) to (vi)):
-</td>
+			style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent;font-weight: bold; text-align: left;"
+			readonly /></td>
 
 
 
@@ -3287,12 +3258,10 @@ function fileuploads(btn) {
 		
 <td id="ROW14" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R14_PRODUCT != null ? report.R14_PRODUCT : 'N/A'}"
+    th:value="${report.R14_PRODUCT != null ? report.R14_PRODUCT : '(i)    Central Government'}"
     id="R14_PRODUCT" name="R14_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	(i)    Central Government
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
 	<td id="R14" style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3380,12 +3349,10 @@ function fileuploads(btn) {
                <tr>
               <td id="ROW15" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R15_PRODUCT != null ? report.R15_PRODUCT : 'N/A'}"
+    th:value="${report.R15_PRODUCT != null ? report.R15_PRODUCT : '(ii)   Local Government'}"
     id="R15_PRODUCT" name="R15_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	(ii)   Local Government
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3474,12 +3441,10 @@ function fileuploads(btn) {
                    <tr>
                 <td id="ROW16" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R16_PRODUCT != null ? report.R16_PRODUCT : 'N/A'}"
+    th:value="${report.R16_PRODUCT != null ? report.R16_PRODUCT : '(iii)  Public Non-Financial Corporations'}"
     id="R16_PRODUCT" name="R16_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	(iii)  Public Non-Financial Corporations
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
 
                 <td style="text-align:right;">
@@ -3568,12 +3533,10 @@ function fileuploads(btn) {
                       <tr>
                       <td id="ROW17" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R17_PRODUCT != null ? report.R17_PRODUCT : 'N/A'}"
+    th:value="${report.R17_PRODUCT != null ? report.R17_PRODUCT : '(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):'}"
     id="R17_PRODUCT" name="R17_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	(iv)  Other Non-Financial Corporations (Private business enterprises) (sum of lines (a) to (m)):
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
                         <td id="R17" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -3660,12 +3623,10 @@ function fileuploads(btn) {
                  <tr>
                <td id="ROW18" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R18_PRODUCT != null ? report.R18_PRODUCT : 'N/A'}"
+    th:value="${report.R18_PRODUCT != null ? report.R18_PRODUCT : 'a) Agriculture, Forestry, Fishing'}"
     id="R18_PRODUCT" name="R18_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	a) Agriculture, Forestry, Fishing
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3752,12 +3713,10 @@ function fileuploads(btn) {
              <tr>
                 <td id="ROW19" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R19_PRODUCT != null ? report.R19_PRODUCT : 'N/A'}"
+    th:value="${report.R19_PRODUCT != null ? report.R19_PRODUCT : 'b) Mining and Quarying'}"
     id="R19_PRODUCT" name="R19_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	b) Mining and Quarying
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
     
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3845,12 +3804,10 @@ function fileuploads(btn) {
                   <tr>
                 <td id="ROW20" style="font-weight: bold;"><input
     class="display-input Show_input " type="text"
-    th:value="${report.R20_PRODUCT != null ? report.R20_PRODUCT : 'N/A'}"
+    th:value="${report.R20_PRODUCT != null ? report.R20_PRODUCT : 'c) Manufacturing'}"
     id="R20_PRODUCT" name="R20_PRODUCT"
-    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-    readonly />
-	c) Manufacturing
-</td>
+    style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+    readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -3938,12 +3895,10 @@ function fileuploads(btn) {
                 <tr>
 					<td id="ROW21" style="font-weight: bold;"><input
 						class="display-input Show_input " type="text"
-						th:value="${report.R21_PRODUCT != null ? report.R21_PRODUCT : 'N/A'}"
+						th:value="${report.R21_PRODUCT != null ? report.R21_PRODUCT : 'd) Construction'}"
 						id="R21_PRODUCT" name="R21_PRODUCT"
-						style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-						readonly />
-					d) Construction
-</td>
+						style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+						readonly /></td>
 
 												<td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4031,12 +3986,10 @@ function fileuploads(btn) {
               <tr>
                <td id="ROW22" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R22_PRODUCT != null ? report.R22_PRODUCT : 'N/A'}"
+        th:value="${report.R22_PRODUCT != null ? report.R22_PRODUCT : 'e) Commercial real estate'}"
         id="R22_PRODUCT" name="R22_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		e) Commercial real estate
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
 
                 <td style="text-align:right;">
@@ -4125,12 +4078,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW23" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R23_PRODUCT != null ? report.R23_PRODUCT : 'N/A'}"
+        th:value="${report.R23_PRODUCT != null ? report.R23_PRODUCT : 'f) Electricity'}"
         id="R23_PRODUCT" name="R23_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		f) Electricity
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4219,12 +4170,10 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW24" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R24_PRODUCT != null ? report.R24_PRODUCT : 'N/A'}"
+        th:value="${report.R24_PRODUCT != null ? report.R24_PRODUCT : 'g) Water'}"
         id="R24_PRODUCT" name="R24_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		g) Water
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
 
                 <td style="text-align:right;">
@@ -4311,12 +4260,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW25" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R25_PRODUCT != null ? report.R25_PRODUCT : 'N/A'}"
+        th:value="${report.R25_PRODUCT != null ? report.R25_PRODUCT : 'h) Telecommunication and post'}"
         id="R25_PRODUCT" name="R25_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		h) Telecommunication and post 
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
 
                 <td style="text-align:right;">
@@ -4403,12 +4350,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW26" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R26_PRODUCT != null ? report.R26_PRODUCT : 'N/A'}"
+        th:value="${report.R26_PRODUCT != null ? report.R26_PRODUCT : 'i) Tourism and hotels'}"
         id="R26_PRODUCT" name="R26_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		i) Tourism and hotels
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4494,12 +4439,10 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW27" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R27_PRODUCT != null ? report.R27_PRODUCT : 'N/A'}"
+        th:value="${report.R27_PRODUCT != null ? report.R27_PRODUCT : 'j) Transport and storage'}"
         id="R27_PRODUCT" name="R27_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		j) Transport and storage
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4585,12 +4528,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW28" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R28_PRODUCT != null ? report.R28_PRODUCT : 'N/A'}"
+        th:value="${report.R28_PRODUCT != null ? report.R28_PRODUCT : 'k) Trade, restaurants and bars'}"
         id="R28_PRODUCT" name="R28_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		k) Trade, restaurants and bars
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
                
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -4676,12 +4617,11 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW29" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R29_PRODUCT != null ? report.R29_PRODUCT : 'N/A'}"
+        th:value="${report.R29_PRODUCT != null ? report.R29_PRODUCT : 'l) Business services'}"
         id="R29_PRODUCT" name="R29_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		l) Business services
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4766,12 +4706,11 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW30" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R30_PRODUCT != null ? report.R30_PRODUCT : 'N/A'}"
+        th:value="${report.R30_PRODUCT != null ? report.R30_PRODUCT : 'm) Other community, social and personal services'}"
         id="R30_PRODUCT" name="R30_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		m) Other community, social and personal services
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4857,12 +4796,11 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW31" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R31_PRODUCT != null ? report.R31_PRODUCT : 'N/A'}"
+        th:value="${report.R31_PRODUCT != null ? report.R31_PRODUCT : '(v)  Households'}"
         id="R31_PRODUCT" name="R31_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(v)  Households 
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -4947,12 +4885,10 @@ function fileuploads(btn) {
                       <tr>
                       <td id="ROW32" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R32_PRODUCT != null ? report.R32_PRODUCT : 'N/A'}"
+        th:value="${report.R32_PRODUCT != null ? report.R32_PRODUCT : '(vi) Non-Residents (sum of lines (a) and (b)):'}"
         id="R32_PRODUCT" name="R32_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(vi) Non-Residents (sum of lines (a) and (b)):
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
 
                         <td id="R32" style="text-align:right;background-color: rgb(107, 122, 143);">
@@ -5039,12 +4975,11 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW33" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R33_PRODUCT != null ? report.R33_PRODUCT : 'N/A'}"
+        th:value="${report.R33_PRODUCT != null ? report.R33_PRODUCT : 'a) Other Non-Financial Corporations*'}"
         id="R33_PRODUCT" name="R33_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		a) Other Non-Financial Corporations*
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5129,12 +5064,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW34" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R34_PRODUCT != null ? report.R34_PRODUCT : 'N/A'}"
+        th:value="${report.R34_PRODUCT != null ? report.R34_PRODUCT : 'b) Households'}"
         id="R34_PRODUCT" name="R34_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		b) Households
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5220,12 +5153,10 @@ function fileuploads(btn) {
                       <tr>
                        <td id="ROW35" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R35_PRODUCT != null ? report.R35_PRODUCT : 'N/A'}"
+        th:value="${report.R35_PRODUCT != null ? report.R35_PRODUCT : '2.  Financial institutional units (sum of lines (i) to (v)):'}"
         id="R35_PRODUCT" name="R35_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		2.  Financial institutional units (sum of lines (i) to (v)):
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                         <td id="R35" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -5311,12 +5242,11 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW36" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R36_PRODUCT != null ? report.R36_PRODUCT : 'N/A'}"
+        th:value="${report.R36_PRODUCT != null ? report.R36_PRODUCT : '(i)    Central Bank'}"
         id="R36_PRODUCT" name="R36_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(i)    Central Bank
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5324,20 +5254,16 @@ function fileuploads(btn) {
 	id="R36_EQUITY" name="R36_EQUITY"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
-<td th:each="report: ${reportsummary1}" id="R36_BONDS" th:text="${#numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
- style="vertical-align: middle; text-align: right;"></td>
                 <td style="text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_input"
 	type="text"
 	th:value="${report.R36_BONDS != null ? #numbers.formatDecimal(report.R36_BONDS, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BONDS" name="R36_BONDS"
 	style="background-color: #FFFFFF; width: 180px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td> 
 
-<!-- <td th:each="report: ${reportsummary1}" id="R36_BOBC" th:text="${#numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT')}" th:attr="reportLable='R10', reportAddlCriteria1='C3'" 
- style="vertical-align: middle; text-align: right;"></td> -->
                  <td style="text-align:right;">
-	<input class="display-input Show_input nonEditable"
+	<input class="display-input Show_input"
 	type="text"
 	th:value="${report.R36_BOBC != null ? #numbers.formatDecimal(report.R36_BOBC, 1, 'COMMA', 0, 'POINT') : '0'}"
 	id="R36_BOBC" name="R36_BOBC"
@@ -5404,12 +5330,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW37" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R37_PRODUCT != null ? report.R37_PRODUCT : 'N/A'}"
+        th:value="${report.R37_PRODUCT != null ? report.R37_PRODUCT : '(ii)   Commercial Banks'}"
         id="R37_PRODUCT" name="R37_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(ii)   Commercial Banks
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5495,12 +5419,10 @@ function fileuploads(btn) {
                       <tr>
                       <td id="ROW38" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R38_PRODUCT != null ? report.R38_PRODUCT : 'N/A'}"
+        th:value="${report.R38_PRODUCT != null ? report.R38_PRODUCT : '(iii)  Other Depository Corporations (sum of lines (a) to (d)):'}"
         id="R38_PRODUCT" name="R38_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(iii)  Other Depository Corporations (sum of lines (a) to (d)):
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                         <td id="R38" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -5586,12 +5508,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW39" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R39_PRODUCT != null ? report.R39_PRODUCT : 'N/A'}"
+        th:value="${report.R39_PRODUCT != null ? report.R39_PRODUCT : 'a) Botswana Savings Bank (BSB)'}"
         id="R39_PRODUCT" name="R39_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		a) Botswana Savings Bank (BSB)
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5677,12 +5597,11 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW40" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R40_PRODUCT != null ? report.R40_PRODUCT : 'N/A'}"
+        th:value="${report.R40_PRODUCT != null ? report.R40_PRODUCT : 'b) Botswana Building Society (BBS)'}"
         id="R40_PRODUCT" name="R40_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		b) Botswana Building Society (BBS)
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5768,12 +5687,10 @@ function fileuploads(btn) {
 <tr>
               <td id="ROW41" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R41_PRODUCT != null ? report.R41_PRODUCT : 'N/A'}"
+        th:value="${report.R41_PRODUCT != null ? report.R41_PRODUCT : 'c) Domestic Money Market Unit Trust'}"
         id="R41_PRODUCT" name="R41_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		c) Domestic Money Market Unit Trust
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -5859,12 +5776,11 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW42" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R42_PRODUCT != null ? report.R42_PRODUCT : 'N/A'}"
+        th:value="${report.R42_PRODUCT != null ? report.R42_PRODUCT : 'd) Other (specify)*'}"
         id="R42_PRODUCT" name="R42_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		d) Other (specify)*
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -5949,12 +5865,11 @@ function fileuploads(btn) {
                       <tr>
                      <td id="ROW43" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R43_PRODUCT != null ? report.R43_PRODUCT : 'N/A'}"
+        th:value="${report.R43_PRODUCT != null ? report.R43_PRODUCT : '(iv)  Other Financial Corporations (sum of lines (a) to (e)):'}"
         id="R43_PRODUCT" name="R43_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(iv)  Other Financial Corporations (sum of lines (a) to (e)):
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                         <td id="R43" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
@@ -6039,12 +5954,11 @@ function fileuploads(btn) {
 <tr>
               <td id="ROW44" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R44_PRODUCT != null ? report.R44_PRODUCT : 'N/A'}"
+        th:value="${report.R44_PRODUCT != null ? report.R44_PRODUCT : 'a) Insurance Companies'}"
         id="R44_PRODUCT" name="R44_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		a) Insurance Companies
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6129,12 +6043,10 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW45" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R45_PRODUCT != null ? report.R45_PRODUCT : 'N/A'}"
+        th:value="${report.R45_PRODUCT != null ? report.R45_PRODUCT : 'b) Pension Funds'}"
         id="R45_PRODUCT" name="R45_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		b) Pension Funds
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6220,12 +6132,10 @@ function fileuploads(btn) {
 <tr>
               <td id="ROW46" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R46_PRODUCT != null ? report.R46_PRODUCT : 'N/A'}"
+        th:value="${report.R46_PRODUCT != null ? report.R46_PRODUCT : 'c) SACCOs'}"
         id="R46_PRODUCT" name="R46_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		c) SACCOs
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6311,12 +6221,10 @@ function fileuploads(btn) {
                       <tr>
                      <td id="ROW47" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R47_PRODUCT != null ? report.R47_PRODUCT : 'N/A'}"
+        th:value="${report.R47_PRODUCT != null ? report.R47_PRODUCT : 'd) Other Financial Intermediaries (sum 1 to 3)'}"
         id="R47_PRODUCT" name="R47_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		d) Other Financial Intermediaries (sum 1 to 3)
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                         <td id="R47" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -6402,12 +6310,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW48" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R48_PRODUCT != null ? report.R48_PRODUCT : 'N/A'}"
+        th:value="${report.R48_PRODUCT != null ? report.R48_PRODUCT : '1. Finance companies'}"
         id="R48_PRODUCT" name="R48_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		1. Finance companies
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6493,12 +6399,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW49" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R49_PRODUCT != null ? report.R49_PRODUCT : 'N/A'}"
+        th:value="${report.R49_PRODUCT != null ? report.R49_PRODUCT : '2. Medical Aid Schemes'}"
         id="R49_PRODUCT" name="R49_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		2. Medical Aid Schemes
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6584,12 +6488,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW50" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R50_PRODUCT != null ? report.R50_PRODUCT : 'N/A'}"
+        th:value="${report.R50_PRODUCT != null ? report.R50_PRODUCT : '3. Public sector financial intermediaries'}"
         id="R50_PRODUCT" name="R50_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		3. Public sector financial intermediaries
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -6676,13 +6578,10 @@ function fileuploads(btn) {
                       <tr>
                         <td id="ROW51" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R51_PRODUCT != null ? report.R51_PRODUCT : 'N/A'}"
+        th:value="${report.R51_PRODUCT != null ? report.R51_PRODUCT : 'e) Financial Auxiliaries (sum 1 to 5)'}"
         id="R51_PRODUCT" name="R51_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		e) Financial Auxiliaries (sum 1 to 5)
-
-</td>
-
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                         <td id="R51" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -6768,12 +6667,11 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW52" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R52_PRODUCT != null ? report.R52_PRODUCT : 'N/A'}"
+        th:value="${report.R52_PRODUCT != null ? report.R52_PRODUCT : '1.Asset managers'}"
         id="R52_PRODUCT" name="R52_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		1.Asset managers
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6858,12 +6756,10 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW53" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R53_PRODUCT != null ? report.R53_PRODUCT : 'N/A'}"
+        th:value="${report.R53_PRODUCT != null ? report.R53_PRODUCT : '2. Insurance brokers'}"
         id="R53_PRODUCT" name="R53_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		2. Insurance brokers
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -6948,12 +6844,11 @@ function fileuploads(btn) {
 <tr>
 <td id="ROW54" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R54_PRODUCT != null ? report.R54_PRODUCT : 'N/A'}"
+        th:value="${report.R54_PRODUCT != null ? report.R54_PRODUCT : '3. fund administrators'}"
         id="R54_PRODUCT" name="R54_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		3. fund administrators
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -7038,12 +6933,10 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW55" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R55_PRODUCT != null ? report.R55_PRODUCT : 'N/A'}"
+        th:value="${report.R55_PRODUCT != null ? report.R55_PRODUCT : '4. Bureau de change'}"
         id="R55_PRODUCT" name="R55_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		4. Bureau de change
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -7129,12 +7022,11 @@ function fileuploads(btn) {
 <tr>
                <td id="ROW56" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R56_PRODUCT != null ? report.R56_PRODUCT : 'N/A'}"
+        th:value="${report.R56_PRODUCT != null ? report.R56_PRODUCT : '5. Other (specify)*'}"
         id="R56_PRODUCT" name="R56_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		5. Other (specify)*
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
+		
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
 	type="text"
@@ -7219,12 +7111,10 @@ function fileuploads(btn) {
 <tr>
                 <td id="ROW57" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R57_PRODUCT != null ? report.R57_PRODUCT : 'N/A'}"
+        th:value="${report.R57_PRODUCT != null ? report.R57_PRODUCT : '(v)  Non-residents'}"
         id="R57_PRODUCT" name="R57_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		(v)  Non-residents
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                 <td style="text-align:right;">
 	<input class="display-input Show_input"
@@ -7310,12 +7200,10 @@ function fileuploads(btn) {
                       <tr>
                        <td id="ROW58" style="font-weight: bold;">
     <input class="display-input Show_input" type="text"
-        th:value="${report.R58_PRODUCT != null ? report.R58_PRODUCT : 'N/A'}"
+        th:value="${report.R58_PRODUCT != null ? report.R58_PRODUCT : 'TOTAL ( Sum of lines 1 and 2)'}"
         id="R58_PRODUCT" name="R58_PRODUCT"
-        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; text-align: left;"
-        readonly />		TOTAL ( Sum of lines 1 and 2)
-
-</td>
+        style="background-color: #FFFFFF; width: 700px; height: 28px; border-color: transparent; font-weight: bold; text-align: left;"
+        readonly /></td>
 
                         <td id="R58" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
@@ -7399,7 +7287,7 @@ function fileuploads(btn) {
                       </tr>
 
 <tr>
-  <td style="padding-left: 0px" th:text="${report.R59_PRODUCT}"> 	Number of Accounts
+  <td style="padding-left: 0px; font-weight: bold;" > 	Number of Accounts
 </td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='B2'"  th:text="${report.R59_EQUITY}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='B3'"  th:text="${report.R59_BONDS}"></td>
@@ -7410,7 +7298,7 @@ function fileuploads(btn) {
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='B8'"  th:text="${report.R59_CERT_OF_DEP}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='B9'"  th:text="${report.R59_PLEDGED_ASSET}"></td>
   <td style="text-align: right" th:attr="RowId='R59', ColumnId='B10'"  th:text="${report.R59_OTHER}"></td>
-                          <td id="R59" style="text-align:right;background-color: rgb(107, 122, 143);">
+  <td id="R59" style="text-align:right;background-color: rgb(107, 122, 143);">
 	<input class="display-input Show_input nonEditable"
 	type="text"
 	th:value="${report.R59_TOTAL != null ? #numbers.formatDecimal(report.R59_TOTAL, 1, 'COMMA', 0, 'POINT') : '0'}"
@@ -7418,11 +7306,6 @@ function fileuploads(btn) {
 	style="background-color: rgb(107, 122, 143); color: white; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 	readonly /></td>
 </tr>
-
-                    
-
-
-
 
                     </tbody>
                   </table>
