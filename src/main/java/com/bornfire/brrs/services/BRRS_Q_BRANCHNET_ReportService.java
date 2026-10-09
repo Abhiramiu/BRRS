@@ -13774,7 +13774,6 @@ public class BRRS_Q_BRANCHNET_ReportService {
 
 		// Audit old copy
 		Q_BRANCHNET_Summary_Entity oldcopy = new Q_BRANCHNET_Summary_Entity();
-
 		BeanUtils.copyProperties(existingSummary, oldcopy);
 
 		String[] fields = { "bran_sub_bran_district", "no1_of_branches", "no1_of_sub_branches", "no1_of_agencies" };
@@ -13790,31 +13789,34 @@ public class BRRS_Q_BRANCHNET_ReportService {
 					String columnName = "R" + i + "_" + field;
 
 					try {
-
 						Method getter = Q_BRANCHNET_Summary_Entity.class.getMethod(getterName);
-
 						Object value = getter.invoke(updatedEntity);
 
-						if (value == null) {
+						// Identify if the field is a String (VARCHAR2) or a Number (BigDecimal)
+						boolean isStringField = field.contains("district");
+
+						// If it's a number and null, we can skip updating it.
+						// If it's a string, we allow null/empty updates so clearing text works in DB.
+						if (value == null && !isStringField) {
 							continue;
 						}
 
-						// Update existing object for audit
+						// Update existing object in-memory for audit purposes
 						Method setter = Q_BRANCHNET_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 						setter.invoke(existingSummary, value);
 
-						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
+						// Update Summary Table
+						String summarySql = "UPDATE BRRS_Q_BRANCHNET_SUMMARYTABLE SET " + columnName
+								+ " = ? WHERE REPORT_DATE = ?";
 						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
 
-						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
+						// Update Detail Table
+						String detailSql = "UPDATE BRRS_Q_BRANCHNET_DETAILTABLE SET " + columnName
+								+ " = ? WHERE REPORT_DATE = ?";
 						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
 
 					} catch (NoSuchMethodException e) {
+						// Method doesn't exist for this specific row, safely skip
 						continue;
 					}
 				}
@@ -13824,7 +13826,6 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			String changes = auditService.getChanges(oldcopy, existingSummary);
 
 			if (!changes.isEmpty()) {
-
 				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
 						"Q_BRANCHNET Summary Screen", "BRRS_Q_BRANCHNET_SUMMARY");
 			}
@@ -13832,7 +13833,6 @@ public class BRRS_Q_BRANCHNET_ReportService {
 			System.out.println("Q_BRANCHNET Summary & Detail Update Completed");
 
 		} catch (Exception e) {
-
 			throw new RuntimeException("Error while updating Q_BRANCHNET fields", e);
 		}
 	}
