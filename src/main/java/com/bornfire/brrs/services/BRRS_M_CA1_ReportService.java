@@ -285,6 +285,15 @@ public class BRRS_M_CA1_ReportService {
 	        return getExcelM_CA1ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, version);
 	    }
 
+	    //  EMAIL check
+	    boolean isEmailFormat = (filename != null && filename.toUpperCase().contains("EMAIL"));
+
+	    if (isEmailFormat && version == null) {
+	        logger.info("Got EMAIL format (filename={})", filename);
+	        logger.info("Service: Generating EMAIL report");
+	        return BRRS_M_CA1EmailExcel(filename, reportId, fromdate, todate, currency, dtltype, type, version);
+	    }
+	    
 	    List<M_CA1_Summary_Entity> dataList =
 	            getSummaryByDate(dateformat.parse(todate));
 
@@ -1649,8 +1658,8 @@ public class BRRS_M_CA1_ReportService {
 					row = sheet.getRow(9);			
 					// Column D 
 					 cell3 = row.getCell(2);
-					if (record.getR10_AMOUNT() != null) {
-						cell3.setCellValue(record.getR10_AMOUNT().doubleValue());
+					if (record.getR11_AMOUNT() != null) {
+						cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
 
 					} else {
 						cell3.setCellValue("");
@@ -1661,18 +1670,6 @@ public class BRRS_M_CA1_ReportService {
 					row = sheet.getRow(10);			
 					// Column D
 					 cell3 = row.getCell(2);
-					if (record.getR11_AMOUNT() != null) {
-						cell3.setCellValue(record.getR11_AMOUNT().doubleValue());
-
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
-					//row12
-					row = sheet.getRow(11);			
-					// Column F 
-					 cell3 = row.getCell(2);
 					if (record.getR12_AMOUNT() != null) {
 						cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
 
@@ -1681,22 +1678,32 @@ public class BRRS_M_CA1_ReportService {
 						cell3.setCellStyle(textStyle);
 					}
 					
+//					//row12
+//					row = sheet.getRow(11);			
+//					// Column F 
+//					 cell3 = row.getCell(2);
+//					if (record.getR12_AMOUNT() != null) {
+//						cell3.setCellValue(record.getR12_AMOUNT().doubleValue());
+//
+//					} else {
+//						cell3.setCellValue("");
+//						cell3.setCellStyle(textStyle);
+//					}
+//					
+//
+//					//row13
+//					row = sheet.getRow(12);			
+//					// Column F 
+//					 cell3 = row.getCell(2);
+//					if (record.getR13_AMOUNT() != null) {
+//						cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
+//			
+//					} else {
+//						cell3.setCellValue("");
+//						cell3.setCellStyle(textStyle);
+//					}
+//					
 
-					//row13
-					row = sheet.getRow(12);			
-					// Column F 
-					 cell3 = row.getCell(2);
-					if (record.getR13_AMOUNT() != null) {
-						cell3.setCellValue(record.getR13_AMOUNT().doubleValue());
-			
-					} else {
-						cell3.setCellValue("");
-						cell3.setCellStyle(textStyle);
-					}
-					
-
-										
-					
 					
 
 					//row18
@@ -1814,16 +1821,20 @@ public class BRRS_M_CA1_ReportService {
 					}					
 				}
 
-
-			
-				try {
-				    workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
-				} catch (RuntimeException e) {
-				    logger.warn("Skipping formula evaluation due to external references: {}", e.getMessage());
-				}
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
+
+			
+//				try {
+//				    workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+//				} catch (RuntimeException e) {
+//				    logger.warn("Skipping formula evaluation due to external references: {}", e.getMessage());
+//				}
+//			} else {
+//
+//			}
 
 			// Write the final workbook content to the in-memory stream.
 			workbook.write(out);
