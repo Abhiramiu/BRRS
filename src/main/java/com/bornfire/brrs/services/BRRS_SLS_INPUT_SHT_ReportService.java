@@ -13,6 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import org.springframework.beans.BeanUtils;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -961,6 +963,118 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 		}
 	}
 
+	// ------------------------------
+	// Updates the report manual values in summary table
+	// ------------------------------
+	@Transactional
+	public void updateReport(SLS_INPUT_SHT_Summary_Entity updatedEntity) {
+		logger.info("Came to SLS updateReport service");
+		logger.info("Report Date: {}", updatedEntity.getREPORT_DATE());
+
+		// =====================================================
+		// STEP 1 : FETCH RECORD
+		// =====================================================
+		Date reportDate = updatedEntity.getREPORT_DATE();
+		if (reportDate == null) {
+			throw new RuntimeException("REPORT_DATE cannot be null for SLS report update");
+		}
+
+		List<SLS_INPUT_SHT_Summary_Entity> list = jdbcTemplate.query(
+				"SELECT * FROM BRRS_SLS_INPUT_SHT_SUMMARYTABLE WHERE REPORT_DATE = ?",
+				new Object[] { reportDate }, new SLSSummaryRowMapper());
+		if (list.isEmpty()) {
+			throw new RuntimeException("Record not found for REPORT_DATE : " + reportDate);
+		}
+		SLS_INPUT_SHT_Summary_Entity existing = list.get(0);
+
+		// FIX: Create audit copy of the ORIGINAL database state before applying changes
+		SLS_INPUT_SHT_Summary_Entity oldcopy = new SLS_INPUT_SHT_Summary_Entity();
+		BeanUtils.copyProperties(existing, oldcopy);
+
+		// =====================================================
+		// STEP 2 : UPDATE ONLY MANUAL FIELDS
+		// =====================================================
+		String[] manualFields = {
+				"R75_DAY1", "R75_DAY2_7", "R75_DAY8_14", "R75_DAY15_30",
+				"R75_DAY31_TO_2M", "R75_MORE2M_TO_3M", "R75_OVER3M_TO_6M",
+				"R75_OVER6M_TO_1Y", "R75_OVER1Y_TO_3Y", "R75_OVER3Y_TO_5Y", "R75_OVER5Y"
+		};
+
+		for (String field : manualFields) {
+			String getterName = "get" + field;
+			String setterName = "set" + field;
+
+			try {
+				Method getter = SLS_INPUT_SHT_Summary_Entity.class.getMethod(getterName);
+				Method setter = SLS_INPUT_SHT_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+
+				Object newValue = getter.invoke(updatedEntity);
+				Object existingValue = getter.invoke(existing);
+
+				// Normalize nulls vs empty strings to prevent audit bloat
+				String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
+				String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+
+				if (currentValStr.equals(newValStr)) {
+					continue;
+				}
+
+				setter.invoke(existing, newValue);
+
+			} catch (NoSuchMethodException e) {
+				logger.warn("Method not found for field: {}", field);
+			} catch (Exception e) {
+				logger.error("Error setting field: {}", field, e);
+			}
+		}
+
+		// Calculate R75_TOTAL
+		BigDecimal r75Total = BigDecimal.ZERO;
+		if (existing.getR75_DAY1() != null) r75Total = r75Total.add(existing.getR75_DAY1());
+		if (existing.getR75_DAY2_7() != null) r75Total = r75Total.add(existing.getR75_DAY2_7());
+		if (existing.getR75_DAY8_14() != null) r75Total = r75Total.add(existing.getR75_DAY8_14());
+		if (existing.getR75_DAY15_30() != null) r75Total = r75Total.add(existing.getR75_DAY15_30());
+		if (existing.getR75_DAY31_TO_2M() != null) r75Total = r75Total.add(existing.getR75_DAY31_TO_2M());
+		if (existing.getR75_MORE2M_TO_3M() != null) r75Total = r75Total.add(existing.getR75_MORE2M_TO_3M());
+		if (existing.getR75_OVER3M_TO_6M() != null) r75Total = r75Total.add(existing.getR75_OVER3M_TO_6M());
+		if (existing.getR75_OVER6M_TO_1Y() != null) r75Total = r75Total.add(existing.getR75_OVER6M_TO_1Y());
+		if (existing.getR75_OVER1Y_TO_3Y() != null) r75Total = r75Total.add(existing.getR75_OVER1Y_TO_3Y());
+		if (existing.getR75_OVER3Y_TO_5Y() != null) r75Total = r75Total.add(existing.getR75_OVER3Y_TO_5Y());
+		if (existing.getR75_OVER5Y() != null) r75Total = r75Total.add(existing.getR75_OVER5Y());
+		existing.setR75_TOTAL(r75Total);
+
+		// =====================================================
+		// STEP 3 : SAVE SUMMARY TABLE
+		// =====================================================
+		String sql = "UPDATE BRRS_SLS_INPUT_SHT_SUMMARYTABLE SET "
+				+ "R75_DAY1 = ?, R75_DAY2_7 = ?, R75_DAY8_14 = ?, R75_DAY15_30 = ?, "
+				+ "R75_DAY31_TO_2M = ?, R75_MORE2M_TO_3M = ?, R75_OVER3M_TO_6M = ?, R75_OVER6M_TO_1Y = ?, "
+				+ "R75_OVER1Y_TO_3Y = ?, R75_OVER3Y_TO_5Y = ?, R75_OVER5Y = ?, R75_TOTAL = ? "
+				+ "WHERE REPORT_DATE = ?";
+
+		jdbcTemplate.update(sql,
+				existing.getR75_DAY1(), existing.getR75_DAY2_7(), existing.getR75_DAY8_14(), existing.getR75_DAY15_30(),
+				existing.getR75_DAY31_TO_2M(), existing.getR75_MORE2M_TO_3M(), existing.getR75_OVER3M_TO_6M(),
+				existing.getR75_OVER6M_TO_1Y(), existing.getR75_OVER1Y_TO_3Y(), existing.getR75_OVER3Y_TO_5Y(),
+				existing.getR75_OVER5Y(), existing.getR75_TOTAL(),
+				reportDate);
+
+		// =====================================================
+		// STEP 4 : EVALUATE AND LOG AUDIT TRAIL
+		// =====================================================
+		try {
+			String changes = auditService.getChanges(oldcopy, existing);
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+						"SLS Summary Screen", "BRRS_SLS_INPUT_SHT_SUMMARYTABLE");
+			}
+		} catch (Exception ex) {
+			logger.warn("Audit log error in SLS updateReport: {}", ex.getMessage());
+		}
+
+		logger.info("SLS Summary Table updated successfully for date: {}", reportDate);
+	}
+
 	// ==============================
 	// Row Mappers
 	// ==============================
@@ -1819,17 +1933,17 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR75_OVER5Y(rs.getBigDecimal("R75_OVER5Y"));
 			obj.setR75_TOTAL(rs.getBigDecimal("R75_TOTAL"));
 			obj.setR76_PRODUCT(rs.getString("R76_PRODUCT"));
-			obj.setR76_DAY1(rs.getBigDecimal("R76_DAY1"));
-			obj.setR76_DAY2_7(rs.getBigDecimal("R76_DAY2_7"));
-			obj.setR76_DAY8_14(rs.getBigDecimal("R76_DAY8_14"));
-			obj.setR76_DAY15_30(rs.getBigDecimal("R76_DAY15_30"));
-			obj.setR76_DAY31_TO_2M(rs.getBigDecimal("R76_DAY31_TO_2M"));
-			obj.setR76_MORE2M_TO_3M(rs.getBigDecimal("R76_MORE2M_TO_3M"));
-			obj.setR76_OVER3M_TO_6M(rs.getBigDecimal("R76_OVER3M_TO_6M"));
-			obj.setR76_OVER6M_TO_1Y(rs.getBigDecimal("R76_OVER6M_TO_1Y"));
-			obj.setR76_OVER1Y_TO_3Y(rs.getBigDecimal("R76_OVER1Y_TO_3Y"));
-			obj.setR76_OVER3Y_TO_5Y(rs.getBigDecimal("R76_OVER3Y_TO_5Y"));
-			obj.setR76_OVER5Y(rs.getBigDecimal("R76_OVER5Y"));
+			obj.setR76_DAY1(rs.getString("R76_DAY1"));
+			obj.setR76_DAY2_7(rs.getString("R76_DAY2_7"));
+			obj.setR76_DAY8_14(rs.getString("R76_DAY8_14"));
+			obj.setR76_DAY15_30(rs.getString("R76_DAY15_30"));
+			obj.setR76_DAY31_TO_2M(rs.getString("R76_DAY31_TO_2M"));
+			obj.setR76_MORE2M_TO_3M(rs.getString("R76_MORE2M_TO_3M"));
+			obj.setR76_OVER3M_TO_6M(rs.getString("R76_OVER3M_TO_6M"));
+			obj.setR76_OVER6M_TO_1Y(rs.getString("R76_OVER6M_TO_1Y"));
+			obj.setR76_OVER1Y_TO_3Y(rs.getString("R76_OVER1Y_TO_3Y"));
+			obj.setR76_OVER3Y_TO_5Y(rs.getString("R76_OVER3Y_TO_5Y"));
+			obj.setR76_OVER5Y(rs.getString("R76_OVER5Y"));
 			obj.setR76_TOTAL(rs.getBigDecimal("R76_TOTAL"));
 //			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
 //			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
@@ -2847,17 +2961,17 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 			obj.setR75_OVER5Y(rs.getBigDecimal("R75_OVER5Y"));
 			obj.setR75_TOTAL(rs.getBigDecimal("R75_TOTAL"));
 			obj.setR76_PRODUCT(rs.getString("R76_PRODUCT"));
-			obj.setR76_DAY1(rs.getBigDecimal("R76_DAY1"));
-			obj.setR76_DAY2_7(rs.getBigDecimal("R76_DAY2_7"));
-			obj.setR76_DAY8_14(rs.getBigDecimal("R76_DAY8_14"));
-			obj.setR76_DAY15_30(rs.getBigDecimal("R76_DAY15_30"));
-			obj.setR76_DAY31_TO_2M(rs.getBigDecimal("R76_DAY31_TO_2M"));
-			obj.setR76_MORE2M_TO_3M(rs.getBigDecimal("R76_MORE2M_TO_3M"));
-			obj.setR76_OVER3M_TO_6M(rs.getBigDecimal("R76_OVER3M_TO_6M"));
-			obj.setR76_OVER6M_TO_1Y(rs.getBigDecimal("R76_OVER6M_TO_1Y"));
-			obj.setR76_OVER1Y_TO_3Y(rs.getBigDecimal("R76_OVER1Y_TO_3Y"));
-			obj.setR76_OVER3Y_TO_5Y(rs.getBigDecimal("R76_OVER3Y_TO_5Y"));
-			obj.setR76_OVER5Y(rs.getBigDecimal("R76_OVER5Y"));
+			obj.setR76_DAY1(rs.getString("R76_DAY1"));
+			obj.setR76_DAY2_7(rs.getString("R76_DAY2_7"));
+			obj.setR76_DAY8_14(rs.getString("R76_DAY8_14"));
+			obj.setR76_DAY15_30(rs.getString("R76_DAY15_30"));
+			obj.setR76_DAY31_TO_2M(rs.getString("R76_DAY31_TO_2M"));
+			obj.setR76_MORE2M_TO_3M(rs.getString("R76_MORE2M_TO_3M"));
+			obj.setR76_OVER3M_TO_6M(rs.getString("R76_OVER3M_TO_6M"));
+			obj.setR76_OVER6M_TO_1Y(rs.getString("R76_OVER6M_TO_1Y"));
+			obj.setR76_OVER1Y_TO_3Y(rs.getString("R76_OVER1Y_TO_3Y"));
+			obj.setR76_OVER3Y_TO_5Y(rs.getString("R76_OVER3Y_TO_5Y"));
+			obj.setR76_OVER5Y(rs.getString("R76_OVER5Y"));
 			obj.setR76_TOTAL(rs.getBigDecimal("R76_TOTAL"));
 //			obj.setR77_PRODUCT(rs.getString("R77_PRODUCT"));
 //			obj.setR77_DAY1(rs.getBigDecimal("R77_DAY1"));
@@ -3880,17 +3994,17 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R75_OVER5Y;
 	private BigDecimal R75_TOTAL;
 	private String R76_PRODUCT;
-	private BigDecimal R76_DAY1;
-	private BigDecimal R76_DAY2_7;
-	private BigDecimal R76_DAY8_14;
-	private BigDecimal R76_DAY15_30;
-	private BigDecimal R76_DAY31_TO_2M;
-	private BigDecimal R76_MORE2M_TO_3M;
-	private BigDecimal R76_OVER3M_TO_6M;
-	private BigDecimal R76_OVER6M_TO_1Y;
-	private BigDecimal R76_OVER1Y_TO_3Y;
-	private BigDecimal R76_OVER3Y_TO_5Y;
-	private BigDecimal R76_OVER5Y;
+	private String R76_DAY1;
+	private String R76_DAY2_7;
+	private String R76_DAY8_14;
+	private String R76_DAY15_30;
+	private String R76_DAY31_TO_2M;
+	private String R76_MORE2M_TO_3M;
+	private String R76_OVER3M_TO_6M;
+	private String R76_OVER6M_TO_1Y;
+	private String R76_OVER1Y_TO_3Y;
+	private String R76_OVER3Y_TO_5Y;
+	private String R76_OVER5Y;
 	private BigDecimal R76_TOTAL;
 //	private String R77_PRODUCT;
 //	private BigDecimal R77_DAY1;
@@ -9101,70 +9215,70 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR76_PRODUCT(String r76_PRODUCT) {
 		R76_PRODUCT = r76_PRODUCT;
 	}
-	public BigDecimal getR76_DAY1() {
+	public String getR76_DAY1() {
 		return R76_DAY1;
 	}
-	public void setR76_DAY1(BigDecimal r76_DAY1) {
+	public void setR76_DAY1(String r76_DAY1) {
 		R76_DAY1 = r76_DAY1;
 	}
-	public BigDecimal getR76_DAY2_7() {
+	public String getR76_DAY2_7() {
 		return R76_DAY2_7;
 	}
-	public void setR76_DAY2_7(BigDecimal r76_DAY2_7) {
+	public void setR76_DAY2_7(String r76_DAY2_7) {
 		R76_DAY2_7 = r76_DAY2_7;
 	}
-	public BigDecimal getR76_DAY8_14() {
+	public String getR76_DAY8_14() {
 		return R76_DAY8_14;
 	}
-	public void setR76_DAY8_14(BigDecimal r76_DAY8_14) {
+	public void setR76_DAY8_14(String r76_DAY8_14) {
 		R76_DAY8_14 = r76_DAY8_14;
 	}
-	public BigDecimal getR76_DAY15_30() {
+	public String getR76_DAY15_30() {
 		return R76_DAY15_30;
 	}
-	public void setR76_DAY15_30(BigDecimal r76_DAY15_30) {
+	public void setR76_DAY15_30(String r76_DAY15_30) {
 		R76_DAY15_30 = r76_DAY15_30;
 	}
-	public BigDecimal getR76_DAY31_TO_2M() {
+	public String getR76_DAY31_TO_2M() {
 		return R76_DAY31_TO_2M;
 	}
-	public void setR76_DAY31_TO_2M(BigDecimal r76_DAY31_TO_2M) {
+	public void setR76_DAY31_TO_2M(String r76_DAY31_TO_2M) {
 		R76_DAY31_TO_2M = r76_DAY31_TO_2M;
 	}
-	public BigDecimal getR76_MORE2M_TO_3M() {
+	public String getR76_MORE2M_TO_3M() {
 		return R76_MORE2M_TO_3M;
 	}
-	public void setR76_MORE2M_TO_3M(BigDecimal r76_MORE2M_TO_3M) {
+	public void setR76_MORE2M_TO_3M(String r76_MORE2M_TO_3M) {
 		R76_MORE2M_TO_3M = r76_MORE2M_TO_3M;
 	}
-	public BigDecimal getR76_OVER3M_TO_6M() {
+	public String getR76_OVER3M_TO_6M() {
 		return R76_OVER3M_TO_6M;
 	}
-	public void setR76_OVER3M_TO_6M(BigDecimal r76_OVER3M_TO_6M) {
+	public void setR76_OVER3M_TO_6M(String r76_OVER3M_TO_6M) {
 		R76_OVER3M_TO_6M = r76_OVER3M_TO_6M;
 	}
-	public BigDecimal getR76_OVER6M_TO_1Y() {
+	public String getR76_OVER6M_TO_1Y() {
 		return R76_OVER6M_TO_1Y;
 	}
-	public void setR76_OVER6M_TO_1Y(BigDecimal r76_OVER6M_TO_1Y) {
+	public void setR76_OVER6M_TO_1Y(String r76_OVER6M_TO_1Y) {
 		R76_OVER6M_TO_1Y = r76_OVER6M_TO_1Y;
 	}
-	public BigDecimal getR76_OVER1Y_TO_3Y() {
+	public String getR76_OVER1Y_TO_3Y() {
 		return R76_OVER1Y_TO_3Y;
 	}
-	public void setR76_OVER1Y_TO_3Y(BigDecimal r76_OVER1Y_TO_3Y) {
+	public void setR76_OVER1Y_TO_3Y(String r76_OVER1Y_TO_3Y) {
 		R76_OVER1Y_TO_3Y = r76_OVER1Y_TO_3Y;
 	}
-	public BigDecimal getR76_OVER3Y_TO_5Y() {
+	public String getR76_OVER3Y_TO_5Y() {
 		return R76_OVER3Y_TO_5Y;
 	}
-	public void setR76_OVER3Y_TO_5Y(BigDecimal r76_OVER3Y_TO_5Y) {
+	public void setR76_OVER3Y_TO_5Y(String r76_OVER3Y_TO_5Y) {
 		R76_OVER3Y_TO_5Y = r76_OVER3Y_TO_5Y;
 	}
-	public BigDecimal getR76_OVER5Y() {
+	public String getR76_OVER5Y() {
 		return R76_OVER5Y;
 	}
-	public void setR76_OVER5Y(BigDecimal r76_OVER5Y) {
+	public void setR76_OVER5Y(String r76_OVER5Y) {
 		R76_OVER5Y = r76_OVER5Y;
 	}
 	public BigDecimal getR76_TOTAL() {
@@ -11041,17 +11155,17 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	private BigDecimal R75_OVER5Y;
 	private BigDecimal R75_TOTAL;
 	private String R76_PRODUCT;
-	private BigDecimal R76_DAY1;
-	private BigDecimal R76_DAY2_7;
-	private BigDecimal R76_DAY8_14;
-	private BigDecimal R76_DAY15_30;
-	private BigDecimal R76_DAY31_TO_2M;
-	private BigDecimal R76_MORE2M_TO_3M;
-	private BigDecimal R76_OVER3M_TO_6M;
-	private BigDecimal R76_OVER6M_TO_1Y;
-	private BigDecimal R76_OVER1Y_TO_3Y;
-	private BigDecimal R76_OVER3Y_TO_5Y;
-	private BigDecimal R76_OVER5Y;
+	private String R76_DAY1;
+	private String R76_DAY2_7;
+	private String R76_DAY8_14;
+	private String R76_DAY15_30;
+	private String R76_DAY31_TO_2M;
+	private String R76_MORE2M_TO_3M;
+	private String R76_OVER3M_TO_6M;
+	private String R76_OVER6M_TO_1Y;
+	private String R76_OVER1Y_TO_3Y;
+	private String R76_OVER3Y_TO_5Y;
+	private String R76_OVER5Y;
 	private BigDecimal R76_TOTAL;
 //	private String R77_PRODUCT;
 //	private BigDecimal R77_DAY1;
@@ -16262,70 +16376,70 @@ public class BRRS_SLS_INPUT_SHT_ReportService {
 	public void setR76_PRODUCT(String r76_PRODUCT) {
 		R76_PRODUCT = r76_PRODUCT;
 	}
-	public BigDecimal getR76_DAY1() {
+	public String getR76_DAY1() {
 		return R76_DAY1;
 	}
-	public void setR76_DAY1(BigDecimal r76_DAY1) {
+	public void setR76_DAY1(String r76_DAY1) {
 		R76_DAY1 = r76_DAY1;
 	}
-	public BigDecimal getR76_DAY2_7() {
+	public String getR76_DAY2_7() {
 		return R76_DAY2_7;
 	}
-	public void setR76_DAY2_7(BigDecimal r76_DAY2_7) {
+	public void setR76_DAY2_7(String r76_DAY2_7) {
 		R76_DAY2_7 = r76_DAY2_7;
 	}
-	public BigDecimal getR76_DAY8_14() {
+	public String getR76_DAY8_14() {
 		return R76_DAY8_14;
 	}
-	public void setR76_DAY8_14(BigDecimal r76_DAY8_14) {
+	public void setR76_DAY8_14(String r76_DAY8_14) {
 		R76_DAY8_14 = r76_DAY8_14;
 	}
-	public BigDecimal getR76_DAY15_30() {
+	public String getR76_DAY15_30() {
 		return R76_DAY15_30;
 	}
-	public void setR76_DAY15_30(BigDecimal r76_DAY15_30) {
+	public void setR76_DAY15_30(String r76_DAY15_30) {
 		R76_DAY15_30 = r76_DAY15_30;
 	}
-	public BigDecimal getR76_DAY31_TO_2M() {
+	public String getR76_DAY31_TO_2M() {
 		return R76_DAY31_TO_2M;
 	}
-	public void setR76_DAY31_TO_2M(BigDecimal r76_DAY31_TO_2M) {
+	public void setR76_DAY31_TO_2M(String r76_DAY31_TO_2M) {
 		R76_DAY31_TO_2M = r76_DAY31_TO_2M;
 	}
-	public BigDecimal getR76_MORE2M_TO_3M() {
+	public String getR76_MORE2M_TO_3M() {
 		return R76_MORE2M_TO_3M;
 	}
-	public void setR76_MORE2M_TO_3M(BigDecimal r76_MORE2M_TO_3M) {
+	public void setR76_MORE2M_TO_3M(String r76_MORE2M_TO_3M) {
 		R76_MORE2M_TO_3M = r76_MORE2M_TO_3M;
 	}
-	public BigDecimal getR76_OVER3M_TO_6M() {
+	public String getR76_OVER3M_TO_6M() {
 		return R76_OVER3M_TO_6M;
 	}
-	public void setR76_OVER3M_TO_6M(BigDecimal r76_OVER3M_TO_6M) {
+	public void setR76_OVER3M_TO_6M(String r76_OVER3M_TO_6M) {
 		R76_OVER3M_TO_6M = r76_OVER3M_TO_6M;
 	}
-	public BigDecimal getR76_OVER6M_TO_1Y() {
+	public String getR76_OVER6M_TO_1Y() {
 		return R76_OVER6M_TO_1Y;
 	}
-	public void setR76_OVER6M_TO_1Y(BigDecimal r76_OVER6M_TO_1Y) {
+	public void setR76_OVER6M_TO_1Y(String r76_OVER6M_TO_1Y) {
 		R76_OVER6M_TO_1Y = r76_OVER6M_TO_1Y;
 	}
-	public BigDecimal getR76_OVER1Y_TO_3Y() {
+	public String getR76_OVER1Y_TO_3Y() {
 		return R76_OVER1Y_TO_3Y;
 	}
-	public void setR76_OVER1Y_TO_3Y(BigDecimal r76_OVER1Y_TO_3Y) {
+	public void setR76_OVER1Y_TO_3Y(String r76_OVER1Y_TO_3Y) {
 		R76_OVER1Y_TO_3Y = r76_OVER1Y_TO_3Y;
 	}
-	public BigDecimal getR76_OVER3Y_TO_5Y() {
+	public String getR76_OVER3Y_TO_5Y() {
 		return R76_OVER3Y_TO_5Y;
 	}
-	public void setR76_OVER3Y_TO_5Y(BigDecimal r76_OVER3Y_TO_5Y) {
+	public void setR76_OVER3Y_TO_5Y(String r76_OVER3Y_TO_5Y) {
 		R76_OVER3Y_TO_5Y = r76_OVER3Y_TO_5Y;
 	}
-	public BigDecimal getR76_OVER5Y() {
+	public String getR76_OVER5Y() {
 		return R76_OVER5Y;
 	}
-	public void setR76_OVER5Y(BigDecimal r76_OVER5Y) {
+	public void setR76_OVER5Y(String r76_OVER5Y) {
 		R76_OVER5Y = r76_OVER5Y;
 	}
 	public BigDecimal getR76_TOTAL() {

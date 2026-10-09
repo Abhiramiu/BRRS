@@ -531,7 +531,11 @@ PURPOSE		: BRRS_M_PLLREPORT
 			// Hide the modals
 			$('#alert').modal('hide');
 			$('#resultModal').modal('hide');
-
+			if ($("#resultModalLabel").text() === "BRRS") {
+				setTimeout(function () {
+					location.reload();
+				}, 300);
+			}
 		}
 
 
@@ -660,31 +664,95 @@ PURPOSE		: BRRS_M_PLLREPORT
 	</script>
 
 	<script>
-		// Toggle the details table into edit mode.
-		// NOTE: hooks up to the existing /BRRS/... updateDetailEdit endpoint on submit;
-		// wire actual editable fields/inputs into the Details table as needed.
-		function showmodify(button) {
-			const addBtn = document.getElementById("addRecord");
-			const cancelBtn = document.getElementById("cancelRecord");
-			if (addBtn) addBtn.style.display = "none";
-			if (cancelBtn) cancelBtn.style.display = "inline-block";
+		// Show Modify (enable inputs)
+		function showmodify(btn) {
+			$("#R75_DAY1, #R75_DAY2_7, #R75_DAY8_14, #R75_DAY15_30, #R75_DAY31_TO_2M, #R75_MORE2M_TO_3M, #R75_OVER3M_TO_6M, #R75_OVER6M_TO_1Y, #R75_OVER1Y_TO_3Y, #R75_OVER3Y_TO_5Y, #R75_OVER5Y").css({
+				"background-color": "#FFF59D",
+				"border": "1px solid #ced4da"
+			}).prop("readonly", false);
 
-			document.querySelectorAll('#reports td[data-editable], #reportdetails td[data-editable]').forEach(function (td) {
-				td.contentEditable = "true";
-				td.classList.add("editing-cell");
-			});
+			// Toggle buttons
+			$("#submitButton").show();
+
+			// Show Cancel button only when Modify is clicked
+			$("#cancelRecord").show();
+
+			// Optionally hide the clicked Modify button
+			$(btn).hide();
 		}
 
+		// Cancel / Reset function
 		function cancelModify() {
-			const addBtn = document.getElementById("addRecord");
-			const cancelBtn = document.getElementById("cancelRecord");
-			if (addBtn) addBtn.style.display = "inline-block";
-			if (cancelBtn) cancelBtn.style.display = "none";
+			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
+				location.reload();
 
-			document.querySelectorAll('#reports td.editing-cell, #reportdetails td.editing-cell').forEach(function (td) {
-				td.contentEditable = "false";
-				td.classList.remove("editing-cell");
-			});
+				$(".Show_input").attr("readonly", true).attr("disabled", true);
+
+				$("#submitButton").hide();
+
+				// Hide Cancel button again
+				$("#cancelRecord").hide();
+
+				// Show all Modify buttons
+				$("#addRecord").show();
+			}
+		}
+
+		function fileuploads(btn) {
+			try {
+				const asondate = btn.getAttribute("data-todate");
+				const type = (btn.getAttribute("data-type") || "").trim();
+
+				$('#loader').modal('show');
+
+				// Step 1: Remove commas from inputs
+				$("#fileupload input[type='text']").each(function () {
+					let value = $(this).val() || '';
+					$(this).val(value.replace(/,/g, ''));
+				});
+
+				// Step 2: Validate form
+				if ($("#fileupload").data('validator') && !$("#fileupload").valid()) {
+					$('#loader').modal('hide');
+					return;
+				}
+
+				// Step 3: SERIALIZE FORM
+				let formData = $("#fileupload").serialize();
+
+				formData += "&asondate=" + encodeURIComponent(asondate);
+				formData += "&type=" + encodeURIComponent(type);
+
+				console.log("Serialized data prepared");
+
+				// Step 4: AJAX request
+				$.ajax({
+					url: './SLSupdateAll',
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
+					success: function () {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text("Modified Successfully");
+						$("#resultModal").modal("show");
+					},
+					error: function (jqXHR) {
+						console.error("Error response:", jqXHR.responseText);
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed. Check console for details."
+						);
+						$("#resultModal").modal("show");
+					},
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				console.error("Unexpected error:", error);
+				$('#loader').modal('hide');
+			}
 		}
 	</script>
 
@@ -1068,16 +1136,15 @@ PURPOSE		: BRRS_M_PLLREPORT
 
 
 						<!-- Modify -->
-						<!--<button class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
-																					th:if="${type != 'ARCHIVAL' and displaymode == 'summary'}"
-																					th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
-																					id="addRecord">Modify</button>
+						<button type="button" class="custom-tab-btn" onclick="showmodify(this);" title="Click to EDIT Records"
+							th:if="${type != 'ARCHIVAL' and displaymode == 'summary' and role != 'C' and role != 'AUDIT'}"
+							id="addRecord">Modify</button>
 
-																				 Cancel 
-																				<button class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
-																					onclick="cancelModify();">
-																					Cancel
-																				</button>-->
+						<!-- Cancel -->
+						<button type="button" class="custom-tab-btn" style="display:none;" title="Cancel editing" id="cancelRecord"
+							onclick="cancelModify();">
+							Cancel
+						</button>
 
 						<!-- Download button - Summary -->
 						<button type="button" class="custom-tab-btn download-btn"
@@ -1114,6 +1181,7 @@ PURPOSE		: BRRS_M_PLLREPORT
 			<div th:if="${displaymode == 'summary'}">
 				<div class="row">
 					<div class="col-sm-12">
+						<form action="#" method="POST" id="fileupload">
 						<!-- <h5 style = "font-weight:bold;color:black;">BANK OF BOTSWANA - BANKING SUPERVISION DEPARTMENT<br>(1) MONTHLY SCHEDULE M-SP: STATEMENT OF FINANCIAL POSITION AS AT<br>(P'000)<br> </h5> -->
 						<div class="table-wrapper table-responsive scrollable-table-container"
 							style="border-right: 1px solid #dee2e6;max-height:700px; overflow-y: auto;">
@@ -3991,68 +4059,170 @@ PURPOSE		: BRRS_M_PLLREPORT
 									<tr>
 										<th colspan="4" Style="background-color:#b3b6b9; text-align: center;"
 											th:text="${report.R75_PRODUCT}"></th>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_DAY1, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_DAY1 != null ? #numbers.formatDecimal(report.R75_DAY1, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_DAY1" name="R75_DAY1"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_DAY2_7, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_DAY2_7 != null ? #numbers.formatDecimal(report.R75_DAY2_7, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_DAY2_7" name="R75_DAY2_7"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_DAY8_14, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_DAY8_14 != null ? #numbers.formatDecimal(report.R75_DAY8_14, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_DAY8_14" name="R75_DAY8_14"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_DAY15_30, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_DAY15_30 != null ? #numbers.formatDecimal(report.R75_DAY15_30, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_DAY15_30" name="R75_DAY15_30"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_DAY31_TO_2M, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_DAY31_TO_2M != null ? #numbers.formatDecimal(report.R75_DAY31_TO_2M, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_DAY31_TO_2M" name="R75_DAY31_TO_2M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_MORE2M_TO_3M, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_MORE2M_TO_3M != null ? #numbers.formatDecimal(report.R75_MORE2M_TO_3M, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_MORE2M_TO_3M" name="R75_MORE2M_TO_3M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_OVER3M_TO_6M, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_OVER3M_TO_6M != null ? #numbers.formatDecimal(report.R75_OVER3M_TO_6M, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_OVER3M_TO_6M" name="R75_OVER3M_TO_6M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_OVER6M_TO_1Y, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_OVER6M_TO_1Y != null ? #numbers.formatDecimal(report.R75_OVER6M_TO_1Y, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_OVER6M_TO_1Y" name="R75_OVER6M_TO_1Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_OVER1Y_TO_3Y, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_OVER1Y_TO_3Y != null ? #numbers.formatDecimal(report.R75_OVER1Y_TO_3Y, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_OVER1Y_TO_3Y" name="R75_OVER1Y_TO_3Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_OVER3Y_TO_5Y, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_OVER3Y_TO_5Y != null ? #numbers.formatDecimal(report.R75_OVER3Y_TO_5Y, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_OVER3Y_TO_5Y" name="R75_OVER3Y_TO_5Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
-										<td style="text-align:right;background-color:#c1e4f7"
-											th:text="${#numbers.formatDecimal(report.R75_OVER5Y, 0, 'COMMA', 2, 'POINT')}">
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R75_OVER5Y != null ? #numbers.formatDecimal(report.R75_OVER5Y, 0, 'COMMA', 2, 'POINT') : '0.00'}"
+												id="R75_OVER5Y" name="R75_OVER5Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
 										</td>
 										<th Style="text-align: right;background-color:#c1e4f7"></th>
 									</tr>
+									
+									
 									<tr>
 										<th colspan="4" Style="background-color:#b3b6b9; text-align: center;"
-											th:text="${report.R76_PRODUCT}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_DAY1}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_DAY2_7}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_DAY8_14}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_DAY15_30}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_DAY31_TO_2M}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_MORE2M_TO_3M}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_OVER3M_TO_6M}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_OVER6M_TO_1Y}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_OVER1Y_TO_3Y}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_OVER3Y_TO_5Y}"></th>
-										<th Style="text-align: right; background-color:#c1e4f7;"
-											th:text="${report.R76_OVER5Y}"></th>
+											th:text="${report.R76_PRODUCT}">Limit Adherence</th>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_DAY1 != null ? report.R76_DAY1 : 'N/A'}"
+												id="R76_DAY1" name="R76_DAY1"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_DAY2_7 != null ? report.R76_DAY2_7 : 'N/A'}"
+												id="R76_DAY2_7" name="R76_DAY2_7"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_DAY8_14 != null ? report.R76_DAY8_14 : 'N/A'}"
+												id="R76_DAY8_14" name="R76_DAY8_14"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_DAY15_30 != null ? report.R76_DAY15_30 : 'N/A'}"
+												id="R76_DAY15_30" name="R76_DAY15_30"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_DAY31_TO_2M != null ? report.R76_DAY31_TO_2M : 'N/A'}"
+												id="R76_DAY31_TO_2M" name="R76_DAY31_TO_2M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_MORE2M_TO_3M != null ? report.R76_MORE2M_TO_3M : 'N/A'}"
+												id="R76_MORE2M_TO_3M" name="R76_MORE2M_TO_3M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_OVER3M_TO_6M != null ? report.R76_OVER3M_TO_6M : 'N/A'}"
+												id="R76_OVER3M_TO_6M" name="R76_OVER3M_TO_6M"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_OVER6M_TO_1Y != null ? report.R76_OVER6M_TO_1Y : 'N/A'}"
+												id="R76_OVER6M_TO_1Y" name="R76_OVER6M_TO_1Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_OVER1Y_TO_3Y != null ? report.R76_OVER1Y_TO_3Y : 'N/A'}"
+												id="R76_OVER1Y_TO_3Y" name="R76_OVER1Y_TO_3Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_OVER3Y_TO_5Y != null ? report.R76_OVER3Y_TO_5Y : 'N/A'}"
+												id="R76_OVER3Y_TO_5Y" name="R76_OVER3Y_TO_5Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
+										<td style="text-align:right;background-color:#c1e4f7">
+											<input class="display-input Show_input" type="text"
+												th:value="${report.R76_OVER5Y != null ? report.R76_OVER5Y : 'N/A'}"
+												id="R76_OVER5Y" name="R76_OVER5Y"
+												style="background-color: transparent; width: 100%; height: 28px; border-color: transparent; text-align: right;"
+												readonly />
+										</td>
 										<th Style="text-align: right;background-color:#c1e4f7"></th>
 									</tr>
+									
 									<tr>
 										<th colspan="16" Style="text-align: left;background-color:#b3b6b9">* Net of
 											provisions, interest suspense and claims received from ECGC / DICGC</th>
@@ -4204,7 +4374,14 @@ PURPOSE		: BRRS_M_PLLREPORT
 							</table>
 						</div>
 
-
+							<div style="text-align: center; margin-top: 15px; background-color: white;">
+								<button id="submitButton" type="button" class="custom-tab-btn Show_input"
+									form="fileupload" th:attr="data-todate=${asondate},data-type=${type}"
+									onclick="fileuploads(this);" style="display: none;">
+									Submit
+								</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>

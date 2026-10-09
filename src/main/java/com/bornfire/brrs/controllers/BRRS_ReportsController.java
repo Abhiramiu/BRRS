@@ -175,6 +175,8 @@ import com.bornfire.brrs.services.BRRS_M_SECL_ReportService.M_SECL_Summary_Entit
 import com.bornfire.brrs.services.BRRS_M_SEC_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP1_ReportService.M_SFINP1_Summary_Manual_Entity;
+import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService;
+import com.bornfire.brrs.services.BRRS_SLS_INPUT_SHT_ReportService.SLS_INPUT_SHT_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService;
 import com.bornfire.brrs.services.BRRS_M_SFINP2_ReportService.M_SFINP2_Summary_Entity;
 import com.bornfire.brrs.services.BRRS_M_SIR_ReportService;
@@ -2520,6 +2522,48 @@ public class BRRS_ReportsController {
 			request1.setREPORT_DATE(asondate);
 
 			M_SFINP1_ReportService.updateReport(request1);
+
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	@Autowired
+	private BRRS_SLS_INPUT_SHT_ReportService BRRS_SLS_INPUT_SHT_reportservice;
+
+	@RequestMapping(value = { "/SLSupdateAll", "/SLS_REPORTupdateAll" }, method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> updateAllSLSReports(
+			@RequestParam(value = "asondate", required = false) String asondateStr,
+			@RequestParam(value = "todate", required = false) String todateStr,
+			@ModelAttribute SLS_INPUT_SHT_Summary_Entity request1,
+			HttpServletRequest req) {
+		try {
+			System.out.println("Came to SLS updateAll controller: asondate=" + asondateStr + ", todate=" + todateStr);
+
+			Date parsedDate = null;
+			String dateStr = (asondateStr != null && !asondateStr.trim().isEmpty()) ? asondateStr : todateStr;
+			if (dateStr == null || dateStr.trim().isEmpty()) {
+				dateStr = req.getParameter("asondate");
+			}
+			if (dateStr != null && !dateStr.trim().isEmpty()) {
+				String[] patterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(dateStr.trim());
+						break;
+					} catch (ParseException ignored) {
+					}
+				}
+			}
+
+			if (parsedDate != null) {
+				request1.setREPORT_DATE(parsedDate);
+			}
+
+			BRRS_SLS_INPUT_SHT_reportservice.updateReport(request1);
 
 			return ResponseEntity.ok("Modified Successfully.");
 		} catch (Exception e) {
