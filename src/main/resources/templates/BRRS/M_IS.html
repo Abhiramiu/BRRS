@@ -820,156 +820,271 @@ PURPOSE		: BWRBRREPORT
 	</script>
 
 	<SCRIPT>
-		// ======================================================
-		// AUTO CALCULATIONS FOR R10–R16
-		// ======================================================
 
-		function getValue(id) {
-			let el = $(id);
-			if (el.length === 0) return 0;
-			if (el.is("input")) {
-				let v = el.val();
-				if (v === undefined || v === null || v === "") return 0;
-				return parseFloat(v.toString().replace(/,/g, "")) || 0;
-			}
-			let txt = el.text();
-			if (!txt) return 0;
-			return parseFloat(txt.toString().replace(/,/g, "")) || 0;
-		}
+		$(document).ready(function () {
 
-		// ======================================================
-		// 1️⃣ D + E + F = G  (Row TOTALS R10–R15)
-		//    Also calculates R16 (sum of D/E/F)
-		// ======================================================
-		function calculateR15Totals() {
-			let HTM = 0, AFS = 0, FVPAL = 0;
+		    // ======================================================
+		    // GET NUMERIC VALUE
+		    // ======================================================
 
-			for (let i = 10; i <= 15; i++) {
-				let c = getValue("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS");
-				let a = getValue("#R" + i + "_HELD_TO_MATURITY");
-				let b = getValue("#R" + i + "_AVAILABLE_FOR_SALE");
+			function getValue(id) {
+			    let el = $(id);
 
-				let rowTotal = a + b + c;
+			    // If the input ID does not exist, find the matching table cell
+			    if (el.length === 0) {
+			        let fieldName = id.replace("#", "");
+			        el = $("[data-field='" + fieldName + "']");
+			    }
 
-				$("#R" + i + "_TOTAL").val(rowTotal.toLocaleString('en-US'));
+			    if (el.length === 0) return 0;
 
-				HTM += a;
-				AFS += b;
-				FVPAL += c;
+			    let value;
+
+			    if (el.is("input")) {
+			        value = el.val();
+			    } else {
+			        value = el.text();
+			    }
+
+			    if (value === undefined || value === null || value.trim() === "") {
+			        return 0;
+			    }
+
+			    return parseFloat(value.toString().replace(/,/g, "")) || 0;
 			}
 
-			// R16 totals
-			$("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(FVPAL.toLocaleString('en-US'));
-			$("#R16_HELD_TO_MATURITY").val(HTM.toLocaleString('en-US'));
-			$("#R16_AVAILABLE_FOR_SALE").val(AFS.toLocaleString('en-US'));
-		}
 
-		// 2️⃣ R16_TOTAL = SUM(G10–G15)
-		// ======================================================
-		function calculateR16Total() {
-			let total = 0;
-			for (let i = 10; i <= 15; i++) {
-				let g = getValue("#R" + i + "_TOTAL");
-				total += g;
-			}
-			$("#R16_TOTAL").val(total.toLocaleString('en-US'));
-		}
+		    // ======================================================
+		    // R10–R15 TOTALS + R16 COLUMN TOTALS
+		    // D + E + F = G
+		    // ======================================================
+		    function calculateR15Totals() {
+		        let HTM = 0;
+		        let AFS = 0;
+		        let FVPAL = 0;
 
-		function calculateR35Totals() {
-			let sumD = 0, sumE = 0, sumF = 0, sumG = 0, sumH = 0, sumI = 0;
+		        for (let i = 10; i <= 15; i++) {
 
-			for (let i = 21; i <= 30; i++) {
-				let D = getValue(`#R${i}_HELD_FOR_TRADING`);
-				let E = getValue(`#R${i}_AMORTISED_COST`);
-				let F = getValue(`#R${i}_AVAILABLE_FOR_SALE`);
-				let G = getValue(`#R${i}_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS`);
-				let H = getValue(`#R${i}_QUALIFYING_FOR_HEDGE_ACCOUNTING`);
+		            let C = getValue("#R" + i + "_FAIR_VALUE_PROFIT_AND_LOSS");
+		            let A = getValue("#R" + i + "_HELD_TO_MATURITY");
+		            let B = getValue("#R" + i + "_AVAILABLE_FOR_SALE");
 
-				let I = D + E + F + G + H;
+		            let rowTotal = A + B + C;
 
-				$("#R" + i + "_TOTAL").val(I.toLocaleString('en-US'));
+		            $("#R" + i + "_TOTAL").val(
+		                rowTotal.toLocaleString("en-US")
+		            );
 
-				sumD += D;
-				sumE += E;
-				sumF += F;
-				sumG += G;
-				sumH += H;
-				sumI += I;
-			}
+		            HTM += A;
+		            AFS += B;
+		            FVPAL += C;
+		        }
 
-			// -------------------------------------------
-			// ROW 31 = SUM OF ROWS 32 + 33 + 34
-			// -------------------------------------------
-			let D31 = 0, E31 = 0, F31 = 0, G31 = 0, H31 = 0, I31 = 0;
+		        // R16 column totals
+		        $("#R16_FAIR_VALUE_PROFIT_AND_LOSS").val(
+		            FVPAL.toLocaleString("en-US")
+		        );
 
-			for (let r = 32; r <= 34; r++) {
-				D31 += getValue("#R" + r + "_HELD_FOR_TRADING");
-				E31 += getValue("#R" + r + "_AMORTISED_COST");
-				F31 += getValue("#R" + r + "_AVAILABLE_FOR_SALE");
-				G31 += getValue("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
-				H31 += getValue("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
-				I31 += getValue("#R" + r + "_TOTAL");
-			}
+		        $("#R16_HELD_TO_MATURITY").val(
+		            HTM.toLocaleString("en-US")
+		        );
 
-			// PUT VALUES INTO ROW 31
-			$("#R31_HELD_FOR_TRADING").val(D31.toLocaleString('en-US'));
-			$("#R31_AMORTISED_COST").val(E31.toLocaleString('en-US'));
-			$("#R31_AVAILABLE_FOR_SALE").val(F31.toLocaleString('en-US'));
-			$("#R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(G31.toLocaleString('en-US'));
-			$("#R31_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(H31.toLocaleString('en-US'));
-			$("#R31_TOTAL").val(I31.toLocaleString('en-US'));
+		        $("#R16_AVAILABLE_FOR_SALE").val(
+		            AFS.toLocaleString("en-US")
+		        );
+		    }
 
-			// Add Row 31 values to column totals
-			sumD += D31;
-			sumE += E31;
-			sumF += F31;
-			sumG += G31;
-			sumH += H31;
-			sumI += I31;
+		    // ======================================================
+		    // R16 TOTAL = SUM OF R10–R15 TOTAL
+		    // ======================================================
+		    function calculateR16Total() {
+		        let total = 0;
 
-			// -------------------------------------------
-			// ROWS 32–34 CALCULATE NORMAL TOTAL
-			// -------------------------------------------
-			for (let r = 32; r <= 34; r++) {
-				let D = getValue("#R" + r + "_HELD_FOR_TRADING");
-				let E = getValue("#R" + r + "_AMORTISED_COST");
-				let F = getValue("#R" + r + "_AVAILABLE_FOR_SALE");
-				let G = getValue("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
-				let H = getValue("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
+		        for (let i = 10; i <= 15; i++) {
+		            total += getValue("#R" + i + "_TOTAL");
+		        }
 
-				let I = D + E + F + G + H;
+		        $("#R16_TOTAL").val(total.toLocaleString("en-US"));
+		    }
 
-				$("#R" + r + "_TOTAL").val(I.toLocaleString('en-US'));
-			}
+		    // ======================================================
+		    // R21–R35 CALCULATIONS
+		    // ======================================================
+		    function calculateR35Totals() {
 
-			// -------------------------------------------
-			// ROW 35 GRAND TOTAL
-			// -------------------------------------------
-			$("#R35_HELD_FOR_TRADING").val(sumD.toLocaleString('en-US'));
-			$("#R35_AMORTISED_COST").val(sumE.toLocaleString('en-US'));
-			$("#R35_AVAILABLE_FOR_SALE").val(sumF.toLocaleString('en-US'));
-			$("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(sumG.toLocaleString('en-US'));
-			$("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(sumH.toLocaleString('en-US'));
-			$("#R35_TOTAL").val(sumI.toLocaleString('en-US'));
-		}
+		        let sumD = 0;
+		        let sumE = 0;
+		        let sumF = 0;
+		        let sumG = 0;
+		        let sumH = 0;
+		        let sumI = 0;
 
-		$(window).on("load", function () {
-			calculateR15Totals();
-			calculateR16Total();
-			calculateR35Totals();
+		        // ==================================================
+		        // ROWS 21–30: CALCULATE ROW TOTALS
+		        // ==================================================
+		        for (let i = 21; i <= 30; i++) {
 
-			$("[id^='R10_'], [id^='R11_'], [id^='R12_'], [id^='R13_'], [id^='R14_'], [id^='R15_']")
-				.on("keyup change input", function () {
-					calculateR15Totals();
-					calculateR16Total();
-				});
+		            let D = getValue("#R" + i + "_HELD_FOR_TRADING");
+		            let E = getValue("#R" + i + "_AMORTISED_COST");
+		            let F = getValue("#R" + i + "_AVAILABLE_FOR_SALE");
+		            let G = getValue("#R" + i + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
+		            let H = getValue("#R" + i + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
 
-			let selectors = [];
-			for (let i = 21; i <= 34; i++) selectors.push("[id^='R" + i + "_']");
-			$(selectors.join(",")).on("input change keyup", function () {
-				calculateR35Totals();
-			});
+		            let I = D + E + F + G + H;
+
+		            $("#R" + i + "_TOTAL").val(
+		                I.toLocaleString("en-US")
+		            );
+		        }
+
+		        // ==================================================
+		        // ROW 31 = SUM OF ROWS 32–34
+		        // ==================================================
+		        let D31 = 0;
+		        let E31 = 0;
+		        let F31 = 0;
+		        let G31 = 0;
+		        let H31 = 0;
+		        let I31 = 0;
+
+		        for (let r = 32; r <= 34; r++) {
+
+		            D31 += getValue("#R" + r + "_HELD_FOR_TRADING");
+		            E31 += getValue("#R" + r + "_AMORTISED_COST");
+		            F31 += getValue("#R" + r + "_AVAILABLE_FOR_SALE");
+		            G31 += getValue("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
+		            H31 += getValue("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
+		            I31 += getValue("#R" + r + "_TOTAL");
+		        }
+
+		        $("#R31_HELD_FOR_TRADING").val(
+		            D31.toLocaleString("en-US")
+		        );
+
+		        $("#R31_AMORTISED_COST").val(
+		            E31.toLocaleString("en-US")
+		        );
+
+		        $("#R31_AVAILABLE_FOR_SALE").val(
+		            F31.toLocaleString("en-US")
+		        );
+
+		        $("#R31_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(
+		            G31.toLocaleString("en-US")
+		        );
+
+		        $("#R31_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(
+		            H31.toLocaleString("en-US")
+		        );
+
+		        $("#R31_TOTAL").val(
+		            I31.toLocaleString("en-US")
+		        );
+
+		        // ==================================================
+		        // ROWS 32–34: CALCULATE ROW TOTALS
+		        // ==================================================
+		        for (let r = 32; r <= 34; r++) {
+
+		            let D = getValue("#R" + r + "_HELD_FOR_TRADING");
+		            let E = getValue("#R" + r + "_AMORTISED_COST");
+		            let F = getValue("#R" + r + "_AVAILABLE_FOR_SALE");
+		            let G = getValue("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
+		            let H = getValue("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
+
+		            let I = D + E + F + G + H;
+
+		            $("#R" + r + "_TOTAL").val(
+		                I.toLocaleString("en-US")
+		            );
+		        }
+
+		        // ==================================================
+		        // ROW 35 = SUM OF ROWS 21–31 FOR ALL COLUMNS
+		        // Includes R28 database values without overwriting them.
+		        // ==================================================
+		        let D35 = 0;
+		        let E35 = 0;
+		        let F35 = 0;
+		        let G35 = 0;
+		        let H35 = 0;
+		        let I35 = 0;
+
+		        for (let r = 21; r <= 31; r++) {
+
+		            D35 += getValue("#R" + r + "_HELD_FOR_TRADING");
+		            E35 += getValue("#R" + r + "_AMORTISED_COST");
+		            F35 += getValue("#R" + r + "_AVAILABLE_FOR_SALE");
+		            G35 += getValue("#R" + r + "_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS");
+		            H35 += getValue("#R" + r + "_QUALIFYING_FOR_HEDGE_ACCOUNTING");
+		            I35 += getValue("#R" + r + "_TOTAL");
+		        }
+
+		        // Set R35 grand totals
+		        $("#R35_HELD_FOR_TRADING").val(
+		            D35.toLocaleString("en-US")
+		        );
+
+		        $("#R35_AMORTISED_COST").val(
+		            E35.toLocaleString("en-US")
+		        );
+
+		        $("#R35_AVAILABLE_FOR_SALE").val(
+		            F35.toLocaleString("en-US")
+		        );
+
+		        $("#R35_FAIR_VALUE_THROUGH_PROFIT_AND_LOSS").val(
+		            G35.toLocaleString("en-US")
+		        );
+
+		        $("#R35_QUALIFYING_FOR_HEDGE_ACCOUNTING").val(
+		            H35.toLocaleString("en-US")
+		        );
+
+		        $("#R35_TOTAL").val(
+		            I35.toLocaleString("en-US")
+		        );
+		    }
+
+		    // ======================================================
+		    // INITIAL CALCULATION ON PAGE LOAD
+		    // ======================================================
+		    calculateR15Totals();
+		    calculateR16Total();
+		    calculateR35Totals();
+
+		    // ======================================================
+		    // R10–R15 INPUT CHANGE EVENTS
+		    // ======================================================
+		    $(
+		        "[id^='R10_'], " +
+		        "[id^='R11_'], " +
+		        "[id^='R12_'], " +
+		        "[id^='R13_'], " +
+		        "[id^='R14_'], " +
+		        "[id^='R15_']"
+		    ).on("keyup change input", function () {
+
+		        calculateR15Totals();
+		        calculateR16Total();
+
+		    });
+
+		    // ======================================================
+		    // R21–R34 INPUT CHANGE EVENTS
+		    // ======================================================
+		    let selectors = [];
+
+		    for (let i = 21; i <= 34; i++) {
+		        selectors.push("[id^='R" + i + "_']");
+		    }
+
+		    $(selectors.join(",")).on("input change keyup", function () {
+		        calculateR35Totals();
+		    });
+
 		});
+
 
 	</SCRIPT>
 
