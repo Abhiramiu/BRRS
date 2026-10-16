@@ -654,7 +654,7 @@ label.error {
 				"r64Leasing"
 			];
 			// 🎯 Unlock all inputs except readonly ones
-			$(".Show_input").each(function () {
+			$("input.Show_input").each(function () {
 				const inputId = this.id;
 				if (!readonlyIds.includes(inputId)) {
 					$(this).removeAttr("readonly").removeAttr("disabled");
