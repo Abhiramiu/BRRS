@@ -996,7 +996,7 @@ public List<Object[]> getM_I_S_CAResub() {
 	        // -----------------------------
 	        // 2️⃣ EXTRA TOTAL FIELDS
 	        // -----------------------------
-	        int[] extraTotals = {67, 68};
+	        int[] extraTotals = {66, 67, 68};
 
 	        for (int i : extraTotals) {
 
