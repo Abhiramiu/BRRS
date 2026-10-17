@@ -204859,7 +204859,7 @@ public class BRRS_M_NOSVOS_ReportService {
 				populateP2(sheet, dataList2, numberStyle, textStyle);
 				populateP3(sheet, dataList3, numberStyle, textStyle);
 				populateP4(sheet, dataList4, numberStyle, textStyle);
-				populateP5(sheet, dataList5, numberStyle, textStyle);
+				
 			}
 
 			// =========================================================
@@ -204902,57 +204902,57 @@ public class BRRS_M_NOSVOS_ReportService {
 			}
 
 			// Column A (index 0) - NAME_OF_BANK_AND_COUNTRY_NOSTRO
-			Cell cellA = dataRow.getCell(0);
+			Cell cellA = dataRow.getCell(1);
 			if (cellA == null)
-				cellA = dataRow.createCell(0);
+				cellA = dataRow.createCell(1);
 			setStringCellValue(cellA, record, "getR" + i + "_NAME_OF_BANK_AND_COUNTRY_NOSTRO", textStyle);
 
 			// Column B (index 1) - TYPE_OF_ACCOUNT_NOSTRO
-			Cell cellB = dataRow.getCell(1);
+			Cell cellB = dataRow.getCell(2);
 			if (cellB == null)
-				cellB = dataRow.createCell(1);
+				cellB = dataRow.createCell(2);
 			setStringCellValue(cellB, record, "getR" + i + "_TYPE_OF_ACCOUNT_NOSTRO", textStyle);
 
 			// Column C (index 2) - PURPOSE_NOSTRO
-			Cell cellC = dataRow.getCell(2);
+			Cell cellC = dataRow.getCell(3);
 			if (cellC == null)
-				cellC = dataRow.createCell(2);
+				cellC = dataRow.createCell(3);
 			setStringCellValue(cellC, record, "getR" + i + "_PURPOSE_NOSTRO", textStyle);
 
 			// Column D (index 3) - CURRENCY_NOSTRO
-			Cell cellD = dataRow.getCell(3);
+			Cell cellD = dataRow.getCell(4);
 			if (cellD == null)
-				cellD = dataRow.createCell(3);
+				cellD = dataRow.createCell(4);
 			setStringCellValue(cellD, record, "getR" + i + "_CURRENCY_NOSTRO", textStyle);
 
 			// Column E (index 4) - SOVEREIGN_RATING_AAA_AA_A1_NOSTRO
-			Cell cellE = dataRow.getCell(4);
+			Cell cellE = dataRow.getCell(5);
 			if (cellE == null)
-				cellE = dataRow.createCell(4);
+				cellE = dataRow.createCell(5);
 			setStringCellValue(cellE, record, "getR" + i + "_SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", textStyle);
 
 			// Column F (index 5) - RISK_WEIGHT_NOSTRO
-			Cell cellF = dataRow.getCell(5);
+			Cell cellF = dataRow.getCell(6);
 			if (cellF == null)
-				cellF = dataRow.createCell(5);
+				cellF = dataRow.createCell(6);
 			setStringCellValue(cellF, record, "getR" + i + "_RISK_WEIGHT_NOSTRO", textStyle);
 
 			// Column G (index 6) - AMOUNT_DEMAND_NOSTRO
-			Cell cellG = dataRow.getCell(6);
+			Cell cellG = dataRow.getCell(7);
 			if (cellG == null)
-				cellG = dataRow.createCell(6);
+				cellG = dataRow.createCell(7);
 			setBigDecimalCellValue(cellG, record, "getR" + i + "_AMOUNT_DEMAND_NOSTRO", numberStyle, textStyle);
 
 			// Column H (index 7) - AMOUNT_TIME_NOSTRO
-			Cell cellH = dataRow.getCell(7);
+			Cell cellH = dataRow.getCell(8);
 			if (cellH == null)
-				cellH = dataRow.createCell(7);
+				cellH = dataRow.createCell(8);
 			setBigDecimalCellValue(cellH, record, "getR" + i + "_AMOUNT_TIME_NOSTRO", numberStyle, textStyle);
 
 			// Column I (index 8) - RISK_WEIGHTED_AMOUNT_NOSTRO
-			Cell cellI = dataRow.getCell(8);
+			Cell cellI = dataRow.getCell(9);
 			if (cellI == null)
-				cellI = dataRow.createCell(8);
+				cellI = dataRow.createCell(9);
 			setBigDecimalCellValue(cellI, record, "getR" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO", numberStyle, textStyle);
 		}
 	}
@@ -204969,46 +204969,46 @@ public class BRRS_M_NOSVOS_ReportService {
 
 		// P2 starts at row 23 (index 23)
 		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 22 + i;
+			int rowIndex = 9 + i;
 			Row dataRow = sheet.getRow(rowIndex);
 			if (dataRow == null) {
 				dataRow = sheet.createRow(rowIndex);
 			}
 
 			// Column K (index 10) - NAME_OF_BANK_AND_COUNTRY_VOSTRO
-			Cell cellK = dataRow.getCell(10);
+			Cell cellK = dataRow.getCell(11);
 			if (cellK == null)
-				cellK = dataRow.createCell(10);
+				cellK = dataRow.createCell(11);
 			setStringCellValue(cellK, record, "getR" + i + "_NAME_OF_BANK_AND_COUNTRY_VOSTRO", textStyle);
 
 			// Column L (index 11) - TYPE_OF_ACCOUNT_VOSTRO
-			Cell cellL = dataRow.getCell(11);
+			Cell cellL = dataRow.getCell(12);
 			if (cellL == null)
-				cellL = dataRow.createCell(11);
+				cellL = dataRow.createCell(12);
 			setStringCellValue(cellL, record, "getR" + i + "_TYPE_OF_ACCOUNT_VOSTRO", textStyle);
 
 			// Column M (index 12) - PURPOSE_VOSTRO
-			Cell cellM = dataRow.getCell(12);
+			Cell cellM = dataRow.getCell(13);
 			if (cellM == null)
-				cellM = dataRow.createCell(12);
+				cellM = dataRow.createCell(13);
 			setStringCellValue(cellM, record, "getR" + i + "_PURPOSE_VOSTRO", textStyle);
 
 			// Column N (index 13) - CURRENCY_VOSTRO
-			Cell cellN = dataRow.getCell(13);
+			Cell cellN = dataRow.getCell(14);
 			if (cellN == null)
-				cellN = dataRow.createCell(13);
+				cellN = dataRow.createCell(14);
 			setStringCellValue(cellN, record, "getR" + i + "_CURRENCY_VOSTRO", textStyle);
 
 			// Column O (index 14) - AMOUNT_DEMAND_VOSTRO
-			Cell cellO = dataRow.getCell(14);
+			Cell cellO = dataRow.getCell(15);
 			if (cellO == null)
-				cellO = dataRow.createCell(14);
+				cellO = dataRow.createCell(15);
 			setBigDecimalCellValue(cellO, record, "getR" + i + "_AMOUNT_DEMAND_VOSTRO", numberStyle, textStyle);
 
 			// Column P (index 15) - AMOUNT_TIME_VOSTRO
-			Cell cellP = dataRow.getCell(15);
+			Cell cellP = dataRow.getCell(16);
 			if (cellP == null)
-				cellP = dataRow.createCell(15);
+				cellP = dataRow.createCell(16);
 			setBigDecimalCellValue(cellP, record, "getR" + i + "_AMOUNT_TIME_VOSTRO", numberStyle, textStyle);
 		}
 	}
@@ -205025,57 +205025,57 @@ public class BRRS_M_NOSVOS_ReportService {
 
 		// P3 starts at row 36 (index 36)
 		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 35 + i;
+			int rowIndex = 117 + i;
 			Row dataRow = sheet.getRow(rowIndex);
 			if (dataRow == null) {
 				dataRow = sheet.createRow(rowIndex);
 			}
 
 			// Same columns as P1 (A-I)
-			Cell cellA = dataRow.getCell(0);
+			Cell cellA = dataRow.getCell(1);
 			if (cellA == null)
-				cellA = dataRow.createCell(0);
+				cellA = dataRow.createCell(1);
 			setStringCellValue(cellA, record, "getR" + i + "_NAME_OF_BANK_NOSTRO1", textStyle);
 
-			Cell cellB = dataRow.getCell(1);
+			Cell cellB = dataRow.getCell(2);
 			if (cellB == null)
-				cellB = dataRow.createCell(1);
+				cellB = dataRow.createCell(2);
 			setStringCellValue(cellB, record, "getR" + i + "_TYPE_OF_ACCOUNT_NOSTRO1", textStyle);
 
-			Cell cellC = dataRow.getCell(2);
+			Cell cellC = dataRow.getCell(3);
 			if (cellC == null)
-				cellC = dataRow.createCell(2);
+				cellC = dataRow.createCell(3);
 			setStringCellValue(cellC, record, "getR" + i + "_PURPOSE_NOSTRO1", textStyle);
 
-			Cell cellD = dataRow.getCell(3);
+			Cell cellD = dataRow.getCell(4);
 			if (cellD == null)
-				cellD = dataRow.createCell(3);
+				cellD = dataRow.createCell(4);
 			setStringCellValue(cellD, record, "getR" + i + "_CURRENCY_NOSTRO1", textStyle);
 
-			Cell cellE = dataRow.getCell(4);
+			Cell cellE = dataRow.getCell(5);
 			if (cellE == null)
-				cellE = dataRow.createCell(4);
+				cellE = dataRow.createCell(5);
 			setStringCellValue(cellE, record, "getR" + i + "_SOVEREIGN_RATING_NOSTRO1", textStyle);
 
-			Cell cellF = dataRow.getCell(5);
+			Cell cellF = dataRow.getCell(6);
 			if (cellF == null)
-				cellF = dataRow.createCell(5);
+				cellF = dataRow.createCell(6);
 			setStringCellValue(cellF, record, "getR" + i + "_RISK_WEIGHT_NOSTRO1", textStyle);
 
-			Cell cellG = dataRow.getCell(6);
+			Cell cellG = dataRow.getCell(7);
 			if (cellG == null)
-				cellG = dataRow.createCell(6);
+				cellG = dataRow.createCell(7);
 			setBigDecimalCellValue(cellG, record, "getR" + i + "_AMOUNT_DEMAND_NOSTRO1", numberStyle, textStyle);
 
-			Cell cellH = dataRow.getCell(7);
+			Cell cellH = dataRow.getCell(8);
 			if (cellH == null)
-				cellH = dataRow.createCell(7);
+				cellH = dataRow.createCell(8);
 			setBigDecimalCellValue(cellH, record, "getR" + i + "_AMOUNT_TIME_NOSTRO1", numberStyle, textStyle);
 
-			Cell cellI = dataRow.getCell(8);
-			if (cellI == null)
-				cellI = dataRow.createCell(8);
-			setBigDecimalCellValue(cellI, record, "getR" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1", numberStyle, textStyle);
+//			Cell cellI = dataRow.getCell(9);
+//			if (cellI == null)
+//				cellI = dataRow.createCell(9);
+//			setBigDecimalCellValue(cellI, record, "getR" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1", numberStyle, textStyle);
 		}
 	}
 
@@ -205091,41 +205091,41 @@ public class BRRS_M_NOSVOS_ReportService {
 
 		// P4 starts at row 51 (index 51)
 		for (int i = 1; i <= 101; i++) {
-			int rowIndex = 50 + i;
+			int rowIndex = 117 + i;
 			Row dataRow = sheet.getRow(rowIndex);
 			if (dataRow == null) {
 				dataRow = sheet.createRow(rowIndex);
 			}
 
 			// Same columns as P2 (K-P)
-			Cell cellK = dataRow.getCell(10);
+			Cell cellK = dataRow.getCell(11);
 			if (cellK == null)
-				cellK = dataRow.createCell(10);
+				cellK = dataRow.createCell(11);
 			setStringCellValue(cellK, record, "getR" + i + "_NAME_OF_BANK_VOSTRO1", textStyle);
 
-			Cell cellL = dataRow.getCell(11);
+			Cell cellL = dataRow.getCell(12);
 			if (cellL == null)
-				cellL = dataRow.createCell(11);
+				cellL = dataRow.createCell(12);
 			setStringCellValue(cellL, record, "getR" + i + "_TYPE_OF_ACCOUNT_VOSTRO1", textStyle);
 
-			Cell cellM = dataRow.getCell(12);
+			Cell cellM = dataRow.getCell(13);
 			if (cellM == null)
-				cellM = dataRow.createCell(12);
+				cellM = dataRow.createCell(13);
 			setStringCellValue(cellM, record, "getR" + i + "_PURPOSE_VOSTRO1", textStyle);
 
-			Cell cellN = dataRow.getCell(13);
+			Cell cellN = dataRow.getCell(14);
 			if (cellN == null)
-				cellN = dataRow.createCell(13);
+				cellN = dataRow.createCell(14);
 			setStringCellValue(cellN, record, "getR" + i + "_CURRENCY_VOSTRO1", textStyle);
 
-			Cell cellO = dataRow.getCell(14);
+			Cell cellO = dataRow.getCell(15);
 			if (cellO == null)
-				cellO = dataRow.createCell(14);
+				cellO = dataRow.createCell(15);
 			setBigDecimalCellValue(cellO, record, "getR" + i + "_AMOUNT_DEMAND_VOSTRO1", numberStyle, textStyle);
 
-			Cell cellP = dataRow.getCell(15);
+			Cell cellP = dataRow.getCell(16);
 			if (cellP == null)
-				cellP = dataRow.createCell(15);
+				cellP = dataRow.createCell(16);
 			setBigDecimalCellValue(cellP, record, "getR" + i + "_AMOUNT_TIME_VOSTRO1", numberStyle, textStyle);
 		}
 	}
@@ -205277,29 +205277,71 @@ public class BRRS_M_NOSVOS_ReportService {
 
 	private void populateEmailP1(Sheet sheet, List<BrrsMNosvosP1> dataList, CellStyle numberStyle,
 			CellStyle textStyle) {
-		// Same as populateP1 but with email column mapping
-		// For now, reuse populateP1 as the template structure handles email format
-		populateP1(sheet, dataList, numberStyle, textStyle);
+	    String[] rowCodes = new String[101];
+	    for (int i = 10; i <= 18; i++) {
+	        rowCodes[i - 1] = "R" + i;
+	    }
+
+	    String[] fieldSuffixes = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO",
+	        "PURPOSE_NOSTRO", "CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+	        "RISK_WEIGHT_NOSTRO", "AMOUNT_DEMAND_NOSTRO", "AMOUNT_TIME_NOSTRO",
+	        "RISK_WEIGHTED_AMOUNT_NOSTRO" };
+
+	    writeEmailExcelRowData1(sheet, dataList, rowCodes, fieldSuffixes, 10, numberStyle, textStyle);
 	}
 
 	private void populateEmailP2(Sheet sheet, List<BrrsMNosvosP2> dataList, CellStyle numberStyle,
-			CellStyle textStyle) {
-		populateP2(sheet, dataList, numberStyle, textStyle);
+	        CellStyle textStyle) {
+	    String[] rowCodes = new String[101];
+	    for (int i = 23; i <= 30; i++) {
+	        rowCodes[i - 1] = "R" + i;
+	    }
+
+	    String[] fieldSuffixes = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO",
+	        "PURPOSE_VOSTRO", "CURRENCY_VOSTRO", "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
+
+	    writeEmailExcelRowData2(sheet, dataList, rowCodes, fieldSuffixes, 23, numberStyle, textStyle);
 	}
 
 	private void populateEmailP3(Sheet sheet, List<BrrsMNosvosP3> dataList, CellStyle numberStyle,
-			CellStyle textStyle) {
-		populateP3(sheet, dataList, numberStyle, textStyle);
+	        CellStyle textStyle) {
+	    String[] rowCodes = new String[101];
+	    for (int i = 36; i <= 46; i++) {
+	        rowCodes[i - 1] = "R" + i;
+	    }
+
+	    String[] fieldSuffixes = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1",
+	        "CURRENCY_NOSTRO1", "SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1",
+	        "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+
+	    writeEmailExcelRowData3(sheet, dataList, rowCodes, fieldSuffixes, 36, numberStyle, textStyle);
 	}
 
 	private void populateEmailP4(Sheet sheet, List<BrrsMNosvosP4> dataList, CellStyle numberStyle,
-			CellStyle textStyle) {
-		populateP4(sheet, dataList, numberStyle, textStyle);
+	        CellStyle textStyle) {
+	    String[] rowCodes = new String[101];
+	    for (int i = 51; i <= 57; i++) {
+	        rowCodes[i - 1] = "R" + i;
+	    }
+
+	    String[] fieldSuffixes = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1",
+	        "CURRENCY_VOSTRO1", "AMOUNT_DEMAND_VOSTRO1", "AMOUNT_TIME_VOSTRO1" };
+
+	    writeEmailExcelRowData4(sheet, dataList, rowCodes, fieldSuffixes, 51, numberStyle, textStyle);
 	}
 
 	private void populateEmailP5(Sheet sheet, List<BrrsMNosvosP5> dataList, CellStyle numberStyle,
-			CellStyle textStyle) {
-		populateP5(sheet, dataList, numberStyle, textStyle);
+	        CellStyle textStyle) {
+	    String[] rowCodes = new String[101];
+	    for (int i = 62; i <= 72; i++) {
+	        rowCodes[i - 1] = "R" + i;
+	    }
+
+	    String[] fieldSuffixes = { "DUE_FROM_DOMESTIC_NAME_OF_BANK", "DUE_FROM_DOMESTIC_ACCT_TYPE",
+	        "DUE_FROM_DOMESTIC_PURPOSE", "DUE_FROM_DOMESTIC_AMOUNT", "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+	        "DUE_FROM_DOMESTIC_CURRENCY", "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" };
+
+	    writeEmailExcelRowData5(sheet, dataList, rowCodes, fieldSuffixes, 62, numberStyle, textStyle);
 	}
 
 	// ================================================================
@@ -206380,13 +206422,14 @@ public class BRRS_M_NOSVOS_ReportService {
 		// P1 fields (9 fields per row)
 		// =========================================================
 		String[] p1Fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO",
-				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "AMOUNT_DEMAND_NOSTRO",
-				"AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
+				"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
 
 		// R1 starts at row 10 (index 10), R101 at row 110 (index 110)
-		for (int i = 1; i <= 101; i++) {
+		for (int i = 1; i <= 9; i++) {
 			int rowIndex = 9 + i; // R1=10, R101=110
+			String rowPrefix = "R" + i;
 			populateEmailP1Row(sheet, rowIndex, record, "R" + i, p1Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO", 6, numberStyle);
 		}
 	}
 
@@ -206403,11 +206446,13 @@ public class BRRS_M_NOSVOS_ReportService {
 		}
 
 		// P1 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 };   //  A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
-			if (cell == null) {
-				cell = row.createCell(i);
-			}
+		    int col = colMap[i];                  
+		    Cell cell = row.getCell(col);         
+		    if (cell == null) {
+		        cell = row.createCell(col);       
+		    }
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
 			try {
@@ -206462,13 +206507,15 @@ public class BRRS_M_NOSVOS_ReportService {
 
 		// P2 fields (6 fields per row)
 		String[] p2Fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO",
-				"CURRENCY_VOSTRO", "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
+				"CURRENCY_VOSTRO" };
 
 		// P2 starts at row 23 (index 23), ends at row 123 (index 123)
 		// R1=23, R101=123
-		for (int i = 1; i <= 101; i++) {
+		for (int i = 1; i <= 8; i++) {
 			int rowIndex = 22 + i;
+			String rowPrefix = "R" + i;
 			populateEmailP2Row(sheet, rowIndex, record, "R" + i, p2Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO", 6, numberStyle); 
 		}
 	}
 
@@ -206488,18 +206535,11 @@ public class BRRS_M_NOSVOS_ReportService {
 		// Columns A-D (0-3) for String fields
 		// Columns G-H (6-7) for Amount fields
 		for (int i = 0; i < fields.length; i++) {
-			// Map column positions
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
-
-			Cell cell = row.getCell(colIndex);
-			if (cell == null) {
-				cell = row.createCell(colIndex);
-			}
+		    int colIndex = i;                     // A-D only now
+		    Cell cell = row.getCell(colIndex);
+		    if (cell == null) {
+		        cell = row.createCell(colIndex);
+		    }
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
 			try {
@@ -206554,14 +206594,15 @@ public class BRRS_M_NOSVOS_ReportService {
 
 		// P3 fields (9 fields per row)
 		String[] p3Fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1", "CURRENCY_NOSTRO1",
-				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1", "AMOUNT_TIME_NOSTRO1",
-				"RISK_WEIGHTED_AMOUNT_NOSTRO1" };
+				"SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
 
 		// P3 starts at row 36 (index 36), ends at row 136 (index 136)
 		// R1=36, R101=136
-		for (int i = 1; i <= 101; i++) {
+		for (int i = 1; i <= 11; i++) {
 			int rowIndex = 35 + i;
+			String rowPrefix = "R" + i;
 			populateEmailP3Row(sheet, rowIndex, record, "R" + i, p3Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "NOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -206578,11 +206619,13 @@ public class BRRS_M_NOSVOS_ReportService {
 		}
 
 		// P3 uses Columns A-I (0-8)
+		int[] colMap = { 0, 1, 2, 3, 4, 5, 7 };   // A B C D E F [G skipped] H
 		for (int i = 0; i < fields.length; i++) {
-			Cell cell = row.getCell(i);
-			if (cell == null) {
-				cell = row.createCell(i);
-			}
+		    int col = colMap[i];                  
+		    Cell cell = row.getCell(col);         
+		    if (cell == null) {
+		        cell = row.createCell(col);       
+		    }
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
 			try {
@@ -206636,14 +206679,15 @@ public class BRRS_M_NOSVOS_ReportService {
 		BrrsMNosvosP4 record = dataList.get(0);
 
 		// P4 fields (6 fields per row)
-		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1",
-				"AMOUNT_DEMAND_VOSTRO1", "AMOUNT_TIME_VOSTRO1" };
+		String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1", "CURRENCY_VOSTRO1" };
 
 		// P4 starts at row 51 (index 51), ends at row 151 (index 151)
 		// R1=51, R101=151
-		for (int i = 1; i <= 101; i++) {
+		for (int i = 1; i <= 7; i++) {
 			int rowIndex = 50 + i;
+			String rowPrefix = "R" + i;
 			populateEmailP4Row(sheet, rowIndex, record, "R" + i, p4Fields, numberStyle, textStyle);
+			writeCombinedAmountCell(sheet, rowIndex, record, rowPrefix, "VOSTRO1", 6, numberStyle);
 		}
 	}
 
@@ -206663,17 +206707,11 @@ public class BRRS_M_NOSVOS_ReportService {
 		// Columns A-D (0-3) for String fields
 		// Columns G-H (6-7) for Amount fields
 		for (int i = 0; i < fields.length; i++) {
-			int colIndex;
-			if (i <= 3) {
-				colIndex = i; // Columns A-D (0-3)
-			} else {
-				colIndex = i + 2; // Columns G-H (6-7)
-			}
-
-			Cell cell = row.getCell(colIndex);
-			if (cell == null) {
-				cell = row.createCell(colIndex);
-			}
+		    int colIndex = i;                     // A-D only now
+		    Cell cell = row.getCell(colIndex);
+		    if (cell == null) {
+		        cell = row.createCell(colIndex);
+		    }
 
 			String methodName = "get" + rowPrefix + "_" + fields[i];
 			try {
@@ -206854,6 +206892,36 @@ public class BRRS_M_NOSVOS_ReportService {
 				cell.setCellStyle(textStyle);
 			}
 		}
+	}
+	
+	private BigDecimal invokeBigDecimal(Object target, String methodName) {
+	    try {
+	        Method m = target.getClass().getMethod(methodName);
+	        Object v = m.invoke(target);
+	        return (v instanceof BigDecimal) ? (BigDecimal) v : null;
+	    } catch (Exception e) {
+	        logger.error("Error invoking {} on {}", methodName,
+	                target.getClass().getSimpleName(), e);
+	        return null;
+	    }
+	}
+
+	private void writeCombinedAmountCell(Sheet sheet, int rowIndex, Object record,
+	        String rowPrefix, String suffix, int colIndex, CellStyle numberStyle) {
+
+	    Row row = sheet.getRow(rowIndex);
+	    if (row == null) row = sheet.createRow(rowIndex);
+
+	    BigDecimal time   = invokeBigDecimal(record, "get" + rowPrefix + "_AMOUNT_TIME_"   + suffix);
+	    BigDecimal demand = invokeBigDecimal(record, "get" + rowPrefix + "_AMOUNT_DEMAND_" + suffix);
+
+	    BigDecimal sum = (time   == null ? BigDecimal.ZERO : time)
+	                     .add(demand == null ? BigDecimal.ZERO : demand);
+
+	    Cell cell = row.getCell(colIndex);
+	    if (cell == null) cell = row.createCell(colIndex);
+	    cell.setCellValue(sum.doubleValue());
+	    cell.setCellStyle(numberStyle);
 	}
 
 	// ================================================================

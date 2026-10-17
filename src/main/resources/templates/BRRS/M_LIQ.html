@@ -619,33 +619,46 @@ PURPOSE		: BRRS REPORT
 
 	<script>
 		function showmodify(btn) {
-			$(".Show_input").removeAttr("readonly").removeAttr("disabled");
 
+		    // Enable all editable fields
+		    $(".Show_input").removeAttr("readonly").removeAttr("disabled");
 
+		    // Columns that must not be modified
+		    const readonlyColumns = [
+		        "#r16_product",
+		        "#r19_product",
+		        "#r20_product",
+		        "#r22_product",
+		        "#r23_product",
+		        "#r26_product"
+		    ];
 
-			$(document).ready(function () {
-				// Rows to apply gray background
-				const rows = [16, 19, 20, 22, 23, 26];
-				const column = "total"; // column name
+		    // Keep these columns readonly
+		    readonlyColumns.forEach(function (selector) {
+		        $(selector).prop("readonly", true);
+		    });
 
-				rows.forEach(i => {
-					let selector = `#r${i}_${column}`;
-					if ($(selector).length) {  // check if element exists
-						$(selector).css({"background-color": "#FFF59D"});
-					}
-				});
-			});
+		    // Apply yellow background to specified total fields
+		    const rows = [16, 19, 20, 22, 23, 26];
+		    const column = "total";
 
+		    rows.forEach(function (i) {
+		        const selector = `#r${i}_${column}`;
 
-			// Toggle buttons
-			$("#submitButton, #btnBack_edit").show();
-			$("#btnBack").hide();
+		        if ($(selector).length) {
+		            $(selector).css("background-color", "#FFF59D");
+		        }
+		    });
 
-			// Show Cancel button only when Modify is clicked
-			$("#cancelRecord").show();
+		    // Toggle buttons
+		    $("#submitButton, #btnBack_edit").show();
+		    $("#btnBack").hide();
 
-			// Optionally hide the clicked Modify button
-			$(btn).hide();
+		    // Show Cancel button
+		    $("#cancelRecord").show();
+
+		    // Hide clicked Modify button
+		    $(btn).hide();
 		}
 
 		//Cancel / Reset function
@@ -2616,6 +2629,6 @@ PURPOSE		: BRRS REPORT
 				    setTimeout(function () {
 				      table.columns.adjust().draw(false);
 				    }, 500);
-				  });
+				  });}
 				</script>
 </html>
