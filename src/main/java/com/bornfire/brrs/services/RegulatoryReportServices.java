@@ -6248,7 +6248,7 @@ public class RegulatoryReportServices {
 					return brrs_m_sci_e_reportservice.getM_SCI_EExcel("EMAIL_M_SCI_E.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 				case "M_IS":
-					return BRRS_M_IS_reportservice.BRRS_M_ISExcel("EMAILM_IS.xlsx", reportName, fromdate, todate,
+					return BRRS_M_IS_reportservice.BRRS_M_ISExcel("EMAIL_M_IS.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 				case "M_CA1":
 					return BRRS_M_CA1_reportservice.BRRS_M_CA1Excel("EMAIL_M_CA1.xlsx", reportName, fromdate, todate,
@@ -6275,10 +6275,10 @@ public class RegulatoryReportServices {
 					return brrs_m_srwa_12a_reportservice.getM_SRWA_12AExcel("EMAIL_M_SRWA_12A.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12B":
-					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("M_SRWA_12B_EMAIL.xlsx", reportName,
+					return brrs_m_srwa_12b_reportservice.getM_SRWA_12BExcel("EMAIL_M_SRWA_12B.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12C":
-					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("EMAIL_M_SRWA12c.xlsx", reportName,
+					return BRRS_M_SRWA_12C_reportservice.getBRRS_M_SRWA_12CExcel("EMAIL_M_SRWA_12C.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12D":
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("EMAIL_M_SRWA_12D.xlsx", reportName,
@@ -6341,7 +6341,7 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "M_LA3":
-					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("M_LA3.xlsx", reportName, fromdate, todate,
+					return BRRS_M_LA3_reportservice.BRRS_M_LA3Excel("EMAIL_M_LA3.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_LA4":
@@ -6407,7 +6407,7 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "M_DEP4":
-					return BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel("M_DEP4.xlsx", reportName, fromdate, todate,
+					return BRRS_M_DEP4_ReportService.BRRS_M_DEP4Excel("EMAIL_M_DEP4.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 
 				case "M_OB":
@@ -6418,11 +6418,11 @@ public class RegulatoryReportServices {
 					return BRRS_M_BOP_ReportService.getM_BOPExcel("EMAIL_M_BOP.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, format, version);
 				case "M_INT_RATES":
-					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("EMAIL_M_INTRATES.xlsx", reportName,
+					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("EMAIL_M_INT_RATES.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_INT_RATES_FCA":
-					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("EMAIL_M_INTRATESFCA.xlsx",
+					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("EMAIL_M_INT_RATES_FCA.xlsx",
 							reportName, fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_SECA":
@@ -6451,7 +6451,7 @@ public class RegulatoryReportServices {
 							currency, dtltype, type, format, version);
 
 				case "Q_RLFA1":
-					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("Q_RLFA1_EMAIL.xlsx", reportName, fromdate,
+					return brrs_q_rlfa1_reportservice.getQ_RLFA1Excel("EMAIL_Q_RLFA1.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 				case "Q_RLFA2":
 					return brrs_q_rlfa2_reportservice.getQ_RLFA2Excel("EMAIL_Q_RLFA2.xlsx", reportName, fromdate,
@@ -6540,7 +6540,7 @@ public class RegulatoryReportServices {
 					return brrs_m_srwa_12d_reportservice.getM_SRWA_12DExcel("M_SRWA_12D.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12E":
-					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA12E.xlsx", reportName,
+					return BRRS_M_SRWA_12E_reportservice.BRRS_M_SRWA_12E_LTVExcel("M_SRWA_12E.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "M_SRWA_12F":
 					return BRRS_M_SRWA_12F_reportservice.getM_SRWA_12FExcel("M_SRWA_12F.xlsx", reportName, fromdate,
@@ -6612,7 +6612,7 @@ public class RegulatoryReportServices {
 					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 				case "SLS_INR":
-					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate, currency,
+					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportName, fromdate, todate, currency,
 							dtltype, type, version);
 				case "SLS_WORKING":
 					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportName, fromdate, todate,
@@ -6673,11 +6673,11 @@ public class RegulatoryReportServices {
 							dtltype, type, format, version);
 
 				case "M_INT_RATES":
-					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("M_INTRATES.xlsx", reportName, fromdate,
+					return brrs_m_int_rates_reportservice.getM_INTRATESExcel("M_INT_RATES.xlsx", reportName, fromdate,
 							todate, currency, dtltype, type, format, version);
 
 				case "M_INT_RATES_FCA":
-					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("M_INTRATESFCA.xlsx", reportName,
+					return BRRS_M_INT_RATES_FCA_ReportService.getM_INTRATESFCAExcel("M_INT_RATES_FCA.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 
 				case "M_SECA":
@@ -8525,7 +8525,7 @@ public class RegulatoryReportServices {
 
 		case "SLS_INR":
 			try {
-				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS.xlsx", reportId, fromdate, todate, currency,
+				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportId, fromdate, todate, currency,
 						dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
@@ -8830,7 +8830,7 @@ public class RegulatoryReportServices {
 		case "Q_SMME":
 			try {
 				if ("EMAIL_Q_SMME.xlsx".equals(filename)) {
-					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportId,
+					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx", reportId,
 							fromdate, todate, currency, dtltype, null, "email", null);
 				} else {
 					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportId,
