@@ -6458,7 +6458,7 @@ public class RegulatoryReportServices {
 							todate, currency, dtltype, type, format, version);
 
 				case "Q_SMME":
-					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME.xlsx", reportName,
+					return BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx", reportName,
 							fromdate, todate, currency, dtltype, type, format, version);
 				case "Q_SMME_LA":
 					return BRRS_Q_SMME_loans_Advances_reportService.getQ_SMMEExcel("EMAIL_Q_SMME_LA.xlsx", reportName,
