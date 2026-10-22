@@ -4,12 +4,15 @@ import java.io.IOException;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -17,6 +20,7 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -34,6 +38,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,7 +50,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bornfire.brrs.entities.UserProfile;
 import com.bornfire.brrs.entities.UserProfileRep;
 import com.bornfire.brrs.services.AuditService;
+import com.bornfire.brrs.services.LoginCompletionService;
 import com.bornfire.brrs.services.LoginServices;
+import com.bornfire.brrs.services.OtpService;
 
 @Configuration
 @EnableWebSecurity
@@ -56,25 +63,36 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	SessionFactory sessionFactory;
-	
+
 	@Autowired
 	LoginServices loginServices;
 
-	@Autowired 
+	@Autowired
 	AuditService auditService;
-	
+
+	@Autowired
+	OtpService otpService;
+
+	@Autowired
+	LoginCompletionService loginCompletionService;
+
+	// Comma-separated user IDs that must use OTP. Default: BFI0153
+	@Value("${otp.enabled.users:BFI0153}")
+	private String otpEnabledUsers;
+
 	private final Integer SESSION_TIMEOUT_IN_SECONDS = 650000;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/webjars/**", "/images/**", "/login*", "/freezeColumn/**","favicon.ico").permitAll()
+		http.authorizeRequests()
+				.antMatchers("/webjars/**", "/images/**", "/login*", "/otp", "/otp/**", "/error", "/freezeColumn/**", "favicon.ico")
+				.permitAll()
 				.anyRequest().authenticated().and().formLogin().loginPage("/login").permitAll()
 				.failureHandler(xbrlAuthFailHandle()).successHandler(xbrlAuthSuccessHandle())
 				.usernameParameter("userid").and().logout().permitAll().and()
 				.logout().logoutSuccessHandler(xbrlLogoutSuccessHandler()).permitAll()
 				.and().sessionManagement().maximumSessions(1)
 				.maxSessionsPreventsLogin(false);
-				
 
 		http.csrf().disable();
 
@@ -86,7 +104,6 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-
 	public AuthenticationProvider authenticationProvider() {
 
 		DaoAuthenticationProvider ap = new DaoAuthenticationProvider() {
@@ -138,7 +155,7 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 							throw new BadCredentialsException("Authentication failed");
 
 						} else {
-							
+
 							return new UsernamePasswordAuthenticationToken(userid, password, Collections.emptyList());
 
 						}
@@ -199,7 +216,7 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 					AuthenticationException exception) throws IOException, ServletException {
 
 				response.setStatus(HttpStatus.UNAUTHORIZED.value());
-	//			logger.info(exception.getMessage());
+				// logger.info(exception.getMessage());
 				response.sendRedirect("login?error=" + exception.getMessage());
 
 			}
@@ -208,6 +225,8 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 
 	}
 
+	// OTP is required only for users in the allow-list (default BFI0153).
+	// Everyone else logs in directly, exactly as before, via LoginCompletionService.
 	@Bean
 	public AuthenticationSuccessHandler xbrlAuthSuccessHandle() {
 		return new AuthenticationSuccessHandler() {
@@ -215,53 +234,60 @@ public class BrrsWebSecurity extends WebSecurityConfigurerAdapter {
 			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
-				
-				Optional<UserProfile> up = userProfileRep.findById(authentication.getName());
-				UserProfile user = up.get();
-				user.setNo_of_attmp(0);
-				user.setUser_locked_flg("N");
-				userProfileRep.save(user);
-				
-				loginServices.SessionLogging("LOGIN","M1",request.getSession().getId(),user.getUserid(),request.getRemoteAddr(),
-						"ACTIVE");
-			
-				request.getSession().setMaxInactiveInterval(SESSION_TIMEOUT_IN_SECONDS);
-				request.getSession().setAttribute("USERID", user.getUserid());
-				request.getSession().setAttribute("USERNAME", user.getUsername());
-				request.getSession().setAttribute("ROLEID", user.getRole_id());
-				request.getSession().setAttribute("DOMAINID", user.getDomain_id());
-				request.getSession().setAttribute("PERMISSIONS", user.getPermissions());
-				request.getSession().setAttribute("WORKCLASS", user.getWork_class());
-				request.getSession().setAttribute("MOBILENUMBER", user.getMob_number());
-				request.getSession().setAttribute("ROLEDESC", user.getRole_desc());
-				request.getSession().setAttribute("ACCESSCODE", user.getAcct_access_code());
-				request.getSession().setAttribute("BRANCHCODE", user.getBranch_code());
-				request.getSession().setAttribute("BRANCHNAME", user.getBranch_name());
-				
-				auditService.createBusinessAudit(user.getUserid() , "Login",null , null, "XBRL_USER_PROFILE_TABLE");				
-				
-				response.sendRedirect("Dashboard");
+
+				String userId = authentication.getName();
+
+				List<String> otpUsers = Arrays.asList(otpEnabledUsers.toUpperCase().split("\\s*,\\s*"));
+				boolean otpRequired = otpUsers.contains(userId.toUpperCase());
+
+				// Other users: normal login, no OTP
+				if (!otpRequired) {
+					loginCompletionService.completeLogin(request, userId);
+					response.sendRedirect(request.getContextPath() + "/Dashboard");
+					return;
+				}
+
+				// OTP users: hold the login until the OTP is verified
+				try {
+					UserProfile user = userProfileRep.findById(userId).get();
+					String email = user.getEmail_id();
+					if (email == null || email.trim().isEmpty()) {
+						throw new IllegalStateException("No email registered for user " + userId);
+					}
+
+					HttpSession session = request.getSession();
+					session.setAttribute("PRE_AUTH", authentication);
+					SecurityContextHolder.clearContext();
+					session.removeAttribute("SPRING_SECURITY_CONTEXT");
+
+					otpService.sendOtp(userId, email);
+					response.sendRedirect(request.getContextPath() + "/otp");
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					SecurityContextHolder.clearContext();
+					request.getSession().invalidate();
+					response.sendRedirect(request.getContextPath() + "/login?error=Unable%20to%20send%20OTP");
+				}
 			}
 
 		};
 
 	}
-	
+
 	@Bean
 	public LogoutSuccessHandler xbrlLogoutSuccessHandler() {
-		
+
 		return new LogoutSuccessHandler() {
 
 			@Override
 			public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
-				
-				
+
 				response.sendRedirect("login?logout");
-			
+
 			}
-		
-		
-	};
-}
+
+		};
+	}
 }
