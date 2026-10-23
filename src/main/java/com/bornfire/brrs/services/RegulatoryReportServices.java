@@ -11982,90 +11982,88 @@ public class RegulatoryReportServices {
 	}
 
 	public byte[] getConsolidatedDownloadADISBFile(String filename, String asondate, String fromdate, String todate,
-			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+	        String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
-		// List of all reports you want to include
-		List<String> reportList = Arrays.asList("ADISB1", "ADISB2");
+	    List<String> reportList = Arrays.asList("ADISB1", "ADISB2");
 
-		System.out.println(todate);
+	    System.out.println(todate);
 
-		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-		Date date = inputFormat.parse(todate);
+	    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	    Date date = inputFormat.parse(todate);
 
-		// 2️⃣ Format to required pattern (Date → String)
-		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-		String formattedDate = outputFormat.format(date); // Workbook for consolidated report
-		XSSFWorkbook workbook = new XSSFWorkbook();
-		Sheet errorSheet = workbook.createSheet("Status");
-		Row headerRow = errorSheet.createRow(0);
-		headerRow.createCell(0).setCellValue("Report Name");
-		headerRow.createCell(1).setCellValue("Status");
-		headerRow.createCell(2).setCellValue("Remarks");
+	    SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+	    String formattedDate = outputFormat.format(date);
 
-		int errorRowNum = 1;
+	    XSSFWorkbook workbook = new XSSFWorkbook();
+	    Sheet errorSheet = workbook.createSheet("Status");
 
-		for (String report : reportList) {
-			try {
-				byte[] fileData = generateADISBReport(report, filename, asondate, fromdate, formattedDate, currency,
-						dtltype, type, format, version);
-				System.out.println(fileData + "    fileData");
+	    Row headerRow = errorSheet.createRow(0);
+	    headerRow.createCell(0).setCellValue("Report Name");
+	    headerRow.createCell(1).setCellValue("Status");
+	    headerRow.createCell(2).setCellValue("Remarks");
 
-				if (fileData != null && fileData.length > 0) {
-					try (Workbook reportWorkbook = new XSSFWorkbook(new java.io.ByteArrayInputStream(fileData))) {// Copy
-																													// the
-																													// first
-																													// sheet
-																													// from
-																													// each
-																													// report
-																													// into
-																													// the
-																													// consolidated
-																													// workbook
+	    int errorRowNum = 1;
 
-						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
-							Sheet srcSheet = reportWorkbook.getSheetAt(i);
-							/*
-							 * if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() ==
-							 * 0) { System.out.println("Skipping empty sheet: " + srcSheet.getSheetName());
-							 * continue; }
-							 */
-							Sheet newSheet;
-							if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
-								newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
-							} else {
-								newSheet = workbook.createSheet(report);
-							}
-							copySheet(srcSheet, newSheet);
-						}
+	    for (String report : reportList) {
+	        try {
+	            byte[] fileData = generateADISBReport(report, filename, asondate, fromdate, formattedDate, currency,
+	                    dtltype, type, format, version);
+	            
+	            System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
 
-					}
-				} else { // Log missing data
-					Row failRow = errorSheet.createRow(errorRowNum++);
-					failRow.createCell(0).setCellValue(report);
-					failRow.createCell(1).setCellValue("FAILED");
-					failRow.createCell(2).setCellValue("No data found");
-				}
+	            if (fileData != null && fileData.length > 0) {
+	                try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
 
-			} catch (Exception e) {
-				Row failRow = errorSheet.createRow(errorRowNum++);
-				failRow.createCell(0).setCellValue(report);
-				failRow.createCell(1).setCellValue("FAILED");
-				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
+	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
 
-		// Finalize workbook
-		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-			workbook.write(bos);
-			workbook.close();
-			return bos.toByteArray();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	                        Sheet newSheet;
+	                        if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
+	                            newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
+	                        } else {
+	                            String sheetName = report;
+	                            if (workbook.getSheet(sheetName) != null) {
+	                                sheetName = report + "_" + (i + 1);
+	                            }
+	                            newSheet = workbook.createSheet(sheetName);
+	                        }
+	                        copySheet(srcSheet, newSheet);
+	                    }
+	                }
 
-		return null;
+	                // SUCCESS ENTRY
+	                Row successRow = errorSheet.createRow(errorRowNum++);
+	                successRow.createCell(0).setCellValue(report);
+	                successRow.createCell(1).setCellValue("SUCCESS");
+	                successRow.createCell(2).setCellValue("Downloaded Successfully");
+
+	            } else {
+	                // FAILED ENTRY (No data found)
+	                Row failRow = errorSheet.createRow(errorRowNum++);
+	                failRow.createCell(0).setCellValue(report);
+	                failRow.createCell(1).setCellValue("FAILED");
+	                failRow.createCell(2).setCellValue("No data found");
+	            }
+
+	        } catch (Exception e) {
+	            Row failRow = errorSheet.createRow(errorRowNum++);
+	            failRow.createCell(0).setCellValue(report);
+	            failRow.createCell(1).setCellValue("FAILED");
+	            failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+	            
+	            e.printStackTrace();
+	        }
+	    }
+
+	    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+	        workbook.write(bos);
+	        workbook.close();
+	        return bos.toByteArray();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return null;
 	}
 
 	private byte[] generateADISBReport(String reportName, String filename, String asondate, String fromdate,
