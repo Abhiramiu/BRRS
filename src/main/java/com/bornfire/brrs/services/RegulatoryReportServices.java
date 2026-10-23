@@ -772,8 +772,8 @@ public class RegulatoryReportServices {
 
 		case "FORMAT_II":
 
-			repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype, pageable,
-					type, version, req, md);
+			repsummary = brrs_format_II_reportservice.getFORMAT_IIView(reportId, fromdate, todate, currency, dtltype,
+					pageable, type, version, req, md);
 
 			break;
 
@@ -1579,8 +1579,8 @@ public class RegulatoryReportServices {
 
 		case "FORMAT_II":
 
-			repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency, dtltype,
-					pageable, Filter, type, version, req1, md);
+			repdetail = brrs_format_II_reportservice.getFORMAT_IIcurrentDtl(reportId, fromdate, todate, currency,
+					dtltype, pageable, Filter, type, version, req1, md);
 			break;
 
 		case "MDISB1":
@@ -6051,7 +6051,6 @@ public class RegulatoryReportServices {
 			}
 			break;
 
-			
 		case "FORMAT_II":
 			try {
 				List<Object[]> resubList = brrs_format_II_reportservice.getFORMAT_IIResub();
@@ -6612,8 +6611,8 @@ public class RegulatoryReportServices {
 					return BRRS_SLS_INPUT_SHT_reportservice.getSLSExcel("SLS.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
 				case "SLS_INR":
-					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportName, fromdate, todate, currency,
-							dtltype, type, version);
+					return BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
 				case "SLS_WORKING":
 					return BRRS_SLS_WORKING_reportservice.getSLSExcel("SLS_WORKING.xlsx", reportName, fromdate, todate,
 							currency, dtltype, type, version);
@@ -8525,8 +8524,8 @@ public class RegulatoryReportServices {
 
 		case "SLS_INR":
 			try {
-				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportId, fromdate, todate, currency,
-						dtltype, null, null);
+				excelBytes = BRRS_SLS_INR_reportservice.getSLSExcel("SLS_INR.xlsx", reportId, fromdate, todate,
+						currency, dtltype, null, null);
 
 				if (excelBytes == null || excelBytes.length == 0) {
 					logger.warn("SLS: No Excel data found for PDF generation → todate={}", todate);
@@ -8830,8 +8829,8 @@ public class RegulatoryReportServices {
 		case "Q_SMME":
 			try {
 				if ("EMAIL_Q_SMME.xlsx".equals(filename)) {
-					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx", reportId,
-							fromdate, todate, currency, dtltype, null, "email", null);
+					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("EMAIL_Q_SMME_INT.xlsx",
+							reportId, fromdate, todate, currency, dtltype, null, "email", null);
 				} else {
 					excelBytes = BRRS_Q_SMME_Intrest_Income_ReportService.getQ_SMMEExcel("Q_SMME_INT.xlsx", reportId,
 							fromdate, todate, currency, dtltype, null, "excel", null);
