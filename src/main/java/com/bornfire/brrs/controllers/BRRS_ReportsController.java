@@ -7516,5 +7516,41 @@ public class BRRS_ReportsController {
 		return BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, viewType, null,
 				type, versionDecimal, req, md);
 	}
+	@GetMapping("/downloadPULA_CFSConsolidatedExcel")
+	public void downloadPULA_CFSConsolidatedExcel(@RequestParam(required = false) String asondate,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
+			@RequestParam(required = false) String currency, @RequestParam(required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
+			@RequestParam(required = false) BigDecimal version, @RequestParam(required = false) String filename,
+			@RequestParam(required = false) String dtltype, HttpServletResponse response)
+			throws IOException, ParseException {
+		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
+		byte[] file = regreportServices.getConsolidatedDownloadPULA_CFSFile(filename, asondate, fromdate, todate, currency,
+				type, format, version, dtltype);
+		System.out.println("filename..." + filename);
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
+		response.getOutputStream().write(file);
+		response.getOutputStream().flush();
+	}
+	@GetMapping("/downloadPILLER_3_DISCLOSUREConsolidatedExcel")
+	public void downloadPILLER_3_DISCLOSUREConsolidatedExcel(@RequestParam(required = false) String asondate,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
+			@RequestParam(required = false) String currency, @RequestParam(required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
+			@RequestParam(required = false) BigDecimal version, @RequestParam(required = false) String filename,
+			@RequestParam(required = false) String dtltype, HttpServletResponse response)
+			throws IOException, ParseException {
+		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
+		byte[] file = regreportServices.getConsolidatedDownloadPILLER_3_DISCLOSUREFile(filename, asondate, fromdate, todate, currency,
+				type, format, version, dtltype);
+		System.out.println("filename..." + filename);
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
+		response.getOutputStream().write(file);
+		response.getOutputStream().flush();
+	}
 
 }

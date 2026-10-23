@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12424,6 +12425,434 @@ public class RegulatoryReportServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ArrayList<Map<String, Object>>();
+		}
+	}
+	public byte[] getConsolidatedDownloadPULA_CFSFile(String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+		List<String> reportList = Arrays.asList("FORMAT_I", "M_P_L", "GL_SCH", "PL_SCHS", "SCH_17", "FORMAT_II",
+				"FORMAT_III", "TIER_1_2_CFS", "RWA", "OFF_BS_ITEMS", "CASH_FLOW", "DTAX", "AS_11");
+
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		inputFormat.setLenient(false);
+
+		Date date = inputFormat.parse(todate);
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+
+		String formattedDate = outputFormat.format(date);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		// Calendar.MONTH is zero-based; convert to 1-based month
+		int month = calendar.get(Calendar.MONTH) + 1;
+
+		boolean isAS11Applicable = month == 3 || month == 6 || month == 9 || month == 12;
+
+		try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+			Sheet errorSheet = workbook.createSheet("Status");
+
+			Row headerRow = errorSheet.createRow(0);
+			headerRow.createCell(0).setCellValue("Report Name");
+			headerRow.createCell(1).setCellValue("Status");
+			headerRow.createCell(2).setCellValue("Remarks");
+
+			int errorRowNum = 1;
+
+			for (String report : reportList) {
+
+				// Skip AS_11 when the reporting month is not quarter-end
+				if ("AS_11".equals(report) && !isAS11Applicable) {
+
+					Row statusRow = errorSheet.createRow(errorRowNum++);
+
+					statusRow.createCell(0).setCellValue(report);
+					statusRow.createCell(1).setCellValue("NOT APPLICABLE");
+					statusRow.createCell(2).setCellValue("Available only for March, June, September and December.");
+
+					continue;
+				}
+
+				try {
+
+					byte[] fileData = generatePULA_CFSReport(report, filename, asondate, fromdate, formattedDate,
+							currency, dtltype, type, format, version);
+
+					System.out.println(report + " fileData: " + (fileData != null ? fileData.length : "NULL"));
+
+					if (fileData != null && fileData.length > 0) {
+
+						try (XSSFWorkbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+							for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+								Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+								String sheetName = report;
+
+								if (workbook.getSheet(sheetName) != null) {
+
+									sheetName = report + "_" + (i + 1);
+
+									int suffix = 1;
+
+									while (workbook.getSheet(sheetName) != null) {
+										sheetName = report + "_" + (i + 1) + "_" + suffix++;
+									}
+								}
+
+								Sheet newSheet = workbook.createSheet(sheetName);
+
+								copySheet(srcSheet, newSheet);
+							}
+						}
+
+						Row successRow = errorSheet.createRow(errorRowNum++);
+
+						successRow.createCell(0).setCellValue(report);
+						successRow.createCell(1).setCellValue("SUCCESS");
+						successRow.createCell(2).setCellValue("Downloaded Successfully");
+
+					} else {
+
+						Row failRow = errorSheet.createRow(errorRowNum++);
+
+						failRow.createCell(0).setCellValue(report);
+						failRow.createCell(1).setCellValue("FAILED");
+						failRow.createCell(2).setCellValue("No data found");
+					}
+
+				} catch (Exception e) {
+
+					Row failRow = errorSheet.createRow(errorRowNum++);
+
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+
+					e.printStackTrace();
+				}
+			}
+
+			for (int i = 0; i < 3; i++) {
+				errorSheet.autoSizeColumn(i);
+			}
+
+			workbook.write(bos);
+
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private byte[] generatePULA_CFSReport(String reportName, String filename, String asondate, String fromdate,
+			String todate, String currency, String dtltype, String type, String format, BigDecimal version) {
+
+		try {
+
+			System.out.println("Service: Generating report for " + reportName);
+
+			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+			switch (reportName) {
+
+			case "FORMAT_I":
+
+				return brrs_format_I_reportservice.getFORMAT_IExcel("FORMAT_I.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+
+			case "M_P_L":
+
+				return BRRS_M_P_L_ReportService.getM_P_LExcel("M_P_L.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, version);
+
+			case "GL_SCH":
+
+				return brrs_gl_sch_reportservice.getGL_SCHExcel("GL_SCH.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, version);
+
+			case "PL_SCHS":
+
+				return BRRS_PL_SCHS_Reportservice.getPL_SCHSExcel("PL_SCHS.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+
+			case "SCH_17":
+
+				return brrs_sch_17_reportservice.getSCH_17Excel("SCH_17.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, version);
+
+			case "FORMAT_II":
+
+				return brrs_format_II_reportservice.getFORMAT_IIExcel("FORMAT_II.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+
+			case "FORMAT_III":
+
+				return BRRS_FORMAT_III_ReportService.getFORMAT_IIIExcel("FORMAT_III.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+			case "TIER_1_2_CFS":
+
+				return BRRS_TIER_1_2_CFS_ReportService.getTIER_1_2_CFSExcel("TIER_1_2_CFS.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "RWA":
+
+				return BRRS_RWA_ReportService.getRWAExcel("RWA.xlsx", reportName, fromdate, todate, currency, dtltype,
+						type, version);
+
+			case "OFF_BS_ITEMS":
+
+				return BRRS_OFF_BS_ITEMS_ReportService.getOFF_BS_ITEMSExcel("OFF_BS_ITEMS.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "CASH_FLOW":
+
+				return BRRS_CASH_FLOW_ReportService.getCASH_FLOWExcel("CASH_FLOW.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+			case "DTAX":
+
+				return BRRS_DEFERRED_TAX_ReportService.getDTAXExcel("DTAX.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, version);
+			case "AS_11":
+
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+				sdf.setLenient(false);
+
+				Date reportDate = sdf.parse(todate);
+
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(reportDate);
+
+				int month = calendar.get(Calendar.MONTH); // Zero-based
+
+				if (month != Calendar.MARCH && month != Calendar.JUNE && month != Calendar.SEPTEMBER
+						&& month != Calendar.DECEMBER) {
+
+					System.out.println("AS_11 is not applicable for report date: " + todate);
+
+					return null;
+				}
+
+				return BRRS_AS_11_Reportservice.getAS_11Excel("AS_11.xlsx", reportName, fromdate, todate, currency,
+						dtltype, type, version);
+			default:
+
+				System.out.println("Unknown report: " + reportName);
+
+				return null;
+			}
+
+		} catch (Exception e) {
+
+			System.err.println("Error generating report " + reportName + ": " + e.getMessage());
+
+			e.printStackTrace();
+
+			return null;
+		}
+	}
+
+	public byte[] getConsolidatedDownloadPILLER_3_DISCLOSUREFile(String filename, String asondate, String fromdate,
+			String todate, String currency, String type, String format, BigDecimal version, String dtltype)
+			throws ParseException {
+
+		List<String> reportList = Arrays.asList("SCOPE_OF_APP", "B_III_CETD", "CAP_RATIO_BUFFER", "CAP_ADEQ",
+				"Recon_Of_FS", "EXPANDED_REGU_BS", "COMMON_DISCLOSURE", "Main_Features", "CREDIT_RISK", "Market_Risk",
+				"OPER_RISK_DIS");
+
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		inputFormat.setLenient(false);
+
+		Date date = inputFormat.parse(todate);
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+
+		String formattedDate = outputFormat.format(date);
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+
+		// Calendar.MONTH is zero-based; convert to 1-based month
+		int month = calendar.get(Calendar.MONTH) + 1;
+
+		boolean isAS11Applicable = month == 3 || month == 6 || month == 9 || month == 12;
+
+		try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+			Sheet errorSheet = workbook.createSheet("Status");
+
+			Row headerRow = errorSheet.createRow(0);
+			headerRow.createCell(0).setCellValue("Report Name");
+			headerRow.createCell(1).setCellValue("Status");
+			headerRow.createCell(2).setCellValue("Remarks");
+
+			int errorRowNum = 1;
+
+			for (String report : reportList) {
+
+				try {
+
+					byte[] fileData = generatePILLER_3_DISCLOSUREReport(report, filename, asondate, fromdate,
+							formattedDate, currency, dtltype, type, format, version);
+
+					System.out.println(report + " fileData: " + (fileData != null ? fileData.length : "NULL"));
+
+					if (fileData != null && fileData.length > 0) {
+
+						try (XSSFWorkbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+							for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+								Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+								String sheetName = report;
+
+								if (workbook.getSheet(sheetName) != null) {
+
+									sheetName = report + "_" + (i + 1);
+
+									int suffix = 1;
+
+									while (workbook.getSheet(sheetName) != null) {
+										sheetName = report + "_" + (i + 1) + "_" + suffix++;
+									}
+								}
+
+								Sheet newSheet = workbook.createSheet(sheetName);
+
+								copySheet(srcSheet, newSheet);
+							}
+						}
+
+						Row successRow = errorSheet.createRow(errorRowNum++);
+
+						successRow.createCell(0).setCellValue(report);
+						successRow.createCell(1).setCellValue("SUCCESS");
+						successRow.createCell(2).setCellValue("Downloaded Successfully");
+
+					} else {
+
+						Row failRow = errorSheet.createRow(errorRowNum++);
+
+						failRow.createCell(0).setCellValue(report);
+						failRow.createCell(1).setCellValue("FAILED");
+						failRow.createCell(2).setCellValue("No data found");
+					}
+
+				} catch (Exception e) {
+
+					Row failRow = errorSheet.createRow(errorRowNum++);
+
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+
+					e.printStackTrace();
+				}
+			}
+
+			for (int i = 0; i < 3; i++) {
+				errorSheet.autoSizeColumn(i);
+			}
+
+			workbook.write(bos);
+
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private byte[] generatePILLER_3_DISCLOSUREReport(String reportName, String filename, String asondate,
+			String fromdate, String todate, String currency, String dtltype, String type, String format,
+			BigDecimal version) {
+
+		try {
+
+			System.out.println("Service: Generating report for " + reportName);
+
+			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+			switch (reportName) {
+
+			case "SCOPE_OF_APP":
+
+				return brrs_SCOPE_OF_APP_reportservice.getSCOPE_OF_APPExcel("SCOPE_OF_APP.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "B_III_CETD":
+
+				return b_III_cetd_ReportService.getB_III_CETDExcel("B_III_CETD.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+
+			case "CAP_RATIO_BUFFER":
+
+				return brrs_cap_ratio_buffer_reportservice.getCAP_RATIO_BUFFERExcel("CAP_RATIO_BUFFER.xlsx", reportName,
+						fromdate, todate, currency, dtltype, type, version);
+
+			case "CAP_ADEQ":
+
+				return brrs_cap_adeq_reportservice.getCAP_ADEQExcel("CAP_ADEQ.xlsx", reportName, fromdate, todate,
+						currency, dtltype, type, version);
+
+			case "Recon_Of_FS":
+
+				return BRRS_RECON_OF_FS_ReportService.getRecon_Of_FSExcel("Recon_Of_FS.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "EXPANDED_REGU_BS":
+
+				return BRRS_Expanded_Regu_BS_ReportService.getExpanded_Regu_BSExcel("Expanded_Regu_BS.xlsx", reportName,
+						fromdate, todate, currency, dtltype, type, version);
+
+			case "COMMON_DISCLOSURE":
+
+				return BRRS_Common_Disclosure_Reportservice.getCommon_DisclosureExcel("Common_Disclosure.xlsx",
+						reportName, fromdate, todate, currency, dtltype, type, version);
+
+			case "Main_Features":
+
+				return BRRS_Main_Features_Reportservice.getMain_FeaturesExcel("Main_Features.xlsx", reportName,
+						fromdate, todate, currency, dtltype, type, version);
+
+			case "CREDIT_RISK":
+
+				return brrs_credit_risk_reportservice.getCREDIT_RISKExcel("CREDIT_RISK.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "Market_Risk":
+
+				return BRRS_Market_Risk_Reportservice.getMarket_RiskExcel("MarketRisk.xlsx", reportName, fromdate,
+						todate, currency, dtltype, type, version);
+
+			case "OPER_RISK_DIS":
+
+				return brrs_OPER_RISK_DIS_reportservice.getOPER_RISK_DISExcel("OPER_RISK_DIS.xlsx", reportName,
+						fromdate, todate, currency, dtltype, type, version);
+
+			default:
+
+				System.out.println("Unknown report: " + reportName);
+
+				return null;
+			}
+
+		} catch (Exception e) {
+
+			System.err.println("Error generating report " + reportName + ": " + e.getMessage());
+
+			e.printStackTrace();
+
+			return null;
 		}
 	}
 

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Pula CFS Consolidated Download</title>
+
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}" type="image/x-icon">
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+</head>
+<style>
+	.container-fluid {
+		padding: 80px;
+	}
+</style>
+
+<body>
+
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+	<div class="container-fluid">
+
+		<div class="card">
+			<div class="card-header">
+				<h5 style="font-weight: bold ;padding-top: 10px;font-size:20px;">Pula CFS Consolidated Report - Download
+				</h5>
+			</div>
+
+			<div class="card-body">
+
+				<!-- Report Date -->
+				<div class="form-group row justify-content-center">
+					<label class="col-sm-2 col-form-label">Report Date</label>
+					<div class="col-sm-3">
+						<input type="date" id="report_date" name="report_date"
+							class="form-control form-control-sm month-end-date-picker" th:value="${LastUploadedDate}"
+							readonly />
+					</div>
+
+				</div>
+
+
+				<!-- Submit -->
+				<div class="text-center">
+					<button onclick="downloadPULA_CFS()"
+						style="text-align: center;background-color: #6B7A8F ;border-radius: 10px;padding: 10px;color: white;border: none;">Download</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<!-- PULA CFS Download Status Popup -->
+	<div class="modal fade" id="pulaCfsStatusModal" tabindex="-1" role="dialog" aria-labelledby="pulaCfsStatusTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header" style="background-color: #6B7A8F; color: white;">
+					<h5 class="modal-title" id="pulaCfsStatusTitle">
+						PULA CFS Download Status
+					</h5>
+					<button type="button" class="close"
+					        aria-label="Close"
+					        onclick="closePulaCfsStatusModalByX()"
+					        style="color: white;">
+					    <span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body text-center">
+					<div id="pulaCfsStatusIcon" style="font-size: 40px;"></div>
+					<h5 id="pulaCfsStatusMessage" class="mt-2"></h5>
+					<p id="pulaCfsStatusDetails" class="text-muted mb-0"></p>
+				</div>
+
+				<div class="modal-footer justify-content-center">
+				    <button type="button" class="btn btn-secondary"
+				            onclick="closePulaCfsStatusModal()">
+				        OK
+				    </button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<!-- Loader -->
+	<div class="modal fade" id="loader">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="background:none;border:none">
+				<div class="modal-body text-center">
+					<h5>Loading...</h5>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// OK button close function
+		function closePulaCfsStatusModal() {
+		    $('#pulaCfsStatusModal').modal('hide');
+		}
+
+		// X button close function
+		function closePulaCfsStatusModalByX() {
+		    $('#pulaCfsStatusModal').modal('hide');
+		}
+		function downloadPULA_CFS() {
+
+			var rawDate = document.getElementById("report_date").value;
+
+			if (!rawDate) {
+				showPulaCfsStatus(
+					"warning",
+					"Report Date Required",
+					"Please select a report date."
+				);
+				return;
+			}
+
+			var asondate = formatDate(rawDate);
+			var todate = formatDate(rawDate);
+
+			var filename = "PULA_CFS_Consolidated_Report";
+			var type = "BRRS";
+
+			$('#loader').modal('show');
+
+			$.ajax({
+				url: './Reports/downloadPULA_CFSConsolidatedExcel',
+				type: 'GET',
+				data: {
+					asondate: asondate,
+					todate: todate,
+					type: type,
+					filename: filename
+				},
+				xhrFields: {
+					responseType: 'blob'
+				},
+
+				success: function (data, textStatus, xhr) {
+
+					$('#loader').modal('hide');
+
+					// Check whether the server returned an Excel file
+					var contentType = xhr.getResponseHeader('Content-Type') || '';
+
+					if (data && data.size > 100 &&
+						!contentType.includes('application/json')) {
+
+						var blob = new Blob([data], {
+							type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+						});
+
+						var url = window.URL.createObjectURL(blob);
+						var a = document.createElement('a');
+
+						a.href = url;
+						a.download = filename + '.xlsx';
+
+						document.body.appendChild(a);
+						a.click();
+						document.body.removeChild(a);
+
+						window.URL.revokeObjectURL(url);
+
+						showPulaCfsStatus(
+							"success",
+							"Download Successful",
+							"The PULA CFS Consolidated Report has been downloaded successfully."
+						);
+
+					} else {
+						showPulaCfsStatus(
+							"warning",
+							"No Data Available",
+							"No report data was available for the selected date."
+						);
+					}
+				},
+
+				error: function () {
+					$('#loader').modal('hide');
+
+					showPulaCfsStatus(
+						"error",
+						"Download Failed",
+						"Unable to download the report. Please try again."
+					);
+				}
+			});
+		}
+
+
+		// Display the Bootstrap popup instead of browser alert()
+		function showPulaCfsStatus(status, title, message) {
+
+			var icon = "";
+			var color = "";
+
+			if (status === "success") {
+				icon = "&#10004;";
+				color = "#28a745";
+			} else if (status === "warning") {
+				icon = "&#9888;";
+				color = "#e0a800";
+			} else {
+				icon = "&#10006;";
+				color = "#dc3545";
+			}
+
+			$('#pulaCfsStatusTitle').text(title);
+			$('#pulaCfsStatusIcon').html(icon).css('color', color);
+			$('#pulaCfsStatusMessage').text(title);
+			$('#pulaCfsStatusDetails').text(message);
+
+			$('#pulaCfsStatusModal').modal('show');
+		}
+		function formatDate(dateStr) {
+			let d = dateStr.split("-");
+			let monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			let month = monthNames[parseInt(d[1]) - 1];
+			return d[2] + "-" + month + "-" + d[0]; // ✅ FIXED FORMAT (31-Oct-2025)
+		}
+
+	</script>
+
+</body>
+
+</html>

@@ -106,7 +106,7 @@ public class NavigationController {
 	MCBL_Main_Rep MCBL_Main_Reps;
 	@Autowired
 	UserProfileRep UserProfileReps;
-	
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -173,11 +173,7 @@ public class NavigationController {
 
 	@Autowired
 	BRRS_Validation_Services BRRSValidationServices;
-	
 
-	
-	
-	
 	private String pagesize;
 
 	public String getPagesize() {
@@ -191,43 +187,40 @@ public class NavigationController {
 	@RequestMapping(value = "Dashboard", method = { RequestMethod.GET, RequestMethod.POST })
 	public String dashboard(Model md, HttpServletRequest req) {
 
-	    String userid = (String) req.getSession().getAttribute("USERID");
+		String userid = (String) req.getSession().getAttribute("USERID");
 
-	    md.addAttribute("changepassword", loginServices.checkPasswordChangeReq(userid));
-	    md.addAttribute("checkpassExpiry", loginServices.checkpassexpirty(userid));
-	    md.addAttribute("checkAcctExpiry", loginServices.checkAcctexpirty(userid));
+		md.addAttribute("changepassword", loginServices.checkPasswordChangeReq(userid));
+		md.addAttribute("checkpassExpiry", loginServices.checkpassexpirty(userid));
+		md.addAttribute("checkAcctExpiry", loginServices.checkAcctexpirty(userid));
 
-	    // already formatted string
-	    md.addAttribute("LastUploadedDate",
-	            GeneralMasterRepos.findLastUploadedReportDate());
+		// already formatted string
+		md.addAttribute("LastUploadedDate", GeneralMasterRepos.findLastUploadedReportDate());
 
-	    md.addAttribute("completed", 0);
-	    md.addAttribute("uncompleted", 0);
-	    md.addAttribute("menu", "Dashboard");
+		md.addAttribute("completed", 0);
+		md.addAttribute("uncompleted", 0);
+		md.addAttribute("menu", "Dashboard");
 
-	    return "Dashboard";
+		return "Dashboard";
 	}
-
 
 	@RequestMapping(value = "TriggerProcedure", method = RequestMethod.POST)
 	@ResponseBody
 	public String callSummaryProcedure(@RequestParam("reportDate") String reportDate) {
 
-	    System.out.println("came to Procedure calling : " + reportDate);
+		System.out.println("came to Procedure calling : " + reportDate);
 
-	    String sql = "{ call BRRS_COMMON_PROCEDURE(?) }";
+		String sql = "{ call BRRS_COMMON_PROCEDURE(?) }";
 
-	    jdbcTemplate.update(connection -> {
-	        CallableStatement cs = connection.prepareCall(sql);
-	        cs.setString(1, reportDate); // already DD-MM-YYYY
-	        return cs;
-	    });
+		jdbcTemplate.update(connection -> {
+			CallableStatement cs = connection.prepareCall(sql);
+			cs.setString(1, reportDate); // already DD-MM-YYYY
+			return cs;
+		});
 
-	    return "Reports Generated for " + reportDate + " Successfully.";
+		return "Reports Generated for " + reportDate + " Successfully.";
 
 	}
 
-	
 	@RequestMapping(value = "AccessandRoles", method = { RequestMethod.GET, RequestMethod.POST })
 	public String IPSAccessandRoles(@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String userid, @RequestParam(required = false) Optional<Integer> page,
@@ -311,14 +304,14 @@ public class NavigationController {
 		String WORKCLASSAC = (String) req.getSession().getAttribute("WORKCLASS");
 		String ROLEIDAC = (String) req.getSession().getAttribute("ROLEID");
 		md.addAttribute("RuleIDType", accessandrolesrepository.roleidtype());
-		System.out.println("loginuserid"+loginuserid);
+		System.out.println("loginuserid" + loginuserid);
 		md.addAttribute("loginuserid", loginuserid);
 
 		System.out.println("work class is : " + WORKCLASSAC);
 		// Logging Navigation
 //		loginServices.SessionLogging("USERPROFILE", "M2", req.getSession().getId(), loginuserid, req.getRemoteAddr(),
 //				"ACTIVE");
-		//Session hs1 = sessionFactory.getCurrentSession();
+		// Session hs1 = sessionFactory.getCurrentSession();
 		md.addAttribute("menu", "USER PROFILE"); // To highlight the menu
 
 		if (formmode == null || formmode.equals("list")) {
@@ -426,11 +419,10 @@ public class NavigationController {
 		md.addAttribute("RoleId", roleId);
 
 		md.addAttribute("rpt_date", todate);
-		
+
 		// md.addAttribute("rpt_date", todate);
 		return "BRRS/BRRSValidations";
 	}
-	
 
 	@RequestMapping(value = "BRRSValidationsChk", method = RequestMethod.POST)
 	@ResponseBody
@@ -445,7 +437,6 @@ public class NavigationController {
 
 	}
 
-	
 	@GetMapping("/checkDomainFlag")
 	@ResponseBody
 	public ResponseEntity<String> checkDomainFlag(@RequestParam String rptcode) {
@@ -500,7 +491,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "Pillar3Disclosure", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Pillar3Disclosure(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Reports");
@@ -510,7 +501,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "PulaCFS", method = { RequestMethod.GET, RequestMethod.POST })
 	public String PulaCFS(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pula CFS Reports");
@@ -520,7 +511,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "DISBMonthlyAndQuaterly", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBMonthlyAndQuaterly(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Reports");
@@ -530,7 +521,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "LCR", method = { RequestMethod.GET, RequestMethod.POST })
 	public String LCR(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- LCR");
@@ -540,7 +531,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "SLS", method = { RequestMethod.GET, RequestMethod.POST })
 	public String SLS(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- SLS");
@@ -550,7 +541,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "NSFR", method = { RequestMethod.GET, RequestMethod.POST })
 	public String NSFR(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- NSFR");
@@ -560,7 +551,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "CPR", method = { RequestMethod.GET, RequestMethod.POST })
 	public String CPR(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- CPR");
@@ -570,7 +561,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "FSI", method = { RequestMethod.GET, RequestMethod.POST })
 	public String FSI(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- FSI");
@@ -580,7 +571,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "AMLCFT", method = { RequestMethod.GET, RequestMethod.POST })
 	public String AMLCFT(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- AMLCFT");
@@ -590,7 +581,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "DISBAnnualReturn", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBAnnualReturn(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Annual Return");
@@ -600,7 +591,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "DISBBiannualReturn", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBBiannualReturn(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Biannual Return");
@@ -610,7 +601,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "BGREPORT", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BGREPORT(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- BG REPORT");
@@ -620,7 +611,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "UFCE", method = { RequestMethod.GET, RequestMethod.POST })
 	public String UFCE(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- UFCE");
@@ -630,7 +621,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "IRRBB", method = { RequestMethod.GET, RequestMethod.POST })
 	public String IRRBB(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- IRRBB");
@@ -640,7 +631,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "Top100borrower", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Top100borrower(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Top100 borrower");
@@ -650,7 +641,7 @@ public class NavigationController {
 		return "BRRS/RRReports";
 
 	}
-	
+
 	@RequestMapping(value = "Top100borrowerArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Top100borrowerArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Top100 borrower Archival");
@@ -660,7 +651,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "IRRBBArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String IRRBBArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- IRRBB Archival");
@@ -670,7 +661,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "UFCEArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String UFCEArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- UFCE Archival");
@@ -680,7 +671,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "BGREPORTArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BGREPORTArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- BG REPORT Archival");
@@ -690,7 +681,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "DISBBiannualReturnArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBBiannualReturnArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Biannual Return Archival");
@@ -700,7 +691,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "DISBAnnualReturnArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBAnnualReturnArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Annual Return Archival");
@@ -710,7 +701,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "AMLCFTArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String AMLCFTArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- AMLCFT Archival");
@@ -720,7 +711,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "FSIArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String FSIArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- FSI Archival");
@@ -730,7 +721,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "CPRArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String CPRArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- CPR Archival");
@@ -740,7 +731,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "NSFRArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String NSFRArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- NSFR Archival");
@@ -750,7 +741,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "LCRArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String LCRArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- LCR Archival");
@@ -760,7 +751,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "DISBMonthlyAndQuaterlyArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBMonthlyAndQuaterlyArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Archival");
@@ -770,7 +761,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "PulaCFSArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String PulaCFSArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pula CFS Archival");
@@ -780,7 +771,7 @@ public class NavigationController {
 		return "BRRS/BRRSArchival";
 
 	}
-	
+
 	@RequestMapping(value = "Pillar3DisclosureArchival", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Pillar3DisclosureArchival(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Archival");
@@ -1133,7 +1124,6 @@ public class NavigationController {
 		return "MCBL";
 	}
 
-	
 	// Getting Details by report date for view and download for MCBL IN FILE UPLOAD
 	@GetMapping("/fetchMCBLRecords")
 	public String fetchMCBLRecords(@RequestParam String reportDate, Model md) {
@@ -1420,79 +1410,70 @@ public class NavigationController {
 	 */
 
 	@GetMapping("/fetchRecords")
-	public String fetchRecords(@RequestParam String reportDate,
-	                           @RequestParam String fileType,
-	                           Model md) throws ParseException {
+	public String fetchRecords(@RequestParam String reportDate, @RequestParam String fileType, Model md)
+			throws ParseException {
 
-	    System.out.println("Fetching records for type: " + fileType + " and date: " + reportDate);
+		System.out.println("Fetching records for type: " + fileType + " and date: " + reportDate);
 
-	    // UI format : yyyy-MM-dd
-	    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+		// UI format : yyyy-MM-dd
+		SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-	    Date parsedDate = inputFormat.parse(reportDate);
+		Date parsedDate = inputFormat.parse(reportDate);
 
-	    // Only for display purpose
-	    SimpleDateFormat displayFormat = new SimpleDateFormat("dd-MM-yyyy");
-	    String formattedDate = displayFormat.format(parsedDate);
+		// Only for display purpose
+		SimpleDateFormat displayFormat = new SimpleDateFormat("dd-MM-yyyy");
+		String formattedDate = displayFormat.format(parsedDate);
 
-	    System.out.println("Date going to pass : " + formattedDate);
+		System.out.println("Date going to pass : " + formattedDate);
 
-	    md.addAttribute("selectedReportDate", formattedDate);
-	    md.addAttribute("selectedFileType", fileType);
-	    md.addAttribute("formmode", "list");
+		md.addAttribute("selectedReportDate", formattedDate);
+		md.addAttribute("selectedFileType", fileType);
+		md.addAttribute("formmode", "list");
 
-	    switch (fileType) {
+		switch (fileType) {
 
-	    case "MCBL":
+		case "MCBL":
 
-	        List<GeneralMasterEntity> mcblList =
-	                GeneralMasterRepos.findMCBLRecordsByReportDate(parsedDate);
+			List<GeneralMasterEntity> mcblList = GeneralMasterRepos.findMCBLRecordsByReportDate(parsedDate);
 
-	        System.out.println("MCBL Size is : " + mcblList.size());
+			System.out.println("MCBL Size is : " + mcblList.size());
 
-	        md.addAttribute("MCBL_List", mcblList);
-	        md.addAttribute("reportDates",
-	                GeneralMasterRepos.findDistinctReportDatesMCBL());
-	        break;
+			md.addAttribute("MCBL_List", mcblList);
+			md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesMCBL());
+			break;
 
-	    case "DEPOSIT_BOOK":
+		case "DEPOSIT_BOOK":
 
-	        List<GeneralMasterEntity> bfdbList =
-	                GeneralMasterRepos.findDepBRecordsByReportDate(parsedDate);
+			List<GeneralMasterEntity> bfdbList = GeneralMasterRepos.findDepBRecordsByReportDate(parsedDate);
 
-	        System.out.println("Deposit Book Size is : " + bfdbList.size());
+			System.out.println("Deposit Book Size is : " + bfdbList.size());
 
-	        md.addAttribute("BFDB_List", bfdbList);
-	        md.addAttribute("reportDates",
-	                GeneralMasterRepos.findDistinctReportDatesDepB());
-	        break;
+			md.addAttribute("BFDB_List", bfdbList);
+			md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesDepB());
+			break;
 
-	    case "DEPOSIT_GENERAL":
+		case "DEPOSIT_GENERAL":
 
-	        List<GeneralMasterEntity> bdgfList =
-	                GeneralMasterRepos.findDepGRecordsByReportDate(parsedDate);
+			List<GeneralMasterEntity> bdgfList = GeneralMasterRepos.findDepGRecordsByReportDate(parsedDate);
 
-	        System.out.println("Deposit General Size is : " + bdgfList.size());
+			System.out.println("Deposit General Size is : " + bdgfList.size());
 
-	        md.addAttribute("BDGF_List", bdgfList);
-	        md.addAttribute("reportDates",
-	                GeneralMasterRepos.findDistinctReportDatesDepG());
-	        break;
+			md.addAttribute("BDGF_List", bdgfList);
+			md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesDepG());
+			break;
 
-	    case "LOAN_BOOK":
+		case "LOAN_BOOK":
 
-	        List<GeneralMasterEntity> blbfList =
-	                GeneralMasterRepos.findLoanBRecordsByReportDate(parsedDate);
+			List<GeneralMasterEntity> blbfList = GeneralMasterRepos.findLoanBRecordsByReportDate(parsedDate);
 
-	        System.out.println("Loan Book Size is : " + blbfList.size());
+			System.out.println("Loan Book Size is : " + blbfList.size());
 
-	        md.addAttribute("BLBF_List", blbfList);
-	        md.addAttribute("reportDates",
-	                GeneralMasterRepos.findDistinctReportDatesLoan());
-	        break;
-	    }
+			md.addAttribute("BLBF_List", blbfList);
+			md.addAttribute("reportDates", GeneralMasterRepos.findDistinctReportDatesLoan());
+			break;
+		}
 
-	    return "MCBL";
+		return "MCBL";
 	}
 
 	@GetMapping("/vieAddDel")
@@ -1899,8 +1880,8 @@ public class NavigationController {
 		List<String> headers = Arrays.asList("SOL ID", "S No", "A/C No", "Customer ID", "Customer Name", "Open Date",
 				"Amount Deposited", "Currency", "Period", "Rate of Interest", "100", "BAL EQUI TO BWP",
 				"Outstanding Balance", "Oustndng Bal UGX", "Maturity Date", "Maturity Amount", "Scheme",
-				"Cr Pref Int Rate", "SEGMENT", "REFERENCE DATE", "DIFFERENCE", "LIQGAP BUCKET","MDEP2A BUCKET","MDEP BUCKET", "PERIOD",
-				"EFFECTIVE INTEREST RATE", "SLS BUCKET","REPORT DATE");
+				"Cr Pref Int Rate", "SEGMENT", "REFERENCE DATE", "DIFFERENCE", "LIQGAP BUCKET", "MDEP2A BUCKET",
+				"MDEP BUCKET", "PERIOD", "EFFECTIVE INTEREST RATE", "SLS BUCKET", "REPORT DATE");
 		return createExcelTemplate("DEPOSIT GENERAL", "DEPOSIT GENERAL.xlsx", headers);
 	}
 
@@ -1909,7 +1890,7 @@ public class NavigationController {
 		List<String> headers = Arrays.asList("SOL ID", "CUST ID", "GENDER", "ACCOUNT NO", "ACCT NAME", "SCHM_CODE",
 				"SCHM DESC", "ACCT OPN DATE", "ACCT CLS DATE", "BALANCE AS ON", "CCY", "BAL EQUI TO BWP", "INT RATE",
 				"100", "STATUS", "MATURITY DATE", "GL SUB HEAD CODE", "GL SUB HEAD DESC", "TYPE OF ACCOUNTS", "SEGMENT",
-				"PERIOD", "EFFECTIVE INTEREST RATE","SMME", "PIP","RISK CAT","CONSTITUTION", "REPORT DATE");
+				"PERIOD", "EFFECTIVE INTEREST RATE", "SMME", "PIP", "RISK CAT", "CONSTITUTION", "REPORT DATE");
 		return createExcelTemplate("DEPOSIT BOOK", "DEPOSIT BOOK.xlsx", headers);
 	}
 
@@ -1921,8 +1902,8 @@ public class NavigationController {
 				"ACCT CLS FLG", "CLOSE DATE", "GENDER", "CLASSFICATION CODE", "CONSTITUTION CODE", "MATURITY DATE",
 				"GL SUB HEAD CODE", "GL SUB HEAD DESC", "TENOR(MONTH)", "EMI", "SEGMENT", "FACILITY", "PAST DUE",
 				"PAST DUE DAYS", "ASSET", "PROVISION", "UNSECURED", "INT BUCKET", "STAFF", "SMME", "LABOD", "NEW A/C",
-				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", 
-				"MAT BUCKET", "REPORT DATE");
+				"UNDRAWN", "SECTOR", "Period", "Effective Interest Rate", "STAGE", "ECL PROVISION", "MAT BUCKET",
+				"REPORT DATE");
 		return createExcelTemplate("LOAN BOOK", "LOAN BOOK.xlsx", headers);
 	}
 
@@ -2062,7 +2043,7 @@ public class NavigationController {
 
 		return "BRRS/BRRSResubmission";
 	}
-	
+
 	@RequestMapping(value = "HalfYearlyResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String HalfYearlyResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "BRRS - BRRS Half Yearly RESUBMISSION");
@@ -2072,7 +2053,7 @@ public class NavigationController {
 
 		return "BRRS/BRRSResubmission";
 	}
-	
+
 	@RequestMapping(value = "Top100borrowerResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Top100borrowerResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Top100 borrower Resubmission");
@@ -2082,7 +2063,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "IRRBBResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String IRRBBResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- IRRBB Resubmission");
@@ -2092,7 +2073,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "UFCEResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String UFCEResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- UFCE Resubmission");
@@ -2102,7 +2083,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "BGREPORTResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BGREPORTResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- BG REPORT Resubmission");
@@ -2112,7 +2093,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "DISBBiannualReturnResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBBiannualReturnResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Biannual Return Resubmission");
@@ -2122,7 +2103,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "DISBAnnualReturnResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBAnnualReturnResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Annual Return Resubmission");
@@ -2132,7 +2113,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "AMLCFTResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String AMLCFTResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- AMLCFT Resubmission");
@@ -2142,7 +2123,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "FSIResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String FSIResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- FSI Resubmission");
@@ -2152,7 +2133,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "CPRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String CPRResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- CPR Resubmission");
@@ -2162,7 +2143,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "NSFRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String NSFRResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- NSFR Resubmission");
@@ -2172,7 +2153,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "LCRResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String LCRResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- LCR Resubmission");
@@ -2182,7 +2163,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "DISBMonthlyAndQuaterlyResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String DISBMonthlyAndQuaterlyResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- DISB Monthly And Quaterly Resubmission");
@@ -2192,7 +2173,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "PulaCFSResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String PulaCFSResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pula CFS Resubmission");
@@ -2202,7 +2183,7 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-	
+
 	@RequestMapping(value = "Pillar3DisclosureResubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Pillar3DisclosureResubmission(Model md, HttpServletRequest req) {
 		md.addAttribute("menu", "RBR Reports- Pillar 3 Disclosure Resubmission");
@@ -2212,7 +2193,6 @@ public class NavigationController {
 		return "BRRS/BRRSResubmission";
 
 	}
-
 
 	@RequestMapping(value = "Resubmission", method = { RequestMethod.GET, RequestMethod.POST })
 	public String Resubmission(Model md, @RequestParam(value = "rptcode", required = false) String rptcode,
@@ -2233,7 +2213,6 @@ public class NavigationController {
 
 	}
 
-
 	@GetMapping("/toDownloadExcel")
 	public String redirectToDownloadExcel(@RequestParam String asondate, @RequestParam String fromdate,
 			@RequestParam String todate, @RequestParam String currency, @RequestParam String type,
@@ -2246,10 +2225,9 @@ public class NavigationController {
 		return redirectUrl;
 	}
 
-
 	@RequestMapping(value = "CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
-	public String CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, @RequestParam(required = false) String tranid,
-			@RequestParam(required = false) Optional<Integer> page,
+	public String CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode,
+			@RequestParam(required = false) String tranid, @RequestParam(required = false) Optional<Integer> page,
 			@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req,
 			@RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 		md.addAttribute("activeMenu", "Reports");
@@ -2257,185 +2235,202 @@ public class NavigationController {
 		String USERID = (String) req.getSession().getAttribute("USERID");
 		md.addAttribute("USERID", USERID);
 		logger.info("==> Entered CosolidatedReport controller || Formmode: {}", formmode);
-		
-			if (formmode == null || formmode.equals("list")) {
-				md.addAttribute("formmode", "list");
-				
 
-				String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
 
-				DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-				DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
 
-				String htmlDate = LocalDate.parse(reportDate, input).format(output);
+			DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-				md.addAttribute("LastUploadedDate", htmlDate);
-				
-			}
-			 if (date != null) {
-			        md.addAttribute("LastUploadedDate", date.toString());
-			    }
+			String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+			md.addAttribute("LastUploadedDate", htmlDate);
+
+		}
+		if (date != null) {
+			md.addAttribute("LastUploadedDate", date.toString());
+		}
 		return "CosolidatedReport";
 	}
-	
+
 	@RequestMapping(value = "trigger", method = { RequestMethod.GET, RequestMethod.POST })
-	public String trigger(@RequestParam(required = false) String formmode, 
-			 Model md, HttpServletRequest req) {
-		
+	public String trigger(@RequestParam(required = false) String formmode, Model md, HttpServletRequest req) {
+
 		String USERID = (String) req.getSession().getAttribute("USERID");
 		md.addAttribute("USERID", USERID);
 		logger.info("==> Entered MCBL controller || Formmode: {}", formmode);
 
-		
-		
 		logger.info("<== Exiting trigger controller");
 		return "Trigger";
 	}
 
-	
 	@GetMapping("/toDownloadRBRExcel")
-	public String redirectToDownloadRBRExcel(
-	        @RequestParam String asondate,
-	        @RequestParam String fromdate,
-	        @RequestParam String todate,
-	        @RequestParam String currency,
-	        @RequestParam String type,
-	        @RequestParam String version,
-	        @RequestParam String filename) {
+	public String redirectToDownloadRBRExcel(@RequestParam String asondate, @RequestParam String fromdate,
+			@RequestParam String todate, @RequestParam String currency, @RequestParam String type,
+			@RequestParam String version, @RequestParam String filename) {
 
-	    String redirectUrl = String.format(
-	            "redirect:/Reports/downloadRBRConsolidatedExcel?asondate=%s&fromdate=%s&todate=%s&currency=%s&type=%s&version=%s&filename=%s",
-	            asondate, fromdate, todate, currency, type, version, filename);
+		String redirectUrl = String.format(
+				"redirect:/Reports/downloadRBRConsolidatedExcel?asondate=%s&fromdate=%s&todate=%s&currency=%s&type=%s&version=%s&filename=%s",
+				asondate, fromdate, todate, currency, type, version, filename);
 
-	    return redirectUrl;
+		return redirectUrl;
+	}
+
+	@RequestMapping(value = "ADISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String ADISB_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+			HttpServletRequest req) {
+
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered ADISBCosolidatedReport controller || Formmode: {}", formmode);
+
+		System.out.println("Enter into navigation controller");
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
+
+			String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+			DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+			md.addAttribute("LastUploadedDate", htmlDate);
+
+		}
+
+		return "ADISBConsolidatedReport"; // HTML name
+	}
+
+	@RequestMapping(value = "MDISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String MDISB_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+			HttpServletRequest req) {
+
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered MDISBCosolidatedReport controller || Formmode: {}", formmode);
+
+		System.out.println("Enter into navigation controller");
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
+
+			String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+			DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+			md.addAttribute("LastUploadedDate", htmlDate);
+
+		}
+
+		return "MDISBConsolidatedReport"; // HTML name
+	}
+
+	@RequestMapping(value = "BDISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BDISB_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+			HttpServletRequest req) {
+
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered BDISBCosolidatedReport controller || Formmode: {}", formmode);
+
+		System.out.println("Enter into navigation controller");
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
+		}
+
+		return "BDISBConsolidatedReport"; // HTML name
+	}
+
+	@RequestMapping(value = "PULA_CFS_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String PULA_CFS_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+			HttpServletRequest req) {
+
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
+
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered PULA CFS Cosolidated Report controller || Formmode: {}", formmode);
+
+		System.out.println("Enter into navigation controller");
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
+
+			String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+			DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+			md.addAttribute("LastUploadedDate", htmlDate);
+
+		}
+
+		return "PULA_CFSConsolidatedReport"; // HTML name
 	}
 	
-	 @RequestMapping(value = "ADISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
-	    public String ADISB_CONSOLIDATED_REPORT(
-	            @RequestParam(required = false) String formmode,
-	            Model md,
-	            HttpServletRequest req) {
+	@RequestMapping(value = "PILLER_3_DISCLOSURE_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String PILLER_3_DISCLOSURE_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+			HttpServletRequest req) {
 
-	        md.addAttribute("activeMenu", "Reports");
-	        md.addAttribute("activePage", "CentralBank");
+		md.addAttribute("activeMenu", "Reports");
+		md.addAttribute("activePage", "CentralBank");
 
-	        String USERID = (String) req.getSession().getAttribute("USERID");
-	        md.addAttribute("USERID", USERID);
-	        logger.info("==> Entered ADISBCosolidatedReport controller || Formmode: {}", formmode);
-			
-	        System.out.println("Enter into navigation controller");
-	        if (formmode == null || formmode.equals("list")) {
-	            md.addAttribute("formmode", "list");
-	            
+		String USERID = (String) req.getSession().getAttribute("USERID");
+		md.addAttribute("USERID", USERID);
+		logger.info("==> Entered Piller 3 Disclosure Cosolidated Report controller || Formmode: {}", formmode);
 
-				String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+		System.out.println("Enter into navigation controller");
+		if (formmode == null || formmode.equals("list")) {
+			md.addAttribute("formmode", "list");
 
-				DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-				DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
 
-				String htmlDate = LocalDate.parse(reportDate, input).format(output);
+			DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-				md.addAttribute("LastUploadedDate", htmlDate);
-				
-	        }
+			String htmlDate = LocalDate.parse(reportDate, input).format(output);
 
-	        return "ADISBConsolidatedReport"; // HTML name
-	    }
+			md.addAttribute("LastUploadedDate", htmlDate);
 
-	 
-	 @RequestMapping(value = "MDISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
-	    public String MDISB_CONSOLIDATED_REPORT(
-	            @RequestParam(required = false) String formmode,
-	            Model md,
-	            HttpServletRequest req) {
+		}
 
-	        md.addAttribute("activeMenu", "Reports");
-	        md.addAttribute("activePage", "CentralBank");
+		return "PILLER_3_DISCLOSUREConsolidatedReport"; // HTML name
+	}
 
-	        String USERID = (String) req.getSession().getAttribute("USERID");
-	        md.addAttribute("USERID", USERID);
-	        logger.info("==> Entered MDISBCosolidatedReport controller || Formmode: {}", formmode);
-			
-	        System.out.println("Enter into navigation controller");
-	        if (formmode == null || formmode.equals("list")) {
-	            md.addAttribute("formmode", "list");
-	            
+	@GetMapping("dashboardChartData")
+	@ResponseBody
+	public Map<String, Object> getDashboardChartData(@RequestParam("lastUploadedDate") String lastUploadedDate)
+			throws Exception {
 
-				String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+		System.out.println("Last Uploaded Date : " + lastUploadedDate);
 
-				DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-				DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		Date reportDate = sdf.parse(lastUploadedDate);
 
-				String htmlDate = LocalDate.parse(reportDate, input).format(output);
+		Map<String, Object> map = new HashMap();
 
-				md.addAttribute("LastUploadedDate", htmlDate);
-				
-	        }
+		map.put("totalCount", GeneralMasterRepos.getTotalCount(reportDate));
+		map.put("mcblCount", GeneralMasterRepos.getMcblCount(reportDate));
+		map.put("depositBookCount", GeneralMasterRepos.getDepositBookCount(reportDate));
+		map.put("depositGeneralCount", GeneralMasterRepos.getDepositGeneralCount(reportDate));
+		map.put("loanBookCount", GeneralMasterRepos.getLoanBookCount(reportDate));
 
-	        return "MDISBConsolidatedReport"; // HTML name
-	    }
-
-	 
-	 @RequestMapping(value = "BDISB_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
-	    public String BDISB_CONSOLIDATED_REPORT(
-	            @RequestParam(required = false) String formmode,
-	            Model md,
-	            HttpServletRequest req) {
-
-	        md.addAttribute("activeMenu", "Reports");
-	        md.addAttribute("activePage", "CentralBank");
-
-	        String USERID = (String) req.getSession().getAttribute("USERID");
-	        md.addAttribute("USERID", USERID);
-	        logger.info("==> Entered BDISBCosolidatedReport controller || Formmode: {}", formmode);
-			
-	        System.out.println("Enter into navigation controller");
-	        if (formmode == null || formmode.equals("list")) {
-	            md.addAttribute("formmode", "list");
-	        }
-
-	        return "BDISBConsolidatedReport"; // HTML name
-	    }
-
-    @RequestMapping(value = "RBR_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
-    public String RBR_CONSOLIDATED_REPORT(
-            @RequestParam(required = false) String formmode,
-            Model md,
-            HttpServletRequest req) {
-
-        md.addAttribute("activeMenu", "Reports");
-        md.addAttribute("activePage", "CentralBank");
-
-        String USERID = (String) req.getSession().getAttribute("USERID");
-        md.addAttribute("USERID", USERID);
-        logger.info("==> Entered rbrCosolidatedReport controller || Formmode: {}", formmode);
-		
-System.out.println("Enter into navigation controller");
-        if (formmode == null || formmode.equals("list")) {
-            md.addAttribute("formmode", "list");
-        }
-
-        return "RBRConsolidatedReport"; // HTML name
-    }
-    
-    @GetMapping("dashboardChartData")
-    @ResponseBody
-    public Map<String, Object> getDashboardChartData(
-            @RequestParam("lastUploadedDate") String lastUploadedDate) throws Exception {
-
-        System.out.println("Last Uploaded Date : " + lastUploadedDate);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        Date reportDate = sdf.parse(lastUploadedDate);
-
-        Map<String, Object> map = new HashMap();
-
-        map.put("totalCount", GeneralMasterRepos.getTotalCount(reportDate));
-        map.put("mcblCount", GeneralMasterRepos.getMcblCount(reportDate));
-        map.put("depositBookCount", GeneralMasterRepos.getDepositBookCount(reportDate));
-        map.put("depositGeneralCount", GeneralMasterRepos.getDepositGeneralCount(reportDate));
-        map.put("loanBookCount", GeneralMasterRepos.getLoanBookCount(reportDate));
-
-        return map;
-    }
+		return map;
+	}
 }
