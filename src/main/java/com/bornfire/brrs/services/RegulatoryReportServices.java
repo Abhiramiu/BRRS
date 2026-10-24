@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,10 +12,16 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -26,6 +33,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11983,88 +11991,88 @@ public class RegulatoryReportServices {
 	}
 
 	public byte[] getConsolidatedDownloadADISBFile(String filename, String asondate, String fromdate, String todate,
-	        String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
-	    List<String> reportList = Arrays.asList("ADISB1", "ADISB2");
+		List<String> reportList = Arrays.asList("ADISB1", "ADISB2");
 
-	    System.out.println(todate);
+		System.out.println(todate);
 
-	    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-	    Date date = inputFormat.parse(todate);
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		Date date = inputFormat.parse(todate);
 
-	    SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
-	    String formattedDate = outputFormat.format(date);
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		String formattedDate = outputFormat.format(date);
 
-	    XSSFWorkbook workbook = new XSSFWorkbook();
-	    Sheet errorSheet = workbook.createSheet("Status");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		Sheet errorSheet = workbook.createSheet("Status");
 
-	    Row headerRow = errorSheet.createRow(0);
-	    headerRow.createCell(0).setCellValue("Report Name");
-	    headerRow.createCell(1).setCellValue("Status");
-	    headerRow.createCell(2).setCellValue("Remarks");
+		Row headerRow = errorSheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Report Name");
+		headerRow.createCell(1).setCellValue("Status");
+		headerRow.createCell(2).setCellValue("Remarks");
 
-	    int errorRowNum = 1;
+		int errorRowNum = 1;
 
-	    for (String report : reportList) {
-	        try {
-	            byte[] fileData = generateADISBReport(report, filename, asondate, fromdate, formattedDate, currency,
-	                    dtltype, type, format, version);
-	            
-	            System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
+		for (String report : reportList) {
+			try {
+				byte[] fileData = generateADISBReport(report, filename, asondate, fromdate, formattedDate, currency,
+						dtltype, type, format, version);
 
-	            if (fileData != null && fileData.length > 0) {
-	                try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+				System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
 
-	                    for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
-	                        Sheet srcSheet = reportWorkbook.getSheetAt(i);
+				if (fileData != null && fileData.length > 0) {
+					try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
 
-	                        Sheet newSheet;
-	                        if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
-	                            newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
-	                        } else {
-	                            String sheetName = report;
-	                            if (workbook.getSheet(sheetName) != null) {
-	                                sheetName = report + "_" + (i + 1);
-	                            }
-	                            newSheet = workbook.createSheet(sheetName);
-	                        }
-	                        copySheet(srcSheet, newSheet);
-	                    }
-	                }
+						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+							Sheet srcSheet = reportWorkbook.getSheetAt(i);
 
-	                // SUCCESS ENTRY
-	                Row successRow = errorSheet.createRow(errorRowNum++);
-	                successRow.createCell(0).setCellValue(report);
-	                successRow.createCell(1).setCellValue("SUCCESS");
-	                successRow.createCell(2).setCellValue("Downloaded Successfully");
+							Sheet newSheet;
+							if (srcSheet.getLastRowNum() == -1 || srcSheet.getPhysicalNumberOfRows() == 0) {
+								newSheet = workbook.createSheet(report + "_" + srcSheet.getSheetName());
+							} else {
+								String sheetName = report;
+								if (workbook.getSheet(sheetName) != null) {
+									sheetName = report + "_" + (i + 1);
+								}
+								newSheet = workbook.createSheet(sheetName);
+							}
+							copySheet(srcSheet, newSheet);
+						}
+					}
 
-	            } else {
-	                // FAILED ENTRY (No data found)
-	                Row failRow = errorSheet.createRow(errorRowNum++);
-	                failRow.createCell(0).setCellValue(report);
-	                failRow.createCell(1).setCellValue("FAILED");
-	                failRow.createCell(2).setCellValue("No data found");
-	            }
+					// SUCCESS ENTRY
+					Row successRow = errorSheet.createRow(errorRowNum++);
+					successRow.createCell(0).setCellValue(report);
+					successRow.createCell(1).setCellValue("SUCCESS");
+					successRow.createCell(2).setCellValue("Downloaded Successfully");
 
-	        } catch (Exception e) {
-	            Row failRow = errorSheet.createRow(errorRowNum++);
-	            failRow.createCell(0).setCellValue(report);
-	            failRow.createCell(1).setCellValue("FAILED");
-	            failRow.createCell(2).setCellValue("Error: " + e.getMessage());
-	            
-	            e.printStackTrace();
-	        }
-	    }
+				} else {
+					// FAILED ENTRY (No data found)
+					Row failRow = errorSheet.createRow(errorRowNum++);
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("No data found");
+				}
 
-	    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-	        workbook.write(bos);
-	        workbook.close();
-	        return bos.toByteArray();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			} catch (Exception e) {
+				Row failRow = errorSheet.createRow(errorRowNum++);
+				failRow.createCell(0).setCellValue(report);
+				failRow.createCell(1).setCellValue("FAILED");
+				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
 
-	    return null;
+				e.printStackTrace();
+			}
+		}
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			workbook.write(bos);
+			workbook.close();
+			return bos.toByteArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	private byte[] generateADISBReport(String reportName, String filename, String asondate, String fromdate,
@@ -12427,6 +12435,7 @@ public class RegulatoryReportServices {
 			return new ArrayList<Map<String, Object>>();
 		}
 	}
+
 	public byte[] getConsolidatedDownloadPULA_CFSFile(String filename, String asondate, String fromdate, String todate,
 			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
 
@@ -12484,7 +12493,11 @@ public class RegulatoryReportServices {
 
 					if (fileData != null && fileData.length > 0) {
 
-						try (XSSFWorkbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+						byte[] repairedFileData = repairMissingSharedFormulas(fileData);
+
+						try (XSSFWorkbook reportWorkbook = new XSSFWorkbook(
+								new ByteArrayInputStream(repairedFileData))) {
+							Map<CellStyle, CellStyle> styleMap = new HashMap<>();
 
 							for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
 
@@ -12505,7 +12518,7 @@ public class RegulatoryReportServices {
 
 								Sheet newSheet = workbook.createSheet(sheetName);
 
-								copySheet(srcSheet, newSheet);
+								copySheet(srcSheet, newSheet, styleMap);
 							}
 						}
 
@@ -12549,6 +12562,119 @@ public class RegulatoryReportServices {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private byte[] repairMissingSharedFormulas(byte[] fileData) throws Exception {
+
+		Map<String, byte[]> entries = new LinkedHashMap<>();
+
+		try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(fileData))) {
+
+			ZipEntry entry;
+
+			while ((entry = zis.getNextEntry()) != null) {
+				ByteArrayOutputStream entryData = new ByteArrayOutputStream();
+
+				byte[] buffer = new byte[8192];
+				int bytesRead;
+
+				while ((bytesRead = zis.read(buffer)) != -1) {
+					entryData.write(buffer, 0, bytesRead);
+				}
+
+				String entryName = entry.getName();
+				byte[] content = entryData.toByteArray();
+
+				if (entryName.matches("xl/worksheets/sheet\\d+\\.xml")) {
+					String xml = new String(content, StandardCharsets.UTF_8);
+
+					xml = repairWorksheetSharedFormulas(xml);
+
+					content = xml.getBytes(StandardCharsets.UTF_8);
+				}
+
+				entries.put(entryName, content);
+			}
+		}
+
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+		try (ZipOutputStream zos = new ZipOutputStream(output)) {
+
+			for (Map.Entry<String, byte[]> item : entries.entrySet()) {
+
+				zos.putNextEntry(new ZipEntry(item.getKey()));
+				zos.write(item.getValue());
+				zos.closeEntry();
+			}
+		}
+
+		return output.toByteArray();
+	}
+
+	private String repairWorksheetSharedFormulas(String xml) {
+
+		Pattern formulaPattern = Pattern.compile("<f\\b([^>]*)>(.*?)</f>|<f\\b([^>]*)/>", Pattern.DOTALL);
+
+		Matcher matcher = formulaPattern.matcher(xml);
+
+		Map<String, Boolean> masterExists = new HashMap<>();
+
+		while (matcher.find()) {
+
+			String attributes = matcher.group(1) != null ? matcher.group(1) : matcher.group(3);
+
+			if (attributes == null || !attributes.matches("(?s).*\\bsi\\s*=\\s*(['\"])\\d+\\1.*")
+					|| !attributes.matches("(?s).*\\bt\\s*=\\s*(['\"])shared\\1.*")) {
+				continue;
+			}
+
+			Matcher siMatcher = Pattern.compile("\\bsi\\s*=\\s*(['\"])(\\d+)\\1").matcher(attributes);
+
+			if (!siMatcher.find()) {
+				continue;
+			}
+
+			String si = siMatcher.group(2);
+
+			String formula = matcher.group(2);
+
+			if (formula != null && !formula.trim().isEmpty()) {
+				masterExists.put(si, true);
+			}
+		}
+
+		matcher.reset();
+
+		StringBuffer result = new StringBuffer();
+
+		while (matcher.find()) {
+
+			String attributes = matcher.group(1) != null ? matcher.group(1) : matcher.group(3);
+
+			if (attributes != null && attributes.matches("(?s).*\\bt\\s*=\\s*(['\"])shared\\1.*")) {
+
+				Matcher siMatcher = Pattern.compile("\\bsi\\s*=\\s*(['\"])(\\d+)\\1").matcher(attributes);
+
+				if (siMatcher.find()) {
+
+					String si = siMatcher.group(2);
+
+					if (!masterExists.containsKey(si)) {
+						// Remove the orphan formula element only.
+						// The cell's cached value remains in the XML.
+						matcher.appendReplacement(result, "");
+						continue;
+					}
+				}
+			}
+
+			matcher.appendReplacement(result, Matcher.quoteReplacement(matcher.group()));
+		}
+
+		matcher.appendTail(result);
+
+		return result.toString();
 	}
 
 	private byte[] generatePULA_CFSReport(String reportName, String filename, String asondate, String fromdate,
@@ -12675,14 +12801,6 @@ public class RegulatoryReportServices {
 
 		String formattedDate = outputFormat.format(date);
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-
-		// Calendar.MONTH is zero-based; convert to 1-based month
-		int month = calendar.get(Calendar.MONTH) + 1;
-
-		boolean isAS11Applicable = month == 3 || month == 6 || month == 9 || month == 12;
-
 		try (XSSFWorkbook workbook = new XSSFWorkbook(); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 
 			Sheet errorSheet = workbook.createSheet("Status");
@@ -12706,6 +12824,7 @@ public class RegulatoryReportServices {
 					if (fileData != null && fileData.length > 0) {
 
 						try (XSSFWorkbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+							Map<CellStyle, CellStyle> styleMap = new HashMap<>();
 
 							for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
 
@@ -12726,7 +12845,7 @@ public class RegulatoryReportServices {
 
 								Sheet newSheet = workbook.createSheet(sheetName);
 
-								copySheet(srcSheet, newSheet);
+								copySheet(srcSheet, newSheet, styleMap);
 							}
 						}
 
@@ -12856,4 +12975,131 @@ public class RegulatoryReportServices {
 		}
 	}
 
+	private void copySheet(Sheet srcSheet, Sheet targetSheet, Map<CellStyle, CellStyle> styleMap) {
+		Workbook targetWorkbook = targetSheet.getWorkbook();
+
+		// Copy merged regions
+		for (int i = 0; i < srcSheet.getNumMergedRegions(); i++) {
+			CellRangeAddress mergedRegion = srcSheet.getMergedRegion(i);
+			targetSheet.addMergedRegion(mergedRegion);
+		}
+
+		int maxCols = 0;
+
+		// Copy rows and cells
+		for (int r = 0; r <= srcSheet.getLastRowNum(); r++) {
+			Row srcRow = srcSheet.getRow(r);
+			if (srcRow == null) {
+				continue;
+			}
+
+			Row targetRow = targetSheet.createRow(r);
+			targetRow.setHeight(srcRow.getHeight());
+
+			if (srcRow.getLastCellNum() > maxCols) {
+				maxCols = srcRow.getLastCellNum();
+			}
+
+			for (int c = 0; c < srcRow.getLastCellNum(); c++) {
+				Cell srcCell = srcRow.getCell(c);
+				if (srcCell == null) {
+					continue;
+				}
+
+				Cell targetCell = targetRow.createCell(c);
+
+				// Copy cell style across workbooks safely using a cache map
+				CellStyle srcStyle = srcCell.getCellStyle();
+				if (srcStyle != null) {
+					CellStyle newStyle = styleMap.get(srcStyle);
+					if (newStyle == null) {
+						newStyle = targetWorkbook.createCellStyle();
+						newStyle.cloneStyleFrom(srcStyle);
+						styleMap.put(srcStyle, newStyle);
+					}
+					targetCell.setCellStyle(newStyle);
+				}
+
+				// Copy cell content safely
+				try {
+					switch (srcCell.getCellType()) {
+					case Cell.CELL_TYPE_STRING:
+						targetCell.setCellValue(srcCell.getRichStringCellValue().getString());
+						break;
+
+					case Cell.CELL_TYPE_NUMERIC:
+						if (DateUtil.isCellDateFormatted(srcCell)) {
+							targetCell.setCellValue(srcCell.getDateCellValue());
+						} else {
+							targetCell.setCellValue(srcCell.getNumericCellValue());
+						}
+						break;
+
+					case Cell.CELL_TYPE_BOOLEAN:
+						targetCell.setCellValue(srcCell.getBooleanCellValue());
+						break;
+
+					case Cell.CELL_TYPE_FORMULA:
+						try {
+							// Attempt to copy formula string directly
+							targetCell.setCellFormula(srcCell.getCellFormula());
+						} catch (Exception formulaEx) {
+							// Fallback: If POI throws 'Master cell of a shared formula with sid=X was not
+							// found'
+							// copy the cached calculated formula result value instead
+							copyCachedCellValue(srcCell, targetCell);
+						}
+						break;
+
+					case Cell.CELL_TYPE_ERROR:
+						targetCell.setCellErrorValue(srcCell.getErrorCellValue());
+						break;
+
+					case Cell.CELL_TYPE_BLANK:
+						targetCell.setCellType(Cell.CELL_TYPE_BLANK);
+						break;
+
+					default:
+						break;
+					}
+				} catch (Exception cellEx) {
+					// Outer safety fallback if any unexpected POI internal exception occurs
+					copyCachedCellValue(srcCell, targetCell);
+				}
+			}
+		}
+
+		// Copy column widths
+		for (int c = 0; c < maxCols; c++) {
+			targetSheet.setColumnWidth(c, srcSheet.getColumnWidth(c));
+		}
+	}
+
+	private void copyCachedCellValue(Cell srcCell, Cell targetCell) {
+		try {
+			switch (srcCell.getCachedFormulaResultType()) {
+			case Cell.CELL_TYPE_NUMERIC:
+				if (DateUtil.isCellDateFormatted(srcCell)) {
+					targetCell.setCellValue(srcCell.getDateCellValue());
+				} else {
+					targetCell.setCellValue(srcCell.getNumericCellValue());
+				}
+				break;
+			case Cell.CELL_TYPE_STRING:
+				targetCell.setCellValue(srcCell.getStringCellValue());
+				break;
+			case Cell.CELL_TYPE_BOOLEAN:
+				targetCell.setCellValue(srcCell.getBooleanCellValue());
+				break;
+			case Cell.CELL_TYPE_ERROR:
+				targetCell.setCellErrorValue(srcCell.getErrorCellValue());
+				break;
+			default:
+				targetCell.setCellValue(srcCell.toString());
+				break;
+			}
+		} catch (Exception e) {
+			targetCell.setCellValue(srcCell.toString());
+		}
+	}
 }
