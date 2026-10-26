@@ -41,6 +41,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -359,7 +360,7 @@ public class BRRS_SLS_INR_ReportService {
 					
 					System.out.println(rowIndex);
 					if(rowIndex==40 || rowIndex==41 || rowIndex==42 || rowIndex==43 || rowIndex==44 ||rowIndex==45 || rowIndex==74 
-							|| rowIndex==75 || rowIndex==76 ||rowIndex==77|| rowIndex==78 ||rowIndex==79 || rowIndex==80 || rowIndex==82 ||rowIndex==85 ) {
+							|| rowIndex==75 || rowIndex==76 ||rowIndex==77|| rowIndex==78 ||rowIndex==79 || rowIndex==80 || rowIndex==81 || rowIndex==82 ||rowIndex==85 ) {
 						continue;
 					}
 
@@ -396,7 +397,14 @@ public class BRRS_SLS_INR_ReportService {
 
 				}
 
-				workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+				evaluator.setIgnoreMissingWorkbooks(true);
+				try {
+					evaluator.evaluateAll();
+				} catch (Exception e) {
+					logger.warn("Formula evaluation skipped: {}", e.getMessage());
+				}
+				workbook.setForceFormulaRecalculation(true);
 			} else {
 
 			}
@@ -665,7 +673,7 @@ public class BRRS_SLS_INR_ReportService {
 								
 								System.out.println(rowIndex);
 								if(rowIndex==40 || rowIndex==41 || rowIndex==42 || rowIndex==43 || rowIndex==44 ||rowIndex==45 || rowIndex==74 
-										|| rowIndex==75 || rowIndex==76 ||rowIndex==77|| rowIndex==78 ||rowIndex==79 || rowIndex==80 || rowIndex==82 ||rowIndex==85 ) {
+										|| rowIndex==75 || rowIndex==76 ||rowIndex==77|| rowIndex==78 ||rowIndex==79 || rowIndex==80 || rowIndex==81 || rowIndex==82 ||rowIndex==85 ) {
 									continue;
 								}
 
@@ -702,7 +710,14 @@ public class BRRS_SLS_INR_ReportService {
 
 							}
 
-							workbook.getCreationHelper().createFormulaEvaluator().evaluateAll();
+							FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+							evaluator.setIgnoreMissingWorkbooks(true);
+							try {
+								evaluator.evaluateAll();
+							} catch (Exception e) {
+								logger.warn("Formula evaluation skipped: {}", e.getMessage());
+							}
+							workbook.setForceFormulaRecalculation(true);
 						} else {
 
 						}
