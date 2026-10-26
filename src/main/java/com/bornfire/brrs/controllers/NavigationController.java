@@ -2444,6 +2444,36 @@ public class NavigationController {
 
 	    return "UFCEConsolidatedReport"; // HTML name
 	}
+	
+	@RequestMapping(value = "BG_CONSOLIDATED_REPORT", method = { RequestMethod.GET, RequestMethod.POST })
+	public String BG_CONSOLIDATED_REPORT(@RequestParam(required = false) String formmode, Model md,
+	        HttpServletRequest req) {
+
+	    md.addAttribute("activeMenu", "Reports");
+	    md.addAttribute("activePage", "CentralBank");
+
+	    String USERID = (String) req.getSession().getAttribute("USERID");
+	    md.addAttribute("USERID", USERID);
+
+	    logger.info("==> Entered BG CosolidatedReport controller || Formmode: {}", formmode);
+
+	    System.out.println("Enter into navigation controller");
+
+	    if (formmode == null || formmode.equals("list")) {
+	        md.addAttribute("formmode", "list");
+
+	        String reportDate = GeneralMasterRepos.findLastUploadedReportDate(); // DD-MM-YYYY
+
+	        DateTimeFormatter input = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	        DateTimeFormatter output = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	        String htmlDate = LocalDate.parse(reportDate, input).format(output);
+
+	        md.addAttribute("LastUploadedDate", htmlDate);
+	    }
+
+	    return "BGConsolidatedReport"; // HTML name
+	}
 
 	
 	@GetMapping("dashboardChartData")

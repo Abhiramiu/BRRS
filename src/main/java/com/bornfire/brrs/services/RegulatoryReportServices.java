@@ -13253,5 +13253,164 @@ public class RegulatoryReportServices {
     }
     
     
+    public byte[] getConsolidatedDownloadBGFile(String filename, String asondate, String fromdate, String todate,
+			String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+		List<String> reportList = Arrays.asList("DBS10_FINCON_II_1A", "DBS10_FINCON_III_1B", "DBS10_FINCON_III_1C");
+
+		SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		Date date = inputFormat.parse(todate);
+
+		SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+		String formattedDate = outputFormat.format(date);
+
+		XSSFWorkbook workbook = new XSSFWorkbook();
+
+		Sheet errorSheet = workbook.createSheet("Status");
+
+		Row headerRow = errorSheet.createRow(0);
+		headerRow.createCell(0).setCellValue("Report Name");
+		headerRow.createCell(1).setCellValue("Status");
+		headerRow.createCell(2).setCellValue("Remarks");
+
+		int errorRowNum = 1;
+
+		for (String report : reportList) {
+
+			try {
+
+				byte[] fileData = generateBGReport(report, filename, asondate, fromdate, formattedDate, currency,
+						dtltype, type, format, version);
+
+				System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
+
+				if (fileData != null && fileData.length > 0) {
+
+					try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+						for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+							Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+							String sheetName = report;
+
+							if (workbook.getSheet(sheetName) != null) {
+								sheetName = report + "_" + (i + 1);
+							}
+
+							Sheet newSheet = workbook.createSheet(sheetName);
+
+							copySheet(srcSheet, newSheet);
+						}
+					}
+
+					// SUCCESS ENTRY
+					Row successRow = errorSheet.createRow(errorRowNum++);
+					successRow.createCell(0).setCellValue(report);
+					successRow.createCell(1).setCellValue("SUCCESS");
+					successRow.createCell(2).setCellValue("Downloaded Successfully");
+
+				} else {
+
+					// FAILED ENTRY
+					Row failRow = errorSheet.createRow(errorRowNum++);
+					failRow.createCell(0).setCellValue(report);
+					failRow.createCell(1).setCellValue("FAILED");
+					failRow.createCell(2).setCellValue("No data found");
+				}
+
+			} catch (Exception e) {
+
+				Row failRow = errorSheet.createRow(errorRowNum++);
+				failRow.createCell(0).setCellValue(report);
+				failRow.createCell(1).setCellValue("FAILED");
+				failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+
+				e.printStackTrace();
+			}
+		}
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+			workbook.write(bos);
+			workbook.close();
+
+			return bos.toByteArray();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	private byte[] generateBGReport(String reportName, String filename, String asondate, String fromdate,
+			String todate, String currency, String dtltype, String type, String format, BigDecimal version) {
+
+		try {
+
+			System.out.println("Service: Generating report for " + reportName);
+			System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+			if ("email".equalsIgnoreCase(format) && version == null) {
+
+				switch (reportName) {
+
+				case "DBS10_FINCON_II_1A":
+					return  BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel("DBS10_FINCON_II_1A.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "DBS10_FINCON_III_1B":
+					return  BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BExcel("DBS10_FINCON_III_1B.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format, version);
+
+				case "DBS10_FINCON_III_1C":
+					return BRRS_DBS10_FINCON_III_1C_ReportService.BRRS_DBS10_FINCON_III_1CExcel("DBS10_FINCON_III_1C.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				
+
+				default:
+					System.out.println("Unknown report: " + reportName);
+					return null;
+				}
+
+			} else {
+
+				switch (reportName) {
+
+				case "DBS10_FINCON_II_1A":
+					return  BRRS_DBS10_FINCON_II_1A_ReportService.getDBS10_FINCON_II_1AExcel("DBS10_FINCON_II_1A.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				case "DBS10_FINCON_III_1B":
+					return  BRRS_DBS10_FINCON_III_1B_ReportService.getDBS10_FINCON_III_1BExcel("DBS10_FINCON_III_1B.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, format,version);
+
+				case "DBS10_FINCON_III_1C":
+					return BRRS_DBS10_FINCON_III_1C_ReportService.BRRS_DBS10_FINCON_III_1CExcel("DBS10_FINCON_III_1C.xlsx", reportName, fromdate, todate,
+							currency, dtltype, type, version);
+
+				default:
+					System.out.println("Unknown report: " + reportName);
+					return null;
+				}
+			}
+
+		} catch (FileNotFoundException fe) {
+
+			System.err.println("Template file not found: " + fe.getMessage());
+			fe.printStackTrace();
+			return null;
+
+		} catch (Exception e) {
+
+			System.err.println("Error generating report: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+    
 
 }
