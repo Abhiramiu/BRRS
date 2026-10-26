@@ -49,6 +49,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import javax.servlet.http.HttpServletRequest;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
 
@@ -13102,4 +13105,153 @@ public class RegulatoryReportServices {
 			targetCell.setCellValue(srcCell.toString());
 		}
 	}
+	
+	public byte[] getConsolidatedDownloadUFCEFile(String filename, String asondate, String fromdate, String todate,
+            String currency, String type, String format, BigDecimal version, String dtltype) throws ParseException {
+
+        List<String> reportList = Arrays.asList("UFCE_CALCULATION", "UFCE_ANNEXURE", "LOAN_LIST_UFCE", "BORR_UFCE", "UFCE_RETAILADV");
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        Date date = inputFormat.parse(todate);
+
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        String formattedDate = outputFormat.format(date);
+
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        Sheet errorSheet = workbook.createSheet("Status");
+
+        Row headerRow = errorSheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Report Name");
+        headerRow.createCell(1).setCellValue("Status");
+        headerRow.createCell(2).setCellValue("Remarks");
+
+        int errorRowNum = 1;
+
+        for (String report : reportList) {
+
+            try {
+
+                byte[] fileData = generateUFCEReport(report, filename, asondate, fromdate, formattedDate, currency,
+                        dtltype, type, format, version);
+
+                System.out.println(report + " fileData : " + (fileData != null ? fileData.length : "NULL"));
+
+                if (fileData != null && fileData.length > 0) {
+
+                    try (Workbook reportWorkbook = new XSSFWorkbook(new ByteArrayInputStream(fileData))) {
+
+                        for (int i = 0; i < reportWorkbook.getNumberOfSheets(); i++) {
+
+                            Sheet srcSheet = reportWorkbook.getSheetAt(i);
+
+                            String sheetName = report;
+
+                            if (workbook.getSheet(sheetName) != null) {
+                                sheetName = report + "_" + (i + 1);
+                            }
+
+                            Sheet newSheet = workbook.createSheet(sheetName);
+
+                            copySheet(srcSheet, newSheet);
+                        }
+                    }
+
+                    // SUCCESS ENTRY
+                    Row successRow = errorSheet.createRow(errorRowNum++);
+                    successRow.createCell(0).setCellValue(report);
+                    successRow.createCell(1).setCellValue("SUCCESS");
+                    successRow.createCell(2).setCellValue("Downloaded Successfully");
+
+                } else {
+
+                    // FAILED ENTRY
+                    Row failRow = errorSheet.createRow(errorRowNum++);
+                    failRow.createCell(0).setCellValue(report);
+                    failRow.createCell(1).setCellValue("FAILED");
+                    failRow.createCell(2).setCellValue("No data found");
+                }
+
+            } catch (Exception e) {
+
+                Row failRow = errorSheet.createRow(errorRowNum++);
+                failRow.createCell(0).setCellValue(report);
+                failRow.createCell(1).setCellValue("FAILED");
+                failRow.createCell(2).setCellValue("Error: " + e.getMessage());
+
+                e.printStackTrace();
+            }
+        }
+
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+
+            workbook.write(bos);
+            workbook.close();
+
+            return bos.toByteArray();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private byte[] generateUFCEReport(String reportName, String filename, String asondate, String fromdate,
+            String todate, String currency, String dtltype, String type, String format, BigDecimal version) {
+
+        try {
+
+            System.out.println("Service: Generating report for " + reportName);
+            System.out.println("Converted Dates: From " + fromdate + " To " + todate + " Ason " + asondate);
+
+            // Fetch current HttpServletRequest safely via RequestContextHolder
+            HttpServletRequest request = null;
+            ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attr != null) {
+                request = attr.getRequest();
+            }
+
+            switch (reportName) {
+
+                case "UFCE_CALCULATION":
+                    return BRRS_UFCE_CALCULATION_ReportService.getUFCEUploadableExcel("UFCE_CALCULATION.xlsx", reportName, fromdate, todate,
+                            currency, dtltype, type, version, request);
+
+                case "UFCE_ANNEXURE":
+                    return BRRS_UFCE_ANNEXURE_ReportService.getBRRS_UFCE_ANNEXURE_Excel("UFCE_ANNEXURE.xlsx", reportName, fromdate, todate,
+                            currency, dtltype, type, format, version);
+
+                case "LOAN_LIST_UFCE":
+                    return BRRS_LOAN_LIST_UFCE_ReportService.getBRRS_LOAN_LIST_UFCE_Excel("LOAN_LIST_UFCE.xlsx", reportName, fromdate, todate,
+                            currency, dtltype, type, format, version);
+
+                case "BORR_UFCE":
+                    return BRRS_BORR_UFCE_ReportService.getBRRS_BORR_UFCE_Excel("BORR_UFCE.xlsx", reportName, fromdate, todate,
+                            currency, dtltype, type, format, version);
+
+                case "UFCE_RETAILADV":
+                    return BRRS_UFCE_RETAILADV_ReportService.getBRRS_UFCE_RETAILADV_Excel("UFCE_RETAILADV.xlsx", reportName, fromdate, todate,
+                            currency, dtltype, type, format, version);
+                default:
+                    System.out.println("Unknown report: " + reportName);
+                    return null;
+            }
+
+        } catch (FileNotFoundException fe) {
+
+            System.err.println("Template file not found: " + fe.getMessage());
+            fe.printStackTrace();
+            return null;
+
+        } catch (Exception e) {
+
+            System.err.println("Error generating report: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    
+
 }

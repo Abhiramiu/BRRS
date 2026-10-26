@@ -5538,6 +5538,25 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
+	
+	@GetMapping("/downloadUFCEConsolidatedExcel")
+	public void downloadUFCEConsolidatedExcel(@RequestParam(required = false) String asondate,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
+			@RequestParam(required = false) String currency, @RequestParam(required = false) String type,
+			@RequestParam(value = "format", required = false) String format,
+			@RequestParam(required = false) BigDecimal version, @RequestParam(required = false) String filename,
+			@RequestParam(required = false) String dtltype, HttpServletResponse response)
+			throws IOException, ParseException {
+		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
+		byte[] file = regreportServices.getConsolidatedDownloadUFCEFile(filename, asondate, fromdate, todate, currency,
+				type, format, version, dtltype);
+		System.out.println("filename..." + filename);
+
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + ".xlsx\"");
+		response.getOutputStream().write(file);
+		response.getOutputStream().flush();
+	}
 
 	@Autowired
 	BRRS_M_SIR_ReportService BRRS_M_SIR_ReportService;
@@ -7552,5 +7571,7 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
+	
+	
 
 }
