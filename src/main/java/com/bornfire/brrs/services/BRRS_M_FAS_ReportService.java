@@ -3,11 +3,14 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -41,35 +48,24 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.io.Serializable;
-import org.springframework.jdbc.core.RowMapper;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import com.bornfire.brrs.entities.UserProfileRep;
-
-import java.sql.ResultSetMetaData;
-import java.util.HashSet;
-import java.util.Set;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 
 @Component
 @Service
@@ -146,12 +142,14 @@ public class BRRS_M_FAS_ReportService {
 	}
 
 	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
-		if (REPORT_DATE == null || REPORT_VERSION == null) return "NO";
+		if (REPORT_DATE == null || REPORT_VERSION == null)
+			return "NO";
 		String result = "NO";
 		try {
 			String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
 					+ "FROM BRRS_M_FAS_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-			List<String> list = jdbcTemplate.queryForList(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+			List<String> list = jdbcTemplate.queryForList(sql, new Object[] { REPORT_VERSION, REPORT_DATE },
+					String.class);
 			if (!list.isEmpty() && list.get(0) != null) {
 				result = list.get(0);
 			}
@@ -163,19 +161,23 @@ public class BRRS_M_FAS_ReportService {
 
 	public List<M_FAS_Archival_Summary_Entity> get_ResubSummaryByDate(Date reportDate, String reportVersion) {
 		try {
-			if (reportDate == null) return new ArrayList<>();
+			if (reportDate == null)
+				return new ArrayList<>();
 			BigDecimal verBD = null;
 			if (reportVersion != null && !reportVersion.trim().isEmpty()) {
 				try {
 					verBD = new BigDecimal(reportVersion.trim());
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 			}
 			if (verBD != null) {
 				String sql = "SELECT * FROM BRRS_M_FAS_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
-				return jdbcTemplate.query(sql, new Object[] { reportDate, verBD }, new GenericRowMapper<>(M_FAS_Archival_Summary_Entity.class));
+				return jdbcTemplate.query(sql, new Object[] { reportDate, verBD },
+						new GenericRowMapper<>(M_FAS_Archival_Summary_Entity.class));
 			} else {
 				String sql = "SELECT * FROM BRRS_M_FAS_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-				return jdbcTemplate.query(sql, new Object[] { reportDate }, new GenericRowMapper<>(M_FAS_Archival_Summary_Entity.class));
+				return jdbcTemplate.query(sql, new Object[] { reportDate },
+						new GenericRowMapper<>(M_FAS_Archival_Summary_Entity.class));
 			}
 		} catch (Exception e) {
 			logger.error("Error querying BRRS_M_FAS_ARCHIVALTABLE_SUMMARY", e);
@@ -197,7 +199,8 @@ public class BRRS_M_FAS_ReportService {
 		try {
 			if (reportDate != null) {
 				String sql = "SELECT * FROM BRRS_M_FAS_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
-				List<M_FAS_Archival_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber, reportDate },
+				List<M_FAS_Archival_Detail_Entity> list = jdbcTemplate.query(sql,
+						new Object[] { acctNumber, reportDate },
 						new GenericRowMapper<>(M_FAS_Archival_Detail_Entity.class));
 				return list.isEmpty() ? null : list.get(0);
 			} else {
@@ -300,7 +303,8 @@ public class BRRS_M_FAS_ReportService {
 				try {
 					d1 = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(rawDate.trim());
 					break;
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 			}
 		}
 
@@ -318,8 +322,8 @@ public class BRRS_M_FAS_ReportService {
 			// ---------- CASE 3: NORMAL ----------
 			else {
 				List<M_FAS_Summary_Entity> T1Master = jdbcTemplate.query(
-						"SELECT * FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-						new Object[] { d1 }, new GenericRowMapper<>(M_FAS_Summary_Entity.class));
+						"SELECT * FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)", new Object[] { d1 },
+						new GenericRowMapper<>(M_FAS_Summary_Entity.class));
 
 				mv.addObject("reportsummary", T1Master);
 				System.out.println("T1Master Size " + (T1Master != null ? T1Master.size() : 0));
@@ -372,7 +376,8 @@ public class BRRS_M_FAS_ReportService {
 				try {
 					parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(rawDate.trim());
 					break;
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 			}
 		}
 
@@ -391,19 +396,20 @@ public class BRRS_M_FAS_ReportService {
 			}
 
 			System.out.println(type);
-			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null && !version.isEmpty()) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null
+					&& !version.isEmpty()) {
 				System.out.println(type);
 				BigDecimal verBD = null;
 				try {
 					verBD = new BigDecimal(version.trim());
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 
 				// 🔹 Archival branch
 				List<M_FAS_Archival_Detail_Entity> T1Dt1;
 				if (reportLable != null && reportAddlCriteria_1 != null) {
 					String sql = "select * from BRRS_M_FAS_ARCHIVALTABLE_DETAIL where REPORT_LABEL =? and REPORT_ADDL_CRITERIA_1=? AND TRUNC(REPORT_DATE)=TRUNC(?)";
-					T1Dt1 = jdbcTemplate.query(sql,
-							new Object[] { reportLable, reportAddlCriteria_1, parsedDate },
+					T1Dt1 = jdbcTemplate.query(sql, new Object[] { reportLable, reportAddlCriteria_1, parsedDate },
 							new GenericRowMapper<>(M_FAS_Archival_Detail_Entity.class));
 				} else {
 					String sql = "select * from BRRS_M_FAS_ARCHIVALTABLE_DETAIL where TRUNC(REPORT_DATE)=TRUNC(?)";
@@ -742,12 +748,21 @@ public class BRRS_M_FAS_ReportService {
 		System.out.println("Came to services 3");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_FAS_Summary_Entity existing = findSummaryById(updatedEntity.getReportDate());
+		// 🔹 JdbcTemplate lookup with date truncation
+		String selectSql = "SELECT * FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
-		if (existing == null) {
+		List<M_FAS_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_FAS_Summary_Entity.class), updatedEntity.getReportDate());
+
+		M_FAS_Summary_Entity existing;
+
+		if (list.isEmpty()) {
+			existing = new M_FAS_Summary_Entity();
+			existing.setReportDate(updatedEntity.getReportDate());
 			System.out.println("⚠️ No existing record found — creating new record");
-			saveSummary(updatedEntity);
-			return;
+		} else {
+			existing = list.get(0);
+			System.out.println("Updating existing record");
 		}
 
 		// 🔹 Audit copy: Create a clone of the original database state before making
@@ -756,7 +771,6 @@ public class BRRS_M_FAS_ReportService {
 		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
-
 			/*
 			 * ----------------------------------------------------------- 🔵 1) UPDATE R12
 			 * FIELDS ------------------------------------------------------------
@@ -774,7 +788,7 @@ public class BRRS_M_FAS_ReportService {
 					Object value = getter.invoke(updatedEntity);
 					Object existingValue = getter.invoke(existing);
 
-					// --- FIX: Normalize state differences to keep audit log payload minimal ---
+					// --- Normalize state differences to keep audit log payload minimal ---
 					String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 					String newValStr = (value == null) ? "" : value.toString().trim();
 
@@ -797,7 +811,7 @@ public class BRRS_M_FAS_ReportService {
 
 			for (int i = 23; i <= 28; i++) {
 				for (String field : fields) {
-					String base = "R" + i + "_" + field; // match getter/setter names
+					String base = "R" + i + "_" + field;
 					String getterName = "get" + base;
 					String setterName = "set" + base;
 
@@ -808,7 +822,7 @@ public class BRRS_M_FAS_ReportService {
 						Object value = getter.invoke(updatedEntity);
 						Object existingValue = getter.invoke(existing);
 
-						// --- FIX: Normalize state differences ---
+						// --- Normalize state differences ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (value == null) ? "" : value.toString().trim();
 
@@ -824,22 +838,175 @@ public class BRRS_M_FAS_ReportService {
 			}
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error updating record", e);
+			throw new RuntimeException("Error updating record fields", e);
 		}
 
-		saveSummary(existing);
-		System.out.println("✔ UPDATED successfully");
-
-		// =====================================================
-		// EVALUATE AND LOG AUDIT TRAIL
-		// =====================================================
+		// 🔹 Evaluate audit changes
 		String changes = auditService.getChanges(oldcopy, existing);
-		System.out.println("M_FAS Changes Length = " + changes.length());
+		System.out.println("M_FAS Changes Length = " + (changes != null ? changes.length() : 0));
 
+		// 🔹 Set Maker-Checker Flags
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		System.out.println("✔ Record saved into BRRS_M_FAS_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 🔹 Log Audit Trail if changes exist
 		if (changes != null && !changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
-					"M_FAS Summary Screen", "BRRS_M_FAS_SUMMARY");
+					"M_FAS", "BRRS_M_FAS_SUMMARYTABLE");
 		}
+
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getReportDate());
+
+					logger.info("Transaction committed — calling BRRS_M_FAS_SUMMARY_PROCEDURE({})", formattedDate);
+
+					jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+					logger.info("BRRS_M_FAS_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
+
+	public void saveModSummaryEntity(M_FAS_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_M_FAS_MOD_SUMMARYTABLE dest " + "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) " + "WHEN MATCHED THEN " + "  UPDATE SET "
+				+ "    R12_FIX_ASS = ?, R12_COST = ?, R12_ADD = ?, R12_DISPOSALS = ?, R12_DEPRECIATION = ?, R12_NET_BOOK_VALUE = ?, "
+				+ "    R23_INTANGIBLE_ASS = ?, R23_COST_REV = ?, R23_USEFUL_LIFE = ?, R23_RES_VALUE = ?, R23_MONTH_AMORT = ?, R23_ACC_AMORT_AMT = ?, R23_CLOSE_BAL = ?, "
+				+ "    R24_INTANGIBLE_ASS = ?, R24_COST_REV = ?, R24_USEFUL_LIFE = ?, R24_RES_VALUE = ?, R24_MONTH_AMORT = ?, R24_ACC_AMORT_AMT = ?, R24_CLOSE_BAL = ?, "
+				+ "    R25_INTANGIBLE_ASS = ?, R25_COST_REV = ?, R25_USEFUL_LIFE = ?, R25_RES_VALUE = ?, R25_MONTH_AMORT = ?, R25_ACC_AMORT_AMT = ?, R25_CLOSE_BAL = ?, "
+				+ "    R26_INTANGIBLE_ASS = ?, R26_COST_REV = ?, R26_USEFUL_LIFE = ?, R26_RES_VALUE = ?, R26_MONTH_AMORT = ?, R26_ACC_AMORT_AMT = ?, R26_CLOSE_BAL = ?, "
+				+ "    R27_INTANGIBLE_ASS = ?, R27_COST_REV = ?, R27_USEFUL_LIFE = ?, R27_RES_VALUE = ?, R27_MONTH_AMORT = ?, R27_ACC_AMORT_AMT = ?, R27_CLOSE_BAL = ?, "
+				+ "    R28_INTANGIBLE_ASS = ?, R28_COST_REV = ?, R28_USEFUL_LIFE = ?, R28_RES_VALUE = ?, R28_MONTH_AMORT = ?, R28_ACC_AMORT_AMT = ?, R28_CLOSE_BAL = ?, "
+				+ "    ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? " + "WHEN NOT MATCHED THEN "
+				+ "  INSERT (REPORT_DATE, "
+				+ "    R12_FIX_ASS, R12_COST, R12_ADD, R12_DISPOSALS, R12_DEPRECIATION, R12_NET_BOOK_VALUE, "
+				+ "    R23_INTANGIBLE_ASS, R23_COST_REV, R23_USEFUL_LIFE, R23_RES_VALUE, R23_MONTH_AMORT, R23_ACC_AMORT_AMT, R23_CLOSE_BAL, "
+				+ "    R24_INTANGIBLE_ASS, R24_COST_REV, R24_USEFUL_LIFE, R24_RES_VALUE, R24_MONTH_AMORT, R24_ACC_AMORT_AMT, R24_CLOSE_BAL, "
+				+ "    R25_INTANGIBLE_ASS, R25_COST_REV, R25_USEFUL_LIFE, R25_RES_VALUE, R25_MONTH_AMORT, R25_ACC_AMORT_AMT, R25_CLOSE_BAL, "
+				+ "    R26_INTANGIBLE_ASS, R26_COST_REV, R26_USEFUL_LIFE, R26_RES_VALUE, R26_MONTH_AMORT, R26_ACC_AMORT_AMT, R26_CLOSE_BAL, "
+				+ "    R27_INTANGIBLE_ASS, R27_COST_REV, R27_USEFUL_LIFE, R27_RES_VALUE, R27_MONTH_AMORT, R27_ACC_AMORT_AMT, R27_CLOSE_BAL, "
+				+ "    R28_INTANGIBLE_ASS, R28_COST_REV, R28_USEFUL_LIFE, R28_RES_VALUE, R28_MONTH_AMORT, R28_ACC_AMORT_AMT, R28_CLOSE_BAL, "
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG) " + "  VALUES (?, " + "    ?, ?, ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, ?, ?, ?, " + "    ?, ?, ?, ?, ?, ?, ?, " + "    ?, ?, ?, ?, ?, ?, ?, "
+				+ "    ?, ?, ?, ?, ?, ?, ?, " + "    ?, ?, ?, ?, ?, ?, ?, " + "    ?, ?, ?, ?, ?, ?, ?, "
+				+ "    ?, ?, ?)";
+
+		Object[] params = {
+				// USING clause
+				entity.getReportDate(),
+
+				// UPDATE parameters (R12)
+				entity.getR12_fix_ass(), entity.getR12_cost(), entity.getR12_add(), entity.getR12_disposals(),
+				entity.getR12_depreciation(), entity.getR12_net_book_value(),
+
+				// UPDATE parameters (R23)
+				entity.getR23_intangible_ass(), entity.getR23_cost_rev(), entity.getR23_useful_life(),
+				entity.getR23_res_value(), entity.getR23_month_amort(), entity.getR23_acc_amort_amt(),
+				entity.getR23_close_bal(),
+
+				// UPDATE parameters (R24)
+				entity.getR24_intangible_ass(), entity.getR24_cost_rev(), entity.getR24_useful_life(),
+				entity.getR24_res_value(), entity.getR24_month_amort(), entity.getR24_acc_amort_amt(),
+				entity.getR24_close_bal(),
+
+				// UPDATE parameters (R25)
+				entity.getR25_intangible_ass(), entity.getR25_cost_rev(), entity.getR25_useful_life(),
+				entity.getR25_res_value(), entity.getR25_month_amort(), entity.getR25_acc_amort_amt(),
+				entity.getR25_close_bal(),
+
+				// UPDATE parameters (R26)
+				entity.getR26_intangible_ass(), entity.getR26_cost_rev(), entity.getR26_useful_life(),
+				entity.getR26_res_value(), entity.getR26_month_amort(), entity.getR26_acc_amort_amt(),
+				entity.getR26_close_bal(),
+
+				// UPDATE parameters (R27)
+				entity.getR27_intangible_ass(), entity.getR27_cost_rev(), entity.getR27_useful_life(),
+				entity.getR27_res_value(), entity.getR27_month_amort(), entity.getR27_acc_amort_amt(),
+				entity.getR27_close_bal(),
+
+				// UPDATE parameters (R28)
+				entity.getR28_intangible_ass(), entity.getR28_cost_rev(), entity.getR28_useful_life(),
+				entity.getR28_res_value(), entity.getR28_month_amort(), entity.getR28_acc_amort_amt(),
+				entity.getR28_close_bal(),
+
+				// Flags UPDATE
+				entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg(),
+
+				// INSERT parameters (Report Date)
+				entity.getReportDate(),
+
+				// INSERT parameters (R12)
+				entity.getR12_fix_ass(), entity.getR12_cost(), entity.getR12_add(), entity.getR12_disposals(),
+				entity.getR12_depreciation(), entity.getR12_net_book_value(),
+
+				// INSERT parameters (R23)
+				entity.getR23_intangible_ass(), entity.getR23_cost_rev(), entity.getR23_useful_life(),
+				entity.getR23_res_value(), entity.getR23_month_amort(), entity.getR23_acc_amort_amt(),
+				entity.getR23_close_bal(),
+
+				// INSERT parameters (R24)
+				entity.getR24_intangible_ass(), entity.getR24_cost_rev(), entity.getR24_useful_life(),
+				entity.getR24_res_value(), entity.getR24_month_amort(), entity.getR24_acc_amort_amt(),
+				entity.getR24_close_bal(),
+
+				// INSERT parameters (R25)
+				entity.getR25_intangible_ass(), entity.getR25_cost_rev(), entity.getR25_useful_life(),
+				entity.getR25_res_value(), entity.getR25_month_amort(), entity.getR25_acc_amort_amt(),
+				entity.getR25_close_bal(),
+
+				// INSERT parameters (R26)
+				entity.getR26_intangible_ass(), entity.getR26_cost_rev(), entity.getR26_useful_life(),
+				entity.getR26_res_value(), entity.getR26_month_amort(), entity.getR26_acc_amort_amt(),
+				entity.getR26_close_bal(),
+
+				// INSERT parameters (R27)
+				entity.getR27_intangible_ass(), entity.getR27_cost_rev(), entity.getR27_useful_life(),
+				entity.getR27_res_value(), entity.getR27_month_amort(), entity.getR27_acc_amort_amt(),
+				entity.getR27_close_bal(),
+
+				// INSERT parameters (R28)
+				entity.getR28_intangible_ass(), entity.getR28_cost_rev(), entity.getR28_useful_life(),
+				entity.getR28_res_value(), entity.getR28_month_amort(), entity.getR28_acc_amort_amt(),
+				entity.getR28_close_bal(),
+
+				// Flags INSERT
+				entity.getEntity_flg(), entity.getModify_flg(), entity.getDel_flg() };
+
+		jdbcTemplate.update(sql, params);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_FAS_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_FAS_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(M_FAS_Summary_Entity.class), reportDate);
+
+		// Copy/Merge MOD values to live SUMMARY table
+		saveModSummaryEntity(modRecord);
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_M_FAS_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("M_FAS Checker Approved Successfully");
 	}
 
 	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type, HttpServletRequest request) {
@@ -932,7 +1099,8 @@ public class BRRS_M_FAS_ReportService {
 				}
 				if (average != null && !average.isEmpty()) {
 					BigDecimal newaverage = new BigDecimal(average.replace(",", ""));
-					if (existing.getDebitEquivalent() == null || existing.getDebitEquivalent().compareTo(newaverage) != 0) {
+					if (existing.getDebitEquivalent() == null
+							|| existing.getDebitEquivalent().compareTo(newaverage) != 0) {
 						existing.setDebitEquivalent(newaverage);
 						isChanged = true;
 					}
@@ -944,7 +1112,8 @@ public class BRRS_M_FAS_ReportService {
 
 				jdbcTemplate.update(
 						"UPDATE BRRS_M_FAS_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, CREDIT_EQUIVALENT = ?, DEBIT_EQUIVALENT = ? WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)",
-						existing.getAcctName(), existing.getCreditEquivalent(), existing.getDebitEquivalent(), acctNo, parsedDate);
+						existing.getAcctName(), existing.getCreditEquivalent(), existing.getDebitEquivalent(), acctNo,
+						parsedDate);
 
 				Run_M_FAS_Procedure(parsedDate, type, entry);
 				return ResponseEntity.ok("Record updated successfully!");
@@ -971,7 +1140,8 @@ public class BRRS_M_FAS_ReportService {
 				}
 				if (average != null && !average.isEmpty()) {
 					BigDecimal newaverage = new BigDecimal(average.replace(",", ""));
-					if (existing.getDebitEquivalent() == null || existing.getDebitEquivalent().compareTo(newaverage) != 0) {
+					if (existing.getDebitEquivalent() == null
+							|| existing.getDebitEquivalent().compareTo(newaverage) != 0) {
 						existing.setDebitEquivalent(newaverage);
 						isChanged = true;
 					}
@@ -998,7 +1168,8 @@ public class BRRS_M_FAS_ReportService {
 	}
 
 	@Transactional
-	public ResponseEntity<?> updateReport(M_FAS_Summary_Entity updatedEntity, String type, String version, String entry) {
+	public ResponseEntity<?> updateReport(M_FAS_Summary_Entity updatedEntity, String type, String version,
+			String entry) {
 		try {
 			boolean isResub = "RESUB".equalsIgnoreCase(type);
 			Date reportDate = updatedEntity.getReportDate();
@@ -1008,7 +1179,8 @@ public class BRRS_M_FAS_ReportService {
 			java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
 			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
 
-			System.out.println("Updating FAS Summary: type=" + type + ", version=" + version + ", entry=" + entry + ", date=" + formattedDate);
+			System.out.println("Updating FAS Summary: type=" + type + ", version=" + version + ", entry=" + entry
+					+ ", date=" + formattedDate);
 
 			String ver = (version != null && !version.isEmpty()) ? version
 					: (updatedEntity.getReportVersion() != null ? updatedEntity.getReportVersion().toString() : null);
@@ -1026,7 +1198,8 @@ public class BRRS_M_FAS_ReportService {
 				}
 
 				if (list == null || list.isEmpty()) {
-					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No archival summary record found to update.");
+					return ResponseEntity.status(HttpStatus.NOT_FOUND)
+							.body("No archival summary record found to update.");
 				}
 
 				M_FAS_Archival_Summary_Entity existing = list.get(0);
@@ -1038,20 +1211,27 @@ public class BRRS_M_FAS_ReportService {
 				if (isResubNoEntry) {
 					// REGENERATE:
 					// 1) Clean live summary table
-					jdbcTemplate.update("DELETE FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+					jdbcTemplate.update("DELETE FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+							sqlDate);
 
 					// 2) Stage into live summary table
 					M_FAS_Summary_Entity liveEntity = new M_FAS_Summary_Entity();
 					BeanUtils.copyProperties(existing, liveEntity);
 
 					// Apply modified values from updatedEntity
-					if (updatedEntity.getR12_cost() != null) liveEntity.setR12_cost(updatedEntity.getR12_cost());
-					if (updatedEntity.getR12_add() != null) liveEntity.setR12_add(updatedEntity.getR12_add());
-					if (updatedEntity.getR12_disposals() != null) liveEntity.setR12_disposals(updatedEntity.getR12_disposals());
-					if (updatedEntity.getR12_depreciation() != null) liveEntity.setR12_depreciation(updatedEntity.getR12_depreciation());
-					if (updatedEntity.getR12_net_book_value() != null) liveEntity.setR12_net_book_value(updatedEntity.getR12_net_book_value());
+					if (updatedEntity.getR12_cost() != null)
+						liveEntity.setR12_cost(updatedEntity.getR12_cost());
+					if (updatedEntity.getR12_add() != null)
+						liveEntity.setR12_add(updatedEntity.getR12_add());
+					if (updatedEntity.getR12_disposals() != null)
+						liveEntity.setR12_disposals(updatedEntity.getR12_disposals());
+					if (updatedEntity.getR12_depreciation() != null)
+						liveEntity.setR12_depreciation(updatedEntity.getR12_depreciation());
+					if (updatedEntity.getR12_net_book_value() != null)
+						liveEntity.setR12_net_book_value(updatedEntity.getR12_net_book_value());
 
-					String[] fields = { "cost_rev", "useful_life", "res_value", "month_amort", "acc_amort_amt", "close_bal" };
+					String[] fields = { "cost_rev", "useful_life", "res_value", "month_amort", "acc_amort_amt",
+							"close_bal" };
 					for (int i = 23; i <= 28; i++) {
 						for (String f : fields) {
 							String base = "R" + i + "_" + f;
@@ -1062,44 +1242,50 @@ public class BRRS_M_FAS_ReportService {
 								if (v != null) {
 									s.invoke(liveEntity, v);
 								}
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 					liveEntity.setReportDate(reportDate);
 					saveSummary(liveEntity);
 
-					auditService.compareEntitiesmanual(
-							oldcopy,
-							existing,
-							reportDate.toString(),
-							"M FAS Archival Summary Screen",
-							"BRRS_M_FAS_ARCHIVALTABLE_SUMMARY");
+					auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+							"M FAS Archival Summary Screen", "BRRS_M_FAS_ARCHIVALTABLE_SUMMARY");
 
-					System.out.println("Modified values staged into live summary. Old version " + ver + " preserved in archival summary.");
+					System.out.println("Modified values staged into live summary. Old version " + ver
+							+ " preserved in archival summary.");
 
 					Run_M_FAS_Procedure(reportDate, "RESUB", "NO");
 					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
 
 				} else {
 					// MODIFY ONLY: Update current version in BRRS_M_FAS_ARCHIVALTABLE_SUMMARY
-					if (updatedEntity.getR12_cost() != null) existing.setR12_cost(updatedEntity.getR12_cost());
-					if (updatedEntity.getR12_add() != null) existing.setR12_add(updatedEntity.getR12_add());
-					if (updatedEntity.getR12_disposals() != null) existing.setR12_disposals(updatedEntity.getR12_disposals());
-					if (updatedEntity.getR12_depreciation() != null) existing.setR12_depreciation(updatedEntity.getR12_depreciation());
-					if (updatedEntity.getR12_net_book_value() != null) existing.setR12_net_book_value(updatedEntity.getR12_net_book_value());
+					if (updatedEntity.getR12_cost() != null)
+						existing.setR12_cost(updatedEntity.getR12_cost());
+					if (updatedEntity.getR12_add() != null)
+						existing.setR12_add(updatedEntity.getR12_add());
+					if (updatedEntity.getR12_disposals() != null)
+						existing.setR12_disposals(updatedEntity.getR12_disposals());
+					if (updatedEntity.getR12_depreciation() != null)
+						existing.setR12_depreciation(updatedEntity.getR12_depreciation());
+					if (updatedEntity.getR12_net_book_value() != null)
+						existing.setR12_net_book_value(updatedEntity.getR12_net_book_value());
 
-					String[] fields = { "intangible_ass", "cost_rev", "useful_life", "res_value", "month_amort", "acc_amort_amt", "close_bal" };
+					String[] fields = { "intangible_ass", "cost_rev", "useful_life", "res_value", "month_amort",
+							"acc_amort_amt", "close_bal" };
 					for (int i = 23; i <= 28; i++) {
 						for (String f : fields) {
 							String base = "R" + i + "_" + f;
 							try {
 								Method g = M_FAS_Summary_Entity.class.getMethod("get" + base);
-								Method s = M_FAS_Archival_Summary_Entity.class.getMethod("set" + base, g.getReturnType());
+								Method s = M_FAS_Archival_Summary_Entity.class.getMethod("set" + base,
+										g.getReturnType());
 								Object v = g.invoke(updatedEntity);
 								if (v != null) {
 									s.invoke(existing, v);
 								}
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 						}
 					}
 
@@ -1114,22 +1300,24 @@ public class BRRS_M_FAS_ReportService {
 							+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?";
 
 					BigDecimal verBD = new BigDecimal(ver);
-					jdbcTemplate.update(updateSql,
-							existing.getR12_cost(), existing.getR12_add(), existing.getR12_disposals(), existing.getR12_depreciation(), existing.getR12_net_book_value(),
-							existing.getR23_cost_rev(), existing.getR23_useful_life(), existing.getR23_res_value(), existing.getR23_month_amort(), existing.getR23_acc_amort_amt(), existing.getR23_close_bal(),
-							existing.getR24_cost_rev(), existing.getR24_useful_life(), existing.getR24_res_value(), existing.getR24_month_amort(), existing.getR24_acc_amort_amt(), existing.getR24_close_bal(),
-							existing.getR25_cost_rev(), existing.getR25_useful_life(), existing.getR25_res_value(), existing.getR25_month_amort(), existing.getR25_acc_amort_amt(), existing.getR25_close_bal(),
-							existing.getR26_cost_rev(), existing.getR26_useful_life(), existing.getR26_res_value(), existing.getR26_month_amort(), existing.getR26_acc_amort_amt(), existing.getR26_close_bal(),
-							existing.getR27_cost_rev(), existing.getR27_useful_life(), existing.getR27_res_value(), existing.getR27_month_amort(), existing.getR27_acc_amort_amt(), existing.getR27_close_bal(),
-							existing.getR28_cost_rev(), existing.getR28_useful_life(), existing.getR28_res_value(), existing.getR28_month_amort(), existing.getR28_acc_amort_amt(), existing.getR28_close_bal(),
-							sqlDate, verBD);
+					jdbcTemplate.update(updateSql, existing.getR12_cost(), existing.getR12_add(),
+							existing.getR12_disposals(), existing.getR12_depreciation(),
+							existing.getR12_net_book_value(), existing.getR23_cost_rev(), existing.getR23_useful_life(),
+							existing.getR23_res_value(), existing.getR23_month_amort(), existing.getR23_acc_amort_amt(),
+							existing.getR23_close_bal(), existing.getR24_cost_rev(), existing.getR24_useful_life(),
+							existing.getR24_res_value(), existing.getR24_month_amort(), existing.getR24_acc_amort_amt(),
+							existing.getR24_close_bal(), existing.getR25_cost_rev(), existing.getR25_useful_life(),
+							existing.getR25_res_value(), existing.getR25_month_amort(), existing.getR25_acc_amort_amt(),
+							existing.getR25_close_bal(), existing.getR26_cost_rev(), existing.getR26_useful_life(),
+							existing.getR26_res_value(), existing.getR26_month_amort(), existing.getR26_acc_amort_amt(),
+							existing.getR26_close_bal(), existing.getR27_cost_rev(), existing.getR27_useful_life(),
+							existing.getR27_res_value(), existing.getR27_month_amort(), existing.getR27_acc_amort_amt(),
+							existing.getR27_close_bal(), existing.getR28_cost_rev(), existing.getR28_useful_life(),
+							existing.getR28_res_value(), existing.getR28_month_amort(), existing.getR28_acc_amort_amt(),
+							existing.getR28_close_bal(), sqlDate, verBD);
 
-					auditService.compareEntitiesmanual(
-							oldcopy,
-							existing,
-							reportDate.toString(),
-							"M FAS Archival Summary Screen",
-							"BRRS_M_FAS_ARCHIVALTABLE_SUMMARY");
+					auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(),
+							"M FAS Archival Summary Screen", "BRRS_M_FAS_ARCHIVALTABLE_SUMMARY");
 
 					System.out.println("FAS Archival Summary updated successfully for version " + ver);
 					return ResponseEntity.ok("Record updated successfully!");
@@ -1158,14 +1346,16 @@ public class BRRS_M_FAS_ReportService {
 					try {
 						d1 = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(todateStr.trim());
 						break;
-					} catch (Exception ignored) {}
+					} catch (Exception ignored) {
+					}
 				}
 			}
 			Run_M_FAS_Procedure(d1, "RESUB", "NO");
 			return ResponseEntity.ok("Regenerated Successfully.");
 		} catch (Exception e) {
 			logger.error("Error in callregenprocedure", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Regeneration Failed: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Regeneration Failed: " + e.getMessage());
 		}
 	}
 
@@ -1208,15 +1398,13 @@ public class BRRS_M_FAS_ReportService {
 				+ "REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
 				+ "REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, "
 				+ "REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, "
-				+ "VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT"
-				+ ") SELECT "
+				+ "VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT" + ") SELECT "
 				+ "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, REPORT_NAME, REPORT_LABEL, "
 				+ "REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, "
 				+ "REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, "
 				+ "REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, "
 				+ "VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG, DEBIT_EQUIVALENT, CREDIT_EQUIVALENT "
-				+ "FROM BRRS_M_FAS_ARCHIVALTABLE_DETAIL "
-				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+				+ "FROM BRRS_M_FAS_ARCHIVALTABLE_DETAIL " + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
 				+ "AND DATA_ENTRY_VERSION = (SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) FROM BRRS_M_FAS_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?))";
 		jdbcTemplate.update(sql, d1, d1);
 	}
@@ -1228,7 +1416,8 @@ public class BRRS_M_FAS_ReportService {
 			jdbcTemplate.update("BEGIN BRRS_M_FAS_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 			if ("RESUB".equalsIgnoreCase(type) && "NO".equalsIgnoreCase(entry)) {
-				// If procedure did not populate manual rows R12 and R23-R28, restore from latest archival summary
+				// If procedure did not populate manual rows R12 and R23-R28, restore from
+				// latest archival summary
 				String copyManualSql = "UPDATE BRRS_M_FAS_SUMMARYTABLE s SET ("
 						+ "R12_FIX_ASS, R12_COST, R12_ADD, R12_DISPOSALS, R12_DEPRECIATION, R12_NET_BOOK_VALUE, "
 						+ "R23_INTANGIBLE_ASS, R23_COST_REV, R23_USEFUL_LIFE, R23_RES_VALUE, R23_MONTH_AMORT, R23_ACC_AMORT_AMT, R23_CLOSE_BAL, "
@@ -1261,29 +1450,21 @@ public class BRRS_M_FAS_ReportService {
 
 				StringBuilder columnsPart = new StringBuilder();
 				for (int i = 10; i <= 17; i++) {
-					columnsPart.append("R").append(i).append("_FIX_ASS, ")
-							   .append("R").append(i).append("_COST, ")
-							   .append("R").append(i).append("_ADD, ")
-							   .append("R").append(i).append("_DISPOSALS, ")
-							   .append("R").append(i).append("_DEPRECIATION, ")
-							   .append("R").append(i).append("_NET_BOOK_VALUE, ");
+					columnsPart.append("R").append(i).append("_FIX_ASS, ").append("R").append(i).append("_COST, ")
+							.append("R").append(i).append("_ADD, ").append("R").append(i).append("_DISPOSALS, ")
+							.append("R").append(i).append("_DEPRECIATION, ").append("R").append(i)
+							.append("_NET_BOOK_VALUE, ");
 				}
 				for (int i = 23; i <= 28; i++) {
-					columnsPart.append("R").append(i).append("_INTANGIBLE_ASS, ")
-							   .append("R").append(i).append("_COST_REV, ")
-							   .append("R").append(i).append("_USEFUL_LIFE, ")
-							   .append("R").append(i).append("_RES_VALUE, ")
-							   .append("R").append(i).append("_MONTH_AMORT, ")
-							   .append("R").append(i).append("_ACC_AMORT_AMT, ")
-							   .append("R").append(i).append("_CLOSE_BAL, ");
+					columnsPart.append("R").append(i).append("_INTANGIBLE_ASS, ").append("R").append(i)
+							.append("_COST_REV, ").append("R").append(i).append("_USEFUL_LIFE, ").append("R").append(i)
+							.append("_RES_VALUE, ").append("R").append(i).append("_MONTH_AMORT, ").append("R").append(i)
+							.append("_ACC_AMORT_AMT, ").append("R").append(i).append("_CLOSE_BAL, ");
 				}
 
-				String insertSummarySql = "INSERT INTO BRRS_M_FAS_ARCHIVALTABLE_SUMMARY ("
-						+ columnsPart.toString()
+				String insertSummarySql = "INSERT INTO BRRS_M_FAS_ARCHIVALTABLE_SUMMARY (" + columnsPart.toString()
 						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
-						+ ") SELECT "
-						+ columnsPart.toString()
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE" + ") SELECT " + columnsPart.toString()
 						+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
 						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
 						+ "FROM BRRS_M_FAS_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";

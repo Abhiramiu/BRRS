@@ -1,12 +1,5 @@
 package com.bornfire.brrs.services;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +17,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -43,7 +40,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +47,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
@@ -65,7 +64,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.dto.ReportLineItemDTO;
-
 import com.bornfire.brrs.entities.UserProfileRep;
 
 @Component
@@ -301,31 +299,23 @@ public class BRRS_M_SFINP2_ReportService {
 	private JdbcTemplate jdbcTemplate;
 
 	@Transactional
-
-	// ------------------------------
-	// Updates and saves summary fields, triggers audit trail, and runs dynamic
-	// database procedures after commit
-	// ------------------------------
 	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
-
 		System.out.println("Came to services");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 		System.out.println("R79 From UI = " + updatedEntity.getR79_MONTH_END());
 
 		String selectSql = "SELECT * FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
 		List<M_SFINP2_Summary_Entity> list = jdbcTemplate.query(selectSql,
-				new Object[] { updatedEntity.getREPORT_DATE() },
-				new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class));
+				new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class), updatedEntity.getREPORT_DATE());
 
 		M_SFINP2_Summary_Entity existing;
 
 		if (list.isEmpty()) {
-			// INSERT
 			existing = new M_SFINP2_Summary_Entity();
 			existing.setREPORT_DATE(updatedEntity.getREPORT_DATE());
 			System.out.println("Creating new record");
 		} else {
-			// UPDATE
 			existing = list.get(0);
 			System.out.println("Updating existing record");
 		}
@@ -338,96 +328,140 @@ public class BRRS_M_SFINP2_ReportService {
 
 		try {
 			for (int i : allowedIndexes) {
-
 				String field = "MONTH_END";
 				String getterName = "getR" + i + "_" + field;
 				String setterName = "setR" + i + "_" + field;
 
 				try {
-
 					Method getter = M_SFINP2_Summary_Entity.class.getMethod(getterName);
 					Method setter = M_SFINP2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 					Object newValue = getter.invoke(updatedEntity);
-
 					System.out.println("R" + i + "_MONTH_END = " + newValue);
 
 					setter.invoke(existing, newValue);
-
 				} catch (NoSuchMethodException e) {
-
 					System.out.println("Method Not Found : " + getterName);
-					continue;
-
 				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Check whether R79 is copied successfully
 		System.out.println("Existing R79 Before Save = " + existing.getR79_MONTH_END());
 
-		// Check changes before save
 		String changes = auditService.getChanges(oldcopy, existing);
 
-		// Save entity using dynamic jdbcTemplate save helper
-		saveSummaryEntity(existing);
+		// Set Maker-Checker Flags (Cleaned up duplication)
+		existing.setENTITY_FLG("Y");
+		existing.setMODIFY_FLG("Y");
+		existing.setDEL_FLG("N");
 
-		// Verify value after save
+		// Save ONLY into MOD table
+		saveModSummaryEntity(existing);
+		System.out.println("Record saved for Checker Approval");
+
 		try {
 			BigDecimal dbValue = jdbcTemplate.queryForObject(
-					"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE " + "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-					new Object[] { updatedEntity.getREPORT_DATE() }, BigDecimal.class);
+					"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+					BigDecimal.class, updatedEntity.getREPORT_DATE());
 
 			System.out.println("R79 Value In DB After Save = " + dbValue);
-
 		} catch (Exception e) {
 			System.out.println("Unable to fetch R79 value from DB.");
 		}
 
-		// Audit only if changes found
 		if (!changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
-					"M SFINP2 Summary Screen", "BRRS_M_SFINP2_SUMMARY");
+					"M_SFINP2", "BRRS_M_SFINP2_SUMMARYTABLE");
 		}
 
-		// CALL PROCEDURE AFTER COMMIT
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
+		// Using non-deprecated TransactionSynchronization interface (Spring 5.3+)
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 			@Override
 			public void afterCommit() {
-
 				try {
-
 					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
 
 					logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})", formattedDate);
 
 					jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
-					// Check R79 value after procedure execution
 					try {
-
 						BigDecimal dbValue = jdbcTemplate.queryForObject(
-								"SELECT R79_MONTH_END " + "FROM BRRS_M_SFINP2_SUMMARYTABLE "
-										+ "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-								new Object[] { updatedEntity.getREPORT_DATE() }, BigDecimal.class);
+								"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+								BigDecimal.class, updatedEntity.getREPORT_DATE());
 
 						System.out.println("R79 Value After Procedure = " + dbValue);
-
 					} catch (Exception ex) {
 						System.out.println("Unable to fetch R79 value after procedure execution.");
 					}
 
 					logger.info("Procedure executed successfully after commit.");
-
 				} catch (Exception e) {
 					logger.error("Procedure execution failed", e);
 					throw new RuntimeException("Procedure execution failed", e);
 				}
 			}
 		});
+	}
+
+	public void saveModSummaryEntity(M_SFINP2_Summary_Entity entity) {
+		String sql = "MERGE INTO BRRS_M_SFINP2_MOD_SUMMARYTABLE dest "
+				+ "USING (SELECT ? AS report_date FROM dual) src "
+				+ "ON (TRUNC(dest.REPORT_DATE) = TRUNC(src.report_date)) " + "WHEN MATCHED THEN " + "  UPDATE SET "
+				+ "    R34_MONTH_END = ?, R35_MONTH_END = ?, R43_MONTH_END = ?, "
+				+ "    R47_MONTH_END = ?, R48_MONTH_END = ?, R51_MONTH_END = ?, "
+				+ "    R52_MONTH_END = ?, R53_MONTH_END = ?, R54_MONTH_END = ?, "
+				+ "    R55_MONTH_END = ?, R56_MONTH_END = ?, R57_MONTH_END = ?, "
+				+ "    R58_MONTH_END = ?, R61_MONTH_END = ?, R62_MONTH_END = ?, "
+				+ "    R78_MONTH_END = ?, R79_MONTH_END = ?, " + "    ENTITY_FLG = ?, MODIFY_FLG = ?, DEL_FLG = ? "
+				+ "WHEN NOT MATCHED THEN " + "  INSERT (REPORT_DATE, R34_MONTH_END, R35_MONTH_END, R43_MONTH_END, "
+				+ "          R47_MONTH_END, R48_MONTH_END, R51_MONTH_END, R52_MONTH_END, "
+				+ "          R53_MONTH_END, R54_MONTH_END, R55_MONTH_END, R56_MONTH_END, "
+				+ "          R57_MONTH_END, R58_MONTH_END, R61_MONTH_END, R62_MONTH_END, "
+				+ "          R78_MONTH_END, R79_MONTH_END, ENTITY_FLG, MODIFY_FLG, DEL_FLG) "
+				+ "  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		jdbcTemplate.update(sql, entity.getREPORT_DATE(), // For USING clause
+				// Update parameters
+				entity.getR34_MONTH_END(), entity.getR35_MONTH_END(), entity.getR43_MONTH_END(),
+				entity.getR47_MONTH_END(), entity.getR48_MONTH_END(), entity.getR51_MONTH_END(),
+				entity.getR52_MONTH_END(), entity.getR53_MONTH_END(), entity.getR54_MONTH_END(),
+				entity.getR55_MONTH_END(), entity.getR56_MONTH_END(), entity.getR57_MONTH_END(),
+				entity.getR58_MONTH_END(), entity.getR61_MONTH_END(), entity.getR62_MONTH_END(),
+				entity.getR78_MONTH_END(), entity.getR79_MONTH_END(), entity.getENTITY_FLG(), entity.getMODIFY_FLG(),
+				entity.getDEL_FLG(),
+				// Insert parameters
+				entity.getREPORT_DATE(), entity.getR34_MONTH_END(), entity.getR35_MONTH_END(),
+				entity.getR43_MONTH_END(), entity.getR47_MONTH_END(), entity.getR48_MONTH_END(),
+				entity.getR51_MONTH_END(), entity.getR52_MONTH_END(), entity.getR53_MONTH_END(),
+				entity.getR54_MONTH_END(), entity.getR55_MONTH_END(), entity.getR56_MONTH_END(),
+				entity.getR57_MONTH_END(), entity.getR58_MONTH_END(), entity.getR61_MONTH_END(),
+				entity.getR62_MONTH_END(), entity.getR78_MONTH_END(), entity.getR79_MONTH_END(), entity.getENTITY_FLG(),
+				entity.getMODIFY_FLG(), entity.getDEL_FLG());
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_SFINP2_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_SFINP2_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class), reportDate);
+
+		// Copy MOD values to SUMMARY table
+		saveSummaryEntity(modRecord);
+
+		// Mark approved
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_SFINP2_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("Checker Approved Successfully");
 	}
 
 	// ------------------------------

@@ -21,6 +21,9 @@ public interface AuditServicesRep extends JpaRepository<AuditServicesEntity , Lo
 	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  != 'Login' order by AUDIT_DATE DESC", nativeQuery = true)
 	List<AuditServicesEntity> getServiceAudit();
 	
+	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE = 'MODIFY' ORDER BY AUDIT_DATE DESC", nativeQuery = true)
+	List<AuditServicesEntity> getModifyStatus();
+	
 	@Query(value = "SELECT * FROM BRRS_AUDIT WHERE FUNC_CODE  = 'Login'", nativeQuery = true)
 		List<AuditServicesEntity> getUserAudit();
 

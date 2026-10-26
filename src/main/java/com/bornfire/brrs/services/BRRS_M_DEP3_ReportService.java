@@ -3,11 +3,14 @@ package com.bornfire.brrs.services;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +18,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -41,11 +48,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.Model;
@@ -54,16 +67,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.io.Serializable;
-import org.springframework.jdbc.core.RowMapper;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 // ------------------------------
 // SERVICE FOR M_DEP3 REPORTS
@@ -245,20 +248,26 @@ public class BRRS_M_DEP3_ReportService {
 	}
 
 	@Transactional
-	// ------------------------------
-	// UPDATE M_DEP3 SUMMARY REPORT
-	// ------------------------------
 	public void updateReport(M_DEP3_Summary_Entity updatedEntity) {
 		System.out.println("Came to services1");
 		System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		List<M_DEP3_Summary_Entity> list = jdbcTemplate.query(
-				"SELECT * FROM BRRS_M_DEP3_SUMMARYTABLE WHERE REPORT_DATE = ?",
-				new Object[] { updatedEntity.getReportDate() }, new M_DEP3_Summary_EntityRowMapper());
+		// 🔹 JdbcTemplate lookup with date truncation
+		String selectSql = "SELECT * FROM BRRS_M_DEP3_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+		List<M_DEP3_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_DEP3_Summary_Entity.class), updatedEntity.getReportDate());
+
+		M_DEP3_Summary_Entity existing;
+
 		if (list.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+			existing = new M_DEP3_Summary_Entity();
+			existing.setReportDate(updatedEntity.getReportDate());
+			System.out.println("⚠️ No existing record found — creating new record");
+		} else {
+			existing = list.get(0);
+			System.out.println("Updating existing record");
 		}
-		M_DEP3_Summary_Entity existing = list.get(0);
 
 		// 🔹 Audit copy: Create clone of original DB state before altering any
 		// attributes
@@ -266,24 +275,24 @@ public class BRRS_M_DEP3_ReportService {
 		BeanUtils.copyProperties(existing, oldcopy);
 
 		try {
-			// ✅ Loop for table 2 fields
-			int[] Rows = { 28, 29, 30, 31, 32, 33, 34 };
-			for (int i : Rows) {
+			// ✅ Loop for table 2 fields (Rows 28 to 34)
+			int[] rows = { 28, 29, 30, 31, 32, 33, 34 };
+			for (int i : rows) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "import", "investment", "other", "residents", "non_residents" };
 
 				for (String field : fields) {
-					try {
-						String getterName = "get" + prefix + field;
-						String setterName = "set" + prefix + field;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
+					try {
 						Method getter = M_DEP3_Summary_Entity.class.getMethod(getterName);
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						Object existingValue = getter.invoke(existing);
 
-						// --- FIX: Normalize state differences to keep audit log payload minimal ---
+						// --- Normalize state differences to keep audit log payload minimal ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -292,32 +301,29 @@ public class BRRS_M_DEP3_ReportService {
 						}
 
 						setter.invoke(existing, newValue);
-
 					} catch (NoSuchMethodException e) {
-						// Skip missing getter/setter gracefully
-						continue;
+						System.out.println("Missing method: " + getterName);
 					}
 				}
 			}
 
-			// ✅ Loop for exchange rate fields
-			int[] Rows1 = { 11, 12, 13, 14, 15, 16 };
-			for (int i : Rows1) {
+			// ✅ Loop for exchange rate fields (Rows 11 to 16)
+			int[] rows1 = { 11, 12, 13, 14, 15, 16 };
+			for (int i : rows1) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "ex_rate_buy", "ex_rate_mid", "ex_rate_sell" };
 
 				for (String field : fields) {
-					try {
-						String getterName = "get" + prefix + field;
-						String setterName = "set" + prefix + field;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
+					try {
 						Method getter = M_DEP3_Summary_Entity.class.getMethod(getterName);
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						Object existingValue = getter.invoke(existing);
 
-						// --- FIX: Normalize state differences ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -326,31 +332,29 @@ public class BRRS_M_DEP3_ReportService {
 						}
 
 						setter.invoke(existing, newValue);
-
 					} catch (NoSuchMethodException e) {
-						continue;
+						System.out.println("Missing method: " + getterName);
 					}
 				}
 			}
 
-			// ✅ Loop for notice/deposit fields
-			int[] Rows2 = { 11, 12, 13, 14, 15, 16, 18 };
-			for (int i : Rows2) {
+			// ✅ Loop for notice/deposit fields (Rows 11 to 16, and 18)
+			int[] rows2 = { 11, 12, 13, 14, 15, 16, 18 };
+			for (int i : rows2) {
 				String prefix = "R" + i + "_";
 				String[] fields = { "notice_0to31", "notice_32to88", "cer_of_depo" };
 
 				for (String field : fields) {
-					try {
-						String getterName = "get" + prefix + field;
-						String setterName = "set" + prefix + field;
+					String getterName = "get" + prefix + field;
+					String setterName = "set" + prefix + field;
 
+					try {
 						Method getter = M_DEP3_Summary_Entity.class.getMethod(getterName);
 						Method setter = M_DEP3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
 
 						Object newValue = getter.invoke(updatedEntity);
 						Object existingValue = getter.invoke(existing);
 
-						// --- FIX: Normalize state differences ---
 						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
 						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
 
@@ -359,31 +363,229 @@ public class BRRS_M_DEP3_ReportService {
 						}
 
 						setter.invoke(existing, newValue);
-
 					} catch (NoSuchMethodException e) {
-						continue;
+						System.out.println("Missing method: " + getterName);
 					}
 				}
 			}
-
-			// ✅ Save after all updates
-			saveSummaryEntity(existing);
 
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		// Evaluate actual adjustments made across processing threads
+		// 🔹 Evaluate audit changes
 		String changes = auditService.getChanges(oldcopy, existing);
-		System.out.println("M_DEP3 Changes Length = " + changes.length());
+		System.out.println("M_DEP3 Changes Length = " + (changes != null ? changes.length() : 0));
 
-		// Post dynamic tracking to engine if changes are present
+		// 🔹 Set Maker-Checker Flags
+		existing.setEntity_flg("Y");
+		existing.setModify_flg("Y");
+		existing.setDel_flg("N");
+
+		// 🔹 Save into MOD Summary Table for Checker Approval
+		saveModSummaryEntity(existing);
+		System.out.println("✔ Record saved into BRRS_M_DEP3_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 🔹 Log Audit Trail if changes exist
 		if (changes != null && !changes.isEmpty()) {
 			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getReportDate().toString(),
-					"M_DEP3 Summary Screen", "BRRS_M_DEP3_SUMMARY");
+					"M_DEP3 Summary Screen", "BRRS_M_DEP3_SUMMARYTABLE");
 		}
 
-		System.out.println("Update completed successfully");
+		// 🔹 Post-Commit Transaction Synchronization to execute Stored Procedure
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+			@Override
+			public void afterCommit() {
+				try {
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getReportDate());
+
+					logger.info("Transaction committed — calling BRRS_M_DEP3_SUMMARY_PROCEDURE({})", formattedDate);
+
+					jdbcTemplate.update("BEGIN BRRS_M_DEP3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+					logger.info("BRRS_M_DEP3_SUMMARY_PROCEDURE executed successfully after commit.");
+				} catch (Exception e) {
+					logger.error("Procedure execution failed", e);
+					throw new RuntimeException("Procedure execution failed", e);
+				}
+			}
+		});
+	}
+
+	public void saveModSummaryEntity(M_DEP3_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		// 🔹 1. Check if record already exists for this report date
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_DEP3_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		// 🔹 2. Build parameter map for all fields
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReportDate())
+				// Exchange Rates (11-16)
+				.addValue("r11_ex_rate_buy", entity.getR11_ex_rate_buy())
+				.addValue("r11_ex_rate_mid", entity.getR11_ex_rate_mid())
+				.addValue("r11_ex_rate_sell", entity.getR11_ex_rate_sell())
+				.addValue("r12_ex_rate_buy", entity.getR12_ex_rate_buy())
+				.addValue("r12_ex_rate_mid", entity.getR12_ex_rate_mid())
+				.addValue("r12_ex_rate_sell", entity.getR12_ex_rate_sell())
+				.addValue("r13_ex_rate_buy", entity.getR13_ex_rate_buy())
+				.addValue("r13_ex_rate_mid", entity.getR13_ex_rate_mid())
+				.addValue("r13_ex_rate_sell", entity.getR13_ex_rate_sell())
+				.addValue("r14_ex_rate_buy", entity.getR14_ex_rate_buy())
+				.addValue("r14_ex_rate_mid", entity.getR14_ex_rate_mid())
+				.addValue("r14_ex_rate_sell", entity.getR14_ex_rate_sell())
+				.addValue("r15_ex_rate_buy", entity.getR15_ex_rate_buy())
+				.addValue("r15_ex_rate_mid", entity.getR15_ex_rate_mid())
+				.addValue("r15_ex_rate_sell", entity.getR15_ex_rate_sell())
+				.addValue("r16_ex_rate_buy", entity.getR16_ex_rate_buy())
+				.addValue("r16_ex_rate_mid", entity.getR16_ex_rate_mid())
+				.addValue("r16_ex_rate_sell", entity.getR16_ex_rate_sell())
+				// Notice & Deposits (11-16, 18)
+				.addValue("r11_notice_0to31", entity.getR11_notice_0to31())
+				.addValue("r11_notice_32to88", entity.getR11_notice_32to88())
+				.addValue("r11_cer_of_depo", entity.getR11_cer_of_depo())
+				.addValue("r12_notice_0to31", entity.getR12_notice_0to31())
+				.addValue("r12_notice_32to88", entity.getR12_notice_32to88())
+				.addValue("r12_cer_of_depo", entity.getR12_cer_of_depo())
+				.addValue("r13_notice_0to31", entity.getR13_notice_0to31())
+				.addValue("r13_notice_32to88", entity.getR13_notice_32to88())
+				.addValue("r13_cer_of_depo", entity.getR13_cer_of_depo())
+				.addValue("r14_notice_0to31", entity.getR14_notice_0to31())
+				.addValue("r14_notice_32to88", entity.getR14_notice_32to88())
+				.addValue("r14_cer_of_depo", entity.getR14_cer_of_depo())
+				.addValue("r15_notice_0to31", entity.getR15_notice_0to31())
+				.addValue("r15_notice_32to88", entity.getR15_notice_32to88())
+				.addValue("r15_cer_of_depo", entity.getR15_cer_of_depo())
+				.addValue("r16_notice_0to31", entity.getR16_notice_0to31())
+				.addValue("r16_notice_32to88", entity.getR16_notice_32to88())
+				.addValue("r16_cer_of_depo", entity.getR16_cer_of_depo())
+				.addValue("r18_notice_0to31", entity.getR18_notice_0to31())
+				.addValue("r18_notice_32to88", entity.getR18_notice_32to88())
+				.addValue("r18_cer_of_depo", entity.getR18_cer_of_depo())
+				// Table 2 fields (28-34)
+				.addValue("r28_import", entity.getR28_import()).addValue("r28_investment", entity.getR28_investment())
+				.addValue("r28_other", entity.getR28_other()).addValue("r28_residents", entity.getR28_residents())
+				.addValue("r28_non_residents", entity.getR28_non_residents())
+				.addValue("r29_import", entity.getR29_import()).addValue("r29_investment", entity.getR29_investment())
+				.addValue("r29_other", entity.getR29_other()).addValue("r29_residents", entity.getR29_residents())
+				.addValue("r29_non_residents", entity.getR29_non_residents())
+				.addValue("r30_import", entity.getR30_import()).addValue("r30_investment", entity.getR30_investment())
+				.addValue("r30_other", entity.getR30_other()).addValue("r30_residents", entity.getR30_residents())
+				.addValue("r30_non_residents", entity.getR30_non_residents())
+				.addValue("r31_import", entity.getR31_import()).addValue("r31_investment", entity.getR31_investment())
+				.addValue("r31_other", entity.getR31_other()).addValue("r31_residents", entity.getR31_residents())
+				.addValue("r31_non_residents", entity.getR31_non_residents())
+				.addValue("r32_import", entity.getR32_import()).addValue("r32_investment", entity.getR32_investment())
+				.addValue("r32_other", entity.getR32_other()).addValue("r32_residents", entity.getR32_residents())
+				.addValue("r32_non_residents", entity.getR32_non_residents())
+				.addValue("r33_import", entity.getR33_import()).addValue("r33_investment", entity.getR33_investment())
+				.addValue("r33_other", entity.getR33_other()).addValue("r33_residents", entity.getR33_residents())
+				.addValue("r33_non_residents", entity.getR33_non_residents())
+				.addValue("r34_import", entity.getR34_import()).addValue("r34_investment", entity.getR34_investment())
+				.addValue("r34_other", entity.getR34_other()).addValue("r34_residents", entity.getR34_residents())
+				.addValue("r34_non_residents", entity.getR34_non_residents())
+				// Flags
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		if (count != null && count > 0) {
+			// 🔹 3. UPDATE existing record
+			String updateSql = "UPDATE BRRS_M_DEP3_MOD_SUMMARYTABLE SET "
+					+ "R11_EX_RATE_BUY = :r11_ex_rate_buy, R11_EX_RATE_MID = :r11_ex_rate_mid, R11_EX_RATE_SELL = :r11_ex_rate_sell, "
+					+ "R12_EX_RATE_BUY = :r12_ex_rate_buy, R12_EX_RATE_MID = :r12_ex_rate_mid, R12_EX_RATE_SELL = :r12_ex_rate_sell, "
+					+ "R13_EX_RATE_BUY = :r13_ex_rate_buy, R13_EX_RATE_MID = :r13_ex_rate_mid, R13_EX_RATE_SELL = :r13_ex_rate_sell, "
+					+ "R14_EX_RATE_BUY = :r14_ex_rate_buy, R14_EX_RATE_MID = :r14_ex_rate_mid, R14_EX_RATE_SELL = :r14_ex_rate_sell, "
+					+ "R15_EX_RATE_BUY = :r15_ex_rate_buy, R15_EX_RATE_MID = :r15_ex_rate_mid, R15_EX_RATE_SELL = :r15_ex_rate_sell, "
+					+ "R16_EX_RATE_BUY = :r16_ex_rate_buy, R16_EX_RATE_MID = :r16_ex_rate_mid, R16_EX_RATE_SELL = :r16_ex_rate_sell, "
+					+ "R11_NOTICE_0TO31 = :r11_notice_0to31, R11_NOTICE_32TO88 = :r11_notice_32to88, R11_CER_OF_DEPO = :r11_cer_of_depo, "
+					+ "R12_NOTICE_0TO31 = :r12_notice_0to31, R12_NOTICE_32TO88 = :r12_notice_32to88, R12_CER_OF_DEPO = :r12_cer_of_depo, "
+					+ "R13_NOTICE_0TO31 = :r13_notice_0to31, R13_NOTICE_32TO88 = :r13_notice_32to88, R13_CER_OF_DEPO = :r13_cer_of_depo, "
+					+ "R14_NOTICE_0TO31 = :r14_notice_0to31, R14_NOTICE_32TO88 = :r14_notice_32to88, R14_CER_OF_DEPO = :r14_cer_of_depo, "
+					+ "R15_NOTICE_0TO31 = :r15_notice_0to31, R15_NOTICE_32TO88 = :r15_notice_32to88, R15_CER_OF_DEPO = :r15_cer_of_depo, "
+					+ "R16_NOTICE_0TO31 = :r16_notice_0to31, R16_NOTICE_32TO88 = :r16_notice_32to88, R16_CER_OF_DEPO = :r16_cer_of_depo, "
+					+ "R18_NOTICE_0TO31 = :r18_notice_0to31, R18_NOTICE_32TO88 = :r18_notice_32to88, R18_CER_OF_DEPO = :r18_cer_of_depo, "
+					+ "R28_IMPORT = :r28_import, R28_INVESTMENT = :r28_investment, R28_OTHER = :r28_other, R28_RESIDENTS = :r28_residents, R28_NON_RESIDENTS = :r28_non_residents, "
+					+ "R29_IMPORT = :r29_import, R29_INVESTMENT = :r29_investment, R29_OTHER = :r29_other, R29_RESIDENTS = :r29_residents, R29_NON_RESIDENTS = :r29_non_residents, "
+					+ "R30_IMPORT = :r30_import, R30_INVESTMENT = :r30_investment, R30_OTHER = :r30_other, R30_RESIDENTS = :r30_residents, R30_NON_RESIDENTS = :r30_non_residents, "
+					+ "R31_IMPORT = :r31_import, R31_INVESTMENT = :r31_investment, R31_OTHER = :r31_other, R31_RESIDENTS = :r31_residents, R31_NON_RESIDENTS = :r31_non_residents, "
+					+ "R32_IMPORT = :r32_import, R32_INVESTMENT = :r32_investment, R32_OTHER = :r32_other, R32_RESIDENTS = :r32_residents, R32_NON_RESIDENTS = :r32_non_residents, "
+					+ "R33_IMPORT = :r33_import, R33_INVESTMENT = :r33_investment, R33_OTHER = :r33_other, R33_RESIDENTS = :r33_residents, R33_NON_RESIDENTS = :r33_non_residents, "
+					+ "R34_IMPORT = :r34_import, R34_INVESTMENT = :r34_investment, R34_OTHER = :r34_other, R34_RESIDENTS = :r34_residents, R34_NON_RESIDENTS = :r34_non_residents, "
+					+ "ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg "
+					+ "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+			namedParamJdbc.update(updateSql, params);
+
+		} else {
+			// 🔹 4. INSERT new record
+			String insertSql = "INSERT INTO BRRS_M_DEP3_MOD_SUMMARYTABLE (" + "REPORT_DATE, "
+					+ "R11_EX_RATE_BUY, R11_EX_RATE_MID, R11_EX_RATE_SELL, "
+					+ "R12_EX_RATE_BUY, R12_EX_RATE_MID, R12_EX_RATE_SELL, "
+					+ "R13_EX_RATE_BUY, R13_EX_RATE_MID, R13_EX_RATE_SELL, "
+					+ "R14_EX_RATE_BUY, R14_EX_RATE_MID, R14_EX_RATE_SELL, "
+					+ "R15_EX_RATE_BUY, R15_EX_RATE_MID, R15_EX_RATE_SELL, "
+					+ "R16_EX_RATE_BUY, R16_EX_RATE_MID, R16_EX_RATE_SELL, "
+					+ "R11_NOTICE_0TO31, R11_NOTICE_32TO88, R11_CER_OF_DEPO, "
+					+ "R12_NOTICE_0TO31, R12_NOTICE_32TO88, R12_CER_OF_DEPO, "
+					+ "R13_NOTICE_0TO31, R13_NOTICE_32TO88, R13_CER_OF_DEPO, "
+					+ "R14_NOTICE_0TO31, R14_NOTICE_32TO88, R14_CER_OF_DEPO, "
+					+ "R15_NOTICE_0TO31, R15_NOTICE_32TO88, R15_CER_OF_DEPO, "
+					+ "R16_NOTICE_0TO31, R16_NOTICE_32TO88, R16_CER_OF_DEPO, "
+					+ "R18_NOTICE_0TO31, R18_NOTICE_32TO88, R18_CER_OF_DEPO, "
+					+ "R28_IMPORT, R28_INVESTMENT, R28_OTHER, R28_RESIDENTS, R28_NON_RESIDENTS, "
+					+ "R29_IMPORT, R29_INVESTMENT, R29_OTHER, R29_RESIDENTS, R29_NON_RESIDENTS, "
+					+ "R30_IMPORT, R30_INVESTMENT, R30_OTHER, R30_RESIDENTS, R30_NON_RESIDENTS, "
+					+ "R31_IMPORT, R31_INVESTMENT, R31_OTHER, R31_RESIDENTS, R31_NON_RESIDENTS, "
+					+ "R32_IMPORT, R32_INVESTMENT, R32_OTHER, R32_RESIDENTS, R32_NON_RESIDENTS, "
+					+ "R33_IMPORT, R33_INVESTMENT, R33_OTHER, R33_RESIDENTS, R33_NON_RESIDENTS, "
+					+ "R34_IMPORT, R34_INVESTMENT, R34_OTHER, R34_RESIDENTS, R34_NON_RESIDENTS, "
+					+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (" + ":reportDate, "
+					+ ":r11_ex_rate_buy, :r11_ex_rate_mid, :r11_ex_rate_sell, "
+					+ ":r12_ex_rate_buy, :r12_ex_rate_mid, :r12_ex_rate_sell, "
+					+ ":r13_ex_rate_buy, :r13_ex_rate_mid, :r13_ex_rate_sell, "
+					+ ":r14_ex_rate_buy, :r14_ex_rate_mid, :r14_ex_rate_sell, "
+					+ ":r15_ex_rate_buy, :r15_ex_rate_mid, :r15_ex_rate_sell, "
+					+ ":r16_ex_rate_buy, :r16_ex_rate_mid, :r16_ex_rate_sell, "
+					+ ":r11_notice_0to31, :r11_notice_32to88, :r11_cer_of_depo, "
+					+ ":r12_notice_0to31, :r12_notice_32to88, :r12_cer_of_depo, "
+					+ ":r13_notice_0to31, :r13_notice_32to88, :r13_cer_of_depo, "
+					+ ":r14_notice_0to31, :r14_notice_32to88, :r14_cer_of_depo, "
+					+ ":r15_notice_0to31, :r15_notice_32to88, :r15_cer_of_depo, "
+					+ ":r16_notice_0to31, :r16_notice_32to88, :r16_cer_of_depo, "
+					+ ":r18_notice_0to31, :r18_notice_32to88, :r18_cer_of_depo, "
+					+ ":r28_import, :r28_investment, :r28_other, :r28_residents, :r28_non_residents, "
+					+ ":r29_import, :r29_investment, :r29_other, :r29_residents, :r29_non_residents, "
+					+ ":r30_import, :r30_investment, :r30_other, :r30_residents, :r30_non_residents, "
+					+ ":r31_import, :r31_investment, :r31_other, :r31_residents, :r31_non_residents, "
+					+ ":r32_import, :r32_investment, :r32_other, :r32_residents, :r32_non_residents, "
+					+ ":r33_import, :r33_investment, :r33_other, :r33_residents, :r33_non_residents, "
+					+ ":r34_import, :r34_investment, :r34_other, :r34_residents, :r34_non_residents, "
+					+ ":entity_flg, :modify_flg, :del_flg)";
+
+			namedParamJdbc.update(insertSql, params);
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		M_DEP3_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_DEP3_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND MODIFY_FLG='Y'",
+				new BeanPropertyRowMapper<>(M_DEP3_Summary_Entity.class), reportDate);
+
+		// Copy/Merge MOD values to live SUMMARY table
+		saveModSummaryEntity(modRecord);
+
+		// Mark modified flag as 'N' (Approved) in the mod table
+		jdbcTemplate.update("UPDATE BRRS_M_DEP3_MOD_SUMMARYTABLE SET MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+				reportDate);
+
+		String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+		// Run procedure after approval
+		jdbcTemplate.update("BEGIN BRRS_M_DEP3_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+		System.out.println("M_DEP3 Checker Approved Successfully");
 	}
 
 	// ------------------------------
