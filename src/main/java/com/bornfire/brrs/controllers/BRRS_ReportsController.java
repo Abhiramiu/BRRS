@@ -3855,27 +3855,30 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_Q_SMME_DEP_ReportService BRRS_Q_SMME_DEP_ReportService;
 
-	@RequestMapping(value = "/Q_SMME_DEPupdate", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Summary_Entity request) {
-
-		try {
-			System.out.println("came to single controller");
-
-			// ? set the asondate into entity
-			request.setReport_date(asondate);
-
-			// call services
-			BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
-
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+	/*
+	 * @RequestMapping(value = "/Q_SMME_DEPupdate", method = { RequestMethod.GET,
+	 * RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateReport(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute BRRS_Q_SMME_DEP_ReportService.Q_SMME_DEP_Summary_Entity
+	 * request) {
+	 * 
+	 * try { System.out.println("came to single controller");
+	 * 
+	 * // ? set the asondate into entity request.setReport_date(asondate);
+	 * 
+	 * // call services BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
+	 * 
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
 
 	@RequestMapping(value = "/UpdateQ_SMME_DEP_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4307,30 +4310,31 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_Q_BRANCHNET_ReportService QBRANCHNET_service;
 
-	@RequestMapping(value = "/Q_BRANCHNETupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
-	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute Q_BRANCHNET_Summary_Entity request1) {
-		try {
-			System.out.println("Came to single controller");
-
-			// set date into all 3 entities
-			request1.setReport_date(asondate);
-
-			// call services
-			QBRANCHNET_service.updateQBranchnetReport(request1);
-//			QBRANCHNET_service.QBranchnetUpdate2(request1);
-//			QBRANCHNET_service.QBranchnetUpdate3(request1);
-//			QBRANCHNET_service.QBranchnetUpdate4(request1);
-
-			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
-	}
+	/*
+	 * @RequestMapping(value = "/Q_BRANCHNETupdateAll", method = {
+	 * RequestMethod.GET, RequestMethod.POST })
+	 * 
+	 * @ResponseBody public ResponseEntity<String> updateAllReports(
+	 * 
+	 * @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date
+	 * asondate,
+	 * 
+	 * @ModelAttribute Q_BRANCHNET_Summary_Entity request1) { try {
+	 * System.out.println("Came to single controller");
+	 * 
+	 * // set date into all 3 entities request1.setReport_date(asondate);
+	 * 
+	 * // call services QBRANCHNET_service.updateQBranchnetReport(request1); //
+	 * QBRANCHNET_service.QBranchnetUpdate2(request1); //
+	 * QBRANCHNET_service.QBranchnetUpdate3(request1); //
+	 * QBRANCHNET_service.QBranchnetUpdate4(request1);
+	 * 
+	 * return
+	 * ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval."
+	 * ); } catch (Exception e) { e.printStackTrace(); return
+	 * ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+	 * body("Update Failed: " + e.getMessage()); } }
+	 */
 
 	@RequestMapping(value = "/UpdateQ_BRANCHNETReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
