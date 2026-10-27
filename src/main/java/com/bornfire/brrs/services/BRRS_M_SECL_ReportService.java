@@ -1,32 +1,33 @@
 package com.bornfire.brrs.services;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.ResultSetMetaData;
-import java.lang.reflect.Field;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field; 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Id;
-import javax.persistence.Column;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,25 +42,50 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-import com.itextpdf.text.log.SysoCounter;
 
 @Component
 @Service
 public class BRRS_M_SECL_ReportService {
 
 	private static final Logger logger = LoggerFactory.getLogger(BRRS_M_SECL_ReportService.class);
+	
+	private static final int[] SECL_MOD_R_ROWS = buildRowRange(12, 57);
+
+    /** Common amount columns present on every Rnn row. */
+    private static final String[] SECL_MOD_AMT_FIELDS = {
+            "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS",
+            "REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER",
+            "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS", "OTHER_SPECIFY",
+            "TOTAL"
+    };
+
+    /** Text column present on every Rnn row. */
+    private static final String SECL_MOD_TEXT_FIELD = "PRODUCT";
+
+    private static int[] buildRowRange(int from, int to) {
+        int[] arr = new int[to - from + 1];
+        for (int i = 0; i < arr.length; i++) arr[i] = from + i;
+        return arr;
+    }
 
 	@Autowired
 	private Environment env;
@@ -180,296 +206,332 @@ public class BRRS_M_SECL_ReportService {
 		return mv;
 	}
 
-	// ------------------------------
-// Updates normal report data in summary and detail tables
-// ------------------------------
+	// =========================================================
+	// MAKER STEP — write maker edits into BRRS_M_SECL_MOD_SUMMARYTABLE only.
+	// LIVE Summary/Detail tables are untouched until Checker approves.
+	// =========================================================
+	@Transactional
 	public void updateReport(M_SECL_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
-		System.out.println("report_date: " + updatedEntity.getReportDate());
+	    System.out.println("Came to SECL updateReport (MAKER path)");
 
-		M_SECL_Summary_Entity existing = jdbcTemplate
-				.query("SELECT * FROM BRRS_M_SECL_SUMMARYTABLE WHERE REPORT_DATE = ?",
-						new M_SECL_Summary_Entity_RowMapper(),
-						new java.sql.Date(updatedEntity.getReportDate().getTime()))
-				.stream().findFirst().orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    Date reportDate = updatedEntity.getReportDate();
+	    System.out.println("report_date: " + reportDate);
 
-		M_SECL_Detail_Entity detailexisting = jdbcTemplate
-				.query("SELECT * FROM BRRS_M_SECL_DETAILTABLE WHERE REPORT_DATE = ?",
-						new M_SECL_Detail_Entity_RowMapper(),
-						new java.sql.Date(updatedEntity.getReportDate().getTime()))
-				.stream().findFirst().orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    if (reportDate == null) {
+	        throw new RuntimeException("report_date is required for SECL update");
+	    }
 
-		try {
-			// Loop from R11 to R50 and copy fields
+	    // 1. Load LIVE summary row as baseline reference
+	    M_SECL_Summary_Entity liveSummary = findLiveSummaryByDate(reportDate);
+	    if (liveSummary == null) {
+	        throw new RuntimeException(
+	                "Record not found in LIVE summary table for REPORT_DATE: " + reportDate);
+	    }
 
-			for (int i = 12; i <= 12; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	    // 2. Load existing MOD row; if absent, seed it from LIVE
+	    M_SECL_Summary_Entity modRecord = findModSummaryByDate(reportDate);
+	    if (modRecord == null) {
+	        modRecord = new M_SECL_Summary_Entity();
+	        org.springframework.beans.BeanUtils.copyProperties(liveSummary, modRecord);
+	    }
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    // 3. Keep a copy for audit diff
+	    M_SECL_Summary_Entity oldcopy = new M_SECL_Summary_Entity();
+	    org.springframework.beans.BeanUtils.copyProperties(modRecord, oldcopy);
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	    // 4. Reflect maker edits into the MOD record (R12..R57, all fields)
+	    applyChangesToEntity(updatedEntity, modRecord);
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    // 5. Audit diff (before vs after maker edits)
+	    String changes = auditService.getChanges(oldcopy, modRecord);
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	    // 6. Maker/Checker flags
+	    modRecord.setEntity_flg("Y");
+	    modRecord.setModify_flg("Y");
+	    modRecord.setDel_flg("N");
 
-			for (int i = 13; i <= 15; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	    // 7. Save into MOD only (INSERT-or-UPDATE)
+	    saveModSummaryEntity(modRecord);
+	    System.out.println("✔ Record saved into BRRS_M_SECL_MOD_SUMMARYTABLE for Checker approval");
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    // 8. Audit trail if anything actually changed
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(
+	                oldcopy, modRecord, reportDate.toString(),
+	                "M SECL Summary Screen", "BRRS_M_SECL_MOD_SUMMARYTABLE");
+	    }
+	}
+	
+	
+	/** Fetch the LIVE SECL summary row for the given date. */
+	public M_SECL_Summary_Entity findLiveSummaryByDate(Date reportDate) {
+	    List<M_SECL_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECL_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new M_SECL_Summary_Entity_RowMapper(),
+	            new java.sql.Date(reportDate.getTime()));
+	    return list.isEmpty() ? null : list.get(0);
+	}
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	/** Fetch the existing MOD SECL summary row, if any. */
+	public M_SECL_Summary_Entity findModSummaryByDate(Date reportDate) {
+	    List<M_SECL_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECL_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new M_SECL_Summary_Entity_RowMapper(),
+	            new java.sql.Date(reportDate.getTime()));
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
+	/**
+	 * Persists a MOD SECL summary row. INSERT if none exists for the date,
+	 * UPDATE otherwise.
+	 *
+	 * NOTE: REPORT_VERSION is VARCHAR2(100) in the DDL — bind it as String.
+	 */
+	public void saveModSummaryEntity(M_SECL_Summary_Entity entity) {
+	    NamedParameterJdbcTemplate namedParamJdbc =
+	            new NamedParameterJdbcTemplate(jdbcTemplate);
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    // --- existence check ---
+	    String checkSql = "SELECT COUNT(*) FROM BRRS_M_SECL_MOD_SUMMARYTABLE " +
+	                      "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+	    MapSqlParameterSource checkParams = new MapSqlParameterSource(
+	            "reportDate", entity.getReportDate());
+	    Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	    // --- common metadata ---
+	    MapSqlParameterSource params = new MapSqlParameterSource()
+	            .addValue("reportDate",      entity.getReportDate())
+	            .addValue("reportVersion",   toStr(entity.getReportVersion()))
+	            .addValue("reportFrequency", entity.getReport_frequency())
+	            .addValue("reportCode",      entity.getReport_code())
+	            .addValue("reportDesc",      entity.getReport_desc())
+	            .addValue("entityFlg",       entity.getEntity_flg())
+	            .addValue("modifyFlg",       entity.getModify_flg())
+	            .addValue("delFlg",          entity.getDel_flg());
 
-			// Loop from R17 to R30 and copy fields
-			for (int i = 16; i <= 30; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	    StringBuilder updateSetSql = new StringBuilder(
+	            "REPORT_VERSION = :reportVersion, " +
+	            "REPORT_FREQUENCY = :reportFrequency, " +
+	            "REPORT_CODE = :reportCode, " +
+	            "REPORT_DESC = :reportDesc, " +
+	            "ENTITY_FLG = :entityFlg, " +
+	            "MODIFY_FLG = :modifyFlg, " +
+	            "DEL_FLG = :delFlg");
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    List<String> insertColumns = new ArrayList<>(Arrays.asList(
+	            "REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY",
+	            "REPORT_CODE", "REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	    List<String> insertValues = new ArrayList<>(Arrays.asList(
+	            ":reportDate", ":reportVersion", ":reportFrequency",
+	            ":reportCode", ":reportDesc", ":entityFlg", ":modifyFlg", ":delFlg"));
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    // --- per-row Rnn_* columns ---
+	    for (int row : SECL_MOD_R_ROWS) {
+	        String prefix = "R" + row + "_";
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	        // PRODUCT (String)
+	        appendColumn(prefix, SECL_MOD_TEXT_FIELD, entity, params,
+	                updateSetSql, insertColumns, insertValues);
 
-			// Loop from R32 to R33 and copy fields
-			for (int i = 31; i <= 33; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	        // numeric columns
+	        for (String field : SECL_MOD_AMT_FIELDS) {
+	            appendColumn(prefix, field, entity, params,
+	                    updateSetSql, insertColumns, insertValues);
+	        }
+	    }
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    if (count != null && count > 0) {
+	        String updateSql = "UPDATE BRRS_M_SECL_MOD_SUMMARYTABLE SET " + updateSetSql
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+	        namedParamJdbc.update(updateSql, params);
+	        System.out.println("✔ BRRS_M_SECL_MOD_SUMMARYTABLE updated successfully.");
+	    } else {
+	        String insertSql = "INSERT INTO BRRS_M_SECL_MOD_SUMMARYTABLE ("
+	                + String.join(", ", insertColumns) + ") VALUES ("
+	                + String.join(", ", insertValues) + ")";
+	        namedParamJdbc.update(insertSql, params);
+	        System.out.println("✔ BRRS_M_SECL_MOD_SUMMARYTABLE inserted successfully.");
+	    }
+	}
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	
+	
+	/**
+	 * CHECKER STEP — transfer MOD values into LIVE Summary + Detail tables,
+	 * then mark MOD row as approved (MODIFY_FLG = 'N').
+	 */
+	@Transactional
+	public void approveReport(Date reportDate) {
+	    List<M_SECL_Summary_Entity> pending = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECL_MOD_SUMMARYTABLE " +
+	            "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+	            new M_SECL_Summary_Entity_RowMapper(),
+	            new java.sql.Date(reportDate.getTime()));
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    if (pending == null || pending.isEmpty()) {
+	        throw new RuntimeException(
+	                "No pending modification found for approval on date: " + reportDate);
+	    }
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	    transferModValuesToLiveTables(pending.get(0), reportDate);
 
-			// Loop from R35 to R36 and copy fields
-			for (int i = 34; i <= 36; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_SECL_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' " +
+	            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new java.sql.Date(reportDate.getTime()));
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    System.out.println(
+	            "✔ M_SECL Checker Approved: MOD values transferred to Summary & Detail live tables.");
+	}
+	
+	/**
+	 * Reflects MOD values into both LIVE tables (Summary + Detail) on approval.
+	 * Only non-null MOD values are transferred.
+	 */
+	private void transferModValuesToLiveTables(M_SECL_Summary_Entity modRecord, Date reportDate) {
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	    for (int row : SECL_MOD_R_ROWS) {
+	        String prefix = "R" + row + "_";
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	        transferOneColumn(prefix, SECL_MOD_TEXT_FIELD, modRecord, reportDate);
+	        for (String field : SECL_MOD_AMT_FIELDS) {
+	            transferOneColumn(prefix, field, modRecord, reportDate);
+	        }
+	    }
+	}
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	private void transferOneColumn(String prefix, String field,
+	                               M_SECL_Summary_Entity modRecord,
+	                               Date reportDate) {
 
-			// Loop from R38 to R41 and copy fields
-			for (int i = 37; i <= 41; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	    String getterName = "get" + prefix + field;
+	    String columnName = prefix + field;
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    try {
+	        Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
+	        Object raw = getter.invoke(modRecord);
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	        // PRODUCT is text; numeric columns go through cleanValue
+	        Object value = (getter.getReturnType() == BigDecimal.class)
+	                ? cleanValue(raw)
+	                : raw;
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	        if (value == null) return;
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	        jdbcTemplate.update(
+	                "UPDATE BRRS_M_SECL_SUMMARYTABLE SET " + columnName +
+	                " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	                value, new java.sql.Date(reportDate.getTime()));
 
-			// Loop from R43 to R45 and copy fields
-			for (int i = 42; i <= 45; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	        jdbcTemplate.update(
+	                "UPDATE BRRS_M_SECL_DETAILTABLE SET " + columnName +
+	                " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	                value, new java.sql.Date(reportDate.getTime()));
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    } catch (NoSuchMethodException e) {
+	        // field not on entity — skip
+	    } catch (Exception e) {
+	        throw new RuntimeException(
+	                "Error transferring column to live tables: " + columnName, e);
+	    }
+	}
+	
+	
+	/** Helper used only by saveModSummaryEntity to append one column. */
+	private void appendColumn(String prefix, String field,
+	                          M_SECL_Summary_Entity entity,
+	                          MapSqlParameterSource params,
+	                          StringBuilder updateSetSql,
+	                          List<String> insertColumns,
+	                          List<String> insertValues) {
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	    String getterName = "get" + prefix + field;
+	    String paramName  = "r" + prefix.substring(1, prefix.length() - 1) // strip R and _
+	                              + "_" + field.toLowerCase();
+	    String columnName = prefix + field;
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    try {
+	        Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
+	        Object raw = getter.invoke(entity);
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	        // Numeric normalisation ONLY for BigDecimal-returning getters
+	        Object value = (getter.getReturnType() == BigDecimal.class)
+	                ? cleanValue(raw)
+	                : raw;                      // PRODUCT is a String — keep as-is
 
-			// Loop from R47 to R49 and copy fields
-			for (int i = 46; i <= 49; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	        params.addValue(paramName, value);
+	        updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+	        insertColumns.add(columnName);
+	        insertValues.add(":" + paramName);
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    } catch (NoSuchMethodException e) {
+	        // field not on entity — skip
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error mapping MOD column: " + columnName, e);
+	    }
+	}
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	/** Safely convert BigDecimal / Integer / anything to String (REPORT_VERSION is VARCHAR2). */
+	private static String toStr(Object o) {
+	    return (o == null) ? null : o.toString();
+	}
+	
+	
+	private Object cleanValue(Object value) {
+	    if (value instanceof String) {
+	        String s = ((String) value).trim();
+	        if (s.isEmpty()) return null;
+	        try {
+	            return new BigDecimal(s);
+	        } catch (NumberFormatException nfe) {
+	            return null;
+	        }
+	    }
+	    return value;
+	}
+	
+	
+	/**
+	 * Copies non-null / non-blank values from {@code updatedEntity} into
+	 * {@code targetEntity} for all R12..R57 rows.
+	 */
+	private void applyChangesToEntity(M_SECL_Summary_Entity updatedEntity,
+	                                  M_SECL_Summary_Entity targetEntity) {
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    for (int row : SECL_MOD_R_ROWS) {
+	        String prefix = "R" + row + "_";
 
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
+	        // 1. PRODUCT (VARCHAR)
+	        applyOneField(prefix, SECL_MOD_TEXT_FIELD, updatedEntity, targetEntity);
 
-			// Loop from R51 to R56 and copy fields
-			for (int i = 50; i <= 56; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "EQUITY", "BONDS", "BOBCS", "TREASURY_BILLS", "OTHER_SPECIFY",
-						"REPURCHASE_AGREEMENTS", "COMMERCIAL_PAPER", "CERTIFICATES_OF_DEPOSITS", "PLEDGED_ASSETS" };
+	        // 2. Amount columns + TOTAL (all BigDecimal)
+	        for (String field : SECL_MOD_AMT_FIELDS) {
+	            applyOneField(prefix, field, updatedEntity, targetEntity);
+	        }
+	    }
+	}
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	private void applyOneField(String prefix, String field,
+	                           M_SECL_Summary_Entity updatedEntity,
+	                           M_SECL_Summary_Entity targetEntity) {
+	    String getterName = "get" + prefix + field;
+	    String setterName = "set" + prefix + field;
+	    try {
+	        Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
+	        Object value = cleanValue(getter.invoke(updatedEntity));
+	        if (value == null) return;
 
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	        Method setter = M_SECL_Summary_Entity.class
+	                .getMethod(setterName, getter.getReturnType());
+	        setter.invoke(targetEntity, value);
 
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			String[] totalFields = { "TOTAL" };
-
-			// Loop from R12 to R57 and copy fields
-			for (int i = 13; i <= 57; i++) {
-				String prefix = "R" + i + "_";
-
-				for (String field : totalFields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SECL_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
-
-						Method setter = M_SECL_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailsetter = M_SECL_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existing, newValue);
-						detailsetter.invoke(detailexisting, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip if field does not exist for this row/field
-						continue;
-					}
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		// Save updated entity
-		System.out.println("abc");
-		updateEntityInTable("BRRS_M_SECL_SUMMARYTABLE", existing, existing.getReportDate());
-		updateEntityInTable("BRRS_M_SECL_DETAILTABLE", detailexisting, detailexisting.getReportDate());
+	    } catch (NoSuchMethodException e) {
+	        // field not on entity — skip
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error applying field: " + getterName, e);
+	    }
 	}
 
 	// ------------------------------

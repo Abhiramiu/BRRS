@@ -232,6 +232,8 @@ import com.bornfire.brrs.services.Exceltopdfservice;
 import com.bornfire.brrs.services.RegulatoryReportServices;
 import com.bornfire.brrs.services.ReportCodeMappingService;
 import com.bornfire.brrs.services.SlsHistoricalDataUploadService;
+import com.bornfire.brrs.entities.UserProfileRep;
+import com.bornfire.brrs.services.AuditService;
 
 @Controller
 @ConfigurationProperties("default")
@@ -1424,55 +1426,85 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_CA4_ReportService brrs_m_ca4_reportservice;
 
+	// ─────────────────────────────────────────────────────────
+	// MAKER — submit edits (goes into BRRS_M_CA4_MOD_SUMMARYTABLE)
+	// ─────────────────────────────────────────────────────────
 	@RequestMapping(value = "/M_CA4update", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA4_Summary_Entity request) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_CA4_Summary_Entity request) {
 
-		try {
-			System.out.println("came to single controller");
+	    try {
+	        System.out.println("came to single controller");
 
-			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+	        // ✅ set the asondate into entity
+	        request.setReport_date(asondate);
 
-			// call services
-			brrs_m_ca4_reportservice.updateReport(request);
+	        // call services → routes to MOD table (Maker-Checker step 1)
+	        brrs_m_ca4_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
 
+	// ─────────────────────────────────────────────────────────
+	// CHECKER — approve pending MOD row (NEW)
+	// Promotes MOD → LIVE (Summary + Detail), marks MOD as approved
+	// ─────────────────────────────────────────────────────────
+	@RequestMapping(value = "/M_CA4/approve", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveMCA4(
+	        @RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        HttpServletRequest request) {
+
+	    try {
+	        System.out.println("Came to M_CA4 approve controller. asondate = " + asondate);
+
+	        brrs_m_ca4_reportservice.approveReport(asondate);
+
+	        return ResponseEntity.ok("Approved Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approve Failed: " + e.getMessage());
+	    }
+	}
+
+	// ─────────────────────────────────────────────────────────
+	// RESUB — unchanged (bypasses MOD; goes to RESUB + ARCHIVAL)
+	// ─────────────────────────────────────────────────────────
 	@RequestMapping(value = "/UpdateM_CA4_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_CA4_Resub_Summary_Entity request, HttpServletRequest req) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_CA4_Resub_Summary_Entity request, HttpServletRequest req) {
 
-		try {
-			System.out.println("Came to Resub Controller");
+	    try {
+	        System.out.println("Came to Resub Controller");
 
-			if (asondate != null) {
-				// Set the asondate into the entity
-				request.setReport_date(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-			}
+	        if (asondate != null) {
+	            // Set the asondate into the entity
+	            request.setReport_date(asondate);
+	            System.out.println("Set Report Date: " + asondate);
+	        } else {
+	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+	        }
 
-			// Call service to create a new versioned row
-			brrs_m_ca4_reportservice.updateResubReport(request);
+	        // Call service to create a new versioned row
+	        brrs_m_ca4_reportservice.updateResubReport(request);
 
-			return ResponseEntity.ok("Resubmission Updated Successfully");
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Resubmission Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@Autowired
@@ -2269,57 +2301,153 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_SECL_ReportService SECLreportService;
 
+	@Autowired
+	private UserProfileRep userProfileRep;
+
+	@Autowired
+	private AuditService auditService;
+
+	// ---------------- role helpers (one-line, optional but cleaner) ----------------
+	private static boolean isMaker(String role) {
+	    return "MAKER".equalsIgnoreCase(role)
+	        || "MAN".equalsIgnoreCase(role)
+	        || "ADMIN".equalsIgnoreCase(role);
+	}
+
+	private static boolean isChecker(String role) {
+	    return "CHECKER".equalsIgnoreCase(role)
+	        || "MAN".equalsIgnoreCase(role)
+	        || "ADMIN".equalsIgnoreCase(role);
+	}
+
+	// =========================================================
+	// MAKER — writes edits into BRRS_M_SECL_MOD_SUMMARYTABLE only.
+	// =========================================================
 	@RequestMapping(value = "/SECLupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECL_Summary_Entity request1
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_SECL_Summary_Entity request1,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-	) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReportDate(asondate);
+	        // ✅ MAN allowed — a Manager acts as both Maker and Checker
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit SECL modifications. Current role: " + role);
+	        }
 
-			// call services
-			SECLreportService.updateReport(request1);
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
 
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        System.out.println("Came to SECLupdateAll (MAKER) for date: " + asondate);
+	        request1.setReportDate(asondate);
+
+	        // Writes only to BRRS_M_SECL_MOD_SUMMARYTABLE
+	        SECLreportService.updateReport(request1);
+
+	        return ResponseEntity.ok("Modified successfully — pending Checker approval.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
 
-	@RequestMapping(value = "/UpdateM_SECL_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
+	// =========================================================
+	// CHECKER (by date) — MOD → LIVE Summary + Detail
+	// =========================================================
+	@RequestMapping(value = "/approveSECL", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveSECL(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
+	        // ✅ MAN allowed — a Manager can approve
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can approve SECL modifications. Current role: " + role);
+	        }
+
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+
+	        System.out.println("Came to approveSECL (CHECKER) for date: " + asondate);
+
+	        // Reads BRRS_M_SECL_MOD_SUMMARYTABLE where MODIFY_FLG='Y',
+	        // copies to LIVE Summary + Detail, sets MODIFY_FLG='N'
+	        SECLreportService.approveReport(asondate);
+
+	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approval Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// CHECKER (by audit id) — from audit screen "Verify" button
+	// =========================================================
+	@RequestMapping(value = "/verifyAuditSECL", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditSECL(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ MAN allowed — a Manager can verify
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify. Current role: " + role);
+	        }
+
+	        auditService.verifyAndTransferReport(auditId);
+
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// RESUB — unchanged
+	// =========================================================
+	@RequestMapping(value = "/UpdateM_SECL_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_SECL_Resub_Summary_Entity request,
+	        HttpServletRequest req) {
+	    try {
+	        System.out.println("Came to Resub Controller");
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        if (asondate != null) {
+	            request.setReport_date(asondate);
+	            System.out.println("Set Report Date: " + asondate);
+	        } else {
+	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+	        }
 
-			@ModelAttribute M_SECL_Resub_Summary_Entity request, HttpServletRequest req) {
+	        SECLreportService.updateReportReSub(request);
 
-		try {
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) { // Set the asondate into the entity
-				request.setReport_date(asondate);
-				System.out.println("Set Report Date: " + asondate);
-			} else {
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-			}
-
-			// Call service to create a new versioned row
-			SECLreportService.updateReportReSub(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Resubmission Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@Autowired
