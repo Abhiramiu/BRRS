@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -89,80 +90,67 @@ public class BRRS_M_SFINP2_ReportService {
 // Summary view 
 // ------------------------------
 	public ModelAndView getM_SFINP2View(String reportId, String fromdate, String todate, String currency,
-			String dtltype, // kept but not used
-			Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
+			String dtltype, Pageable pageable, String type, BigDecimal version, HttpServletRequest req1, Model md) {
 
 		ModelAndView mv = new ModelAndView();
 
 		String userid = (String) req1.getSession().getAttribute("USERID");
-
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
+		Date d1 = null;
+		String rawDate = (todate != null && !todate.isEmpty()) ? todate : fromdate;
+		if (rawDate != null && !rawDate.isEmpty()) {
+			String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+			for (String pattern : patterns) {
+				try {
+					d1 = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(rawDate.trim());
+					break;
+				} catch (Exception ignored) {}
+			}
+		}
+
+		String formattedDdmmyyyy = d1 != null ? new SimpleDateFormat("dd/MM/yyyy").format(d1) : rawDate;
+
 		try {
-
-			// Parse date only once
-			Date d1 = dateformat.parse(todate);
-
-			System.out.println("======= VIEW DEBUG =======");
-			System.out.println("TYPE    : " + type);
-			System.out.println("DATE    : " + d1);
-			System.out.println("VERSION : " + version);
-			System.out.println("==========================");
-
-			// ===========================================================
-			// SUMMARY ONLY
-			// ===========================================================
-
-			/* ---------- ARCHIVAL SUMMARY ---------- */
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
-
-				String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-				List<M_SFINP2_Archival_Summary_Entity> summaryList = jdbcTemplate.query(sql,
-						new Object[] { d1, version },
-						new BeanPropertyRowMapper<>(M_SFINP2_Archival_Summary_Entity.class));
-
-				System.out.println("Archival Summary Size : " + summaryList.size());
-
-				mv.addObject("displaymode", "summary");
-				mv.addObject("reportsummary", summaryList);
+			// ---------- CASE 1: ARCHIVAL / RESUB ----------
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
+				List<M_SFINP2_Archival_Summary_Entity> T1Master = get_ResubSummaryByDate(d1, version.toString());
+				mv.addObject("reportsummary", T1Master);
+				System.out.println("T1Master Size " + (T1Master != null ? T1Master.size() : 0));
+				mv.addObject("allowdetail", getishighestversion(d1, version));
 			}
 
-			/* ---------- RESUB SUMMARY ---------- */
-			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-
-				String sql = "SELECT * FROM BRRS_M_SFINP2_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ? AND REPORT_VERSION = ?";
-				List<M_SFINP2_RESUB_Summary_Entity> summaryList = jdbcTemplate.query(sql, new Object[] { d1, version },
-						new BeanPropertyRowMapper<>(M_SFINP2_RESUB_Summary_Entity.class));
-
-				System.out.println("Resub Summary Size : " + summaryList.size());
-
-				mv.addObject("displaymode", "resub");
-				mv.addObject("reportsummary", summaryList);
-			}
-
-			/* ---------- NORMAL SUMMARY ---------- */
+			// ---------- CASE 2: NORMAL ----------
 			else {
+				List<M_SFINP2_Summary_Entity> T1Master = jdbcTemplate.query(
+						"SELECT * FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+						new Object[] { d1 }, new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class));
 
-				String sql = "SELECT * FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-				List<M_SFINP2_Summary_Entity> summaryList = jdbcTemplate.query(sql, new Object[] { d1 },
-						new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class));
-
-				System.out.println("Normal Summary Size : " + summaryList.size());
-
-				mv.addObject("displaymode", "summary");
-				mv.addObject("reportsummary", summaryList);
+				mv.addObject("reportsummary", T1Master);
+				System.out.println("T1Master Size " + (T1Master != null ? T1Master.size() : 0));
+				mv.addObject("allowdetail", "YES");
 			}
 
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		mv.setViewName("BRRS/M_SFINP2");
+		mv.addObject("displaymode", "summary");
+		mv.addObject("reportId", reportId);
+		mv.addObject("reportid", reportId);
+		mv.addObject("menu", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("dtltype", dtltype);
+		mv.addObject("type", type);
+		mv.addObject("version", version != null ? version.toString() : "");
+		mv.addObject("asondate", formattedDdmmyyyy);
+		mv.addObject("fromdate", formattedDdmmyyyy);
+		mv.addObject("todate", formattedDdmmyyyy);
 		System.out.println("View set to: " + mv.getViewName());
-
 		return mv;
 	}
 
@@ -178,22 +166,30 @@ public class BRRS_M_SFINP2_ReportService {
 		int totalPages = 0;
 
 		ModelAndView mv = new ModelAndView();
-		String userid = (String) req1.getSession().getAttribute("USERID");
 
+		String userid = (String) req1.getSession().getAttribute("USERID");
 		System.out.println("User Id Maker and Checker: " + userid);
 		String role = userProfileRep.getUserRole(userid);
 		md.addAttribute("role", role);
 		System.out.println("Role: " + role);
 
-		try {
-			Date parsedDate = null;
-			if (todate != null && !todate.isEmpty()) {
-				parsedDate = dateformat.parse(todate);
+		Date parsedDate = null;
+		String rawDate = (todate != null && !todate.isEmpty()) ? todate : fromdate;
+		if (rawDate != null && !rawDate.isEmpty()) {
+			String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+			for (String pattern : patterns) {
+				try {
+					parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(rawDate.trim());
+					break;
+				} catch (Exception ignored) {}
 			}
+		}
 
+		String formattedDdmmyyyy = parsedDate != null ? new SimpleDateFormat("dd/MM/yyyy").format(parsedDate) : rawDate;
+
+		try {
 			String reportLable = null;
 			String reportAddlCriteria_1 = null;
-
 			// Split filter string into rowId & columnId
 			if (filter != null && filter.contains(",")) {
 				String[] parts = filter.split(",");
@@ -203,106 +199,175 @@ public class BRRS_M_SFINP2_ReportService {
 				}
 			}
 
-			/*
-			 * ========================================================= ARCHIVAL DETAIL
-			 * =========================================================
-			 */
-			if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null && !version.isEmpty()) {
+				BigDecimal verBD = null;
+				try {
+					verBD = new BigDecimal(version.trim());
+				} catch (Exception ignored) {}
 
+				// Archival branch
 				List<M_SFINP2_Archival_Detail_Entity> T1Dt1;
-
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
+					String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
 					T1Dt1 = jdbcTemplate.query(sql,
-							new Object[] { reportLable, reportAddlCriteria_1, parsedDate, version },
+							new Object[] { reportLable, reportAddlCriteria_1, parsedDate },
 							new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
 				} else {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-					T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate, version },
+					String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate },
 							new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
 				}
 
+				if (T1Dt1 == null || T1Dt1.isEmpty()) {
+					// Fallback to current detail table if archival detail has not been copied
+					if (reportLable != null && reportAddlCriteria_1 != null) {
+						String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
+						T1Dt1 = jdbcTemplate.query(sql, new Object[] { reportLable, reportAddlCriteria_1, parsedDate },
+								new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
+					} else {
+						String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate },
+								new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
+					}
+				}
+
 				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("ARCHIVAL COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
+				mv.addObject("allowdetail", getishighestversion(parsedDate, verBD));
 
-			/*
-			 * ========================================================= RESUB DETAIL
-			 * =========================================================
-			 */
-			else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-
-				List<M_SFINP2_RESUB_Detail_Entity> T1Dt1;
-
-				if (reportLable != null && reportAddlCriteria_1 != null) {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_RESUB_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-					T1Dt1 = jdbcTemplate.query(sql,
-							new Object[] { reportLable, reportAddlCriteria_1, parsedDate, version },
-							new BeanPropertyRowMapper<>(M_SFINP2_RESUB_Detail_Entity.class));
-				} else {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_RESUB_DETAILTABLE WHERE REPORT_DATE = ? AND DATA_ENTRY_VERSION = ?";
-					T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate, version },
-							new BeanPropertyRowMapper<>(M_SFINP2_RESUB_Detail_Entity.class));
-				}
-
-				mv.addObject("reportdetails", T1Dt1);
-				System.out.println("RESUB COUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
-			}
-
-			/*
-			 * ========================================================= CURRENT DETAIL
-			 * =========================================================
-			 */
-			else {
-
+			} else {
+				// Current branch
 				List<M_SFINP2_Detail_Entity> T1Dt1;
 
 				if (reportLable != null && reportAddlCriteria_1 != null) {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND REPORT_DATE = ?";
+					String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_LABEL = ? AND REPORT_ADDL_CRITERIA_1 = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
 					T1Dt1 = jdbcTemplate.query(sql, new Object[] { reportLable, reportAddlCriteria_1, parsedDate },
 							new BeanPropertyRowMapper<>(M_SFINP2_Detail_Entity.class));
 				} else {
-					String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_DATE = ?";
-					T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate },
+					String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+					T1Dt1 = jdbcTemplate.query(sql, new Object[] { parsedDate, currentPage, pageSize },
 							new BeanPropertyRowMapper<>(M_SFINP2_Detail_Entity.class));
-
-					String sqlCount = "SELECT COUNT(*) FROM BRRS_M_SFINP2_DETAILTABLE WHERE REPORT_DATE = ?";
-					totalPages = jdbcTemplate.queryForObject(sqlCount, new Object[] { parsedDate }, Integer.class);
-
+					String countSql = "SELECT COUNT(*) FROM BRRS_M_SFINP2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					totalPages = jdbcTemplate.queryForObject(countSql, new Object[] { parsedDate }, Integer.class);
 					mv.addObject("pagination", "YES");
 				}
 
 				mv.addObject("reportdetails", T1Dt1);
+				mv.addObject("reportmaster12", T1Dt1);
 				System.out.println("LISTCOUNT: " + (T1Dt1 != null ? T1Dt1.size() : 0));
+				mv.addObject("allowdetail", "YES");
 			}
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-			mv.addObject("errorMessage", "Invalid date format: " + todate);
 		} catch (Exception e) {
 			e.printStackTrace();
 			mv.addObject("errorMessage", "Unexpected error: " + e.getMessage());
 		}
 
-		// Common attributes
 		mv.setViewName("BRRS/M_SFINP2");
 		mv.addObject("displaymode", "Details");
 		mv.addObject("currentPage", currentPage);
 		mv.addObject("totalPages", (int) Math.ceil((double) totalPages / 100));
 		mv.addObject("reportsflag", "reportsflag");
 		mv.addObject("menu", reportId);
-
+		mv.addObject("reportid", reportId);
+		mv.addObject("currency", currency);
+		mv.addObject("dtltype", dtltype);
+		mv.addObject("type", type);
+		mv.addObject("version", version != null ? version : "");
+		mv.addObject("asondate", formattedDdmmyyyy);
+		mv.addObject("fromdate", formattedDdmmyyyy);
+		mv.addObject("todate", formattedDdmmyyyy);
 		return mv;
 	}
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	public String getishighestversion(Date REPORT_DATE, BigDecimal REPORT_VERSION) {
+		if (REPORT_DATE == null || REPORT_VERSION == null) return "NO";
+		String result = "NO";
+		try {
+			String sql = "SELECT CASE WHEN ? = MAX(REPORT_VERSION) THEN 'YES' ELSE 'NO' END AS is_highest "
+					+ "FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+			List<String> list = jdbcTemplate.queryForList(sql, new Object[] { REPORT_VERSION, REPORT_DATE }, String.class);
+			if (!list.isEmpty() && list.get(0) != null) {
+				result = list.get(0);
+			}
+		} catch (Exception e) {
+			logger.error("Error checking highest version", e);
+		}
+		return result;
+	}
+
+	public List<M_SFINP2_Archival_Summary_Entity> get_ResubSummaryByDate(Date reportDate, String reportVersion) {
+		try {
+			if (reportDate == null) return new ArrayList<>();
+			BigDecimal verBD = null;
+			if (reportVersion != null && !reportVersion.trim().isEmpty()) {
+				try {
+					verBD = new BigDecimal(reportVersion.trim());
+				} catch (Exception ignored) {}
+			}
+			if (verBD != null) {
+				String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND REPORT_VERSION = ?";
+				return jdbcTemplate.query(sql, new Object[] { reportDate, verBD }, new BeanPropertyRowMapper<>(M_SFINP2_Archival_Summary_Entity.class));
+			} else {
+				String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+				return jdbcTemplate.query(sql, new Object[] { reportDate }, new BeanPropertyRowMapper<>(M_SFINP2_Archival_Summary_Entity.class));
+			}
+		} catch (Exception e) {
+			logger.error("Error querying BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY", e);
+			return new ArrayList<>();
+		}
+	}
+
+	public M_SFINP2_Detail_Entity findDetailByAcctnumber(String acctNumber) {
+		String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE ACCT_NUMBER = ?";
+		try {
+			List<M_SFINP2_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber },
+					new BeanPropertyRowMapper<>(M_SFINP2_Detail_Entity.class));
+			return list.isEmpty() ? null : list.get(0);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public M_SFINP2_Archival_Detail_Entity findByAcctNumberArch(String acctNumber, Date reportDate) {
+		try {
+			if (reportDate != null) {
+				String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)";
+				List<M_SFINP2_Archival_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber, reportDate },
+						new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
+				return list.isEmpty() ? null : list.get(0);
+			} else {
+				String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE ACCT_NUMBER = ?";
+				List<M_SFINP2_Archival_Detail_Entity> list = jdbcTemplate.query(sql, new Object[] { acctNumber },
+						new BeanPropertyRowMapper<>(M_SFINP2_Archival_Detail_Entity.class));
+				return list.isEmpty() ? null : list.get(0);
+			}
+		} catch (Exception e) {
+			logger.error("Error finding archival detail by acctNumber", e);
+			return null;
+		}
+	}
+
+	public M_SFINP2_Summary_Entity findSummaryById(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		try {
+			List<M_SFINP2_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
+					new BeanPropertyRowMapper<>(M_SFINP2_Summary_Entity.class));
+			return list.isEmpty() ? null : list.get(0);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	@Transactional
-	public void updateReport(M_SFINP2_Summary_Entity updatedEntity) {
+
+	public void updateReport1(M_SFINP2_Summary_Entity updatedEntity) {
 		System.out.println("Came to services");
+
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-		System.out.println("R79 From UI = " + updatedEntity.getR79_MONTH_END());
 
 		String selectSql = "SELECT * FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 
@@ -320,7 +385,6 @@ public class BRRS_M_SFINP2_ReportService {
 			System.out.println("Updating existing record");
 		}
 
-		// Audit old copy
 		M_SFINP2_Summary_Entity oldcopy = new M_SFINP2_Summary_Entity();
 		BeanUtils.copyProperties(existing, oldcopy);
 
@@ -335,18 +399,20 @@ public class BRRS_M_SFINP2_ReportService {
 				try {
 					Method getter = M_SFINP2_Summary_Entity.class.getMethod(getterName);
 					Method setter = M_SFINP2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
 					Object newValue = getter.invoke(updatedEntity);
 					System.out.println("R" + i + "_MONTH_END = " + newValue);
-
-					setter.invoke(existing, newValue);
+					if (newValue != null) {
+						setter.invoke(existing, newValue);
+					}
 				} catch (NoSuchMethodException e) {
 					System.out.println("Method Not Found : " + getterName);
+
 				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Error while updating report fields", e);
 		}
+
 
 		System.out.println("Existing R79 Before Save = " + existing.getR79_MONTH_END());
 
@@ -357,7 +423,11 @@ public class BRRS_M_SFINP2_ReportService {
 		existing.setMODIFY_FLG("Y");
 		existing.setDEL_FLG("N");
 
-		// Save ONLY into MOD table
+		// Save into live SUMMARY table
+		saveSummaryEntity(existing);
+		System.out.println("✔ Record saved into BRRS_M_SFINP2_SUMMARYTABLE");
+
+		// Save into MOD table
 		saveModSummaryEntity(existing);
 		System.out.println("Record saved for Checker Approval");
 
@@ -376,35 +446,32 @@ public class BRRS_M_SFINP2_ReportService {
 					"M_SFINP2", "BRRS_M_SFINP2_SUMMARYTABLE");
 		}
 
-		// Using non-deprecated TransactionSynchronization interface (Spring 5.3+)
-		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-			@Override
-			public void afterCommit() {
-				try {
-					String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
-
-					logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})", formattedDate);
-
-					jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+				@Override
+				public void afterCommit() {
 					try {
-						BigDecimal dbValue = jdbcTemplate.queryForObject(
-								"SELECT R79_MONTH_END FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-								BigDecimal.class, updatedEntity.getREPORT_DATE());
-
-						System.out.println("R79 Value After Procedure = " + dbValue);
-					} catch (Exception ex) {
-						System.out.println("Unable to fetch R79 value after procedure execution.");
+						String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
+						logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})", formattedDate);
+						jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+						logger.info("Procedure executed successfully after commit.");
+					} catch (Exception e) {
+						logger.error("Procedure execution failed", e);
 					}
-
-					logger.info("Procedure executed successfully after commit.");
-				} catch (Exception e) {
-					logger.error("Procedure execution failed", e);
-					throw new RuntimeException("Procedure execution failed", e);
 				}
+			});
+		} else {
+			try {
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(updatedEntity.getREPORT_DATE());
+				logger.info("Calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({}) directly", formattedDate);
+				jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+				logger.info("BRRS_M_SFINP2_SUMMARY_PROCEDURE executed successfully.");
+			} catch (Exception e) {
+				logger.error("Procedure execution failed", e);
 			}
-		});
+		}
 	}
+
 
 	public void saveModSummaryEntity(M_SFINP2_Summary_Entity entity) {
 		String sql = "MERGE INTO BRRS_M_SFINP2_MOD_SUMMARYTABLE dest "
@@ -462,29 +529,320 @@ public class BRRS_M_SFINP2_ReportService {
 		jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
 
 		System.out.println("Checker Approved Successfully");
+
+	}
+
+	@Transactional
+	public ResponseEntity<?> updateReport(M_SFINP2_Summary_Entity updatedEntity, String type, String version, String entry) {
+		try {
+			boolean isResub = "RESUB".equalsIgnoreCase(type);
+			Date reportDate = updatedEntity.getREPORT_DATE();
+			if (reportDate == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Report Date is required.");
+			}
+			java.sql.Date sqlDate = new java.sql.Date(reportDate.getTime());
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy").format(reportDate);
+
+			System.out.println("Updating SFINP2 Summary: type=" + type + ", version=" + version + ", entry=" + entry + ", date=" + formattedDate);
+
+			String ver = (version != null && !version.isEmpty()) ? version
+					: (updatedEntity.getREPORT_VERSION() != null ? updatedEntity.getREPORT_VERSION().toString() : null);
+
+			if (isResub) {
+				List<M_SFINP2_Archival_Summary_Entity> list = null;
+				if (ver != null) {
+					list = get_ResubSummaryByDate(reportDate, ver);
+				}
+				if (list == null || list.isEmpty()) {
+					String maxVerSql = "SELECT NVL(MAX(REPORT_VERSION), 0) FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					BigDecimal maxV = jdbcTemplate.queryForObject(maxVerSql, BigDecimal.class, sqlDate);
+					ver = maxV != null ? maxV.toString() : "1";
+					list = get_ResubSummaryByDate(reportDate, ver);
+				}
+
+				if (list == null || list.isEmpty()) {
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No archival summary record found to update.");
+				}
+
+				M_SFINP2_Archival_Summary_Entity existing = list.get(0);
+				M_SFINP2_Archival_Summary_Entity oldcopy = new M_SFINP2_Archival_Summary_Entity();
+				BeanUtils.copyProperties(existing, oldcopy);
+
+				boolean isResubNoEntry = "NO".equalsIgnoreCase(entry);
+				int[] allowedIndexes = { 34, 35, 43, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 61, 62, 78, 79 };
+
+				if (isResubNoEntry) {
+					// REGENERATE:
+					// 1) Clean live summary table
+					jdbcTemplate.update("DELETE FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", sqlDate);
+
+					// 2) Stage into live summary table
+					M_SFINP2_Summary_Entity liveEntity = new M_SFINP2_Summary_Entity();
+					BeanUtils.copyProperties(existing, liveEntity);
+
+					// Apply modified values from updatedEntity
+					for (int i : allowedIndexes) {
+						String field = "MONTH_END";
+						String getterName = "getR" + i + "_" + field;
+						String setterName = "setR" + i + "_" + field;
+						try {
+							Method getter = M_SFINP2_Summary_Entity.class.getMethod(getterName);
+							Method setter = M_SFINP2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+							Object newValue = getter.invoke(updatedEntity);
+							if (newValue != null) {
+								setter.invoke(liveEntity, newValue);
+							}
+						} catch (Exception ignored) {}
+					}
+					liveEntity.setREPORT_DATE(reportDate);
+					saveSummaryEntity(liveEntity);
+
+					auditService.compareEntitiesmanual(
+							oldcopy,
+							existing,
+							reportDate.toString(),
+							"M SFINP2 Archival Summary Screen",
+							"BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY");
+
+					System.out.println("Modified values staged into live summary. Old version " + ver + " preserved in archival summary.");
+
+					Run_M_SFINP2_Procedure(reportDate, "RESUB", "NO");
+					return ResponseEntity.ok("Record updated and Report Regenerated successfully!");
+
+				} else {
+					// MODIFY ONLY: Update current version in BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY
+					StringBuilder updateSql = new StringBuilder("UPDATE BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY SET ");
+					List<Object> params = new ArrayList<>();
+
+					for (int i : allowedIndexes) {
+						String field = "MONTH_END";
+						String getterName = "getR" + i + "_" + field;
+						String setterName = "setR" + i + "_" + field;
+						try {
+							Method getter = M_SFINP2_Summary_Entity.class.getMethod(getterName);
+							Method setter = M_SFINP2_Archival_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+							Object newValue = getter.invoke(updatedEntity);
+							if (newValue != null) {
+								setter.invoke(existing, newValue);
+							}
+							updateSql.append("R").append(i).append("_MONTH_END = ?, ");
+							params.add(getter.invoke(existing));
+						} catch (Exception ignored) {}
+					}
+					updateSql.setLength(updateSql.length() - 2);
+					updateSql.append(" WHERE TRUNC(REPORT_DATE)=TRUNC(?) AND REPORT_VERSION=?");
+					BigDecimal verBD = new BigDecimal(ver);
+					params.add(sqlDate);
+					params.add(verBD);
+
+					jdbcTemplate.update(updateSql.toString(), params.toArray());
+
+					auditService.compareEntitiesmanual(
+							oldcopy,
+							existing,
+							reportDate.toString(),
+							"M SFINP2 Archival Summary Screen",
+							"BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY");
+
+					System.out.println("SFINP2 Archival Summary updated successfully for version " + ver);
+					return ResponseEntity.ok("Record updated successfully!");
+				}
+
+			} else {
+				updateReport1(updatedEntity);
+				return ResponseEntity.ok("Modified Successfully.");
+			}
+		} catch (Exception e) {
+			logger.error("Error in updateReport", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
+	}
+
+	public ResponseEntity<?> callregenprocedure(HttpServletRequest request) {
+		try {
+			String todateStr = request.getParameter("todate");
+			if (todateStr == null || todateStr.isEmpty()) {
+				todateStr = request.getParameter("reportDate");
+			}
+			Date d1 = null;
+			if (todateStr != null && !todateStr.isEmpty()) {
+				String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						d1 = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(todateStr.trim());
+						break;
+					} catch (Exception ignored) {}
+				}
+			}
+			Run_M_SFINP2_Procedure(d1, "RESUB", "NO");
+			return ResponseEntity.ok("Regenerated Successfully.");
+		} catch (Exception e) {
+			logger.error("Error in callregenprocedure", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Regeneration Failed: " + e.getMessage());
+		}
+	}
+
+	public void Run_M_SFINP2_Procedure(Date d1, String type, String entry) {
+		if (TransactionSynchronizationManager.isSynchronizationActive()) {
+			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+				@Override
+				public void afterCommit() {
+					try {
+						if ("RESUB".equalsIgnoreCase(type) && "YES".equalsIgnoreCase(entry)) {
+							return;
+						}
+						if ("RESUB".equalsIgnoreCase(type) && "NO".equalsIgnoreCase(entry)) {
+							transferArchivalDetailsToLive(d1);
+						}
+						executeProcedureLogic(d1, type, entry);
+					} catch (Exception e) {
+						logger.error("Error executing afterCommit in Run_M_SFINP2_Procedure", e);
+					}
+				}
+			});
+		} else {
+			try {
+				if ("RESUB".equalsIgnoreCase(type) && "YES".equalsIgnoreCase(entry)) {
+					return;
+				}
+				if ("RESUB".equalsIgnoreCase(type) && "NO".equalsIgnoreCase(entry)) {
+					transferArchivalDetailsToLive(d1);
+				}
+				executeProcedureLogic(d1, type, entry);
+			} catch (Exception e) {
+				logger.error("Error executing Run_M_SFINP2_Procedure", e);
+			}
+		}
+	}
+
+	private void transferArchivalDetailsToLive(Date d1) {
+		String sql = "INSERT INTO BRRS_M_SFINP2_DETAILTABLE ("
+				+ "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, COLUMN_ID, REPORT_NAME, REPORT_LABEL, "
+				+ "REPORT_ADDL_CRITERIA_1, "
+				+ "REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, AVERAGE, "
+				+ "REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, "
+				+ "VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG"
+				+ ") SELECT "
+				+ "CUST_ID, ACCT_NUMBER, ACCT_NAME, DATA_TYPE, COLUMN_ID, REPORT_NAME, REPORT_LABEL, "
+				+ "REPORT_ADDL_CRITERIA_1, "
+				+ "REPORT_REMARKS, MODIFICATION_REMARKS, DATA_ENTRY_VERSION, ACCT_BALANCE_IN_PULA, AVERAGE, "
+				+ "REPORT_DATE, CREATE_USER, CREATE_TIME, MODIFY_USER, MODIFY_TIME, VERIFY_USER, "
+				+ "VERIFY_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG "
+				+ "FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL "
+				+ "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+				+ "AND DATA_ENTRY_VERSION = (SELECT MAX(TO_NUMBER(DATA_ENTRY_VERSION)) FROM BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL WHERE TRUNC(REPORT_DATE) = TRUNC(?))";
+		jdbcTemplate.update(sql, d1, d1);
+	}
+
+	private void executeProcedureLogic(Date d1, String type, String entry) {
+		try {
+			String formattedDate = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH).format(d1);
+			logger.info("AFTER COMMIT → Executing BRRS_M_SFINP2_SUMMARY_PROCEDURE({})", formattedDate);
+			jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
+
+			if ("RESUB".equalsIgnoreCase(type) && "NO".equalsIgnoreCase(entry)) {
+				int[] manualRows = { 34, 35, 43, 47, 48, 51, 52, 53, 54, 55, 56, 57, 58, 61, 62, 78, 79 };
+				StringBuilder setCols = new StringBuilder();
+				StringBuilder selCols = new StringBuilder();
+				for (int r : manualRows) {
+					setCols.append("R").append(r).append("_MONTH_END, ");
+					selCols.append("a.R").append(r).append("_MONTH_END, ");
+				}
+				setCols.setLength(setCols.length() - 2);
+				selCols.setLength(selCols.length() - 2);
+
+				String copyManualSql = "UPDATE BRRS_M_SFINP2_SUMMARYTABLE s SET ("
+						+ setCols.toString()
+						+ ") = (SELECT "
+						+ selCols.toString()
+						+ " FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY a "
+						+ " WHERE TRUNC(a.REPORT_DATE) = TRUNC(s.REPORT_DATE) "
+						+ " AND a.REPORT_VERSION = (SELECT MAX(REPORT_VERSION) FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(s.REPORT_DATE))) "
+						+ " WHERE TRUNC(s.REPORT_DATE) = TRUNC(?) "
+						+ " AND (s.R79_MONTH_END IS NULL OR s.R79_MONTH_END = 0)";
+				try {
+					jdbcTemplate.update(copyManualSql, d1);
+				} catch (Exception e) {
+					logger.warn("Could not copy previous manual fields to summary table: {}", e.getMessage());
+				}
+
+				String versionSql = "SELECT NVL(MAX(REPORT_VERSION), 0) + 1 FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+				BigDecimal newVersion = jdbcTemplate.queryForObject(versionSql, new Object[] { d1 }, BigDecimal.class);
+
+				StringBuilder columnsPart = new StringBuilder();
+				for (int i = 10; i <= 80; i++) {
+					columnsPart.append("R").append(i).append("_PRODUCT, ")
+							   .append("R").append(i).append("_CROSS_REFERENCE, ")
+							   .append("R").append(i).append("_MONTH_END, ")
+							   .append("R").append(i).append("_AVERAGE, ");
+				}
+
+				String insertSummarySql = "INSERT INTO BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY ("
+						+ columnsPart.toString()
+						+ "REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, REPORT_RESUBDATE"
+						+ ") SELECT "
+						+ columnsPart.toString()
+						+ "REPORT_DATE, ?, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
+						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG, SYSDATE "
+						+ "FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+				jdbcTemplate.update(insertSummarySql, newVersion, d1);
+
+				String updateDetailVersionSql = "UPDATE BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL SET DATA_ENTRY_VERSION = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND DATA_ENTRY_VERSION IS NULL";
+				jdbcTemplate.update(updateDetailVersionSql, newVersion.toString(), d1);
+
+				jdbcTemplate.update("DELETE FROM BRRS_M_SFINP2_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)", d1);
+			}
+		} catch (Exception e) {
+			logger.error("Error executing procedure logic", e);
+		}
+
 	}
 
 	// ------------------------------
 	// edit/view page
 	// ------------------------------
-	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode, String type, HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView("BRRS/M_SFINP2");
+		String asondateStr = request != null ? request.getParameter("asondate") : null;
+		Date reportDate = null;
+		if (asondateStr != null && !asondateStr.isEmpty()) {
+			String[] patterns = { "dd-MM-yyyy", "dd/MM/yyyy", "dd-MMM-yyyy", "yyyy-MM-dd" };
+			for (String pattern : patterns) {
+				try {
+					reportDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+					break;
+				} catch (Exception ignored) {}
+			}
+		}
 
 		if (acctNo != null) {
-			String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE ACCT_NUMBER = ?";
-			List<M_SFINP2_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { acctNo },
-					new BeanPropertyRowMapper<>(M_SFINP2_Detail_Entity.class));
-			M_SFINP2_Detail_Entity msfinp2Entity = results.isEmpty() ? null : results.get(0);
-			if (msfinp2Entity != null && msfinp2Entity.getReportDate() != null) {
-				String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(msfinp2Entity.getReportDate());
-				mv.addObject("asondate", formattedDate);
+			if (type != null && ("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type))) {
+				M_SFINP2_Archival_Detail_Entity msfinp2Entity = findByAcctNumberArch(acctNo, reportDate);
+				if (msfinp2Entity != null && msfinp2Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(msfinp2Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("msfinp2Data", msfinp2Entity);
+			} else {
+				M_SFINP2_Detail_Entity msfinp2Entity = findDetailByAcctnumber(acctNo);
+				if (msfinp2Entity != null && msfinp2Entity.getReportDate() != null) {
+					String formattedDate = new SimpleDateFormat("dd/MM/yyyy").format(msfinp2Entity.getReportDate());
+					mv.addObject("asondate", formattedDate);
+				}
+				mv.addObject("msfinp2Data", msfinp2Entity);
 			}
-			mv.addObject("msfinp2Data", msfinp2Entity);
 		}
 
 		mv.addObject("displaymode", "edit");
 		mv.addObject("formmode", formMode != null ? formMode : "edit");
+		mv.addObject("type", type);
+		mv.addObject("reportid", "M_SFINP2");
 		return mv;
+	}
+
+	public ModelAndView getViewOrEditPage(String acctNo, String formMode) {
+		return getViewOrEditPage(acctNo, formMode, null, null);
 	}
 
 	@Transactional
@@ -494,97 +852,108 @@ public class BRRS_M_SFINP2_ReportService {
 	public ResponseEntity<?> updateDetailEdit(HttpServletRequest request) {
 		try {
 			String acctNo = request.getParameter("acctNumber");
-			String acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			String acctBalanceInpula = request.getParameter("acctBalanceInPula");
+			if (acctBalanceInpula == null) {
+				acctBalanceInpula = request.getParameter("acctBalanceInpula");
+			}
 			String average = request.getParameter("average");
 			String acctName = request.getParameter("acctName");
 			String reportDateStr = request.getParameter("reportDate");
+			String type = request.getParameter("type");
+			String entry = request.getParameter("entry");
 
-			logger.info("Received update for ACCT_NO: {}", acctNo);
+			logger.info("Received update for ACCT_NO: {}, type: {}, entry: {}", acctNo, type, entry);
 
-			String sql = "SELECT * FROM BRRS_M_SFINP2_DETAILTABLE WHERE ACCT_NUMBER = ?";
-			List<M_SFINP2_Detail_Entity> results = jdbcTemplate.query(sql, new Object[] { acctNo },
-					new BeanPropertyRowMapper<>(M_SFINP2_Detail_Entity.class));
-			M_SFINP2_Detail_Entity existing = results.isEmpty() ? null : results.get(0);
-			if (existing == null) {
-				logger.warn("No record found for ACCT_NO: {}", acctNo);
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+			Date parsedDate = null;
+			if (reportDateStr != null && !reportDateStr.isEmpty()) {
+				String[] patterns = { "yyyy-MM-dd", "dd-MM-yyyy", "dd/MM/yyyy", "dd-MMM-yyyy" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(reportDateStr.trim());
+						break;
+					} catch (Exception ignored) {}
+				}
 			}
 
-			// Create old copy for audit comparison
-			M_SFINP2_Detail_Entity oldcopy = new M_SFINP2_Detail_Entity();
-			BeanUtils.copyProperties(existing, oldcopy);
+			if (type != null && "RESUB".equalsIgnoreCase(type)) {
+				M_SFINP2_Archival_Detail_Entity existing = findByAcctNumberArch(acctNo, parsedDate);
 
-			boolean isChanged = false;
+				if (existing == null) {
+					logger.warn("No archival record found for ACCT_NO: {}", acctNo);
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				}
 
-			if (acctName != null && !acctName.isEmpty()) {
-				if (existing.getAcctName() == null || !existing.getAcctName().equals(acctName)) {
+				boolean isChanged = false;
+				if (acctName != null && !acctName.isEmpty() && !acctName.equals(existing.getAcctName())) {
 					existing.setAcctName(acctName);
 					isChanged = true;
-					logger.info("Account name updated to {}", acctName);
 				}
-			}
-
-			if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
-				BigDecimal newacctBalanceInpula = new BigDecimal(acctBalanceInpula);
-				if (existing.getAcctBalanceInPula() == null
-						|| existing.getAcctBalanceInPula().compareTo(newacctBalanceInpula) != 0) {
-					existing.setAcctBalanceInPula(newacctBalanceInpula);
-					isChanged = true;
-					logger.info("Balance updated to {}", newacctBalanceInpula);
-				}
-			}
-
-			if (average != null && !average.isEmpty()) {
-				BigDecimal newaverage = new BigDecimal(average);
-				if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
-					existing.setAverage(newaverage);
-					isChanged = true;
-					logger.info("Balance updated to {}", newaverage);
-				}
-			}
-
-			if (isChanged) {
-				saveDetailEntity(existing);
-
-				// Audit comparison
-				auditService.compareEntitiesmanual(oldcopy, existing, acctNo, "M_SFINP2 Detail Screen",
-						"BRRS_M_SFINP2_DETAIL");
-
-				logger.info("Record updated successfully for account {}", acctNo);
-
-				// Format date for procedure
-				String formattedDate = new SimpleDateFormat("dd-MM-yyyy")
-						.format(new SimpleDateFormat("yyyy-MM-dd").parse(reportDateStr));
-
-				// Run summary procedure after commit
-
-				TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-					@Override
-					// ------------------------------
-					// Callback function executed synchronously after database transaction commit
-					// succeeds
-					// ------------------------------
-					public void afterCommit() {
-						try {
-
-							logger.info("Transaction committed — calling BRRS_M_SFINP2_SUMMARY_PROCEDURE({})",
-									formattedDate);
-
-							jdbcTemplate.update("BEGIN BRRS_M_SFINP2_SUMMARY_PROCEDURE(?); END;", formattedDate);
-
-							logger.info("Procedure executed successfully after commit.");
-
-						} catch (Exception e) {
-							logger.error("Error executing procedure after commit", e);
-						}
+				if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+					BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+					if (existing.getAcctBalanceInPula() == null
+							|| existing.getAcctBalanceInPula().compareTo(newBalance) != 0) {
+						existing.setAcctBalanceInPula(newBalance);
+						isChanged = true;
 					}
-				});
+				}
+				if (average != null && !average.isEmpty()) {
+					BigDecimal newaverage = new BigDecimal(average.replace(",", ""));
+					if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
+						existing.setAverage(newaverage);
+						isChanged = true;
+					}
+				}
 
+				if (!isChanged) {
+					return ResponseEntity.ok("No changes were made.");
+				}
+
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_SFINP2_ARCHIVALTABLE_DETAIL SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ?, AVERAGE = ? WHERE ACCT_NUMBER = ? AND TRUNC(REPORT_DATE) = TRUNC(?)",
+						existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAverage(), acctNo, parsedDate);
+
+				Run_M_SFINP2_Procedure(parsedDate, type, entry);
 				return ResponseEntity.ok("Record updated successfully!");
 			} else {
-				logger.info("No changes detected for ACCT_NO: {}", acctNo);
-				return ResponseEntity.ok("No changes were made.");
+				M_SFINP2_Detail_Entity existing = findDetailByAcctnumber(acctNo);
+
+				if (existing == null) {
+					logger.warn("No record found for ACCT_NO: {}", acctNo);
+					return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Record not found for update.");
+				}
+
+				boolean isChanged = false;
+				if (acctName != null && !acctName.isEmpty() && !acctName.equals(existing.getAcctName())) {
+					existing.setAcctName(acctName);
+					isChanged = true;
+				}
+				if (acctBalanceInpula != null && !acctBalanceInpula.isEmpty()) {
+					BigDecimal newBalance = new BigDecimal(acctBalanceInpula.replace(",", ""));
+					if (existing.getAcctBalanceInPula() == null
+							|| existing.getAcctBalanceInPula().compareTo(newBalance) != 0) {
+						existing.setAcctBalanceInPula(newBalance);
+						isChanged = true;
+					}
+				}
+				if (average != null && !average.isEmpty()) {
+					BigDecimal newaverage = new BigDecimal(average.replace(",", ""));
+					if (existing.getAverage() == null || existing.getAverage().compareTo(newaverage) != 0) {
+						existing.setAverage(newaverage);
+						isChanged = true;
+					}
+				}
+
+				if (!isChanged) {
+					return ResponseEntity.ok("No changes were made.");
+				}
+
+				jdbcTemplate.update(
+						"UPDATE BRRS_M_SFINP2_DETAILTABLE SET ACCT_NAME = ?, ACCT_BALANCE_IN_PULA = ?, AVERAGE = ? WHERE ACCT_NUMBER = ?",
+						existing.getAcctName(), existing.getAcctBalanceInPula(), existing.getAverage(), acctNo);
+
+				Date dateForProc = parsedDate != null ? parsedDate : existing.getReportDate();
+				Run_M_SFINP2_Procedure(dateForProc, type, entry);
+				return ResponseEntity.ok("Record updated successfully!");
 			}
 
 		} catch (Exception e) {
@@ -601,7 +970,7 @@ public class BRRS_M_SFINP2_ReportService {
 		List<Object[]> archivalList = new ArrayList<>();
 
 		try {
-			String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC";
 			List<M_SFINP2_Archival_Summary_Entity> repoData = jdbcTemplate.query(sql,
 					new BeanPropertyRowMapper<>(M_SFINP2_Archival_Summary_Entity.class));
 
@@ -620,7 +989,7 @@ public class BRRS_M_SFINP2_ReportService {
 			}
 
 		} catch (Exception e) {
-			System.err.println("Error fetching  M_SFINP2  Archival data: " + e.getMessage());
+			System.err.println("Error fetching M_SFINP2 Archival data: " + e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -633,7 +1002,7 @@ public class BRRS_M_SFINP2_ReportService {
 	public List<Object[]> getM_SFINP2Resub() {
 		List<Object[]> resubList = new ArrayList<>();
 		try {
-			String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION ASC";
+			String sql = "SELECT * FROM BRRS_M_SFINP2_ARCHIVALTABLE_SUMMARY WHERE REPORT_VERSION IS NOT NULL ORDER BY REPORT_VERSION DESC";
 			List<M_SFINP2_Archival_Summary_Entity> latestArchivalList = jdbcTemplate.query(sql,
 					new BeanPropertyRowMapper<>(M_SFINP2_Archival_Summary_Entity.class));
 
@@ -663,7 +1032,7 @@ public class BRRS_M_SFINP2_ReportService {
 		try {
 			logger.info("Generating Excel for BRRS_M_SFINP2 Details...");
 			System.out.println("came to Detail download service");
-			if (type.equals("ARCHIVAL") & version != null) {
+			if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 				byte[] ARCHIVALreport = getDetailExcelARCHIVAL(filename, fromdate, todate, currency, dtltype, type,
 						version);
 				return ARCHIVALreport;
@@ -1033,23 +1402,10 @@ public class BRRS_M_SFINP2_ReportService {
 		System.out.println("==========================");
 
 // ARCHIVAL check
-		if ("ARCHIVAL".equalsIgnoreCase(type) && version != null) {
+		if (("ARCHIVAL".equalsIgnoreCase(type) || "RESUB".equalsIgnoreCase(type)) && version != null) {
 			try {
-// Redirecting to Archival
 				return getExcelM_SFINP2ARCHIVAL(filename, reportId, fromdate, todate, currency, dtltype, type, format,
 						version);
-			} catch (ParseException e) {
-				logger.error("Invalid report date format: {}", fromdate, e);
-				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
-			}
-		} else if ("RESUB".equalsIgnoreCase(type) && version != null) {
-			logger.info("Service: Generating RESUB report for version {}", version);
-
-			try {
-// Redirecting to Resub Excel
-				return BRRS_M_SFINP2ResubExcel(filename, reportId, fromdate, todate, currency, dtltype, type, format,
-						version);
-
 			} catch (ParseException e) {
 				logger.error("Invalid report date format: {}", fromdate, e);
 				throw new RuntimeException("Date format must be dd-MMM-yyyy (e.g. 31-Jul-2025)");
@@ -9044,7 +9400,7 @@ public class BRRS_M_SFINP2_ReportService {
 	}
 
 	private void saveSummaryEntity(M_SFINP2_Summary_Entity entity) {
-		String countSql = "SELECT COUNT(*) FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE REPORT_DATE = ?";
+		String countSql = "SELECT COUNT(*) FROM BRRS_M_SFINP2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		int count = jdbcTemplate.queryForObject(countSql, new Object[] { entity.getREPORT_DATE() }, Integer.class);
 
 		if (count > 0) {
@@ -9057,7 +9413,8 @@ public class BRRS_M_SFINP2_ReportService {
 					continue;
 				}
 				String name = field.getName();
-				if ("REPORT_DATE".equalsIgnoreCase(name)) {
+				if ("REPORT_DATE".equalsIgnoreCase(name) || "REPORT_VERSION".equalsIgnoreCase(name)
+						|| "reportResubDate".equalsIgnoreCase(name)) {
 					continue;
 				}
 				if (!first) {
@@ -9072,7 +9429,7 @@ public class BRRS_M_SFINP2_ReportService {
 				}
 				first = false;
 			}
-			sql.append(" WHERE REPORT_DATE = ?");
+			sql.append(" WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
 			params.add(entity.getREPORT_DATE());
 			jdbcTemplate.update(sql.toString(), params.toArray());
 		} else {

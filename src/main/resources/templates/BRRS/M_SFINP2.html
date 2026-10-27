@@ -339,6 +339,13 @@ PURPOSE		: BWRBRREPORT
 	</style>
 
 	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const reportId = /*[[${reportid}]]*/ null;
+		const allowdetail = /*[[${allowdetail}]]*/ 'NO';
+		const type = /*[[${type}]]*/ '';
+		const version = /*[[${version}]]*/ '';
+		/*]]>*/
+		let isDetailsModal = false;
 		$(document).ready(function () {
 			// hide loader on normal load
 			$('#loader').modal('hide');
@@ -351,8 +358,6 @@ PURPOSE		: BWRBRREPORT
 			// hide loader on leaving page
 			$('#loader').modal('hide');
 		});
-
-
 
 		$(document).ready(function () {
 			Maker_Checker_Function();
@@ -395,39 +400,22 @@ PURPOSE		: BWRBRREPORT
 
 		//to fetch summary from the database - called from the summary button
 		function showdetails() {
-
+			if ((type === "RESUB" || type === "ARCHIVAL") && allowdetail === "NO") {
+				showResultModal("Information", "Detail page is only available for highest report version only");
+				return;
+			}
 			var Callurl;
 			$('#loader').modal('show');
-			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/
-				location.href = Callurl;
+			Callurl = /*[[@{'/Reports/'+${reportid}+'/Details'(asondate=${asondate},fromdate=${fromdate},todate=${todate},currency=${currency},dtltype=${dtltype},type=${type},version=${version})}]]*/ "";
+			location.href = Callurl;
 			console.log(Callurl);
-			/*  $.ajax({
-				 type: 'get',
-				 url: Callurl,
-				 beforeSend: function () {
-					 $('#loader').modal('show'); // 🔄 Show loader
-				 },
-				 success: function (data) {
-					 $('.content').html(data);
-					 //$("#detailsbtn").addClass("active");
-					 //tablepagination();
-				 },
-				 complete: function () {
-					 $('#loader').modal('hide');
-				 },
-				 error: function () {
-						  $('#loader').modal('hide');
-					 alert("Something went wrongss. Please try again.");
-				  
-				 }
-			 }); */
 		}
 
 
 		function showsummary() {
 			$('#loader').modal('show');
-			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version})}]]*/
-				location.href = Callurl;
+			var Callurl = /*[[@{'/Reports/' + ${reportid} (dtltype='report', fromdate=${fromdate}, todate=${todate}, type=${type}, asondate=${asondate}, version=${version}, currency=${currency})}]]*/ "";
+			location.href = Callurl;
 		}
 
 
@@ -845,14 +833,34 @@ PURPOSE		: BWRBRREPORT
 	<script>
 
 		function submitMSFINP2Update() {
-			const formData = $('#msfinp2DetailForm').serialize(); // Ensure correct form ID
+			let formData = $('#msfinp2DetailForm').serialize();
+			let userAnswer = null;
 
-			// ✅ Store the previous page URL
-			const previousUrl = document.referrer; // same as going back once in history
+			if (new URLSearchParams(formData).get('type') === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
 
-			// Show loader while processing
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					submitMSFINP2Update();
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					submitMSFINP2Update();
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			if (userAnswer === 'NO') {
+				formData += '&entry=NO';
+			}
+
+			$('#confirmModal').data('answered', null);
 			$('#loader').modal('show');
-
 
 			$.ajax({
 				url: `/BRRS/Reports/${reportId}/update`,
@@ -861,50 +869,89 @@ PURPOSE		: BWRBRREPORT
 				success: function (response) {
 					$('#loader').modal('hide');
 
-					// ✅ Handle SUCCESS & NON-SUCCESS (Information)
 					if (response && response.toLowerCase().includes('success')) {
-						showResultModalDetail('BRRS', response);
-					} else {
-						showResultModalDetail('Information', response || 'No data updated.');
-					}
-
-					// Redirect after 1.5 sec
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
+						if (userAnswer === 'NO') {
+							document.getElementById('resultModalLabel2').innerText = 'Success';
+							document.getElementById('resultModalBody2').innerText = response;
+							const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+							modal.show();
 						} else {
-							window.history.back(); // fallback
+							showResultModal1('BRRS', response);
 						}
-					}, 1500);
+					} else {
+						showResultModal1('Information', response || 'No data updated.');
+					}
 				},
 
 				error: function (xhr, status, error) {
 					$('#loader').modal('hide');
 					console.error("Update error:", error);
 
-					// ✅ Handle ERROR
-					showResultModalDetail('Error', 'Failed to update record. Please try again.');
-
-					// Redirect back after delay even on error
-					setTimeout(() => {
-						if (previousUrl) {
-							window.location.href = previousUrl;
-						} else {
-							window.history.back();
-						}
-					}, 1500);
+					showResultModal1('Error', 'Failed to update record. Please try again.');
 				}
 			});
 		}
 
+		function regenerateProcedure() {
+			let rawDate = /*[[${todate}]]*/ 'fallback-string';
+			let cleanDate = rawDate.replace(/['"]/g, '');
+			let formattedDate = cleanDate;
+			let dateParts = cleanDate.split(/[\/\-]/);
+			if (dateParts.length === 3) {
+				formattedDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0];
+			}
+			let formData = 'type=RESUB&entry=NO&reportDate=' + formattedDate;
 
+			$('#loader').modal('show');
 
-		function showResultModalDetail(title, message) {
-			// Set the text for the modal elements
+			$.ajax({
+				url: '/BRRS/Reports/' + reportId + '/regenprocedure',
+				type: 'POST',
+				data: formData,
+				success: function (response) {
+					$('#loader').modal('hide');
+					if (response && response.toLowerCase().includes('success')) {
+						document.getElementById('resultModalLabel2').innerText = 'Success';
+						document.getElementById('resultModalBody2').innerText = response;
+						const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+						modal.show();
+					} else {
+						showResultModal1('Information', response || 'No data updated.');
+					}
+				},
+				error: function (xhr) {
+					$('#loader').modal('hide');
+					let errMsg = (xhr && xhr.responseText) ? xhr.responseText : 'Failed to process request. Please try again.';
+					showResultModal1('Error', errMsg);
+				}
+			});
+		}
+
+		function redirecttoarchlist() {
+			window.location.href = '/BRRS/Resubmission?rptcode=' + (reportId || 'M_SFINP2');
+		}
+
+		function showResultModal1(title, message) {
 			$('#resultModalLabel1').text(title);
 			$('#resultModalBody1').text(message);
+			$('#resultModal1').modal('show');
+		}
 
-			// Show the modal
+		function closemodels() {
+			$('#resultModal1').modal('hide');
+
+			setTimeout(function () {
+				if (document.referrer) {
+					window.location.href = document.referrer;
+				} else {
+					window.history.back();
+				}
+			}, 500);
+		}
+
+		function showResultModalDetail(title, message) {
+			$('#resultModalLabel1').text(title);
+			$('#resultModalBody1').text(message);
 			$('#resultModal1').modal('show');
 		}
 	</script>
@@ -923,9 +970,7 @@ PURPOSE		: BWRBRREPORT
 			const acctNo = elem.getAttribute("data-acctNo");
 			const asondate = elem.getAttribute("data-asondate");
 
-			// Use the 'reportId' variable initialized above
-			// Use backticks (`) for a template literal to easily include the variable
-			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}`;
+			location.href = `/BRRS/Reports/${reportId}/Detailspage?formmode=${mode}&acctNo=${acctNo}&asondate=${asondate}&type=${type}`;
 		}
 	</script>
 
@@ -965,7 +1010,7 @@ PURPOSE		: BWRBRREPORT
 				"#R78_MONTH_END"
 			].forEach(selector => {
 				if ($(selector).length) {
-					$(selector).css("background-color", "#FFF59D");
+					$(selector).css("background-color", "#d3d3d3");
 				}
 			});
 
@@ -1155,41 +1200,59 @@ PURPOSE		: BWRBRREPORT
 		}
 
 		function fileuploads(btn) {
-			const asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
+			const asondate = btn.getAttribute("data-todate") || /*[[${asondate}]]*/ '';
+			const type = btn.getAttribute("data-type") || /*[[${type}]]*/ '';
+			const version = btn.getAttribute("data-version") || /*[[${version}]]*/ '';
+			let userAnswer = null;
 
-			// Show loader
+			if (type === 'RESUB' && !$('#confirmModal').data('answered')) {
+				$('#confirmModal').modal('show');
+
+				$('#btnConfirmYes').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'YES');
+					fileuploads(btn);
+				});
+
+				$('#btnConfirmNo').off('click').on('click', function () {
+					$('#confirmModal').modal('hide');
+					$('#confirmModal').data('answered', 'NO');
+					fileuploads(btn);
+				});
+
+				return;
+			}
+
+			userAnswer = $('#confirmModal').data('answered');
+			$('#confirmModal').data('answered', null);
+
 			$('#loader').modal('show');
 
 			try {
-				// ✅ Step 1: Calculate totals
-				/*  calculateR14Totals(); */
 				calculateMonthEndValues();
 
-				// ✅ Step 2: Remove commas from all text inputs
 				$("#fileupload input[type='text']").each(function () {
 					$(this).val($(this).val().replace(/,/g, ''));
 				});
 
-				// ✅ Step 3: Validate form
-				if (!$("#fileupload").valid()) {
-					$('#loader').modal('hide');
-					return;
-				}
-
-				// ✅ Step 4: Build FormData
 				const formData = new FormData();
 				formData.append("asondate", asondate);
-				formData.append("type", type);
+				formData.append("todate", asondate);
+				if (type) formData.append("type", type);
+				if (version) formData.append("version", version);
+				if (userAnswer === 'NO') {
+					formData.append("entry", "NO");
+				} else if (userAnswer === 'YES') {
+					formData.append("entry", "YES");
+				}
 
-				$('#fileupload').find(':input').each(function () {
-					const name = $(this).attr('name');
+				$("#fileupload").find(":input").each(function () {
+					const name = $(this).attr("name");
 					if (name) {
 						formData.append(name, $(this).val());
 					}
 				});
 
-				// ✅ Step 5: AJAX submission
 				$.ajax({
 					url: './M_SFIN_P2updateAll',
 					type: 'POST',
@@ -1197,19 +1260,32 @@ PURPOSE		: BWRBRREPORT
 					processData: false,
 					contentType: false,
 					dataType: 'text',
-					success: function () {
-						$("#resultModalLabel").text("BRRS");
-						$("#resultModalBody").text(" Modified Successfully.");
-						$("#resultModal").modal("show");
+					success: function (response) {
+						$('#loader').modal('hide');
+
+						if (response && response.toLowerCase().includes('success')) {
+							if (userAnswer === 'NO') {
+								document.getElementById('resultModalLabel2').innerText = 'Success';
+								document.getElementById('resultModalBody2').innerText = response;
+								const modal = new bootstrap.Modal(document.getElementById('resultModal2'));
+								modal.show();
+							} else {
+								$("#resultModalLabel").text("BRRS");
+								$("#resultModalBody").text(response);
+								$("#resultModal").modal("show");
+							}
+						} else {
+							$("#resultModalLabel").text("Information");
+							$("#resultModalBody").text(response || 'No data updated.');
+							$("#resultModal").modal("show");
+						}
 					},
 					error: function (jqXHR) {
+						$('#loader').modal('hide');
 						console.error("Error response:", jqXHR.responseText);
 						$("#resultModalLabel").text("Error");
 						$("#resultModalBody").text("Update failed. Check console for details.");
 						$("#resultModal").modal("show");
-					},
-					complete: function () {
-						$('#loader').modal('hide');
 					}
 				});
 
@@ -1275,10 +1351,10 @@ PURPOSE		: BWRBRREPORT
 
 
 
-						<!-- Modify button -->
+						<!-- Modify Button -->
 						<button type="button" class="custom-tab-btn" onclick="showmodify(this);"
 							title="Click to EDIT Records"
-							th:if="${(role == 'M' or role == 'MAN') and type != 'ARCHIVAL' and displaymode == 'summary'}"
+							th:if="${(role == 'M' or role == 'MAN') and (type != 'RESUB' or allowdetail == 'YES') and type != 'ARCHIVAL' and displaymode == 'summary'}"
 							th:classappend="${session.PERMISSIONS == 'W'} AND ${dtltype == 'report'} ? addedit"
 							id="addRecord">
 							Modify
@@ -1288,10 +1364,9 @@ PURPOSE		: BWRBRREPORT
 						<button type="button" class="custom-tab-btn" title="Cancel editing" id="cancelRecord"
 							onclick="cancelModify();" style="display: none;">Cancel</button>
 
-
-
-
-
+						<button type="button" class="custom-tab-btn"
+							th:if="${displaymode == 'Details' and type == 'RESUB' and allowdetail == 'YES'}"
+							onclick="regenerateProcedure()">Regenerate</button>
 
 						<button type="button" class="custom-tab-btn" id="custom-tab-btnAdd"
 							th:if="${displaymode == 'summary' and role != 'M'}" th:attr="data-reportid=${reportid},
@@ -1302,10 +1377,9 @@ PURPOSE		: BWRBRREPORT
                     				 data-dtltype=${dtltype},
                     				 data-filename='M_SFINP2.xlsx',
 					 				 data-type=${type},
-					    			 data-version=${version}" onclick="downloadfile(this);">
+					    			 data-version=${version != null ? version : ''}" onclick="downloadfile(this);">
 							<i class="fa fa-download"></i> Format
 						</button>
-
 
 						<button type="button" class="custom-tab-btn " id="custom-tab-btnAdd"
 							onclick="downloadfile(this)" th:if="${(displaymode == 'summary' or displaymode == 'resub')and role != 'M'}"
@@ -1326,6 +1400,7 @@ PURPOSE		: BWRBRREPORT
 						<div class="nav-item dropdown PDF-download-menu"
 							style="list-style: none; display: inline-block;"
 							th:if="${(displaymode == 'summary' or displaymode == 'resubSummary')and role != 'M' }">
+
 							<button type="button" class="custom-tab-btn dropdown-toggle" data-toggle="dropdown">
 								<i class="fa fa-download"></i> PDF
 							</button>
@@ -2382,7 +2457,7 @@ PURPOSE		: BWRBRREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										form="fileupload" th:attr="data-todate=${asondate},data-type=${type},data-version=${version != null ? version : ''}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 							</form>
@@ -2397,7 +2472,7 @@ PURPOSE		: BWRBRREPORT
 								<table class="table table-striped table-hover table-bordereds " id="reportdetails">
 									<thead class="thead-light">
 										<tr>
-											<th></th>
+											<th th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}"></th>
 											<th style="width: 60px; text-align:center;">S No</th>
 											<th>CUST ID</th>
 											<th style="text-align:left;">ACCT NO</th>
@@ -2413,7 +2488,7 @@ PURPOSE		: BWRBRREPORT
 
 									<tbody style="font-family: Arial;">
 										<tr th:each="report ,srlno: ${reportdetails}">
-											<td>
+											<td th:if="${type != 'ARCHIVAL' and (type != 'RESUB' or allowdetail == 'YES')}">
 												<a data-toggle="tooltip" class="editrec"
 													title="Click to Edit this Record" th:if="${role == 'M' or role == 'MAN'}">
 													<i class="fas fa-edit" style="color: black; cursor:pointer;"
@@ -2530,6 +2605,8 @@ PURPOSE		: BWRBRREPORT
 								th:value="${#dates.format(msfinp2Data.reportDate, 'yyyy-MM-dd')}" />
 						</div>
 					</div>
+
+					<input type="hidden" name="type" th:value="${type}" />
 			</div>
 
 			<div style="text-align: center; margin-top: 20px;">
@@ -2599,6 +2676,62 @@ PURPOSE		: BWRBRREPORT
 					<!-- Your custom styled button -->
 					<button type="button" class="custom-tab-btn" onclick="closemodel()"
 						data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!-- Your custom styled header -->
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel1" style="text-align: center; color: white;">
+						<!-- Title will be set by JavaScript -->
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody1"></p>
+					<!-- Your custom styled button -->
+					<button type="button" class="custom-tab-btn" onclick="closemodels()"
+						data-dismiss="modal">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ---------------FOR RESUB---------------------- -->
+	<div class="modal fade" id="confirmModal">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="confirmModalLabel" style="text-align: center; color: white;">
+						Confirmation</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="confirmModalBody">Would you like to make further modifications?</p>
+
+					<div style="display: flex; justify-content: center; gap: 15px; margin-top: 20px;">
+						<button type="button" id="btnConfirmYes" class="custom-tab-btn"
+							data-dismiss="modal">Modify</button>
+						<button type="button" id="btnConfirmNo" class="custom-tab-btn" data-dismiss="modal">
+							Regenerate</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="resultModal2" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="resultModalLabel2" style="text-align: center; color: white;">
+					</div>
+				</div>
+				<div class="modal-body" style="text-align: center; font-size: 1.1rem;">
+					<p id="resultModalBody2"></p>
+					<button type="button" class="custom-tab-btn" onclick="redirecttoarchlist()">OK</button>
 				</div>
 			</div>
 		</div>

@@ -1265,18 +1265,47 @@ public class BRRS_ReportsController {
 
 	@RequestMapping(value = "/M_SFIN_P2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SFINP2_Summary_Entity request) {
+	public ResponseEntity<String> updateAllReports_M_SFINP2(
+			@RequestParam(value = "asondate", required = false) String asondateStr,
+			@RequestParam(value = "todate", required = false) String todateStr,
+			@RequestParam(value = "type", required = false) String type,
+			@RequestParam(value = "version", required = false) String version,
+			@RequestParam(value = "entry", required = false) String entry,
+			@ModelAttribute M_SFINP2_Summary_Entity request,
+			HttpServletRequest req) {
+
 		try {
-			System.out.println("came to single controller");
+			System.out.println("came to M_SFIN_P2updateAll controller: type=" + type + ", version=" + version + ", entry=" + entry + ", asondate=" + asondateStr);
 
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
+			Date parsedDate = null;
+			String dateStr = (asondateStr != null && !asondateStr.trim().isEmpty()) ? asondateStr : todateStr;
+			if (dateStr == null || dateStr.trim().isEmpty()) {
+				dateStr = req.getParameter("asondate");
+			}
+			if (dateStr != null && !dateStr.trim().isEmpty()) {
+				String[] patterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(dateStr.trim());
+						break;
+					} catch (Exception ignored) {}
+				}
+			}
+
+			if (parsedDate != null) {
+				request.setREPORT_DATE(parsedDate);
+			}
+
+			if (version != null && !version.isEmpty()) {
+				try {
+					request.setREPORT_VERSION(new BigDecimal(version));
+				} catch (Exception ex) {}
+			}
+
 			// call services
-			brrs_M_SFINP2_reportservice.updateReport(request);
+			ResponseEntity<?> response = brrs_M_SFINP2_reportservice.updateReport(request, type, version, entry);
 
-			return ResponseEntity.ok(" Modified Successfully");
+			return ResponseEntity.status(response.getStatusCode()).body(String.valueOf(response.getBody()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

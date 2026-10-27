@@ -4749,7 +4749,7 @@ public class RegulatoryReportServices {
 
 			case "M_SFINP2":
 				modelAndView = BRRS_M_SFINP2_reportservice.getViewOrEditPage(request.getParameter("acctNo"),
-						request.getParameter("formmode"));
+						request.getParameter("formmode"), request.getParameter("type"), request);
 				break;
 			default:
 				logger.warn("No detail service found for reportId: {}", reportId);
@@ -4830,6 +4830,10 @@ public class RegulatoryReportServices {
 
 			case "M_DEP2":
 				response = BRRS_M_DEP2_reportservice.callregenprocedure(request);
+				break;
+
+			case "M_SFINP2":
+				response = BRRS_M_SFINP2_reportservice.callregenprocedure(request);
 				break;
 
 			default:
