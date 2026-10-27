@@ -1,4 +1,5 @@
 package com.bornfire.brrs.services;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -42,8 +43,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -86,15 +90,19 @@ public class BRRS_Q_STAFF_Report_Service {
 		return jdbcTemplate.query(sql, new Object[] { reportDate }, new Q_STAFF_Summary_RowMapper());
 	}
 
-	// findbyreportdate
-
+	// Fetch existing live summary record
 	public Q_STAFF_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_STAFF_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_STAFF_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_STAFF_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-		String sql = "SELECT * FROM BRRS_Q_STAFF_SUMMARYTABLE " + "WHERE REPORT_DATE = ?";
-
-		List<Q_STAFF_Summary_Entity> list = jdbcTemplate.query(sql, new Object[] { reportDate },
-				new Q_STAFF_Summary_RowMapper());
-
+	// Fetch existing mod record if any pending modifications exist
+	public Q_STAFF_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_Q_STAFF_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<Q_STAFF_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(Q_STAFF_Summary_Entity.class), reportDate);
 		return list.isEmpty() ? null : list.get(0);
 	}
 
@@ -417,7 +425,7 @@ public class BRRS_Q_STAFF_Report_Service {
 		}
 	}
 
-	public class Q_STAFF_Summary_Entity {
+	public static class Q_STAFF_Summary_Entity {
 
 		private String R9_STAFF_COMPLEMENT;
 		private BigDecimal R9_LOCAL;
@@ -520,6 +528,11 @@ public class BRRS_Q_STAFF_Report_Service {
 		private String entity_flg;
 		private String modify_flg;
 		private String del_flg;
+
+		public Q_STAFF_Summary_Entity() {
+			super();
+
+		}
 
 		public String getR9_STAFF_COMPLEMENT() {
 			return R9_STAFF_COMPLEMENT;
@@ -6759,235 +6772,263 @@ public class BRRS_Q_STAFF_Report_Service {
 
 	@Transactional
 	public void updateReport(Q_STAFF_Summary_Entity updatedEntity) {
-
 		System.out.println("Came to Q_STAFF Update");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		// Fetch existing summary record for audit
-		Q_STAFF_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		// 1. Fetch live summary record as baseline reference
+		Q_STAFF_Summary_Entity liveSummary = findByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
 		}
 
-		// Audit old copy
+		// 2. Check if a mod record already exists. If not, copy from live summary
+		// baseline.
+		Q_STAFF_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new Q_STAFF_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
+
+		// 3. Keep old copy for audit comparison
 		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
-
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		String[] fields = { "STAFF_COMPLEMENT", "LOCAL", "EXPARIATES", "TOTAL" };
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
+			// ✅ Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields1 = { "STAFF_COMPLEMENT", "LOCAL", "EXPARIATES", "TOTAL" };
+			applyChangesToEntity(9, 15, fields1, updatedEntity, modRecord);
 
-			for (int i = 9; i <= 15; i++) {
+			String[] fields2 = { "SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL" };
+			applyChangesToEntity(21, 28, fields2, updatedEntity, modRecord);
 
+			String[] fields3 = { "STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS", "INTEREST_RATE" };
+			applyChangesToEntity(33, 38, fields3, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating Q_STAFF fields", e);
+		}
+
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("Q_STAFF Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_Q_STAFF_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"Q_STAFF Summary Screen", "BRRS_Q_STAFF_MOD_SUMMARYTABLE");
+		}
+	}
+
+// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields, Q_STAFF_Summary_Entity updatedEntity,
+			Q_STAFF_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					// Clean and convert string numbers to proper numeric format or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null; // Fallback to null if invalid number format
+							}
+						}
+					}
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = Q_STAFF_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	// 2. Safe MOD table saver with strict cleaning and BigDecimal conversion
+	public void saveModSummaryEntity(Q_STAFF_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_Q_STAFF_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		int[][] ranges = { { 9, 15 }, { 21, 28 }, { 33, 38 } };
+		String[][] fieldGroups = { { "STAFF_COMPLEMENT", "LOCAL", "EXPARIATES", "TOTAL" },
+				{ "SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL" },
+				{ "STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS", "INTEREST_RATE" } };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
+
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
 				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
+					String getterName = "get" + prefix + field;
+					String paramName = "r" + i + "_" + field.toLowerCase();
+					String columnName = prefix + field;
 
 					try {
-
 						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(entity);
 
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
+						// Convert any String number safely to BigDecimal or null
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
 						}
 
-						// Update existing object for audit
-						Method setter = Q_STAFF_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						params.addValue(paramName, value);
 
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_STAFF_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_STAFF_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
+						updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+						insertColumns.add(columnName);
+						insertValues.add(":" + paramName);
 
 					} catch (NoSuchMethodException e) {
-						continue;
+						// Skip
+					} catch (Exception e) {
+						throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
 					}
 				}
 			}
+		}
 
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
-			}
-
-			System.out.println("Q_STAFF Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_STAFF fields", e);
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_Q_STAFF_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_Q_STAFF_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_Q_STAFF_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_Q_STAFF_MOD_SUMMARYTABLE inserted successfully.");
 		}
 	}
 
 	@Transactional
-	public void updateReport2(Q_STAFF_Summary_Entity updatedEntity) {
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		Q_STAFF_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_Q_STAFF_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(Q_STAFF_Summary_Entity.class), reportDate);
 
-		System.out.println("Came to Q_STAFF Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
-
-		// Fetch existing summary record for audit
-		Q_STAFF_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
 		}
 
-		// Audit old copy
-		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on
+		// approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
 
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_Q_STAFF_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
 
-		String[] fields = { "SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL" };
-
-		try {
-
-			for (int i = 21; i <= 28; i++) {
-
-				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
-
-					try {
-
-						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
-
-						if (value == null) {
-							continue;
-						}
-
-						// Update existing object for audit
-						Method setter = Q_STAFF_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_STAFF_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_STAFF_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
-			}
-
-			System.out.println("Q_STAFF Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_STAFF fields", e);
-		}
+		System.out.println(
+				"✔ Q_STAFF Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
 	}
 
-	@Transactional
-	public void updateReport3(Q_STAFF_Summary_Entity updatedEntity) {
+	// Helper to push all modified fields from MOD table to Live Summary & Detail
+	// tables upon approval
+	private void transferModValuesToLiveTables(Q_STAFF_Summary_Entity modRecord, Date reportDate) {
+		int[][] ranges = { { 9, 15 }, { 21, 28 }, { 33, 38 } };
+		String[][] fieldGroups = { { "STAFF_COMPLEMENT", "LOCAL", "EXPARIATES", "TOTAL" },
+				{ "SENIOR_MANAGEMENT_COMPENSATION", "LOCAL", "EXPARIATES", "TOTAL" },
+				{ "STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS", "INTEREST_RATE" } };
 
-		System.out.println("Came to Q_STAFF Update");
-		System.out.println("Report Date: " + updatedEntity.getReport_date());
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
 
-		// Fetch existing summary record for audit
-		Q_STAFF_Summary_Entity existingSummary = findByReportDate(updatedEntity.getReport_date());
-
-		if (existingSummary == null) {
-			throw new RuntimeException("Record not found for REPORT_DATE : " + updatedEntity.getReport_date());
-		}
-
-		// Audit old copy
-		Q_STAFF_Summary_Entity oldcopy = new Q_STAFF_Summary_Entity();
-
-		BeanUtils.copyProperties(existingSummary, oldcopy);
-
-		String[] fields = { "STAFF_LOANS", "ORIGINAL_AMT", "BALANCE_OUTSTANDING", "NO_OF_ACS", "INTEREST_RATE" };
-
-		try {
-
-			for (int i = 33; i <= 38; i++) {
-
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
 				for (String field : fields) {
-
-					String getterName = "getR" + i + "_" + field;
-					String setterName = "setR" + i + "_" + field;
-					String columnName = "R" + i + "_" + field;
+					String getterName = "get" + prefix + field;
+					String columnName = prefix + field;
 
 					try {
-
 						Method getter = Q_STAFF_Summary_Entity.class.getMethod(getterName);
-
-						Object value = getter.invoke(updatedEntity);
+						Object value = getter.invoke(modRecord);
 
 						if (value == null) {
 							continue;
 						}
 
-						// Update existing object for audit
-						Method setter = Q_STAFF_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+						// Update Live Summary Table
+						String summarySql = "UPDATE BRRS_Q_STAFF_SUMMARYTABLE SET " + columnName
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(summarySql, value, reportDate);
 
-						setter.invoke(existingSummary, value);
-
-						String summarySql = "UPDATE BRRS_Q_STAFF_SUMMARYTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(summarySql, value, updatedEntity.getReport_date());
-
-						String detailSql = "UPDATE BRRS_Q_STAFF_DETAILTABLE " + "SET " + columnName + " = ? "
-								+ "WHERE REPORT_DATE = ?";
-
-						jdbcTemplate.update(detailSql, value, updatedEntity.getReport_date());
+						// Update Live Detail Table
+						String detailSql = "UPDATE BRRS_Q_STAFF_DETAILTABLE SET " + columnName
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(detailSql, value, reportDate);
 
 					} catch (NoSuchMethodException e) {
-						continue;
+						// Skip
+					} catch (Exception e) {
+						throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
 					}
 				}
 			}
-
-			// Audit only if changes found
-			String changes = auditService.getChanges(oldcopy, existingSummary);
-
-			if (!changes.isEmpty()) {
-
-				auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReport_date().toString(),
-						"Q_STAFF Summary Screen", "BRRS_Q_STAFF_SUMMARY");
-			}
-
-			System.out.println("Q_STAFF Summary & Detail Update Completed");
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating Q_STAFF fields", e);
 		}
 	}
 
@@ -7377,8 +7418,8 @@ public class BRRS_Q_STAFF_Report_Service {
 	}
 
 // Summary EXCEL  FORMAT
-	public byte[] getBRRS_Q_STAFFExcel(String filename, String reportId, String fromdate, String todate, String currency,
-			String dtltype, String type, String format, BigDecimal version) throws Exception {
+	public byte[] getBRRS_Q_STAFFExcel(String filename, String reportId, String fromdate, String todate,
+			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
 
 		System.out.println("======= VIEW SCREEN =======");

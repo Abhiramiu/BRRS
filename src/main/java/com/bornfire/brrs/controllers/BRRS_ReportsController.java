@@ -3868,9 +3868,9 @@ public class BRRS_ReportsController {
 			request.setReport_date(asondate);
 
 			// call services
-			BRRS_Q_SMME_DEP_ReportService.updateReport(request);
+			BRRS_Q_SMME_DEP_ReportService.updateQSmmeDepReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4320,12 +4320,12 @@ public class BRRS_ReportsController {
 			request1.setReport_date(asondate);
 
 			// call services
-			QBRANCHNET_service.QBranchnetUpdate1(request1);
-			QBRANCHNET_service.QBranchnetUpdate2(request1);
-			QBRANCHNET_service.QBranchnetUpdate3(request1);
-			QBRANCHNET_service.QBranchnetUpdate4(request1);
+			QBRANCHNET_service.updateQBranchnetReport(request1);
+//			QBRANCHNET_service.QBranchnetUpdate2(request1);
+//			QBRANCHNET_service.QBranchnetUpdate3(request1);
+//			QBRANCHNET_service.QBranchnetUpdate4(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -5646,21 +5646,19 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/Q_STAFFupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
 			@ModelAttribute Q_STAFF_Summary_Entity request1) {
 
 		try {
 			System.out.println("Came to single controller");
 
-			request1.setReport_date(asondate);
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+			}
 
 			QSTAFF_service.updateReport(request1);
-			QSTAFF_service.updateReport2(request1);
-			QSTAFF_service.updateReport3(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 			e.printStackTrace();
