@@ -6,234 +6,174 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BRRS</title>
+<title>BRRS - Login</title>
 
+<!-- Bootstrap & jQuery -->
 <link rel="stylesheet" type="text/css"
 	href="/webjars/bootstrap/4.3.1/css/bootstrap.css"
 	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.css}">
-<script src="/webjars/bootstrap/4.3.1/js/bootstrap.js"
-	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.js}"></script>
 <script src="/webjars/jquery/3.4.1/jquery.js"
 	th:src="@{/webjars/jquery/3.4.1/jquery.js}"></script>
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.js"
+	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.js}"></script>
 
+<!-- Favicon -->
 <link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
 <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
 
-<script>
-$(function() {
-var windHeight = $( window ).height();
-var topmargin = (windHeight/2)-(353/2);
-$(".login").css("margin-top",topmargin*0.8+"px");
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-});
-
-$(window).resize(function() {
-	var windHeight = $( window ).height();
-	var topmargin = (windHeight/2)-(353/2);
-	$(".login").css("margin-top",topmargin*0.8+"px");
-});
-
-</script>
 <style>
+* {
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
 body {
-	background-image: url("images/bodyBG.jpg");
 	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
 }
 
-
-
-</style>
-<style>
-/*
- * Specific styles of signin component
- */
-/*
- * General styles
- */
-
-
-.card-container.card {
-    max-width: 350px;
-    padding: 40px 40px;
+.login-wrapper {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
 }
 
-.btn {
-    font-weight: 700;
-    height: 36px;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
-}
-
-/*
- * Card component
- */
-.card {
-    background-color: #F7F7F7;
-    /* just in case there no content*/
-    padding: 20px 25px 30px;
-    margin: 0 auto 25px;
-    margin-top: 50px;
-    /* shadows and rounded borders */
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+.card-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 12px;
+    padding: 40px 35px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
 }
 
 .profile-img-card {
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 10px;
+    width: 180px;
+    height: auto;
+    margin: 0 auto 5px;
     display: block;
-    -moz-border-radius: 50%;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
+    object-fit: contain;
 }
 
-/*
- * Form styles
- */
 .profile-name-card {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    margin: 10px 0 0;
-    min-height: 1em;
-}
-
-.reauth-email {
-    display: block;
-    color: #404040;
-    line-height: 2;
-    margin-bottom: 10px;
-    font-size: 14px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.form-signin #inputEmail,
-.form-signin #inputPassword {
-    direction: ltr;
-    height: 44px;
-    font-size: 16px;
-}
-
-.form-signin input[type=email],
-.form-signin input[type=password],
-.form-signin input[type=text],
-.form-signin button {
-    width: 100%;
-    display: block;
-    margin-bottom: 10px;
-    z-index: 1;
-    position: relative;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.form-signin .form-control:focus {
-    border-color: rgb(104, 145, 162);
-    outline: 0;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
-}
-
-.btn.btn-signin {
-    /*background-color: #4d90fe; */
-    background-color: rgb(104, 145, 162);
-    /* background-color: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));*/
-    padding: 0px;
+    font-size: 20px;
     font-weight: 700;
-    font-size: 14px;
-    height: 36px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
+    color: #333333;
+    text-align: center;
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    height: 48px;
+    font-size: 15px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: rgb(104, 145, 162);
+    box-shadow: 0 0 0 3px rgba(104, 145, 162, 0.15);
+    outline: none;
+}
+
+
+.btn-signin {
+    background-color: rgb(104, 145, 162);
     border: none;
-    -o-transition: all 0.218s;
-    -moz-transition: all 0.218s;
-    -webkit-transition: all 0.218s;
-    transition: all 0.218s;
+    border-radius: 8px;
+    height: 48px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #ffffff;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                transform 0.1s ease,
+                box-shadow 0.2s ease;
 }
 
-.btn.btn-signin:hover,
-.btn.btn-signin:active,
-.btn.btn-signin:focus {
-    background-color: rgb(12, 97, 33);
+.btn-signin:hover {
+    background-color: #527789;
+    box-shadow: 0 4px 10px rgba(82, 119, 137, 0.3);
+    transform: translateY(-1px);
 }
 
-.forgot-password {
-    color: rgb(104, 145, 162);
+.btn-signin:active {
+    background-color: #3F6475;
+    transform: translateY(0);
 }
 
-.forgot-password:hover,
-.forgot-password:active,
-.forgot-password:focus{
-    color: rgb(12, 97, 33);
-};
+
+.btn-signin:active {
+    transform: scale(0.98);
+}
+
+.alert-message {
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.alert-error {
+    color: #cd103c;
+    background-color: rgba(205, 16, 60, 0.08);
+}
+
+.alert-logout {
+    color: #34af32;
+    background-color: rgba(52, 175, 50, 0.08);
+}
 </style>
 </head>
-<body>
-	<!-- <div class="container-fluid">
-		<div class="row">
-			<div class="col-sm-8"></div>
-			<div class="col-sm-4">
-				<div class="card card-primary login">
-					<img class="card-img-top" th:src=@{/images/Bornfire.png} style="width:130px" alt="Bornfire">
-					
-					<div class="card-body">
+<body th:style="'background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + @{/images/bodyBG.jpg} + ');'">
 
-						<form th:action="@{/login}" method="post" name="Login_Form"	class="form-signin">
-							
-							<div class="form-group">
-							<label for="userid">User Id</label>
-							<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="userid"	placeholder="User Id" id="userid" required autofocus />
-							</div>
-							
-							<div class="form-group">
-							<label for="password">Password</label>
-							<input type="password" class="form-control" name="password"	placeholder="Password" id="password" required />
-							</div>
-							<div style="text-align: center; padding-bottom: 10px;">
-							<span style="color: #cd103c;" th:if="${param.error}" th:text="${param.error}" >test</span>
-							<span style="color: #34af32;" th:if="${param.logout}">You have been logged out.</span>
-							</div>
-							<input class="btn btn-lg btn-primary btn-block" type="submit" value="Sign In" />
-							
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div> -->
-	   <div class="container login">
+    <div class="login-wrapper">
         <div class="card card-container">
-            <img id="profile-img" class="profile-img-card"  th:src=@{/images/Bornfire.png} />
+            <!-- Logo -->
+            <img id="profile-img" class="profile-img-card" th:src="@{/images/Login-Logo.png}" alt="BRRS Logo" />
 
-           
+            <!-- Title -->
+            <p id="profile-name" class="profile-name-card">BRRS Portal</p>
 
-            <p id="profile-name" class="profile-name-card">BRRS Login</p>
-            <form th:action="@{/login}" method="post" name="Login_Form"	 class="form-signin">
-                <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="userid"	placeholder="User Id" id="userid" required autofocus>
-                <input type="password" class="form-control"  name="password" placeholder="Password" id="password" required>
-                <div style="text-align: center; padding-bottom: 10px;">
-							<span style="color: #cd103c;" th:if="${param.error}" th:text="${param.error}">test</span>
-							<span style="color: #34af32;" th:if="${param.logout}">You have been logged out.</span>
-							</div>
-                <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Sign in</button>
-               <!--  <p class="profile-name-card">License to BOB Dubai</p>
-            </form><!-- /form -->
-        </div><!-- /card-container -->
-    </div><!-- /container -->
+            <!-- Login Form -->
+            <form th:action="@{/login}" method="post" name="Login_Form" class="form-signin">
+                
+                <!-- Feedback Messages -->
+                <div th:if="${param.error}" class="alert-message alert-error" th:text="${param.error}">Invalid credentials</div>
+                
+                <!-- User ID Field -->
+                <div class="form-group">
+                    <input type="text" onkeyup="this.value = this.value.toUpperCase();" 
+                           class="form-control" name="userid" placeholder="User Id" id="userid" required autofocus>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password" placeholder="Password" id="password" required>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="btn btn-signin" type="submit">Sign In</button>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>
