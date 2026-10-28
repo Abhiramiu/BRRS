@@ -3083,7 +3083,7 @@ public class BRRS_ReportsController {
 
 			BRRS_M_LA2_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully.Record sent for Checker Approval.");
 
 		} catch (Exception e) {
 

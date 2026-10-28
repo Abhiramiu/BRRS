@@ -21,19 +21,10 @@ PURPOSE		: RRREPORT
 	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
 
 	<!-- JavaScript -->
-	<!-- jQuery core (required first) -->
-
-
-	<!-- ✅ Your manually placed jQuery validation
-	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	 <script th:src="/jquery/jquery.validate.min.js"></script>
-	 -->
-
 	<!-- jQuery (required first) -->
 	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
 
-	<!-- ✅ jQuery Validation -->
+	<!-- jQuery Validation -->
 	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
 		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
 
@@ -44,8 +35,6 @@ PURPOSE		: RRREPORT
 	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
-
-
 
 	<style>
 		.btns {
@@ -75,8 +64,6 @@ PURPOSE		: RRREPORT
 			border-color: #0c0c0c;
 		}
 
-
-
 		#finusertb {
 			width: 460px;
 		}
@@ -85,9 +72,6 @@ PURPOSE		: RRREPORT
 			padding: 0px;
 		}
 	</style>
-
-
-
 
 	<style>
 		.card {
@@ -155,8 +139,6 @@ PURPOSE		: RRREPORT
 			transform: scale(1.1);
 		}
 
-
-
 		td {
 			border: 1px solid rgb(0, 164, 166);
 			overflow: hidden;
@@ -164,7 +146,6 @@ PURPOSE		: RRREPORT
 			text-overflow: ellipsis;
 		}
 	</style>
-
 
 	<style>
 		.form-group {
@@ -186,8 +167,6 @@ PURPOSE		: RRREPORT
 			color: red;
 			padding-top: 15px;
 		}
-
-
 
 		.form-control:focus {
 			border-color: #007bff;
@@ -214,16 +193,12 @@ PURPOSE		: RRREPORT
 			color: #007bff;
 		}
 
-		/* Hover effect when the input/select is focused */
 		.form-control:focus:hover~.form-legend {
 			color: #0056b3;
-			/* Darker shade of blue on hover */
 		}
 
-		/* Ensure the label returns to the normal color after focus or hover is removed */
 		.form-control:not(:focus)~.form-legend {
 			color: #aaa;
-			/* Normal label color */
 		}
 	</style>
 
@@ -276,12 +251,7 @@ PURPOSE		: RRREPORT
 		}
 	</style>
 
-
 	<script th:inline="javascript">
-
-
-
-
 
 		$(document).ready(function () {
 			Maker_Checker_Function();
@@ -293,7 +263,6 @@ PURPOSE		: RRREPORT
 				url: "/BRRS/getUserRole",
 				type: "GET",
 				success: function (roleId) {
-					// console.log("User Role ID:", roleId);
 
 					if (roleId === "ADM-C" || roleId === "USR-C" || roleId === "USER-AUDIT") {
 						const modifyBtn = document.getElementById("addRecord");
@@ -312,7 +281,6 @@ PURPOSE		: RRREPORT
 			});
 		}
 
-
 		function home() {
 			$("#loader").modal("toggle");
 			location.href = 'Dashboard'
@@ -324,10 +292,7 @@ PURPOSE		: RRREPORT
 			window.history.back();
 		}
 
-
-
 	</script>
-
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
@@ -358,15 +323,12 @@ PURPOSE		: RRREPORT
 			});
 		});
 
-
-
 		function getVali(a) {
 			var reportid = a.getAttribute("data-rptcode");
 			var todate = a.getAttribute("data-todate");
 
 			// Show loader
 			$('#loader').modal('show');
-
 
 			$.ajax({
 				url: "checkDomainFlag?rptcode=" + reportid,
@@ -443,6 +405,84 @@ PURPOSE		: RRREPORT
 			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 		}
 	</style>
+
+	<!-- ✅ Search (top-right) + Colour legend (bottom-left) + Pagination (bottom-right) -->
+	<style>
+		/* Search box on the RIGHT (top) */
+		.dataTables_wrapper .top-bar {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			padding: 10px;
+		}
+
+		.dataTables_wrapper .top-bar .dataTables_filter {
+			float: none !important;
+			text-align: right;
+			margin: 0 !important;
+			padding: 0 !important;
+		}
+
+		/* Bottom bar: legend on the LEFT, pagination on the RIGHT */
+		.dataTables_wrapper .bottom-bar {
+			display: flex !important;
+			flex-wrap: nowrap;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+			padding: 8px 10px;
+		}
+
+		.dataTables_wrapper .bottom-bar .legend-holder {
+			flex: 0 0 auto;
+			margin-right: auto;
+		}
+
+		.dataTables_wrapper .bottom-bar .pager-holder {
+			flex: 0 0 auto;
+			margin-left: auto;
+		}
+
+		.dataTables_wrapper .bottom-bar .dataTables_paginate {
+			float: none !important;
+			text-align: right;
+			padding-top: 0 !important;
+			margin: 0 !important;
+		}
+
+		/* Legend container (hidden until it is moved into the bottom bar) */
+		.rpt-legend {
+			display: flex;
+			align-items: center;
+			gap: 22px;
+			font-family: Arial;
+			font-size: 14px;
+			font-weight: 600;
+			color: #333;
+		}
+
+		.rpt-legend .legend-item {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			white-space: nowrap;
+		}
+
+		/* Small square box */
+		.rpt-legend .legend-box {
+			display: inline-block;
+			width: 26px;
+			height: 20px;
+			border: 2px solid rgb(0, 164, 166);
+			border-radius: 3px;
+		}
+
+		/* Same colours as the table rows */
+		.rpt-legend .legend-yellow { background-color: rgb(255, 244, 202); }
+		.rpt-legend .legend-grey   { background-color: rgb(225, 231, 234); }
+		.rpt-legend .legend-white  { background-color: #ffffff; }
+	</style>
+
 	<script>
 		function contentLoad(a) {
 			// Store ID of clicked element in localStorage
@@ -454,12 +494,10 @@ PURPOSE		: RRREPORT
 			// Delay navigation slightly so the loader is visible
 			setTimeout(function () {
 				location.href = "/BRRS/" + a.id;
-			}, 300); // You can increase this delay if needed
+			}, 300);
 		}
 	</script>
 </head>
-
-
 
 <title>BRRS</title>
 
@@ -468,7 +506,6 @@ PURPOSE		: RRREPORT
 		<div class="row">
 
 			<div th:insert="HeaderMenu :: header"></div>
-
 
 			<div class="card">
 
@@ -501,10 +538,11 @@ PURPOSE		: RRREPORT
 					</div>
 				</div>
 
-
-
 				<div class="row">
 					<div class="col-sm-12">
+						<!-- TOP BAR : search box goes here (right side) -->
+						<div id="rptTopBar" style="display:flex !important; justify-content:flex-end !important; align-items:center !important; padding:10px;"></div>
+
 						<div class="table-container" style="max-height: 620px; ">
 
 							<table class="table table-bordered table-hover" id="BRRSvalidation">
@@ -539,7 +577,6 @@ PURPOSE		: RRREPORT
 
 										<td th:text="${userProfile.domainId}"></td>
 
-
 										<td class="rpt-status" th:attr="data-rptcode=${userProfile.rptCode}">
 											Loading...
 										</td>
@@ -549,24 +586,31 @@ PURPOSE		: RRREPORT
 								</tbody>
 							</table>
 						</div>
-						<!-- <div class="card-footer text-center" style="background-color: white;">
-						  <button type="button" class="custom-tab-btn custom-tab-btn-xs" id="custom-tab-btnHome" onclick="home();">Home</button>
-						  <button type="button" class="custom-tab-btn custom-tab-btn-xs" id="custom-tab-btnBack" onclick="back();">Back</button>
-					</div> -->
+
+						<!-- ✅ Colour legend. Moved to the bottom-left (beside the pagination) by the DataTable script -->
+						<!-- BOTTOM BAR : legend on the left, pagination on the right (one line) -->
+						<div id="rptBottomBar" style="display:flex !important; flex-wrap:nowrap !important; flex-direction:row !important; justify-content:space-between !important; align-items:center !important; padding:8px 0 8px 10px;">
+						<div id="rptLegend" class="rpt-legend">
+							<span class="legend-item">
+								<span class="legend-box legend-yellow"></span>NO MANUAL
+							</span>
+							<span class="legend-item">
+								<span class="legend-box legend-grey"></span>PARTIAL MANUAL
+							</span>
+							<span class="legend-item">
+								<span class="legend-box legend-white"></span>FULL MANUAL
+							</span>
+						</div>
+						<div id="rptPager" style="margin-left:auto !important;"></div>
+						</div>
 
 					</div>
 				</div>
 			</div>
 
-
-
 		</div>
 
-
-
 	</div>
-
-
 
 	<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -581,41 +625,64 @@ PURPOSE		: RRREPORT
 		</div>
 	</div>
 
-
-
-
-
 </body>
-<!-- <script>
-  $(document).ready(function () {
-    $('#BRRSvalidation').DataTable({
-      "paging": true,
-      "pageLength": 20,
-      "lengthChange": false,
-      "searching": true,
-      "ordering": true,
-      "autoWidth": false,
-      "language": {
-        "search": "Search:"
-      }
-    });
-  });
-</script> -->
+
 <script>
 	$(document).ready(function () {
-		$('#BRRSvalidation').DataTable({
-			"pageLength": 10,
-			"paging": true,
-			"info": false,       // turn off "Showing x of y"
-			"searching": true,  // turn on search
-			"ordering": false,   // turn off ordering
-			"lengthChange": false // hide "Show x entries"
-		});
+
+		// inline !important so no stylesheet can override
+		function force(el, props) {
+			for (var k in props) { el.style.setProperty(k, props[k], 'important'); }
+		}
+
+		// Works with BOTH DataTables 1.x (.dataTables_filter / .dataTables_paginate)
+		// and DataTables 2.x (.dt-search / .dt-paging)
+		function arrange() {
+			var filter = document.querySelector('.dataTables_filter, .dt-search');
+			var pager = document.querySelector('.dataTables_paginate, .dt-paging');
+			if (!filter || !pager) { return false; }
+
+			force(filter, { 'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right' });
+			force(pager, { 'float': 'none', 'margin': '0', 'padding': '0', 'text-align': 'right', 'justify-content': 'flex-end' });
+
+			document.getElementById('rptTopBar').appendChild(filter);   // search -> top right
+			document.getElementById('rptPager').appendChild(pager);     // pagination -> bottom right
+
+			// DataTables 2.x leaves empty layout rows behind - hide them
+			document.querySelectorAll('.dt-layout-row').forEach(function (row) {
+				if (!row.querySelector('table') && row.textContent.trim() === '') {
+					row.style.display = 'none';
+				}
+			});
+			return true;
+		}
+
+		try {
+			// Create the DataTable only if nobody initialised it yet
+			var tbl = document.getElementById('BRRSvalidation');
+			if (tbl && !$.fn.dataTable.isDataTable(tbl)) {
+				$(tbl).DataTable({
+					"pageLength": 10,
+					"paging": true,
+					"info": false,
+					"searching": true,
+					"ordering": false,
+					"lengthChange": false,
+					"dom": 'frtp'
+				});
+			}
+		} catch (e) {
+			console.error(e);
+		}
+
+		// Wait (up to 5 seconds) until the controls exist, then move them
+		var tries = 0;
+		var timer = setInterval(function () {
+			tries++;
+			if (arrange() || tries > 50) { clearInterval(timer); }
+		}, 100);
 	});
 </script>
-
-
-<!-- Include this after your DataTable initialization script -->
 
 <style>
 	/* Remove top margin/padding from DataTables parent containers */
@@ -635,42 +702,97 @@ PURPOSE		: RRREPORT
 		padding-top: 0 !important;
 	}
 
-	/* FIX: Make search label and box inline */
+	/* Search label and box inline, aligned to the right */
 	div.dataTables_filter label {
 		display: flex !important;
 		align-items: center;
+		justify-content: flex-end;
 		gap: 8px;
 		white-space: nowrap;
+		margin: 0;
 	}
 
-	/* Style pagination buttons */
-	.dataTables_wrapper .dataTables_paginate .paginate_button {
-		background-color: white;
-		border: 1px solid rgb(0, 164, 166);
-		color: rgb(0, 164, 166) !important;
-		padding: 5px 10px;
-		margin: 2px;
-		border-radius: 6px;
-		transition: 0.3s;
-		font-weight: 600;
+	/* Controls moved into the fixed bars */
+	#rptTopBar .dataTables_filter {
+		float: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		text-align: right !important;
 	}
 
-	.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-	.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-		background-color: rgb(0, 164, 166) !important;
-		color: white !important;
+	#rptPager .dataTables_paginate {
+		float: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		text-align: right !important;
 	}
 
-	/* Optional: Style the search input */
+	#rptTopBar .dt-search {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+	}
+
+	#rptPager .dt-paging {
+		display: flex !important;
+		align-items: center;
+		justify-content: flex-end;
+	}
+
+	/* ===== Pagination style (grey band, plain numbers, boxed current page) ===== */
+	#rptPager .dt-paging,
+	#rptPager .dataTables_paginate {
+		display: inline-flex !important;
+		align-items: center;
+		justify-content: flex-end;
+		background-color: #f7f7f7;
+		padding: 0 !important;
+		margin: 0 !important;
+		font-family: Arial;
+	}
+
+	#rptPager .dt-paging .dt-paging-button,
+	#rptPager .dataTables_paginate .paginate_button {
+		background: transparent !important;
+		border: 1px solid transparent !important;
+		border-radius: 2px !important;
+		color: #333 !important;
+		font-family: Arial;
+		font-size: 15px;
+		font-weight: 400;
+		min-width: 43px;
+		height: 40px;
+		padding: 0 14px !important;
+		margin: 0 !important;
+		box-shadow: none !important;
+		cursor: pointer;
+	}
+
+	#rptPager .dt-paging .dt-paging-button.current,
+	#rptPager .dataTables_paginate .paginate_button.current {
+		background: #ececec !important;
+		border: 1px solid #8a8a8a !important;
+		color: #111 !important;
+	}
+
+	#rptPager .dt-paging .dt-paging-button:hover:not(.disabled):not(.current),
+	#rptPager .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
+		background: #e6e6e6 !important;
+		color: #000 !important;
+	}
+
+	#rptPager .dt-paging .dt-paging-button.disabled,
+	#rptPager .dataTables_paginate .paginate_button.disabled {
+		color: #999 !important;
+		cursor: default;
+	}
+
+	/* Style the search input */
 	.dataTables_filter input {
 		border: 1px solid rgb(0, 164, 166);
 		border-radius: 4px;
 		padding: 4px 8px;
 	}
 </style>
-
-
-
-
 
 </html>

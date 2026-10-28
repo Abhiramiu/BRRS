@@ -1450,6 +1450,7 @@ public class AuditService {
 		/* Q_SMME_DEP */
 		else if (upperTable.contains("Q_SMME_DEP")) {
 			transferQSmmeDepData(auditRecord);
+
 		}
 		
 		/* M_CA4 (Maker-Checker) */
@@ -1460,8 +1461,14 @@ public class AuditService {
 		/* M_SECL (Maker-Checker) */
 		else if (upperTable.contains("M_SECL")) {
 		    transferSECLData(auditRecord);
-		}
 		
+		
+		} 
+		/* M_LA2 */
+		else if (upperTable.contains("M_LA2")) {
+			transferMLA2Data(auditRecord);
+		}
+
 		else {
 			throw new IllegalArgumentException("Verification not configured for table: " + auditTable);
 		}
@@ -2033,6 +2040,7 @@ public class AuditService {
 		System.out.println("Q_SMME_DEP Verification and Transfer Completed Successfully");
 	}
 	
+
 	
 	private void transferCA4Data(AuditServicesEntity auditRecord) {
 	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA4_MOD_SUMMARYTABLE";
@@ -2357,5 +2365,108 @@ public class AuditService {
 	}
 	
 	
-	
+
+	private void transferMLA2Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_LA2_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_LA2 record available for verification.");
+		}
+
+		System.out.println("M_LA2 Report Date : " + reportDate);
+
+		// 1. Update BRRS_M_LA2_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_LA2_SUMMARYTABLE M " + "SET ("
+				+ "     R12_INDUSTRY, R12_TOTAL,"
+				+ "     R13_INDUSTRY, R13_TOTAL,"
+				+ "     R14_INDUSTRY, R14_TOTAL,"
+				+ "     R15_INDUSTRY, R15_TOTAL,"
+				+ "     R16_INDUSTRY, R16_TOTAL,"
+				+ "     R17_INDUSTRY, R17_TOTAL,"
+				+ "     R18_INDUSTRY, R18_TOTAL,"
+				+ "     R19_INDUSTRY, R19_TOTAL,"
+				+ "    R20_INDUSTRY, R20_TOTAL,"
+				+ "    R21_INDUSTRY, R21_TOTAL,"
+				+ "    R22_INDUSTRY, R22_TOTAL,"
+				+ "    R23_INDUSTRY, R23_TOTAL,"
+				+ "    R24_INDUSTRY, R24_TOTAL,"
+				+ "    R25_INDUSTRY, R25_TOTAL,"
+				+ "    R26_INDUSTRY, R26_TOTAL,"
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "     S.R12_INDUSTRY, S.R12_TOTAL,"
+				+ "     S.R13_INDUSTRY, S.R13_TOTAL,"
+				+ "     S.R14_INDUSTRY, S.R14_TOTAL,"
+				+ "     S.R15_INDUSTRY, S.R15_TOTAL,"
+				+ "     S.R16_INDUSTRY, S.R16_TOTAL,"
+				+ "     S.R17_INDUSTRY, S.R17_TOTAL,"
+				+ "     S.R18_INDUSTRY, S.R18_TOTAL,"
+				+ "     S.R19_INDUSTRY, S.R19_TOTAL,"
+				+ "    S.R20_INDUSTRY, S.R20_TOTAL,"
+				+ "    S.R21_INDUSTRY, S.R21_TOTAL,"
+				+ "    S.R22_INDUSTRY, S.R22_TOTAL,"
+				+ "    S.R23_INDUSTRY, S.R23_TOTAL,"
+				+ "    S.R24_INDUSTRY, S.R24_TOTAL,"
+				+ "    S.R25_INDUSTRY, S.R25_TOTAL,"
+				+ "    S.R26_INDUSTRY, S.R26_TOTAL,"
+				+ "        S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_M_LA2_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_LA2 modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("M_LA2 Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_M_LA2_DETAILTABLE from MOD table (Same column mapping)
+		String updateDetailSql = "UPDATE BRRS_M_LA2_DETAILTABLE M " + "SET ("
+				+ "     R12_INDUSTRY, R12_TOTAL,"
+				+ "     R13_INDUSTRY, R13_TOTAL,"
+				+ "     R14_INDUSTRY, R14_TOTAL,"
+				+ "     R15_INDUSTRY, R15_TOTAL,"
+				+ "     R16_INDUSTRY, R16_TOTAL,"
+				+ "     R17_INDUSTRY, R17_TOTAL,"
+				+ "     R18_INDUSTRY, R18_TOTAL,"
+				+ "     R19_INDUSTRY, R19_TOTAL,"
+				+ "    R20_INDUSTRY, R20_TOTAL,"
+				+ "    R21_INDUSTRY, R21_TOTAL,"
+				+ "    R22_INDUSTRY, R22_TOTAL,"
+				+ "    R23_INDUSTRY, R23_TOTAL,"
+				+ "    R24_INDUSTRY, R24_TOTAL,"
+				+ "    R25_INDUSTRY, R25_TOTAL,"
+				+ "    R26_INDUSTRY, R26_TOTAL,"
+				+ "    ENTITY_FLG, MODIFY_FLG, DEL_FLG" + ") = (" + "    SELECT "
+				+ "     S.R12_INDUSTRY, S.R12_TOTAL,"
+				+ "     S.R13_INDUSTRY, S.R13_TOTAL,"
+				+ "     S.R14_INDUSTRY, S.R14_TOTAL,"
+				+ "     S.R15_INDUSTRY, S.R15_TOTAL,"
+				+ "     S.R16_INDUSTRY, S.R16_TOTAL,"
+				+ "     S.R17_INDUSTRY, S.R17_TOTAL,"
+				+ "     S.R18_INDUSTRY, S.R18_TOTAL,"
+				+ "     S.R19_INDUSTRY, S.R19_TOTAL,"
+				+ "    S.R20_INDUSTRY, S.R20_TOTAL,"
+				+ "    S.R21_INDUSTRY, S.R21_TOTAL,"
+				+ "    S.R22_INDUSTRY, S.R22_TOTAL,"
+				+ "    S.R23_INDUSTRY, S.R23_TOTAL,"
+				+ "    S.R24_INDUSTRY, S.R24_TOTAL,"
+				+ "    S.R25_INDUSTRY, S.R25_TOTAL,"
+				+ "    S.R26_INDUSTRY, S.R26_TOTAL,"
+				+ "        S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG " + "    FROM BRRS_M_LA2_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" + ") "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_LA2 Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_LA2_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_LA2 MOD Updated : " + modUpdated);
+		System.out.println("M_LA2 Verification and Transfer Completed Successfully");
+	}
+
 }

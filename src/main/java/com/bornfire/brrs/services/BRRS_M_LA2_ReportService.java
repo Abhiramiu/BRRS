@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.IdClass;
+
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -45,6 +47,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +58,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-
 @Component
 @Service
 
@@ -3214,151 +3217,391 @@ public class BRRS_M_LA2_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_LA2_Summary_Entity request1) {
+	public void updateReport(M_LA2_Summary_Entity updatedEntity) {
 
-	    try {
+	    System.out.println("Came to M_LA2 Update");
+	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	        logger.info("Came to services");
-	        logger.info("Report Date: {}", request1.getREPORT_DATE());
+	    // 1. Fetch live summary record
+	    M_LA2_Summary_Entity liveSummary = findByReportDate(
+	            updatedEntity.getREPORT_DATE());
 
-	        // Fetch existing record
-	        List<M_LA2_Summary_Entity> records =
-	                getDataByDate1(request1.getREPORT_DATE());
-
-	        if (records == null || records.isEmpty()) {
-
-	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE : "
-	                            + request1.getREPORT_DATE());
-	        }
-
-	        M_LA2_Summary_Entity existing = records.get(0);
-
-	        // Audit old copy
-	        M_LA2_Summary_Entity oldcopy =
-	                new M_LA2_Summary_Entity();
-
-	        BeanUtils.copyProperties(existing, oldcopy);
-
-	        String changes = auditService.getChanges(oldcopy, request1);
-
-	        if (!changes.isEmpty()) {
-
-	            String sql =
-	                    "UPDATE BRRS_M_LA2_SUMMARYTABLE SET " +
-	                    "R12_INDUSTRY=?, R12_TOTAL=?, " +
-	                    "R13_INDUSTRY=?, R13_TOTAL=?, " +
-	                    "R14_INDUSTRY=?, R14_TOTAL=?, " +
-	                    "R15_INDUSTRY=?, R15_TOTAL=?, " +
-	                    "R16_INDUSTRY=?, R16_TOTAL=?, " +
-	                    "R17_INDUSTRY=?, R17_TOTAL=?, " +
-	                    "R18_INDUSTRY=?, R18_TOTAL=?, " +
-	                    "R19_INDUSTRY=?, R19_TOTAL=?, " +
-	                    "R20_INDUSTRY=?, R20_TOTAL=?, " +
-	                    "R21_INDUSTRY=?, R21_TOTAL=?, " +
-	                    "R22_INDUSTRY=?, R22_TOTAL=?, " +
-	                    "R23_INDUSTRY=?, R23_TOTAL=?, " +
-	                    "R24_INDUSTRY=?, R24_TOTAL=?, " +
-	                    "R25_INDUSTRY=?, R25_TOTAL=?, " +
-	                    "R26_INDUSTRY=?, R26_TOTAL=? " +
-	                    "WHERE REPORT_DATE=?";
-
-	            int count = jdbcTemplate.update(
-
-	                    sql,
-
-	                    request1.getR12_INDUSTRY(),
-	                    request1.getR12_TOTAL(),
-
-	                    request1.getR13_INDUSTRY(),
-	                    request1.getR13_TOTAL(),
-
-	                    request1.getR14_INDUSTRY(),
-	                    request1.getR14_TOTAL(),
-
-	                    request1.getR15_INDUSTRY(),
-	                    request1.getR15_TOTAL(),
-
-	                    request1.getR16_INDUSTRY(),
-	                    request1.getR16_TOTAL(),
-
-	                    request1.getR17_INDUSTRY(),
-	                    request1.getR17_TOTAL(),
-
-	                    request1.getR18_INDUSTRY(),
-	                    request1.getR18_TOTAL(),
-
-	                    request1.getR19_INDUSTRY(),
-	                    request1.getR19_TOTAL(),
-
-	                    request1.getR20_INDUSTRY(),
-	                    request1.getR20_TOTAL(),
-
-	                    request1.getR21_INDUSTRY(),
-	                    request1.getR21_TOTAL(),
-
-	                    request1.getR22_INDUSTRY(),
-	                    request1.getR22_TOTAL(),
-
-	                    request1.getR23_INDUSTRY(),
-	                    request1.getR23_TOTAL(),
-
-	                    request1.getR24_INDUSTRY(),
-	                    request1.getR24_TOTAL(),
-
-	                    request1.getR25_INDUSTRY(),
-	                    request1.getR25_TOTAL(),
-
-	                    request1.getR26_INDUSTRY(),
-	                    request1.getR26_TOTAL(),
-
-	                    request1.getREPORT_DATE()
-	            );
-
-	            if (count > 0) {
-
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request1,
-	                        request1.getREPORT_DATE().toString(),
-	                        "M LA2 Summary Screen",
-	                        "BRRS_M_LA2_SUMMARYTABLE"
-	                );
-
-	                logger.info(
-	                        "Audit completed for REPORT_DATE {}",
-	                        request1.getREPORT_DATE());
-
-	                logger.info(
-	                        "M_LA2 Summary Updated Successfully. Rows Updated: {}",
-	                        count);
-	            }
-
-	        } else {
-
-	            logger.info(
-	                    "No changes detected for REPORT_DATE {}",
-	                    request1.getREPORT_DATE());
-	        }
-
-	    } catch (Exception e) {
-
-	        logger.error(
-	                "Error while updating BRRS_M_LA2 Report",
-	                e);
-
+	    if (liveSummary == null) {
 	        throw new RuntimeException(
-	                "Error while updating BRRS_M_LA2 Report",
-	                e);
+	                "Record not found in live LA2 summary table for REPORT_DATE: "
+	                        + updatedEntity.getREPORT_DATE());
 	    }
-	}
-	private Object getValue(Object obj, String methodName) {
+
+	    // 2. Fetch existing MOD record
+	    M_LA2_Summary_Entity modRecord = findModRecordByReportDate(
+	            updatedEntity.getREPORT_DATE());
+
+	    if (modRecord == null) {
+	        modRecord = new M_LA2_Summary_Entity();
+	        BeanUtils.copyProperties(liveSummary, modRecord);
+	    }
+
+	    // 3. Keep old copy for audit
+	    M_LA2_Summary_Entity oldcopy = new M_LA2_Summary_Entity();
+	    BeanUtils.copyProperties(modRecord, oldcopy);
+
 	    try {
-	        return obj.getClass().getMethod(methodName).invoke(obj);
+	        // 4. Update only LA2 fields in MOD entity
+	        String[] fields = { "INDUSTRY", "TOTAL" };
+
+	        applyLA2ChangesToEntity(
+	                12, 26, fields, updatedEntity, modRecord);
+
 	    } catch (Exception e) {
-	        throw new RuntimeException(e);
+	        throw new RuntimeException(
+	                "Error while updating LA2 fields", e);
+	    }
+
+	    // 5. Check changes
+	    String changes = auditService.getChanges(oldcopy, modRecord);
+
+	    System.out.println("LA2 Changes Length = "
+	            + (changes != null ? changes.length() : 0));
+
+	    // 6. Set Maker-Checker flags
+	    modRecord.setENTITY_FLG("Y");
+	    modRecord.setMODIFY_FLG("Y");
+	    modRecord.setDEL_FLG("N");
+
+	    // 7. Save only into MOD table
+	    saveLA2ModSummaryEntity(modRecord);
+
+	    System.out.println(
+	            "Record saved into BRRS_M_LA2_MOD_SUMMARYTABLE for Checker Approval");
+
+	    // 8. Audit trail
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(
+	                oldcopy,
+	                modRecord,
+	                updatedEntity.getREPORT_DATE().toString(),
+	                "M LA2 Summary Screen",
+	                "BRRS_M_LA2_MOD_SUMMARYTABLE");
 	    }
 	}
+	
+	
+	private void applyLA2ChangesToEntity(
+	        int startRow,
+	        int endRow,
+	        String[] fields,
+	        M_LA2_Summary_Entity updatedEntity,
+	        M_LA2_Summary_Entity targetEntity) {
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
+
+	            try {
+	                Method getter = M_LA2_Summary_Entity.class
+	                        .getMethod(getterName);
+
+	                Object value = getter.invoke(updatedEntity);
+
+	             // Clean and convert string numbers to proper numeric format or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null; // Fallback to null if invalid number format
+							}
+						}
+					}
+
+	                // Preserve the existing value if the incoming value is null
+	                if (value == null) {
+	                    continue;
+	                }
+
+	                Method setter = M_LA2_Summary_Entity.class.getMethod(
+	                        setterName, getter.getReturnType());
+
+	                setter.invoke(targetEntity, value);
+
+	            } catch (NoSuchMethodException e) {
+	                // Skip fields whose getter/setter does not exist
+	            } catch (Exception e) {
+	                throw new RuntimeException(
+	                        "Error applying LA2 field: " + getterName, e);
+	            }
+	        }
+	    }
+	}
+	
+
+	public void saveLA2ModSummaryEntity(M_LA2_Summary_Entity entity) {
+
+	    NamedParameterJdbcTemplate namedParamJdbc =
+	            new NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    String checkSql =
+	            "SELECT COUNT(*) FROM BRRS_M_LA2_MOD_SUMMARYTABLE "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+	    MapSqlParameterSource checkParams =
+	            new MapSqlParameterSource(
+	                    "reportDate", entity.getREPORT_DATE());
+
+	    Integer count = namedParamJdbc.queryForObject(
+	            checkSql, checkParams, Integer.class);
+
+	    MapSqlParameterSource params = new MapSqlParameterSource()
+	            .addValue("reportDate", entity.getREPORT_DATE())
+	            .addValue("entityFlg", entity.getENTITY_FLG())
+	            .addValue("modifyFlg", entity.getMODIFY_FLG())
+	            .addValue("delFlg", entity.getDEL_FLG());
+
+	    int startRow = 12;
+	    int endRow = 26;
+
+	    String[] fields = { "INDUSTRY", "TOTAL" };
+
+	    StringBuilder updateSetSql = new StringBuilder(
+	            "ENTITY_FLG = :entityFlg, "
+	            + "MODIFY_FLG = :modifyFlg, "
+	            + "DEL_FLG = :delFlg");
+
+	    List<String> insertColumns = new ArrayList<>();
+	    List<String> insertValues = new ArrayList<>();
+
+	    insertColumns.add("REPORT_DATE");
+	    insertValues.add(":reportDate");
+
+	    insertColumns.add("ENTITY_FLG");
+	    insertValues.add(":entityFlg");
+
+	    insertColumns.add("MODIFY_FLG");
+	    insertValues.add(":modifyFlg");
+
+	    insertColumns.add("DEL_FLG");
+	    insertValues.add(":delFlg");
+
+	    for (int i = startRow; i <= endRow; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String paramName =
+	                    "r" + i + "_" + field.toLowerCase();
+	            String columnName = prefix + field;
+
+	            try {
+	                Method getter = M_LA2_Summary_Entity.class
+	                        .getMethod(getterName);
+
+	                Object value = getter.invoke(entity);
+
+	                // Convert numeric TOTAL values to BigDecimal
+	                if ("TOTAL".equals(field) && value instanceof String) {
+
+	                    String valStr = ((String) value).trim();
+
+	                    if (valStr.isEmpty()) {
+	                        value = null;
+	                    } else {
+	                        try {
+	                            value = new java.math.BigDecimal(valStr);
+	                        } catch (NumberFormatException e) {
+	                            throw new RuntimeException(
+	                                    "Invalid numeric value for "
+	                                    + columnName + ": " + valStr, e);
+	                        }
+	                    }
+	                }
+
+	                params.addValue(paramName, value);
+
+	                updateSetSql.append(", ")
+	                        .append(columnName)
+	                        .append(" = :")
+	                        .append(paramName);
+
+	                insertColumns.add(columnName);
+	                insertValues.add(":" + paramName);
+
+	            } catch (NoSuchMethodException e) {
+	                throw new RuntimeException(
+	                        "Getter not found for LA2 column: "
+	                        + columnName, e);
+	            } catch (Exception e) {
+	                throw new RuntimeException(
+	                        "Error mapping LA2 column: "
+	                        + columnName, e);
+	            }
+	        }
+	    }
+
+	    if (count != null && count > 0) {
+
+	        String updateSql =
+	                "UPDATE BRRS_M_LA2_MOD_SUMMARYTABLE SET "
+	                + updateSetSql
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+
+	        namedParamJdbc.update(updateSql, params);
+
+	        System.out.println(
+	                "BRRS_M_LA2_MOD_SUMMARYTABLE updated successfully.");
+
+	    } else {
+
+	        String insertSql =
+	                "INSERT INTO BRRS_M_LA2_MOD_SUMMARYTABLE ("
+	                + String.join(", ", insertColumns)
+	                + ") VALUES ("
+	                + String.join(", ", insertValues)
+	                + ")";
+
+	        namedParamJdbc.update(insertSql, params);
+
+	        System.out.println(
+	                "BRRS_M_LA2_MOD_SUMMARYTABLE inserted successfully.");
+	    }
+	}
+	
+	
+	@Transactional
+	public void approveLA2Report(Date reportDate) {
+
+	    List<M_LA2_Summary_Entity> modRecords = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_LA2_MOD_SUMMARYTABLE "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            new BeanPropertyRowMapper<>(M_LA2_Summary_Entity.class),
+	            reportDate);
+
+	    if (modRecords == null || modRecords.isEmpty()) {
+	        throw new RuntimeException(
+	                "No pending LA2 modification found for approval on date: "
+	                        + reportDate);
+	    }
+
+	    M_LA2_Summary_Entity modRecord = modRecords.get(0);
+
+	    // Transfer MOD values to live tables
+	    transferLA2ModValuesToLiveTables(modRecord, reportDate);
+
+	    // Mark MOD record approved
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_LA2_MOD_SUMMARYTABLE "
+	            + "SET MODIFY_FLG = 'N' "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) "
+	            + "AND MODIFY_FLG = 'Y'",
+	            reportDate);
+
+	    System.out.println(
+	            "LA2 Checker Approved Successfully. "
+	            + "MOD values transferred to Summary and Detail tables.");
+	}
+
+	private void transferLA2ModValuesToLiveTables(
+	        M_LA2_Summary_Entity modRecord, Date reportDate) {
+
+	    String[] fields = { "INDUSTRY", "TOTAL" };
+
+	    for (int i = 12; i <= 25; i++) {
+
+	        String prefix = "R" + i + "_";
+
+	        for (String field : fields) {
+
+	            String getterName = "get" + prefix + field;
+	            String columnName = prefix + field;
+
+	            try {
+
+	                Method getter = M_LA2_Summary_Entity.class
+	                        .getMethod(getterName);
+
+	                Object value = getter.invoke(modRecord);
+
+	                String summarySql =
+	                        "UPDATE BRRS_M_LA2_SUMMARYTABLE SET "
+	                        + columnName
+	                        + " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(summarySql, value, reportDate);
+
+	                String detailSql =
+	                        "UPDATE BRRS_M_LA2_DETAILTABLE SET "
+	                        + columnName
+	                        + " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	                jdbcTemplate.update(detailSql, value, reportDate);
+
+	            } catch (NoSuchMethodException e) {
+
+	                // Skip missing entity fields
+
+	            } catch (Exception e) {
+
+	                throw new RuntimeException(
+	                        "Error transferring LA2 column to live tables: "
+	                                + columnName, e);
+	            }
+	        }
+	    }
+
+	    System.out.println(
+	            "LA2 MOD values transferred to live tables successfully.");
+	}
+
+	public M_LA2_Summary_Entity findByReportDate(Date reportDate) {
+
+	    List<M_LA2_Summary_Entity> records = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_LA2_SUMMARYTABLE "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new BeanPropertyRowMapper<>(M_LA2_Summary_Entity.class),
+	            reportDate);
+
+	    return records.isEmpty() ? null : records.get(0);
+	}
+
+	public M_LA2_Summary_Entity findModRecordByReportDate(Date reportDate) {
+
+	    List<M_LA2_Summary_Entity> records = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_LA2_MOD_SUMMARYTABLE "
+	            + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new BeanPropertyRowMapper<>(M_LA2_Summary_Entity.class),
+	            reportDate);
+
+	    return records.isEmpty() ? null : records.get(0);
+	}
+	
+	
+	
+	private Object getValue(Object entity, String methodName) {
+	    try {
+	        java.lang.reflect.Method method = entity.getClass().getMethod(methodName);
+	        return method.invoke(entity);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Error getting value from method: " + methodName, e);
+	    }
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@Transactional
 	public void updateResubReport(M_LA2_RESUB_Summary_Entity updatedEntity) {
@@ -3452,8 +3695,7 @@ public class BRRS_M_LA2_ReportService {
 	        StringBuilder columns = new StringBuilder(
 	                "INSERT INTO BRRS_M_LA2_RESUB_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
 	        List<Object> params = new ArrayList<>();
 
@@ -3461,6 +3703,7 @@ public class BRRS_M_LA2_ReportService {
 	        params.add(entity.getREPORT_VERSION());
 	        params.add(entity.getREPORT_RESUBDATE());
 
+	        // --- Loop (i = 11 to 25) ---
 	        for (int i = 11; i <= 25; i++) {
 
 	            columns.append("R").append(i).append("_INDUSTRY,")
@@ -3472,6 +3715,7 @@ public class BRRS_M_LA2_ReportService {
 	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
 	        }
 
+	        // Clean up trailing commas and close brackets
 	        columns.deleteCharAt(columns.length() - 1);
 	        values.deleteCharAt(values.length() - 1);
 
@@ -3481,8 +3725,10 @@ public class BRRS_M_LA2_ReportService {
 	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
 	    } catch (Exception e) {
+
 	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting RESUB SUMMARY", e);
+
+	        throw new RuntimeException("Error inserting LA2 RESUB SUMMARY", e);
 	    }
 	}
 	
@@ -3526,16 +3772,14 @@ public class BRRS_M_LA2_ReportService {
 	        throw new RuntimeException("Error inserting RESUB DETAIL", e);
 	    }
 	}
-	
 	private void insertArchivalSummary(M_LA2_Archival_Summary_Entity entity) {
 
 	    try {
 
 	        StringBuilder columns = new StringBuilder(
-	                "INSERT INTO BRRS_M_LA2_ARCHIVAL_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
+	                "INSERT INTO BRRS_M_LA2_ARCHIVALTABLE_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,");
 
-	        StringBuilder values = new StringBuilder(
-	                " VALUES (?,?,?,");
+	        StringBuilder values = new StringBuilder(" VALUES (?,?,?,");
 
 	        List<Object> params = new ArrayList<>();
 
@@ -3543,17 +3787,10 @@ public class BRRS_M_LA2_ReportService {
 	        params.add(entity.getREPORT_VERSION());
 	        params.add(entity.getREPORT_RESUBDATE());
 
-	        for (int i = 11; i <= 25; i++) {
+	        // Add the LA2 report fields here using the same loop pattern
+	        // as your existing LA2 summary entity.
 
-	            columns.append("R").append(i).append("_INDUSTRY,")
-	                   .append("R").append(i).append("_TOTAL,");
-
-	            values.append("?,?,");
-
-	            params.add(getValue(entity, "getR" + i + "_INDUSTRY"));
-	            params.add(getValue(entity, "getR" + i + "_TOTAL"));
-	        }
-
+	        // Clean up trailing commas and close brackets
 	        columns.deleteCharAt(columns.length() - 1);
 	        values.deleteCharAt(values.length() - 1);
 
@@ -3563,11 +3800,51 @@ public class BRRS_M_LA2_ReportService {
 	        jdbcTemplate.update(columns.toString() + values.toString(), params.toArray());
 
 	    } catch (Exception e) {
+
 	        e.printStackTrace();
-	        throw new RuntimeException("Error inserting ARCHIVAL SUMMARY", e);
+
+	        throw new RuntimeException("Error inserting LA2 ARCHIVAL SUMMARY", e);
 	    }
 	}
 	
+	
+	/*
+	 * private void insertArchivalSummary(M_LA2_Archival_Summary_Entity entity) {
+	 * 
+	 * try {
+	 * 
+	 * StringBuilder columns = new StringBuilder(
+	 * "INSERT INTO BRRS_M_LA2_ARCHIVAL_SUMMARY (REPORT_DATE,REPORT_VERSION,REPORT_RESUBDATE,"
+	 * );
+	 * 
+	 * StringBuilder values = new StringBuilder( " VALUES (?,?,?,");
+	 * 
+	 * List<Object> params = new ArrayList<>();
+	 * 
+	 * params.add(entity.getREPORT_DATE()); params.add(entity.getREPORT_VERSION());
+	 * params.add(entity.getREPORT_RESUBDATE());
+	 * 
+	 * for (int i = 11; i <= 25; i++) {
+	 * 
+	 * columns.append("R").append(i).append("_INDUSTRY,")
+	 * .append("R").append(i).append("_TOTAL,");
+	 * 
+	 * values.append("?,?,");
+	 * 
+	 * params.add(getValue(entity, "getR" + i + "_INDUSTRY"));
+	 * params.add(getValue(entity, "getR" + i + "_TOTAL")); }
+	 * 
+	 * columns.deleteCharAt(columns.length() - 1);
+	 * values.deleteCharAt(values.length() - 1);
+	 * 
+	 * columns.append(")"); values.append(")");
+	 * 
+	 * jdbcTemplate.update(columns.toString() + values.toString(),
+	 * params.toArray());
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); throw new
+	 * RuntimeException("Error inserting ARCHIVAL SUMMARY", e); } }
+	 */
 	private void insertArchivalDetail(M_LA2_Archival_Detail_Entity entity) {
 
 	    try {
