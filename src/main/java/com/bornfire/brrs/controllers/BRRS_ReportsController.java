@@ -3138,14 +3138,14 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
+			if (asondate != null) {
+				request.setReportDate(asondate);
+			}
 
 			// call services
-
 			BRRS_M_OB_reportservice.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -4132,13 +4132,14 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ? set the asondate into entity
-			request.setReport_date(asondate);
+			if (asondate != null) {
+				request.setReport_date(asondate);
+			}
 
 			// call services
 			BRRS_M_BOP_ReportService.updateReport(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

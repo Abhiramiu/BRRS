@@ -55,7 +55,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -111,22 +114,20 @@ public class BRRS_M_BOP_ReportService {
     );
 }
 	
-	//findbyreportdate
-
+	// Fetch existing live summary record
 	public M_BOP_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_BOP_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_BOP_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_BOP_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-	    String sql =
-	            "SELECT * FROM BRRS_M_BOP_SUMMARYTABLE " +
-	            "WHERE REPORT_DATE = ?";
-
-	    List<M_BOP_Summary_Entity> list =
-	            jdbcTemplate.query(
-	                    sql,
-	                    new Object[] { reportDate },
-	                    new M_BOP_Summary_RowMapper()
-	            );
-
-	    return list.isEmpty() ? null : list.get(0);
+	// Fetch existing mod record if any pending modifications exist
+	public M_BOP_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_BOP_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_BOP_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_BOP_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
 	}
 	
 // =====================================================
@@ -699,7 +700,11 @@ obj.setR36_cp(rs.getBigDecimal("r36_cp"));
 }
 
 
-public class M_BOP_Summary_Entity {
+public static class M_BOP_Summary_Entity {
+
+		public M_BOP_Summary_Entity() {
+			super();
+		}
 	
 	 private String	r13_product;
 	private BigDecimal	r13_open_position;
@@ -11123,130 +11128,252 @@ public List<Object[]> getM_BOPArchival() {
 //}
 
 
-@Transactional
-public void updateReport(M_BOP_Summary_Entity updatedEntity) {
+	@Transactional
+	public void updateReport(M_BOP_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_BOP Update");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-    System.out.println("Came to M_BOP Update");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
+		// 1. Fetch live summary record as baseline reference
+		M_BOP_Summary_Entity liveSummary = findByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
+		}
 
-    // Fetch existing summary record for audit
-    M_BOP_Summary_Entity existingSummary =
-            findByReportDate(updatedEntity.getReport_date());
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		M_BOP_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new M_BOP_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-    if (existingSummary == null) {
-        throw new RuntimeException(
-                "Record not found for REPORT_DATE : "
-                        + updatedEntity.getReport_date());
-    }
+		// 3. Keep old copy for audit comparison
+		M_BOP_Summary_Entity oldcopy = new M_BOP_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-    // Audit old copy
-    M_BOP_Summary_Entity oldcopy =
-            new M_BOP_Summary_Entity();
+		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "product", "open_position", "cpdm_dt_inc", "cpdm_dt_dec", "net", "cpdm_dt_der", "cpdm_dt_dto", "cp" };
+			applyChangesToEntity(13, 36, fields, updatedEntity, modRecord);
 
-    BeanUtils.copyProperties(existingSummary, oldcopy);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_BOP fields", e);
+		}
 
-    String[] fields = {
-            "product",
-            "open_position",
-            "cpdm_dt_inc",
-            "cpdm_dt_dec",
-            "net",
-            "cpdm_dt_der",
-            "cpdm_dt_dto",
-            "cp"
-    };
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_BOP Changes Length = " + (changes != null ? changes.length() : 0));
 
-    try {
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-        for (int i = 13; i <= 36; i++) {
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_BOP_MOD_SUMMARYTABLE for Checker Approval");
 
-            for (String field : fields) {
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M BOP Summary Screen", "BRRS_M_BOP_MOD_SUMMARYTABLE");
+		}
+	}
 
-                String getterName = "getR" + i + "_" + field;
-                String setterName = "setR" + i + "_" + field;
-                String columnName = "R" + i + "_" + field;
+	// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields, M_BOP_Summary_Entity updatedEntity,
+			M_BOP_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
 
-                try {
+				try {
+					Method getter = M_BOP_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
 
-                    Method getter =
-                            M_BOP_Summary_Entity.class.getMethod(getterName);
+					// Clean and convert string numbers to proper numeric format or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (getter.getReturnType().equals(BigDecimal.class)) {
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						} else {
+							value = valStr.isEmpty() ? null : valStr;
+						}
+					}
 
-                    Object value = getter.invoke(updatedEntity);
+					if (value == null) {
+						continue;
+					}
 
-                    if (value == null) {
-                        continue;
-                    }
+					Method setter = M_BOP_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
 
-                    // Update existing object for audit
-                    Method setter =
-                            M_BOP_Summary_Entity.class.getMethod(
-                                    setterName,
-                                    getter.getReturnType());
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
 
-                    setter.invoke(existingSummary, value);
+	// 2. Safe MOD table saver with strict cleaning and BigDecimal conversion
+	public void saveModSummaryEntity(M_BOP_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-                    // ===========================
-                    // UPDATE SUMMARY TABLE
-                    // ===========================
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_BOP_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
 
-                    String summarySql =
-                            "UPDATE BRRS_M_BOP_SUMMARYTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
 
-                    jdbcTemplate.update(
-                            summarySql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
+		int start = 13;
+		int end = 36;
+		String[] fields = { "product", "open_position", "cpdm_dt_inc", "cpdm_dt_dec", "net", "cpdm_dt_der", "cpdm_dt_dto", "cp" };
 
-                    // ===========================
-                    // UPDATE DETAIL TABLE
-                    // ===========================
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
 
-                    String detailSql =
-                            "UPDATE BRRS_M_BOP_DETAILTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
 
-                    jdbcTemplate.update(
-                            detailSql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
+		for (int i = start; i <= end; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = prefix + field.toUpperCase();
 
-                } catch (NoSuchMethodException e) {
-                    continue;
-                }
-            }
-        }
+				try {
+					Method getter = M_BOP_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
 
-        // Audit only if changes found
-        String changes =
-                auditService.getChanges(
-                        oldcopy,
-                        existingSummary);
+					// Convert any String number safely to BigDecimal or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (getter.getReturnType().equals(BigDecimal.class)) {
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						} else {
+							value = valStr.isEmpty() ? null : valStr;
+						}
+					}
 
-        if (!changes.isEmpty()) {
+					params.addValue(paramName, value);
 
-            auditService.compareEntitiesmanual(
-                    oldcopy,
-                    existingSummary,
-                    updatedEntity.getReport_date().toString(),
-                    "M BOP Summary Screen",
-                    "BRRS_M_BOP_SUMMARY"
-            );
-        }
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
 
-        System.out.println(
-                "M_BOP Summary & Detail Update Completed");
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
 
-    } catch (Exception e) {
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_BOP_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_BOP_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_BOP_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_BOP_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
 
-        throw new RuntimeException(
-                "Error while updating M_BOP fields", e);
-    }
-}
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		M_BOP_Summary_Entity modRecord = jdbcTemplate.queryForObject(
+				"SELECT * FROM BRRS_M_BOP_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_BOP_Summary_Entity.class), reportDate);
+
+		if (modRecord == null) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_BOP_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_BOP Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail tables upon approval
+	private void transferModValuesToLiveTables(M_BOP_Summary_Entity modRecord, Date reportDate) {
+		int start = 13;
+		int end = 36;
+		String[] fields = { "product", "open_position", "cpdm_dt_inc", "cpdm_dt_dec", "net", "cpdm_dt_der", "cpdm_dt_dto", "cp" };
+
+		for (int i = start; i <= end; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field.toUpperCase();
+
+				try {
+					Method getter = M_BOP_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_M_BOP_SUMMARYTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_M_BOP_DETAILTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
+	}
 
 
 

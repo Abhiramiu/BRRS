@@ -572,59 +572,47 @@ PURPOSE		: BRRS MANUAL REPORT
 	<script>
 		// Show Modify (enable inputs & dropdowns)
 		function showmodify(btn) {
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
 
-			//$(".Show_input").removeAttr("readonly").removeAttr("disabled");
+			// ✅ List of IDs that should ALWAYS remain readonly (sum rows)
+			var readonlyIds = [
+				"R11_OTHER_BORROW", "R15_OTHER_BORROW", "R29_OTHER_BORROW",
+				"R38_OTHER_BORROW", "R41_OTHER_BORROW", "R44_OTHER_BORROW",
+				"R49_OTHER_BORROW", "R52_OTHER_BORROW", "R58_OTHER_BORROW",
+				"R64_OTHER_BORROW"
+			];
 
-			// Make all editable fields editable 
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-
-
-			// Highlight editable fields for rows 11 to 60
-			for (let i = 12; i <= 63; i++) {
-				if ([15, 29, 38, 41, 44, 49, 52, 58].includes(i)) continue;
-
-				let fields = ["OTHER_BORROW"];
-				fields.forEach(field => {
-					let selector = `#R${i}_${field}`;
-					if ($(selector).length) {
-						$(selector).css({"background-color": "#FFF59D"});
-					}
-				});
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #FFF59D !important;";
+					});
+				}
 			}
 
+			// ✅ Only paint <input> elements, never <button>
+			$("input.Show_input").each(function () {
+				if (!readonlyIds.includes(this.id) && !$(this).hasClass("nonEditable")) {
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);
+				}
+			});
 
-			// Show buttons
+			// ✅ Toggle buttons (once, outside any loop)
 			$("#submitButton").show();
-			$("#cancelRecord").show(); // Show Cancel button only when Modify is clicked
-
-			// Hide the clicked Modify button
+			$("#cancelRecord").show();
 			$(btn).hide();
 		}
 
-
-		//Cancel / Reset function
+		// Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
-				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
+				location.reload();   // ✅ Reload restores everything — yellow gone, inputs readonly
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
-
-
-
-
 	</script>
 
 	<SCRIPT>
@@ -1024,6 +1012,19 @@ PURPOSE		: BRRS MANUAL REPORT
 			}
 		});
 
+		// Calculate all totals
+		function calculateTotals() {
+			calculateR15Totals();
+			calculateR29Totals();
+			calculateR38Totals();
+			calculateR44Totals();
+			calculateR52Totals();
+			calculateR58Totals();
+			calculateR11Totals();
+			calculateR49Totals();
+			calculateR41Totals();
+			calculateR64Totals();
+		}
 
 	</SCRIPT>
 
@@ -1033,17 +1034,24 @@ PURPOSE		: BRRS MANUAL REPORT
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
 		function closemodel() {
+			$("#alert").modal("hide");
 			$("#resultModal").modal("hide");
 			$('#loader').modal('hide');
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
+			const message = document.getElementById("resultModalBody") ? document.getElementById("resultModalBody").innerText.toLowerCase() : "";
+
+			if (message.includes("resubmission")) {
+				window.location.href = document.referrer;
 			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
+				// Only reload if not from Details modal
+				if (!isDetailsModal) {
+					setTimeout(function () {
+						location.reload();
+					}, 300);
+				} else {
+					// reset flag for next modal usage
+					isDetailsModal = false;
+				}
 			}
 		}
 </script>
@@ -2117,7 +2125,7 @@ PURPOSE		: BRRS MANUAL REPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}" onclick="fileuploads(this);"
+										form="fileupload" th:attr="data-todate=${asondate},data-type=${type}" onclick="fileuploads(this);"
 										style="display: none;">Submit</button>
 								</div>
 
