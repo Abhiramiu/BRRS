@@ -1,40 +1,38 @@
 package com.bornfire.brrs.services;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.springframework.jdbc.core.RowMapper;
-import java.util.Optional;
-import javax.persistence.Column;
-import javax.persistence.IdClass;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.beans.Beans;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
+import javax.persistence.Column;
+import javax.persistence.EntityManager;
+import javax.persistence.IdClass;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
@@ -60,10 +58,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -74,8 +78,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-
-import java.math.BigDecimal;
 
 @Component
 @Service
@@ -553,154 +555,216 @@ public class BRRS_M_SECA_ReportService {
 		}
 	}
 
-//------------------------------------------------------RESUB UPDATE END--------------------------------------------------------------------------	
-	// ------------------------------
-// Updates database values of normal summary and detail records using reflection
-// ------------------------------
-	public void updateReport1(M_SECA_Summary_Entity updatedEntity) {
-		System.out.println("Came to services1");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+	// =========================================================
+	// MAKER: Writes edits to BRRS_M_SECA_MOD_SUMMARYTABLE
+	// =========================================================
+	@Transactional
+	public void updateReport(M_SECA_Summary_Entity updatedEntity) {
+	    System.out.println("Came to M_SECA updateReport (MOD path)");
+	    System.out.println("Report Date: " + updatedEntity.getReportDate());
 
-		M_SECA_Summary_Entity existing = findSummaryById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    M_SECA_Summary_Entity liveSummary = findLiveByReportDate(updatedEntity.getReportDate());
+	    if (liveSummary == null) {
+	        throw new RuntimeException("Live record not found for REPORT_DATE: " + updatedEntity.getReportDate());
+	    }
 
-		M_SECA_Detail_Entity existingDetail = findDetailById(updatedEntity.getReportDate()).orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    M_SECA_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReportDate());
+	    if (modRecord == null) {
+	        modRecord = new M_SECA_Summary_Entity();
+	        BeanUtils.copyProperties(liveSummary, modRecord);
+	    }
 
-		try {
-			// 1. Loop from R15 to R50 and copy fields
-			for (int i = 14; i <= 57; i++) {
-				if (i == 17 || i == 32 || i == 35 || i == 38 || i == 43 || i == 47 || i == 51) {
-					continue;
-				}
-				String prefix = "R" + i + "_";
+	    M_SECA_Summary_Entity oldcopy = new M_SECA_Summary_Entity();
+	    BeanUtils.copyProperties(modRecord, oldcopy);
 
-				String[] fields = { "EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE", "COM_PAPER",
-						"CERT_OF_DEP", "PLEDGED_ASSET", "OTHER" };
+	    applyChangesToEntity(updatedEntity, modRecord);
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	    String changes = auditService.getChanges(oldcopy, modRecord);
 
-					try {
-						Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
+	    modRecord.setENTITY_FLG("Y");
+	    modRecord.setMODIFY_FLG("Y");
+	    modRecord.setDEL_FLG("N");
 
-						Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method setterDet = M_SECA_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
+	    saveModSummaryEntity(modRecord);
+	    System.out.println("✔ Record saved into BRRS_M_SECA_MOD_SUMMARYTABLE for Checker approval");
 
-						Object newValue = getter.invoke(updatedEntity);
-
-						setter.invoke(existing, newValue);
-						setterDet.invoke(existingDetail, newValue);
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-// Loop through rows for formula fields 
-			int[] targetRows = { 13, 17, 32, 35, 38, 43, 47, 51, 58 };
-
-			for (int i : targetRows) {
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "EQUITY", "BONDS", "BOBC", "TRES_BILLS", "REPURCHASE_AGREE", "COM_PAPER",
-						"CERT_OF_DEP", "PLEDGED_ASSET", "OTHER", "TOTAL" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-
-						Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method setterDet = M_SECA_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						setter.invoke(existing, newValue);
-						setterDet.invoke(existingDetail, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-					}
-				}
-			}
-
-			for (int i = 14; i <= 57; i++) {
-				if (i == 17 || i == 32 || i == 35 || i == 38 || i == 43 || i == 47 || i == 51) {
-					continue;
-				}
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "TOTAL" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
-
-						Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method setterDet = M_SECA_Detail_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						setter.invoke(existing, newValue);
-						setterDet.invoke(existingDetail, newValue);
-
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields
-						continue;
-//                }
-//            }
-//        }
-//
-//}			
-//
-//	catch (Exception e) {
-//	        throw new RuntimeException("Error while updating report fields", e);
-//	    }
-//
-//	    // 3️⃣ Save updated entity
-//	    updateEntity("BRRS_M_SECA_SUMMARYTABLE", existing, existing.getReportDate());
-//	}
-					}
-				}
-			}
-
-// Metadata
-			existing.setReportVersion(updatedEntity.getReportVersion());
-//existing.setREPORT_FREQUENCY(updatedEntity.getREPORT_FREQUENCY());
-			existing.setREPORT_CODE(updatedEntity.getREPORT_CODE());
-			existing.setREPORT_DESC(updatedEntity.getREPORT_DESC());
-			existing.setENTITY_FLG(updatedEntity.getENTITY_FLG());
-			existing.setMODIFY_FLG(updatedEntity.getMODIFY_FLG());
-			existing.setDEL_FLG(updatedEntity.getDEL_FLG());
-
-		} catch (Exception e) {
-			throw new RuntimeException("❌ Error while updating SECA Summary fields", e);
-		}
-
-		updateEntity("BRRS_M_SECA_SUMMARYTABLE", existing, existing.getReportDate());
-		updateEntity("BRRS_M_SECA_DETAILTABLE", existingDetail, existingDetail.getReportDate());
-		System.out.println("✅ SECA Summary and Detail updated and COMMITTED");
-
-		/*
-		 * // NOW PROCEDURE CAN SEE UPDATED DATA String oracleDate = new
-		 * SimpleDateFormat("dd-MM-yyyy") .format(updatedEntity.getReportDate())
-		 * .toUpperCase();
-		 * 
-		 * String sql = "BEGIN BRRS.BRRS_M_SECA_SUMMARY_PROCEDURE('" + oracleDate +
-		 * "'); END;"; jdbcTemplate.execute(sql);
-		 * 
-		 * System.out.println("Procedure executed for date: " + oracleDate);
-		 */
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(oldcopy, modRecord,
+	                updatedEntity.getReportDate().toString(),
+	                "M SECA Summary Screen", "BRRS_M_SECA_MOD_SUMMARYTABLE");
+	    }
 	}
+	
+	// ---------------------------------------------------------
+	// Supporting helpers for maker-checker flow
+	// ---------------------------------------------------------
+
+	private static final int[] SECA_R_ROWS = { 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+	        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+	        48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59 };
+
+	private static final String[] SECA_R_FIELDS = { "PRODUCT", "EQUITY", "BONDS", "BOBC", "TRES_BILLS",
+	        "REPURCHASE_AGREE", "COM_PAPER", "CERT_OF_DEP", "PLEDGED_ASSET", "OTHER", "TOTAL" };
+
+	public M_SECA_Summary_Entity findLiveByReportDate(Date reportDate) {
+	    List<M_SECA_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECA_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new Object[] { reportDate }, new GenericRowMapper<>(M_SECA_Summary_Entity.class));
+	    return list.isEmpty() ? null : list.get(0);
+	}
+
+	public M_SECA_Summary_Entity findModRecordByReportDate(Date reportDate) {
+	    List<M_SECA_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECA_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new Object[] { reportDate }, new GenericRowMapper<>(M_SECA_Summary_Entity.class));
+	    return list.isEmpty() ? null : list.get(0);
+	}
+
+	private Object cleanValue(Object value) {
+	    if (value instanceof String) {
+	        String s = ((String) value).trim();
+	        if (s.isEmpty()) return null;
+	        try {
+	            return new java.math.BigDecimal(s);
+	        } catch (NumberFormatException nfe) {
+	            return null;
+	        }
+	    }
+	    return value;
+	}
+
+	private void applyChangesToEntity(M_SECA_Summary_Entity updatedEntity, M_SECA_Summary_Entity targetEntity) {
+	    for (int row : SECA_R_ROWS) {
+	        String prefix = "R" + row + "_";
+	        for (String field : SECA_R_FIELDS) {
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
+	            try {
+	                Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
+	                Object value = cleanValue(getter.invoke(updatedEntity));
+	                if (value == null) continue;
+	                Method setter = M_SECA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                setter.invoke(targetEntity, value);
+	            } catch (NoSuchMethodException e) {
+	                // skip
+	            } catch (Exception e) {
+	                throw new RuntimeException("Error applying field: " + getterName, e);
+	            }
+	        }
+	    }
+	}
+
+	public void saveModSummaryEntity(M_SECA_Summary_Entity entity) {
+	    NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    String checkSql = "SELECT COUNT(*) FROM BRRS_M_SECA_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+	    MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+	    Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+	    MapSqlParameterSource params = new MapSqlParameterSource()
+	            .addValue("reportDate", entity.getReportDate())
+	            .addValue("reportVersion", entity.getReportVersion())
+	            .addValue("reportFrequency", entity.getREPORT_FREQUENCY())
+	            .addValue("reportCode", entity.getREPORT_CODE())
+	            .addValue("reportDesc", entity.getREPORT_DESC())
+	            .addValue("entityFlg", entity.getENTITY_FLG())
+	            .addValue("modifyFlg", entity.getMODIFY_FLG())
+	            .addValue("delFlg", entity.getDEL_FLG());
+
+	    StringBuilder updateSetSql = new StringBuilder(
+	            "REPORT_VERSION = :reportVersion, REPORT_FREQUENCY = :reportFrequency, "
+	          + "REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc, "
+	          + "ENTITY_FLG = :entityFlg, MODIFY_FLG = :modifyFlg, DEL_FLG = :delFlg");
+
+	    List<String> insertColumns = new ArrayList<>(Arrays.asList(
+	            "REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE",
+	            "REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+	    List<String> insertValues = new ArrayList<>(Arrays.asList(
+	            ":reportDate", ":reportVersion", ":reportFrequency", ":reportCode",
+	            ":reportDesc", ":entityFlg", ":modifyFlg", ":delFlg"));
+
+	    for (int row : SECA_R_ROWS) {
+	        String prefix = "R" + row + "_";
+	        for (String field : SECA_R_FIELDS) {
+	            String getterName = "get" + prefix + field;
+	            String paramName = "r" + row + "_" + field.toLowerCase();
+	            String columnName = prefix + field.toUpperCase();
+	            try {
+	                Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
+	                Object value = cleanValue(getter.invoke(entity));
+	                params.addValue(paramName, value);
+	                updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+	                insertColumns.add(columnName);
+	                insertValues.add(":" + paramName);
+	            } catch (NoSuchMethodException e) {
+	                // skip
+	            } catch (Exception e) {
+	                throw new RuntimeException("Error mapping MOD column: " + columnName, e);
+	            }
+	        }
+	    }
+
+	    if (count != null && count > 0) {
+	        namedParamJdbc.update("UPDATE BRRS_M_SECA_MOD_SUMMARYTABLE SET " + updateSetSql
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)", params);
+	        System.out.println("✔ BRRS_M_SECA_MOD_SUMMARYTABLE updated successfully.");
+	    } else {
+	        namedParamJdbc.update("INSERT INTO BRRS_M_SECA_MOD_SUMMARYTABLE ("
+	                + String.join(", ", insertColumns) + ") VALUES ("
+	                + String.join(", ", insertValues) + ")", params);
+	        System.out.println("✔ BRRS_M_SECA_MOD_SUMMARYTABLE inserted successfully.");
+	    }
+	}
+	
+	@Transactional
+	public void approveReport(Date reportDate) {
+	    List<M_SECA_Summary_Entity> pending = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_SECA_MOD_SUMMARYTABLE "
+	          + "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+	            new Object[] { reportDate }, new GenericRowMapper<>(M_SECA_Summary_Entity.class));
+
+	    if (pending == null || pending.isEmpty()) {
+	        throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+	    }
+
+	    transferModValuesToLiveTables(pending.get(0), reportDate);
+
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_SECA_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' "
+	          + "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+
+	    System.out.println("✔ M_SECA Checker Approved: MOD values transferred to Summary & Detail live tables.");
+	}
+
+	private void transferModValuesToLiveTables(M_SECA_Summary_Entity modRecord, Date reportDate) {
+	    for (int row : SECA_R_ROWS) {
+	        String prefix = "R" + row + "_";
+	        for (String field : SECA_R_FIELDS) {
+	            String getterName = "get" + prefix + field;
+	            String columnName = prefix + field.toUpperCase();
+	            try {
+	                Method getter = M_SECA_Summary_Entity.class.getMethod(getterName);
+	                Object value = cleanValue(getter.invoke(modRecord));
+	                if (value == null) continue;
+
+	                jdbcTemplate.update(
+	                        "UPDATE BRRS_M_SECA_SUMMARYTABLE SET " + columnName
+	                      + " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)", value, reportDate);
+
+	                jdbcTemplate.update(
+	                        "UPDATE BRRS_M_SECA_DETAILTABLE SET " + columnName
+	                      + " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)", value, reportDate);
+
+	            } catch (NoSuchMethodException e) {
+	                // skip
+	            } catch (Exception e) {
+	                throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+	            }
+	        }
+	    }
+	}
+	
+	
 
 	// ------------------------------
 // Directs flow to appropriate Excel generation method based on normal, archival, or resub format

@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;  
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;  
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate; 
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -52,16 +55,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.brrs.entities.UserProfileRep;
-import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 
@@ -15219,107 +15212,179 @@ public class BRRS_M_OR1_ReportService {
 		return archivalList;
 	}
 
+	// =========================================================
+	// MAKER: Writes edits to BRRS_M_OR1_MOD_SUMMARYTABLE
+	// =========================================================
 	@Transactional
 	public void updateReport(M_OR1_Summary_Entity updatedEntity) {
+	    System.out.println("Came to M_OR1 updateReport (MOD path)");
+	    System.out.println("report_date: " + updatedEntity.getReport_date());
 
-		System.out.println("Came to services");
-		System.out.println("report_date: " + updatedEntity.getReport_date());
+	    // 1. Read LIVE summary as baseline
+	    List<M_OR1_Summary_Entity> existingList = getSummaryDataByDate(updatedEntity.getReport_date());
+	    if (existingList.isEmpty()) {
+	        throw new RuntimeException("Live record not found for REPORT_DATE: " + updatedEntity.getReport_date());
+	    }
+	    M_OR1_Summary_Entity liveSummary = existingList.get(0);
 
-		List<M_OR1_Summary_Entity> existingList = getSummaryDataByDate(updatedEntity.getReport_date());
+	    // 2. Check if MOD row exists; if not, copy from LIVE baseline
+	    M_OR1_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+	    if (modRecord == null) {
+	        modRecord = new M_OR1_Summary_Entity();
+	        BeanUtils.copyProperties(liveSummary, modRecord);
+	    }
 
-		if (existingList.isEmpty()) {
-			throw new RuntimeException("Record not found for REPORT_DATE: " + updatedEntity.getReport_date());
-		}
+	    // 3. Keep a copy for audit diff
+	    M_OR1_Summary_Entity oldcopy = new M_OR1_Summary_Entity();
+	    BeanUtils.copyProperties(modRecord, oldcopy);
 
-		M_OR1_Summary_Entity existing = existingList.get(0);
+	    // 4. Reflect maker edits into modRecord (only R-fields, only non-null values)
+	    applyChangesToEntity(updatedEntity, modRecord);
 
-		try {
+	    // 5. Compute audit diff
+	    String changes = auditService.getChanges(oldcopy, modRecord);
 
-			// ==========================
-			// R10 - R48 (Gross Income)
-			// ==========================
-			for (int i = 10; i <= 48; i++) {
+	    // 6. Maker flags
+	    modRecord.setEntity_flg("Y");
+	    modRecord.setModify_flg("Y");
+	    modRecord.setDel_flg("N");
 
-				// Skip R49
-				if (i == 49) {
-					continue;
-				}
+	    // 7. INSERT-or-UPDATE into MOD only (LIVE untouched)
+	    saveModSummaryEntity(modRecord);
+	    System.out.println("✔ Record saved into BRRS_M_OR1_MOD_SUMMARYTABLE for Checker approval");
 
-				String prefix = "R" + i + "_";
+	    // 8. Audit trail if anything changed
+	    if (changes != null && !changes.isEmpty()) {
+	        auditService.compareEntitiesmanual(oldcopy, modRecord,
+	                updatedEntity.getReport_date().toString(),
+	                "M OR1 Summary Screen", "BRRS_M_OR1_MOD_SUMMARYTABLE");
+	    }
+	}
+	
 
-				try {
+	private static final int[] MOR1_R_ROWS = {
+	    10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+	    30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+	    50, 51, 52, 53, 54, 55, 56
+	};
 
-					Method getter = M_OR1_Summary_Entity.class.getMethod("get" + prefix + "gross_income");
+	private static final String[] MOR1_R_FIELDS = {
+	    "product", "month", "gross_income", "aggregate_gross_income", "risk_weight_factor"
+	};
+	
+	public M_OR1_Summary_Entity findModRecordByReportDate(Date reportDate) {
+	    List<M_OR1_Summary_Entity> list = jdbcTemplate.query(
+	            "SELECT * FROM BRRS_M_OR1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+	            new Object[] { reportDate },
+	            new M_OR1_Summary_RowMapper());
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
+	
+	private Object cleanValue(Object value) {
+	    if (value instanceof String) {
+	        String s = ((String) value).trim();
+	        if (s.isEmpty()) return null;
+	        try {
+	            return new java.math.BigDecimal(s);
+	        } catch (NumberFormatException nfe) {
+	            return null;
+	        }
+	    }
+	    return value;
+	}
+	
+	private void applyChangesToEntity(M_OR1_Summary_Entity updatedEntity, M_OR1_Summary_Entity targetEntity) {
+	    for (int row : MOR1_R_ROWS) {
+	        String prefix = "R" + row + "_";
+	        for (String field : MOR1_R_FIELDS) {
+	            // Build getter/setter names respecting Java camelCase
+	            // r10_gross_income → getR10_gross_income / setR10_gross_income
+	            String methodSuffix = prefix + field;
+	            String getterName = "get" + methodSuffix;
+	            String setterName = "set" + methodSuffix;
 
-					Method setter = M_OR1_Summary_Entity.class.getMethod("set" + prefix + "gross_income",
-							getter.getReturnType());
+	            try {
+	                Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	                Object value = cleanValue(getter.invoke(updatedEntity));
+	                if (value == null) continue;
 
-					Object value = getter.invoke(updatedEntity);
+	                Method setter = M_OR1_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+	                setter.invoke(targetEntity, value);
+	            } catch (NoSuchMethodException e) {
+	                // Field absent on entity — skip
+	            } catch (Exception e) {
+	                throw new RuntimeException("Error applying field: " + getterName, e);
+	            }
+	        }
+	    }
+	}
+	
+	public void saveModSummaryEntity(M_OR1_Summary_Entity entity) {
+	    NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-					setter.invoke(existing, value);
+	    String checkSql =
+	        "SELECT COUNT(*) FROM BRRS_M_OR1_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+	    MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+	    Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
 
-				} catch (NoSuchMethodException e) {
-					// Ignore missing methods
-				}
-			}
+	    MapSqlParameterSource params = new MapSqlParameterSource()
+	            .addValue("reportDate", entity.getReport_date())
+	            .addValue("reportVersion", entity.getReport_version())
+	            .addValue("reportFrequency", entity.getReport_frequency())
+	            .addValue("reportCode", entity.getReport_code())
+	            .addValue("reportDesc", entity.getReport_desc())
+	            .addValue("entityFlg", entity.getEntity_flg())
+	            .addValue("modifyFlg", entity.getModify_flg())
+	            .addValue("delFlg", entity.getDel_flg());
 
-			// ==========================
-			// R50 - R54 (Aggregate Gross Income)
-			// ==========================
-			for (int i = 50; i <= 54; i++) {
+	    StringBuilder updateSetSql = new StringBuilder(
+	            "REPORT_VERSION = :reportVersion, REPORT_FREQUENCY = :reportFrequency, "
+	          + "REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc, "
+	          + "ENTITY_FLG = :entityFlg, MODIFY_FLG = :modifyFlg, DEL_FLG = :delFlg");
 
-				String prefix = "R" + i + "_";
+	    List<String> insertColumns = new ArrayList<>(Arrays.asList(
+	            "REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE",
+	            "REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+	    List<String> insertValues = new ArrayList<>(Arrays.asList(
+	            ":reportDate", ":reportVersion", ":reportFrequency", ":reportCode",
+	            ":reportDesc", ":entityFlg", ":modifyFlg", ":delFlg"));
 
-				try {
+	    for (int row : MOR1_R_ROWS) {
+	        String prefix = "R" + row + "_";
+	        for (String field : MOR1_R_FIELDS) {
+	            String methodSuffix = prefix + field;
+	            String getterName = "get" + methodSuffix;
+	            String columnName = prefix + field.toUpperCase();
+	            String paramName = "r" + row + "_" + field.toLowerCase();
 
-					Method getter = M_OR1_Summary_Entity.class.getMethod("get" + prefix + "aggregate_gross_income");
+	            try {
+	                Method getter = M_OR1_Summary_Entity.class.getMethod(getterName);
+	                Object value = cleanValue(getter.invoke(entity));
+	                params.addValue(paramName, value);
 
-					Method setter = M_OR1_Summary_Entity.class.getMethod("set" + prefix + "aggregate_gross_income",
-							getter.getReturnType());
+	                updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+	                insertColumns.add(columnName);
+	                insertValues.add(":" + paramName);
+	            } catch (NoSuchMethodException e) {
+	                // Skip
+	            } catch (Exception e) {
+	                throw new RuntimeException("Error mapping MOD column: " + columnName, e);
+	            }
+	        }
+	    }
 
-					Object value = getter.invoke(updatedEntity);
-
-					setter.invoke(existing, value);
-
-				} catch (NoSuchMethodException e) {
-					// Ignore missing methods
-				}
-			}
-
-			// ==========================
-			// R55 - R56 (Risk Weight Factor)
-			// ==========================
-			for (int i = 55; i <= 56; i++) {
-
-				String prefix = "R" + i + "_";
-
-				try {
-
-					Method getter = M_OR1_Summary_Entity.class.getMethod("get" + prefix + "risk_weight_factor");
-
-					Method setter = M_OR1_Summary_Entity.class.getMethod("set" + prefix + "risk_weight_factor",
-							getter.getReturnType());
-
-					Object value = getter.invoke(updatedEntity);
-
-					setter.invoke(existing, value);
-
-				} catch (NoSuchMethodException e) {
-					// Ignore missing methods
-				}
-			}
-
-			existing.setModify_flg("Y");
-
-			System.out.println("R47 Value Before Save : " + existing.getR47_gross_income());
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
-
-		System.out.println("Updating Summary Record.....");
-
-		updateSummaryRecord(existing);
+	    if (count != null && count > 0) {
+	        namedParamJdbc.update("UPDATE BRRS_M_OR1_MOD_SUMMARYTABLE SET " + updateSetSql
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)", params);
+	        System.out.println("✔ BRRS_M_OR1_MOD_SUMMARYTABLE updated successfully.");
+	    } else {
+	        namedParamJdbc.update("INSERT INTO BRRS_M_OR1_MOD_SUMMARYTABLE ("
+	                + String.join(", ", insertColumns) + ") VALUES ("
+	                + String.join(", ", insertValues) + ")", params);
+	        System.out.println("✔ BRRS_M_OR1_MOD_SUMMARYTABLE inserted successfully.");
+	    }
 	}
 
 	@Transactional

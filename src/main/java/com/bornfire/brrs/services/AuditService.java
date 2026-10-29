@@ -1453,15 +1453,15 @@ public class AuditService {
 
 		}
 		
-		/* M_CA4 (Maker-Checker) */
+		/* M_CA4 */
 		else if (upperTable.contains("M_CA4")) {
 		    transferCA4Data(auditRecord);
 		}
 		
-		/* M_SECL (Maker-Checker) */
+		/* M_SECL */
 		else if (upperTable.contains("M_SECL")) {
 		    transferSECLData(auditRecord);
-		}
+		    }
 		
 		/* M_BOP */
 		else if (upperTable.contains("M_BOP")) {
@@ -1471,8 +1471,18 @@ public class AuditService {
 		/* M_OB */
 		else if (upperTable.contains("M_OB")) {
 			transferMObData(auditRecord);
-		 
-		} 
+			} 
+		
+		/* M_SECA */
+		else if (upperTable.contains("M_SECA")) {
+		    transferSECAData(auditRecord);
+		}
+		
+		/* M_OR1 */
+		else if (upperTable.contains("M_OR1")) {
+		    transferMOR1Data(auditRecord);
+		}
+		
 		/* M_LA2 */
 		else if (upperTable.contains("M_LA2")) {
 			transferMLA2Data(auditRecord);
@@ -2328,6 +2338,121 @@ public class AuditService {
 	    System.out.println("M_SECL Verification and Transfer Completed Successfully");
 	}
 	
+	// =========================================================
+	// M_SECA — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferSECAData(AuditServicesEntity auditRecord) {
+	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SECA_MOD_SUMMARYTABLE";
+	    java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+	    if (reportDate == null) {
+	        throw new IllegalStateException("No modified M_SECA record available for verification.");
+	    }
+
+	    System.out.println("M_SECA Report Date : " + reportDate);
+
+	    // Build the (cols) = (SELECT cols FROM MOD) parts once — reused for Summary + Detail
+	    String columnList = buildSecaColumnList();
+	    String selectList = buildSecaSelectList();
+
+	    // 1. Update BRRS_M_SECA_SUMMARYTABLE from MOD
+	    String updateSummarySql =
+	            "UPDATE BRRS_M_SECA_SUMMARYTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_SECA_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException("M_SECA modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SECA Summary Table Updated : " + summaryUpdated);
+
+	    // 2. Update BRRS_M_SECA_DETAILTABLE from MOD (identical column/select lists)
+	    String updateDetailSql =
+	            "UPDATE BRRS_M_SECA_DETAILTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_SECA_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+
+	    if (detailUpdated == 0) {
+	        throw new IllegalStateException("M_SECA detail record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SECA Detail Table Updated : " + detailUpdated);
+
+	    // 3. Mark MOD row as approved
+	    String updateModSql =
+	            "UPDATE BRRS_M_SECA_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	            "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+	    System.out.println("M_SECA MOD Updated : " + modUpdated);
+	    System.out.println("M_SECA Verification and Transfer Completed Successfully");
+	}
+	
+	// =========================================================
+	// M_OR1 — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferMOR1Data(AuditServicesEntity auditRecord) {
+	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_OR1_MOD_SUMMARYTABLE";
+	    java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+	    if (reportDate == null) {
+	        throw new IllegalStateException("No modified M_OR1 record available for verification.");
+	    }
+
+	    System.out.println("M_OR1 Report Date : " + reportDate);
+
+	    String columnList = buildMOR1ColumnList();
+	    String selectList = buildMOR1SelectList();
+
+	    // 1. Update BRRS_M_OR1_SUMMARYTABLE from MOD
+	    String updateSummarySql =
+	            "UPDATE BRRS_M_OR1_SUMMARYTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_OR1_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException("M_OR1 modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_OR1 Summary Table Updated : " + summaryUpdated);
+
+	    // 2. Update BRRS_M_OR1_DETAILTABLE from MOD (if detail table exists)
+	    String updateDetailSql =
+	            "UPDATE BRRS_M_OR1_DETAILTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_OR1_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+	    System.out.println("M_OR1 Detail Table Updated : " + detailUpdated);
+
+	    // 3. Mark MOD row as approved
+	    String updateModSql =
+	            "UPDATE BRRS_M_OR1_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	            "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+	    System.out.println("M_OR1 MOD Updated : " + modUpdated);
+	    System.out.println("M_OR1 Verification and Transfer Completed Successfully");
+	}
+	
 	
 	private static String buildSecLColumnList() {
 	    StringBuilder sb = new StringBuilder();
@@ -2373,6 +2498,47 @@ public class AuditService {
 	    return sb.toString();
 	}
 	
+private static String buildSecaColumnList() {
+   StringBuilder sb = new StringBuilder();
+
+   for (int row = 13; row <= 59; row++) {
+       String p = "R" + row + "_";
+       sb.append(p).append("PRODUCT, ")
+         .append(p).append("EQUITY, ")
+         .append(p).append("BONDS, ")
+         .append(p).append("BOBC, ")
+         .append(p).append("TRES_BILLS, ")
+         .append(p).append("REPURCHASE_AGREE, ")
+         .append(p).append("COM_PAPER, ")
+         .append(p).append("CERT_OF_DEP, ")
+         .append(p).append("PLEDGED_ASSET, ")
+         .append(p).append("OTHER, ")
+         .append(p).append("TOTAL, ");
+   }
+   sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+   return sb.toString();
+}
+
+private static String buildSecaSelectList() {
+   StringBuilder sb = new StringBuilder();
+
+   for (int row = 13; row <= 59; row++) {
+       String p = "R" + row + "_";
+       sb.append("S.").append(p).append("PRODUCT, ")
+         .append("S.").append(p).append("EQUITY, ")
+         .append("S.").append(p).append("BONDS, ")
+         .append("S.").append(p).append("BOBC, ")
+         .append("S.").append(p).append("TRES_BILLS, ")
+         .append("S.").append(p).append("REPURCHASE_AGREE, ")
+         .append("S.").append(p).append("COM_PAPER, ")
+         .append("S.").append(p).append("CERT_OF_DEP, ")
+         .append("S.").append(p).append("PLEDGED_ASSET, ")
+         .append("S.").append(p).append("OTHER, ")
+         .append("S.").append(p).append("TOTAL, ");
+   }
+   sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+   return sb.toString();
+}
 	
 	private void transferMBopData(AuditServicesEntity auditRecord) {
 		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_BOP_MOD_SUMMARYTABLE";
@@ -2527,6 +2693,34 @@ public class AuditService {
 		System.out.println("M_OB Verification and Transfer Completed Successfully");
 	}
 
+
+private static String buildMOR1ColumnList() {
+StringBuilder sb = new StringBuilder();
+for (int row = 10; row <= 56; row++) {
+   String p = "R" + row + "_";
+   sb.append(p).append("PRODUCT, ")
+     .append(p).append("MONTH, ")
+     .append(p).append("GROSS_INCOME, ")
+     .append(p).append("AGGREGATE_GROSS_INCOME, ")
+     .append(p).append("RISK_WEIGHT_FACTOR, ");
+}
+sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+return sb.toString();
+}
+
+private static String buildMOR1SelectList() {
+StringBuilder sb = new StringBuilder();
+for (int row = 10; row <= 56; row++) {
+   String p = "R" + row + "_";
+   sb.append("S.").append(p).append("PRODUCT, ")
+     .append("S.").append(p).append("MONTH, ")
+     .append("S.").append(p).append("GROSS_INCOME, ")
+     .append("S.").append(p).append("AGGREGATE_GROSS_INCOME, ")
+     .append("S.").append(p).append("RISK_WEIGHT_FACTOR, ");
+}
+sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+return sb.toString();
+}
 
 	private void transferMLA2Data(AuditServicesEntity auditRecord) {
 		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_LA2_MOD_SUMMARYTABLE";

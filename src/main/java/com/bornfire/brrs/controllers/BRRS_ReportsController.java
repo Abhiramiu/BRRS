@@ -1363,64 +1363,51 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_OR1_ReportService M_OR1_service;
 
+	// =========================================================
+	// MAKER: Save edits to MOD table
+	// =========================================================
 	@RequestMapping(value = "/M_OR1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_OR1_Summary_Entity request1) {
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute M_OR1_Summary_Entity request1) {
-
-		try {
-			System.out.println("Came to single controller");
-
-			request1.setReport_date(asondate);
-
-			M_OR1_service.updateReport(request1);
-
-			return ResponseEntity.ok("Modified Successfully.");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	    try {
+	        System.out.println("Came to M_OR1 maker controller");
+	        request1.setReport_date(asondate);
+	        M_OR1_service.updateReport(request1);   // MOD path — pending checker
+	        return ResponseEntity.ok("Modification saved. Pending checker verification.");  // ⬅️ message updated
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	    }
 	}
 
+	// =========================================================
+	// RESUB: Unchanged (bypasses maker-checker)
+	// =========================================================
 	@RequestMapping(value = "/UpdateM_OR1_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_M_OR1_ReportService.M_OR1_Resub_Summary_Entity request,
+	        HttpServletRequest req) {
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-
-			@ModelAttribute BRRS_M_OR1_ReportService.M_OR1_Resub_Summary_Entity request,
-
-			HttpServletRequest req) {
-
-		try {
-
-			System.out.println("Came to Resub Controller");
-
-			if (asondate != null) {
-
-				request.setReport_date(asondate);
-				System.out.println("Set Report Date: " + asondate);
-
-			} else {
-
-				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-			}
-
-			M_OR1_service.updateResubReport(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Resubmission Update Failed: " + e.getMessage());
-		}
+	    try {
+	        System.out.println("Came to M_OR1 Resub Controller");
+	        if (asondate != null) {
+	            request.setReport_date(asondate);
+	            System.out.println("Set Report Date: " + asondate);
+	        } else {
+	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+	        }
+	        M_OR1_service.updateResubReport(request);
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Resubmission Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@Autowired
@@ -4223,50 +4210,64 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_SECA_ReportService BRRS_M_SECA_reportservice;
 
+	// =========================================================
+	// MAKER: Save edits to MOD table
+	// =========================================================
 	@RequestMapping(value = "/MSECAupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECA_Summary_Entity request) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_SECA_Summary_Entity request) {
 
-		try {
-			System.out.println("came to single controller");
-
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
-
-			// call services
-			BRRS_M_SECA_reportservice.updateReport1(request);
-
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	    try {
+	        System.out.println("came to M_SECA maker controller");
+	        request.setReportDate(asondate);
+	        BRRS_M_SECA_reportservice.updateReport(request);   // MOD path
+	        return ResponseEntity.ok("Modification saved. Pending checker verification.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	    }
 	}
 
+	// =========================================================
+	// CHECKER: Verify pending M_SECA modification
+	// =========================================================
+	@RequestMapping(value = "/verifyM_SECA", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyM_SECA(
+	        @RequestParam("auditId") Long auditId) {
+
+	    try {
+	        System.out.println("came to M_SECA checker controller, auditId = " + auditId);
+	        auditService.verifyAndTransferReport(auditId);     // MOD → LIVE
+	        return ResponseEntity.ok("M_SECA Verified & Transferred Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verification Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// RESUB (unchanged)
+	// =========================================================
 	@RequestMapping(value = "/UpdateM_SECA_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportResub(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SECA_Resub_Summary_Entity request) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_SECA_Resub_Summary_Entity request) {
 
-		try {
-			System.out.println("came to single controller");
-
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
-
-			// call services
-			BRRS_M_SECA_reportservice.updateReportResub(request);
-
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	    try {
+	        System.out.println("came to M_SECA resub controller");
+	        request.setReportDate(asondate);
+	        BRRS_M_SECA_reportservice.updateReportResub(request);
+	        return ResponseEntity.ok("Modified Successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	    }
 	}
-
 	// @RequestMapping(value = "/updateMLA4", method = { RequestMethod.GET,
 	// RequestMethod.POST })
 	// @ResponseBody
