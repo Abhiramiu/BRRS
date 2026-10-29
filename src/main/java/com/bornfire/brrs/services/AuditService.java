@@ -1458,6 +1458,12 @@ public class AuditService {
 		    transferCA4Data(auditRecord);
 		}
 		
+
+		/* M_CA3 */
+		else if (upperTable.contains("M_CA3")) {
+		    transferCA3Data(auditRecord);
+		}
+		
 		/* M_SECL */
 		else if (upperTable.contains("M_SECL")) {
 		    transferSECLData(auditRecord);
@@ -2277,6 +2283,102 @@ public class AuditService {
 	    System.out.println("M_CA4 Verification and Transfer Completed Successfully");
 	}
 	
+	// =========================================================
+	// M_CA3 — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferCA3Data(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA3_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception e) {
+			// fallback
+		}
+		if (reportDate == null) {
+			reportDate = jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_M_CA3_MOD_SUMMARYTABLE", java.sql.Date.class);
+		}
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_CA3 record available for verification.");
+		}
+
+		System.out.println("M_CA3 Report Date : " + reportDate);
+
+		String columns = "R10_PRODUCT, R10_AMOUNT, R11_PRODUCT, R11_AMOUNT, R12_PRODUCT, R12_AMOUNT, "
+				+ "R13_PRODUCT, R13_AMOUNT, R14_PRODUCT, R14_AMOUNT, R15_PRODUCT, R15_AMOUNT, "
+				+ "R16_PRODUCT, R16_AMOUNT, R17_PRODUCT, R17_AMOUNT, R18_PRODUCT, R18_AMOUNT, "
+				+ "R19_PRODUCT, R19_AMOUNT, R20_PRODUCT, R20_AMOUNT, "
+				+ "R24_PRODUCT, R24_AMOUNT, R25_PRODUCT, R25_AMOUNT, R26_PRODUCT, R26_AMOUNT, "
+				+ "R27_PRODUCT, R27_AMOUNT, R28_PRODUCT, R28_AMOUNT, R29_PRODUCT, R29_AMOUNT, "
+				+ "R36_PRODUCT, R36_AMOUNT, R37_PRODUCT, R37_AMOUNT, R38_PRODUCT, R38_AMOUNT, "
+				+ "R39_PRODUCT, R39_AMOUNT, R40_PRODUCT, R40_AMOUNT, R41_PRODUCT, R41_AMOUNT, "
+				+ "R44_PRODUCT, R44_AMOUNT, R45_PRODUCT, R45_AMOUNT, R46_PRODUCT, R46_AMOUNT, "
+				+ "R50_PRODUCT, R50_AMOUNT, R51_PRODUCT, R51_AMOUNT, R52_PRODUCT, R52_AMOUNT, "
+				+ "R53_PRODUCT, R53_AMOUNT, R54_PRODUCT, R54_AMOUNT, R55_PRODUCT, R55_AMOUNT, "
+				+ "R58_PRODUCT, R58_AMOUNT, R59_PRODUCT, R59_AMOUNT, R60_PRODUCT, R60_AMOUNT, "
+				+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG";
+
+		String selectColumns = "S.R10_PRODUCT, S.R10_AMOUNT, S.R11_PRODUCT, S.R11_AMOUNT, S.R12_PRODUCT, S.R12_AMOUNT, "
+				+ "S.R13_PRODUCT, S.R13_AMOUNT, S.R14_PRODUCT, S.R14_AMOUNT, S.R15_PRODUCT, S.R15_AMOUNT, "
+				+ "S.R16_PRODUCT, S.R16_AMOUNT, S.R17_PRODUCT, S.R17_AMOUNT, S.R18_PRODUCT, S.R18_AMOUNT, "
+				+ "S.R19_PRODUCT, S.R19_AMOUNT, S.R20_PRODUCT, S.R20_AMOUNT, "
+				+ "S.R24_PRODUCT, S.R24_AMOUNT, S.R25_PRODUCT, S.R25_AMOUNT, S.R26_PRODUCT, S.R26_AMOUNT, "
+				+ "S.R27_PRODUCT, S.R27_AMOUNT, S.R28_PRODUCT, S.R28_AMOUNT, S.R29_PRODUCT, S.R29_AMOUNT, "
+				+ "S.R36_PRODUCT, S.R36_AMOUNT, S.R37_PRODUCT, S.R37_AMOUNT, S.R38_PRODUCT, S.R38_AMOUNT, "
+				+ "S.R39_PRODUCT, S.R39_AMOUNT, S.R40_PRODUCT, S.R40_AMOUNT, S.R41_PRODUCT, S.R41_AMOUNT, "
+				+ "S.R44_PRODUCT, S.R44_AMOUNT, S.R45_PRODUCT, S.R45_AMOUNT, S.R46_PRODUCT, S.R46_AMOUNT, "
+				+ "S.R50_PRODUCT, S.R50_AMOUNT, S.R51_PRODUCT, S.R51_AMOUNT, S.R52_PRODUCT, S.R52_AMOUNT, "
+				+ "S.R53_PRODUCT, S.R53_AMOUNT, S.R54_PRODUCT, S.R54_AMOUNT, S.R55_PRODUCT, S.R55_AMOUNT, "
+				+ "S.R58_PRODUCT, S.R58_AMOUNT, S.R59_PRODUCT, S.R59_AMOUNT, S.R60_PRODUCT, S.R60_AMOUNT, "
+				+ "S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG";
+
+		// 1. Update BRRS_M_CA3_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_CA3_SUMMARYTABLE M SET (" + columns + ") = ("
+				+ "    SELECT " + selectColumns + " FROM BRRS_M_CA3_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_CA3 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_CA3 Summary Table Updated : " + summaryUpdated);
+
+		// Ensure detail record exists for this date
+		Integer detailCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM BRRS_M_CA3_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				new Object[] { reportDate }, Integer.class);
+		if (detailCount == null || detailCount == 0) {
+			jdbcTemplate.update(
+					"INSERT INTO BRRS_M_CA3_DETAILTABLE (REPORT_DATE, ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, 'Y', 'N', 'N')",
+					reportDate);
+		}
+
+		// 2. Update BRRS_M_CA3_DETAILTABLE from MOD table
+		String updateDetailSql = "UPDATE BRRS_M_CA3_DETAILTABLE M SET (" + columns + ") = ("
+				+ "    SELECT " + selectColumns + " FROM BRRS_M_CA3_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_CA3 Detail Table Updated : " + detailUpdated);
+
+		// Update flags on Live Summary & Detail tables to approved status
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_DETAILTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_CA3_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_CA3 MOD Updated : " + modUpdated);
+		System.out.println("M_CA3 Verification and Transfer Completed Successfully");
+	}
+
 	// =========================================================
 	// M_SECL — Checker transfer (MOD → LIVE Summary + Detail)
 	// =========================================================

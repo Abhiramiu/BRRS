@@ -3207,26 +3207,22 @@ public class BRRS_ReportsController {
 			@ModelAttribute M_CA3_Summary_Entity request) {
 
 		try {
-			System.out.println("came to single controller");
+			System.out.println("Came to M_CA3 single controller");
 
-			// ✅ set the asondate into entity
-			request.setREPORT_DATE(asondate);
-
-			// call services
+			if (asondate != null) {
+				request.setREPORT_DATE(asondate);
+			}
 
 			BRRS_M_CA3_reportservice.updateReport(request);
-			BRRS_M_CA3_reportservice.updateReport2(request);
-			BRRS_M_CA3_reportservice.updateReport3(request);
-			BRRS_M_CA3_reportservice.updateReport4(request);
-			BRRS_M_CA3_reportservice.updateReport5(request);
-			BRRS_M_CA3_reportservice.updateReport6(request);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
+
+
 
 	@RequestMapping(value = "/UpdateM_CA3_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody

@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -515,392 +518,299 @@ public class BRRS_M_CA3_ReportService {
 		return mv;
 	}
 
+	// =========================================================
+	// NORMAL UPDATE WORKFLOW (Maker-Checker with MOD Table)
+	// =========================================================
+
+	public static final int[] CA3_MOD_R_ROWS = {
+		10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+		24, 25, 26, 27, 28, 29,
+		36, 37, 38, 39, 40, 41,
+		44, 45, 46,
+		50, 51, 52, 53, 54, 55,
+		58, 59, 60
+	};
+
+	public static final String[] CA3_MOD_R_FIELDS = { "PRODUCT", "AMOUNT" };
+
+	/** Fetch LIVE summary row for a given report date (baseline reference). */
+	public M_CA3_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA3_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA3_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new Object[] { reportDate }, new M_CA3SummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	/** Fetch existing MOD row (pending maker edit), if any. */
+	public M_CA3_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA3_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA3_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new Object[] { reportDate }, new M_CA3SummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	/** Normalizes a raw value: trims, converts String numeric to BigDecimal, or null. */
+	private Object cleanValue(Object value, String field) {
+		if (value == null) {
+			return null;
+		}
+		if (value instanceof String) {
+			String s = ((String) value).trim().replace(",", "");
+			if (s.isEmpty()) {
+				return null;
+			}
+			if ("AMOUNT".equalsIgnoreCase(field)) {
+				try {
+					return new java.math.BigDecimal(s);
+				} catch (NumberFormatException nfe) {
+					return null;
+				}
+			}
+			return s;
+		}
+		return value;
+	}
+
+	/** Copies non-null values from updatedEntity into targetEntity for all configured rows/fields. */
+	private void applyChangesToEntity(int[] rows, String[] fields, M_CA3_Summary_Entity updatedEntity,
+			M_CA3_Summary_Entity targetEntity) {
+		for (int row : rows) {
+			String prefix = "R" + row + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(updatedEntity), field);
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = M_CA3_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	/** Saves or updates the entity in BRRS_M_CA3_MOD_SUMMARYTABLE only. */
+	public void saveModSummaryEntity(M_CA3_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_CA3_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getREPORT_DATE());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getREPORT_DATE())
+				.addValue("reportVersion", entity.getREPORT_VERSION())
+				.addValue("reportFrequency", entity.getREPORT_FREQUENCY())
+				.addValue("reportCode", entity.getREPORT_CODE())
+				.addValue("reportDesc", entity.getREPORT_DESC())
+				.addValue("entityFlg", entity.getENTITY_FLG())
+				.addValue("modifyFlg", entity.getMODIFY_FLG())
+				.addValue("delFlg", entity.getDEL_FLG());
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"REPORT_VERSION = :reportVersion, "
+				+ "REPORT_FREQUENCY = :reportFrequency, "
+				+ "REPORT_CODE = :reportCode, "
+				+ "REPORT_DESC = :reportDesc, "
+				+ "ENTITY_FLG = :entityFlg, "
+				+ "MODIFY_FLG = :modifyFlg, "
+				+ "DEL_FLG = :delFlg");
+
+		List<String> insertColumns = new ArrayList<>(Arrays.asList(
+				"REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY",
+				"REPORT_CODE", "REPORT_DESC", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+
+		List<String> insertValues = new ArrayList<>(Arrays.asList(
+				":reportDate", ":reportVersion", ":reportFrequency",
+				":reportCode", ":reportDesc", ":entityFlg", ":modifyFlg", ":delFlg"));
+
+		for (int row : CA3_MOD_R_ROWS) {
+			String prefix = "R" + row + "_";
+			for (String field : CA3_MOD_R_FIELDS) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + row + "_" + field.toLowerCase();
+				String columnName = prefix + field.toUpperCase();
+
+				try {
+					Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(entity), field);
+					params.addValue(paramName, value);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_CA3_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_CA3_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_CA3_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_CA3_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
+
+	@Transactional
 	public void updateReport(M_CA3_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_CA3 updateReport (MOD path)");
+		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
+		// 1. Fetch live summary record as baseline reference
+		M_CA3_Summary_Entity liveSummary = findByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
+		}
 
-	    // Fetch existing SUMMARY
-	    List<M_CA3_Summary_Entity> summaryList1 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList1.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
-	    M_CA3_Summary_Entity existingSummary = summaryList1.get(0);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		M_CA3_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getREPORT_DATE());
+		if (modRecord == null) {
+			modRecord = new M_CA3_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-	    // Audit old copy
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
+		// 3. Keep old copy for audit comparison
+		M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-	    // Fetch existing DETAIL
-	    List<M_CA3_Detail_Entity> detailList1 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList1.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList1.get(0);
-	    }
+		// 4. Apply updates ONLY to the modRecord object (Live tables remain untouched!)
+		applyChangesToEntity(CA3_MOD_R_ROWS, CA3_MOD_R_FIELDS, updatedEntity, modRecord);
 
-	    try {
+		// 5. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_CA3 Changes Length = " + (changes != null ? changes.length() : 0));
 
-	        String[] fields = { "AMOUNT" };
+		// 6. Set Maker-Checker Flags
+		modRecord.setENTITY_FLG("Y");
+		modRecord.setMODIFY_FLG("Y");
+		modRecord.setDEL_FLG("N");
 
-	        // Loop R10 -> R60
-	        for (int i = 10; i <= 60; i++) {
+		// 7. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_CA3_MOD_SUMMARYTABLE for Checker Approval");
 
-	            String prefix = "R" + i + "_";
+		// 8. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+					"M CA3 Summary Screen", "BRRS_M_CA3_MOD_SUMMARYTABLE");
+		}
+	}
 
-	            for (String field : fields) {
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		List<M_CA3_Summary_Entity> pending = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_CA3_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new Object[] { reportDate }, new M_CA3SummaryRowMapper());
 
-	                String getterName = "get" + prefix + field;
-	                String setterName = "set" + prefix + field;
+		if (pending == null || pending.isEmpty()) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
 
-	                try {
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferModValuesToLiveTables(pending.get(0), reportDate);
 
-	                    Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
-	                    Object newValue = getter.invoke(updatedEntity);
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			reportDate);
 
-	                    if (newValue != null) {
+		System.out.println(
+				"✔ M_CA3 Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
 
-	                        Method summarySetter = M_CA3_Summary_Entity.class
-	                                .getMethod(setterName, BigDecimal.class);
+	private void transferModValuesToLiveTables(M_CA3_Summary_Entity modRecord, Date reportDate) {
+		// Ensure detail record exists for this date
+		Integer detailCount = jdbcTemplate.queryForObject(
+				"SELECT COUNT(*) FROM BRRS_M_CA3_DETAILTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				new Object[] { reportDate }, Integer.class);
+		if (detailCount == null || detailCount == 0) {
+			jdbcTemplate.update(
+					"INSERT INTO BRRS_M_CA3_DETAILTABLE (REPORT_DATE, ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, 'Y', 'N', 'N')",
+					reportDate);
+		}
 
-	                        Method detailSetter = M_CA3_Detail_Entity.class
-	                                .getMethod(setterName, BigDecimal.class);
+		for (int row : CA3_MOD_R_ROWS) {
+			String prefix = "R" + row + "_";
+			for (String field : CA3_MOD_R_FIELDS) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field.toUpperCase();
 
-	                        // Update Summary
-	                        summarySetter.invoke(existingSummary, newValue);
+				try {
+					Method getter = M_CA3_Summary_Entity.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(modRecord), field);
 
-	                        // Update Detail
-	                        detailSetter.invoke(existingDetail, newValue);
-	                    }
+					if (value == null) {
+						continue;
+					}
 
-	                } catch (NoSuchMethodException e) {
-	                    continue; // Skip missing rows
-	                }
-	            }
-	        }
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_M_CA3_SUMMARYTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
 
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_M_CA3_DETAILTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
 
-	    // Check changes
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
 
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Update flags on Live Summary & Detail tables
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			reportDate);
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_CA3_DETAILTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+			reportDate);
 	}
 
 	public void updateReport2(M_CA3_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-
-	    List<M_CA3_Summary_Entity> summaryList2 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList2.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
-	    M_CA3_Summary_Entity existingSummary = summaryList2.get(0);
-
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
-
-	    List<M_CA3_Detail_Entity> detailList2 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList2.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList2.get(0);
-	    }
-
-	    try {
-
-	        for (int i = 24; i <= 29; i++) {
-
-	            String prefix = "R" + i + "_";
-
-	            Method getter = M_CA3_Summary_Entity.class.getMethod(
-	                    "get" + prefix + "AMOUNT");
-
-	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Object value = getter.invoke(updatedEntity);
-
-	            summarySetter.invoke(existingSummary, value);
-	            detailSetter.invoke(existingDetail, value);
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
-
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Consolidated into updateReport()
 	}
-	
+
 	public void updateReport3(M_CA3_Summary_Entity updatedEntity) {
-
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
-
-	    List<M_CA3_Summary_Entity> summaryList3 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList3.isEmpty()) throw new RuntimeException("Summary record not found for REPORT_DATE: " + updatedEntity.getREPORT_DATE());
-	    M_CA3_Summary_Entity existingSummary = summaryList3.get(0);
-
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
-
-	    List<M_CA3_Detail_Entity> detailList3 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList3.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList3.get(0);
-	    }
-
-	    try {
-
-	        for (int i = 36; i <= 41; i++) {
-
-	            String prefix = "R" + i + "_";
-
-	            Method getter = M_CA3_Summary_Entity.class.getMethod(
-	                    "get" + prefix + "AMOUNT");
-
-	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Object value = getter.invoke(updatedEntity);
-
-	            summarySetter.invoke(existingSummary, value);
-	            detailSetter.invoke(existingDetail, value);
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
-
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Consolidated into updateReport()
 	}
-	
+
 	public void updateReport4(M_CA3_Summary_Entity updatedEntity) {
-
-	    List<M_CA3_Summary_Entity> summaryList4 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList4.isEmpty()) throw new RuntimeException("Record not found");
-	    M_CA3_Summary_Entity existingSummary = summaryList4.get(0);
-
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
-
-	    List<M_CA3_Detail_Entity> detailList4 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList4.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList4.get(0);
-	    }
-
-	    try {
-
-	        int[] rows = {44,45,46};
-
-	        for (int i : rows) {
-
-	            String prefix = "R" + i + "_";
-
-	            Method getter = M_CA3_Summary_Entity.class.getMethod(
-	                    "get" + prefix + "AMOUNT");
-
-	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Object value = getter.invoke(updatedEntity);
-
-	            summarySetter.invoke(existingSummary, value);
-	            detailSetter.invoke(existingDetail, value);
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
-
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Consolidated into updateReport()
 	}
-	
+
 	public void updateReport5(M_CA3_Summary_Entity updatedEntity) {
-
-	    List<M_CA3_Summary_Entity> summaryList5 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList5.isEmpty()) throw new RuntimeException("Record not found");
-	    M_CA3_Summary_Entity existingSummary = summaryList5.get(0);
-
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
-
-	    List<M_CA3_Detail_Entity> detailList5 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList5.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList5.get(0);
-	    }
-
-	    try {
-
-	        for (int i = 50; i <= 55; i++) {
-
-	            String prefix = "R" + i + "_";
-
-	            Method getter = M_CA3_Summary_Entity.class.getMethod(
-	                    "get" + prefix + "AMOUNT");
-
-	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Object value = getter.invoke(updatedEntity);
-
-	            summarySetter.invoke(existingSummary, value);
-	            detailSetter.invoke(existingDetail, value);
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
-
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Consolidated into updateReport()
 	}
-	
+
 	public void updateReport6(M_CA3_Summary_Entity updatedEntity) {
-
-	    List<M_CA3_Summary_Entity> summaryList6 = getSummaryByDate(updatedEntity.getREPORT_DATE());
-	    if (summaryList6.isEmpty()) throw new RuntimeException("Record not found");
-	    M_CA3_Summary_Entity existingSummary = summaryList6.get(0);
-
-	    M_CA3_Summary_Entity oldcopy = new M_CA3_Summary_Entity();
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
-
-	    List<M_CA3_Detail_Entity> detailList6 = getDetailByDate(updatedEntity.getREPORT_DATE());
-	    M_CA3_Detail_Entity existingDetail;
-	    if (detailList6.isEmpty()) {
-	        existingDetail = new M_CA3_Detail_Entity();
-	        existingDetail.setREPORT_DATE(updatedEntity.getREPORT_DATE());
-	    } else {
-	        existingDetail = detailList6.get(0);
-	    }
-
-	    try {
-
-	        for (int i = 58; i <= 60; i++) {
-
-	            String prefix = "R" + i + "_";
-
-	            Method getter = M_CA3_Summary_Entity.class.getMethod(
-	                    "get" + prefix + "AMOUNT");
-
-	            Method summarySetter = M_CA3_Summary_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Method detailSetter = M_CA3_Detail_Entity.class.getMethod(
-	                    "set" + prefix + "AMOUNT", getter.getReturnType());
-
-	            Object value = getter.invoke(updatedEntity);
-
-	            summarySetter.invoke(existingSummary, value);
-	            detailSetter.invoke(existingDetail, value);
-	        }
-
-	    } catch (Exception e) {
-	        throw new RuntimeException("Error while updating report fields", e);
-	    }
-
-	    String changes = auditService.getChanges(oldcopy, existingSummary);
-
-	    if (!changes.isEmpty()) {
-
-	        saveSummary(existingSummary);
-	        saveDetail(existingDetail);
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getREPORT_DATE().toString(),
-	                "M CA3 Summary Screen",
-	                "BRRS_M_CA3_SUMMARY");
-	    }
+		// Consolidated into updateReport()
 	}
 
 	public void updateResubReport(M_CA3_Resub_Summary_Entity updatedEntity) {
@@ -4923,7 +4833,24 @@ public class BRRS_M_CA3_ReportService {
 		public String getMODIFY_FLG() { return MODIFY_FLG; }
 		public void setMODIFY_FLG(String mODIFY_FLG) { MODIFY_FLG = mODIFY_FLG; }
 		public String getDEL_FLG() { return DEL_FLG; }
-		public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+				public void setDEL_FLG(String dEL_FLG) { DEL_FLG = dEL_FLG; }
+
+		public Date getReport_date() { return REPORT_DATE; }
+		public void setReport_date(Date report_date) { this.REPORT_DATE = report_date; }
+		public BigDecimal getReport_version() { return REPORT_VERSION; }
+		public void setReport_version(BigDecimal report_version) { this.REPORT_VERSION = report_version; }
+		public String getReport_frequency() { return REPORT_FREQUENCY; }
+		public void setReport_frequency(String report_frequency) { this.REPORT_FREQUENCY = report_frequency; }
+		public String getReport_code() { return REPORT_CODE; }
+		public void setReport_code(String report_code) { this.REPORT_CODE = report_code; }
+		public String getReport_desc() { return REPORT_DESC; }
+		public void setReport_desc(String report_desc) { this.REPORT_DESC = report_desc; }
+		public String getEntity_flg() { return ENTITY_FLG; }
+		public void setEntity_flg(String entity_flg) { this.ENTITY_FLG = entity_flg; }
+		public String getModify_flg() { return MODIFY_FLG; }
+		public void setModify_flg(String modify_flg) { this.MODIFY_FLG = modify_flg; }
+		public String getDel_flg() { return DEL_FLG; }
+		public void setDel_flg(String del_flg) { this.DEL_FLG = del_flg; }
 	}
 
 	// =========================================================
