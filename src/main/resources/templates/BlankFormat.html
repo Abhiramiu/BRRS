@@ -1,0 +1,228 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Blank Format</title>
+
+	<link rel="icon" th:href="@{/images/client_Logo_bkp.png}" type="image/x-icon" />
+
+	<!-- CSS -->
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+	<link rel="stylesheet" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+	<!-- JavaScript -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	<style>
+		.container-fluid {
+			margin-top: 70px;
+			padding: 20px;
+			zoom: 95%;
+		}
+
+		.formline {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 20px;
+		}
+
+		/* ===== Result popup (same look as report download popup) ===== */
+		#bfOverlay {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.45);
+			z-index: 99999;
+		}
+
+		#bfBox {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 480px;
+			max-width: 90%;
+			background: #ffffff;
+			border-radius: 6px;
+			overflow: hidden;
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+			font-family: Arial, Geneva, Tahoma, sans-serif;
+		}
+
+		#bfBoxHead {
+			background: #6b7a8f;
+			color: #ffffff !important;
+			text-align: center;
+			font-size: 15px;
+			padding: 3px 10px;
+		}
+
+		#bfBoxMsg {
+			color: #000000 !important;
+			text-align: center;
+			font-size: 16px;
+			padding: 22px 20px 14px 20px;
+		}
+
+		#bfBoxBtnWrap {
+			text-align: center;
+			padding-bottom: 18px;
+		}
+
+		#bfOkBtn {
+			background: #ffffff;
+			color: #000000;
+			font-weight: bold;
+			border: 1px solid #6b7a8f;
+			border-radius: 20px;
+			padding: 6px 22px;
+			cursor: pointer;
+		}
+
+		#bfOkBtn:hover {
+			background: #6b7a8f;
+			color: #ffffff;
+		}
+	</style>
+
+	<script>
+		function back() {
+			window.history.back();
+		}
+
+		function showResultModal(message) {
+			document.getElementById("bfBoxMsg").textContent = message;
+			document.getElementById("bfOverlay").style.display = "block";
+		}
+
+		function closeResultModal() {
+			document.getElementById("bfOverlay").style.display = "none";
+		}
+
+		function downloadBlank(sel) {
+			var type = sel.value;
+			if (!type) {
+				return;
+			}
+
+			// relative URL -> /BRRS/BlankFormat/download
+			var url = "BlankFormat/download?fileType=" + encodeURIComponent(type);
+
+			fetch(url)
+				.then(function (res) {
+					if (!res.ok) {
+						if (res.status === 404) {
+							throw new Error(type + " file not found in the source folder.");
+						}
+						throw new Error("Download failed (" + res.status + ").");
+					}
+					var cd = res.headers.get("Content-Disposition") || "";
+					var m = /filename="?([^";]+)"?/i.exec(cd);
+					var name = m ? m[1] : type + ".xlsx";
+					return res.blob().then(function (blob) {
+						return {blob: blob, name: name};
+					});
+				})
+				.then(function (r) {
+					var objUrl = window.URL.createObjectURL(r.blob);
+					var a = document.createElement("a");
+					a.style.display = "none";
+					a.href = objUrl;
+					a.download = r.name;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(objUrl);
+					document.body.removeChild(a);
+					showResultModal(r.name + " downloaded successfully.");
+				})
+				.catch(function (err) {
+					showResultModal(err.message);
+				})
+				.then(function () {
+					sel.value = "";
+				});
+		}
+	</script>
+</head>
+
+<body>
+	<!-- Header -->
+	<div th:insert="HeaderMenu :: header" class="fixed-top"></div>
+
+	<!-- Main Container -->
+	<div class="container-fluid">
+		<div class="card">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="card">
+
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<div class="d-flex align-items-center">
+								<button type="button" class="custom-tab-btn" id="btnBack" onclick="back();" title="Back">
+									<i class="fa fa-arrow-left" style="color: black;"></i>
+								</button>
+								<h6 style="font-family: Arial; font-weight: bold; margin: 0; font-size: 1.25rem;">Blank Format</h6>
+							</div>
+						</div>
+
+						<div class="card-body">
+							<form style="margin-left: 600px;" autocomplete="off" onsubmit="return false;">
+								<div class="row formline">
+									<label class="col-sm-2">File Type</label>
+									<div class="col-sm-3">
+										<select id="fileType" class="form-control form-control-sm" onchange="downloadBlank(this);">
+											<option value="">Select</option>
+											<option th:each="f : ${fileTypes}" th:value="${f}" th:text="${f}"></option>
+										</select>
+									</div>
+								</div>
+							</form>
+
+							<div class="row justify-content-center mt-5 mb-3">
+								<div class="col-md-9 col-lg-8">
+									<div class="card shadow-sm" style="border: 1px solid #6B7A8F; border-left: 6px solid #6B7A8F; border-radius: 8px; background-color: #f8f9fa;">
+										<div class="card-body p-4">
+											<h5 class="font-weight-bold mb-3" style="color: #6B7A8F; font-size: 1.3rem;">
+												<i class="fas fa-info-circle" style="color: #6B7A8F;"></i> Instructions
+											</h5>
+											<ol class="mb-0 pl-4" style="font-size: 1.15rem; line-height: 1.9; color: #2c3e50;">
+												<li>Select a file name (MCBL, Deposit General, Deposit Book or Loan Book) from the File Type list.</li>
+												<li>The blank format file downloads automatically.</li>
+												<li>Fill in the data and upload it from the File Upload screen.</li>
+											</ol>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Result popup -->
+	<div id="bfOverlay">
+		<div id="bfBox">
+			<div id="bfBoxHead">BRRS</div>
+			<div id="bfBoxMsg"></div>
+			<div id="bfBoxBtnWrap">
+				<button type="button" id="bfOkBtn" onclick="closeResultModal();">Ok</button>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
