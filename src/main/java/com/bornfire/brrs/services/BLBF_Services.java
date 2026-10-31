@@ -7,9 +7,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -200,6 +202,20 @@ public class BLBF_Services {
 				try {
 					String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
 					java.sql.Date reportDate = getCellDateSafe(row, 47, formatter, evaluator);
+					
+					// Validation 1: REPORT_DATE must be the last day of the month
+					LocalDate localReportDate = reportDate.toLocalDate();
+
+					if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
+					    return "Invalid Report Date: " + reportDate+ ". Report Date must be the last day of the month.";
+					}
+
+					// Validation 2: SEGMENT must be uppercase
+					String segment = getCellStringSafe(row, 28, formatter, evaluator);
+
+					if (!segment.equals(segment.toUpperCase(Locale.ROOT))) {
+					    return "Invalid Segment: " + segment+ ". Segment must be in uppercase.";
+					}
 
 					// Get current max version for L_BOOK
 					stmtGetMaxVersionLBook.setString(1, accountNo);

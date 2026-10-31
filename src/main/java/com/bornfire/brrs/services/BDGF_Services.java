@@ -7,9 +7,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -205,9 +207,29 @@ public class BDGF_Services {
 	            if (emptyRow) continue;
 	            
 	            try {
-	                String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
-	                java.sql.Date reportDate = getCellDateSafe(row, 27, formatter, evaluator);
-	                java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+	            	String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
+
+	            	java.sql.Date reportDate = getCellDateSafe(row, 27, formatter, evaluator);
+
+	            	// Validation 1: Report Date must be the last day of the month
+	            	if (reportDate == null) {
+	            	     return "Report Date cannot be empty.";
+	            	}
+
+	            	LocalDate localReportDate = reportDate.toLocalDate();
+
+	            	if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
+	            	    return "Invalid Report Date: " + reportDate +". Report Date must be the last day of the month.";
+	            	}
+
+	            	// Validation 2: Segment must contain uppercase characters only
+	            	String segment = getCellStringSafe(row, 18, formatter, evaluator);
+
+	            	if (!segment.equals(segment.toUpperCase(Locale.ROOT))) {
+	            	    return "Invalid Segment: " + segment + ". Segment must be in uppercase.";
+	            	}
+
+	            	java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
 	                
 	                // 🔍 Step 1: Get max version for DEP_GENERAL
 	                stmtGetMaxVersionBDGF.setString(1, accountNo);
