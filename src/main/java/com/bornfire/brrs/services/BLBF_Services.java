@@ -201,20 +201,31 @@ public class BLBF_Services {
 
 				try {
 					String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
+
 					java.sql.Date reportDate = getCellDateSafe(row, 47, formatter, evaluator);
-					
-					// Validation 1: REPORT_DATE must be the last day of the month
+
+					// Validation 1: REPORT_DATE cannot be empty
+					if (reportDate == null) {
+					    return "Report Date cannot be empty at Excel Row "
+					            + (row.getRowNum() + 1);
+					}
+
+					// Validation 2: REPORT_DATE must be the last day of the month
 					LocalDate localReportDate = reportDate.toLocalDate();
 
 					if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
-					    return "Invalid Report Date: " + reportDate+ ". Report Date must be the last day of the month.";
+					    return "Invalid Report Date at Excel Row "
+					            + (row.getRowNum() + 1) + ": " + reportDate
+					            + ". Report Date must be the last day of the month.";
 					}
 
-					// Validation 2: SEGMENT must be uppercase
+					// Validation 3: SEGMENT must be uppercase
 					String segment = getCellStringSafe(row, 28, formatter, evaluator);
 
-					if (!segment.equals(segment.toUpperCase(Locale.ROOT))) {
-					    return "Invalid Segment: " + segment+ ". Segment must be in uppercase.";
+					if (segment != null && !segment.equals(segment.toUpperCase(Locale.ROOT))) {
+					    return "Invalid Segment at Excel Row "
+					            + (row.getRowNum() + 1) + ": " + segment
+					            + ". Segment must be in uppercase.";
 					}
 
 					// Get current max version for L_BOOK

@@ -249,25 +249,34 @@ public class BFDB_Services {
 
 	            try {
 	                // Key fields
-	                String accountNo = getCellStringSafe(row, 3, formatter, evaluator);
-	                java.sql.Date reportDate = getCellDateSafe(row, 26, formatter, evaluator);
+	            	String accountNo = getCellStringSafe(row, 3, formatter, evaluator);
 
-	                if (accountNo == null || accountNo.trim().isEmpty() || reportDate == null) {
-	                    skippedCount++;
-	                    continue;
-	                }
-	                LocalDate localReportDate = reportDate.toLocalDate();
+	            	java.sql.Date reportDate = getCellDateSafe(row, 24, formatter, evaluator);
 
-	                if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
-	                   return "Invalid Report Date: " + reportDate + ". Report Date must be the last day of the month.";
-	                }
+	            	// Skip rows where mandatory values are missing
+	            	if (accountNo == null || accountNo.trim().isEmpty() || reportDate == null) {
+	            	    skippedCount++;
+	            	    continue;
+	            	}
 
-	                // Validation 2: Segment must be uppercase
-	                String segment = getCellStringSafe(row, 19, formatter, evaluator);
+	            	// Validation 1: REPORT_DATE must be the last day of the month
+	            	LocalDate localReportDate = reportDate.toLocalDate();
 
-	                if (!segment.equals(segment.toUpperCase(Locale.ROOT))) {
-	                    return "Invalid Segment: " + segment+ ". Segment must be in uppercase.";
-	                }
+	            	if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
+	            	    return "Invalid Report Date at Excel Row "
+	            	            + (row.getRowNum() + 1) + ": " + reportDate
+	            	            + ". Report Date must be the last day of the month.";
+	            	}
+
+	            	// Validation 2: SEGMENT must be uppercase
+	            	String segment = getCellStringSafe(row, 19, formatter, evaluator);
+
+	            	if (segment != null && !segment.trim().isEmpty()
+	            	        && !segment.equals(segment.toUpperCase(Locale.ROOT))) {
+	            	    return "Invalid Segment at Excel Row "
+	            	            + (row.getRowNum() + 1) + ": " + segment
+	            	            + ". Segment must be in uppercase.";
+	            	}
 	                // Set current timestamp once for all time fields
 	                java.sql.Date currentTime = new java.sql.Date(System.currentTimeMillis());
 

@@ -207,26 +207,30 @@ public class BDGF_Services {
 	            if (emptyRow) continue;
 	            
 	            try {
-	            	String accountNo = getCellStringSafe(row, 2, formatter, evaluator);
+	            	// Correct column indexes
+	            	String accountNo = getCellStringSafe(row, 1, formatter, evaluator);
+	            	String segment = getCellStringSafe(row, 17, formatter, evaluator);
+	            	java.sql.Date reportDate = getCellDateSafe(row, 25, formatter, evaluator);
 
-	            	java.sql.Date reportDate = getCellDateSafe(row, 27, formatter, evaluator);
-
-	            	// Validation 1: Report Date must be the last day of the month
+	            	// Validation 1: Report Date cannot be empty
 	            	if (reportDate == null) {
-	            	     return "Report Date cannot be empty.";
+	            	    return "Report Date cannot be empty at Excel Row " + (i + 1);
 	            	}
 
+	            	// Validation 2: Report Date must be the last day of the month
 	            	LocalDate localReportDate = reportDate.toLocalDate();
 
 	            	if (localReportDate.getDayOfMonth() != localReportDate.lengthOfMonth()) {
-	            	    return "Invalid Report Date: " + reportDate +". Report Date must be the last day of the month.";
+	            	    return "Invalid Report Date at Excel Row " + (i + 1)
+	            	            + ": " + reportDate
+	            	            + ". Report Date must be the last day of the month.";
 	            	}
 
-	            	// Validation 2: Segment must contain uppercase characters only
-	            	String segment = getCellStringSafe(row, 18, formatter, evaluator);
-
-	            	if (!segment.equals(segment.toUpperCase(Locale.ROOT))) {
-	            	    return "Invalid Segment: " + segment + ". Segment must be in uppercase.";
+	            	// Validation 3: Segment must be uppercase
+	            	if (segment != null && !segment.equals(segment.toUpperCase(Locale.ROOT))) {
+	            	    return "Invalid Segment at Excel Row " + (i + 1)
+	            	            + ": " + segment
+	            	            + ". Segment must be in uppercase.";
 	            	}
 
 	            	java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
