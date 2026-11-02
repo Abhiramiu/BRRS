@@ -41,6 +41,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.Arrays;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +90,9 @@ public class BRRS_M_CA6_ReportService {
 	private static final String TBL_RESUB_SUMMARY2 = "BRRS_M_CA6_RESUB_SUMMARYTABLE2";
 	private static final String TBL_RESUB_DETAIL1 = "BRRS_M_CA6_RESUB_DETAILTABLE1";
 	private static final String TBL_RESUB_DETAIL2 = "BRRS_M_CA6_RESUB_DETAILTABLE2";
+	private static final String TBL_MOD_SUMMARY1 = "BRRS_M_CA6_MOD_SUMMARYTABLE1";
+	private static final String TBL_MOD_SUMMARY2 = "BRRS_M_CA6_MOD_SUMMARYTABLE2";
+
 
 	private <T> List<T> getByDate(String tableName, Date reportDate, Class<T> type) {
 		String sql = "SELECT * FROM " + tableName + " WHERE REPORT_DATE = ?";
@@ -435,430 +442,494 @@ public class BRRS_M_CA6_ReportService {
 
 	}
 
-	public void updateReport1(M_CA6_Summary_Entity1 entity1) {
-		System.out.println("Report Date: " + entity1.getReportDate());
+	// =========================================================================
+	// NORMAL UPDATE WORKFLOW (REPLICATED FROM Q_STAFF - MAKER / CHECKER)
+	// Live tables remain untouched until Checker approval
+	// =========================================================================
 
-		M_CA6_Summary_Entity1 existing = getOneByDate(TBL_SUMMARY1, entity1.getReportDate(), M_CA6_Summary_Entity1.class)
-				.orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + entity1.getReportDate()));
+	private static final int[] T1_ROWS = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24 };
+	private static final String[] T1_FIELDS = { "CALENDAR_YEAR", "CAP", "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
+			"AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" };
 
-		// --------------------------
-		// Update R28–R34 amounts
-		// --------------------------
+	private static final int[] T2_ROWS_MAIN = { 28, 29, 30, 31, 32, 33, 34, 40, 41, 42, 43, 44, 45, 46 };
+	private static final String[] T2_FIELDS_MAIN = { "PRODUCT", "ISSUANCE_DATE", "CONTRACTUAL_MATURITY_DATE",
+			"EFFECTIVE_MATURITY_DATE", "AMOUNT" };
 
-		try {
-			for (int i = 12; i <= 16; i++) {
-				String prefix = "R" + i + "_";
-				// You can add more fields here if needed later
-				String[] fields = { "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-						"AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
-						Method setter = M_CA6_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity1);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// if any field is missing in entity class, skip it
-						continue;
-					}
-				}
+	// Normalize numeric / string values
+	private Object cleanValue(Object value) {
+		if (value instanceof String) {
+			String s = ((String) value).trim().replace(",", "");
+			if (s.isEmpty()) {
+				return null;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R12–R16 fields", e);
-		}
-
-		try {
-			for (int i = 20; i <= 24; i++) {
-				String prefix = "R" + i + "_";
-				// You can add more fields here if needed later
-				String[] fields = { "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-						"AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
-						Method setter = M_CA6_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity1);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// if any field is missing in entity class, skip it
-						continue;
-					}
-				}
+			try {
+				return new BigDecimal(s);
+			} catch (NumberFormatException nfe) {
+				return s;
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R20-24 fields", e);
 		}
-		saveEntity(TBL_SUMMARY1, existing, "reportDate");
+		return value;
 	}
 
-	public void updatedetail1(M_CA6_Detail_Entity1 entity1) {
-		System.out.println("Report Date: " + entity1.getReportDate());
+	// Fetch LIVE summary record as baseline reference
+	public M_CA6_Summary_Entity1 findLiveByReportDate1(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA6_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA6_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity1.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-		M_CA6_Detail_Entity1 existing = getOneByDate(TBL_DETAIL1, entity1.getReportDate(), M_CA6_Detail_Entity1.class)
-				.orElseThrow(
-				() -> new RuntimeException("Record not found for REPORT_DATE: " + entity1.getReportDate()));
+	public M_CA6_Summary_Entity2 findLiveByReportDate2(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA6_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA6_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity2.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-		// --------------------------
-		// Update R28–R34 amounts
-		// --------------------------
+	// Fetch existing MOD record if any pending modifications exist
+	public M_CA6_Summary_Entity1 findModRecordByReportDate1(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA6_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA6_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity1.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-		try {
-			for (int i = 12; i <= 16; i++) {
-				String prefix = "R" + i + "_";
-				// You can add more fields here if needed later
-				String[] fields = { "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-						"AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" };
+	public M_CA6_Summary_Entity2 findModRecordByReportDate2(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_CA6_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_CA6_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity2.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	// Apply changes to Table 1 entity
+	private void applyChangesToEntity1(M_CA6_Summary_Entity1 updatedEntity, M_CA6_Summary_Entity1 targetEntity) {
+		for (int row : T1_ROWS) {
+			String prefix = "R" + row + "_";
+			for (String field : T1_FIELDS) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
 
-					try {
-						Method getter = M_CA6_Detail_Entity1.class.getMethod(getterName);
-						Method setter = M_CA6_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity1);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// if any field is missing in entity class, skip it
+			try {
+					Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(updatedEntity));
+					if (value == null) {
 						continue;
 					}
+					Method setter = M_CA6_Summary_Entity1.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field for Table 1: " + getterName, e);
 				}
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R12–R16 fields", e);
 		}
+	}
 
-		try {
-			for (int i = 20; i <= 24; i++) {
-				String prefix = "R" + i + "_";
-				// You can add more fields here if needed later
-				String[] fields = { "CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT",
-						"AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT" };
+	// Apply changes to Table 2 entity
+	private void applyChangesToEntity2(M_CA6_Summary_Entity2 updatedEntity, M_CA6_Summary_Entity2 targetEntity) {
+		for (int row : T2_ROWS_MAIN) {
+			String prefix = "R" + row + "_";
+			for (String field : T2_FIELDS_MAIN) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Detail_Entity1.class.getMethod(getterName);
-						Method setter = M_CA6_Detail_Entity1.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity1);
-						setter.invoke(existing, newValue);
-					} catch (NoSuchMethodException e) {
-						// if any field is missing in entity class, skip it
+				try {
+					Method getter = M_CA6_Summary_Entity2.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(updatedEntity));
+					if (value == null) {
 						continue;
 					}
+					Method setter = M_CA6_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field for Table 2: " + getterName, e);
 				}
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R20-24 fields", e);
 		}
-		saveEntity(TBL_DETAIL1, existing, "reportDate");
+
+		if (updatedEntity.getR35_AMOUNT() != null) {
+			Object val35 = cleanValue(updatedEntity.getR35_AMOUNT());
+			if (val35 instanceof BigDecimal) {
+				targetEntity.setR35_AMOUNT((BigDecimal) val35);
+			}
+		}
+
+		if (updatedEntity.getR47_AMOUNT() != null) {
+			Object val47 = cleanValue(updatedEntity.getR47_AMOUNT());
+			if (val47 instanceof BigDecimal) {
+				targetEntity.setR47_AMOUNT((BigDecimal) val47);
+			}
+		}
+	}
+
+	// Safe MOD Table 1 saver with INSERT or UPDATE
+	public void saveModSummaryEntity1(M_CA6_Summary_Entity1 entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_CA6_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getReportDate())
+				.addValue("reportVersion", entity.getReportVersion())
+				.addValue("reportFrequency", entity.getREPORT_FREQUENCY())
+				.addValue("reportCode", entity.getREPORT_CODE())
+				.addValue("reportDesc", entity.getREPORT_DESC())
+				.addValue("entityFlg", entity.getENTITY_FLG())
+				.addValue("modifyFlg", entity.getMODIFY_FLG())
+				.addValue("delFlg", entity.getDEL_FLG());
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"REPORT_VERSION = :reportVersion, "
+				+ "REPORT_FREQUENCY = :reportFrequency, "
+				+ "REPORT_CODE = :reportCode, "
+				+ "REPORT_DESC = :reportDesc, "
+				+ "ENTITY_FLG = :entityFlg, "
+				+ "MODIFY_FLG = :modifyFlg, "
+				+ "DEL_FLG = :delFlg");
+
+		List<String> insertColumns = new ArrayList<>(Arrays.asList(
+				"REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC",
+				"ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+		List<String> insertValues = new ArrayList<>(Arrays.asList(
+				":reportDate", ":reportVersion", ":reportFrequency", ":reportCode", ":reportDesc",
+				":entityFlg", ":modifyFlg", ":delFlg"));
+
+		for (int row : T1_ROWS) {
+			String prefix = "R" + row + "_";
+			for (String field : T1_FIELDS) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + row + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(entity));
+					params.addValue(paramName, value);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table 1: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE1 SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_CA6_MOD_SUMMARYTABLE1 updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_CA6_MOD_SUMMARYTABLE1 (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_CA6_MOD_SUMMARYTABLE1 inserted successfully.");
+		}
+	}
+
+	// Safe MOD Table 2 saver with INSERT or UPDATE
+	public void saveModSummaryEntity2(M_CA6_Summary_Entity2 entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_CA6_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReportDate());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getReportDate())
+				.addValue("reportVersion", entity.getReportVersion())
+				.addValue("reportFrequency", entity.getREPORT_FREQUENCY())
+				.addValue("reportCode", entity.getREPORT_CODE())
+				.addValue("reportDesc", entity.getREPORT_DESC())
+				.addValue("entityFlg", entity.getENTITY_FLG())
+				.addValue("modifyFlg", entity.getMODIFY_FLG())
+				.addValue("delFlg", entity.getDEL_FLG());
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"REPORT_VERSION = :reportVersion, "
+				+ "REPORT_FREQUENCY = :reportFrequency, "
+				+ "REPORT_CODE = :reportCode, "
+				+ "REPORT_DESC = :reportDesc, "
+				+ "ENTITY_FLG = :entityFlg, "
+				+ "MODIFY_FLG = :modifyFlg, "
+				+ "DEL_FLG = :delFlg");
+
+		List<String> insertColumns = new ArrayList<>(Arrays.asList(
+				"REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC",
+				"ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+		List<String> insertValues = new ArrayList<>(Arrays.asList(
+				":reportDate", ":reportVersion", ":reportFrequency", ":reportCode", ":reportDesc",
+				":entityFlg", ":modifyFlg", ":delFlg"));
+
+		for (int row : T2_ROWS_MAIN) {
+			String prefix = "R" + row + "_";
+			for (String field : T2_FIELDS_MAIN) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + row + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_CA6_Summary_Entity2.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(entity));
+					params.addValue(paramName, value);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table 2: " + columnName, e);
+				}
+			}
+		}
+
+		// Row 35
+		params.addValue("r35_amount", cleanValue(entity.getR35_AMOUNT()));
+		updateSetSql.append(", R35_AMOUNT = :r35_amount");
+		insertColumns.add("R35_AMOUNT");
+		insertValues.add(":r35_amount");
+
+		// Row 47
+		params.addValue("r47_amount", cleanValue(entity.getR47_AMOUNT()));
+		updateSetSql.append(", R47_AMOUNT = :r47_amount");
+		insertColumns.add("R47_AMOUNT");
+		insertValues.add(":r47_amount");
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE2 SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_CA6_MOD_SUMMARYTABLE2 updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_CA6_MOD_SUMMARYTABLE2 (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_CA6_MOD_SUMMARYTABLE2 inserted successfully.");
+		}
+	}
+
+	// Normal Update workflow: saves to MOD summary tables only, logs audit diff
+	@Transactional
+	public void updateReport(M_CA6_Summary_Entity1 updatedEntity1, M_CA6_Summary_Entity2 updatedEntity2) {
+		Date reportDate = updatedEntity1 != null && updatedEntity1.getReportDate() != null
+				? updatedEntity1.getReportDate()
+				: (updatedEntity2 != null ? updatedEntity2.getReportDate() : null);
+
+		if (reportDate == null) {
+			throw new RuntimeException("REPORT_DATE is required for M_CA6 update.");
+		}
+
+		System.out.println("Came to M_CA6 Update (MOD workflow). Report Date: " + reportDate);
+
+		// 1. Process Table 1 if provided
+		if (updatedEntity1 != null) {
+			M_CA6_Summary_Entity1 liveSummary1 = findLiveByReportDate1(reportDate);
+			if (liveSummary1 == null) {
+				throw new RuntimeException(
+						"Record not found in live summary table 1 for REPORT_DATE : " + reportDate);
+			}
+
+			M_CA6_Summary_Entity1 modRecord1 = findModRecordByReportDate1(reportDate);
+			if (modRecord1 == null) {
+				modRecord1 = new M_CA6_Summary_Entity1();
+				BeanUtils.copyProperties(liveSummary1, modRecord1);
+			}
+
+			M_CA6_Summary_Entity1 oldcopy1 = new M_CA6_Summary_Entity1();
+			BeanUtils.copyProperties(modRecord1, oldcopy1);
+
+			applyChangesToEntity1(updatedEntity1, modRecord1);
+
+			String changes1 = auditService.getChanges(oldcopy1, modRecord1);
+			System.out.println("M_CA6 Table 1 Changes Length = " + (changes1 != null ? changes1.length() : 0));
+
+			modRecord1.setENTITY_FLG("Y");
+			modRecord1.setMODIFY_FLG("Y");
+			modRecord1.setDEL_FLG("N");
+
+			saveModSummaryEntity1(modRecord1);
+			System.out.println("✔ Record saved into BRRS_M_CA6_MOD_SUMMARYTABLE1 for Checker Approval");
+
+			if (changes1 != null && !changes1.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy1, modRecord1, reportDate.toString(),
+						"M_CA6 Summary Table 1 Screen", "BRRS_M_CA6_MOD_SUMMARYTABLE1");
+			}
+		}
+
+		// 2. Process Table 2 if provided
+		if (updatedEntity2 != null) {
+			M_CA6_Summary_Entity2 liveSummary2 = findLiveByReportDate2(reportDate);
+			if (liveSummary2 == null) {
+				throw new RuntimeException(
+						"Record not found in live summary table 2 for REPORT_DATE : " + reportDate);
+			}
+
+			M_CA6_Summary_Entity2 modRecord2 = findModRecordByReportDate2(reportDate);
+			if (modRecord2 == null) {
+				modRecord2 = new M_CA6_Summary_Entity2();
+				BeanUtils.copyProperties(liveSummary2, modRecord2);
+			}
+
+			M_CA6_Summary_Entity2 oldcopy2 = new M_CA6_Summary_Entity2();
+			BeanUtils.copyProperties(modRecord2, oldcopy2);
+
+			applyChangesToEntity2(updatedEntity2, modRecord2);
+
+			String changes2 = auditService.getChanges(oldcopy2, modRecord2);
+			System.out.println("M_CA6 Table 2 Changes Length = " + (changes2 != null ? changes2.length() : 0));
+
+			modRecord2.setENTITY_FLG("Y");
+			modRecord2.setMODIFY_FLG("Y");
+			modRecord2.setDEL_FLG("N");
+
+			saveModSummaryEntity2(modRecord2);
+			System.out.println("✔ Record saved into BRRS_M_CA6_MOD_SUMMARYTABLE2 for Checker Approval");
+
+			if (changes2 != null && !changes2.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy2, modRecord2, reportDate.toString(),
+						"M_CA6 Summary Table 2 Screen", "BRRS_M_CA6_MOD_SUMMARYTABLE2");
+			}
+		}
+	}
+
+	public void updateReport1(M_CA6_Summary_Entity1 entity1) {
+		updateReport(entity1, null);
 	}
 
 	public void updateReport2(M_CA6_Summary_Entity2 entity) {
-		System.out.println("Report Date: " + entity.getReportDate());
+		updateReport(null, entity);
+	}
 
-		M_CA6_Summary_Entity2 existing = getOneByDate(TBL_SUMMARY2, entity.getReportDate(), M_CA6_Summary_Entity2.class)
-				
-				.orElseThrow(() -> new RuntimeException("Record not found for REPORT_DATE: " + entity.getReportDate()));
-
-		// --------------------------
-		// Update R28–R34 amounts
-		// --------------------------
-		try {
-			for (int i = 28; i <= 34; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRODUCT", "AMOUNT" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Summary_Entity2.class.getMethod(getterName);
-						Method setter = M_CA6_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Update R35 total
-			Method getter = M_CA6_Summary_Entity2.class.getMethod("getR35_AMOUNT");
-			Method setter = M_CA6_Summary_Entity2.class.getMethod("setR35_AMOUNT", getter.getReturnType());
-			setter.invoke(existing, getter.invoke(entity));
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R28–R35 fields", e);
-		}
-
-		// --------------------------
-		// Update R40–R46 + R47 amounts
-		// --------------------------
-		try {
-			for (int i = 40; i <= 46; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRODUCT", "AMOUNT" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Summary_Entity2.class.getMethod(getterName);
-						Method setter = M_CA6_Summary_Entity2.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Update R47
-			Method getter = M_CA6_Summary_Entity2.class.getMethod("getR47_AMOUNT");
-			Method setter = M_CA6_Summary_Entity2.class.getMethod("setR47_AMOUNT", getter.getReturnType());
-			setter.invoke(existing, getter.invoke(entity));
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R40–R47 fields", e);
-		}
-
-		// --------------------------
-		// ✅ Update date fields
-		// --------------------------
-		try {
-			existing.setR28_ISSUANCE_DATE(entity.getR28_ISSUANCE_DATE());
-			existing.setR28_CONTRACTUAL_MATURITY_DATE(entity.getR28_CONTRACTUAL_MATURITY_DATE());
-			existing.setR28_EFFECTIVE_MATURITY_DATE(entity.getR28_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR29_ISSUANCE_DATE(entity.getR29_ISSUANCE_DATE());
-			existing.setR29_CONTRACTUAL_MATURITY_DATE(entity.getR29_CONTRACTUAL_MATURITY_DATE());
-			existing.setR29_EFFECTIVE_MATURITY_DATE(entity.getR29_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR30_ISSUANCE_DATE(entity.getR30_ISSUANCE_DATE());
-			existing.setR30_CONTRACTUAL_MATURITY_DATE(entity.getR30_CONTRACTUAL_MATURITY_DATE());
-			existing.setR30_EFFECTIVE_MATURITY_DATE(entity.getR30_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR31_ISSUANCE_DATE(entity.getR31_ISSUANCE_DATE());
-			existing.setR31_CONTRACTUAL_MATURITY_DATE(entity.getR31_CONTRACTUAL_MATURITY_DATE());
-			existing.setR31_EFFECTIVE_MATURITY_DATE(entity.getR31_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR32_ISSUANCE_DATE(entity.getR32_ISSUANCE_DATE());
-			existing.setR32_CONTRACTUAL_MATURITY_DATE(entity.getR32_CONTRACTUAL_MATURITY_DATE());
-			existing.setR32_EFFECTIVE_MATURITY_DATE(entity.getR32_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR33_ISSUANCE_DATE(entity.getR33_ISSUANCE_DATE());
-			existing.setR33_CONTRACTUAL_MATURITY_DATE(entity.getR33_CONTRACTUAL_MATURITY_DATE());
-			existing.setR33_EFFECTIVE_MATURITY_DATE(entity.getR33_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR34_ISSUANCE_DATE(entity.getR34_ISSUANCE_DATE());
-			existing.setR34_CONTRACTUAL_MATURITY_DATE(entity.getR34_CONTRACTUAL_MATURITY_DATE());
-			existing.setR34_EFFECTIVE_MATURITY_DATE(entity.getR34_EFFECTIVE_MATURITY_DATE());
-
-			// Update dates R40–R46
-			existing.setR40_ISSUANCE_DATE(entity.getR40_ISSUANCE_DATE());
-			existing.setR40_CONTRACTUAL_MATURITY_DATE(entity.getR40_CONTRACTUAL_MATURITY_DATE());
-			existing.setR40_EFFECTIVE_MATURITY_DATE(entity.getR40_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR41_ISSUANCE_DATE(entity.getR41_ISSUANCE_DATE());
-			existing.setR41_CONTRACTUAL_MATURITY_DATE(entity.getR41_CONTRACTUAL_MATURITY_DATE());
-			existing.setR41_EFFECTIVE_MATURITY_DATE(entity.getR41_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR42_ISSUANCE_DATE(entity.getR42_ISSUANCE_DATE());
-			existing.setR42_CONTRACTUAL_MATURITY_DATE(entity.getR42_CONTRACTUAL_MATURITY_DATE());
-			existing.setR42_EFFECTIVE_MATURITY_DATE(entity.getR42_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR43_ISSUANCE_DATE(entity.getR43_ISSUANCE_DATE());
-			existing.setR43_CONTRACTUAL_MATURITY_DATE(entity.getR43_CONTRACTUAL_MATURITY_DATE());
-			existing.setR43_EFFECTIVE_MATURITY_DATE(entity.getR43_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR44_ISSUANCE_DATE(entity.getR44_ISSUANCE_DATE());
-			existing.setR44_CONTRACTUAL_MATURITY_DATE(entity.getR44_CONTRACTUAL_MATURITY_DATE());
-			existing.setR44_EFFECTIVE_MATURITY_DATE(entity.getR44_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR45_ISSUANCE_DATE(entity.getR45_ISSUANCE_DATE());
-			existing.setR45_CONTRACTUAL_MATURITY_DATE(entity.getR45_CONTRACTUAL_MATURITY_DATE());
-			existing.setR45_EFFECTIVE_MATURITY_DATE(entity.getR45_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR46_ISSUANCE_DATE(entity.getR46_ISSUANCE_DATE());
-			existing.setR46_CONTRACTUAL_MATURITY_DATE(entity.getR46_CONTRACTUAL_MATURITY_DATE());
-			existing.setR46_EFFECTIVE_MATURITY_DATE(entity.getR46_EFFECTIVE_MATURITY_DATE());
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating date fields", e);
-		}
-
-		// --------------------------
-		// Save updated entity
-		// --------------------------
-		saveEntity(TBL_SUMMARY2, existing, "reportDate");
+	public void updatedetail1(M_CA6_Detail_Entity1 entity1) {
+		// In MOD workflow, detail updates are deferred until Checker approval
 	}
 
 	public void updateDetial2(M_CA6_Detail_Entity2 entity) {
-		System.out.println("Report Date: " + entity.getReportDate());
+		// In MOD workflow, detail updates are deferred until Checker approval
+	}
 
-		M_CA6_Detail_Entity2 existing = getOneByDate(TBL_DETAIL2, entity.getReportDate(), M_CA6_Detail_Entity2.class)
-				
-				.orElseThrow(() -> new RuntimeException("Record not found for REPORT_DATE: " + entity.getReportDate()));
+	// Checker Approval: transfers MOD values to Live Summary & Detail tables
+	@Transactional
+	public void approveReport(Date reportDate) {
+		List<M_CA6_Summary_Entity1> mod1List = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_CA6_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity1.class), reportDate);
 
-		// --------------------------
-		// Update R28–R34 amounts
-		// --------------------------
-		try {
-			for (int i = 28; i <= 34; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRODUCT", "AMOUNT" };
+		List<M_CA6_Summary_Entity2> mod2List = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_CA6_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_CA6_Summary_Entity2.class), reportDate);
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+		if (mod1List.isEmpty() && mod2List.isEmpty()) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
 
-					try {
-						Method getter = M_CA6_Detail_Entity2.class.getMethod(getterName);
-						Method setter = M_CA6_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
+		if (!mod1List.isEmpty()) {
+			transferModValuesToLiveTables1(mod1List.get(0), reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE1 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					reportDate);
+		}
 
-						Object newValue = getter.invoke(entity);
-						setter.invoke(existing, newValue);
+		if (!mod2List.isEmpty()) {
+			transferModValuesToLiveTables2(mod2List.get(0), reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE2 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					reportDate);
+		}
 
-					} catch (NoSuchMethodException e) {
+		System.out.println(
+				"✔ M_CA6 Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferModValuesToLiveTables1(M_CA6_Summary_Entity1 modRecord, Date reportDate) {
+		for (int row : T1_ROWS) {
+			String prefix = "R" + row + "_";
+			for (String field : T1_FIELDS) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_CA6_Summary_Entity1.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(modRecord));
+					if (value == null) {
 						continue;
 					}
+
+					// Update Live Summary Table 1
+					String summarySql = "UPDATE BRRS_M_CA6_SUMMARYTABLE1 SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table 1
+					String detailSql = "UPDATE BRRS_M_CA6_DETAILTABLE1 SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live table 1: " + columnName, e);
 				}
 			}
-
-			// Update R35 total
-			Method getter = M_CA6_Detail_Entity2.class.getMethod("getR35_AMOUNT");
-			Method setter = M_CA6_Detail_Entity2.class.getMethod("setR35_AMOUNT", getter.getReturnType());
-			setter.invoke(existing, getter.invoke(entity));
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R28–R35 fields", e);
 		}
+	}
 
-		// --------------------------
-		// Update R40–R46 + R47 amounts
-		// --------------------------
-		try {
-			for (int i = 40; i <= 46; i++) {
-				String prefix = "R" + i + "_";
-				String[] fields = { "PRODUCT", "AMOUNT" };
+	private void transferModValuesToLiveTables2(M_CA6_Summary_Entity2 modRecord, Date reportDate) {
+		for (int row : T2_ROWS_MAIN) {
+			String prefix = "R" + row + "_";
+			for (String field : T2_FIELDS_MAIN) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_CA6_Detail_Entity2.class.getMethod(getterName);
-						Method setter = M_CA6_Detail_Entity2.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(entity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
+				try {
+					Method getter = M_CA6_Summary_Entity2.class.getMethod(getterName);
+					Object value = cleanValue(getter.invoke(modRecord));
+					if (value == null) {
 						continue;
 					}
+
+					// Update Live Summary Table 2
+					String summarySql = "UPDATE BRRS_M_CA6_SUMMARYTABLE2 SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table 2
+					String detailSql = "UPDATE BRRS_M_CA6_DETAILTABLE2 SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live table 2: " + columnName, e);
 				}
 			}
-
-			// Update R47
-			Method getter = M_CA6_Detail_Entity2.class.getMethod("getR47_AMOUNT");
-			Method setter = M_CA6_Detail_Entity2.class.getMethod("setR47_AMOUNT", getter.getReturnType());
-			setter.invoke(existing, getter.invoke(entity));
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating R40–R47 fields", e);
 		}
 
-		// --------------------------
-		// ✅ Update date fields
-		// --------------------------
-		try {
-			existing.setR28_ISSUANCE_DATE(entity.getR28_ISSUANCE_DATE());
-			existing.setR28_CONTRACTUAL_MATURITY_DATE(entity.getR28_CONTRACTUAL_MATURITY_DATE());
-			existing.setR28_EFFECTIVE_MATURITY_DATE(entity.getR28_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR29_ISSUANCE_DATE(entity.getR29_ISSUANCE_DATE());
-			existing.setR29_CONTRACTUAL_MATURITY_DATE(entity.getR29_CONTRACTUAL_MATURITY_DATE());
-			existing.setR29_EFFECTIVE_MATURITY_DATE(entity.getR29_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR30_ISSUANCE_DATE(entity.getR30_ISSUANCE_DATE());
-			existing.setR30_CONTRACTUAL_MATURITY_DATE(entity.getR30_CONTRACTUAL_MATURITY_DATE());
-			existing.setR30_EFFECTIVE_MATURITY_DATE(entity.getR30_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR31_ISSUANCE_DATE(entity.getR31_ISSUANCE_DATE());
-			existing.setR31_CONTRACTUAL_MATURITY_DATE(entity.getR31_CONTRACTUAL_MATURITY_DATE());
-			existing.setR31_EFFECTIVE_MATURITY_DATE(entity.getR31_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR32_ISSUANCE_DATE(entity.getR32_ISSUANCE_DATE());
-			existing.setR32_CONTRACTUAL_MATURITY_DATE(entity.getR32_CONTRACTUAL_MATURITY_DATE());
-			existing.setR32_EFFECTIVE_MATURITY_DATE(entity.getR32_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR33_ISSUANCE_DATE(entity.getR33_ISSUANCE_DATE());
-			existing.setR33_CONTRACTUAL_MATURITY_DATE(entity.getR33_CONTRACTUAL_MATURITY_DATE());
-			existing.setR33_EFFECTIVE_MATURITY_DATE(entity.getR33_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR34_ISSUANCE_DATE(entity.getR34_ISSUANCE_DATE());
-			existing.setR34_CONTRACTUAL_MATURITY_DATE(entity.getR34_CONTRACTUAL_MATURITY_DATE());
-			existing.setR34_EFFECTIVE_MATURITY_DATE(entity.getR34_EFFECTIVE_MATURITY_DATE());
-
-			// Update dates R40–R46
-			existing.setR40_ISSUANCE_DATE(entity.getR40_ISSUANCE_DATE());
-			existing.setR40_CONTRACTUAL_MATURITY_DATE(entity.getR40_CONTRACTUAL_MATURITY_DATE());
-			existing.setR40_EFFECTIVE_MATURITY_DATE(entity.getR40_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR41_ISSUANCE_DATE(entity.getR41_ISSUANCE_DATE());
-			existing.setR41_CONTRACTUAL_MATURITY_DATE(entity.getR41_CONTRACTUAL_MATURITY_DATE());
-			existing.setR41_EFFECTIVE_MATURITY_DATE(entity.getR41_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR42_ISSUANCE_DATE(entity.getR42_ISSUANCE_DATE());
-			existing.setR42_CONTRACTUAL_MATURITY_DATE(entity.getR42_CONTRACTUAL_MATURITY_DATE());
-			existing.setR42_EFFECTIVE_MATURITY_DATE(entity.getR42_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR43_ISSUANCE_DATE(entity.getR43_ISSUANCE_DATE());
-			existing.setR43_CONTRACTUAL_MATURITY_DATE(entity.getR43_CONTRACTUAL_MATURITY_DATE());
-			existing.setR43_EFFECTIVE_MATURITY_DATE(entity.getR43_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR44_ISSUANCE_DATE(entity.getR44_ISSUANCE_DATE());
-			existing.setR44_CONTRACTUAL_MATURITY_DATE(entity.getR44_CONTRACTUAL_MATURITY_DATE());
-			existing.setR44_EFFECTIVE_MATURITY_DATE(entity.getR44_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR45_ISSUANCE_DATE(entity.getR45_ISSUANCE_DATE());
-			existing.setR45_CONTRACTUAL_MATURITY_DATE(entity.getR45_CONTRACTUAL_MATURITY_DATE());
-			existing.setR45_EFFECTIVE_MATURITY_DATE(entity.getR45_EFFECTIVE_MATURITY_DATE());
-
-			existing.setR46_ISSUANCE_DATE(entity.getR46_ISSUANCE_DATE());
-			existing.setR46_CONTRACTUAL_MATURITY_DATE(entity.getR46_CONTRACTUAL_MATURITY_DATE());
-			existing.setR46_EFFECTIVE_MATURITY_DATE(entity.getR46_EFFECTIVE_MATURITY_DATE());
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating date fields", e);
+		if (modRecord.getR35_AMOUNT() != null) {
+			Object val35 = cleanValue(modRecord.getR35_AMOUNT());
+			jdbcTemplate.update("UPDATE BRRS_M_CA6_SUMMARYTABLE2 SET R35_AMOUNT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					val35, reportDate);
+			jdbcTemplate.update("UPDATE BRRS_M_CA6_DETAILTABLE2 SET R35_AMOUNT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					val35, reportDate);
 		}
 
-		// --------------------------
-		// Save updated entity
-		// --------------------------
-		saveEntity(TBL_DETAIL2, existing, "reportDate");
+		if (modRecord.getR47_AMOUNT() != null) {
+			Object val47 = cleanValue(modRecord.getR47_AMOUNT());
+			jdbcTemplate.update("UPDATE BRRS_M_CA6_SUMMARYTABLE2 SET R47_AMOUNT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					val47, reportDate);
+			jdbcTemplate.update("UPDATE BRRS_M_CA6_DETAILTABLE2 SET R47_AMOUNT = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+					val47, reportDate);
+		}
 	}
 
 ////////////////////////////////////////// RESUBMISSION///////////////////////////////////////////////////////////////////
@@ -6486,6 +6557,22 @@ public class BRRS_M_CA6_ReportService {
 		public void setDEL_FLG(String dEL_FLG) {
 			DEL_FLG = dEL_FLG;
 		}
+				public Date getReport_date() { return reportDate; }
+		public void setReport_date(Date report_date) { this.reportDate = report_date; }
+		public BigDecimal getReport_version() { return reportVersion; }
+		public void setReport_version(BigDecimal report_version) { this.reportVersion = report_version; }
+		public String getReport_frequency() { return REPORT_FREQUENCY; }
+		public void setReport_frequency(String report_frequency) { this.REPORT_FREQUENCY = report_frequency; }
+		public String getReport_code() { return REPORT_CODE; }
+		public void setReport_code(String report_code) { this.REPORT_CODE = report_code; }
+		public String getReport_desc() { return REPORT_DESC; }
+		public void setReport_desc(String report_desc) { this.REPORT_DESC = report_desc; }
+		public String getEntity_flg() { return ENTITY_FLG; }
+		public void setEntity_flg(String entity_flg) { this.ENTITY_FLG = entity_flg; }
+		public String getModify_flg() { return MODIFY_FLG; }
+		public void setModify_flg(String modify_flg) { this.MODIFY_FLG = modify_flg; }
+		public String getDel_flg() { return DEL_FLG; }
+		public void setDel_flg(String del_flg) { this.DEL_FLG = del_flg; }
 		public M_CA6_Summary_Entity1() {
 			super();
 			// TODO Auto-generated constructor stub
@@ -7115,6 +7202,22 @@ public class BRRS_M_CA6_ReportService {
 		public void setDEL_FLG(String dEL_FLG) {
 			DEL_FLG = dEL_FLG;
 		}
+				public Date getReport_date() { return reportDate; }
+		public void setReport_date(Date report_date) { this.reportDate = report_date; }
+		public BigDecimal getReport_version() { return reportVersion; }
+		public void setReport_version(BigDecimal report_version) { this.reportVersion = report_version; }
+		public String getReport_frequency() { return REPORT_FREQUENCY; }
+		public void setReport_frequency(String report_frequency) { this.REPORT_FREQUENCY = report_frequency; }
+		public String getReport_code() { return REPORT_CODE; }
+		public void setReport_code(String report_code) { this.REPORT_CODE = report_code; }
+		public String getReport_desc() { return REPORT_DESC; }
+		public void setReport_desc(String report_desc) { this.REPORT_DESC = report_desc; }
+		public String getEntity_flg() { return ENTITY_FLG; }
+		public void setEntity_flg(String entity_flg) { this.ENTITY_FLG = entity_flg; }
+		public String getModify_flg() { return MODIFY_FLG; }
+		public void setModify_flg(String modify_flg) { this.MODIFY_FLG = modify_flg; }
+		public String getDel_flg() { return DEL_FLG; }
+		public void setDel_flg(String del_flg) { this.DEL_FLG = del_flg; }
 		public M_CA6_Summary_Entity2() {
 			super();
 			// TODO Auto-generated constructor stub

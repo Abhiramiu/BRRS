@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +37,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -114,6 +117,22 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		return jdbcTemplate.queryForObject(
 			"SELECT MAX(REPORT_VERSION) FROM BRRS_M_INT_RATES_FCA_RESUB_SUMMARYTABLE WHERE REPORT_DATE = ?",
 			new Object[]{reportDate}, BigDecimal.class);
+	}
+
+	// Fetch existing live summary record
+	public M_INT_RATES_FCA_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_INT_RATES_FCA_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_INT_RATES_FCA_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new Object[] { reportDate }, new M_INT_RATES_FCASummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Fetch existing mod record if any pending modifications exist
+	public M_INT_RATES_FCA_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_INT_RATES_FCA_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new Object[] { reportDate }, new M_INT_RATES_FCASummaryRowMapper());
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 	// =========================================================
@@ -622,153 +641,243 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 
 	@Transactional
 	public void updateReport(M_INT_RATES_FCA_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_INT_RATES_FCA Update");
+		Date rptDate = updatedEntity.getReportDate() != null ? updatedEntity.getReportDate() : updatedEntity.getReport_date();
+		System.out.println("Report Date: " + rptDate);
 
-	    System.out.println("Came to services");
-	    System.out.println("Report Date: " + updatedEntity.getReportDate());
+		// 1. Fetch live summary record as baseline reference
+		M_INT_RATES_FCA_Summary_Entity liveSummary = findByReportDate(rptDate);
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + rptDate);
+		}
 
-	    // 1️⃣ Fetch existing SUMMARY
-	    List<M_INT_RATES_FCA_Summary_Entity> summaryList =
-	            getSummaryByDate(updatedEntity.getReportDate());
-	    if (summaryList.isEmpty()) {
-	        throw new RuntimeException(
-	                "Summary record not found for REPORT_DATE: "
-	                        + updatedEntity.getReportDate());
-	    }
-	    M_INT_RATES_FCA_Summary_Entity existingSummary = summaryList.get(0);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		M_INT_RATES_FCA_Summary_Entity modRecord = findModRecordByReportDate(rptDate);
+		if (modRecord == null) {
+			modRecord = new M_INT_RATES_FCA_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-	    // =========================================
-	    // AUDIT OLD COPY
-	    // =========================================
+		// 3. Keep old copy for audit comparison
+		M_INT_RATES_FCA_Summary_Entity oldcopy = new M_INT_RATES_FCA_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-	    M_INT_RATES_FCA_Summary_Entity oldcopy =
-	            new M_INT_RATES_FCA_Summary_Entity();
+		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "CURRENT", "CALL", "SAVINGS", "NOTICE_0_31_DAYS", "NOTICE_32_88_DAYS",
+					"91_DEPOSIT_DAY", "FD_1_6_MONTHS", "FD_7_12_MONTHS", "FD_13_18_MONTHS",
+					"FD_19_24_MONTHS", "FD_OVER_24_MONTHS", "TOTAL" };
+			applyChangesToEntity(10, 15, fields, updatedEntity, modRecord);
 
-	    BeanUtils.copyProperties(existingSummary, oldcopy);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_INT_RATES_FCA fields", e);
+		}
 
-	    // 2️⃣ Fetch or create DETAIL
-	    List<M_INT_RATES_FCA_Detail_Entity> detailList =
-	            getDetailByDate(updatedEntity.getReportDate());
-	    M_INT_RATES_FCA_Detail_Entity existingDetail;
-	    if (detailList.isEmpty()) {
-	        existingDetail = new M_INT_RATES_FCA_Detail_Entity();
-	        existingDetail.setReport_date(updatedEntity.getReportDate());
-	    } else {
-	        existingDetail = detailList.get(0);
-	    }
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_INT_RATES_FCA Changes Length = " + (changes != null ? changes.length() : 0));
 
-	    try {
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
 
-	        // 3️⃣ Loop through rows
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE for Checker Approval");
 
-	        for (int i = 10; i <= 15; i++) {
-
-	            String prefix = "R" + i + "_";
-
-	            String[] fields = {
-	                    "CURRENT",
-	                    "CALL",
-	                    "SAVINGS",
-	                    "NOTICE_0_31_DAYS",
-	                    "NOTICE_32_88_DAYS",
-	                    "91_DEPOSIT_DAY",
-	                    "FD_1_6_MONTHS",
-	                    "FD_7_12_MONTHS",
-	                    "FD_13_18_MONTHS",
-	                    "FD_19_24_MONTHS",
-	                    "FD_OVER_24_MONTHS",
-	                    "TOTAL"
-	            };
-
-	            for (String field : fields) {
-
-	                String getterName =
-	                        "get" + prefix + field;
-
-	                String setterName =
-	                        "set" + prefix + field;
-
-	                try {
-
-	                    Method getter =
-	                            M_INT_RATES_FCA_Summary_Entity.class
-	                                    .getMethod(getterName);
-
-	                    Method summarySetter =
-	                            M_INT_RATES_FCA_Summary_Entity.class
-	                                    .getMethod(
-	                                            setterName,
-	                                            getter.getReturnType());
-
-	                    Method detailSetter =
-	                            M_INT_RATES_FCA_Detail_Entity.class
-	                                    .getMethod(
-	                                            setterName,
-	                                            getter.getReturnType());
-
-	                    Object newValue =
-	                            getter.invoke(updatedEntity);
-
-	                    // Update SUMMARY
-	                    summarySetter.invoke(
-	                            existingSummary,
-	                            newValue);
-
-	                    // Update DETAIL
-	                    detailSetter.invoke(
-	                            existingDetail,
-	                            newValue);
-
-	                } catch (NoSuchMethodException e) {
-
-	                    // Skip missing fields safely
-	                    continue;
-	                }
-	            }
-	        }
-
-	    } catch (Exception e) {
-
-	        throw new RuntimeException(
-	                "Error while updating report fields",
-	                e);
-	    }
-
-	    // =========================================
-	    // CHECK CHANGES
-	    // =========================================
-
-	    String changes =
-	            auditService.getChanges(
-	                    oldcopy,
-	                    existingSummary);
-
-	    // =========================================
-	    // SAVE BOTH TABLES
-	    // =========================================
-
-	    saveSummary(existingSummary);
-	    saveDetail(existingDetail);
-
-	    // =========================================
-	    // AUDIT ONLY IF CHANGES FOUND
-	    // =========================================
-
-	    if (!changes.isEmpty()) {
-
-	        auditService.compareEntitiesmanual(
-	                oldcopy,
-	                existingSummary,
-	                updatedEntity.getReportDate().toString(),
-	                "M INT RATES FCA Summary Screen",
-	                "BRRS_M_INT_RATES_FCA_SUMMARY"
-	        );
-	    }
-
-	    System.out.println(
-	            "M_INT_RATES_FCA Summary & Detail Updated Successfully");
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, rptDate.toString(),
+					"M INT RATES FCA Summary Screen", "BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE");
+		}
 	}
-	
-	
+
+	// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields,
+			M_INT_RATES_FCA_Summary_Entity updatedEntity, M_INT_RATES_FCA_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					// Clean and convert string numbers to proper numeric format or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim().replace(",", "");
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							value = valStr;
+						}
+					}
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	// 2. Safe MOD table saver with strict cleaning
+	public void saveModSummaryEntity(M_INT_RATES_FCA_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+		Date rptDate = entity.getReportDate() != null ? entity.getReportDate() : entity.getReport_date();
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", rptDate);
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", rptDate)
+				.addValue("reportVersion", entity.getReportVersion() != null ? entity.getReportVersion() : entity.getReport_version())
+				.addValue("reportFrequency", entity.getReport_frequency())
+				.addValue("reportCode", entity.getReport_code())
+				.addValue("reportDesc", entity.getReport_desc())
+				.addValue("entity_flg", entity.getEntity_flg())
+				.addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		String[] fields = { "CURRENCY", "CURRENT", "CALL", "SAVINGS", "NOTICE_0_31_DAYS", "NOTICE_32_88_DAYS",
+				"91_DEPOSIT_DAY", "FD_1_6_MONTHS", "FD_7_12_MONTHS", "FD_13_18_MONTHS", "FD_19_24_MONTHS",
+				"FD_OVER_24_MONTHS", "TOTAL" };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"REPORT_VERSION = :reportVersion, REPORT_FREQUENCY = :reportFrequency, "
+						+ "REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc, "
+						+ "MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+
+		List<String> insertColumns = new ArrayList<>(Arrays.asList(
+				"REPORT_DATE", "REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC",
+				"ENTITY_FLG", "MODIFY_FLG", "DEL_FLG"));
+		List<String> insertValues = new ArrayList<>(Arrays.asList(
+				":reportDate", ":reportVersion", ":reportFrequency", ":reportCode", ":reportDesc",
+				":entity_flg", ":modify_flg", ":del_flg"));
+
+		for (int i = 10; i <= 15; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (value instanceof String) {
+						String valStr = ((String) value).trim().replace(",", "");
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							value = valStr;
+						}
+					}
+
+					params.addValue(paramName, value);
+
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		List<M_INT_RATES_FCA_Summary_Entity> list = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new Object[] { reportDate }, new M_INT_RATES_FCASummaryRowMapper());
+
+		if (list.isEmpty()) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+		M_INT_RATES_FCA_Summary_Entity modRecord = list.get(0);
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_INT_RATES_FCA Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail tables upon approval
+	private void transferModValuesToLiveTables(M_INT_RATES_FCA_Summary_Entity modRecord, Date reportDate) {
+		String[] fields = { "CURRENCY", "CURRENT", "CALL", "SAVINGS", "NOTICE_0_31_DAYS", "NOTICE_32_88_DAYS",
+				"91_DEPOSIT_DAY", "FD_1_6_MONTHS", "FD_7_12_MONTHS", "FD_13_18_MONTHS", "FD_19_24_MONTHS",
+				"FD_OVER_24_MONTHS", "TOTAL" };
+
+		for (int i = 10; i <= 15; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_INT_RATES_FCA_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_M_INT_RATES_FCA_SUMMARYTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_M_INT_RATES_FCA_DETAILTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
+	}
+
 	// RESUB VIEW
 
 	
@@ -6927,6 +7036,10 @@ public class BRRS_M_INT_RATES_FCA_ReportService {
 		public void setReportDate(Date reportDate) { this.reportDate = reportDate; }
 		public BigDecimal getReportVersion() { return reportVersion; }
 		public void setReportVersion(BigDecimal reportVersion) { this.reportVersion = reportVersion; }
+		public Date getReport_date() { return reportDate; }
+		public void setReport_date(Date report_date) { this.reportDate = report_date; }
+		public BigDecimal getReport_version() { return reportVersion; }
+		public void setReport_version(BigDecimal report_version) { this.reportVersion = report_version; }
 		public String getReport_frequency() { return report_frequency; }
 		public void setReport_frequency(String report_frequency) { this.report_frequency = report_frequency; }
 		public String getReport_code() { return report_code; }

@@ -665,10 +665,12 @@ public class BRRS_ReportsController {
 		try {
 
 			// set date into all 4 entities
-			request1.setREPORT_DATE(asondate);
-			request2.setREPORT_DATE(asondate);
-			request3.setREPORT_DATE(asondate);
-			request4.setREPORT_DATE(asondate);
+			if (asondate != null) {
+				request1.setREPORT_DATE(asondate);
+				request2.setREPORT_DATE(asondate);
+				request3.setREPORT_DATE(asondate);
+				request4.setREPORT_DATE(asondate);
+			}
 
 			// call services
 			AIDPreportService.updateReport(request1);
@@ -676,7 +678,7 @@ public class BRRS_ReportsController {
 			AIDPreportService.updateReport3(request3);
 			AIDPreportService.updateReport4(request4);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -999,19 +1001,25 @@ public class BRRS_ReportsController {
 			System.out.println(type);
 
 			// set date into all entities
-			summary1.setReportDate(asondate);
-			detail1.setReportDate(asondate);
-			summary2.setReportDate(asondate);
-			detail2.setReportDate(asondate);
+			if (asondate != null) {
+				if (summary1 != null) {
+					summary1.setReportDate(asondate);
+				}
+				if (detail1 != null) {
+					detail1.setReportDate(asondate);
+				}
+				if (summary2 != null) {
+					summary2.setReportDate(asondate);
+				}
+				if (detail2 != null) {
+					detail2.setReportDate(asondate);
+				}
+			}
 
 			// call services
-			BRRS_M_CA6_ReportService.updateReport1(summary1);
-			BRRS_M_CA6_ReportService.updatedetail1(detail1);
+			BRRS_M_CA6_ReportService.updateReport(summary1, summary2);
 
-			BRRS_M_CA6_ReportService.updateReport2(summary2);
-			BRRS_M_CA6_ReportService.updateDetial2(detail2);
-
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
@@ -2925,24 +2933,24 @@ public class BRRS_ReportsController {
 	private BRRS_M_INT_RATES_FCA_ReportService INTRATESFCAreportService;
 
 	@RequestMapping(value = "/INTRATESFCAupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
-
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_INT_RATES_FCA_Summary_Entity request1) {
 
-			@ModelAttribute M_INT_RATES_FCA_Summary_Entity request1
-
-	) {
 		try {
 			System.out.println("Came to single controller");
-			// set date into all entities
-			request1.setReportDate(asondate);
+
+			if (asondate != null) {
+				request1.setReportDate(asondate);
+				request1.setReport_date(asondate);
+			}
 
 			// call services
 			INTRATESFCAreportService.updateReport(request1);
 
-			return ResponseEntity.ok("Modified Successfully.");
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());

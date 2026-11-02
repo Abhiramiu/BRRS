@@ -63,6 +63,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -217,402 +219,731 @@ public class BRRS_M_AIDP_ReportService {
 		return mv;
 	}
 
+	public BRRS_M_AIDP_Summary_Entity1 findSummary1ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity1.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity1 findModRecord1ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity1> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity1.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity2 findSummary2ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity2.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity2 findModRecord2ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity2> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity2.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity3 findSummary3ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity3> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity3.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity3 findModRecord3ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity3> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity3.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity4 findSummary4ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity4> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity4.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity4 findModRecord4ByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<BRRS_M_AIDP_Summary_Entity4> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity4.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
 	@Transactional
 	public void updateReport(BRRS_M_AIDP_Summary_Entity1 updatedEntity) {
-
-		System.out.println("Came to services");
+		System.out.println("Came to M_AIDP Update (Section 1)");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity1 existing = findAIDPSummary1(updatedEntity.getREPORT_DATE());
-
-		BRRS_M_AIDP_Detail_Entity1 existing1 = findAIDPDetail1(updatedEntity.getREPORT_DATE());
-
-		// Audit old copy
-		BRRS_M_AIDP_Summary_Entity1 oldcopy = new BRRS_M_AIDP_Summary_Entity1();
-		BeanUtils.copyProperties(existing, oldcopy);
-
-		try {
-
-			// 1️⃣ Loop R11 to R50
-			for (int i = 11; i <= 50; i++) {
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
-
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-
-						Method getter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(getterName);
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// Summary update
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(setterName,
-								getter.getReturnType());
-
-						summarySetter.invoke(existing, newValue);
-
-						// Detail update
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity1.class.getMethod(setterName,
-								getter.getReturnType());
-
-						detailSetter.invoke(existing1, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 2️⃣ Handle R51 Totals
-			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
-
-			for (String field : totalFields) {
-
-				String getterName = "getR51_" + field;
-				String setterName = "setR51_" + field;
-
-				try {
-
-					Method getter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(getterName);
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity1.class.getMethod(setterName,
-							getter.getReturnType());
-
-					summarySetter.invoke(existing, newValue);
-
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity1.class.getMethod(setterName,
-							getter.getReturnType());
-
-					detailSetter.invoke(existing1, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-
-			throw new RuntimeException("Error while updating report fields", e);
+		// 1. Fetch live summary record as baseline reference
+		BRRS_M_AIDP_Summary_Entity1 liveSummary = findSummary1ByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table 1 for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
 		}
 
-		// Audit & Save only if changes exist
-		String changes = auditService.getChanges(oldcopy, existing);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		BRRS_M_AIDP_Summary_Entity1 modRecord = findModRecord1ByReportDate(updatedEntity.getREPORT_DATE());
+		boolean modRecordExisted = (modRecord != null);
+		if (modRecord == null) {
+			modRecord = new BRRS_M_AIDP_Summary_Entity1();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		if (!changes.isEmpty()) {
+		// 3. Keep old copy for audit comparison
+		BRRS_M_AIDP_Summary_Entity1 oldcopy = new BRRS_M_AIDP_Summary_Entity1();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-			saveAIDPSummary1(existing);
-			saveAIDPDetail1(existing1);
+		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+					"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+			applyChangesToEntity(11, 50, fields, updatedEntity, modRecord);
 
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
-					"M AIDP Summary Screen", "BRRS_M_AIDP_SUMMARY");
+			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+			applyChangesToEntity(51, 51, totalFields, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_AIDP section 1 fields", e);
+		}
+
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_AIDP Section 1 Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. If changes exist or modRecord already existed, save to MOD table
+		if ((changes != null && !changes.isEmpty()) || modRecordExisted) {
+			modRecord.setENTITY_FLG("Y");
+			modRecord.setMODIFY_FLG("Y");
+			modRecord.setDEL_FLG("N");
+
+			// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+			saveModSummaryEntity1(modRecord);
+			System.out.println("✔ Record saved into BRRS_M_AIDP_MOD_SUMMARYTABLE1 for Checker Approval");
+
+			// 7. Log Audit Trail if changes exist
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+						"M_AIDP Summary Screen 1", "BRRS_M_AIDP_MOD_SUMMARYTABLE1");
+			}
 		}
 	}
 
 	@Transactional
 	public void updateReport2(BRRS_M_AIDP_Summary_Entity2 updatedEntity) {
-
-		System.out.println("Came to services");
+		System.out.println("Came to M_AIDP Update (Section 2)");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity2 existing = findAIDPSummary2(updatedEntity.getREPORT_DATE());
-
-		BRRS_M_AIDP_Detail_Entity2 existing1 = findAIDPDetail2(updatedEntity.getREPORT_DATE());
-
-		// Audit old copy
-		BRRS_M_AIDP_Summary_Entity2 oldcopy = new BRRS_M_AIDP_Summary_Entity2();
-		BeanUtils.copyProperties(existing, oldcopy);
-
-		try {
-
-			// 1️⃣ Loop from R56 to R95
-			for (int i = 56; i <= 95; i++) {
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
-
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-
-						Method getter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(getterName);
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// Update Summary
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(setterName,
-								getter.getReturnType());
-
-						summarySetter.invoke(existing, newValue);
-
-						// Update Detail
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity2.class.getMethod(setterName,
-								getter.getReturnType());
-
-						detailSetter.invoke(existing1, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 2️⃣ Handle R96 Totals
-			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
-
-			for (String field : totalFields) {
-
-				String getterName = "getR96_" + field;
-				String setterName = "setR96_" + field;
-
-				try {
-
-					Method getter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(getterName);
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity2.class.getMethod(setterName,
-							getter.getReturnType());
-
-					summarySetter.invoke(existing, newValue);
-
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity2.class.getMethod(setterName,
-							getter.getReturnType());
-
-					detailSetter.invoke(existing1, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+		// 1. Fetch live summary record as baseline reference
+		BRRS_M_AIDP_Summary_Entity2 liveSummary = findSummary2ByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table 2 for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
 		}
 
-		// Audit & Save only if changes exist
-		String changes = auditService.getChanges(oldcopy, existing);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		BRRS_M_AIDP_Summary_Entity2 modRecord = findModRecord2ByReportDate(updatedEntity.getREPORT_DATE());
+		boolean modRecordExisted = (modRecord != null);
+		if (modRecord == null) {
+			modRecord = new BRRS_M_AIDP_Summary_Entity2();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		if (!changes.isEmpty()) {
+		// 3. Keep old copy for audit comparison
+		BRRS_M_AIDP_Summary_Entity2 oldcopy = new BRRS_M_AIDP_Summary_Entity2();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-			saveAIDPSummary2(existing);
-			saveAIDPDetail2(existing1);
+		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+					"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+			applyChangesToEntity(56, 95, fields, updatedEntity, modRecord);
 
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
-					"M AIDP Summary 2 Screen", "BRRS_M_AIDP_SUMMARY_2");
+			String[] totalFields = { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" };
+			applyChangesToEntity(96, 96, totalFields, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_AIDP section 2 fields", e);
+		}
+
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_AIDP Section 2 Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. If changes exist or modRecord already existed, save to MOD table
+		if ((changes != null && !changes.isEmpty()) || modRecordExisted) {
+			modRecord.setENTITY_FLG("Y");
+			modRecord.setMODIFY_FLG("Y");
+			modRecord.setDEL_FLG("N");
+
+			// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+			saveModSummaryEntity2(modRecord);
+			System.out.println("✔ Record saved into BRRS_M_AIDP_MOD_SUMMARYTABLE2 for Checker Approval");
+
+			// 7. Log Audit Trail if changes exist
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+						"M_AIDP Summary Screen 2", "BRRS_M_AIDP_MOD_SUMMARYTABLE2");
+			}
 		}
 	}
 
 	@Transactional
 	public void updateReport3(BRRS_M_AIDP_Summary_Entity3 updatedEntity) {
-
-		System.out.println("Came to services");
+		System.out.println("Came to M_AIDP Update (Section 3)");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity3 existing = findAIDPSummary3(updatedEntity.getREPORT_DATE());
-
-		BRRS_M_AIDP_Detail_Entity3 existing1 = findAIDPDetail3(updatedEntity.getREPORT_DATE());
-
-		// Audit old copy
-		BRRS_M_AIDP_Summary_Entity3 oldcopy = new BRRS_M_AIDP_Summary_Entity3();
-		BeanUtils.copyProperties(existing, oldcopy);
-
-		try {
-
-			// 1️⃣ Loop from R101 to R141
-			for (int i = 101; i <= 141; i++) {
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND",
-						"AMT_TIME" };
-
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-
-						Method getter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(getterName);
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// Update Summary
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(setterName,
-								getter.getReturnType());
-
-						summarySetter.invoke(existing, newValue);
-
-						// Update Detail
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity3.class.getMethod(setterName,
-								getter.getReturnType());
-
-						detailSetter.invoke(existing1, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 2️⃣ Handle R142 Totals
-			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
-
-			for (String field : totalFields) {
-
-				String getterName = "getR142_" + field;
-				String setterName = "setR142_" + field;
-
-				try {
-
-					Method getter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(getterName);
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity3.class.getMethod(setterName,
-							getter.getReturnType());
-
-					summarySetter.invoke(existing, newValue);
-
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity3.class.getMethod(setterName,
-							getter.getReturnType());
-
-					detailSetter.invoke(existing1, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report3 fields", e);
+		// 1. Fetch live summary record as baseline reference
+		BRRS_M_AIDP_Summary_Entity3 liveSummary = findSummary3ByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table 3 for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
 		}
 
-		// Audit & Save only if changes exist
-		String changes = auditService.getChanges(oldcopy, existing);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		BRRS_M_AIDP_Summary_Entity3 modRecord = findModRecord3ByReportDate(updatedEntity.getREPORT_DATE());
+		boolean modRecordExisted = (modRecord != null);
+		if (modRecord == null) {
+			modRecord = new BRRS_M_AIDP_Summary_Entity3();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		if (!changes.isEmpty()) {
+		// 3. Keep old copy for audit comparison
+		BRRS_M_AIDP_Summary_Entity3 oldcopy = new BRRS_M_AIDP_Summary_Entity3();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-			saveAIDPSummary3(existing);
-			saveAIDPDetail3(existing1);
+		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+					"AMT_DEMAND", "AMT_TIME" };
+			applyChangesToEntity(101, 141, fields, updatedEntity, modRecord);
 
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
-					"M AIDP Summary 3 Screen", "BRRS_M_AIDP_SUMMARY_3");
+			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
+			applyChangesToEntity(142, 142, totalFields, updatedEntity, modRecord);
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_AIDP section 3 fields", e);
+		}
+
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_AIDP Section 3 Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. If changes exist or modRecord already existed, save to MOD table
+		if ((changes != null && !changes.isEmpty()) || modRecordExisted) {
+			modRecord.setENTITY_FLG("Y");
+			modRecord.setMODIFY_FLG("Y");
+			modRecord.setDEL_FLG("N");
+
+			// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+			saveModSummaryEntity3(modRecord);
+			System.out.println("✔ Record saved into BRRS_M_AIDP_MOD_SUMMARYTABLE3 for Checker Approval");
+
+			// 7. Log Audit Trail if changes exist
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+						"M_AIDP Summary Screen 3", "BRRS_M_AIDP_MOD_SUMMARYTABLE3");
+			}
 		}
 	}
 
 	@Transactional
 	public void updateReport4(BRRS_M_AIDP_Summary_Entity4 updatedEntity) {
-
-		System.out.println("Came to services");
+		System.out.println("Came to M_AIDP Update (Section 4)");
 		System.out.println("Report Date: " + updatedEntity.getREPORT_DATE());
 
-		BRRS_M_AIDP_Summary_Entity4 existing = findAIDPSummary4(updatedEntity.getREPORT_DATE());
+		// 1. Fetch live summary record as baseline reference
+		BRRS_M_AIDP_Summary_Entity4 liveSummary = findSummary4ByReportDate(updatedEntity.getREPORT_DATE());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table 4 for REPORT_DATE : " + updatedEntity.getREPORT_DATE());
+		}
 
-		BRRS_M_AIDP_Detail_Entity4 existing1 = findAIDPDetail4(updatedEntity.getREPORT_DATE());
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		BRRS_M_AIDP_Summary_Entity4 modRecord = findModRecord4ByReportDate(updatedEntity.getREPORT_DATE());
+		boolean modRecordExisted = (modRecord != null);
+		if (modRecord == null) {
+			modRecord = new BRRS_M_AIDP_Summary_Entity4();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		// Audit old copy
+		// 3. Keep old copy for audit comparison
 		BRRS_M_AIDP_Summary_Entity4 oldcopy = new BRRS_M_AIDP_Summary_Entity4();
-		BeanUtils.copyProperties(existing, oldcopy);
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields = { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+					"AMT_DEMAND", "AMT_TIME" };
+			applyChangesToEntity(147, 193, fields, updatedEntity, modRecord);
 
-			// 1️⃣ Loop from R147 to R193
-			for (int i = 147; i <= 193; i++) {
-
-				String prefix = "R" + i + "_";
-
-				String[] fields = { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
-						"AMT_DEMAND", "AMT_TIME" };
-
-				for (String field : fields) {
-
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-
-						Method getter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(getterName);
-
-						Object newValue = getter.invoke(updatedEntity);
-
-						// Update Summary
-						Method summarySetter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(setterName,
-								getter.getReturnType());
-
-						summarySetter.invoke(existing, newValue);
-
-						// Update Detail
-						Method detailSetter = BRRS_M_AIDP_Detail_Entity4.class.getMethod(setterName,
-								getter.getReturnType());
-
-						detailSetter.invoke(existing1, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// 2️⃣ Handle R194 Totals
 			String[] totalFields = { "TOT_AMT_DEMAND", "TOT_AMT_TIME" };
-
-			for (String field : totalFields) {
-
-				String getterName = "getR194_" + field;
-				String setterName = "setR194_" + field;
-
-				try {
-
-					Method getter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(getterName);
-
-					Object newValue = getter.invoke(updatedEntity);
-
-					Method summarySetter = BRRS_M_AIDP_Summary_Entity4.class.getMethod(setterName,
-							getter.getReturnType());
-
-					summarySetter.invoke(existing, newValue);
-
-					Method detailSetter = BRRS_M_AIDP_Detail_Entity4.class.getMethod(setterName,
-							getter.getReturnType());
-
-					detailSetter.invoke(existing1, newValue);
-
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
+			applyChangesToEntity(194, 194, totalFields, updatedEntity, modRecord);
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report4 fields", e);
+			throw new RuntimeException("Error while updating M_AIDP section 4 fields", e);
 		}
 
-		// Audit & Save only if changes exist
-		String changes = auditService.getChanges(oldcopy, existing);
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_AIDP Section 4 Changes Length = " + (changes != null ? changes.length() : 0));
 
-		if (!changes.isEmpty()) {
+		// 5. If changes exist or modRecord already existed, save to MOD table
+		if ((changes != null && !changes.isEmpty()) || modRecordExisted) {
+			modRecord.setENTITY_FLG("Y");
+			modRecord.setMODIFY_FLG("Y");
+			modRecord.setDEL_FLG("N");
 
-			saveAIDPSummary4(existing);
-			saveAIDPDetail4(existing1);
+			// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+			saveModSummaryEntity4(modRecord);
+			System.out.println("✔ Record saved into BRRS_M_AIDP_MOD_SUMMARYTABLE4 for Checker Approval");
 
-			auditService.compareEntitiesmanual(oldcopy, existing, updatedEntity.getREPORT_DATE().toString(),
-					"M AIDP Summary 4 Screen", "BRRS_M_AIDP_SUMMARY_4");
+			// 7. Log Audit Trail if changes exist
+			if (changes != null && !changes.isEmpty()) {
+				auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getREPORT_DATE().toString(),
+						"M_AIDP Summary Screen 4", "BRRS_M_AIDP_MOD_SUMMARYTABLE4");
+			}
 		}
 	}
+
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields, Object updatedEntity,
+			Object targetEntity) {
+		Class<?> clazz = updatedEntity.getClass();
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = clazz.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					// Clean and convert string numbers to proper numeric format or null
+					if (getter.getReturnType() == BigDecimal.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim().replace(",", "");
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
+					} else if (getter.getReturnType() == String.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							value = valStr.isEmpty() ? null : valStr;
+						}
+					}
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = clazz.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	public void saveModSummaryEntity1(BRRS_M_AIDP_Summary_Entity1 entity) {
+		saveModSummaryEntityInternal("BRRS_M_AIDP_MOD_SUMMARYTABLE1", entity, 11, 50,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" },
+				51, new String[] { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" });
+	}
+
+	public void saveModSummaryEntity2(BRRS_M_AIDP_Summary_Entity2 entity) {
+		saveModSummaryEntityInternal("BRRS_M_AIDP_MOD_SUMMARYTABLE2", entity, 56, 95,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" },
+				96, new String[] { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" });
+	}
+
+	public void saveModSummaryEntity3(BRRS_M_AIDP_Summary_Entity3 entity) {
+		saveModSummaryEntityInternal("BRRS_M_AIDP_MOD_SUMMARYTABLE3", entity, 101, 141,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_DEMAND", "AMT_TIME" },
+				142, new String[] { "TOT_AMT_DEMAND", "TOT_AMT_TIME" });
+	}
+
+	public void saveModSummaryEntity4(BRRS_M_AIDP_Summary_Entity4 entity) {
+		saveModSummaryEntityInternal("BRRS_M_AIDP_MOD_SUMMARYTABLE4", entity, 147, 193,
+				new String[] { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_DEMAND", "AMT_TIME" },
+				194, new String[] { "TOT_AMT_DEMAND", "TOT_AMT_TIME" });
+	}
+
+	private void saveModSummaryEntityInternal(String modTableName, Object entity, int startRow, int endRow,
+			String[] fields, int totalRow, String[] totalFields) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+		Class<?> clazz = entity.getClass();
+
+		Date reportDate;
+		String entityFlg;
+		String modifyFlg;
+		String delFlg;
+		String reportFrequency = null;
+		String reportCode = null;
+		String reportDesc = null;
+		BigDecimal reportVersion = null;
+
+		try {
+			reportDate = (Date) clazz.getMethod("getREPORT_DATE").invoke(entity);
+			entityFlg = (String) clazz.getMethod("getENTITY_FLG").invoke(entity);
+			modifyFlg = (String) clazz.getMethod("getMODIFY_FLG").invoke(entity);
+			delFlg = (String) clazz.getMethod("getDEL_FLG").invoke(entity);
+			try { reportFrequency = (String) clazz.getMethod("getREPORT_FREQUENCY").invoke(entity); } catch (Exception ignored) {}
+			try { reportCode = (String) clazz.getMethod("getREPORT_CODE").invoke(entity); } catch (Exception ignored) {}
+			try { reportDesc = (String) clazz.getMethod("getREPORT_DESC").invoke(entity); } catch (Exception ignored) {}
+			try { reportVersion = (BigDecimal) clazz.getMethod("getREPORT_VERSION").invoke(entity); } catch (Exception ignored) {}
+		} catch (Exception e) {
+			throw new RuntimeException("Error accessing metadata from entity: " + clazz.getSimpleName(), e);
+		}
+
+		String checkSql = "SELECT COUNT(*) FROM " + modTableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", reportDate);
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", reportDate)
+				.addValue("entity_flg", entityFlg)
+				.addValue("modify_flg", modifyFlg)
+				.addValue("del_flg", delFlg)
+				.addValue("report_frequency", reportFrequency)
+				.addValue("report_code", reportCode)
+				.addValue("report_desc", reportDesc)
+				.addValue("report_version", reportVersion);
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		if (reportFrequency != null) {
+			updateSetSql.append(", REPORT_FREQUENCY = :report_frequency");
+			insertColumns.add("REPORT_FREQUENCY");
+			insertValues.add(":report_frequency");
+		}
+		if (reportCode != null) {
+			updateSetSql.append(", REPORT_CODE = :report_code");
+			insertColumns.add("REPORT_CODE");
+			insertValues.add(":report_code");
+		}
+		if (reportDesc != null) {
+			updateSetSql.append(", REPORT_DESC = :report_desc");
+			insertColumns.add("REPORT_DESC");
+			insertValues.add(":report_desc");
+		}
+		if (reportVersion != null) {
+			updateSetSql.append(", REPORT_VERSION = :report_version");
+			insertColumns.add("REPORT_VERSION");
+			insertValues.add(":report_version");
+		}
+
+		// Standard rows
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + i + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = clazz.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (getter.getReturnType() == BigDecimal.class && value instanceof String) {
+						String valStr = ((String) value).trim().replace(",", "");
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					} else if (getter.getReturnType() == String.class && value instanceof String) {
+						String valStr = ((String) value).trim();
+						value = valStr.isEmpty() ? null : valStr;
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		// Total row
+		if (totalRow > 0 && totalFields != null) {
+			String prefix = "R" + totalRow + "_";
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + totalRow + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = clazz.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (getter.getReturnType() == BigDecimal.class && value instanceof String) {
+						String valStr = ((String) value).trim().replace(",", "");
+						if (valStr.isEmpty()) {
+							value = null;
+						} else {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null;
+							}
+						}
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping total column for MOD table: " + columnName, e);
+				}
+			}
+		}
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE " + modTableName + " SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ " + modTableName + " updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO " + modTableName + " (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ " + modTableName + " inserted successfully.");
+		}
+	}
+
+	public BRRS_M_AIDP_Summary_Entity1 findPendingModRecord1(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'";
+		List<BRRS_M_AIDP_Summary_Entity1> list = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity1.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity2 findPendingModRecord2(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'";
+		List<BRRS_M_AIDP_Summary_Entity2> list = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity2.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity3 findPendingModRecord3(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'";
+		List<BRRS_M_AIDP_Summary_Entity3> list = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity3.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	public BRRS_M_AIDP_Summary_Entity4 findPendingModRecord4(Date reportDate) {
+		String sql = "SELECT * FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4 WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'";
+		List<BRRS_M_AIDP_Summary_Entity4> list = jdbcTemplate.query(sql,
+				new BeanPropertyRowMapper<>(BRRS_M_AIDP_Summary_Entity4.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		boolean anyApproved = false;
+
+		// Section 1
+		BRRS_M_AIDP_Summary_Entity1 modRecord1 = findPendingModRecord1(reportDate);
+		if (modRecord1 != null) {
+			transferMod1ValuesToLiveTables(modRecord1, reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE1 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+			anyApproved = true;
+		}
+
+		// Section 2
+		BRRS_M_AIDP_Summary_Entity2 modRecord2 = findPendingModRecord2(reportDate);
+		if (modRecord2 != null) {
+			transferMod2ValuesToLiveTables(modRecord2, reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE2 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+			anyApproved = true;
+		}
+
+		// Section 3
+		BRRS_M_AIDP_Summary_Entity3 modRecord3 = findPendingModRecord3(reportDate);
+		if (modRecord3 != null) {
+			transferMod3ValuesToLiveTables(modRecord3, reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE3 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+			anyApproved = true;
+		}
+
+		// Section 4
+		BRRS_M_AIDP_Summary_Entity4 modRecord4 = findPendingModRecord4(reportDate);
+		if (modRecord4 != null) {
+			transferMod4ValuesToLiveTables(modRecord4, reportDate);
+			jdbcTemplate.update(
+					"UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE4 SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+			anyApproved = true;
+		}
+
+		if (!anyApproved) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+
+		System.out.println(
+				"✔ M_AIDP Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	private void transferMod1ValuesToLiveTables(BRRS_M_AIDP_Summary_Entity1 modRecord, Date reportDate) {
+		transferModValuesToLiveTablesInternal("BRRS_M_AIDP_SUMMARYTABLE1", "BRRS_M_AIDP_DETAILTABLE1",
+				modRecord, 11, 50,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" },
+				51, new String[] { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" }, reportDate);
+	}
+
+	private void transferMod2ValuesToLiveTables(BRRS_M_AIDP_Summary_Entity2 modRecord, Date reportDate) {
+		transferModValuesToLiveTablesInternal("BRRS_M_AIDP_SUMMARYTABLE2", "BRRS_M_AIDP_DETAILTABLE2",
+				modRecord, 56, 95,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" },
+				96, new String[] { "TOT_AMT_LESS_184_DAYS", "TOT_AMT_MORE_184_DAYS" }, reportDate);
+	}
+
+	private void transferMod3ValuesToLiveTables(BRRS_M_AIDP_Summary_Entity3 modRecord, Date reportDate) {
+		transferModValuesToLiveTablesInternal("BRRS_M_AIDP_SUMMARYTABLE3", "BRRS_M_AIDP_DETAILTABLE3",
+				modRecord, 101, 141,
+				new String[] { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_DEMAND", "AMT_TIME" },
+				142, new String[] { "TOT_AMT_DEMAND", "TOT_AMT_TIME" }, reportDate);
+	}
+
+	private void transferMod4ValuesToLiveTables(BRRS_M_AIDP_Summary_Entity4 modRecord, Date reportDate) {
+		transferModValuesToLiveTablesInternal("BRRS_M_AIDP_SUMMARYTABLE4", "BRRS_M_AIDP_DETAILTABLE4",
+				modRecord, 147, 193,
+				new String[] { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE",
+						"AMT_DEMAND", "AMT_TIME" },
+				194, new String[] { "TOT_AMT_DEMAND", "TOT_AMT_TIME" }, reportDate);
+	}
+
+	private void transferModValuesToLiveTablesInternal(String summaryTable, String detailTable, Object modRecord,
+			int startRow, int endRow, String[] fields, int totalRow, String[] totalFields, Date reportDate) {
+		Class<?> clazz = modRecord.getClass();
+
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+			try {
+					Method getter = clazz.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE " + summaryTable + " SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE " + detailTable + " SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
+
+		if (totalRow > 0 && totalFields != null) {
+			String prefix = "R" + totalRow + "_";
+			for (String field : totalFields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = clazz.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE " + summaryTable + " SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE " + detailTable + " SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring total column to live tables: " + columnName, e);
+				}
+			}
+		}
+
+		// Also update flags on live summary & detail tables
+		String flagSql1 = "UPDATE " + summaryTable + " SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		jdbcTemplate.update(flagSql1, reportDate);
+		String flagSql2 = "UPDATE " + detailTable + " SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		jdbcTemplate.update(flagSql2, reportDate);
+	}
+
 
 	public byte[] getM_AIDPExcel(String filename, String reportId, String fromdate, String todate, String currency,
 			String dtltype, String type, BigDecimal version) throws Exception {

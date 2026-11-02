@@ -1443,6 +1443,10 @@ public class AuditService {
 		else if (upperTable.contains("Q_STAFF")) {
 			transferQStaffData(auditRecord);
 		}
+		/* M_AIDP */
+		else if (upperTable.contains("AIDP") || upperTable.contains("M_AIDP")) {
+			transferAIDPData(auditRecord);
+		}
 		/* Q_BRANCHNET */
 		else if (upperTable.contains("Q_BRANCHNET")) {
 			transferQBranchnetData(auditRecord);
@@ -1456,6 +1460,11 @@ public class AuditService {
 		/* M_CA4 */
 		else if (upperTable.contains("M_CA4")) {
 		    transferCA4Data(auditRecord);
+		}
+		
+		/* M_CA6 */
+		else if (upperTable.contains("M_CA6")) {
+		    transferMCA6Data(auditRecord);
 		}
 		
 
@@ -1497,6 +1506,11 @@ public class AuditService {
 		/* M_LA2 */
 		else if (upperTable.contains("M_LA2")) {
 			transferMLA2Data(auditRecord);
+		}
+
+		/* M_INT_RATES_FCA */
+		else if (upperTable.contains("INT_RATES_FCA")) {
+			transferIntRatesFcaData(auditRecord);
 		}
 
 		else {
@@ -1823,6 +1837,315 @@ public class AuditService {
 
 		System.out.println("Q_STAFF MOD Updated : " + modUpdated);
 		System.out.println("Q_STAFF Verification and Transfer Completed Successfully");
+	}
+
+	private void transferAIDPData(AuditServicesEntity auditRecord) {
+		String upperTable = auditRecord.getAudit_table() != null ? auditRecord.getAudit_table().trim().toUpperCase() : "";
+
+		if (upperTable.contains("TABLE1") || upperTable.endsWith("1")) {
+			transferAIDPTable1Data();
+		} else if (upperTable.contains("TABLE2") || upperTable.endsWith("2")) {
+			transferAIDPTable2Data();
+		} else if (upperTable.contains("TABLE3") || upperTable.endsWith("3")) {
+			transferAIDPTable3Data();
+		} else if (upperTable.contains("TABLE4") || upperTable.endsWith("4")) {
+			transferAIDPTable4Data();
+		} else {
+			transferAIDPTable1Data();
+			transferAIDPTable2Data();
+			transferAIDPTable3Data();
+			transferAIDPTable4Data();
+		}
+	}
+
+	private void transferAIDPTable1Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1 WHERE MODIFY_FLG = 'Y'";
+		List<java.sql.Date> dates = jdbcTemplate.queryForList(dateSql, java.sql.Date.class);
+		java.sql.Date reportDate = (!dates.isEmpty() && dates.get(0) != null) ? dates.get(0)
+				: jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1",
+						java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_AIDP Table 1 record available for verification.");
+		}
+
+		System.out.println("M_AIDP Table 1 Report Date : " + reportDate);
+
+		String cols = buildAIDPTable1Columns(false);
+		String selectCols = buildAIDPTable1Columns(true);
+
+		String updateSummarySql = "UPDATE BRRS_M_AIDP_SUMMARYTABLE1 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_AIDP Table 1 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_AIDP Summary Table 1 Updated : " + summaryUpdated);
+
+		String updateDetailSql = "UPDATE BRRS_M_AIDP_DETAILTABLE1 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE1 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_AIDP Detail Table 1 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE1 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_AIDP MOD Table 1 Updated : " + modUpdated);
+
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_SUMMARYTABLE1 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_DETAILTABLE1 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		System.out.println("M_AIDP Table 1 Verification and Transfer Completed Successfully");
+	}
+
+	private void transferAIDPTable2Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2 WHERE MODIFY_FLG = 'Y'";
+		List<java.sql.Date> dates = jdbcTemplate.queryForList(dateSql, java.sql.Date.class);
+		java.sql.Date reportDate = (!dates.isEmpty() && dates.get(0) != null) ? dates.get(0)
+				: jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2",
+						java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_AIDP Table 2 record available for verification.");
+		}
+
+		System.out.println("M_AIDP Table 2 Report Date : " + reportDate);
+
+		String cols = buildAIDPTable2Columns(false);
+		String selectCols = buildAIDPTable2Columns(true);
+
+		String updateSummarySql = "UPDATE BRRS_M_AIDP_SUMMARYTABLE2 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_AIDP Table 2 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_AIDP Summary Table 2 Updated : " + summaryUpdated);
+
+		String updateDetailSql = "UPDATE BRRS_M_AIDP_DETAILTABLE2 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE2 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_AIDP Detail Table 2 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE2 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_AIDP MOD Table 2 Updated : " + modUpdated);
+
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_SUMMARYTABLE2 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_DETAILTABLE2 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		System.out.println("M_AIDP Table 2 Verification and Transfer Completed Successfully");
+	}
+
+	private void transferAIDPTable3Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3 WHERE MODIFY_FLG = 'Y'";
+		List<java.sql.Date> dates = jdbcTemplate.queryForList(dateSql, java.sql.Date.class);
+		java.sql.Date reportDate = (!dates.isEmpty() && dates.get(0) != null) ? dates.get(0)
+				: jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3",
+						java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_AIDP Table 3 record available for verification.");
+		}
+
+		System.out.println("M_AIDP Table 3 Report Date : " + reportDate);
+
+		String cols = buildAIDPTable3Columns(false);
+		String selectCols = buildAIDPTable3Columns(true);
+
+		String updateSummarySql = "UPDATE BRRS_M_AIDP_SUMMARYTABLE3 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_AIDP Table 3 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_AIDP Summary Table 3 Updated : " + summaryUpdated);
+
+		String updateDetailSql = "UPDATE BRRS_M_AIDP_DETAILTABLE3 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE3 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_AIDP Detail Table 3 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE3 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_AIDP MOD Table 3 Updated : " + modUpdated);
+
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_SUMMARYTABLE3 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_DETAILTABLE3 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		System.out.println("M_AIDP Table 3 Verification and Transfer Completed Successfully");
+	}
+
+	private void transferAIDPTable4Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4 WHERE MODIFY_FLG = 'Y'";
+		List<java.sql.Date> dates = jdbcTemplate.queryForList(dateSql, java.sql.Date.class);
+		java.sql.Date reportDate = (!dates.isEmpty() && dates.get(0) != null) ? dates.get(0)
+				: jdbcTemplate.queryForObject("SELECT MAX(REPORT_DATE) FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4",
+						java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_AIDP Table 4 record available for verification.");
+		}
+
+		System.out.println("M_AIDP Table 4 Report Date : " + reportDate);
+
+		String cols = buildAIDPTable4Columns(false);
+		String selectCols = buildAIDPTable4Columns(true);
+
+		String updateSummarySql = "UPDATE BRRS_M_AIDP_SUMMARYTABLE4 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_AIDP Table 4 modification record not found for date : " + reportDate);
+		}
+		System.out.println("M_AIDP Summary Table 4 Updated : " + summaryUpdated);
+
+		String updateDetailSql = "UPDATE BRRS_M_AIDP_DETAILTABLE4 M SET (" + cols + ") = (SELECT " + selectCols
+				+ " FROM BRRS_M_AIDP_MOD_SUMMARYTABLE4 S WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)) "
+				+ "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_AIDP Detail Table 4 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_AIDP_MOD_SUMMARYTABLE4 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_AIDP MOD Table 4 Updated : " + modUpdated);
+
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_SUMMARYTABLE4 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_AIDP_DETAILTABLE4 SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		System.out.println("M_AIDP Table 4 Verification and Transfer Completed Successfully");
+	}
+
+	private String buildAIDPTable1Columns(boolean withPrefix) {
+		StringBuilder sb = new StringBuilder();
+		String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+		for (int i = 11; i <= 50; i++) {
+			for (String f : fields) {
+				if (withPrefix) sb.append("S.");
+				sb.append("R").append(i).append("_").append(f).append(", ");
+			}
+		}
+		if (withPrefix) {
+			sb.append("S.R51_TOT_AMT_LESS_184_DAYS, S.R51_TOT_AMT_MORE_184_DAYS, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		} else {
+			sb.append("R51_TOT_AMT_LESS_184_DAYS, R51_TOT_AMT_MORE_184_DAYS, ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		}
+		return sb.toString();
+	}
+
+	private String buildAIDPTable2Columns(boolean withPrefix) {
+		StringBuilder sb = new StringBuilder();
+		String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_LESS_184_DAYS", "AMT_MORE_184_DAYS" };
+		for (int i = 56; i <= 95; i++) {
+			for (String f : fields) {
+				if (withPrefix) sb.append("S.");
+				sb.append("R").append(i).append("_").append(f).append(", ");
+			}
+		}
+		if (withPrefix) {
+			sb.append("S.R96_TOT_AMT_LESS_184_DAYS, S.R96_TOT_AMT_MORE_184_DAYS, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		} else {
+			sb.append("R96_TOT_AMT_LESS_184_DAYS, R96_TOT_AMT_MORE_184_DAYS, ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		}
+		return sb.toString();
+	}
+
+	private String buildAIDPTable3Columns(boolean withPrefix) {
+		StringBuilder sb = new StringBuilder();
+		String[] fields = { "NAME_OF_BANK", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND", "AMT_TIME" };
+		for (int i = 101; i <= 141; i++) {
+			for (String f : fields) {
+				if (withPrefix) sb.append("S.");
+				sb.append("R").append(i).append("_").append(f).append(", ");
+			}
+		}
+		if (withPrefix) {
+			sb.append("S.R142_TOT_AMT_DEMAND, S.R142_TOT_AMT_TIME, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		} else {
+			sb.append("R142_TOT_AMT_DEMAND, R142_TOT_AMT_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		}
+		return sb.toString();
+	}
+
+	private String buildAIDPTable4Columns(boolean withPrefix) {
+		StringBuilder sb = new StringBuilder();
+		String[] fields = { "NAME_OF_BANK", "COUNTRY", "TYPE_OF_ACC", "PURPOSE", "CURRENCY", "BANK_RATE", "AMT_DEMAND", "AMT_TIME" };
+		for (int i = 147; i <= 193; i++) {
+			for (String f : fields) {
+				if (withPrefix) sb.append("S.");
+				sb.append("R").append(i).append("_").append(f).append(", ");
+			}
+		}
+		if (withPrefix) {
+			sb.append("S.R194_TOT_AMT_DEMAND, S.R194_TOT_AMT_TIME, S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		} else {
+			sb.append("R194_TOT_AMT_DEMAND, R194_TOT_AMT_TIME, ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		}
+		return sb.toString();
+	}
+
+	private void transferIntRatesFcaData(AuditServicesEntity auditRecord) {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE";
+		java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+		if (reportDate == null) {
+			throw new IllegalStateException("No modified M_INT_RATES_FCA record available for verification.");
+		}
+
+		System.out.println("M_INT_RATES_FCA Report Date : " + reportDate);
+
+		String[] rows = { "R10", "R11", "R12", "R13", "R14", "R15" };
+		String[] fields = { "CURRENCY", "CURRENT", "CALL", "SAVINGS", "NOTICE_0_31_DAYS", "NOTICE_32_88_DAYS",
+				"91_DEPOSIT_DAY", "FD_1_6_MONTHS", "FD_7_12_MONTHS", "FD_13_18_MONTHS", "FD_19_24_MONTHS",
+				"FD_OVER_24_MONTHS", "TOTAL" };
+
+		StringBuilder colsBuilder = new StringBuilder();
+		StringBuilder selBuilder = new StringBuilder();
+
+		for (String r : rows) {
+			for (String f : fields) {
+				String col = r + "_" + f;
+				colsBuilder.append(col).append(", ");
+				selBuilder.append("S.").append(col).append(", ");
+			}
+		}
+		colsBuilder.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		selBuilder.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+
+		String cols = colsBuilder.toString();
+		String sel = selBuilder.toString();
+
+		// 1. Update BRRS_M_INT_RATES_FCA_SUMMARYTABLE from MOD table
+		String updateSummarySql = "UPDATE BRRS_M_INT_RATES_FCA_SUMMARYTABLE M SET (" + cols + ") = ("
+				+ "    SELECT " + sel + " FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+
+		if (summaryUpdated == 0) {
+			throw new IllegalStateException("M_INT_RATES_FCA modification record not found for date : " + reportDate);
+		}
+
+		System.out.println("M_INT_RATES_FCA Summary Table Updated : " + summaryUpdated);
+
+		// 2. Update BRRS_M_INT_RATES_FCA_DETAILTABLE from MOD table (Same column mapping)
+		String updateDetailSql = "UPDATE BRRS_M_INT_RATES_FCA_DETAILTABLE M SET (" + cols + ") = ("
+				+ "    SELECT " + sel + " FROM BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_INT_RATES_FCA Detail Table Updated : " + detailUpdated);
+
+		// 3. Mark MOD record status as approved (MODIFY_FLG = 'N')
+		String updateModSql = "UPDATE BRRS_M_INT_RATES_FCA_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+		System.out.println("M_INT_RATES_FCA MOD Updated : " + modUpdated);
+		System.out.println("M_INT_RATES_FCA Verification and Transfer Completed Successfully");
 	}
 
 	private void transferQBranchnetData(AuditServicesEntity auditRecord) {
@@ -2288,7 +2611,175 @@ public class AuditService {
 	    System.out.println("M_CA4 Verification and Transfer Completed Successfully");
 	}
 	
+		// =========================================================
+	// M_CA6 — Checker transfer (MOD → LIVE Summary + Detail)
 	// =========================================================
+	private void transferMCA6Data(AuditServicesEntity auditRecord) {
+		String upperTable = auditRecord.getAudit_table() != null ? auditRecord.getAudit_table().toUpperCase() : "";
+		boolean doTable1 = upperTable.contains("TABLE1") || !upperTable.contains("TABLE2");
+		boolean doTable2 = upperTable.contains("TABLE2") || !upperTable.contains("TABLE1");
+
+		if (doTable1) {
+			transferMCA6Table1Data();
+		}
+		if (doTable2) {
+			transferMCA6Table2Data();
+		}
+	}
+
+	private void transferMCA6Table1Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA6_MOD_SUMMARYTABLE1 WHERE MODIFY_FLG = 'Y'";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception ignored) {}
+		if (reportDate == null) {
+			dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA6_MOD_SUMMARYTABLE1";
+			try {
+				reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+			} catch (Exception ignored) {}
+		}
+		if (reportDate == null) {
+			System.out.println("No modified M_CA6 Table 1 record available for verification.");
+			return;
+		}
+		System.out.println("M_CA6 Table 1 Report Date : " + reportDate);
+
+		String cols = buildMCA6Table1ColumnList();
+		String sel = buildMCA6Table1SelectList();
+
+		String updateSummarySql = "UPDATE BRRS_M_CA6_SUMMARYTABLE1 M SET (" + cols + ") = ("
+				+ "    SELECT " + sel + " FROM BRRS_M_CA6_MOD_SUMMARYTABLE1 S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		System.out.println("M_CA6 Summary Table 1 Updated : " + summaryUpdated);
+
+		String updateDetailSql = updateSummarySql.replace("BRRS_M_CA6_SUMMARYTABLE1", "BRRS_M_CA6_DETAILTABLE1");
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_CA6 Detail Table 1 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE1 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_CA6 MOD Table 1 Updated : " + modUpdated);
+		System.out.println("M_CA6 Table 1 Verification and Transfer Completed Successfully");
+	}
+
+	private void transferMCA6Table2Data() {
+		String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA6_MOD_SUMMARYTABLE2 WHERE MODIFY_FLG = 'Y'";
+		java.sql.Date reportDate = null;
+		try {
+			reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+		} catch (Exception ignored) {}
+		if (reportDate == null) {
+			dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_CA6_MOD_SUMMARYTABLE2";
+			try {
+				reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+			} catch (Exception ignored) {}
+		}
+		if (reportDate == null) {
+			System.out.println("No modified M_CA6 Table 2 record available for verification.");
+			return;
+		}
+		System.out.println("M_CA6 Table 2 Report Date : " + reportDate);
+
+		String cols = buildMCA6Table2ColumnList();
+		String sel = buildMCA6Table2SelectList();
+
+		String updateSummarySql = "UPDATE BRRS_M_CA6_SUMMARYTABLE2 M SET (" + cols + ") = ("
+				+ "    SELECT " + sel + " FROM BRRS_M_CA6_MOD_SUMMARYTABLE2 S "
+				+ "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)"
+				+ ") WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+		int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+		System.out.println("M_CA6 Summary Table 2 Updated : " + summaryUpdated);
+
+		String updateDetailSql = updateSummarySql.replace("BRRS_M_CA6_SUMMARYTABLE2", "BRRS_M_CA6_DETAILTABLE2");
+		int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+		System.out.println("M_CA6 Detail Table 2 Updated : " + detailUpdated);
+
+		String updateModSql = "UPDATE BRRS_M_CA6_MOD_SUMMARYTABLE2 SET ENTITY_FLG='Y', MODIFY_FLG='N' WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+		int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+		System.out.println("M_CA6 MOD Table 2 Updated : " + modUpdated);
+		System.out.println("M_CA6 Table 2 Verification and Transfer Completed Successfully");
+	}
+
+	private static String buildMCA6Table1ColumnList() {
+		StringBuilder sb = new StringBuilder();
+		int[] rows = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24 };
+		for (int r : rows) {
+			sb.append("R").append(r).append("_CALENDAR_YEAR, ");
+			sb.append("R").append(r).append("_CAP, ");
+			sb.append("R").append(r).append("_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, ");
+			sb.append("R").append(r).append("_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, ");
+		}
+		sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		return sb.toString();
+	}
+
+	private static String buildMCA6Table1SelectList() {
+		StringBuilder sb = new StringBuilder();
+		int[] rows = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24 };
+		for (int r : rows) {
+			sb.append("S.R").append(r).append("_CALENDAR_YEAR, ");
+			sb.append("S.R").append(r).append("_CAP, ");
+			sb.append("S.R").append(r).append("_CAP_ON_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, ");
+			sb.append("S.R").append(r).append("_AMT_ELIGIBLE_FOR_PHASEOUT_TREATMENT, ");
+		}
+		sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		return sb.toString();
+	}
+
+	private static String buildMCA6Table2ColumnList() {
+		StringBuilder sb = new StringBuilder();
+		int[] rows1 = { 28, 29, 30, 31, 32, 33, 34 };
+		for (int r : rows1) {
+			sb.append("R").append(r).append("_PRODUCT, ");
+			sb.append("R").append(r).append("_ISSUANCE_DATE, ");
+			sb.append("R").append(r).append("_CONTRACTUAL_MATURITY_DATE, ");
+			sb.append("R").append(r).append("_EFFECTIVE_MATURITY_DATE, ");
+			sb.append("R").append(r).append("_AMOUNT, ");
+		}
+		sb.append("R35_AMOUNT, ");
+		int[] rows2 = { 40, 41, 42, 43, 44, 45, 46 };
+		for (int r : rows2) {
+			sb.append("R").append(r).append("_PRODUCT, ");
+			sb.append("R").append(r).append("_ISSUANCE_DATE, ");
+			sb.append("R").append(r).append("_CONTRACTUAL_MATURITY_DATE, ");
+			sb.append("R").append(r).append("_EFFECTIVE_MATURITY_DATE, ");
+			sb.append("R").append(r).append("_AMOUNT, ");
+		}
+		sb.append("R47_AMOUNT, ");
+		sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+		return sb.toString();
+	}
+
+	private static String buildMCA6Table2SelectList() {
+		StringBuilder sb = new StringBuilder();
+		int[] rows1 = { 28, 29, 30, 31, 32, 33, 34 };
+		for (int r : rows1) {
+			sb.append("S.R").append(r).append("_PRODUCT, ");
+			sb.append("S.R").append(r).append("_ISSUANCE_DATE, ");
+			sb.append("S.R").append(r).append("_CONTRACTUAL_MATURITY_DATE, ");
+			sb.append("S.R").append(r).append("_EFFECTIVE_MATURITY_DATE, ");
+			sb.append("S.R").append(r).append("_AMOUNT, ");
+		}
+		sb.append("S.R35_AMOUNT, ");
+		int[] rows2 = { 40, 41, 42, 43, 44, 45, 46 };
+		for (int r : rows2) {
+			sb.append("S.R").append(r).append("_PRODUCT, ");
+			sb.append("S.R").append(r).append("_ISSUANCE_DATE, ");
+			sb.append("S.R").append(r).append("_CONTRACTUAL_MATURITY_DATE, ");
+			sb.append("S.R").append(r).append("_EFFECTIVE_MATURITY_DATE, ");
+			sb.append("S.R").append(r).append("_AMOUNT, ");
+		}
+		sb.append("S.R47_AMOUNT, ");
+		sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+		return sb.toString();
+	}
+
+// =========================================================
 	// M_CA3 — Checker transfer (MOD → LIVE Summary + Detail)
 	// =========================================================
 	private void transferCA3Data(AuditServicesEntity auditRecord) {

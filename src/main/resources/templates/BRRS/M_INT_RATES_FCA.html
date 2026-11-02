@@ -655,9 +655,11 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 	<script>
 
 		function showmodify(btn) {
-			// 🔹 IDs of formula/total cells that must always stay readonly
-			$(".Show_input").not(".nonEditable").removeAttr("readonly").removeAttr("disabled");
-			const readonlyIds = [
+			// ✅ Prevent double-trigger
+			if ($(btn).is(":hidden")) return;
+
+			// ✅ List of IDs that should ALWAYS remain readonly (sum rows + totals)
+			var readonlyIds = [
 				"R10_TOTAL", "R11_TOTAL", "R12_TOTAL", "R13_TOTAL", "R14_TOTAL", "R15_TOTAL",
 				"R15_CURRENT",
 				"R15_CALL",
@@ -672,48 +674,35 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 				"R15_FD_OVER_24_MONTHS"
 			];
 
-			// 🔹 Enable editing for all inputs except formula ones
-			$(".show_input, .display-input").each(function () {
+			// ✅ Helper: force YELLOW #FFF59D with !important (beats inline bg)
+			function paintYellow(selector) {
+				if ($(selector).length) {
+					$(selector).attr("style", function (idx, s) {
+						return (s || "").replace(/background-color\s*:\s*[^;]+;?/gi, "")
+							+ ";background-color: #FFF59D !important;";
+					});
+				}
+			}
+
+			// ✅ Only paint <input> elements, never <button>
+			$("input.Show_input").each(function () {
 				if (!readonlyIds.includes(this.id)) {
-					$(this).removeAttr("readonly")
-						.removeAttr("disabled")
-						.css({"background-color": "#FFF59D"}); // light yellow for editable
+					$(this).removeAttr("readonly").removeAttr("disabled");
+					paintYellow("#" + this.id);
 				}
 			});
 
-
-
-
-			// Toggle buttons
+			// ✅ Toggle buttons
 			$("#submitButton").show();
-
-			// Show Cancel button only when Modify is clicked
 			$("#cancelRecord").show();
-
-			// Optionally hide the clicked Modify button
 			$(btn).hide();
 		}
 
 		//Cancel / Reset function
 		function cancelModify() {
 			if (confirm("Are you sure you want to cancel changes? Page will reload.")) {
-				// ✅ Only when user clicks YES
 				location.reload();
-
-				$(".Show_input").attr("readonly", true).attr("disabled", true);
-
-
-
-				$("#submitButton, #btnBack_edit").hide();
-				$("#btnBack").show();
-
-				// Hide Cancel button again
-				$("#cancelRecord").hide();
-
-				// Show all Modify buttons
-				$("#addRecord").show();
 			}
-			// ❌ If user clicks CANCEL, nothing happens
 		}
 
 
@@ -818,144 +807,121 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 		// This function is for closing the modal after an action is complete.
 		// It hides the result and loader modals and reloads the page.
 		function closemodel() {
-			$("#resultModal").modal("hide");
+			const modalElement = document.getElementById('resultModal');
+			const modal = bootstrap.Modal.getInstance(modalElement);
+
+			if (modal) {
+				modal.hide();
+			} else {
+				$("#resultModal").modal("hide");
+			}
 			$('#loader').modal('hide');
 
-			if (isResubmissionUpdate) {
-				return;
-			}
+			const message = document.getElementById("resultModalBody") ? document.getElementById("resultModalBody").innerText.toLowerCase() : "";
 
-			// Only reload if not from Details modal
-			if (!isDetailsModal) {
-				setTimeout(function () {
-					location.reload();
-				}, 300);
+			if (message.includes("resubmission")) {
+				window.location.href = document.referrer;
 			} else {
-				// reset flag for next modal usage
-				isDetailsModal = false;
+				location.reload();
 			}
 		}
 
 		function fileuploads(btn) {
 
-			var asondate = btn.getAttribute("data-todate");
-			const type = btn.getAttribute("data-type");
+			try {
 
-			isResubmissionUpdate =
-				(type && type.toUpperCase() === 'RESUB');
-
-			$('#loader').modal('show');
-
-			// ✅ calculations
-			calculateAllTotals();
-
-			// ✅ remove commas
-			$("#fileupload input[type='text']").each(function () {
-
-				var val = $(this).val();
-
-				if (val && val.includes(",")) {
-
-					$(this).val(val.replace(/,/g, ''));
+				let asondate = btn.getAttribute("data-todate") || btn.getAttribute("data-asondate") || $("#asondate").val();
+				if (asondate && asondate.includes("-")) {
+					const parts = asondate.split("-");
+					if (parts[0].length === 4) {
+						asondate = parts[2] + "/" + parts[1] + "/" + parts[0];
+					} else {
+						asondate = asondate.replace(/-/g, "/");
+					}
 				}
-			});
 
-			// ✅ validation
-			if (!$("#fileupload").valid()) {
+				$('#loader').modal('show');
 
-				$('#loader').modal('hide');
+				// Step 1: Calculate totals
+				if (typeof calculateAllTotals === 'function') {
+					calculateAllTotals();
+				}
 
-				return;
-			}
-
-			// ✅ SERIALIZE STRING
-			var serializedData = $("#fileupload").serialize();
-
-			console.log("Serialized Data :", serializedData);
-
-			// ✅ FORMDATA
-			const formData = new FormData();
-
-			formData.append("asondate", asondate);
-			formData.append("type", type);
-
-			// ✅ append serialize data also
-			formData.append("serializedData", serializedData);
-
-			// ✅ append all inputs using ID
-			$('#fileupload')
-				.find(':input[id]')
-				.each(function () {
-
-					formData.append(this.id, $(this).val());
+				// Remove commas
+				$("#fileupload input[type='text']").each(function () {
+					const val = $(this).val();
+					if (val && val.includes(",")) {
+						$(this).val(val.replace(/,/g, ''));
+					}
 				});
 
-			console.log("✅ FormData appended successfully");
-
-			// ✅ API URL
-			let apiUrl = './INTRATESFCAupdateAll';
-
-			if (type && type.toUpperCase() === 'RESUB') {
-
-				apiUrl = './UpdateM_INT_RATES_FCA_ReSub';
-			}
-
-			// ✅ AJAX
-			$.ajax({
-
-				url: apiUrl,
-
-				type: 'POST',
-
-				data: formData,
-
-				processData: false,
-
-				contentType: false,
-
-				dataType: 'text',
-
-				success: function (response) {
-
-					$("#resultModalLabel").text("BRRS");
-
-					$("#resultModalBody").text(response);
-
-					$("#resultModal").modal("show");
-
-					$("#resultModal")
-						.off("hidden.bs.modal")
-						.on("hidden.bs.modal", function () {
-
-							if (isResubmissionUpdate) {
-
-								window.location.href = previousUrl
-									? previousUrl
-									: "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
-							}
-						});
-				},
-
-				error: function (jqXHR) {
-
-					console.log("Error response:", jqXHR.responseText);
-
-					$("#resultModalLabel").text("Error");
-
-					$("#resultModalBody").text(
-						"Update failed. Check console for details."
-					);
-
-					$("#resultModal").modal("show");
-				},
-
-				complete: function () {
-
+				if (typeof $("#fileupload").valid === 'function' && !$("#fileupload").valid()) {
 					$('#loader').modal('hide');
+					return;
 				}
-			});
 
-			console.log("✅ AJAX executed successfully");
+				// Get type from URL
+				const urlParams = new URLSearchParams(window.location.search);
+				const urlType = urlParams.get("type") || btn.getAttribute("data-type") || '';
+
+				const isResub = urlType && urlType.toUpperCase() === 'RESUB';
+
+				// ✅ Use SERIALIZE (NOT FormData) - identical to Q_STAFF
+				const formData =
+					$('#fileupload').serialize()
+					+ '&asondate=' + encodeURIComponent(asondate || '')
+					+ '&type=' + encodeURIComponent(urlType || '');
+
+				console.log("✅ Form data prepared:", formData);
+
+				let apiUrl = './INTRATESFCAupdateAll';
+				if (isResub) {
+					apiUrl = './UpdateM_INT_RATES_FCA_ReSub';
+				}
+
+				$.ajax({
+					url: apiUrl,
+					type: 'POST',
+					data: formData,
+					dataType: 'text',
+
+					success: function (response) {
+						$("#resultModalLabel").text("BRRS");
+						$("#resultModalBody").text(response);
+						$("#resultModal").modal("show");
+
+						$("#resultModal")
+							.off("hidden.bs.modal")
+							.on("hidden.bs.modal", function () {
+								if (isResub) {
+									window.location.href =
+										window.previousUrl
+											? window.previousUrl
+											: "/BRRS/Resubmission?rptcode=M_INT_RATES_FCA";
+								}
+							});
+					},
+
+					error: function (jqXHR) {
+						console.log("Error response:", jqXHR.responseText);
+
+						$("#resultModalLabel").text("Error");
+						$("#resultModalBody").text(
+							"Update failed: " +
+							(jqXHR.responseText || "Unknown error")
+						);
+						$("#resultModal").modal("show");
+					},
+
+					complete: function () {
+						$('#loader').modal('hide');
+					}
+				});
+
+			} catch (error) {
+				$('#loader').modal('hide');
+				console.error("Error during file upload:", error);
+			}
 		}
 	</script>
 
@@ -1137,7 +1103,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 					<div class="row">
 						<div class="col-sm-12">
 							<form action="#" method="POST" id="fileupload">
-								<input type="hidden" name="asondate" id="asondate" th:value="${asondate}" />
+								<input type="hidden" id="asondate" th:value="${asondate}" />
 								<div class="table-wrapper table-responsive scrollable-table-container"
 									style="border-right: 1px solid #dee2e6; ">
 									<table
@@ -1226,7 +1192,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														  th:value="${report.R10_CURRENT ?: '0'}"
-														id="R10_CURRENT" name="R10_C1_CURRENT"
+														id="R10_CURRENT" name="R10_CURRENT"
 														style="background-color: #FFFFFF; height: 28px;  border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1234,7 +1200,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														 th:value="${report.R10_CALL ?: '0'}"
-														id="R10_CALL" name="R10_C2_CALL"
+														id="R10_CALL" name="R10_CALL"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1242,7 +1208,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 													 th:value="${report.R10_SAVINGS ?: '0'}"
-														id="R10_SAVINGS" name="R10_C3_SAVINGS"
+														id="R10_SAVINGS" name="R10_SAVINGS"
 														style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1250,7 +1216,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														 th:value="${report.R10_NOTICE_0_31_DAYS ?: '0'}"
-														id="R10_NOTICE_0_31_DAYS" name="R10_C4_NOTICE_0_31_DAYS"
+														id="R10_NOTICE_0_31_DAYS" name="R10_NOTICE_0_31_DAYS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1258,7 +1224,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 													 th:value="${report.R10_NOTICE_32_88_DAYS ?: '0'}"
-														id="R10_NOTICE_32_88_DAYS" name="R10_C5_NOTICE_32_88_DAYS"
+														id="R10_NOTICE_32_88_DAYS" name="R10_NOTICE_32_88_DAYS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1266,7 +1232,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_91_DEPOSIT_DAY ?: '0'}"
-														id="R10_91_DEPOSIT_DAY" name="R10_C6_91_DEPOSIT_DAY"
+														id="R10_91_DEPOSIT_DAY" name="R10_91_DEPOSIT_DAY"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1274,7 +1240,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FD_1_6_MONTHS ?: '0'}"
-														id="R10_FD_1_6_MONTHS" name="R10_C7_FD_1_6_MONTHS"
+														id="R10_FD_1_6_MONTHS" name="R10_FD_1_6_MONTHS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1282,7 +1248,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FD_7_12_MONTHS ?: '0'}"
-														id="R10_FD_7_12_MONTHS" name="R10_C8_FD_7_12_MONTHS"
+														id="R10_FD_7_12_MONTHS" name="R10_FD_7_12_MONTHS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1290,7 +1256,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FD_13_18_MONTHS ?: '0'}"
-														id="R10_FD_13_18_MONTHS" name="R10_C9_FD_13_18_MONTHS"
+														id="R10_FD_13_18_MONTHS" name="R10_FD_13_18_MONTHS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1298,7 +1264,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FD_19_24_MONTHS ?: '0'}"
-														id="R10_FD_19_24_MONTHS" name="R10_C10_FD_19_24_MONTHS"
+														id="R10_FD_19_24_MONTHS" name="R10_FD_19_24_MONTHS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1306,7 +1272,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_FD_OVER_24_MONTHS ?: '0'}"
-														id="R10_FD_OVER_24_MONTHS" name="R10_C11_FD_OVER_24_MONTHS"
+														id="R10_FD_OVER_24_MONTHS" name="R10_FD_OVER_24_MONTHS"
 														style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1314,7 +1280,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 													style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 													<input class="display-input Show_input" type="text"
 														th:value="${report.R10_TOTAL ?: '0'}"
-														id="R10_TOTAL" name="R10_C12_TOTAL"
+														id="R10_TOTAL" name="R10_TOTAL"
 														style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
@@ -1329,7 +1295,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_CURRENT ?: '0'}"
-												           id="R11_CURRENT" name="R11_C1_CURRENT"
+												           id="R11_CURRENT" name="R11_CURRENT"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1338,7 +1304,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_CALL ?: '0'}"
-												           id="R11_CALL" name="R11_C2_CALL"
+												           id="R11_CALL" name="R11_CALL"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1347,7 +1313,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_SAVINGS ?: '0'}"
-												           id="R11_SAVINGS" name="R11_C3_SAVINGS"
+												           id="R11_SAVINGS" name="R11_SAVINGS"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1356,7 +1322,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_NOTICE_0_31_DAYS ?: '0'}"
-												           id="R11_NOTICE_0_31_DAYS" name="R11_C4_NOTICE_0_31_DAYS"
+												           id="R11_NOTICE_0_31_DAYS" name="R11_NOTICE_0_31_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1365,7 +1331,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_NOTICE_32_88_DAYS ?: '0'}"
-												           id="R11_NOTICE_32_88_DAYS" name="R11_C5_NOTICE_32_88_DAYS"
+												           id="R11_NOTICE_32_88_DAYS" name="R11_NOTICE_32_88_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1374,7 +1340,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_91_DEPOSIT_DAY ?: '0'}"
-												           id="R11_91_DEPOSIT_DAY" name="R11_C6_91_DEPOSIT_DAY"
+												           id="R11_91_DEPOSIT_DAY" name="R11_91_DEPOSIT_DAY"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1383,7 +1349,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_FD_1_6_MONTHS ?: '0'}"
-												           id="R11_FD_1_6_MONTHS" name="R11_C7_FD_1_6_MONTHS"
+												           id="R11_FD_1_6_MONTHS" name="R11_FD_1_6_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1392,7 +1358,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_FD_7_12_MONTHS ?: '0'}"
-												           id="R11_FD_7_12_MONTHS" name="R11_C8_FD_7_12_MONTHS"
+												           id="R11_FD_7_12_MONTHS" name="R11_FD_7_12_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1401,7 +1367,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_FD_13_18_MONTHS ?: '0'}"
-												           id="R11_FD_13_18_MONTHS" name="R11_C9_FD_13_18_MONTHS"
+												           id="R11_FD_13_18_MONTHS" name="R11_FD_13_18_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1410,7 +1376,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_FD_19_24_MONTHS ?: '0'}"
-												           id="R11_FD_19_24_MONTHS" name="R11_C10_FD_19_24_MONTHS"
+												           id="R11_FD_19_24_MONTHS" name="R11_FD_19_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1419,7 +1385,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_FD_OVER_24_MONTHS ?: '0'}"
-												           id="R11_FD_OVER_24_MONTHS" name="R11_C11_FD_OVER_24_MONTHS"
+												           id="R11_FD_OVER_24_MONTHS" name="R11_FD_OVER_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1428,7 +1394,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R11_TOTAL ?: '0'}"
-												           id="R11_TOTAL" name="R11_C12_TOTAL"
+												           id="R11_TOTAL" name="R11_TOTAL"
 												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1443,7 +1409,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_CURRENT ?: '0'}"
-												           id="R12_CURRENT" name="R12_C1_CURRENT"
+												           id="R12_CURRENT" name="R12_CURRENT"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1452,7 +1418,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_CALL ?: '0'}"
-												           id="R12_CALL" name="R12_C2_CALL"
+												           id="R12_CALL" name="R12_CALL"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1461,7 +1427,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_SAVINGS ?: '0'}"
-												           id="R12_SAVINGS" name="R12_C3_SAVINGS"
+												           id="R12_SAVINGS" name="R12_SAVINGS"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1470,7 +1436,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_NOTICE_0_31_DAYS ?: '0'}"
-												           id="R12_NOTICE_0_31_DAYS" name="R12_C4_NOTICE_0_31_DAYS"
+												           id="R12_NOTICE_0_31_DAYS" name="R12_NOTICE_0_31_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1479,7 +1445,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_NOTICE_32_88_DAYS ?: '0'}"
-												           id="R12_NOTICE_32_88_DAYS" name="R12_C5_NOTICE_32_88_DAYS"
+												           id="R12_NOTICE_32_88_DAYS" name="R12_NOTICE_32_88_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1488,7 +1454,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_91_DEPOSIT_DAY ?: '0'}"
-												           id="R12_91_DEPOSIT_DAY" name="R12_C6_91_DEPOSIT_DAY"
+												           id="R12_91_DEPOSIT_DAY" name="R12_91_DEPOSIT_DAY"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1497,7 +1463,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_FD_1_6_MONTHS ?: '0'}"
-												           id="R12_FD_1_6_MONTHS" name="R12_C7_FD_1_6_MONTHS"
+												           id="R12_FD_1_6_MONTHS" name="R12_FD_1_6_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1506,7 +1472,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_FD_7_12_MONTHS ?: '0'}"
-												           id="R12_FD_7_12_MONTHS" name="R12_C8_FD_7_12_MONTHS"
+												           id="R12_FD_7_12_MONTHS" name="R12_FD_7_12_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1515,7 +1481,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_FD_13_18_MONTHS ?: '0'}"
-												           id="R12_FD_13_18_MONTHS" name="R12_C9_FD_13_18_MONTHS"
+												           id="R12_FD_13_18_MONTHS" name="R12_FD_13_18_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1524,7 +1490,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_FD_19_24_MONTHS ?: '0'}"
-												           id="R12_FD_19_24_MONTHS" name="R12_C10_FD_19_24_MONTHS"
+												           id="R12_FD_19_24_MONTHS" name="R12_FD_19_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1533,7 +1499,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_FD_OVER_24_MONTHS ?: '0'}"
-												           id="R12_FD_OVER_24_MONTHS" name="R12_C11_FD_OVER_24_MONTHS"
+												           id="R12_FD_OVER_24_MONTHS" name="R12_FD_OVER_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1542,7 +1508,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R12_TOTAL ?: '0'}"
-												           id="R12_TOTAL" name="R12_C12_TOTAL"
+												           id="R12_TOTAL" name="R12_TOTAL"
 												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1557,7 +1523,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_CURRENT ?: '0'}"
-												           id="R13_CURRENT" name="R13_C1_CURRENT"
+												           id="R13_CURRENT" name="R13_CURRENT"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1566,7 +1532,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_CALL ?: '0'}"
-												           id="R13_CALL" name="R13_C2_CALL"
+												           id="R13_CALL" name="R13_CALL"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1575,7 +1541,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_SAVINGS ?: '0'}"
-												           id="R13_SAVINGS" name="R13_C3_SAVINGS"
+												           id="R13_SAVINGS" name="R13_SAVINGS"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1584,7 +1550,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_NOTICE_0_31_DAYS ?: '0'}"
-												           id="R13_NOTICE_0_31_DAYS" name="R13_C4_NOTICE_0_31_DAYS"
+												           id="R13_NOTICE_0_31_DAYS" name="R13_NOTICE_0_31_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1593,7 +1559,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_NOTICE_32_88_DAYS ?: '0'}"
-												           id="R13_NOTICE_32_88_DAYS" name="R13_C5_NOTICE_32_88_DAYS"
+												           id="R13_NOTICE_32_88_DAYS" name="R13_NOTICE_32_88_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1602,7 +1568,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_91_DEPOSIT_DAY ?: '0'}"
-												           id="R13_91_DEPOSIT_DAY" name="R13_C6_91_DEPOSIT_DAY"
+												           id="R13_91_DEPOSIT_DAY" name="R13_91_DEPOSIT_DAY"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1611,7 +1577,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_FD_1_6_MONTHS ?: '0'}"
-												           id="R13_FD_1_6_MONTHS" name="R13_C7_FD_1_6_MONTHS"
+												           id="R13_FD_1_6_MONTHS" name="R13_FD_1_6_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1620,7 +1586,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_FD_7_12_MONTHS ?: '0'}"
-												           id="R13_FD_7_12_MONTHS" name="R13_C8_FD_7_12_MONTHS"
+												           id="R13_FD_7_12_MONTHS" name="R13_FD_7_12_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1629,7 +1595,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_FD_13_18_MONTHS ?: '0'}"
-												           id="R13_FD_13_18_MONTHS" name="R13_C9_FD_13_18_MONTHS"
+												           id="R13_FD_13_18_MONTHS" name="R13_FD_13_18_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1638,7 +1604,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_FD_19_24_MONTHS ?: '0'}"
-												           id="R13_FD_19_24_MONTHS" name="R13_C10_FD_19_24_MONTHS"
+												           id="R13_FD_19_24_MONTHS" name="R13_FD_19_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1647,7 +1613,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_FD_OVER_24_MONTHS ?: '0'}"
-												           id="R13_FD_OVER_24_MONTHS" name="R13_C11_FD_OVER_24_MONTHS"
+												           id="R13_FD_OVER_24_MONTHS" name="R13_FD_OVER_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1656,7 +1622,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R13_TOTAL ?: '0'}"
-												           id="R13_TOTAL" name="R13_C12_TOTAL"
+												           id="R13_TOTAL" name="R13_TOTAL"
 												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1671,7 +1637,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_CURRENT ?: '0'}"
-												           id="R14_CURRENT" name="R14_C1_CURRENT"
+												           id="R14_CURRENT" name="R14_CURRENT"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1680,7 +1646,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_CALL ?: '0'}"
-												           id="R14_CALL" name="R14_C2_CALL"
+												           id="R14_CALL" name="R14_CALL"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1689,7 +1655,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_SAVINGS ?: '0'}"
-												           id="R14_SAVINGS" name="R14_C3_SAVINGS"
+												           id="R14_SAVINGS" name="R14_SAVINGS"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1698,7 +1664,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_NOTICE_0_31_DAYS ?: '0'}"
-												           id="R14_NOTICE_0_31_DAYS" name="R14_C4_NOTICE_0_31_DAYS"
+												           id="R14_NOTICE_0_31_DAYS" name="R14_NOTICE_0_31_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1707,7 +1673,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_NOTICE_32_88_DAYS ?: '0'}"
-												           id="R14_NOTICE_32_88_DAYS" name="R14_C5_NOTICE_32_88_DAYS"
+												           id="R14_NOTICE_32_88_DAYS" name="R14_NOTICE_32_88_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1716,7 +1682,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_91_DEPOSIT_DAY ?: '0'}"
-												           id="R14_91_DEPOSIT_DAY" name="R14_C6_91_DEPOSIT_DAY"
+												           id="R14_91_DEPOSIT_DAY" name="R14_91_DEPOSIT_DAY"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1725,7 +1691,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_FD_1_6_MONTHS ?: '0'}"
-												           id="R14_FD_1_6_MONTHS" name="R14_C7_FD_1_6_MONTHS"
+												           id="R14_FD_1_6_MONTHS" name="R14_FD_1_6_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1734,7 +1700,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_FD_7_12_MONTHS ?: '0'}"
-												           id="R14_FD_7_12_MONTHS" name="R14_C8_FD_7_12_MONTHS"
+												           id="R14_FD_7_12_MONTHS" name="R14_FD_7_12_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1743,7 +1709,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_FD_13_18_MONTHS ?: '0'}"
-												           id="R14_FD_13_18_MONTHS" name="R14_C9_FD_13_18_MONTHS"
+												           id="R14_FD_13_18_MONTHS" name="R14_FD_13_18_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1752,7 +1718,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_FD_19_24_MONTHS ?: '0'}"
-												           id="R14_FD_19_24_MONTHS" name="R14_C10_FD_19_24_MONTHS"
+												           id="R14_FD_19_24_MONTHS" name="R14_FD_19_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1761,7 +1727,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_FD_OVER_24_MONTHS ?: '0'}"
-												           id="R14_FD_OVER_24_MONTHS" name="R14_C11_FD_OVER_24_MONTHS"
+												           id="R14_FD_OVER_24_MONTHS" name="R14_FD_OVER_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1770,7 +1736,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R14_TOTAL ?: '0'}"
-												           id="R14_TOTAL" name="R14_C12_TOTAL"
+												           id="R14_TOTAL" name="R14_TOTAL"
 												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1785,7 +1751,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_CURRENT ?: '0'}"
-												           id="R15_CURRENT" name="R15_C1_CURRENT"
+												           id="R15_CURRENT" name="R15_CURRENT"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1794,7 +1760,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_CALL ?: '0'}"
-												           id="R15_CALL" name="R15_C2_CALL"
+												           id="R15_CALL" name="R15_CALL"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1803,7 +1769,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_SAVINGS ?: '0'}"
-												           id="R15_SAVINGS" name="R15_C3_SAVINGS"
+												           id="R15_SAVINGS" name="R15_SAVINGS"
 												           style="background-color: #FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1812,7 +1778,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_NOTICE_0_31_DAYS ?: '0'}"
-												           id="R15_NOTICE_0_31_DAYS" name="R15_C4_NOTICE_0_31_DAYS"
+												           id="R15_NOTICE_0_31_DAYS" name="R15_NOTICE_0_31_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1821,7 +1787,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_NOTICE_32_88_DAYS ?: '0'}"
-												           id="R15_NOTICE_32_88_DAYS" name="R15_C5_NOTICE_32_88_DAYS"
+												           id="R15_NOTICE_32_88_DAYS" name="R15_NOTICE_32_88_DAYS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1830,7 +1796,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_91_DEPOSIT_DAY ?: '0'}"
-												           id="R15_91_DEPOSIT_DAY" name="R15_C6_91_DEPOSIT_DAY"
+												           id="R15_91_DEPOSIT_DAY" name="R15_91_DEPOSIT_DAY"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1839,7 +1805,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_FD_1_6_MONTHS ?: '0'}"
-												           id="R15_FD_1_6_MONTHS" name="R15_C7_FD_1_6_MONTHS"
+												           id="R15_FD_1_6_MONTHS" name="R15_FD_1_6_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1848,7 +1814,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_FD_7_12_MONTHS ?: '0'}"
-												           id="R15_FD_7_12_MONTHS" name="R15_C8_FD_7_12_MONTHS"
+												           id="R15_FD_7_12_MONTHS" name="R15_FD_7_12_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1857,7 +1823,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_FD_13_18_MONTHS ?: '0'}"
-												           id="R15_FD_13_18_MONTHS" name="R15_C9_FD_13_18_MONTHS"
+												           id="R15_FD_13_18_MONTHS" name="R15_FD_13_18_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1866,7 +1832,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_FD_19_24_MONTHS ?: '0'}"
-												           id="R15_FD_19_24_MONTHS" name="R15_C10_FD_19_24_MONTHS"
+												           id="R15_FD_19_24_MONTHS" name="R15_FD_19_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1875,7 +1841,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color:#FFFFFF; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_FD_OVER_24_MONTHS ?: '0'}"
-												           id="R15_FD_OVER_24_MONTHS" name="R15_C11_FD_OVER_24_MONTHS"
+												           id="R15_FD_OVER_24_MONTHS" name="R15_FD_OVER_24_MONTHS"
 												           style="background-color:#FFFFFF; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1884,7 +1850,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 												    style="background-color: rgb(107, 122, 143); color: white; padding-left: 20px; font-weight: bold; text-align: right;">
 												    <input class="display-input Show_input" type="text"
 												           th:value="${report.R15_TOTAL ?: '0'}"
-												           id="R15_TOTAL" name="R15_C12_TOTAL"
+												           id="R15_TOTAL" name="R15_TOTAL"
 												           style="background-color: rgb(107, 122, 143); color: white; height: 28px; border-color: transparent; text-align: right;"
 												           readonly />
 												</td>
@@ -1900,7 +1866,7 @@ PURPOSE		: INT_RATES_FCA BRRSREPORT
 								<div style="text-align: center; margin-top: 10px;">
 
 									<button id="submitButton" type="button" class="custom-tab-btn Show_input"
-										form="fileupload" th:attr="data-todate=${asondate}, data-type=${type}"
+										form="fileupload" th:attr="data-todate=${asondate}, data-asondate=${asondate}, data-type=${type}"
 										onclick="fileuploads(this);" style="display: none;">
 										Submit</button>
 								</div>
