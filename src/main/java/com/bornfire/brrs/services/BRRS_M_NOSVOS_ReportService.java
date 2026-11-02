@@ -202644,640 +202644,564 @@ public class BRRS_M_NOSVOS_ReportService {
 		return cal.getTime();
 	}
 
-	// ================================================================
-	// ======================== UPDATE REPORTS =========================
-	// ================================================================
 
 	// ================================================================
-	// UPDATE P1 - NOSTRO
+	// NOSVOS P1, P2, P3, P4, P5 - SINGLE UPDATE METHOD
 	// ================================================================
 
 	@Transactional
-	public void updateReport(BrrsMNosvosP1 request1) {
-		try {
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request1.getREPORT_DATE());
+	public void updateNosvosReport(Object request1) {
 
-			List<BrrsMNosvosP1> records = p1_getDataByDate(request1.getREPORT_DATE());
+	    try {
 
-			if (records == null || records.isEmpty()) {
-				throw new RuntimeException("Record not found for REPORT_DATE : " + request1.getREPORT_DATE());
-			}
+	        logger.info("Came to NOSVOS update service");
 
-			BrrsMNosvosP1 existing = records.get(0);
-			BrrsMNosvosP1 oldcopy = new BrrsMNosvosP1();
-			BeanUtils.copyProperties(existing, oldcopy);
+	        if (request1 == null) {
+	            throw new RuntimeException("Request cannot be null");
+	        }
 
-			// Copy all R1-R101 fields using reflection
-			String[] p1Fields = { "NAME_OF_BANK_AND_COUNTRY_NOSTRO", "TYPE_OF_ACCOUNT_NOSTRO", "PURPOSE_NOSTRO",
-					"CURRENCY_NOSTRO", "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO", "RISK_WEIGHT_NOSTRO",
-					"AMOUNT_DEMAND_NOSTRO", "AMOUNT_TIME_NOSTRO", "RISK_WEIGHTED_AMOUNT_NOSTRO" };
-			copyFieldsWithReflection(request1, existing, 101, p1Fields);
+	        Date reportDate = (Date) getValue(
+	            request1, "getREPORT_DATE"
+	        );
 
-			String[] totalFields = { "TOTAL_AMOUNT_DEMAND_NOSTRO", "TOTAL_AMOUNT_TIME_NOSTRO",
-					"TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO" };
-			copyTotalFieldsWithReflection(request1, existing, totalFields);
+	        if (reportDate == null) {
+	            throw new RuntimeException("REPORT_DATE cannot be null");
+	        }
 
-			String changes = auditService.getChanges(oldcopy, request1);
+	        Class<?> entityClass = request1.getClass();
 
-			if (!changes.isEmpty()) {
-				// ✅ FIXED: Build dynamic UPDATE query with ALL fields
-				StringBuilder sql = new StringBuilder("UPDATE BRRS_M_NOSVOS_P1 SET ");
-				List<Object> params = new ArrayList<>();
+	        List<?> records;
 
-				// Add all R1-R101 fields
-				for (int i = 1; i <= 101; i++) {
-					for (String field : p1Fields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP1.class.getMethod("getR" + i + "_" + field);
-							Object value = getter.invoke(request1);
-							params.add(value);
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
+	        String tableName;
+	        String detailTable;
+	        String screenName;
 
-				// Add R101 Total fields
-				for (String field : totalFields) {
-					sql.append("R101_").append(field).append("=?, ");
-					try {
-						Method getter = BrrsMNosvosP1.class.getMethod("getR101_" + field);
-						Object value = getter.invoke(request1);
-						params.add(value);
-					} catch (Exception e) {
-						params.add(null);
-					}
-				}
+	        String[] fields = null;
+	        String[] totalFields = null;
+	        String[] fromFields = null;
+	        String[] toFields = null;
 
-				// Add common fields
-				sql.append("REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ");
-				sql.append("ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? ");
-				sql.append("WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+	        // ========================================================
+	        // P1 - NOSTRO
+	        // ========================================================
 
-				params.add(request1.getREPORT_FREQUENCY());
-				params.add(request1.getREPORT_CODE());
-				params.add(request1.getREPORT_DESC());
-				params.add(request1.getENTITY_FLG());
-				params.add(request1.getMODIFY_FLG());
-				params.add(request1.getDEL_FLG());
-				params.add(request1.getREPORT_DATE());
+	        if (request1 instanceof BrrsMNosvosP1) {
 
-				int count = jdbcTemplate.update(sql.toString(), params.toArray());
+	            records = p1_getDataByDate(reportDate);
 
-				if (count > 0) {
-					auditService.compareEntitiesmanual(oldcopy, request1, request1.getREPORT_DATE().toString(),
-							"M NOSVOS P1 Screen", "BRRS_M_NOSVOS_P1");
+	            tableName = "BRRS_M_NOSVOS_P1";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P1";
+	            screenName = "M NOSVOS P1 Screen";
 
-					logger.info("Audit completed for REPORT_DATE {}", request1.getREPORT_DATE());
-					logger.info("NOSVOS P1 Updated Successfully. Rows Updated: {}", count);
+	            fields = new String[] {
+	                "NAME_OF_BANK_AND_COUNTRY_NOSTRO",
+	                "TYPE_OF_ACCOUNT_NOSTRO",
+	                "PURPOSE_NOSTRO",
+	                "CURRENCY_NOSTRO",
+	                "SOVEREIGN_RATING_AAA_AA_A1_NOSTRO",
+	                "RISK_WEIGHT_NOSTRO",
+	                "AMOUNT_DEMAND_NOSTRO",
+	                "AMOUNT_TIME_NOSTRO",
+	                "RISK_WEIGHTED_AMOUNT_NOSTRO"
+	            };
 
-					BrrsMNosvosP1Detail detail = new BrrsMNosvosP1Detail();
-					BeanUtils.copyProperties(request1, detail);
-					insertP1Detail(detail);
-				}
-			} else {
-				logger.info("No changes detected for REPORT_DATE {}", request1.getREPORT_DATE());
-			}
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO",
+	                "TOTAL_AMOUNT_TIME_NOSTRO",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO"
+	            };
 
-		} catch (Exception e) {
-			logger.error("Error while updating NOSVOS P1 Report", e);
-			throw new RuntimeException("Error while updating NOSVOS P1 Report", e);
-		}
+	        }
+
+	        // ========================================================
+	        // P2 - VOSTRO
+	        // ========================================================
+
+	        else if (request1 instanceof BrrsMNosvosP2) {
+
+	            records = p2_getDataByDate(reportDate);
+
+	            tableName = "BRRS_M_NOSVOS_P2";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P2";
+	            screenName = "M NOSVOS P2 Screen";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_AND_COUNTRY_VOSTRO",
+	                "TYPE_OF_ACCOUNT_VOSTRO",
+	                "PURPOSE_VOSTRO",
+	                "CURRENCY_VOSTRO",
+	                "AMOUNT_DEMAND_VOSTRO",
+	                "AMOUNT_TIME_VOSTRO"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_VOSTRO",
+	                "TOTAL_AMOUNT_TIME_VOSTRO"
+	            };
+
+	        }
+
+	        // ========================================================
+	        // P3 - NOSTRO1
+	        // ========================================================
+
+	        else if (request1 instanceof BrrsMNosvosP3) {
+
+	            records = p3_getDataByDate(reportDate);
+
+	            tableName = "BRRS_M_NOSVOS_P3";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P3";
+	            screenName = "M NOSVOS P3 Screen";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_NOSTRO1",
+	                "TYPE_OF_ACCOUNT_NOSTRO1",
+	                "PURPOSE_NOSTRO1",
+	                "CURRENCY_NOSTRO1",
+	                "SOVEREIGN_RATING_NOSTRO1",
+	                "RISK_WEIGHT_NOSTRO1",
+	                "AMOUNT_DEMAND_NOSTRO1",
+	                "AMOUNT_TIME_NOSTRO1",
+	                "RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_NOSTRO1",
+	                "TOTAL_AMOUNT_TIME_NOSTRO1",
+	                "TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1"
+	            };
+
+	        }
+
+	        // ========================================================
+	        // P4 - VOSTRO1
+	        // ========================================================
+
+	        else if (request1 instanceof BrrsMNosvosP4) {
+
+	            records = p4_getDataByDate(reportDate);
+
+	            tableName = "BRRS_M_NOSVOS_P4";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P4";
+	            screenName = "M NOSVOS P4 Screen";
+
+	            fields = new String[] {
+	                "NAME_OF_BANK_VOSTRO1",
+	                "TYPE_OF_ACCOUNT_VOSTRO1",
+	                "PURPOSE_VOSTRO1",
+	                "CURRENCY_VOSTRO1",
+	                "AMOUNT_DEMAND_VOSTRO1",
+	                "AMOUNT_TIME_VOSTRO1"
+	            };
+
+	            totalFields = new String[] {
+	                "TOTAL_AMOUNT_DEMAND_VOSTRO1",
+	                "TOTAL_AMOUNT_TIME_VOSTRO1"
+	            };
+
+	        }
+
+	        // ========================================================
+	        // P5 - DUE FROM / DUE TO DOMESTIC
+	        // ========================================================
+
+	        else if (request1 instanceof BrrsMNosvosP5) {
+
+	            records = p5_getDataByDate(reportDate);
+
+	            tableName = "BRRS_M_NOSVOS_P5";
+	            detailTable = "BRRS_M_NOSVOS_DETAIL_P5";
+	            screenName = "M NOSVOS P5 Screen";
+
+	            fromFields = new String[] {
+	                "DUE_FROM_DOMESTIC_NAME_OF_BANK",
+	                "DUE_FROM_DOMESTIC_ACCT_TYPE",
+	                "DUE_FROM_DOMESTIC_PURPOSE",
+	                "DUE_FROM_DOMESTIC_AMOUNT",
+	                "DUE_FROM_DOMESTIC_RISK_WEIGHT",
+	                "DUE_FROM_DOMESTIC_CURRENCY",
+	                "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT"
+	            };
+
+	            toFields = new String[] {
+	                "DUE_TO_DOMESTIC_NAME_OF_BANK",
+	                "DUE_TO_DOMESTIC_ACCT_TYPE",
+	                "DUE_TO_DOMESTIC_PURPOSE",
+	                "DUE_TO_DOMESTIC_AMOUNT",
+	                "DUE_TO_DOMESTIC_RISK_WEIGHT",
+	                "DUE_TO_DOMESTIC_RISK_WEIGHT_AMT"
+	            };
+
+	        } else {
+
+	            throw new RuntimeException(
+	                "Unsupported NOSVOS entity: " + entityClass.getName()
+	            );
+	        }
+
+	        // ========================================================
+	        // CHECK EXISTING RECORD
+	        // ========================================================
+
+	        if (records == null || records.isEmpty()) {
+
+	            throw new RuntimeException(
+	                "Record not found for REPORT_DATE: " + reportDate
+	            );
+	        }
+
+	        Object existing = records.get(0);
+
+	        // ========================================================
+	        // OLD COPY FOR AUDIT
+	        // ========================================================
+
+	        Object oldcopy = entityClass.newInstance();
+
+	        BeanUtils.copyProperties(existing, oldcopy);
+
+	        // ========================================================
+	        // CHECK CHANGES
+	        // ========================================================
+
+	        String changes = auditService.getChanges(
+	            oldcopy, request1
+	        );
+
+	        if (changes == null || changes.trim().isEmpty()) {
+
+	            logger.info(
+	                "No changes detected for REPORT_DATE: {}",
+	                reportDate
+	            );
+
+	            return;
+	        }
+
+	        // ========================================================
+	        // BUILD UPDATE SQL
+	        // ========================================================
+
+	        StringBuilder sql = new StringBuilder(
+	            "UPDATE " + tableName + " SET "
+	        );
+
+	        List<Object> params = new ArrayList<Object>();
+
+	        // ========================================================
+	        // P1, P2, P3, P4 FIELDS
+	        // ========================================================
+
+	        if (fields != null) {
+
+	            appendNosvosUpdateFields(
+	                sql, params, request1, fields, 1, 10
+	            );
+
+	            if (totalFields != null) {
+
+	                appendNosvosUpdateFields(
+	                    sql, params, request1, totalFields, 101, 101
+	                );
+	            }
+	        }
+
+	        // ========================================================
+	        // P5 DUE FROM FIELDS
+	        // ========================================================
+
+	        if (fromFields != null) {
+
+	            appendNosvosUpdateFields(
+	                sql, params, request1, fromFields, 1, 11
+	            );
+	        }
+
+	        // ========================================================
+	        // P5 DUE TO FIELDS
+	        // ========================================================
+
+	        if (toFields != null) {
+
+	            appendNosvosUpdateFields(
+	                sql, params, request1, toFields, 1, 8
+	            );
+	        }
+
+	        // ========================================================
+	        // COMMON FIELDS
+	        // ========================================================
+
+	        sql.append("REPORT_FREQUENCY=?, ");
+	        sql.append("REPORT_CODE=?, ");
+	        sql.append("REPORT_DESC=?, ");
+	        sql.append("ENTITY_FLG=?, ");
+	        sql.append("MODIFY_FLG=?, ");
+	        sql.append("DEL_FLG=? ");
+
+	        // ========================================================
+	        // DATE CONDITION
+	        // ========================================================
+
+	        sql.append(
+	            "WHERE REPORT_DATE >= TRUNC(?) " +
+	            "AND REPORT_DATE < TRUNC(?) + 1"
+	        );
+
+	        params.add(getValue(request1, "getREPORT_FREQUENCY"));
+	        params.add(getValue(request1, "getREPORT_CODE"));
+	        params.add(getValue(request1, "getREPORT_DESC"));
+	        params.add(getValue(request1, "getENTITY_FLG"));
+	        params.add(getValue(request1, "getMODIFY_FLG"));
+	        params.add(getValue(request1, "getDEL_FLG"));
+
+	        params.add(reportDate);
+	        params.add(reportDate);
+
+	        // ========================================================
+	        // EXECUTE UPDATE
+	        // ========================================================
+
+	        int count = jdbcTemplate.update(
+	            sql.toString(),
+	            params.toArray()
+	        );
+
+	        logger.info(
+	            "{} Updated. Rows: {}",
+	            tableName,
+	            count
+	        );
+
+	        // ========================================================
+	        // AUDIT AND DETAIL UPDATE
+	        // ========================================================
+
+	        if (count > 0) {
+
+	            auditService.compareEntitiesmanual(
+	                oldcopy,
+	                request1,
+	                reportDate.toString(),
+	                screenName,
+	                tableName
+	            );
+
+	            logger.info(
+	                "Audit completed for {}",
+	                tableName
+	            );
+
+	            updateNosvosDetail(
+	                request1,
+	                detailTable
+	            );
+
+	            logger.info(
+	                "{} Updated Successfully",
+	                tableName
+	            );
+	        }
+
+	    } catch (Exception e) {
+
+	        logger.error(
+	            "Error while updating NOSVOS report",
+	            e
+	        );
+
+	        throw new RuntimeException(
+	            "Error while updating NOSVOS report", e
+	        );
+	    }
 	}
 
-	private void insertP1Detail(BrrsMNosvosP1Detail detail) {
-		jdbcTemplate.update(
-				"INSERT INTO BRRS_M_NOSVOS_DETAIL_P1 (" + "REPORT_DATE, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				detail.getREPORT_DATE(), detail.getREPORT_FREQUENCY(), detail.getREPORT_CODE(), detail.getREPORT_DESC(),
-				detail.getENTITY_FLG(), detail.getMODIFY_FLG(), detail.getDEL_FLG());
-	}
 
 	// ================================================================
-	// UPDATE P2 - VOSTRO
+	// COMMON FIELD UPDATE BUILDER
 	// ================================================================
 
-	@Transactional
-	public void updateReport2(BrrsMNosvosP2 request1) {
-		try {
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request1.getREPORT_DATE());
+	private void appendNosvosUpdateFields(
+	        StringBuilder sql,
+	        List<Object> params,
+	        Object request,
+	        String[] fields,
+	        int startRow,
+	        int endRow) {
 
-			List<BrrsMNosvosP2> records = p2_getDataByDate(request1.getREPORT_DATE());
+	    try {
 
-			if (records == null || records.isEmpty()) {
-				throw new RuntimeException("Record not found for REPORT_DATE : " + request1.getREPORT_DATE());
-			}
+	        for (int i = startRow; i <= endRow; i++) {
 
-			BrrsMNosvosP2 existing = records.get(0);
-			BrrsMNosvosP2 oldcopy = new BrrsMNosvosP2();
-			BeanUtils.copyProperties(existing, oldcopy);
+	            for (String field : fields) {
 
-			String[] p2Fields = { "NAME_OF_BANK_AND_COUNTRY_VOSTRO", "TYPE_OF_ACCOUNT_VOSTRO", "PURPOSE_VOSTRO",
-					"CURRENCY_VOSTRO", "AMOUNT_DEMAND_VOSTRO", "AMOUNT_TIME_VOSTRO" };
-			copyFieldsWithReflection(request1, existing, 101, p2Fields);
+	                String column = "R" + i + "_" + field;
 
-			String[] totalFields = { "TOTAL_AMOUNT_DEMAND_VOSTRO", "TOTAL_AMOUNT_TIME_VOSTRO" };
-			copyTotalFieldsWithReflection(request1, existing, totalFields);
+	                Method getter = request.getClass().getMethod(
+	                    "get" + column
+	                );
 
-			String changes = auditService.getChanges(oldcopy, request1);
+	                Object value = getter.invoke(request);
 
-			if (!changes.isEmpty()) {
-				StringBuilder sql = new StringBuilder("UPDATE BRRS_M_NOSVOS_P2 SET ");
-				List<Object> params = new ArrayList<>();
+	                sql.append(column).append("=?, ");
 
-				// Add all R1-R101 fields
-				for (int i = 1; i <= 101; i++) {
-					for (String field : p2Fields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP2.class.getMethod("getR" + i + "_" + field);
-							params.add(getter.invoke(request1));
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
+	                params.add(value);
+	            }
+	        }
 
-				// Add R101 Total fields
-				for (String field : totalFields) {
-					sql.append("R101_").append(field).append("=?, ");
-					try {
-						Method getter = BrrsMNosvosP2.class.getMethod("getR101_" + field);
-						params.add(getter.invoke(request1));
-					} catch (Exception e) {
-						params.add(null);
-					}
-				}
+	    } catch (Exception e) {
 
-				// Add common fields
-				sql.append("REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ");
-				sql.append("ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? ");
-				sql.append("WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+	        logger.error(
+	            "Error building NOSVOS update fields",
+	            e
+	        );
 
-				params.add(request1.getREPORT_FREQUENCY());
-				params.add(request1.getREPORT_CODE());
-				params.add(request1.getREPORT_DESC());
-				params.add(request1.getENTITY_FLG());
-				params.add(request1.getMODIFY_FLG());
-				params.add(request1.getDEL_FLG());
-				params.add(request1.getREPORT_DATE());
-
-				int count = jdbcTemplate.update(sql.toString(), params.toArray());
-
-				if (count > 0) {
-					auditService.compareEntitiesmanual(oldcopy, request1, request1.getREPORT_DATE().toString(),
-							"M NOSVOS P2 Screen", "BRRS_M_NOSVOS_P2");
-
-					logger.info("Audit completed for REPORT_DATE {}", request1.getREPORT_DATE());
-					logger.info("NOSVOS P2 Updated Successfully. Rows Updated: {}", count);
-
-					BrrsMNosvosP2Detail detail = new BrrsMNosvosP2Detail();
-					BeanUtils.copyProperties(request1, detail);
-					insertP2Detail(detail);
-				}
-			} else {
-				logger.info("No changes detected for REPORT_DATE {}", request1.getREPORT_DATE());
-			}
-
-		} catch (Exception e) {
-			logger.error("Error while updating NOSVOS P2 Report", e);
-			throw new RuntimeException("Error while updating NOSVOS P2 Report", e);
-		}
+	        throw new RuntimeException(
+	            "Error building NOSVOS update fields", e
+	        );
+	    }
 	}
 
-	private void insertP2Detail(BrrsMNosvosP2Detail detail) {
-		jdbcTemplate.update(
-				"INSERT INTO BRRS_M_NOSVOS_DETAIL_P2 (" + "REPORT_DATE, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				detail.getREPORT_DATE(), detail.getREPORT_FREQUENCY(), detail.getREPORT_CODE(), detail.getREPORT_DESC(),
-				detail.getENTITY_FLG(), detail.getMODIFY_FLG(), detail.getDEL_FLG());
-	}
 
 	// ================================================================
-	// UPDATE P3 - NOSTRO1
+	// COMMON DETAIL TABLE UPDATE / INSERT
 	// ================================================================
 
-	@Transactional
-	public void updateReport3(BrrsMNosvosP3 request1) {
-		try {
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request1.getREPORT_DATE());
+	private void updateNosvosDetail(
+	        Object request,
+	        String detailTable) {
 
-			List<BrrsMNosvosP3> records = p3_getDataByDate(request1.getREPORT_DATE());
+	    try {
 
-			if (records == null || records.isEmpty()) {
-				throw new RuntimeException("Record not found for REPORT_DATE : " + request1.getREPORT_DATE());
-			}
+	        Date reportDate = (Date) getValue(
+	            request, "getREPORT_DATE"
+	        );
 
-			BrrsMNosvosP3 existing = records.get(0);
-			BrrsMNosvosP3 oldcopy = new BrrsMNosvosP3();
-			BeanUtils.copyProperties(existing, oldcopy);
+	        // ====================================================
+	        // CHECK EXISTING DETAIL RECORD
+	        // ====================================================
 
-			String[] p3Fields = { "NAME_OF_BANK_NOSTRO1", "TYPE_OF_ACCOUNT_NOSTRO1", "PURPOSE_NOSTRO1",
-					"CURRENCY_NOSTRO1", "SOVEREIGN_RATING_NOSTRO1", "RISK_WEIGHT_NOSTRO1", "AMOUNT_DEMAND_NOSTRO1",
-					"AMOUNT_TIME_NOSTRO1", "RISK_WEIGHTED_AMOUNT_NOSTRO1" };
-			copyFieldsWithReflection(request1, existing, 101, p3Fields);
+	        String checkSql =
+	            "SELECT COUNT(*) FROM " + detailTable +
+	            " WHERE REPORT_DATE >= TRUNC(?) " +
+	            "AND REPORT_DATE < TRUNC(?) + 1";
 
-			String[] totalFields = { "TOTAL_AMOUNT_DEMAND_NOSTRO1", "TOTAL_AMOUNT_TIME_NOSTRO1",
-					"TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1" };
-			copyTotalFieldsWithReflection(request1, existing, totalFields);
+	        Integer existingCount = jdbcTemplate.queryForObject(
+	            checkSql,
+	            Integer.class,
+	            reportDate,
+	            reportDate
+	        );
 
-			String changes = auditService.getChanges(oldcopy, request1);
+	        // ====================================================
+	        // UPDATE EXISTING RECORD
+	        // ====================================================
 
-			if (!changes.isEmpty()) {
-				StringBuilder sql = new StringBuilder("UPDATE BRRS_M_NOSVOS_P3 SET ");
-				List<Object> params = new ArrayList<>();
+	        if (existingCount != null && existingCount > 0) {
 
-				// Add all R1-R101 fields
-				for (int i = 1; i <= 101; i++) {
-					for (String field : p3Fields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP3.class.getMethod("getR" + i + "_" + field);
-							params.add(getter.invoke(request1));
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
+	            String updateSql =
+	                "UPDATE " + detailTable + " SET " +
+	                "REPORT_FREQUENCY=?, " +
+	                "REPORT_CODE=?, " +
+	                "REPORT_DESC=?, " +
+	                "ENTITY_FLG=?, " +
+	                "MODIFY_FLG=?, " +
+	                "DEL_FLG=? " +
+	                "WHERE REPORT_DATE >= TRUNC(?) " +
+	                "AND REPORT_DATE < TRUNC(?) + 1";
 
-				// Add R101 Total fields
-				for (String field : totalFields) {
-					sql.append("R101_").append(field).append("=?, ");
-					try {
-						Method getter = BrrsMNosvosP3.class.getMethod("getR101_" + field);
-						params.add(getter.invoke(request1));
-					} catch (Exception e) {
-						params.add(null);
-					}
-				}
+	            int count = jdbcTemplate.update(
+	                updateSql,
 
-				// Add common fields
-				sql.append("REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ");
-				sql.append("ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? ");
-				sql.append("WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
+	                getValue(request, "getREPORT_FREQUENCY"),
+	                getValue(request, "getREPORT_CODE"),
+	                getValue(request, "getREPORT_DESC"),
+	                getValue(request, "getENTITY_FLG"),
+	                getValue(request, "getMODIFY_FLG"),
+	                getValue(request, "getDEL_FLG"),
 
-				params.add(request1.getREPORT_FREQUENCY());
-				params.add(request1.getREPORT_CODE());
-				params.add(request1.getREPORT_DESC());
-				params.add(request1.getENTITY_FLG());
-				params.add(request1.getMODIFY_FLG());
-				params.add(request1.getDEL_FLG());
-				params.add(request1.getREPORT_DATE());
+	                reportDate,
+	                reportDate
+	            );
 
-				int count = jdbcTemplate.update(sql.toString(), params.toArray());
+	            logger.info(
+	                "Detail record updated in {}. Rows: {}",
+	                detailTable,
+	                count
+	            );
 
-				if (count > 0) {
-					auditService.compareEntitiesmanual(oldcopy, request1, request1.getREPORT_DATE().toString(),
-							"M NOSVOS P3 Screen", "BRRS_M_NOSVOS_P3");
+	        } else {
 
-					logger.info("Audit completed for REPORT_DATE {}", request1.getREPORT_DATE());
-					logger.info("NOSVOS P3 Updated Successfully. Rows Updated: {}", count);
+	            // ====================================================
+	            // INSERT NEW RECORD
+	            // ====================================================
 
-					BrrsMNosvosP3Detail detail = new BrrsMNosvosP3Detail();
-					BeanUtils.copyProperties(request1, detail);
-					insertP3Detail(detail);
-				}
-			} else {
-				logger.info("No changes detected for REPORT_DATE {}", request1.getREPORT_DATE());
-			}
+	            String insertSql =
+	                "INSERT INTO " + detailTable + " (" +
+	                "REPORT_DATE, " +
+	                "REPORT_FREQUENCY, " +
+	                "REPORT_CODE, " +
+	                "REPORT_DESC, " +
+	                "ENTITY_FLG, " +
+	                "MODIFY_FLG, " +
+	                "DEL_FLG" +
+	                ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-		} catch (Exception e) {
-			logger.error("Error while updating NOSVOS P3 Report", e);
-			throw new RuntimeException("Error while updating NOSVOS P3 Report", e);
-		}
+	            int count = jdbcTemplate.update(
+	                insertSql,
+
+	                reportDate,
+	                getValue(request, "getREPORT_FREQUENCY"),
+	                getValue(request, "getREPORT_CODE"),
+	                getValue(request, "getREPORT_DESC"),
+	                getValue(request, "getENTITY_FLG"),
+	                getValue(request, "getMODIFY_FLG"),
+	                getValue(request, "getDEL_FLG")
+	            );
+
+	            logger.info(
+	                "Detail record inserted into {}. Rows: {}",
+	                detailTable,
+	                count
+	            );
+	        }
+
+	    } catch (Exception e) {
+
+	        logger.error(
+	            "Error updating NOSVOS detail table: " + detailTable,
+	            e
+	        );
+
+	        throw new RuntimeException(
+	            "Error updating NOSVOS detail table: " + detailTable, e
+	        );
+	    }
 	}
 
-	private void insertP3Detail(BrrsMNosvosP3Detail detail) {
-		jdbcTemplate.update(
-				"INSERT INTO BRRS_M_NOSVOS_DETAIL_P3 (" + "REPORT_DATE, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				detail.getREPORT_DATE(), detail.getREPORT_FREQUENCY(), detail.getREPORT_CODE(), detail.getREPORT_DESC(),
-				detail.getENTITY_FLG(), detail.getMODIFY_FLG(), detail.getDEL_FLG());
-	}
 
 	// ================================================================
-	// UPDATE P4 - VOSTRO1
+	// COMMON GET VALUE METHOD
 	// ================================================================
 
-	@Transactional
-	public void updateReport4(BrrsMNosvosP4 request1) {
-		try {
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request1.getREPORT_DATE());
+	private Object getValue(
+	        Object obj,
+	        String methodName) {
 
-			List<BrrsMNosvosP4> records = p4_getDataByDate(request1.getREPORT_DATE());
+	    try {
 
-			if (records == null || records.isEmpty()) {
-				throw new RuntimeException("Record not found for REPORT_DATE : " + request1.getREPORT_DATE());
-			}
+	        Method method = obj.getClass().getMethod(methodName);
 
-			BrrsMNosvosP4 existing = records.get(0);
-			BrrsMNosvosP4 oldcopy = new BrrsMNosvosP4();
-			BeanUtils.copyProperties(existing, oldcopy);
+	        return method.invoke(obj);
 
-			String[] p4Fields = { "NAME_OF_BANK_VOSTRO1", "TYPE_OF_ACCOUNT_VOSTRO1", "PURPOSE_VOSTRO1",
-					"CURRENCY_VOSTRO1", "AMOUNT_DEMAND_VOSTRO1", "AMOUNT_TIME_VOSTRO1" };
-			copyFieldsWithReflection(request1, existing, 101, p4Fields);
+	    } catch (Exception e) {
 
-			String[] totalFields = { "TOTAL_AMOUNT_DEMAND_VOSTRO1", "TOTAL_AMOUNT_TIME_VOSTRO1" };
-			copyTotalFieldsWithReflection(request1, existing, totalFields);
-
-			String changes = auditService.getChanges(oldcopy, request1);
-
-			if (!changes.isEmpty()) {
-				StringBuilder sql = new StringBuilder("UPDATE BRRS_M_NOSVOS_P4 SET ");
-				List<Object> params = new ArrayList<>();
-
-				// Add all R1-R101 fields
-				for (int i = 1; i <= 101; i++) {
-					for (String field : p4Fields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP4.class.getMethod("getR" + i + "_" + field);
-							params.add(getter.invoke(request1));
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
-
-				// Add R101 Total fields
-				for (String field : totalFields) {
-					sql.append("R101_").append(field).append("=?, ");
-					try {
-						Method getter = BrrsMNosvosP4.class.getMethod("getR101_" + field);
-						params.add(getter.invoke(request1));
-					} catch (Exception e) {
-						params.add(null);
-					}
-				}
-
-				// Add common fields
-				sql.append("REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ");
-				sql.append("ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? ");
-				sql.append("WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
-
-				params.add(request1.getREPORT_FREQUENCY());
-				params.add(request1.getREPORT_CODE());
-				params.add(request1.getREPORT_DESC());
-				params.add(request1.getENTITY_FLG());
-				params.add(request1.getMODIFY_FLG());
-				params.add(request1.getDEL_FLG());
-				params.add(request1.getREPORT_DATE());
-
-				int count = jdbcTemplate.update(sql.toString(), params.toArray());
-
-				if (count > 0) {
-					auditService.compareEntitiesmanual(oldcopy, request1, request1.getREPORT_DATE().toString(),
-							"M NOSVOS P4 Screen", "BRRS_M_NOSVOS_P4");
-
-					logger.info("Audit completed for REPORT_DATE {}", request1.getREPORT_DATE());
-					logger.info("NOSVOS P4 Updated Successfully. Rows Updated: {}", count);
-
-					BrrsMNosvosP4Detail detail = new BrrsMNosvosP4Detail();
-					BeanUtils.copyProperties(request1, detail);
-					insertP4Detail(detail);
-				}
-			} else {
-				logger.info("No changes detected for REPORT_DATE {}", request1.getREPORT_DATE());
-			}
-
-		} catch (Exception e) {
-			logger.error("Error while updating NOSVOS P4 Report", e);
-			throw new RuntimeException("Error while updating NOSVOS P4 Report", e);
-		}
+	        throw new RuntimeException(
+	            "Unable to get value from method: " + methodName, e
+	        );
+	    }
 	}
 
-	private void insertP4Detail(BrrsMNosvosP4Detail detail) {
-		jdbcTemplate.update(
-				"INSERT INTO BRRS_M_NOSVOS_DETAIL_P4 (" + "REPORT_DATE, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				detail.getREPORT_DATE(), detail.getREPORT_FREQUENCY(), detail.getREPORT_CODE(), detail.getREPORT_DESC(),
-				detail.getENTITY_FLG(), detail.getMODIFY_FLG(), detail.getDEL_FLG());
-	}
-
-	// ================================================================
-	// UPDATE P5 - DUE FROM/TO DOMESTIC
-	// ================================================================
-
-	@Transactional
-	public void updateReport5(BrrsMNosvosP5 request1) {
-		try {
-			logger.info("Came to services");
-			logger.info("Report Date: {}", request1.getREPORT_DATE());
-
-			List<BrrsMNosvosP5> records = p5_getDataByDate(request1.getREPORT_DATE());
-
-			if (records == null || records.isEmpty()) {
-				throw new RuntimeException("Record not found for REPORT_DATE : " + request1.getREPORT_DATE());
-			}
-
-			BrrsMNosvosP5 existing = records.get(0);
-			BrrsMNosvosP5 oldcopy = new BrrsMNosvosP5();
-			BeanUtils.copyProperties(existing, oldcopy);
-
-			// Copy P5 fields using reflection
-			copyP5Fields(request1, existing);
-
-			String changes = auditService.getChanges(oldcopy, request1);
-
-			if (!changes.isEmpty()) {
-				StringBuilder sql = new StringBuilder("UPDATE BRRS_M_NOSVOS_P5 SET ");
-				List<Object> params = new ArrayList<>();
-
-				// Due From fields (R1-R11)
-				String[] fromFields = { "DUE_FROM_DOMESTIC_NAME_OF_BANK", "DUE_FROM_DOMESTIC_ACCT_TYPE",
-						"DUE_FROM_DOMESTIC_PURPOSE", "DUE_FROM_DOMESTIC_AMOUNT", "DUE_FROM_DOMESTIC_RISK_WEIGHT",
-						"DUE_FROM_DOMESTIC_CURRENCY", "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" };
-
-				for (int i = 1; i <= 11; i++) {
-					for (String field : fromFields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP5.class.getMethod("getR" + i + "_" + field);
-							params.add(getter.invoke(request1));
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
-
-				// Due To fields (R1-R8)
-				String[] toFields = { "DUE_TO_DOMESTIC_NAME_OF_BANK", "DUE_TO_DOMESTIC_ACCT_TYPE",
-						"DUE_TO_DOMESTIC_PURPOSE", "DUE_TO_DOMESTIC_AMOUNT", "DUE_TO_DOMESTIC_RISK_WEIGHT",
-						"DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" };
-
-				for (int i = 1; i <= 8; i++) {
-					for (String field : toFields) {
-						sql.append("R").append(i).append("_").append(field).append("=?, ");
-						try {
-							Method getter = BrrsMNosvosP5.class.getMethod("getR" + i + "_" + field);
-							params.add(getter.invoke(request1));
-						} catch (Exception e) {
-							params.add(null);
-						}
-					}
-				}
-
-				// Add common fields
-				sql.append("REPORT_FREQUENCY=?, REPORT_CODE=?, REPORT_DESC=?, ");
-				sql.append("ENTITY_FLG=?, MODIFY_FLG=?, DEL_FLG=? ");
-				sql.append("WHERE TRUNC(REPORT_DATE) = TRUNC(?)");
-
-				params.add(request1.getREPORT_FREQUENCY());
-				params.add(request1.getREPORT_CODE());
-				params.add(request1.getREPORT_DESC());
-				params.add(request1.getENTITY_FLG());
-				params.add(request1.getMODIFY_FLG());
-				params.add(request1.getDEL_FLG());
-				params.add(request1.getREPORT_DATE());
-
-				int count = jdbcTemplate.update(sql.toString(), params.toArray());
-
-				if (count > 0) {
-					auditService.compareEntitiesmanual(oldcopy, request1, request1.getREPORT_DATE().toString(),
-							"M NOSVOS P5 Screen", "BRRS_M_NOSVOS_P5");
-
-					logger.info("Audit completed for REPORT_DATE {}", request1.getREPORT_DATE());
-					logger.info("NOSVOS P5 Updated Successfully. Rows Updated: {}", count);
-
-					BrrsMNosvosP5Detail detail = new BrrsMNosvosP5Detail();
-					BeanUtils.copyProperties(request1, detail);
-					insertP5Detail(detail);
-				}
-			} else {
-				logger.info("No changes detected for REPORT_DATE {}", request1.getREPORT_DATE());
-			}
-
-		} catch (Exception e) {
-			logger.error("Error while updating NOSVOS P5 Report", e);
-			throw new RuntimeException("Error while updating NOSVOS P5 Report", e);
-		}
-	}
-
-	private void insertP5Detail(BrrsMNosvosP5Detail detail) {
-		jdbcTemplate.update(
-				"INSERT INTO BRRS_M_NOSVOS_DETAIL_P5 (" + "REPORT_DATE, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-						+ "ENTITY_FLG, MODIFY_FLG, DEL_FLG) VALUES (?, ?, ?, ?, ?, ?, ?)",
-				detail.getREPORT_DATE(), detail.getREPORT_FREQUENCY(), detail.getREPORT_CODE(), detail.getREPORT_DESC(),
-				detail.getENTITY_FLG(), detail.getMODIFY_FLG(), detail.getDEL_FLG());
-	}
-
-	// ================================================================
-	// ======================== HELPER METHODS =========================
-	// ================================================================
-
-	private void copyFieldsWithReflection(Object source, Object target, int maxRows, String[] fieldSuffixes) {
-		try {
-			for (int i = 1; i <= maxRows; i++) {
-				String prefix = "R" + i + "_";
-				for (String suffix : fieldSuffixes) {
-					String getterName = "get" + prefix + suffix;
-					String setterName = "set" + prefix + suffix;
-					try {
-						Method getter = source.getClass().getMethod(getterName);
-						Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
-						Object value = getter.invoke(source);
-						setter.invoke(target, value);
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Error copying fields using reflection", e);
-			throw new RuntimeException("Error copying fields: " + e.getMessage(), e);
-		}
-	}
-
-	private void copyTotalFieldsWithReflection(Object source, Object target, String[] totalFields) {
-		try {
-			for (String field : totalFields) {
-				String getterName = "getR101_" + field;
-				String setterName = "setR101_" + field;
-				try {
-					Method getter = source.getClass().getMethod(getterName);
-					Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
-					Object value = getter.invoke(source);
-					setter.invoke(target, value);
-				} catch (NoSuchMethodException e) {
-					continue;
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Error copying total fields", e);
-			throw new RuntimeException("Error copying total fields: " + e.getMessage(), e);
-		}
-	}
-
-	private void copyP5Fields(BrrsMNosvosP5 source, BrrsMNosvosP5 target) {
-		try {
-			// Due From fields (R1-R11)
-			String[] fromFields = { "DUE_FROM_DOMESTIC_NAME_OF_BANK", "DUE_FROM_DOMESTIC_ACCT_TYPE",
-					"DUE_FROM_DOMESTIC_PURPOSE", "DUE_FROM_DOMESTIC_AMOUNT", "DUE_FROM_DOMESTIC_RISK_WEIGHT",
-					"DUE_FROM_DOMESTIC_CURRENCY", "DUE_FROM_DOMESTIC_RISK_WEIGHT_AMT" };
-			for (int i = 1; i <= 11; i++) {
-				String prefix = "R" + i + "_";
-				for (String field : fromFields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-					try {
-						Method getter = source.getClass().getMethod(getterName);
-						Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
-						Object value = getter.invoke(source);
-						setter.invoke(target, value);
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-
-			// Due To fields (R1-R8)
-			String[] toFields = { "DUE_TO_DOMESTIC_NAME_OF_BANK", "DUE_TO_DOMESTIC_ACCT_TYPE",
-					"DUE_TO_DOMESTIC_PURPOSE", "DUE_TO_DOMESTIC_AMOUNT", "DUE_TO_DOMESTIC_RISK_WEIGHT",
-					"DUE_TO_DOMESTIC_RISK_WEIGHT_AMT" };
-			for (int i = 1; i <= 8; i++) {
-				String prefix = "R" + i + "_";
-				for (String field : toFields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-					try {
-						Method getter = source.getClass().getMethod(getterName);
-						Method setter = target.getClass().getMethod(setterName, getter.getReturnType());
-						Object value = getter.invoke(source);
-						setter.invoke(target, value);
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
-		} catch (Exception e) {
-			logger.error("Error copying P5 fields", e);
-			throw new RuntimeException("Error copying P5 fields: " + e.getMessage(), e);
-		}
-	}
-
-	private Object getValue(Object obj, String methodName) {
-		try {
-			return obj.getClass().getMethod(methodName).invoke(obj);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private BigDecimal findMaxVersion(Date reportDate, String tableName) {
-		String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) FROM " + tableName + " WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
-		try {
-			BigDecimal result = jdbcTemplate.queryForObject(sql, new Object[] { reportDate }, BigDecimal.class);
-			return result;
-		} catch (Exception e) {
-			return null;
-		}
-	}
 
 	// ================================================================
 	// ======================== RESUB METHODS ==========================
@@ -203538,6 +203462,29 @@ public class BRRS_M_NOSVOS_ReportService {
 		logger.info("Resubmission Version Created : {}", newVersion);
 	}
 
+	
+	private BigDecimal findMaxVersion(Date reportDate, String tableName) {
+
+	    String sql = "SELECT MAX(TO_NUMBER(REPORT_VERSION)) " +
+	                 "FROM " + tableName + " " +
+	                 "WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+
+	    try {
+
+	        BigDecimal result = jdbcTemplate.queryForObject(
+	                sql,
+	                new Object[] { reportDate },
+	                BigDecimal.class
+	        );
+
+	        return result;
+
+	    } catch (Exception e) {
+
+	        logger.error("Error while finding max report version", e);
+	        return null;
+	    }
+	}
 	// ================================================================
 	// ======================== INSERT METHODS =========================
 	// ================================================================

@@ -814,7 +814,7 @@ PURPOSE		: BWRBRREPORT
 			var readonlyIds = ["R101_TOTAL_AMOUNT_DEMAND_NOSTRO", "R101_TOTAL_AMOUNT_TIME_NOSTRO", "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO", "R101_TOTAL_AMOUNT_DEMAND_VOSTRO", "R101_TOTAL_AMOUNT_TIME_VOSTRO", "R101_TOTAL_AMOUNT_DEMAND_NOSTRO1", "R101_TOTAL_AMOUNT_TIME_NOSTRO1", "R101_TOTAL_RISK_WEIGHTED_AMOUNT_NOSTRO1",
 				"R101_TOTAL_AMOUNT_DEMAND_VOSTRO1", "R101_TOTAL_AMOUNT_TIME_VOSTRO1"];
 
-			for (let i = 1; i <= 101; i++) {
+			for (let i = 1; i <= 10; i++) {
 				readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO");
 				readonlyIds.push("R" + i + "_RISK_WEIGHTED_AMOUNT_NOSTRO1");
 			}
@@ -825,7 +825,7 @@ PURPOSE		: BWRBRREPORT
 				}
 			});
 
-			for (let i = 1; i <= 101; i++) {
+			for (let i = 1; i <= 10; i++) {
 				$("#R" + i + "_TYPE_OF_ACCOUNT_NOSTRO_TEXT").hide();	//R11_TYPE_OF_ACC_TEXT
 				$("#R" + i + "_PURPOSE_NOSTRO_TEXT").hide();
 				$("#R" + i + "_CURRENCY_NOSTRO_TEXT").hide();
@@ -863,7 +863,7 @@ PURPOSE		: BWRBRREPORT
 
 
 
-			for (let i = 1; i <= 101; i++) {
+			for (let i = 1; i <= 10; i++) {
 				let fields = [
 					"NAME_OF_BANK_AND_COUNTRY_NOSTRO",
 					"TYPE_OF_ACCOUNT_NOSTRO",
@@ -1306,7 +1306,7 @@ PURPOSE		: BWRBRREPORT
 
 				$(".Show_input").attr("readonly", true).attr("disabled", true);
 
-				for (let i = 1; i <= 101; i++) {
+				for (let i = 1; i <= 10; i++) {
 					$("#R" + i + "_TYPE_OF_ACCOUNT_NOSTRO_TEXT").show();	//R11_TYPE_OF_ACC_TEXT
 					$("#R" + i + "_PURPOSE_NOSTRO_TEXT").show();
 					$("#R" + i + "_CURRENCY_NOSTRO_TEXT").show();
@@ -1375,7 +1375,7 @@ PURPOSE		: BWRBRREPORT
 			let totalAmountDemandVostro1 = 0;
 			let totalAmountTimeVostro1 = 0;
 
-			for (let i = 1; i <= 101; i++) {
+			for (let i = 1; i <= 10; i++) {
 
 				// Get numeric values
 				let weightNostro = parseFloat($("#R" + i + "_RISK_WEIGHT_NOSTRO").val().replace(/,/g, "")) || 0;
@@ -3122,7 +3122,7 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 
-											<tr>
+											<!--	<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
 														th:value="${#strings.defaultString(report.R11_NAME_OF_BANK_AND_COUNTRY_NOSTRO, 'N/A')}"
@@ -8480,7 +8480,6 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-
 
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
@@ -15177,7 +15176,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-
+-->
 
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
@@ -16629,7 +16628,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-
+											<!--
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -26422,9 +26421,6 @@ PURPOSE		: BWRBRREPORT
 											</tr>
 
 
-
-
-
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -26535,7 +26531,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 
-											<!-- ===== Row R100 End ===== -->
+											===== Row R100 End =====-->
 
 											<tr>
 												<td id="ROW101" style="padding-left: 20px; font-weight: bold;">
@@ -28035,7 +28031,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-
+											<!--	
 
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
@@ -39465,7 +39461,7 @@ PURPOSE		: BWRBRREPORT
 														style="background-color: #FFFFFF; width: 200px; height: 28px; border-color: transparent; text-align: right;"
 														readonly />
 												</td>
-											</tr>
+											</tr>-->
 
 											<!-- ===== Row R100 End ===== -->
 
@@ -40726,7 +40722,7 @@ PURPOSE		: BWRBRREPORT
 												</td>
 											</tr>
 
-
+											<!--
 											<tr>
 												<td style="padding-left: 20px; font-weight: bold;">
 													<input class="display-input Show_input" type="text"
@@ -50087,7 +50083,7 @@ PURPOSE		: BWRBRREPORT
 														readonly />
 												</td>
 											</tr>
-
+-->
 
 
 											<!-- ===== Row R100 End ===== -->

@@ -5117,36 +5117,47 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/NOSVOSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/NOSVOSupdateAll", method = {
+	        RequestMethod.GET, RequestMethod.POST
+	})
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAll(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
-			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
-			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
-			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
-			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
-		try {
 
-			// set date into all 4 entities
-			request1.setREPORT_DATE(asondate);
-			request2.setREPORT_DATE(asondate);
-			request3.setREPORT_DATE(asondate);
-			request4.setREPORT_DATE(asondate);
-			request5.setREPORT_DATE(asondate);
+	        @RequestParam(required = false)
+	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-			// call services
-			BRRS_M_NOSVOS_ReportService.updateReport(request1);
-			BRRS_M_NOSVOS_ReportService.updateReport2(request2);
-			BRRS_M_NOSVOS_ReportService.updateReport3(request3);
-			BRRS_M_NOSVOS_ReportService.updateReport4(request4);
-			BRRS_M_NOSVOS_ReportService.updateReport5(request5);
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
+	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
 
-			return ResponseEntity.ok("All Reports Updated Successfully");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	    try {
+
+	        // Set report date into all entities
+	        request1.setREPORT_DATE(asondate);
+	        request2.setREPORT_DATE(asondate);
+	        request3.setREPORT_DATE(asondate);
+	        request4.setREPORT_DATE(asondate);
+	        request5.setREPORT_DATE(asondate);
+
+	        // Call common service method
+	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request1);
+	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request2);
+	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request3);
+	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request4);
+	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request5);
+
+	        return ResponseEntity.ok("All Reports Updated Successfully");
+
+	    } catch (Exception e) {
+
+	        e.printStackTrace();
+
+	        return ResponseEntity
+	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/NOSVOSupdateAll_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
