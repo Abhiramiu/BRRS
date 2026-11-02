@@ -916,12 +916,10 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 				},
 
 				error: function (jqXHR) {
-
-					console.log("Error response:", jqXHR.responseText);
-
-					$("#resultModalLabel").text("Error");
-					$("#resultModalBody").text("Update failed. Check console.");
-					$("#resultModal").modal("show");
+				    console.log("Error response:", jqXHR.responseText);
+				    $("#resultModalLabel").text("Error");
+				    $("#resultModalBody").text(jqXHR.responseText || "Update failed. Check console.");
+				    $("#resultModal").modal("show");
 				},
 
 				complete: function () {
@@ -2605,11 +2603,13 @@ PURPOSE		: M_SRWA_12F BRRSREPORT
 								</div>
 								<div style="text-align: center; margin-top: 10px;">
 
-									<button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
-										th:attr="data-todate=${asondate},data-reporttype=${type}"
-										onclick="fileuploads(this);" style="display: none;">
-										Submit
-									</button>
+									<div style="text-align: center; margin-top: 10px;">
+									    <button id="submitButton" type="button" class="custom-tab-btn" form="fileupload"
+									        th:attr="data-todate=${asondate},data-reporttype=${type}"
+									        onclick="fileupload_all(this);" style="display: none;">
+									        Submit
+									    </button>
+									</div>
 								</div>
 							</form>
 						</div>
