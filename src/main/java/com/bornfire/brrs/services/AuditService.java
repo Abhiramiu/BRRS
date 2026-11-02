@@ -1507,6 +1507,21 @@ public class AuditService {
 		else if (upperTable.contains("M_LA2")) {
 			transferMLA2Data(auditRecord);
 		}
+		
+		/* M_SRWA_12F */
+		else if (upperTable.contains("M_SRWA_12F")) {
+		    transferMSRWA12FData(auditRecord);
+		}
+		
+		/* M_SRWA_12G */
+		else if (upperTable.contains("M_SRWA_12G")) {
+		    transferMSRWA12GData(auditRecord);
+		}
+		
+		/* M_SRWA_12H */
+		else if (upperTable.contains("M_SRWA_12H")) {
+		    transferMSRWA12HData(auditRecord);
+		}
 
 		/* M_INT_RATES_FCA */
 		else if (upperTable.contains("INT_RATES_FCA")) {
@@ -1838,6 +1853,307 @@ public class AuditService {
 		System.out.println("Q_STAFF MOD Updated : " + modUpdated);
 		System.out.println("Q_STAFF Verification and Transfer Completed Successfully");
 	}
+	
+	
+	// =========================================================
+	// M_SRWA_12F — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSRWA12FData(AuditServicesEntity auditRecord) {
+	    // 1. Find the pending (MODIFY_FLG='Y') report date; fall back to MAX if none
+	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+	    java.sql.Date reportDate = null;
+	    try {
+	        reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+	    } catch (Exception e) {
+	        // fallback below
+	    }
+	    if (reportDate == null) {
+	        reportDate = jdbcTemplate.queryForObject(
+	            "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE",
+	            java.sql.Date.class);
+	    }
+	    if (reportDate == null) {
+	        throw new IllegalStateException("No modified M_SRWA_12F record available for verification.");
+	    }
+
+	    System.out.println("M_SRWA_12F Report Date : " + reportDate);
+
+	    // 2. Build the (cols) = (SELECT cols FROM MOD) pieces once
+	    String columnList = buildMSRWA12FColumnList();
+	    String selectList = buildMSRWA12FSelectList();
+
+	    // 3. Update BRRS_M_SRWA_12F_SUMMARYTABLE from MOD
+	    String updateSummarySql =
+	        "UPDATE BRRS_M_SRWA_12F_SUMMARYTABLE M " +
+	        "SET (" + columnList + ") = (" +
+	        "    SELECT " + selectList +
+	        "    FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	            "M_SRWA_12F modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SRWA_12F Summary Table Updated : " + summaryUpdated);
+
+	    // 4. Update BRRS_M_SRWA_12F_DETAILTABLE from MOD (identical column/select lists)
+	    String updateDetailSql =
+	        "UPDATE BRRS_M_SRWA_12F_DETAILTABLE M " +
+	        "SET (" + columnList + ") = (" +
+	        "    SELECT " + selectList +
+	        "    FROM BRRS_M_SRWA_12F_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int detailUpdated = jdbcTemplate.update(updateDetailSql, reportDate);
+	    System.out.println("M_SRWA_12F Detail Table Updated : " + detailUpdated);
+
+	    // 5. Mark MOD record as approved
+	    String updateModSql =
+	        "UPDATE BRRS_M_SRWA_12F_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	        "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+
+	    System.out.println("M_SRWA_12F MOD Updated : " + modUpdated);
+	    System.out.println("M_SRWA_12F Verification and Transfer Completed Successfully");
+	}
+	
+	
+	// =========================================================
+	// M_SRWA_12G — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSRWA12GData(AuditServicesEntity auditRecord) {
+
+	    // 1. Locate the pending MOD row (MODIFY_FLG = 'Y'); fall back to MAX date if none pending
+	    String dateSql =
+	        "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+	    java.sql.Date reportDate = null;
+	    try {
+	        reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+	    } catch (Exception ignored) {
+	        // fall through to MAX fallback
+	    }
+	    if (reportDate == null) {
+	        reportDate = jdbcTemplate.queryForObject(
+	            "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE",
+	            java.sql.Date.class);
+	    }
+	    if (reportDate == null) {
+	        throw new IllegalStateException(
+	            "No modified M_SRWA_12G record available for verification.");
+	    }
+
+	    System.out.println("M_SRWA_12G Report Date : " + reportDate);
+
+	    // 2. Build column / select fragments once (identical for summary + detail)
+	    String columnList = buildMSRWA12GColumnList();
+	    String selectList = buildMSRWA12GSelectList();
+
+	    // 3. Transfer MOD → LIVE Summary
+	    String sqlSummary =
+	        "UPDATE BRRS_M_SRWA_12G_SUMMARYTABLE M " +
+	        "SET (" + columnList + ") = (" +
+	        "    SELECT " + selectList +
+	        "    FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(sqlSummary, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	            "M_SRWA_12G modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SRWA_12G Summary Table Updated : " + summaryUpdated);
+
+	    // 4. Transfer MOD → LIVE Detail (only if the detail table exists for this report)
+	    try {
+	        String sqlDetail =
+	            "UPDATE BRRS_M_SRWA_12G_DETAILTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	        int detailUpdated = jdbcTemplate.update(sqlDetail, reportDate);
+	        System.out.println("M_SRWA_12G Detail Table Updated : " + detailUpdated);
+	    } catch (org.springframework.jdbc.BadSqlGrammarException ex) {
+	        System.out.println(
+	            "M_SRWA_12G DETAILTABLE not present — summary-only report. Skipping detail transfer.");
+	    }
+
+	    // 5. Flip the MOD row to approved
+	    int modUpdated = jdbcTemplate.update(
+	        "UPDATE BRRS_M_SRWA_12G_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	        "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+	        reportDate);
+
+	    System.out.println("M_SRWA_12G MOD Updated : " + modUpdated);
+	    System.out.println("M_SRWA_12G Verification and Transfer Completed Successfully");
+	}
+	
+	// ─────────────────────────────────────────────────────────
+	// M_SRWA_12G — Column builders
+	//   R11–R60: 6 fields per row
+	//   R61    : 2 fields only (EXPOSURE_AMOUNT, RISK_WEIGHTED_AMOUNT)
+	// ─────────────────────────────────────────────────────────
+	private static String buildMSRWA12GColumnList() {
+	    StringBuilder sb = new StringBuilder();
+
+	    for (int row = 11; row <= 60; row++) {
+	        String p = "R" + row + "_";
+	        sb.append(p).append("SECURITY_FIRM, ")
+	          .append(p).append("CREDIT_RATING, ")
+	          .append(p).append("RATING_AGENCY, ")
+	          .append(p).append("EXPOSURE_AMOUNT, ")
+	          .append(p).append("RISK_WEIGHT, ")
+	          .append(p).append("RISK_WEIGHTED_AMOUNT, ");
+	    }
+
+	    // Row 61 — only two numeric columns; no SECURITY_FIRM / CREDIT_RATING /
+	    // RATING_AGENCY / RISK_WEIGHT exist in the 12G schema
+	    sb.append("R61_EXPOSURE_AMOUNT, R61_RISK_WEIGHTED_AMOUNT, ");
+
+	    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    return sb.toString();
+	}
+
+	private static String buildMSRWA12GSelectList() {
+	    StringBuilder sb = new StringBuilder();
+
+	    for (int row = 11; row <= 60; row++) {
+	        String p = "S.R" + row + "_";
+	        sb.append(p).append("SECURITY_FIRM, ")
+	          .append(p).append("CREDIT_RATING, ")
+	          .append(p).append("RATING_AGENCY, ")
+	          .append(p).append("EXPOSURE_AMOUNT, ")
+	          .append(p).append("RISK_WEIGHT, ")
+	          .append(p).append("RISK_WEIGHTED_AMOUNT, ");
+	    }
+
+	    sb.append("S.R61_EXPOSURE_AMOUNT, S.R61_RISK_WEIGHTED_AMOUNT, ");
+
+	    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+	    return sb.toString();
+	}
+	
+	
+	// =========================================================
+	// M_SRWA_12H — Checker transfer (MOD → LIVE Summary + Detail)
+	// =========================================================
+	private void transferMSRWA12HData(AuditServicesEntity auditRecord) {
+
+	    // 1. Prefer the pending MOD row (MODIFY_FLG='Y'); fall back to MAX date
+	    String dateSql =
+	        "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE WHERE MODIFY_FLG = 'Y'";
+	    java.sql.Date reportDate = null;
+	    try {
+	        reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+	    } catch (Exception ignored) {
+	        // fall through to MAX fallback
+	    }
+	    if (reportDate == null) {
+	        reportDate = jdbcTemplate.queryForObject(
+	            "SELECT MAX(REPORT_DATE) FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE",
+	            java.sql.Date.class);
+	    }
+	    if (reportDate == null) {
+	        throw new IllegalStateException(
+	            "No modified M_SRWA_12H record available for verification.");
+	    }
+
+	    System.out.println("M_SRWA_12H Report Date : " + reportDate);
+
+	    // 2. Build column/select fragments once (identical for summary + detail)
+	    String columnList = buildMSRWA12HColumnList();
+	    String selectList = buildMSRWA12HSelectList();
+
+	    // 3. Transfer MOD → LIVE Summary
+	    String sqlSummary =
+	        "UPDATE BRRS_M_SRWA_12H_SUMMARYTABLE M " +
+	        "SET (" + columnList + ") = (" +
+	        "    SELECT " + selectList +
+	        "    FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(sqlSummary, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	            "M_SRWA_12H modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_SRWA_12H Summary Table Updated : " + summaryUpdated);
+
+	    // 4. Transfer MOD → LIVE Detail (guarded — 12H detail table may not exist)
+	    try {
+	        String sqlDetail =
+	            "UPDATE BRRS_M_SRWA_12H_DETAILTABLE M " +
+	            "SET (" + columnList + ") = (" +
+	            "    SELECT " + selectList +
+	            "    FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	        int detailUpdated = jdbcTemplate.update(sqlDetail, reportDate);
+	        System.out.println("M_SRWA_12H Detail Table Updated : " + detailUpdated);
+	    } catch (org.springframework.jdbc.BadSqlGrammarException ex) {
+	        System.out.println(
+	            "M_SRWA_12H DETAILTABLE not present — summary-only report. Skipping detail transfer.");
+	    }
+
+	    // 5. Flip the MOD row to approved
+	    int modUpdated = jdbcTemplate.update(
+	        "UPDATE BRRS_M_SRWA_12H_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	        "WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
+	        reportDate);
+
+	    System.out.println("M_SRWA_12H MOD Updated : " + modUpdated);
+	    System.out.println("M_SRWA_12H Verification and Transfer Completed Successfully");
+	}
+	
+	// ─────────────────────────────────────────────────────────
+	// M_SRWA_12H — Column builders
+	//   R11..R81: 9 uniform fields per row (no sparse row like 12G's R61)
+	// ─────────────────────────────────────────────────────────
+	private static String buildMSRWA12HColumnList() {
+	    StringBuilder sb = new StringBuilder();
+	    String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                        "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                        "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+
+	    for (int row = 11; row <= 81; row++) {
+	        for (String f : fields) {
+	            sb.append("R").append(row).append("_").append(f).append(", ");
+	        }
+	    }
+	    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    return sb.toString();
+	}
+
+	private static String buildMSRWA12HSelectList() {
+	    StringBuilder sb = new StringBuilder();
+	    String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                        "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                        "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+
+	    for (int row = 11; row <= 81; row++) {
+	        for (String f : fields) {
+	            sb.append("S.R").append(row).append("_").append(f).append(", ");
+	        }
+	    }
+	    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+	    return sb.toString();
+	}
+	
+	
 
 	private void transferAIDPData(AuditServicesEntity auditRecord) {
 		String upperTable = auditRecord.getAudit_table() != null ? auditRecord.getAudit_table().trim().toUpperCase() : "";
@@ -3438,6 +3754,37 @@ for (int row = 10; row <= 56; row++) {
 }
 sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
 return sb.toString();
+}
+
+
+private static String buildMSRWA12FColumnList() {
+    StringBuilder sb = new StringBuilder();
+    for (int row = 11; row <= 37; row++) {
+        String p = "R" + row + "_";
+        sb.append(p).append("NAME_OF_CORPORATE, ")
+          .append(p).append("CREDIT_RATING, ")
+          .append(p).append("RATING_AGENCY, ")
+          .append(p).append("EXPOSURE_AMT, ")
+          .append(p).append("RISK_WEIGHT, ")
+          .append(p).append("RISK_WEIGHTED_AMT, ");
+    }
+    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+    return sb.toString();
+}
+
+private static String buildMSRWA12FSelectList() {
+    StringBuilder sb = new StringBuilder();
+    for (int row = 11; row <= 37; row++) {
+        String p = "R" + row + "_";
+        sb.append("S.").append(p).append("NAME_OF_CORPORATE, ")
+          .append("S.").append(p).append("CREDIT_RATING, ")
+          .append("S.").append(p).append("RATING_AGENCY, ")
+          .append("S.").append(p).append("EXPOSURE_AMT, ")
+          .append("S.").append(p).append("RISK_WEIGHT, ")
+          .append("S.").append(p).append("RISK_WEIGHTED_AMT, ");
+    }
+    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+    return sb.toString();
 }
 
 	private void transferMLA2Data(AuditServicesEntity auditRecord) {

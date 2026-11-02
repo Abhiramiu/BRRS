@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.persistence.IdClass;
 import javax.persistence.Column;
@@ -52,6 +53,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
@@ -30634,782 +30637,384 @@ public class BRRS_M_SRWA_12G_ReportService {
 	@Transactional
 	public void updateReport(M_SRWA_12G_Summary_Entity request) {
 
-	    try {
+	    if (request == null || request.getREPORT_DATE() == null) {
+	        throw new IllegalArgumentException("REPORT_DATE is required to update M_SRWA_12G");
+	    }
 
-	        logger.info("Came to services");
+	    try {
+	        logger.info("Came to M_SRWA_12G updateReport (MAKER)");
 	        logger.info("Report Date : {}", request.getREPORT_DATE());
 
-	        List<M_SRWA_12G_Summary_Entity> records =
-	                getDataByDate1(request.getREPORT_DATE());
-
-	        if (records == null || records.isEmpty()) {
+	        // 1. Baseline — live row
+	        M_SRWA_12G_Summary_Entity liveSummary = findByReportDate(request.getREPORT_DATE());
+	        if (liveSummary == null) {
 	            throw new RuntimeException(
-	                    "Record not found for REPORT_DATE : "
-	                            + request.getREPORT_DATE());
+	                    "Record not found in live summary table for REPORT_DATE : " + request.getREPORT_DATE());
 	        }
 
-	        M_SRWA_12G_Summary_Entity existing = records.get(0);
-
-	        M_SRWA_12G_Summary_Entity oldcopy =
-	                new M_SRWA_12G_Summary_Entity();
-
-	        BeanUtils.copyProperties(existing, oldcopy);
-
-	        String changes = auditService.getChanges(oldcopy, request);
-
-	        if (!changes.isEmpty()) {
-
-	            String sql =
-	                    "UPDATE BRRS_M_SRWA_12G_SUMMARYTABLE SET "
-	                    		+ "R11_SECURITY_FIRM=?,"
-	                    		+ "R11_CREDIT_RATING=?,"
-	                    		+ "R11_RATING_AGENCY=?,"
-	                    		+ "R11_EXPOSURE_AMOUNT=?,"
-	                    		+ "R11_RISK_WEIGHT=?,"
-	                    		+ "R11_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R12_SECURITY_FIRM=?,"
-	                    		+ "R12_CREDIT_RATING=?,"
-	                    		+ "R12_RATING_AGENCY=?,"
-	                    		+ "R12_EXPOSURE_AMOUNT=?,"
-	                    		+ "R12_RISK_WEIGHT=?,"
-	                    		+ "R12_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R13_SECURITY_FIRM=?,"
-	                    		+ "R13_CREDIT_RATING=?,"
-	                    		+ "R13_RATING_AGENCY=?,"
-	                    		+ "R13_EXPOSURE_AMOUNT=?,"
-	                    		+ "R13_RISK_WEIGHT=?,"
-	                    		+ "R13_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R14_SECURITY_FIRM=?,"
-	                    		+ "R14_CREDIT_RATING=?,"
-	                    		+ "R14_RATING_AGENCY=?,"
-	                    		+ "R14_EXPOSURE_AMOUNT=?,"
-	                    		+ "R14_RISK_WEIGHT=?,"
-	                    		+ "R14_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R15_SECURITY_FIRM=?,"
-	                    		+ "R15_CREDIT_RATING=?,"
-	                    		+ "R15_RATING_AGENCY=?,"
-	                    		+ "R15_EXPOSURE_AMOUNT=?,"
-	                    		+ "R15_RISK_WEIGHT=?,"
-	                    		+ "R15_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R16_SECURITY_FIRM=?,"
-	                    		+ "R16_CREDIT_RATING=?,"
-	                    		+ "R16_RATING_AGENCY=?,"
-	                    		+ "R16_EXPOSURE_AMOUNT=?,"
-	                    		+ "R16_RISK_WEIGHT=?,"
-	                    		+ "R16_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R17_SECURITY_FIRM=?,"
-	                    		+ "R17_CREDIT_RATING=?,"
-	                    		+ "R17_RATING_AGENCY=?,"
-	                    		+ "R17_EXPOSURE_AMOUNT=?,"
-	                    		+ "R17_RISK_WEIGHT=?,"
-	                    		+ "R17_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R18_SECURITY_FIRM=?,"
-	                    		+ "R18_CREDIT_RATING=?,"
-	                    		+ "R18_RATING_AGENCY=?,"
-	                    		+ "R18_EXPOSURE_AMOUNT=?,"
-	                    		+ "R18_RISK_WEIGHT=?,"
-	                    		+ "R18_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R19_SECURITY_FIRM=?,"
-	                    		+ "R19_CREDIT_RATING=?,"
-	                    		+ "R19_RATING_AGENCY=?,"
-	                    		+ "R19_EXPOSURE_AMOUNT=?,"
-	                    		+ "R19_RISK_WEIGHT=?,"
-	                    		+ "R19_RISK_WEIGHTED_AMOUNT=?,"
-
-	                    		+ "R20_SECURITY_FIRM=?,"
-	                    		+ "R20_CREDIT_RATING=?,"
-	                    		+ "R20_RATING_AGENCY=?,"
-	                    		+ "R20_EXPOSURE_AMOUNT=?,"
-	                    		+ "R20_RISK_WEIGHT=?,"
-	                    		+ "R20_RISK_WEIGHTED_AMOUNT=?,"
-	                    		
-+ "R21_SECURITY_FIRM=?,"
-+ "R21_CREDIT_RATING=?,"
-+ "R21_RATING_AGENCY=?,"
-+ "R21_EXPOSURE_AMOUNT=?,"
-+ "R21_RISK_WEIGHT=?,"
-+ "R21_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R22_SECURITY_FIRM=?,"
-+ "R22_CREDIT_RATING=?,"
-+ "R22_RATING_AGENCY=?,"
-+ "R22_EXPOSURE_AMOUNT=?,"
-+ "R22_RISK_WEIGHT=?,"
-+ "R22_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R23_SECURITY_FIRM=?,"
-+ "R23_CREDIT_RATING=?,"
-+ "R23_RATING_AGENCY=?,"
-+ "R23_EXPOSURE_AMOUNT=?,"
-+ "R23_RISK_WEIGHT=?,"
-+ "R23_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R24_SECURITY_FIRM=?,"
-+ "R24_CREDIT_RATING=?,"
-+ "R24_RATING_AGENCY=?,"
-+ "R24_EXPOSURE_AMOUNT=?,"
-+ "R24_RISK_WEIGHT=?,"
-+ "R24_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R25_SECURITY_FIRM=?,"
-+ "R25_CREDIT_RATING=?,"
-+ "R25_RATING_AGENCY=?,"
-+ "R25_EXPOSURE_AMOUNT=?,"
-+ "R25_RISK_WEIGHT=?,"
-+ "R25_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R26_SECURITY_FIRM=?,"
-+ "R26_CREDIT_RATING=?,"
-+ "R26_RATING_AGENCY=?,"
-+ "R26_EXPOSURE_AMOUNT=?,"
-+ "R26_RISK_WEIGHT=?,"
-+ "R26_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R27_SECURITY_FIRM=?,"
-+ "R27_CREDIT_RATING=?,"
-+ "R27_RATING_AGENCY=?,"
-+ "R27_EXPOSURE_AMOUNT=?,"
-+ "R27_RISK_WEIGHT=?,"
-+ "R27_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R28_SECURITY_FIRM=?,"
-+ "R28_CREDIT_RATING=?,"
-+ "R28_RATING_AGENCY=?,"
-+ "R28_EXPOSURE_AMOUNT=?,"
-+ "R28_RISK_WEIGHT=?,"
-+ "R28_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R29_SECURITY_FIRM=?,"
-+ "R29_CREDIT_RATING=?,"
-+ "R29_RATING_AGENCY=?,"
-+ "R29_EXPOSURE_AMOUNT=?,"
-+ "R29_RISK_WEIGHT=?,"
-+ "R29_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R30_SECURITY_FIRM=?,"
-+ "R30_CREDIT_RATING=?,"
-+ "R30_RATING_AGENCY=?,"
-+ "R30_EXPOSURE_AMOUNT=?,"
-+ "R30_RISK_WEIGHT=?,"
-+ "R30_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R31_SECURITY_FIRM=?,"
-+ "R31_CREDIT_RATING=?,"
-+ "R31_RATING_AGENCY=?,"
-+ "R31_EXPOSURE_AMOUNT=?,"
-+ "R31_RISK_WEIGHT=?,"
-+ "R31_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R32_SECURITY_FIRM=?,"
-+ "R32_CREDIT_RATING=?,"
-+ "R32_RATING_AGENCY=?,"
-+ "R32_EXPOSURE_AMOUNT=?,"
-+ "R32_RISK_WEIGHT=?,"
-+ "R32_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R33_SECURITY_FIRM=?,"
-+ "R33_CREDIT_RATING=?,"
-+ "R33_RATING_AGENCY=?,"
-+ "R33_EXPOSURE_AMOUNT=?,"
-+ "R33_RISK_WEIGHT=?,"
-+ "R33_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R34_SECURITY_FIRM=?,"
-+ "R34_CREDIT_RATING=?,"
-+ "R34_RATING_AGENCY=?,"
-+ "R34_EXPOSURE_AMOUNT=?,"
-+ "R34_RISK_WEIGHT=?,"
-+ "R34_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R35_SECURITY_FIRM=?,"
-+ "R35_CREDIT_RATING=?,"
-+ "R35_RATING_AGENCY=?,"
-+ "R35_EXPOSURE_AMOUNT=?,"
-+ "R35_RISK_WEIGHT=?,"
-+ "R35_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R36_SECURITY_FIRM=?,"
-+ "R36_CREDIT_RATING=?,"
-+ "R36_RATING_AGENCY=?,"
-+ "R36_EXPOSURE_AMOUNT=?,"
-+ "R36_RISK_WEIGHT=?,"
-+ "R36_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R37_SECURITY_FIRM=?,"
-+ "R37_CREDIT_RATING=?,"
-+ "R37_RATING_AGENCY=?,"
-+ "R37_EXPOSURE_AMOUNT=?,"
-+ "R37_RISK_WEIGHT=?,"
-+ "R37_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R38_SECURITY_FIRM=?,"
-+ "R38_CREDIT_RATING=?,"
-+ "R38_RATING_AGENCY=?,"
-+ "R38_EXPOSURE_AMOUNT=?,"
-+ "R38_RISK_WEIGHT=?,"
-+ "R38_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R39_SECURITY_FIRM=?,"
-+ "R39_CREDIT_RATING=?,"
-+ "R39_RATING_AGENCY=?,"
-+ "R39_EXPOSURE_AMOUNT=?,"
-+ "R39_RISK_WEIGHT=?,"
-+ "R39_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R40_SECURITY_FIRM=?,"
-+ "R40_CREDIT_RATING=?,"
-+ "R40_RATING_AGENCY=?,"
-+ "R40_EXPOSURE_AMOUNT=?,"
-+ "R40_RISK_WEIGHT=?,"
-+ "R40_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R41_SECURITY_FIRM=?,"
-+ "R41_CREDIT_RATING=?,"
-+ "R41_RATING_AGENCY=?,"
-+ "R41_EXPOSURE_AMOUNT=?,"
-+ "R41_RISK_WEIGHT=?,"
-+ "R41_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R42_SECURITY_FIRM=?,"
-+ "R42_CREDIT_RATING=?,"
-+ "R42_RATING_AGENCY=?,"
-+ "R42_EXPOSURE_AMOUNT=?,"
-+ "R42_RISK_WEIGHT=?,"
-+ "R42_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R43_SECURITY_FIRM=?,"
-+ "R43_CREDIT_RATING=?,"
-+ "R43_RATING_AGENCY=?,"
-+ "R43_EXPOSURE_AMOUNT=?,"
-+ "R43_RISK_WEIGHT=?,"
-+ "R43_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R44_SECURITY_FIRM=?,"
-+ "R44_CREDIT_RATING=?,"
-+ "R44_RATING_AGENCY=?,"
-+ "R44_EXPOSURE_AMOUNT=?,"
-+ "R44_RISK_WEIGHT=?,"
-+ "R44_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R45_SECURITY_FIRM=?,"
-+ "R45_CREDIT_RATING=?,"
-+ "R45_RATING_AGENCY=?,"
-+ "R45_EXPOSURE_AMOUNT=?,"
-+ "R45_RISK_WEIGHT=?,"
-+ "R45_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R46_SECURITY_FIRM=?,"
-+ "R46_CREDIT_RATING=?,"
-+ "R46_RATING_AGENCY=?,"
-+ "R46_EXPOSURE_AMOUNT=?,"
-+ "R46_RISK_WEIGHT=?,"
-+ "R46_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R47_SECURITY_FIRM=?,"
-+ "R47_CREDIT_RATING=?,"
-+ "R47_RATING_AGENCY=?,"
-+ "R47_EXPOSURE_AMOUNT=?,"
-+ "R47_RISK_WEIGHT=?,"
-+ "R47_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R48_SECURITY_FIRM=?,"
-+ "R48_CREDIT_RATING=?,"
-+ "R48_RATING_AGENCY=?,"
-+ "R48_EXPOSURE_AMOUNT=?,"
-+ "R48_RISK_WEIGHT=?,"
-+ "R48_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R49_SECURITY_FIRM=?,"
-+ "R49_CREDIT_RATING=?,"
-+ "R49_RATING_AGENCY=?,"
-+ "R49_EXPOSURE_AMOUNT=?,"
-+ "R49_RISK_WEIGHT=?,"
-+ "R49_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R50_SECURITY_FIRM=?,"
-+ "R50_CREDIT_RATING=?,"
-+ "R50_RATING_AGENCY=?,"
-+ "R50_EXPOSURE_AMOUNT=?,"
-+ "R50_RISK_WEIGHT=?,"
-+ "R50_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R51_SECURITY_FIRM=?,"
-+ "R51_CREDIT_RATING=?,"
-+ "R51_RATING_AGENCY=?,"
-+ "R51_EXPOSURE_AMOUNT=?,"
-+ "R51_RISK_WEIGHT=?,"
-+ "R51_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R52_SECURITY_FIRM=?,"
-+ "R52_CREDIT_RATING=?,"
-+ "R52_RATING_AGENCY=?,"
-+ "R52_EXPOSURE_AMOUNT=?,"
-+ "R52_RISK_WEIGHT=?,"
-+ "R52_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R53_SECURITY_FIRM=?,"
-+ "R53_CREDIT_RATING=?,"
-+ "R53_RATING_AGENCY=?,"
-+ "R53_EXPOSURE_AMOUNT=?,"
-+ "R53_RISK_WEIGHT=?,"
-+ "R53_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R54_SECURITY_FIRM=?,"
-+ "R54_CREDIT_RATING=?,"
-+ "R54_RATING_AGENCY=?,"
-+ "R54_EXPOSURE_AMOUNT=?,"
-+ "R54_RISK_WEIGHT=?,"
-+ "R54_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R55_SECURITY_FIRM=?,"
-+ "R55_CREDIT_RATING=?,"
-+ "R55_RATING_AGENCY=?,"
-+ "R55_EXPOSURE_AMOUNT=?,"
-+ "R55_RISK_WEIGHT=?,"
-+ "R55_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R56_SECURITY_FIRM=?,"
-+ "R56_CREDIT_RATING=?,"
-+ "R56_RATING_AGENCY=?,"
-+ "R56_EXPOSURE_AMOUNT=?,"
-+ "R56_RISK_WEIGHT=?,"
-+ "R56_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R57_SECURITY_FIRM=?,"
-+ "R57_CREDIT_RATING=?,"
-+ "R57_RATING_AGENCY=?,"
-+ "R57_EXPOSURE_AMOUNT=?,"
-+ "R57_RISK_WEIGHT=?,"
-+ "R57_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R58_SECURITY_FIRM=?,"
-+ "R58_CREDIT_RATING=?,"
-+ "R58_RATING_AGENCY=?,"
-+ "R58_EXPOSURE_AMOUNT=?,"
-+ "R58_RISK_WEIGHT=?,"
-+ "R58_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R59_SECURITY_FIRM=?,"
-+ "R59_CREDIT_RATING=?,"
-+ "R59_RATING_AGENCY=?,"
-+ "R59_EXPOSURE_AMOUNT=?,"
-+ "R59_RISK_WEIGHT=?,"
-+ "R59_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R60_SECURITY_FIRM=?,"
-+ "R60_CREDIT_RATING=?,"
-+ "R60_RATING_AGENCY=?,"
-+ "R60_EXPOSURE_AMOUNT=?,"
-+ "R60_RISK_WEIGHT=?,"
-+ "R60_RISK_WEIGHTED_AMOUNT=?,"
-
-+ "R61_EXPOSURE_AMOUNT=?,"
-+ "R61_RISK_WEIGHTED_AMOUNT=?"
-	                    + "WHERE REPORT_DATE=?";
-
-	            int count = jdbcTemplate.update(
-
-	                    sql,
-
-	                    request.getR11_security_firm(),
-	                    request.getR11_credit_rating(),
-	                    request.getR11_rating_agency(),
-	                    request.getR11_exposure_amount(),
-	                    request.getR11_risk_weight(),
-	                    request.getR11_risk_weighted_amount(),
-
-	                    request.getR12_security_firm(),
-	                    request.getR12_credit_rating(),
-	                    request.getR12_rating_agency(),
-	                    request.getR12_exposure_amount(),
-	                    request.getR12_risk_weight(),
-	                    request.getR12_risk_weighted_amount(),
-
-	                    request.getR13_security_firm(),
-	                    request.getR13_credit_rating(),
-	                    request.getR13_rating_agency(),
-	                    request.getR13_exposure_amount(),
-	                    request.getR13_risk_weight(),
-	                    request.getR13_risk_weighted_amount(),
-
-	                    request.getR14_security_firm(),
-	                    request.getR14_credit_rating(),
-	                    request.getR14_rating_agency(),
-	                    request.getR14_exposure_amount(),
-	                    request.getR14_risk_weight(),
-	                    request.getR14_risk_weighted_amount(),
-
-	                    request.getR15_security_firm(),
-	                    request.getR15_credit_rating(),
-	                    request.getR15_rating_agency(),
-	                    request.getR15_exposure_amount(),
-	                    request.getR15_risk_weight(),
-	                    request.getR15_risk_weighted_amount(),
-
-	                    request.getR16_security_firm(),
-	                    request.getR16_credit_rating(),
-	                    request.getR16_rating_agency(),
-	                    request.getR16_exposure_amount(),
-	                    request.getR16_risk_weight(),
-	                    request.getR16_risk_weighted_amount(),
-
-	                    request.getR17_security_firm(),
-	                    request.getR17_credit_rating(),
-	                    request.getR17_rating_agency(),
-	                    request.getR17_exposure_amount(),
-	                    request.getR17_risk_weight(),
-	                    request.getR17_risk_weighted_amount(),
-
-	                    request.getR18_security_firm(),
-	                    request.getR18_credit_rating(),
-	                    request.getR18_rating_agency(),
-	                    request.getR18_exposure_amount(),
-	                    request.getR18_risk_weight(),
-	                    request.getR18_risk_weighted_amount(),
-
-	                    request.getR19_security_firm(),
-	                    request.getR19_credit_rating(),
-	                    request.getR19_rating_agency(),
-	                    request.getR19_exposure_amount(),
-	                    request.getR19_risk_weight(),
-	                    request.getR19_risk_weighted_amount(),
-
-	                    request.getR20_security_firm(),
-	                    request.getR20_credit_rating(),
-	                    request.getR20_rating_agency(),
-	                    request.getR20_exposure_amount(),
-	                    request.getR20_risk_weight(),
-	                    request.getR20_risk_weighted_amount(),
-
-	                    request.getR21_security_firm(),
-	                    request.getR21_credit_rating(),
-	                    request.getR21_rating_agency(),
-	                    request.getR21_exposure_amount(),
-	                    request.getR21_risk_weight(),
-	                    request.getR21_risk_weighted_amount(),
-
-	                    request.getR22_security_firm(),
-	                    request.getR22_credit_rating(),
-	                    request.getR22_rating_agency(),
-	                    request.getR22_exposure_amount(),
-	                    request.getR22_risk_weight(),
-	                    request.getR22_risk_weighted_amount(),
-
-	                    request.getR23_security_firm(),
-	                    request.getR23_credit_rating(),
-	                    request.getR23_rating_agency(),
-	                    request.getR23_exposure_amount(),
-	                    request.getR23_risk_weight(),
-	                    request.getR23_risk_weighted_amount(),
-
-	                    request.getR24_security_firm(),
-	                    request.getR24_credit_rating(),
-	                    request.getR24_rating_agency(),
-	                    request.getR24_exposure_amount(),
-	                    request.getR24_risk_weight(),
-	                    request.getR24_risk_weighted_amount(),
-
-	                    request.getR25_security_firm(),
-	                    request.getR25_credit_rating(),
-	                    request.getR25_rating_agency(),
-	                    request.getR25_exposure_amount(),
-	                    request.getR25_risk_weight(),
-	                    request.getR25_risk_weighted_amount(),
-	                    
-	                    request.getR26_security_firm(),
-	                    request.getR26_credit_rating(),
-	                    request.getR26_rating_agency(),
-	                    request.getR26_exposure_amount(),
-	                    request.getR26_risk_weight(),
-	                    request.getR26_risk_weighted_amount(),
-
-	                    request.getR27_security_firm(),
-	                    request.getR27_credit_rating(),
-	                    request.getR27_rating_agency(),
-	                    request.getR27_exposure_amount(),
-	                    request.getR27_risk_weight(),
-	                    request.getR27_risk_weighted_amount(),
-
-	                    request.getR28_security_firm(),
-	                    request.getR28_credit_rating(),
-	                    request.getR28_rating_agency(),
-	                    request.getR28_exposure_amount(),
-	                    request.getR28_risk_weight(),
-	                    request.getR28_risk_weighted_amount(),
-
-	                    request.getR29_security_firm(),
-	                    request.getR29_credit_rating(),
-	                    request.getR29_rating_agency(),
-	                    request.getR29_exposure_amount(),
-	                    request.getR29_risk_weight(),
-	                    request.getR29_risk_weighted_amount(),
-
-	                    request.getR30_security_firm(),
-	                    request.getR30_credit_rating(),
-	                    request.getR30_rating_agency(),
-	                    request.getR30_exposure_amount(),
-	                    request.getR30_risk_weight(),
-	                    request.getR30_risk_weighted_amount(),
-
-	                    request.getR31_security_firm(),
-	                    request.getR31_credit_rating(),
-	                    request.getR31_rating_agency(),
-	                    request.getR31_exposure_amount(),
-	                    request.getR31_risk_weight(),
-	                    request.getR31_risk_weighted_amount(),
-
-	                    request.getR32_security_firm(),
-	                    request.getR32_credit_rating(),
-	                    request.getR32_rating_agency(),
-	                    request.getR32_exposure_amount(),
-	                    request.getR32_risk_weight(),
-	                    request.getR32_risk_weighted_amount(),
-
-	                    request.getR33_security_firm(),
-	                    request.getR33_credit_rating(),
-	                    request.getR33_rating_agency(),
-	                    request.getR33_exposure_amount(),
-	                    request.getR33_risk_weight(),
-	                    request.getR33_risk_weighted_amount(),
-
-	                    request.getR34_security_firm(),
-	                    request.getR34_credit_rating(),
-	                    request.getR34_rating_agency(),
-	                    request.getR34_exposure_amount(),
-	                    request.getR34_risk_weight(),
-	                    request.getR34_risk_weighted_amount(),
-
-	                    request.getR35_security_firm(),
-	                    request.getR35_credit_rating(),
-	                    request.getR35_rating_agency(),
-	                    request.getR35_exposure_amount(),
-	                    request.getR35_risk_weight(),
-	                    request.getR35_risk_weighted_amount(),
-
-	                    request.getR36_security_firm(),
-	                    request.getR36_credit_rating(),
-	                    request.getR36_rating_agency(),
-	                    request.getR36_exposure_amount(),
-	                    request.getR36_risk_weight(),
-	                    request.getR36_risk_weighted_amount(),
-
-	                    request.getR37_security_firm(),
-	                    request.getR37_credit_rating(),
-	                    request.getR37_rating_agency(),
-	                    request.getR37_exposure_amount(),
-	                    request.getR37_risk_weight(),
-	                    request.getR37_risk_weighted_amount(),
-
-	                    request.getR38_security_firm(),
-	                    request.getR38_credit_rating(),
-	                    request.getR38_rating_agency(),
-	                    request.getR38_exposure_amount(),
-	                    request.getR38_risk_weight(),
-	                    request.getR38_risk_weighted_amount(),
-
-	                    request.getR39_security_firm(),
-	                    request.getR39_credit_rating(),
-	                    request.getR39_rating_agency(),
-	                    request.getR39_exposure_amount(),
-	                    request.getR39_risk_weight(),
-	                    request.getR39_risk_weighted_amount(),
-
-	                    request.getR40_security_firm(),
-	                    request.getR40_credit_rating(),
-	                    request.getR40_rating_agency(),
-	                    request.getR40_exposure_amount(),
-	                    request.getR40_risk_weight(),
-	                    request.getR40_risk_weighted_amount(),
-
-	                    request.getR41_security_firm(),
-	                    request.getR41_credit_rating(),
-	                    request.getR41_rating_agency(),
-	                    request.getR41_exposure_amount(),
-	                    request.getR41_risk_weight(),
-	                    request.getR41_risk_weighted_amount(),
-
-	                    request.getR42_security_firm(),
-	                    request.getR42_credit_rating(),
-	                    request.getR42_rating_agency(),
-	                    request.getR42_exposure_amount(),
-	                    request.getR42_risk_weight(),
-	                    request.getR42_risk_weighted_amount(),
-
-	                    request.getR43_security_firm(),
-	                    request.getR43_credit_rating(),
-	                    request.getR43_rating_agency(),
-	                    request.getR43_exposure_amount(),
-	                    request.getR43_risk_weight(),
-	                    request.getR43_risk_weighted_amount(),
-
-	                    request.getR44_security_firm(),
-	                    request.getR44_credit_rating(),
-	                    request.getR44_rating_agency(),
-	                    request.getR44_exposure_amount(),
-	                    request.getR44_risk_weight(),
-	                    request.getR44_risk_weighted_amount(),
-
-	                    request.getR45_security_firm(),
-	                    request.getR45_credit_rating(),
-	                    request.getR45_rating_agency(),
-	                    request.getR45_exposure_amount(),
-	                    request.getR45_risk_weight(),
-	                    request.getR45_risk_weighted_amount(),
-
-	                    request.getR46_security_firm(),
-	                    request.getR46_credit_rating(),
-	                    request.getR46_rating_agency(),
-	                    request.getR46_exposure_amount(),
-	                    request.getR46_risk_weight(),
-	                    request.getR46_risk_weighted_amount(),
-
-	                    request.getR47_security_firm(),
-	                    request.getR47_credit_rating(),
-	                    request.getR47_rating_agency(),
-	                    request.getR47_exposure_amount(),
-	                    request.getR47_risk_weight(),
-	                    request.getR47_risk_weighted_amount(),
-
-	                    request.getR48_security_firm(),
-	                    request.getR48_credit_rating(),
-	                    request.getR48_rating_agency(),
-	                    request.getR48_exposure_amount(),
-	                    request.getR48_risk_weight(),
-	                    request.getR48_risk_weighted_amount(),
-
-	                    request.getR49_security_firm(),
-	                    request.getR49_credit_rating(),
-	                    request.getR49_rating_agency(),
-	                    request.getR49_exposure_amount(),
-	                    request.getR49_risk_weight(),
-	                    request.getR49_risk_weighted_amount(),
-
-	                    request.getR50_security_firm(),
-	                    request.getR50_credit_rating(),
-	                    request.getR50_rating_agency(),
-	                    request.getR50_exposure_amount(),
-	                    request.getR50_risk_weight(),
-	                    request.getR50_risk_weighted_amount(),
-	                    
-	                    request.getR51_security_firm(),
-	                    request.getR51_credit_rating(),
-	                    request.getR51_rating_agency(),
-	                    request.getR51_exposure_amount(),
-	                    request.getR51_risk_weight(),
-	                    request.getR51_risk_weighted_amount(),
-
-	                    request.getR52_security_firm(),
-	                    request.getR52_credit_rating(),
-	                    request.getR52_rating_agency(),
-	                    request.getR52_exposure_amount(),
-	                    request.getR52_risk_weight(),
-	                    request.getR52_risk_weighted_amount(),
-
-	                    request.getR53_security_firm(),
-	                    request.getR53_credit_rating(),
-	                    request.getR53_rating_agency(),
-	                    request.getR53_exposure_amount(),
-	                    request.getR53_risk_weight(),
-	                    request.getR53_risk_weighted_amount(),
-
-	                    request.getR54_security_firm(),
-	                    request.getR54_credit_rating(),
-	                    request.getR54_rating_agency(),
-	                    request.getR54_exposure_amount(),
-	                    request.getR54_risk_weight(),
-	                    request.getR54_risk_weighted_amount(),
-
-	                    request.getR55_security_firm(),
-	                    request.getR55_credit_rating(),
-	                    request.getR55_rating_agency(),
-	                    request.getR55_exposure_amount(),
-	                    request.getR55_risk_weight(),
-	                    request.getR55_risk_weighted_amount(),
-
-	                    request.getR56_security_firm(),
-	                    request.getR56_credit_rating(),
-	                    request.getR56_rating_agency(),
-	                    request.getR56_exposure_amount(),
-	                    request.getR56_risk_weight(),
-	                    request.getR56_risk_weighted_amount(),
-
-	                    request.getR57_security_firm(),
-	                    request.getR57_credit_rating(),
-	                    request.getR57_rating_agency(),
-	                    request.getR57_exposure_amount(),
-	                    request.getR57_risk_weight(),
-	                    request.getR57_risk_weighted_amount(),
-
-	                    request.getR58_security_firm(),
-	                    request.getR58_credit_rating(),
-	                    request.getR58_rating_agency(),
-	                    request.getR58_exposure_amount(),
-	                    request.getR58_risk_weight(),
-	                    request.getR58_risk_weighted_amount(),
-
-	                    request.getR59_security_firm(),
-	                    request.getR59_credit_rating(),
-	                    request.getR59_rating_agency(),
-	                    request.getR59_exposure_amount(),
-	                    request.getR59_risk_weight(),
-	                    request.getR59_risk_weighted_amount(),
-
-	                    request.getR60_security_firm(),
-	                    request.getR60_credit_rating(),
-	                    request.getR60_rating_agency(),
-	                    request.getR60_exposure_amount(),
-	                    request.getR60_risk_weight(),
-	                    request.getR60_risk_weighted_amount(),
-
-	                    request.getR61_exposure_amount(),
-	                    request.getR61_risk_weighted_amount(),
-
-	                    request.getREPORT_DATE()
-	                    
-	            );
-
-	            if (count > 0) {
-
-	                auditService.compareEntitiesmanual(
-	                        oldcopy,
-	                        request,
-	                        request.getREPORT_DATE().toString(),
-	                        "M SRWA 12G Summary Screen",
-	                        "BRRS_M_SRWA_12G_SUMMARYTABLE");
-
-	                logger.info("SRWA 12G Updated Successfully");
+	        // 2. Existing MOD row (re-edit within same pending cycle) or fresh seed
+	        M_SRWA_12G_Summary_Entity modRecord = findModRecordByReportDate(request.getREPORT_DATE());
+	        if (modRecord == null) {
+	            modRecord = new M_SRWA_12G_Summary_Entity();
+	            BeanUtils.copyProperties(liveSummary, modRecord);
+	        }
+
+	        // 3. Audit "before" snapshot
+	        M_SRWA_12G_Summary_Entity oldcopy = new M_SRWA_12G_Summary_Entity();
+	        BeanUtils.copyProperties(modRecord, oldcopy);
+
+	        // 4. Apply maker edits to MOD in-memory only
+	        String[] fields = { "SECURITY_FIRM", "CREDIT_RATING", "RATING_AGENCY",
+	                            "EXPOSURE_AMOUNT", "RISK_WEIGHT", "RISK_WEIGHTED_AMOUNT" };
+	        applyChangesToEntity(11, 60, fields, request, modRecord);
+	        // Row 61 has only 2 fields
+	        applyChangesToEntity(61, 61,
+	                new String[] { "EXPOSURE_AMOUNT", "RISK_WEIGHTED_AMOUNT" },
+	                request, modRecord);
+
+	        // 5. Diff
+	        String changes = auditService.getChanges(oldcopy, modRecord);
+	        logger.info("M_SRWA_12G changes length: {}", changes != null ? changes.length() : 0);
+
+	        // 6. Maker-Checker flags
+	        modRecord.setENTITY_FLG("Y");
+	        modRecord.setMODIFY_FLG("Y");
+	        modRecord.setDEL_FLG("N");
+
+	        // 7. Persist MOD only
+	        saveModSummaryEntity(modRecord);
+	        logger.info("✔ M_SRWA_12G record saved to BRRS_M_SRWA_12G_MOD_SUMMARYTABLE — pending Checker approval");
+	        
+	        
+
+	        // 8. Audit against MOD table
+	        if (changes != null && !changes.isEmpty()) {
+	        	System.out.println("===== 12G MAKER DEBUG =====");
+	        	System.out.println("changes (raw)      : " + changes);
+	        	System.out.println("changes.length()   : " + (changes == null ? "null" : changes.length()));
+	        	System.out.println("modRecord.R11_FIRM : " + modRecord.getR11_security_firm());
+	        	System.out.println("oldcopy.R11_FIRM   : " + oldcopy.getR11_security_firm());
+	        	System.out.println("modRecord.MODIFY   : " + modRecord.getMODIFY_FLG());
+	        	System.out.println("===========================");
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    modRecord,
+	                    request.getREPORT_DATE().toString(),
+	                    "M SRWA 12G Summary Screen",
+	                    "BRRS_M_SRWA_12G_MOD_SUMMARYTABLE");
+	        }
+
+	    } catch (Exception e) {
+	        logger.error("Error updating M_SRWA_12G (MAKER)", e);
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+	// Fetch live summary record
+	public M_SRWA_12G_Summary_Entity findByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SRWA_12G_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SRWA_12G_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[] { reportDate }, new M_SRWA_12G_RowMapper_Summary());
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	// Fetch pending MOD record
+	public M_SRWA_12G_Summary_Entity findModRecordByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SRWA_12G_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[] { reportDate }, new M_SRWA_12G_RowMapper_Summary());
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields,
+	        M_SRWA_12G_Summary_Entity source, M_SRWA_12G_Summary_Entity target) {
+
+	    for (int i = startRow; i <= endRow; i++) {
+	        String prefix = "R" + i + "_";
+	        for (String field : fields) {
+	            // ★ FIX: entity getters are camelCase — "getR11_security_firm", not "getR11_SECURITY_FIRM"
+	            String lowerField = field.toLowerCase();
+	            String getterName = "get" + prefix + lowerField;
+	            String setterName = "set" + prefix + lowerField;
+
+	            java.lang.reflect.Method getter;
+	            try {
+	                getter = M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+	            } catch (NoSuchMethodException nsme) {
+	                // Field doesn't exist on this row (e.g. R61_SECURITY_FIRM) — skip
+	                System.out.println("[12G] skip missing getter: " + getterName);
+	                continue;
 	            }
 
-	        } else {
+	            Object value;
+	            try {
+	                value = getter.invoke(source);
+	            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                throw new RuntimeException("Reflection failed for getter: " + getterName, ex);
+	            }
 
-	            logger.info("No changes detected.");
+	            // Clean string-encoded numbers
+	            if (value instanceof String) {
+	                String s = ((String) value).trim().replace(",", "");
+	                if (s.isEmpty() || "nil".equalsIgnoreCase(s)
+	                        || "null".equalsIgnoreCase(s) || "-".equals(s)
+	                        || "n/a".equalsIgnoreCase(s)) {
+	                    value = null;
+	                } else {
+	                    try {
+	                        value = new java.math.BigDecimal(s);
+	                    } catch (NumberFormatException nfe) {
+	                        value = null;
+	                    }
+	                }
+	            }
+
+	            try {
+	                java.lang.reflect.Method setter =
+	                        M_SRWA_12G_Summary_Entity.class.getMethod(
+	                                setterName, getter.getReturnType());
+	                setter.invoke(target, value);
+	            } catch (NoSuchMethodException nsme) {
+	                System.out.println("[12G] skip missing setter: " + setterName);
+	            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                throw new RuntimeException("Reflection failed for setter: " + setterName, ex);
+	            }
 	        }
-
-	    } catch (Exception e) {
-
-	        logger.error("Error updating SRWA 12G", e);
-
-	        throw new RuntimeException(e);
 	    }
 	}
 	
-	private Object getValue(Object obj, String methodName) {
+
+	public void saveModSummaryEntity(M_SRWA_12G_Summary_Entity entity) {
+
+	    org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate namedJdbc =
+	            new org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate(jdbcTemplate);
+
+	    // Default version so the (REPORT_DATE, REPORT_VERSION) unique index is meaningful
+	    java.math.BigDecimal version = entity.getREPORT_VERSION();
+	    if (version == null) {
+	        version = java.math.BigDecimal.ONE;
+	        entity.setREPORT_VERSION(version);
+	    }
+
+	    Integer count = namedJdbc.queryForObject(
+	            "SELECT COUNT(*) FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:d)",
+	            new org.springframework.jdbc.core.namedparam.MapSqlParameterSource("d", entity.getREPORT_DATE()),
+	            Integer.class);
+
+	    org.springframework.jdbc.core.namedparam.MapSqlParameterSource params =
+	            new org.springframework.jdbc.core.namedparam.MapSqlParameterSource()
+	                    .addValue("d",   entity.getREPORT_DATE())
+	                    .addValue("ver", version)
+	                    .addValue("ent", entity.getENTITY_FLG())
+	                    .addValue("mod", entity.getMODIFY_FLG())
+	                    .addValue("del", entity.getDEL_FLG());
+
+	    StringBuilder updateSet = new StringBuilder(
+	            "ENTITY_FLG = :ent, MODIFY_FLG = :mod, DEL_FLG = :del, REPORT_VERSION = :ver");
+	    java.util.List<String> insertCols   = new java.util.ArrayList<>();
+	    java.util.List<String> insertParams = new java.util.ArrayList<>();
+
+	    insertCols.add("REPORT_DATE");     insertParams.add(":d");
+	    insertCols.add("REPORT_VERSION");  insertParams.add(":ver");
+	    insertCols.add("ENTITY_FLG");      insertParams.add(":ent");
+	    insertCols.add("MODIFY_FLG");      insertParams.add(":mod");
+	    insertCols.add("DEL_FLG");         insertParams.add(":del");
+
+	    // R11–R60: 6 fields each
+	    String[] fields6 = { "security_firm", "credit_rating", "rating_agency",
+	                         "exposure_amount", "risk_weight", "risk_weighted_amount" };
+	    for (int i = 11; i <= 60; i++) {
+	        for (String f : fields6) {
+	            String col       = "R" + i + "_" + f.toUpperCase();   // DB column name
+	            String param     = "r" + i + "_" + f;                 // bound parameter
+	            String getterName = "getR" + i + "_" + f;             // ★ camelCase getter
+	            try {
+	                java.lang.reflect.Method g =
+	                        M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+
+	                Object value;
+	                try {
+	                    value = g.invoke(entity);
+	                } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                    throw new RuntimeException("Reflection failed for getter: " + getterName, ex);
+	                }
+
+	                params.addValue(param, value);
+	                updateSet.append(", ").append(col).append(" = :").append(param);
+	                insertCols.add(col);
+	                insertParams.add(":" + param);
+
+	            } catch (NoSuchMethodException nsme) {
+	                System.out.println("[12G] saveMod skip missing getter: " + getterName);
+	            }
+	        }
+	    }
+
+	    // R61: 2 fields
+	    for (String f : new String[] { "exposure_amount", "risk_weighted_amount" }) {
+	        String col        = "R61_" + f.toUpperCase();
+	        String param      = "r61_" + f;
+	        String getterName = "getR61_" + f;
+	        try {
+	            java.lang.reflect.Method g =
+	                    M_SRWA_12G_Summary_Entity.class.getMethod(getterName);
+
+	            Object value;
+	            try {
+	                value = g.invoke(entity);
+	            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                throw new RuntimeException("Reflection failed for getter: " + getterName, ex);
+	            }
+
+	            params.addValue(param, value);
+	            updateSet.append(", ").append(col).append(" = :").append(param);
+	            insertCols.add(col);
+	            insertParams.add(":" + param);
+
+	        } catch (NoSuchMethodException nsme) {
+	            System.out.println("[12G] saveMod skip missing getter: " + getterName);
+	        }
+	    }
+
+	    if (count != null && count > 0) {
+	        namedJdbc.update(
+	                "UPDATE BRRS_M_SRWA_12G_MOD_SUMMARYTABLE SET " + updateSet
+	                        + " WHERE TRUNC(REPORT_DATE) = TRUNC(:d)",
+	                params);
+	        System.out.println("✔ 12G MOD updated, columns=" + (insertCols.size() - 5));
+	    } else {
+	        namedJdbc.update(
+	                "INSERT INTO BRRS_M_SRWA_12G_MOD_SUMMARYTABLE ("
+	                        + String.join(", ", insertCols) + ") VALUES ("
+	                        + String.join(", ", insertParams) + ")",
+	                params);
+	        System.out.println("✔ 12G MOD inserted, columns=" + (insertCols.size() - 5));
+	    }
+	}
+	
+	@Transactional
+	public void approveReport(Date reportDate) {
+
+	    if (reportDate == null) {
+	        throw new IllegalArgumentException("REPORT_DATE is required to approve M_SRWA_12G");
+	    }
+
+	    // 1. Load pending MOD row
+	    M_SRWA_12G_Summary_Entity modRecord = findModRecordByReportDate(reportDate);
+	    if (modRecord == null) {
+	        throw new RuntimeException("No MOD record found for REPORT_DATE : " + reportDate);
+	    }
+	    if (!"Y".equalsIgnoreCase(modRecord.getMODIFY_FLG())) {
+	        throw new RuntimeException(
+	                "M_SRWA_12G MOD record is not pending approval for REPORT_DATE : " + reportDate);
+	    }
+
+	    // 2. Transfer MOD → LIVE (Summary + Detail)
+	    transferModValuesToLiveTables(modRecord, reportDate);
+
+	    // 3. Flip MOD flag
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_SRWA_12G_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	            "WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+
+	    logger.info("✔ M_SRWA_12G approved for date {}", reportDate);
+	}
+	
+	private void transferModValuesToLiveTables(M_SRWA_12G_Summary_Entity modRecord, Date reportDate) {
+
+	    if (modRecord == null || reportDate == null) {
+	        throw new IllegalArgumentException("modRecord and reportDate are required");
+	    }
+
+	    // ── 1. Update LIVE SUMMARY from MOD row ──
+	    //   We use a bulk UPDATE ... SET (cols) = (SELECT cols FROM MOD ...) so the transfer
+	    //   is one statement — atomic and consistent with AuditService.transferMSRWA12GData.
+	    String cols = buildMSRWA12GColumnList();   // private helper — see below
+	    String sels = buildMSRWA12GSelectList();   // private helper — see below
+
+	    String sqlSummary =
+	        "UPDATE BRRS_M_SRWA_12G_SUMMARYTABLE M " +
+	        "SET (" + cols + ") = (" +
+	        "    SELECT " + sels +
+	        "    FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(sqlSummary, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	                "M_SRWA_12G live summary row not found for date : " + reportDate);
+	    }
+	    logger.info("M_SRWA_12G Summary Table Updated : {}", summaryUpdated);
+
+	    // ── 2. Update LIVE DETAIL (guarded — skip if the table doesn't exist) ──
+	    try {
+	        String sqlDetail =
+	            "UPDATE BRRS_M_SRWA_12G_DETAILTABLE M " +
+	            "SET (" + cols + ") = (" +
+	            "    SELECT " + sels +
+	            "    FROM BRRS_M_SRWA_12G_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	        int detailUpdated = jdbcTemplate.update(sqlDetail, reportDate);
+	        logger.info("M_SRWA_12G Detail Table Updated : {}", detailUpdated);
+	    } catch (org.springframework.jdbc.BadSqlGrammarException ex) {
+	        logger.info("M_SRWA_12G DETAILTABLE not present — summary-only report. Skipping.");
+	    }
+	}
+
+	// ─────────────────────────────────────────────────────────
+	// Column / select builders (identical output to
+	// AuditService.buildMSRWA12GColumnList / buildMSRWA12GSelectList
+	// so both checker paths produce the same SQL).
+	// ─────────────────────────────────────────────────────────
+	private static String buildMSRWA12GColumnList() {
+	    StringBuilder sb = new StringBuilder();
+	    for (int row = 11; row <= 60; row++) {
+	        String p = "R" + row + "_";
+	        sb.append(p).append("SECURITY_FIRM, ")
+	          .append(p).append("CREDIT_RATING, ")
+	          .append(p).append("RATING_AGENCY, ")
+	          .append(p).append("EXPOSURE_AMOUNT, ")
+	          .append(p).append("RISK_WEIGHT, ")
+	          .append(p).append("RISK_WEIGHTED_AMOUNT, ");
+	    }
+	    sb.append("R61_EXPOSURE_AMOUNT, R61_RISK_WEIGHTED_AMOUNT, ");
+	    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    return sb.toString();
+	}
+
+	private static String buildMSRWA12GSelectList() {
+	    StringBuilder sb = new StringBuilder();
+	    for (int row = 11; row <= 60; row++) {
+	        String p = "S.R" + row + "_";
+	        sb.append(p).append("SECURITY_FIRM, ")
+	          .append(p).append("CREDIT_RATING, ")
+	          .append(p).append("RATING_AGENCY, ")
+	          .append(p).append("EXPOSURE_AMOUNT, ")
+	          .append(p).append("RISK_WEIGHT, ")
+	          .append(p).append("RISK_WEIGHTED_AMOUNT, ");
+	    }
+	    sb.append("S.R61_EXPOSURE_AMOUNT, S.R61_RISK_WEIGHTED_AMOUNT, ");
+	    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+	    return sb.toString();
+	}
+	
+	private static Object getValue(Object obj, String methodName) {
 	    try {
 	        return obj.getClass().getMethod(methodName).invoke(obj);
-	    } catch (Exception e) {
-	        throw new RuntimeException(e);
+	    } catch (NoSuchMethodException nsme) {
+	        throw new RuntimeException(
+	            "Getter not found: " + methodName + " on " + obj.getClass().getName(), nsme);
+	    } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	        throw new RuntimeException(
+	            "Reflection failed for getter: " + methodName, ex);
 	    }
 	}
 
-	
 	
 	@Transactional
 	public void updateResubReport(M_SRWA_12G_Resub_Summary_Entity updatedEntity) {

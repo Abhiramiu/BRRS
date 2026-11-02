@@ -1142,63 +1142,142 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_SRWA_12G_ReportService BRRS_M_SRWA_12G_reportservice;
 
+	// =========================================================
+	// M_SRWA_12G — MAKER (writes into BRRS_M_SRWA_12G_MOD_SUMMARYTABLE only)
+	// =========================================================
 	@RequestMapping(value = "/M_SRWA_12GupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Summary_Entity request,
+	        HttpServletRequest req) {
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-			@ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Summary_Entity request) {
+	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12G modifications. Current role: " + role);
+	        }
 
-		try {
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
 
-			if (asondate != null) {
-				request.setREPORT_DATE(asondate);
-			}
+	        System.out.println("came to M_SRWA_12G maker controller, asondate=" + asondate + ", role=" + role);
 
-			BRRS_M_SRWA_12G_reportservice.updateReport(request);
+	        request.setREPORT_DATE(asondate);
 
-			return ResponseEntity.ok("Modified Successfully.");
+	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12G_MOD_SUMMARYTABLE. Live tables untouched.
+	        BRRS_M_SRWA_12G_reportservice.updateReport(request);
 
-		} catch (Exception e) {
-
-			e.printStackTrace();
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
-		}
+	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed : " + e.getMessage());
+	    }
 	}
 
+	// =========================================================
+	// M_SRWA_12G — CHECKER (by auditId) → routes through AuditService
+	// ── RECOMMENDED path (single source of truth) ──
+	// =========================================================
+	@RequestMapping(value = "/verifyAuditSRWA12G", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditSRWA12G(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12G. Current role: " + role);
+	        }
+
+	        System.out.println("came to verifyAuditSRWA12G (CHECKER) for auditId=" + auditId + ", role=" + role);
+
+	        // Dispatches to AuditService.transferMSRWA12GData(auditRecord)
+	        auditService.verifyAndTransferReport(auditId);
+
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// M_SRWA_12G — CHECKER (by date) → OPTIONAL
+	//   Add ONLY if your UI has a "Check by date" button.
+	//   Requires BRRS_M_SRWA_12G_ReportService.approveReport(Date).
+	//   Pick ONE checker path; running both must not double-approve.
+	// =========================================================
+	@RequestMapping(value = "/approveSRWA12G", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveSRWA12G(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12G. Current role: " + role);
+	        }
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+
+	        System.out.println("came to approveSRWA12G (CHECKER) for date: " + asondate + ", role=" + role);
+
+	        // ⚠️ Requires BRRS_M_SRWA_12G_ReportService.approveReport(Date)
+	        BRRS_M_SRWA_12G_reportservice.approveReport(asondate);
+
+	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approval Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// M_SRWA_12G — RESUB (unchanged; bypasses maker-checker)
+	// =========================================================
 	@RequestMapping(value = "/UpdateM_SRWA_12G_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @RequestParam(required = false) String type,
+	        @ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Resub_Summary_Entity request,
+	        HttpServletRequest req) {
 
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	    try {
+	        System.out.println("Came to M_SRWA_12G Resub Controller");
 
-			@RequestParam(required = false) String type,
+	        if (asondate != null) {
+	            request.setREPORT_DATE(asondate);
+	        }
 
-			@ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Resub_Summary_Entity request,
+	        BRRS_M_SRWA_12G_reportservice.updateResubReport(request);
 
-			HttpServletRequest req) {
-
-		try {
-
-			System.out.println("Came to M_SRWA_12G Resub Controller");
-
-			if (asondate != null) {
-				request.setREPORT_DATE(asondate);
-			}
-
-			BRRS_M_SRWA_12G_reportservice.updateResubReport(request);
-
-			return ResponseEntity.ok("Resubmission Updated Successfully");
-
-		} catch (Exception e) {
-
-			e.printStackTrace();
-
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("M_SRWA_12G Resubmission Update Failed : " + e.getMessage());
-		}
+	        return ResponseEntity.ok("Resubmission Updated Successfully");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("M_SRWA_12G Resubmission Update Failed : " + e.getMessage());
+	    }
 	}
 
 	@Autowired
@@ -1383,7 +1462,7 @@ public class BRRS_ReportsController {
 	    try {
 	        System.out.println("Came to M_OR1 maker controller");
 	        request1.setReport_date(asondate);
-	        M_OR1_service.updateReport(request1);   // MOD path — pending checker
+	        M_OR1_service.updateReport(request1); 
 	        return ResponseEntity.ok("Modification saved. Pending checker verification.");  // ⬅️ message updated
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -2986,6 +3065,9 @@ public class BRRS_ReportsController {
 	@Autowired
 	BRRS_M_SRWA_12F_ReportService M_SRWA_12FreportService;
 
+	// =========================================================
+	// M_SRWA_12F — MAKER (writes into BRRS_M_SRWA_12F_MOD_SUMMARYTABLE only)
+	// =========================================================
 	@RequestMapping(value = "/SRWA12FupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
@@ -2994,7 +3076,17 @@ public class BRRS_ReportsController {
 	        HttpServletRequest req) {
 
 	    try {
-	        System.out.println("came to SRWA12FupdateAll controller, asondate=" + asondateStr);
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12F modifications. Current role: " + role);
+	        }
+
+	        System.out.println("came to SRWA12FupdateAll (MAKER) controller, asondate=" + asondateStr
+	                + ", role=" + role);
 
 	        Date parsedDate = null;
 	        if (asondateStr != null && !asondateStr.trim().isEmpty()) {
@@ -3013,11 +3105,93 @@ public class BRRS_ReportsController {
 
 	        request.setReport_date(parsedDate);
 
+	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12F_MOD_SUMMARYTABLE. Live tables untouched.
 	        M_SRWA_12FreportService.updateReport(request);
-	        return ResponseEntity.ok("Modified Successfully.");
+
+	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// M_SRWA_12F — CHECKER (by date) → MOD → LIVE Summary + Detail
+	// =========================================================
+	@RequestMapping(value = "/approveSRWA12F", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveSRWA12F(
+	        @RequestParam(value = "asondate", required = false) String asondateStr,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12F modifications. Current role: " + role);
+	        }
+
+	        Date parsedDate = null;
+	        if (asondateStr != null && !asondateStr.trim().isEmpty()) {
+	            String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+	            for (String pattern : patterns) {
+	                try {
+	                    parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+	                    break;
+	                } catch (ParseException ignored) { }
+	            }
+	        }
+	        if (parsedDate == null) {
+	            return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
+	        }
+
+	        System.out.println("came to approveSRWA12F (CHECKER) for date: " + parsedDate + ", role=" + role);
+
+	        // ⚠️ Service method must exist: copies MOD → LIVE summary + detail, flips MODIFY_FLG='N'
+	        M_SRWA_12FreportService.approveReport(parsedDate);
+
+	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approval Failed: " + e.getMessage());
+	    }
+	}
+
+	// =========================================================
+	// M_SRWA_12F — CHECKER (by auditId) → routes through AuditService
+	// =========================================================
+	@RequestMapping(value = "/verifyAuditSRWA12F", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditSRWA12F(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12F. Current role: " + role);
+	        }
+
+	        System.out.println("came to verifyAuditSRWA12F (CHECKER) for auditId: " + auditId + ", role=" + role);
+
+	        // ⚠️ This path dispatches to AuditService.transferMSRWA12FData(auditRecord)
+	        //    — see AuditService §1.1 in the previous review for the required branch.
+	        auditService.verifyAndTransferReport(auditId);
+
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
 	    }
 	}
 
@@ -4473,25 +4647,104 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_SRWA_12H_ReportService M_SRWA_12Hservice;
 
+	
 	@RequestMapping(value = "/UpdateM_SRWA_12H", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute M_SRWA_12H_Summary_Entity request, HttpServletRequest req) {
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute M_SRWA_12H_Summary_Entity request,
+	        HttpServletRequest req) {
 
-		try {
-			System.out.println("came to First controller");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-			// ✅ set the asondate into entity
-			request.setReportDate(asondate);
+	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12H modifications. Current role: " + role);
+	        }
 
-			M_SRWA_12Hservice.updateReport(request);
-			return ResponseEntity.ok("Modified Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+
+	        System.out.println("came to M_SRWA_12H maker controller, asondate=" + asondate + ", role=" + role);
+
+	        request.setReportDate(asondate);
+
+	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12H_MOD_SUMMARYTABLE. Live tables untouched.
+	        M_SRWA_12Hservice.updateReport(request);
+
+	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+	
+	
+	@RequestMapping(value = "/verifyAuditSRWA12H", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditSRWA12H(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12H. Current role: " + role);
+	        }
+
+	        System.out.println("came to verifyAuditSRWA12H (CHECKER) for auditId=" + auditId + ", role=" + role);
+
+	        // Dispatches to AuditService.transferMSRWA12HData(auditRecord)
+	        auditService.verifyAndTransferReport(auditId);
+
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
+	    }
+	}
+	
+	
+	@RequestMapping(value = "/approveSRWA12H", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveSRWA12H(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        HttpServletRequest req) {
+
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        // ✅ CHECKER gate — MAN/ADMIN allowed
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12H. Current role: " + role);
+	        }
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+
+	        System.out.println("came to approveSRWA12H (CHECKER) for date: " + asondate + ", role=" + role);
+
+	        // ⚠️ Requires BRRS_M_SRWA_12H_ReportService.approveReport(Date)
+	        M_SRWA_12Hservice.approveReport(asondate);
+
+	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approval Failed: " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/UpdateM_SRWA_12H_ReSub", method = { RequestMethod.GET, RequestMethod.POST })

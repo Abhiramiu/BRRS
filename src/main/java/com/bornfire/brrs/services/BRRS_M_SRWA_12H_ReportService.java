@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -41,6 +42,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.bornfire.brrs.entities.UserProfileRep;
 
@@ -1208,94 +1211,362 @@ public class BRRS_M_SRWA_12H_ReportService {
 	}
 
 	@Transactional
-	public void updateReport(M_SRWA_12H_Summary_Entity updatedEntity) {
+	public void updateReport(M_SRWA_12H_Summary_Entity request) {
 
-		System.out.println("Came to services 1");
-		System.out.println("Report Date: " + updatedEntity.getReportDate());
+	    if (request == null || request.getReportDate() == null) {
+	        throw new IllegalArgumentException("REPORT_DATE is required to update M_SRWA_12H");
+	    }
 
-		// Fetch existing SUMMARY record
-		M_SRWA_12H_Summary_Entity existingSummary = getSummaryByDate(updatedEntity.getReportDate()).stream().findFirst()
-				.orElseThrow(() -> new RuntimeException(
-						"Record not found for REPORT_DATE: " + updatedEntity.getReportDate()));
+	    try {
+	        logger.info("Came to M_SRWA_12H updateReport (MAKER)");
+	        logger.info("Report Date : {}", request.getReportDate());
 
-		// Audit copy
-		M_SRWA_12H_Summary_Entity oldcopy = new M_SRWA_12H_Summary_Entity();
-		BeanUtils.copyProperties(existingSummary, oldcopy);
+	        // 1. Baseline — live summary
+	        M_SRWA_12H_Summary_Entity liveSummary = findByReportDate(request.getReportDate());
+	        if (liveSummary == null) {
+	            throw new RuntimeException(
+	                    "Record not found in live summary table for REPORT_DATE : " + request.getReportDate());
+	        }
 
-		// Fetch existing DETAIL record or create new
-		M_SRWA_12H_Detail_Entity detailEntity = getDetailByDate(updatedEntity.getReportDate()).stream().findFirst()
-				.orElseGet(() -> {
-					M_SRWA_12H_Detail_Entity d = new M_SRWA_12H_Detail_Entity();
-					d.setReportDate(updatedEntity.getReportDate());
-					return d;
-				});
+	        // 2. Existing MOD row (re-edit) or fresh seed from live
+	        M_SRWA_12H_Summary_Entity modRecord = findModRecordByReportDate(request.getReportDate());
+	        if (modRecord == null) {
+	            modRecord = new M_SRWA_12H_Summary_Entity();
+	            BeanUtils.copyProperties(liveSummary, modRecord);
+	        }
 
-		try {
-			// Loop through R12 to R81
-			for (int i = 12; i <= 81; i++) {
+	        // 3. "Before" snapshot for audit (captures pre-Save flags, i.e. MODIFY_FLG='N' on first Save)
+	        M_SRWA_12H_Summary_Entity oldcopy = new M_SRWA_12H_Summary_Entity();
+	        BeanUtils.copyProperties(modRecord, oldcopy);
 
-				String prefix = "R" + i + "_";
+	        // 4. Apply maker edits to MOD in-memory only — R11..R81 (no sparse row)
+	        String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                            "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                            "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+	        applyChangesToEntity(11, 81, fields, request, modRecord);
 
-				String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING", "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM",
-						"5YR_VAL_OF_CRM", "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+	        // ★ 5. Maker-Checker flags — set BEFORE the diff so the flag transition is captured
+	        modRecord.setENTITY_FLG("Y");
+	        modRecord.setMODIFY_FLG("Y");
+	        modRecord.setDEL_FLG("N");
 
-				for (String field : fields) {
+	        // 6. Diff (now includes the MODIFY_FLG N→Y transition → changes is never empty on Save)
+	        String changes = auditService.getChanges(oldcopy, modRecord);
+	        logger.info("M_SRWA_12H changes length: {}", changes != null ? changes.length() : 0);
 
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
+	        // 7. Persist MOD only (live untouched until Checker)
+	        saveModSummaryEntity(modRecord);
+	        logger.info("✔ M_SRWA_12H record saved to BRRS_M_SRWA_12H_MOD_SUMMARYTABLE — pending Checker approval");
 
-					try {
-						// Get value from updated entity
-						Method getter = M_SRWA_12H_Summary_Entity.class.getMethod(getterName);
-						Object newValue = getter.invoke(updatedEntity);
+	        // 8. Audit against MOD table — fires on every Save
+	        if (changes != null && !changes.isEmpty()) {
+	            auditService.compareEntitiesmanual(
+	                    oldcopy,
+	                    modRecord,
+	                    request.getReportDate().toString(),
+	                    "M SRWA 12H Summary Screen",
+	                    "BRRS_M_SRWA_12H_MOD_SUMMARYTABLE");
+	        }
+	    } catch (Exception e) {
+	        logger.error("Error updating M_SRWA_12H (MAKER)", e);
+	        throw new RuntimeException(e);
+	    }
+	}
+	
+	public M_SRWA_12H_Summary_Entity findByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SRWA_12H_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SRWA_12H_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[] { reportDate }, new M_SRWA_12HSummaryRowMapper());
+	    return list.isEmpty() ? null : list.get(0);
+	}
 
-						// Get current value from existing record to compare
-						Object existingValue = getter.invoke(existingSummary);
+	public M_SRWA_12H_Summary_Entity findModRecordByReportDate(Date reportDate) {
+	    String sql = "SELECT * FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_SRWA_12H_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[] { reportDate }, new M_SRWA_12HSummaryRowMapper());
+	    return list.isEmpty() ? null : list.get(0);
+	}
+	
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields,
+	        M_SRWA_12H_Summary_Entity source, M_SRWA_12H_Summary_Entity target) {
 
-						// --- FIX: Normalize nulls vs empty strings to prevent audit bloat ---
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
+	    for (int i = startRow; i <= endRow; i++) {
+	        String prefix = "R" + i + "_";
+	        for (String field : fields) {
 
-						// If values are identical, do not overwrite/dirty the fields or trigger audit
-						// logs
-						if (currentValStr.equals(newValStr)) {
-							continue;
-						}
+	            String getterName = "get" + prefix + field;
+	            String setterName = "set" + prefix + field;
 
-						// Update SUMMARY entity
-						Method summarySetter = M_SRWA_12H_Summary_Entity.class.getMethod(setterName,
-								getter.getReturnType());
-						summarySetter.invoke(existingSummary, newValue);
+	            Method getter;
+	            try {
+	                getter = M_SRWA_12H_Summary_Entity.class.getMethod(getterName);
+	            } catch (NoSuchMethodException nsme) {
+	                continue;
+	            }
 
-						// Update DETAIL entity
-						Method detailSetter = M_SRWA_12H_Detail_Entity.class.getMethod(setterName,
-								getter.getReturnType());
-						detailSetter.invoke(detailEntity, newValue);
+	            Object value;
+	            try {
+	                value = getter.invoke(source);
+	            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                throw new RuntimeException("Reflection failed for getter: " + getterName, ex);
+	            }
 
-					} catch (NoSuchMethodException e) {
-						// Skip missing fields safely
-						continue;
-					}
-				}
-			}
+	            // ── Distinguish "not submitted" (null from reflection) from "explicitly cleared" (empty string) ──
+	            boolean explicitClear = false;
+	            if (value instanceof String) {
+	                String s = ((String) value).trim().replace(",", "");
+	                if (s.isEmpty() || "nil".equalsIgnoreCase(s)
+	                        || "null".equalsIgnoreCase(s) || "-".equals(s)
+	                        || "n/a".equalsIgnoreCase(s)) {
+	                    value = null;
+	                    explicitClear = true;
+	                } else {
+	                    try {
+	                        value = new java.math.BigDecimal(s);
+	                    } catch (NumberFormatException nfe) {
+	                        value = null;
+	                    }
+	                }
+	            }
 
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
-		}
+	            // ★ 12H UI submits only edited cells — skip fields the maker didn't touch
+	            if (value == null && !explicitClear) {
+	                continue;
+	            }
 
-		// Evaluate the actual changes calculated post-normalization
-		String changes = auditService.getChanges(oldcopy, existingSummary);
-		System.out.println("M_SRWA_12H Changes Length = " + changes.length());
+	            try {
+	                Method setter = M_SRWA_12H_Summary_Entity.class.getMethod(
+	                        setterName, getter.getReturnType());
+	                setter.invoke(target, value);
+	            } catch (NoSuchMethodException nsme) {
+	                // Setter missing — skip
+	            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                throw new RuntimeException("Reflection failed for setter: " + setterName, ex);
+	            }
+	        }
+	    }
+	}
+	
+	public void saveModSummaryEntity(M_SRWA_12H_Summary_Entity entity) {
 
-		saveSummary(existingSummary);
-		saveDetail(detailEntity);
+	    NamedParameterJdbcTemplate np = new NamedParameterJdbcTemplate(jdbcTemplate);
 
-		// Only invoke audit logger if actual physical modifications exist
-		if (changes != null && !changes.isEmpty()) {
+	    // ── 1. Default version so the (REPORT_DATE, REPORT_VERSION) unique index is meaningful ──
+	    BigDecimal version = entity.getReportVersion();
+	    if (version == null) {
+	        version = BigDecimal.ONE;
+	        entity.setReportVersion(version);
+	    }
 
-			auditService.compareEntitiesmanual(oldcopy, existingSummary, updatedEntity.getReportDate().toString(),
-					"M_SRWA_12H Summary Screen", "BRRS_M_SRWA_12H_SUMMARY");
-		}
+	    // ── 2. Existence check ──
+	    Integer count = np.queryForObject(
+	            "SELECT COUNT(*) FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)",
+	            new MapSqlParameterSource("reportDate", entity.getReportDate()),
+	            (java.sql.ResultSet rs, int rowNum) -> rs.getInt(1));
+
+	    // ── 3. Bind common params ──
+	    MapSqlParameterSource p = new MapSqlParameterSource()
+	            .addValue("reportDate", entity.getReportDate())
+	            .addValue("version",    version)
+	            .addValue("entity_flg", entity.getENTITY_FLG())
+	            .addValue("modify_flg", entity.getMODIFY_FLG())
+	            .addValue("del_flg",    entity.getDEL_FLG())
+	            .addValue("freq",       entity.getREPORT_FREQUENCY())
+	            .addValue("code",       entity.getREPORT_CODE())
+	            .addValue("desc",       entity.getREPORT_DESC())
+	            .addValue("resub",      entity.getReportResubDate());   // ★ drop if no getter (Issue 1, Option B)
+
+	    // ── 4. Update clause ──
+	    StringBuilder updateSet = new StringBuilder(
+	            "ENTITY_FLG = :entity_flg, MODIFY_FLG = :modify_flg, DEL_FLG = :del_flg, " +
+	            "REPORT_VERSION = :version, REPORT_FREQUENCY = :freq, " +
+	            "REPORT_CODE = :code, REPORT_DESC = :desc, REPORT_RESUBDATE = :resub");  // ★ drop ", REPORT_RESUBDATE = :resub" if no getter
+
+	    List<String> insertCols = new ArrayList<>();
+	    List<String> insertVals = new ArrayList<>();
+
+	    // ── 5. Common insert columns ──
+	    insertCols.add("REPORT_DATE");      insertVals.add(":reportDate");
+	    insertCols.add("REPORT_VERSION");   insertVals.add(":version");
+	    insertCols.add("REPORT_FREQUENCY"); insertVals.add(":freq");
+	    insertCols.add("REPORT_CODE");      insertVals.add(":code");
+	    insertCols.add("REPORT_DESC");      insertVals.add(":desc");
+	    insertCols.add("ENTITY_FLG");       insertVals.add(":entity_flg");
+	    insertCols.add("MODIFY_FLG");       insertVals.add(":modify_flg");
+	    insertCols.add("DEL_FLG");          insertVals.add(":del_flg");
+	    insertCols.add("REPORT_RESUBDATE"); insertVals.add(":resub");   // ★ drop if no getter
+
+	    // ── 6. R11..R81 × 9 fields — 12H entity uses UPPERCASE-suffix getters ──
+	    String[] fields9 = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                         "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                         "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+
+	    for (int i = 11; i <= 81; i++) {
+	        for (String field : fields9) {
+	            String getterName = "getR" + i + "_" + field;
+	            String paramName  = "r" + i + "_" + field.toLowerCase();
+	            String columnName = "R" + i + "_" + field;
+
+	            try {
+	                Method getter = M_SRWA_12H_Summary_Entity.class.getMethod(getterName);
+	                Object value;
+	                try {
+	                    value = getter.invoke(entity);
+	                } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	                    throw new RuntimeException("Reflection failed for getter: " + getterName, ex);
+	                }
+
+	                // ★ Issue 2 fix: R81_PRODUCT is NUMBER(24,2) — guard against non-numeric values
+	                if (i == 81 && "PRODUCT".equals(field)) {
+	                    if (value == null) {
+	                        // null is fine — bind as null
+	                    } else if (value instanceof BigDecimal) {
+	                        // fine — bind as-is
+	                    } else {
+	                        try {
+	                            value = new BigDecimal(value.toString().trim().replace(",", ""));
+	                        } catch (NumberFormatException nfe) {
+	                            logger.warn("[12H] R81_PRODUCT is NUMBER(24,2) — skipping non-numeric value: {}", value);
+	                            continue;
+	                        }
+	                    }
+	                }
+
+	                p.addValue(paramName, value);
+	                updateSet.append(", ").append(columnName).append(" = :").append(paramName);
+	                insertCols.add(columnName);
+	                insertVals.add(":" + paramName);
+
+	            } catch (NoSuchMethodException ignore) {
+	                // Sparse row (shouldn't happen for 12H) — skip
+	            }
+	        }
+	    }
+
+	    // ── 7. Upsert ──
+	    if (count != null && count > 0) {
+	        np.update("UPDATE BRRS_M_SRWA_12H_MOD_SUMMARYTABLE SET " + updateSet
+	                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)", p);
+	        logger.info("✔ BRRS_M_SRWA_12H_MOD_SUMMARYTABLE updated");
+	    } else {
+	        np.update("INSERT INTO BRRS_M_SRWA_12H_MOD_SUMMARYTABLE ("
+	                + String.join(", ", insertCols)
+	                + ") VALUES (" + String.join(", ", insertVals) + ")", p);
+	        logger.info("✔ BRRS_M_SRWA_12H_MOD_SUMMARYTABLE inserted");
+	    }
+	}
+	
+	@Transactional
+	public void approveReport(Date reportDate) {
+
+	    if (reportDate == null) {
+	        throw new IllegalArgumentException("REPORT_DATE is required to approve M_SRWA_12H");
+	    }
+
+	    M_SRWA_12H_Summary_Entity modRecord = findModRecordByReportDate(reportDate);
+	    if (modRecord == null) {
+	        throw new RuntimeException("No MOD record found for REPORT_DATE : " + reportDate);
+	    }
+	    if (!"Y".equalsIgnoreCase(modRecord.getMODIFY_FLG())) {
+	        throw new RuntimeException(
+	                "M_SRWA_12H MOD record is not pending approval for REPORT_DATE : " + reportDate);
+	    }
+
+	    transferModValuesToLiveTables(modRecord, reportDate);
+
+	    jdbcTemplate.update(
+	            "UPDATE BRRS_M_SRWA_12H_MOD_SUMMARYTABLE SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	            "WHERE TRUNC(REPORT_DATE)=TRUNC(?)", reportDate);
+
+	    logger.info("✔ M_SRWA_12H approved for date {}", reportDate);
+	}
+	
+	private void transferModValuesToLiveTables(M_SRWA_12H_Summary_Entity modRecord, Date reportDate) {
+
+	    if (modRecord == null || reportDate == null) {
+	        throw new IllegalArgumentException("modRecord and reportDate are required");
+	    }
+
+	    String cols = buildMSRWA12HColumnList();
+	    String sels = buildMSRWA12HSelectList();
+
+	    // ── 1. MOD → LIVE Summary ──
+	    String sqlSummary =
+	        "UPDATE BRRS_M_SRWA_12H_SUMMARYTABLE M " +
+	        "SET (" + cols + ") = (" +
+	        "    SELECT " + sels +
+	        "    FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(sqlSummary, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException(
+	                "M_SRWA_12H live summary row not found for date : " + reportDate);
+	    }
+	    logger.info("M_SRWA_12H Summary Table Updated : {}", summaryUpdated);
+
+	    // ── 2. MOD → LIVE Detail (guarded — skip if the table doesn't exist) ──
+	    try {
+	        String sqlDetail =
+	            "UPDATE BRRS_M_SRWA_12H_DETAILTABLE M " +
+	            "SET (" + cols + ") = (" +
+	            "    SELECT " + sels +
+	            "    FROM BRRS_M_SRWA_12H_MOD_SUMMARYTABLE S " +
+	            "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	            ") " +
+	            "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	        int detailUpdated = jdbcTemplate.update(sqlDetail, reportDate);
+	        logger.info("M_SRWA_12H Detail Table Updated : {}", detailUpdated);
+	    } catch (org.springframework.jdbc.BadSqlGrammarException ex) {
+	        logger.info("M_SRWA_12H DETAILTABLE not present — summary-only report. Skipping.");
+	    }
+	}
+
+	// ─────────────────────────────────────────────────────────
+	// Column / select builders — MUST be identical to the ones
+	// in AuditService.transferMSRWA12HData so both checker paths
+	// (by-date and by-auditId) produce the same SQL.
+	// ─────────────────────────────────────────────────────────
+	private static String buildMSRWA12HColumnList() {
+	    StringBuilder sb = new StringBuilder();
+	    String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                        "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                        "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+	    for (int row = 11; row <= 81; row++) {
+	        for (String f : fields) {
+	            sb.append("R").append(row).append("_").append(f).append(", ");
+	        }
+	    }
+	    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    return sb.toString();
+	}
+
+	private static String buildMSRWA12HSelectList() {
+	    StringBuilder sb = new StringBuilder();
+	    String[] fields = { "PRODUCT", "ISSUER", "ISSUES_RATING",
+	                        "1YR_VAL_OF_CRM", "1YR_5YR_VAL_OF_CRM", "5YR_VAL_OF_CRM",
+	                        "OTHER", "STD_SUPERVISORY_HAIRCUT", "APPLICABLE_RISK_WEIGHT" };
+	    for (int row = 11; row <= 81; row++) {
+	        for (String f : fields) {
+	            sb.append("S.R").append(row).append("_").append(f).append(", ");
+	        }
+	    }
+	    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+	    return sb.toString();
+	}
+	
+	private static Object getValue(Object obj, String methodName) {
+	    try {
+	        return obj.getClass().getMethod(methodName).invoke(obj);
+	    } catch (NoSuchMethodException nsme) {
+	        throw new RuntimeException(
+	            "Getter not found: " + methodName + " on " + obj.getClass().getName(), nsme);
+	    } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+	        throw new RuntimeException("Reflection failed for getter: " + methodName, ex);
+	    }
 	}
 
 	@Transactional
@@ -1374,7 +1645,8 @@ public class BRRS_M_SRWA_12H_ReportService {
 		insertArchivalSummary(archSummary);
 		insertArchivalDetail(archDetail);
 	}
-
+	
+	
 	public byte[] BRRS_M_SRWA_12HExcel(String filename, String reportId, String fromdate, String todate,
 			String currency, String dtltype, String type, String format, BigDecimal version) throws Exception {
 		logger.info("Service: Starting Excel generation process in memory.");
