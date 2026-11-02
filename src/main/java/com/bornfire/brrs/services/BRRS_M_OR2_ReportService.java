@@ -1,5 +1,3 @@
-
-
 package com.bornfire.brrs.services;
 
 import java.io.ByteArrayOutputStream;
@@ -18,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -99,17 +100,12 @@ public class BRRS_M_OR2_ReportService {
 }
 	
 	public M_OR2_Summary_Entity findByReportDate(Date reportDate) {
-
-	    String sql =
-	            "SELECT * FROM BRRS_M_OR2_SUMMARYTABLE " +
-	            "WHERE REPORT_DATE = ?";
-
-	    return jdbcTemplate.queryForObject(
-	            sql,
-	            new Object[]{reportDate},
-	            new M_OR2_Summary_RowMapper()
-	    );
+	    String sql = "SELECT * FROM BRRS_M_OR2_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+	    List<M_OR2_Summary_Entity> list = jdbcTemplate.query(
+	            sql, new Object[]{ reportDate }, new M_OR2_Summary_RowMapper());
+	    return list.isEmpty() ? null : list.get(0);
 	}
+	
 // =====================================================
 // ARCHIVAL  SUMAMRY REPO
 // =====================================================
@@ -22862,149 +22858,187 @@ public List<Object[]> getM_OR2Archival() {
 @Transactional
 public void updateReport(M_OR2_Summary_Entity updatedEntity) {
 
-    System.out.println("Came to M_OR2 Update");
-    System.out.println("Report Date: " + updatedEntity.getReport_date());
+    System.out.println("Came to M_OR2 Maker update. Date : " + updatedEntity.getReport_date());
 
-    // ==========================================
-    // FETCH EXISTING RECORD FOR AUDIT
-    // ==========================================
-
-    M_OR2_Summary_Entity existingSummary =
-            findByReportDate(updatedEntity.getReport_date());
-
-    if (existingSummary == null) {
-        throw new RuntimeException(
-                "Record not found for REPORT_DATE : "
-                        + updatedEntity.getReport_date());
+    M_OR2_Summary_Entity liveSummary = findByReportDate(updatedEntity.getReport_date());
+    if (liveSummary == null) {
+        throw new RuntimeException("Record not found in live M_OR2 summary for REPORT_DATE : "
+                + updatedEntity.getReport_date());
     }
 
-    // ==========================================
-    // OLD COPY FOR AUDIT
-    // ==========================================
+    M_OR2_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+    if (modRecord == null) {
+        modRecord = new M_OR2_Summary_Entity();
+        BeanUtils.copyProperties(liveSummary, modRecord);
+    }
 
-    M_OR2_Summary_Entity oldcopy =
-            new M_OR2_Summary_Entity();
+    M_OR2_Summary_Entity oldcopy = new M_OR2_Summary_Entity();
+    BeanUtils.copyProperties(modRecord, oldcopy);
 
-    BeanUtils.copyProperties(existingSummary, oldcopy);
+    /* Apply maker's edits onto modRecord ONLY — LIVE tables untouched. */
+    applyChangesToEntity(updatedEntity, modRecord);
 
-    String[] fields = {
-	                   "corporate_finance",
-	                    "trading_and_sales",
-	                    "retail_banking",
-	                    "commercial_banking",
-	                    "payments_and_settlements",
-	                    "agency_services",
-	                    "asset_management",
-	                    "retail_brokerage"
-	            };
+    modRecord.setEntity_flg("Y");
+    modRecord.setModify_flg("Y");
+    modRecord.setDel_flg("N");
 
-    try {
+    saveModSummaryEntity(modRecord);
+    System.out.println("✔ M_OR2 MOD saved for Checker Approval. Date : " + updatedEntity.getReport_date());
 
-        for (int i = 12; i <= 65; i++) {
+    String changes = auditService.getChanges(oldcopy, modRecord);
+    if (changes != null && !changes.isEmpty()) {
+        auditService.compareEntitiesmanual(oldcopy, modRecord,
+                updatedEntity.getReport_date().toString(),
+                "M OR2 Summary Screen", "BRRS_M_OR2_MOD_SUMMARYTABLE");
+    }
+}
 
-            for (String field : fields) {
+/* Static driver: row-number → field list */
+private static final String[] OR2_BLOCK_A_FIELDS = {
+        "business_line_month",
+        "corporate_finance", "trading_and_sales", "retail_banking", "commercial_banking",
+        "payments_and_settlements", "agency_services", "asset_management", "retail_brokerage"
+};
+private static final String[] OR2_BLOCK_B_FIELDS = {
+        "product",
+        "corporate_finance", "trading_and_sales", "retail_banking", "commercial_banking",
+        "payments_and_settlements", "agency_services", "asset_management", "retail_brokerage"
+};
+private static final String[] OR2_BLOCK_C_FIELDS = { "product", "operational_risk_cap_charge" };
+private static final String[] OR2_BLOCK_D_FIELDS = { "product", "risk_weight_factor" };
 
-                String getterName = "getR" + i + "_" + field;
-                String setterName = "setR" + i + "_" + field;
-                String columnName = "R" + i + "_" + field;
+private static final java.util.LinkedHashMap<Integer, String[]> OR2_ROW_FIELDS =
+        new java.util.LinkedHashMap<>();
+static {
+    for (int i = 12; i <= 23; i++) OR2_ROW_FIELDS.put(i, OR2_BLOCK_A_FIELDS);
+    for (int i = 28; i <= 55; i++) OR2_ROW_FIELDS.put(i, OR2_BLOCK_A_FIELDS);
+    for (int i : new int[]{24,25,26, 40,41,42, 56,57,58}) OR2_ROW_FIELDS.put(i, OR2_BLOCK_B_FIELDS);
+    for (int i : new int[]{27, 43, 59, 61, 62, 63})         OR2_ROW_FIELDS.put(i, OR2_BLOCK_C_FIELDS);
+    for (int i : new int[]{64, 65})                         OR2_ROW_FIELDS.put(i, OR2_BLOCK_D_FIELDS);
+}
 
-                try {
-
-                    Method getter =
-                            M_OR2_Summary_Entity.class.getMethod(getterName);
-
-                    Object value = getter.invoke(updatedEntity);
-
-                    if (value == null) {
-                        continue;
-                    }
-
-                    // ==========================================
-                    // UPDATE EXISTING OBJECT FOR AUDIT
-                    // ==========================================
-
-                    Method setter =
-                            M_OR2_Summary_Entity.class.getMethod(
-                                    setterName,
-                                    getter.getReturnType());
-
-                    setter.invoke(existingSummary, value);
-
-                    // ==========================================
-                    // UPDATE SUMMARY TABLE
-                    // ==========================================
-
-                    String summarySql =
-                            "UPDATE BRRS_M_OR2_SUMMARYTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
-
-                    jdbcTemplate.update(
-                            summarySql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
-
-                    // ==========================================
-                    // UPDATE DETAIL TABLE
-                    // ==========================================
-
-                    String detailSql =
-                            "UPDATE BRRS_M_OR2_DETAILTABLE " +
-                            "SET " + columnName + " = ? " +
-                            "WHERE REPORT_DATE = ?";
-
-                    jdbcTemplate.update(
-                            detailSql,
-                            value,
-                            updatedEntity.getReport_date()
-                    );
-
-                } catch (NoSuchMethodException e) {
-                    // Skip missing getter/setter methods
-                    continue;
-                }
-                catch (Exception e) {
-
-                    System.out.println("================================");
-                    System.out.println("Error while updating : " + columnName);
-                    e.printStackTrace();
-                    System.out.println("================================");
-
-                    throw new RuntimeException(
-                            "Error while updating column : " + columnName, e);
-                }
+private void applyChangesToEntity(M_OR2_Summary_Entity source, M_OR2_Summary_Entity target) {
+    for (Map.Entry<Integer, String[]> e : OR2_ROW_FIELDS.entrySet()) {
+        int row = e.getKey();
+        for (String field : e.getValue()) {
+            String getterName = "getR" + row + "_" + field;
+            String setterName = "setR" + row + "_" + field;
+            try {
+                Method getter = M_OR2_Summary_Entity.class.getMethod(getterName);
+                Object value = getter.invoke(source);
+                if (value == null) continue;              // Q_STAFF skips nulls too
+                Method setter = M_OR2_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+                setter.invoke(target, value);
+            } catch (NoSuchMethodException ignore) {
+                /* not applicable for this row */
+            } catch (Exception ex) {
+                throw new RuntimeException("M_OR2 applyChanges error on " + getterName, ex);
             }
         }
-
-        // ==========================================
-        // AUDIT ONLY IF CHANGES FOUND
-        // ==========================================
-
-        String changes =
-                auditService.getChanges(
-                        oldcopy,
-                        existingSummary);
-
-        if (!changes.isEmpty()) {
-
-            auditService.compareEntitiesmanual(
-                    oldcopy,
-                    existingSummary,
-                    updatedEntity.getReport_date().toString(),
-                    "M OR2 Summary Screen",
-                    "BRRS_M_OR2_SUMMARYTABLE"
-            );
-        }
-
-        System.out.println(
-                "M_OR2 Summary & Detail Update Completed");
-
-    } catch (Exception e) {
-
-        throw new RuntimeException(
-                "Error while updating M_OR2 fields", e);
     }
+}
+
+public void saveModSummaryEntity(M_OR2_Summary_Entity entity) {
+    NamedParameterJdbcTemplate np = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+    Integer count = np.queryForObject(
+            "SELECT COUNT(*) FROM BRRS_M_OR2_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)",
+            new MapSqlParameterSource("reportDate", entity.getReport_date()),
+            Integer.class);
+
+    MapSqlParameterSource p = new MapSqlParameterSource()
+            .addValue("reportDate", entity.getReport_date())
+            .addValue("entity_flg", entity.getEntity_flg())
+            .addValue("modify_flg", entity.getModify_flg())
+            .addValue("del_flg",    entity.getDel_flg());
+
+    StringBuilder updateSet = new StringBuilder(
+            "MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg");
+    List<String> insertCols = new ArrayList<>();
+    List<String> insertVals = new ArrayList<>();
+
+    insertCols.add("REPORT_DATE"); insertVals.add(":reportDate");
+    insertCols.add("ENTITY_FLG");  insertVals.add(":entity_flg");
+    insertCols.add("MODIFY_FLG");  insertVals.add(":modify_flg");
+    insertCols.add("DEL_FLG");     insertVals.add(":del_flg");
+
+    for (Map.Entry<Integer, String[]> e : OR2_ROW_FIELDS.entrySet()) {
+        int row = e.getKey();
+        for (String field : e.getValue()) {
+            String getterName = "getR" + row + "_" + field;
+            String paramName  = "r" + row + "_" + field;
+            String columnName = "R" + row + "_" + field.toUpperCase();
+            try {
+                Method getter = M_OR2_Summary_Entity.class.getMethod(getterName);
+                Object value = getter.invoke(entity);
+                p.addValue(paramName, value);
+                updateSet.append(", ").append(columnName).append(" = :").append(paramName);
+                insertCols.add(columnName);
+                insertVals.add(":" + paramName);
+            } catch (NoSuchMethodException ignore) { /* skip */ }
+            catch (Exception ex) { throw new RuntimeException("M_OR2 saveMod error on " + columnName, ex); }
+        }
+    }
+
+    if (count != null && count > 0) {
+        np.update("UPDATE BRRS_M_OR2_MOD_SUMMARYTABLE SET " + updateSet
+                + " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)", p);
+        System.out.println("✔ BRRS_M_OR2_MOD_SUMMARYTABLE updated.");
+    } else {
+        np.update("INSERT INTO BRRS_M_OR2_MOD_SUMMARYTABLE (" + String.join(", ", insertCols)
+                + ") VALUES (" + String.join(", ", insertVals) + ")", p);
+        System.out.println("✔ BRRS_M_OR2_MOD_SUMMARYTABLE inserted.");
+    }
+}
+
+@Transactional
+public void approveReport(Date reportDate) {
+    List<M_OR2_Summary_Entity> pending = jdbcTemplate.query(
+            "SELECT * FROM BRRS_M_OR2_MOD_SUMMARYTABLE " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+            new Object[]{ reportDate }, new M_OR2_Summary_RowMapper());
+
+    if (pending.isEmpty()) {
+        throw new RuntimeException("No pending M_OR2 modification found for date: " + reportDate);
+    }
+    M_OR2_Summary_Entity modRecord = pending.get(0);
+
+    transferModValuesToLiveTables(modRecord, reportDate);   // helper — see 1.7
+
+    jdbcTemplate.update(
+            "UPDATE BRRS_M_OR2_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' " +
+            "WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+
+    System.out.println("✔ M_OR2 Checker approved for date : " + reportDate);
+}
+
+private void transferModValuesToLiveTables(M_OR2_Summary_Entity modRecord, Date reportDate) {
+    for (Map.Entry<Integer, String[]> e : OR2_ROW_FIELDS.entrySet()) {
+        int row = e.getKey();
+        for (String field : e.getValue()) {
+            String getterName = "getR" + row + "_" + field;
+            String columnName = "R" + row + "_" + field.toUpperCase();
+            try {
+                Method getter = M_OR2_Summary_Entity.class.getMethod(getterName);
+                Object value = getter.invoke(modRecord);
+                if (value == null) continue;   // Q_STAFF skips nulls
+
+                jdbcTemplate.update(
+                        "UPDATE BRRS_M_OR2_SUMMARYTABLE SET " + columnName + " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+                        value, reportDate);
+            } catch (NoSuchMethodException ignore) { /* skip */ }
+            catch (Exception ex) {
+                throw new RuntimeException("M_OR2 transfer-to-live error on " + columnName, ex);
+            }
+        }
+    }
+}
+
+public M_OR2_Summary_Entity findModRecordByReportDate(Date reportDate) {
+    String sql = "SELECT * FROM BRRS_M_OR2_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+    List<M_OR2_Summary_Entity> list = jdbcTemplate.query(
+            sql, new Object[]{ reportDate }, new M_OR2_Summary_RowMapper());
+    return list.isEmpty() ? null : list.get(0);
 }
 
 //=====================================================

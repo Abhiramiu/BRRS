@@ -1489,6 +1489,11 @@ public class AuditService {
 		    transferMOR1Data(auditRecord);
 		}
 		
+		/* M_OR2 */
+		else if (upperTable.contains("M_OR2")) {
+		    transferMOR2Data(auditRecord);
+		}
+		
 		/* M_LA2 */
 		else if (upperTable.contains("M_LA2")) {
 			transferMLA2Data(auditRecord);
@@ -2553,6 +2558,126 @@ public class AuditService {
 	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
 	    System.out.println("M_OR1 MOD Updated : " + modUpdated);
 	    System.out.println("M_OR1 Verification and Transfer Completed Successfully");
+	}
+	
+	// =========================================================
+	// M_OR2 — Checker transfer (MOD → LIVE Summary only)
+	// =========================================================
+	private void transferMOR2Data(AuditServicesEntity auditRecord) {
+	    String dateSql = "SELECT MAX(REPORT_DATE) FROM BRRS_M_OR2_MOD_SUMMARYTABLE";
+	    java.sql.Date reportDate = jdbcTemplate.queryForObject(dateSql, java.sql.Date.class);
+
+	    if (reportDate == null) {
+	        throw new IllegalStateException("No modified M_OR2 record available for verification.");
+	    }
+	    System.out.println("M_OR2 Report Date : " + reportDate);
+
+	    String cols = buildMOR2ColumnList();
+	    String sel  = buildMOR2SelectList();
+
+	    String updateSummarySql =
+	        "UPDATE BRRS_M_OR2_SUMMARYTABLE M " +
+	        "SET (" + cols + ") = (" +
+	        "    SELECT " + sel +
+	        "    FROM BRRS_M_OR2_MOD_SUMMARYTABLE S " +
+	        "    WHERE TRUNC(S.REPORT_DATE) = TRUNC(M.REPORT_DATE)" +
+	        ") " +
+	        "WHERE TRUNC(M.REPORT_DATE) = TRUNC(?)";
+
+	    int summaryUpdated = jdbcTemplate.update(updateSummarySql, reportDate);
+	    if (summaryUpdated == 0) {
+	        throw new IllegalStateException("M_OR2 modification record not found for date : " + reportDate);
+	    }
+	    System.out.println("M_OR2 Summary Table Updated : " + summaryUpdated);
+
+	    /* NOTE: No BRRS_M_OR2_DETAILTABLE exists for this report — summary-only,
+	       matching the OR2 data model. Detail-table update block intentionally removed. */
+
+	    String updateModSql = "UPDATE BRRS_M_OR2_MOD_SUMMARYTABLE " +
+	                          "SET ENTITY_FLG='Y', MODIFY_FLG='N' " +
+	                          "WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
+	    int modUpdated = jdbcTemplate.update(updateModSql, reportDate);
+	    System.out.println("M_OR2 MOD Updated : " + modUpdated);
+	    System.out.println("M_OR2 Verification and Transfer Completed Successfully");
+	}
+
+	private static String buildMOR2ColumnList() {
+	    StringBuilder sb = new StringBuilder();
+	    // Block A — BUSINESS_LINE_MONTH rows only:
+	    appendMOR2BlockA(sb, false, 12, 23);   // R12–R23
+	    appendMOR2BlockA(sb, false, 28, 39);   // R28–R39   ← stop before R40
+	    appendMOR2BlockA(sb, false, 44, 55);   // R44–R55   ← start after R43
+	    // Block B — PRODUCT + 8 value cols:
+	    appendMOR2BlockB(sb, false);           // 24,25,26, 40,41,42, 56,57,58
+	    // Block C — PRODUCT + OPERATIONAL_RISK_CAP_CHARGE:
+	    appendMOR2BlockC(sb, false);           // 27, 43, 59, 61, 62, 63
+	    // Block D — PRODUCT + RISK_WEIGHT_FACTOR:
+	    appendMOR2BlockD(sb, false);           // 64, 65
+	    sb.append("ENTITY_FLG, MODIFY_FLG, DEL_FLG");
+	    return sb.toString();
+	}
+
+	private static String buildMOR2SelectList() {
+	    StringBuilder sb = new StringBuilder();
+	    appendMOR2BlockA(sb, true, 12, 23);
+	    appendMOR2BlockA(sb, true, 28, 39);
+	    appendMOR2BlockA(sb, true, 44, 55);
+	    appendMOR2BlockB(sb, true);
+	    appendMOR2BlockC(sb, true);
+	    appendMOR2BlockD(sb, true);
+	    sb.append("S.ENTITY_FLG, S.MODIFY_FLG, S.DEL_FLG");
+	    return sb.toString();
+	}
+
+	
+
+	private static void appendMOR2BlockA(StringBuilder sb, boolean withS, int from, int to) {
+	    for (int i = from; i <= to; i++) {
+	        String p = (withS ? "S." : "") + "R" + i + "_";
+	        sb.append(p).append("BUSINESS_LINE_MONTH, ")
+	          .append(p).append("CORPORATE_FINANCE, ")
+	          .append(p).append("TRADING_AND_SALES, ")
+	          .append(p).append("RETAIL_BANKING, ")
+	          .append(p).append("COMMERCIAL_BANKING, ")
+	          .append(p).append("PAYMENTS_AND_SETTLEMENTS, ")
+	          .append(p).append("AGENCY_SERVICES, ")
+	          .append(p).append("ASSET_MANAGEMENT, ")
+	          .append(p).append("RETAIL_BROKERAGE, ");
+	    }
+	}
+
+	private static void appendMOR2BlockB(StringBuilder sb, boolean withS) {
+	    int[] rows = {24,25,26, 40,41,42, 56,57,58};
+	    for (int i : rows) {
+	        String p = (withS ? "S." : "") + "R" + i + "_";
+	        sb.append(p).append("PRODUCT, ")
+	          .append(p).append("CORPORATE_FINANCE, ")
+	          .append(p).append("TRADING_AND_SALES, ")
+	          .append(p).append("RETAIL_BANKING, ")
+	          .append(p).append("COMMERCIAL_BANKING, ")
+	          .append(p).append("PAYMENTS_AND_SETTLEMENTS, ")
+	          .append(p).append("AGENCY_SERVICES, ")
+	          .append(p).append("ASSET_MANAGEMENT, ")
+	          .append(p).append("RETAIL_BROKERAGE, ");
+	    }
+	}
+
+	private static void appendMOR2BlockC(StringBuilder sb, boolean withS) {
+	    int[] rows = {27, 43, 59, 61, 62, 63};
+	    for (int i : rows) {
+	        String p = (withS ? "S." : "") + "R" + i + "_";
+	        sb.append(p).append("PRODUCT, ")
+	          .append(p).append("OPERATIONAL_RISK_CAP_CHARGE, ");
+	    }
+	}
+
+	private static void appendMOR2BlockD(StringBuilder sb, boolean withS) {
+	    int[] rows = {64, 65};
+	    for (int i : rows) {
+	        String p = (withS ? "S." : "") + "R" + i + "_";
+	        sb.append(p).append("PRODUCT, ")
+	          .append(p).append("RISK_WEIGHT_FACTOR, ");
+	    }
 	}
 	
 	

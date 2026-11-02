@@ -2294,17 +2294,20 @@ public class BRRS_ReportsController {
 	@Autowired
 	private AuditService auditService;
 
-	// ---------------- role helpers (one-line, optional but cleaner) ----------------
 	private static boolean isMaker(String role) {
-	    return "MAKER".equalsIgnoreCase(role)
-	        || "MAN".equalsIgnoreCase(role)
-	        || "ADMIN".equalsIgnoreCase(role);
+	    if (role == null) return false;
+	    String r = role.trim().toUpperCase();
+	    return r.equals("MAKER")   || r.equals("M")
+	        || r.equals("MAN")     || r.equals("MANAGER") || r.equals("B")
+	        || r.equals("ADMIN")   || r.equals("A");
 	}
 
 	private static boolean isChecker(String role) {
-	    return "CHECKER".equalsIgnoreCase(role)
-	        || "MAN".equalsIgnoreCase(role)
-	        || "ADMIN".equalsIgnoreCase(role);
+	    if (role == null) return false;
+	    String r = role.trim().toUpperCase();
+	    return r.equals("CHECKER") || r.equals("C")
+	        || r.equals("MAN")     || r.equals("MANAGER") || r.equals("B")
+	        || r.equals("ADMIN")   || r.equals("A");
 	}
 
 	// =========================================================
@@ -2443,23 +2446,83 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/OR2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-			@ModelAttribute BRRS_M_OR2_ReportService.M_OR2_Summary_Entity request1
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        @ModelAttribute BRRS_M_OR2_ReportService.M_OR2_Summary_Entity request1,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-	) {
-		try {
-			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReport_date(asondate);
+	        if (!isMaker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Maker (or MAN/ADMIN) can submit M_OR2 modifications. Current role: " + role);
+	        }
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+	        System.out.println("Came to M_OR2 MAKER update for date: " + asondate);
+	        request1.setReport_date(asondate);
+	        OR2reportService.updateReport(request1);   // MOD-only
+	        return ResponseEntity.ok("Modified successfully — pending Checker approval.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Update Failed: " + e.getMessage());
+	    }
+	}
+	
+	// ─────────────────────────────────────────────────────────────
+	// M_OR2 — CHECKER approve by date
+	// ─────────────────────────────────────────────────────────────
+	@RequestMapping(value = "/approveOR2", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> approveOR2(
+	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
 
-			// call services
-			OR2reportService.updateReport(request1);
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can approve M_OR2. Current role: " + role);
+	        }
+	        if (asondate == null) {
+	            return ResponseEntity.badRequest().body("asondate is required.");
+	        }
+	        System.out.println("Came to M_OR2 CHECKER approve for date: " + asondate);
+	        OR2reportService.approveReport(asondate);
+	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Approval Failed: " + e.getMessage());
+	    }
+	}
 
-			return ResponseEntity.ok("Modifeid Successfully.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-		}
+	// ─────────────────────────────────────────────────────────────
+	// M_OR2 — CHECKER verify by auditId (routes through AuditService)
+	// ─────────────────────────────────────────────────────────────
+	@RequestMapping(value = "/verifyAuditOR2", method = { RequestMethod.GET, RequestMethod.POST })
+	@ResponseBody
+	public ResponseEntity<String> verifyAuditOR2(
+	        @RequestParam("auditId") Long auditId,
+	        HttpServletRequest req) {
+	    try {
+	        String userid = (String) req.getSession().getAttribute("USERID");
+	        String role   = userProfileRep.getUserRole(userid);
+
+	        if (!isChecker(role)) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                    .body("Only Checker (or MAN/ADMIN) can verify M_OR2. Current role: " + role);
+	        }
+	        auditService.verifyAndTransferReport(auditId);
+	        return ResponseEntity.ok("Verified and transferred successfully.");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Verify Failed: " + e.getMessage());
+	    }
 	}
 
 	@RequestMapping(value = "/UpdateM_OR2_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
