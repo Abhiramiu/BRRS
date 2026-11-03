@@ -1148,37 +1148,35 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_SRWA_12GupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Summary_Entity request,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Summary_Entity request, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12G modifications. Current role: " + role);
-	        }
+			// ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12G modifications. Current role: " + role);
+			}
 
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("came to M_SRWA_12G maker controller, asondate=" + asondate + ", role=" + role);
+			System.out.println("came to M_SRWA_12G maker controller, asondate=" + asondate + ", role=" + role);
 
-	        request.setREPORT_DATE(asondate);
+			request.setREPORT_DATE(asondate);
 
-	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12G_MOD_SUMMARYTABLE. Live tables untouched.
-	        BRRS_M_SRWA_12G_reportservice.updateReport(request);
+			// ⚠️ Writes ONLY to BRRS_M_SRWA_12G_MOD_SUMMARYTABLE. Live tables untouched.
+			BRRS_M_SRWA_12G_reportservice.updateReport(request);
 
-	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed : " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed : " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -1187,69 +1185,59 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/verifyAuditSRWA12G", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditSRWA12G(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> verifyAuditSRWA12G(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12G. Current role: " + role);
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12G. Current role: " + role);
+			}
 
-	        System.out.println("came to verifyAuditSRWA12G (CHECKER) for auditId=" + auditId + ", role=" + role);
+			System.out.println("came to verifyAuditSRWA12G (CHECKER) for auditId=" + auditId + ", role=" + role);
 
-	        // Dispatches to AuditService.transferMSRWA12GData(auditRecord)
-	        auditService.verifyAndTransferReport(auditId);
+			// Dispatches to AuditService.transferMSRWA12GData(auditRecord)
+			auditService.verifyAndTransferReport(auditId);
 
-	        return ResponseEntity.ok("Verified and transferred successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
 
-	// =========================================================
-	// M_SRWA_12G — CHECKER (by date) → OPTIONAL
-	//   Add ONLY if your UI has a "Check by date" button.
-	//   Requires BRRS_M_SRWA_12G_ReportService.approveReport(Date).
-	//   Pick ONE checker path; running both must not double-approve.
-	// =========================================================
 	@RequestMapping(value = "/approveSRWA12G", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveSRWA12G(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12G. Current role: " + role);
-	        }
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12G. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("came to approveSRWA12G (CHECKER) for date: " + asondate + ", role=" + role);
+			System.out.println("came to approveSRWA12G (CHECKER) for date: " + asondate + ", role=" + role);
 
-	        // ⚠️ Requires BRRS_M_SRWA_12G_ReportService.approveReport(Date)
-	        BRRS_M_SRWA_12G_reportservice.approveReport(asondate);
+			// ⚠️ Requires BRRS_M_SRWA_12G_ReportService.approveReport(Date)
+			BRRS_M_SRWA_12G_reportservice.approveReport(asondate);
 
-	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approval Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -1258,26 +1246,26 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_SRWA_12G_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @RequestParam(required = false) String type,
-	        @ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Resub_Summary_Entity request,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam(required = false) String type,
+			@ModelAttribute BRRS_M_SRWA_12G_ReportService.M_SRWA_12G_Resub_Summary_Entity request,
+			HttpServletRequest req) {
 
-	    try {
-	        System.out.println("Came to M_SRWA_12G Resub Controller");
+		try {
+			System.out.println("Came to M_SRWA_12G Resub Controller");
 
-	        if (asondate != null) {
-	            request.setREPORT_DATE(asondate);
-	        }
+			if (asondate != null) {
+				request.setREPORT_DATE(asondate);
+			}
 
-	        BRRS_M_SRWA_12G_reportservice.updateResubReport(request);
+			BRRS_M_SRWA_12G_reportservice.updateResubReport(request);
 
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("M_SRWA_12G Resubmission Update Failed : " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("M_SRWA_12G Resubmission Update Failed : " + e.getMessage());
+		}
 	}
 
 	@Autowired
@@ -1360,11 +1348,11 @@ public class BRRS_ReportsController {
 			@RequestParam(value = "type", required = false) String type,
 			@RequestParam(value = "version", required = false) String version,
 			@RequestParam(value = "entry", required = false) String entry,
-			@ModelAttribute M_SFINP2_Summary_Entity request,
-			HttpServletRequest req) {
+			@ModelAttribute M_SFINP2_Summary_Entity request, HttpServletRequest req) {
 
 		try {
-			System.out.println("came to M_SFIN_P2updateAll controller: type=" + type + ", version=" + version + ", entry=" + entry + ", asondate=" + asondateStr);
+			System.out.println("came to M_SFIN_P2updateAll controller: type=" + type + ", version=" + version
+					+ ", entry=" + entry + ", asondate=" + asondateStr);
 
 			Date parsedDate = null;
 			String dateStr = (asondateStr != null && !asondateStr.trim().isEmpty()) ? asondateStr : todateStr;
@@ -1377,7 +1365,8 @@ public class BRRS_ReportsController {
 					try {
 						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(dateStr.trim());
 						break;
-					} catch (Exception ignored) {}
+					} catch (Exception ignored) {
+					}
 				}
 			}
 
@@ -1388,7 +1377,8 @@ public class BRRS_ReportsController {
 			if (version != null && !version.isEmpty()) {
 				try {
 					request.setREPORT_VERSION(new BigDecimal(version));
-				} catch (Exception ex) {}
+				} catch (Exception ex) {
+				}
 			}
 
 			// call services
@@ -1456,18 +1446,18 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_OR1updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_OR1_Summary_Entity request1) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_OR1_Summary_Entity request1) {
 
-	    try {
-	        System.out.println("Came to M_OR1 maker controller");
-	        request1.setReport_date(asondate);
-	        M_OR1_service.updateReport(request1); 
-	        return ResponseEntity.ok("Modification saved. Pending checker verification.");  // ⬅️ message updated
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-	    }
+		try {
+			System.out.println("Came to M_OR1 maker controller");
+			request1.setReport_date(asondate);
+			M_OR1_service.updateReport(request1);
+			return ResponseEntity.ok("Modification saved. Pending checker verification."); // ⬅️ message updated
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -1476,25 +1466,24 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_OR1_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute BRRS_M_OR1_ReportService.M_OR1_Resub_Summary_Entity request,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_OR1_ReportService.M_OR1_Resub_Summary_Entity request, HttpServletRequest req) {
 
-	    try {
-	        System.out.println("Came to M_OR1 Resub Controller");
-	        if (asondate != null) {
-	            request.setReport_date(asondate);
-	            System.out.println("Set Report Date: " + asondate);
-	        } else {
-	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-	        }
-	        M_OR1_service.updateResubReport(request);
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Resubmission Update Failed: " + e.getMessage());
-	    }
+		try {
+			System.out.println("Came to M_OR1 Resub Controller");
+			if (asondate != null) {
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
+			M_OR1_service.updateResubReport(request);
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}
 
 	@Autowired
@@ -1506,24 +1495,23 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_CA4update", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_CA4_Summary_Entity request) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_CA4_Summary_Entity request) {
 
-	    try {
-	        System.out.println("came to single controller");
+		try {
+			System.out.println("came to single controller");
 
-	        // ✅ set the asondate into entity
-	        request.setReport_date(asondate);
+			// ✅ set the asondate into entity
+			request.setReport_date(asondate);
 
-	        // call services → routes to MOD table (Maker-Checker step 1)
-	        brrs_m_ca4_reportservice.updateReport(request);
+			// call services → routes to MOD table (Maker-Checker step 1)
+			brrs_m_ca4_reportservice.updateReport(request);
 
-	        return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Modified Successfully. Record sent for Checker Approval.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────
@@ -1533,20 +1521,19 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/M_CA4/approve", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveMCA4(
-	        @RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        HttpServletRequest request) {
+			@RequestParam("asondate") @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			HttpServletRequest request) {
 
-	    try {
-	        System.out.println("Came to M_CA4 approve controller. asondate = " + asondate);
+		try {
+			System.out.println("Came to M_CA4 approve controller. asondate = " + asondate);
 
-	        brrs_m_ca4_reportservice.approveReport(asondate);
+			brrs_m_ca4_reportservice.approveReport(asondate);
 
-	        return ResponseEntity.ok("Approved Successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approve Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Approved Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approve Failed: " + e.getMessage());
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────
@@ -1555,30 +1542,30 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_CA4_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_CA4_Resub_Summary_Entity request, HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_CA4_Resub_Summary_Entity request, HttpServletRequest req) {
 
-	    try {
-	        System.out.println("Came to Resub Controller");
+		try {
+			System.out.println("Came to Resub Controller");
 
-	        if (asondate != null) {
-	            // Set the asondate into the entity
-	            request.setReport_date(asondate);
-	            System.out.println("Set Report Date: " + asondate);
-	        } else {
-	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-	        }
+			if (asondate != null) {
+				// Set the asondate into the entity
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
 
-	        // Call service to create a new versioned row
-	        brrs_m_ca4_reportservice.updateResubReport(request);
+			// Call service to create a new versioned row
+			brrs_m_ca4_reportservice.updateResubReport(request);
 
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
+			return ResponseEntity.ok("Resubmission Updated Successfully");
 
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Resubmission Update Failed: " + e.getMessage());
-	    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}
 
 	@Autowired
@@ -2382,19 +2369,19 @@ public class BRRS_ReportsController {
 	private AuditService auditService;
 
 	private static boolean isMaker(String role) {
-	    if (role == null) return false;
-	    String r = role.trim().toUpperCase();
-	    return r.equals("MAKER")   || r.equals("M")
-	        || r.equals("MAN")     || r.equals("MANAGER") || r.equals("B")
-	        || r.equals("ADMIN")   || r.equals("A");
+		if (role == null)
+			return false;
+		String r = role.trim().toUpperCase();
+		return r.equals("MAKER") || r.equals("M") || r.equals("MAN") || r.equals("MANAGER") || r.equals("B")
+				|| r.equals("ADMIN") || r.equals("A");
 	}
 
 	private static boolean isChecker(String role) {
-	    if (role == null) return false;
-	    String r = role.trim().toUpperCase();
-	    return r.equals("CHECKER") || r.equals("C")
-	        || r.equals("MAN")     || r.equals("MANAGER") || r.equals("B")
-	        || r.equals("ADMIN")   || r.equals("A");
+		if (role == null)
+			return false;
+		String r = role.trim().toUpperCase();
+		return r.equals("CHECKER") || r.equals("C") || r.equals("MAN") || r.equals("MANAGER") || r.equals("B")
+				|| r.equals("ADMIN") || r.equals("A");
 	}
 
 	// =========================================================
@@ -2403,35 +2390,33 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/SECLupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_SECL_Summary_Entity request1,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SECL_Summary_Entity request1, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAN allowed — a Manager acts as both Maker and Checker
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit SECL modifications. Current role: " + role);
-	        }
+			// ✅ MAN allowed — a Manager acts as both Maker and Checker
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit SECL modifications. Current role: " + role);
+			}
 
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("Came to SECLupdateAll (MAKER) for date: " + asondate);
-	        request1.setReportDate(asondate);
+			System.out.println("Came to SECLupdateAll (MAKER) for date: " + asondate);
+			request1.setReportDate(asondate);
 
-	        // Writes only to BRRS_M_SECL_MOD_SUMMARYTABLE
-	        SECLreportService.updateReport(request1);
+			// Writes only to BRRS_M_SECL_MOD_SUMMARYTABLE
+			SECLreportService.updateReport(request1);
 
-	        return ResponseEntity.ok("Modified successfully — pending Checker approval.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Modified successfully — pending Checker approval.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -2440,34 +2425,33 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/approveSECL", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveSECL(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAN allowed — a Manager can approve
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can approve SECL modifications. Current role: " + role);
-	        }
+			// ✅ MAN allowed — a Manager can approve
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve SECL modifications. Current role: " + role);
+			}
 
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("Came to approveSECL (CHECKER) for date: " + asondate);
+			System.out.println("Came to approveSECL (CHECKER) for date: " + asondate);
 
-	        // Reads BRRS_M_SECL_MOD_SUMMARYTABLE where MODIFY_FLG='Y',
-	        // copies to LIVE Summary + Detail, sets MODIFY_FLG='N'
-	        SECLreportService.approveReport(asondate);
+			// Reads BRRS_M_SECL_MOD_SUMMARYTABLE where MODIFY_FLG='Y',
+			// copies to LIVE Summary + Detail, sets MODIFY_FLG='N'
+			SECLreportService.approveReport(asondate);
 
-	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approval Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -2475,27 +2459,24 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/verifyAuditSECL", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditSECL(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+	public ResponseEntity<String> verifyAuditSECL(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAN allowed — a Manager can verify
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify. Current role: " + role);
-	        }
+			// ✅ MAN allowed — a Manager can verify
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify. Current role: " + role);
+			}
 
-	        auditService.verifyAndTransferReport(auditId);
+			auditService.verifyAndTransferReport(auditId);
 
-	        return ResponseEntity.ok("Verified and transferred successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -2504,27 +2485,26 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_SECL_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_SECL_Resub_Summary_Entity request,
-	        HttpServletRequest req) {
-	    try {
-	        System.out.println("Came to Resub Controller");
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SECL_Resub_Summary_Entity request, HttpServletRequest req) {
+		try {
+			System.out.println("Came to Resub Controller");
 
-	        if (asondate != null) {
-	            request.setReport_date(asondate);
-	            System.out.println("Set Report Date: " + asondate);
-	        } else {
-	            System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
-	        }
+			if (asondate != null) {
+				request.setReport_date(asondate);
+				System.out.println("Set Report Date: " + asondate);
+			} else {
+				System.out.println("Asondate parameter is null; using entity value: " + request.getReport_date());
+			}
 
-	        SECLreportService.updateReportReSub(request);
+			SECLreportService.updateReportReSub(request);
 
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Resubmission Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}
 
 	@Autowired
@@ -2533,58 +2513,55 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/OR2updateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateAllReports(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute BRRS_M_OR2_ReportService.M_OR2_Summary_Entity request1,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute BRRS_M_OR2_ReportService.M_OR2_Summary_Entity request1, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit M_OR2 modifications. Current role: " + role);
-	        }
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
-	        System.out.println("Came to M_OR2 MAKER update for date: " + asondate);
-	        request1.setReport_date(asondate);
-	        OR2reportService.updateReport(request1);   // MOD-only
-	        return ResponseEntity.ok("Modified successfully — pending Checker approval.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_OR2 modifications. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+			System.out.println("Came to M_OR2 MAKER update for date: " + asondate);
+			request1.setReport_date(asondate);
+			OR2reportService.updateReport(request1); // MOD-only
+			return ResponseEntity.ok("Modified successfully — pending Checker approval.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
-	
+
 	// ─────────────────────────────────────────────────────────────
 	// M_OR2 — CHECKER approve by date
 	// ─────────────────────────────────────────────────────────────
 	@RequestMapping(value = "/approveOR2", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveOR2(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can approve M_OR2. Current role: " + role);
-	        }
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
-	        System.out.println("Came to M_OR2 CHECKER approve for date: " + asondate);
-	        OR2reportService.approveReport(asondate);
-	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approval Failed: " + e.getMessage());
-	    }
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve M_OR2. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
+			System.out.println("Came to M_OR2 CHECKER approve for date: " + asondate);
+			OR2reportService.approveReport(asondate);
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
 	}
 
 	// ─────────────────────────────────────────────────────────────
@@ -2592,24 +2569,21 @@ public class BRRS_ReportsController {
 	// ─────────────────────────────────────────────────────────────
 	@RequestMapping(value = "/verifyAuditOR2", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditOR2(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+	public ResponseEntity<String> verifyAuditOR2(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify M_OR2. Current role: " + role);
-	        }
-	        auditService.verifyAndTransferReport(auditId);
-	        return ResponseEntity.ok("Verified and transferred successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_OR2. Current role: " + role);
+			}
+			auditService.verifyAndTransferReport(auditId);
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/UpdateM_OR2_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
@@ -3070,50 +3044,48 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/SRWA12FupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> updateReport(
-	        @RequestParam(value = "asondate", required = false) String asondateStr,
-	        @ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Summary_Entity request,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> updateReport(@RequestParam(value = "asondate", required = false) String asondateStr,
+			@ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Summary_Entity request, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12F modifications. Current role: " + role);
-	        }
+			// ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12F modifications. Current role: " + role);
+			}
 
-	        System.out.println("came to SRWA12FupdateAll (MAKER) controller, asondate=" + asondateStr
-	                + ", role=" + role);
+			System.out
+					.println("came to SRWA12FupdateAll (MAKER) controller, asondate=" + asondateStr + ", role=" + role);
 
-	        Date parsedDate = null;
-	        if (asondateStr != null && !asondateStr.trim().isEmpty()) {
-	            String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
-	            for (String pattern : patterns) {
-	                try {
-	                    parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
-	                    break;
-	                } catch (ParseException ignored) { }
-	            }
-	        }
+			Date parsedDate = null;
+			if (asondateStr != null && !asondateStr.trim().isEmpty()) {
+				String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+						break;
+					} catch (ParseException ignored) {
+					}
+				}
+			}
 
-	        if (parsedDate == null) {
-	            return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
-	        }
+			if (parsedDate == null) {
+				return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
+			}
 
-	        request.setReport_date(parsedDate);
+			request.setReport_date(parsedDate);
 
-	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12F_MOD_SUMMARYTABLE. Live tables untouched.
-	        M_SRWA_12FreportService.updateReport(request);
+			// ⚠️ Writes ONLY to BRRS_M_SRWA_12F_MOD_SUMMARYTABLE. Live tables untouched.
+			M_SRWA_12FreportService.updateReport(request);
 
-	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -3121,45 +3093,45 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/approveSRWA12F", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> approveSRWA12F(
-	        @RequestParam(value = "asondate", required = false) String asondateStr,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> approveSRWA12F(@RequestParam(value = "asondate", required = false) String asondateStr,
+			HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12F modifications. Current role: " + role);
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+						"Only Checker (or MAN/ADMIN) can approve M_SRWA_12F modifications. Current role: " + role);
+			}
 
-	        Date parsedDate = null;
-	        if (asondateStr != null && !asondateStr.trim().isEmpty()) {
-	            String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
-	            for (String pattern : patterns) {
-	                try {
-	                    parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
-	                    break;
-	                } catch (ParseException ignored) { }
-	            }
-	        }
-	        if (parsedDate == null) {
-	            return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
-	        }
+			Date parsedDate = null;
+			if (asondateStr != null && !asondateStr.trim().isEmpty()) {
+				String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+						break;
+					} catch (ParseException ignored) {
+					}
+				}
+			}
+			if (parsedDate == null) {
+				return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
+			}
 
-	        System.out.println("came to approveSRWA12F (CHECKER) for date: " + parsedDate + ", role=" + role);
+			System.out.println("came to approveSRWA12F (CHECKER) for date: " + parsedDate + ", role=" + role);
 
-	        // ⚠️ Service method must exist: copies MOD → LIVE summary + detail, flips MODIFY_FLG='N'
-	        M_SRWA_12FreportService.approveReport(parsedDate);
+			// ⚠️ Service method must exist: copies MOD → LIVE summary + detail, flips
+			// MODIFY_FLG='N'
+			M_SRWA_12FreportService.approveReport(parsedDate);
 
-	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approval Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -3167,69 +3139,67 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/verifyAuditSRWA12F", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditSRWA12F(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> verifyAuditSRWA12F(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12F. Current role: " + role);
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12F. Current role: " + role);
+			}
 
-	        System.out.println("came to verifyAuditSRWA12F (CHECKER) for auditId: " + auditId + ", role=" + role);
+			System.out.println("came to verifyAuditSRWA12F (CHECKER) for auditId: " + auditId + ", role=" + role);
 
-	        // ⚠️ This path dispatches to AuditService.transferMSRWA12FData(auditRecord)
-	        //    — see AuditService §1.1 in the previous review for the required branch.
-	        auditService.verifyAndTransferReport(auditId);
+			// ⚠️ This path dispatches to AuditService.transferMSRWA12FData(auditRecord)
+			// — see AuditService §1.1 in the previous review for the required branch.
+			auditService.verifyAndTransferReport(auditId);
 
-	        return ResponseEntity.ok("Verified and transferred successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/UpdateM_SRWA_12F_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportReSub(
-	        @RequestParam(value = "asondate", required = false) String asondateStr,
-	        @ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Resub_Summary_Entity request,
-	        HttpServletRequest req) {
+			@RequestParam(value = "asondate", required = false) String asondateStr,
+			@ModelAttribute BRRS_M_SRWA_12F_ReportService.M_SRWA_12F_Resub_Summary_Entity request,
+			HttpServletRequest req) {
 
-	    try {
-	        System.out.println("Came to SRWA12F Resub Controller, asondate=" + asondateStr);
+		try {
+			System.out.println("Came to SRWA12F Resub Controller, asondate=" + asondateStr);
 
-	        Date parsedDate = null;
-	        if (asondateStr != null && !asondateStr.trim().isEmpty()) {
-	            String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
-	            for (String pattern : patterns) {
-	                try {
-	                    parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
-	                    break;
-	                } catch (ParseException ignored) { }
-	            }
-	        }
+			Date parsedDate = null;
+			if (asondateStr != null && !asondateStr.trim().isEmpty()) {
+				String[] patterns = { "dd-MMM-yyyy", "dd/MM/yyyy", "dd-MM-yyyy", "yyyy-MM-dd" };
+				for (String pattern : patterns) {
+					try {
+						parsedDate = new SimpleDateFormat(pattern, Locale.ENGLISH).parse(asondateStr.trim());
+						break;
+					} catch (ParseException ignored) {
+					}
+				}
+			}
 
-	        if (parsedDate == null) {
-	            return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
-	        }
+			if (parsedDate == null) {
+				return ResponseEntity.badRequest().body("Invalid or missing asondate: " + asondateStr);
+			}
 
-	        request.setReport_date(parsedDate);
+			request.setReport_date(parsedDate);
 
-	        M_SRWA_12FreportService.updateResubReport(request);
+			M_SRWA_12FreportService.updateResubReport(request);
 
-	        return ResponseEntity.ok("Resubmission Updated Successfully");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Resubmission Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Resubmission Updated Successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Resubmission Update Failed: " + e.getMessage());
+		}
 	}
 
 	@Autowired
@@ -3472,8 +3442,6 @@ public class BRRS_ReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
 		}
 	}
-
-
 
 	@RequestMapping(value = "/UpdateM_CA3_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -4463,18 +4431,18 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/MSECAupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_SECA_Summary_Entity request) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SECA_Summary_Entity request) {
 
-	    try {
-	        System.out.println("came to M_SECA maker controller");
-	        request.setReportDate(asondate);
-	        BRRS_M_SECA_reportservice.updateReport(request);   // MOD path
-	        return ResponseEntity.ok("Modification saved. Pending checker verification.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-	    }
+		try {
+			System.out.println("came to M_SECA maker controller");
+			request.setReportDate(asondate);
+			BRRS_M_SECA_reportservice.updateReport(request); // MOD path
+			return ResponseEntity.ok("Modification saved. Pending checker verification.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -4482,18 +4450,17 @@ public class BRRS_ReportsController {
 	// =========================================================
 	@RequestMapping(value = "/verifyM_SECA", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyM_SECA(
-	        @RequestParam("auditId") Long auditId) {
+	public ResponseEntity<String> verifyM_SECA(@RequestParam("auditId") Long auditId) {
 
-	    try {
-	        System.out.println("came to M_SECA checker controller, auditId = " + auditId);
-	        auditService.verifyAndTransferReport(auditId);     // MOD → LIVE
-	        return ResponseEntity.ok("M_SECA Verified & Transferred Successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verification Failed: " + e.getMessage());
-	    }
+		try {
+			System.out.println("came to M_SECA checker controller, auditId = " + auditId);
+			auditService.verifyAndTransferReport(auditId); // MOD → LIVE
+			return ResponseEntity.ok("M_SECA Verified & Transferred Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Verification Failed: " + e.getMessage());
+		}
 	}
 
 	// =========================================================
@@ -4502,18 +4469,18 @@ public class BRRS_ReportsController {
 	@RequestMapping(value = "/UpdateM_SECA_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReportResub(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_SECA_Resub_Summary_Entity request) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SECA_Resub_Summary_Entity request) {
 
-	    try {
-	        System.out.println("came to M_SECA resub controller");
-	        request.setReportDate(asondate);
-	        BRRS_M_SECA_reportservice.updateReportResub(request);
-	        return ResponseEntity.ok("Modified Successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
-	    }
+		try {
+			System.out.println("came to M_SECA resub controller");
+			request.setReportDate(asondate);
+			BRRS_M_SECA_reportservice.updateReportResub(request);
+			return ResponseEntity.ok("Modified Successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 	// @RequestMapping(value = "/updateMLA4", method = { RequestMethod.GET,
 	// RequestMethod.POST })
@@ -4647,104 +4614,95 @@ public class BRRS_ReportsController {
 	@Autowired
 	private BRRS_M_SRWA_12H_ReportService M_SRWA_12Hservice;
 
-	
 	@RequestMapping(value = "/UpdateM_SRWA_12H", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> updateReport(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        @ModelAttribute M_SRWA_12H_Summary_Entity request,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@ModelAttribute M_SRWA_12H_Summary_Entity request, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ MAKER gate — MAN/ADMIN allowed as dual-role
-	        if (!isMaker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12H modifications. Current role: " + role);
-	        }
+			// ✅ MAKER gate — MAN/ADMIN allowed as dual-role
+			if (!isMaker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Maker (or MAN/ADMIN) can submit M_SRWA_12H modifications. Current role: " + role);
+			}
 
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("came to M_SRWA_12H maker controller, asondate=" + asondate + ", role=" + role);
+			System.out.println("came to M_SRWA_12H maker controller, asondate=" + asondate + ", role=" + role);
 
-	        request.setReportDate(asondate);
+			request.setReportDate(asondate);
 
-	        // ⚠️ Writes ONLY to BRRS_M_SRWA_12H_MOD_SUMMARYTABLE. Live tables untouched.
-	        M_SRWA_12Hservice.updateReport(request);
+			// ⚠️ Writes ONLY to BRRS_M_SRWA_12H_MOD_SUMMARYTABLE. Live tables untouched.
+			M_SRWA_12Hservice.updateReport(request);
 
-	        return ResponseEntity.ok("Modification saved. Pending Checker verification.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Modification saved. Pending Checker verification.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
-	
-	
+
 	@RequestMapping(value = "/verifyAuditSRWA12H", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public ResponseEntity<String> verifyAuditSRWA12H(
-	        @RequestParam("auditId") Long auditId,
-	        HttpServletRequest req) {
+	public ResponseEntity<String> verifyAuditSRWA12H(@RequestParam("auditId") Long auditId, HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12H. Current role: " + role);
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can verify M_SRWA_12H. Current role: " + role);
+			}
 
-	        System.out.println("came to verifyAuditSRWA12H (CHECKER) for auditId=" + auditId + ", role=" + role);
+			System.out.println("came to verifyAuditSRWA12H (CHECKER) for auditId=" + auditId + ", role=" + role);
 
-	        // Dispatches to AuditService.transferMSRWA12HData(auditRecord)
-	        auditService.verifyAndTransferReport(auditId);
+			// Dispatches to AuditService.transferMSRWA12HData(auditRecord)
+			auditService.verifyAndTransferReport(auditId);
 
-	        return ResponseEntity.ok("Verified and transferred successfully.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Verify Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Verified and transferred successfully.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verify Failed: " + e.getMessage());
+		}
 	}
-	
-	
+
 	@RequestMapping(value = "/approveSRWA12H", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> approveSRWA12H(
-	        @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
-	        HttpServletRequest req) {
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			HttpServletRequest req) {
 
-	    try {
-	        String userid = (String) req.getSession().getAttribute("USERID");
-	        String role   = userProfileRep.getUserRole(userid);
+		try {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			String role = userProfileRep.getUserRole(userid);
 
-	        // ✅ CHECKER gate — MAN/ADMIN allowed
-	        if (!isChecker(role)) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-	                    .body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12H. Current role: " + role);
-	        }
-	        if (asondate == null) {
-	            return ResponseEntity.badRequest().body("asondate is required.");
-	        }
+			// ✅ CHECKER gate — MAN/ADMIN allowed
+			if (!isChecker(role)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN)
+						.body("Only Checker (or MAN/ADMIN) can approve M_SRWA_12H. Current role: " + role);
+			}
+			if (asondate == null) {
+				return ResponseEntity.badRequest().body("asondate is required.");
+			}
 
-	        System.out.println("came to approveSRWA12H (CHECKER) for date: " + asondate + ", role=" + role);
+			System.out.println("came to approveSRWA12H (CHECKER) for date: " + asondate + ", role=" + role);
 
-	        // ⚠️ Requires BRRS_M_SRWA_12H_ReportService.approveReport(Date)
-	        M_SRWA_12Hservice.approveReport(asondate);
+			// ⚠️ Requires BRRS_M_SRWA_12H_ReportService.approveReport(Date)
+			M_SRWA_12Hservice.approveReport(asondate);
 
-	        return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Approval Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.ok("Approved successfully — MOD values transferred to live tables.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval Failed: " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/UpdateM_SRWA_12H_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
@@ -5378,47 +5336,42 @@ public class BRRS_ReportsController {
 		}
 	}
 
-	@RequestMapping(value = "/NOSVOSupdateAll", method = {
-	        RequestMethod.GET, RequestMethod.POST
-	})
+	@RequestMapping(value = "/NOSVOSupdateAll", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
 	public ResponseEntity<String> NOSVOSupdateAll(
 
-	        @RequestParam(required = false)
-	        @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date asondate,
 
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
-	        @ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP1 request1,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP2 request2,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP3 request3,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP4 request4,
+			@ModelAttribute BRRS_M_NOSVOS_ReportService.BrrsMNosvosP5 request5) {
 
-	    try {
+		try {
 
-	        // Set report date into all entities
-	        request1.setREPORT_DATE(asondate);
-	        request2.setREPORT_DATE(asondate);
-	        request3.setREPORT_DATE(asondate);
-	        request4.setREPORT_DATE(asondate);
-	        request5.setREPORT_DATE(asondate);
+			// Set report date into all entities
+			request1.setREPORT_DATE(asondate);
+			request2.setREPORT_DATE(asondate);
+			request3.setREPORT_DATE(asondate);
+			request4.setREPORT_DATE(asondate);
+			request5.setREPORT_DATE(asondate);
 
-	        // Call common service method
-	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request1);
-	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request2);
-	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request3);
-	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request4);
-	        BRRS_M_NOSVOS_ReportService.updateNosvosReport(request5);
+			// Call common service method
+			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request1);
+			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request2);
+			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request3);
+			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request4);
+			BRRS_M_NOSVOS_ReportService.updateNosvosReport(request5);
 
-	        return ResponseEntity.ok("All Reports Updated Successfully");
+			return ResponseEntity.ok("All Reports Updated Successfully");
 
-	    } catch (Exception e) {
+		} catch (Exception e) {
 
-	        e.printStackTrace();
+			e.printStackTrace();
 
-	        return ResponseEntity
-	                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body("Update Failed: " + e.getMessage());
-	    }
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Update Failed: " + e.getMessage());
+		}
 	}
 
 	@RequestMapping(value = "/NOSVOSupdateAll_ReSub", method = { RequestMethod.GET, RequestMethod.POST })
@@ -6038,7 +5991,7 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
-	
+
 	@GetMapping("/downloadUFCEConsolidatedExcel")
 	public void downloadUFCEConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
@@ -6057,7 +6010,7 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
-	
+
 	@GetMapping("/downloadBGConsolidatedExcel")
 	public void downloadBGConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
@@ -8052,6 +8005,7 @@ public class BRRS_ReportsController {
 		return BRRS_UFCE_CALCULATION_ReportService.getUFCEView(reportId, fromdate, todate, currency, viewType, null,
 				type, versionDecimal, req, md);
 	}
+
 	@GetMapping("/downloadPULA_CFSConsolidatedExcel")
 	public void downloadPULA_CFSConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
@@ -8061,8 +8015,8 @@ public class BRRS_ReportsController {
 			@RequestParam(required = false) String dtltype, HttpServletResponse response)
 			throws IOException, ParseException {
 		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
-		byte[] file = regreportServices.getConsolidatedDownloadPULA_CFSFile(filename, asondate, fromdate, todate, currency,
-				type, format, version, dtltype);
+		byte[] file = regreportServices.getConsolidatedDownloadPULA_CFSFile(filename, asondate, fromdate, todate,
+				currency, type, format, version, dtltype);
 		System.out.println("filename..." + filename);
 
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -8070,6 +8024,7 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
+
 	@GetMapping("/downloadPILLER_3_DISCLOSUREConsolidatedExcel")
 	public void downloadPILLER_3_DISCLOSUREConsolidatedExcel(@RequestParam(required = false) String asondate,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate,
@@ -8079,8 +8034,8 @@ public class BRRS_ReportsController {
 			@RequestParam(required = false) String dtltype, HttpServletResponse response)
 			throws IOException, ParseException {
 		System.out.println("SerdownloadConsolidatedExcelvice: Generating report ");
-		byte[] file = regreportServices.getConsolidatedDownloadPILLER_3_DISCLOSUREFile(filename, asondate, fromdate, todate, currency,
-				type, format, version, dtltype);
+		byte[] file = regreportServices.getConsolidatedDownloadPILLER_3_DISCLOSUREFile(filename, asondate, fromdate,
+				todate, currency, type, format, version, dtltype);
 		System.out.println("filename..." + filename);
 
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -8088,7 +8043,5 @@ public class BRRS_ReportsController {
 		response.getOutputStream().write(file);
 		response.getOutputStream().flush();
 	}
-	
-	
 
 }
