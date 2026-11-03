@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -55,6 +56,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -126,6 +129,22 @@ public class BRRS_M_SRWA_12D_ReportService {
 	}
 
 //====================================
+	// Fetch existing live summary record
+	public M_SRWA_12D_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12D_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_SRWA_12D_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new M_SRWA_12D_Summary_EntityRowMapper(), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Fetch existing mod record if any pending modifications exist
+	public M_SRWA_12D_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12D_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_SRWA_12D_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new M_SRWA_12D_Summary_EntityRowMapper(), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
 //JDBC REPOSITORIES - SRWA 12D DETAIL
 //====================================
 
@@ -18251,153 +18270,380 @@ public class BRRS_M_SRWA_12D_ReportService {
 
 	@Transactional
 	public void updateReport(M_SRWA_12D_Summary_Entity updatedEntity) {
+		System.out.println("Came to M_SRWA_12D Update");
+		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		System.out.println("Came to services");
-		System.out.println("report_date: " + updatedEntity.getReport_date());
+		// 1. Fetch live summary record as baseline reference
+		M_SRWA_12D_Summary_Entity liveSummary = findByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
+		}
 
-		Date reportDate = updatedEntity.getReport_date();
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		M_SRWA_12D_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12D_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
+		}
 
-		// =====================================================
-		// 1️⃣ FETCH EXISTING SUMMARY USING JDBC
-		// =====================================================
-		List<M_SRWA_12D_Summary_Entity> existingSummaryList = getSrw12dSummaryDataByDate(reportDate);
-		M_SRWA_12D_Summary_Entity existing;
+		// 3. Keep old copy for audit comparison
 		M_SRWA_12D_Summary_Entity oldcopy = new M_SRWA_12D_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
-		if (!existingSummaryList.isEmpty()) {
-			existing = existingSummaryList.get(0);
-			BeanUtils.copyProperties(existing, oldcopy);
-			System.out.println("✅ Existing Summary record found for date: " + reportDate);
-		} else {
-			existing = new M_SRWA_12D_Summary_Entity();
-			existing.setReport_date(reportDate);
-			System.out.println("⚠️ No Summary record found — creating new entry for date: " + reportDate);
-		}
-
-		// =====================================================
-		// 2️⃣ FETCH OR CREATE DETAIL USING JDBC
-		// =====================================================
-		List<M_SRWA_12D_Detail_Entity> existingDetailList = getSrw12dDetailDataByDate(reportDate);
-		M_SRWA_12D_Detail_Entity existingDetail;
-
-		if (!existingDetailList.isEmpty()) {
-			existingDetail = existingDetailList.get(0);
-			System.out.println("✅ Existing Detail record found for date: " + reportDate);
-		} else {
-			existingDetail = new M_SRWA_12D_Detail_Entity();
-			existingDetail.setReport_date(reportDate);
-			System.out.println("⚠️ No Detail record found — creating new entry for date: " + reportDate);
-		}
-
-		// =====================================================
-		// 3️⃣ UPDATE FIELDS USING REFLECTION
-		// =====================================================
 		try {
-			// Define all field names (without R-prefix)
-			String[] fieldNames = { "LINE_NO_EXCHANGE_CONTRACTS", "RESIDUAL_MATURITY_EXCHANGE_CONTRACTS",
+			// ✅ Apply updates ONLY to the modRecord object (Live tables are untouched!)
+			String[] fields1 = { "LINE_NO_EXCHANGE_CONTRACTS", "RESIDUAL_MATURITY_EXCHANGE_CONTRACTS",
 					"PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
 					"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
 					"RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS", "LINE_NO_INTEREST_CONTRACTS",
 					"RESIDUAL_MATURITY_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
 					"TOTAL_CURRENT_INTEREST_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS", "CREDIT_EQUIVALENT_INTEREST_CONTRACTS",
-					"APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS", "RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS",
-					"LINE_NO_EQUITY_CONTRACTS", "RESIDUAL_MATURITY_EQUITY_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
+					"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS" };
+			applyChangesToEntity(12, 15, fields1, updatedEntity, modRecord);
+
+			String[] fields2 = { "LINE_NO_EQUITY_CONTRACTS", "RESIDUAL_MATURITY_EQUITY_CONTRACTS",
 					"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS",
-					"CREDIT_EQUIVALENT_EQUITY_CONTRACTS", "APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS",
-					"RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS", "LINE_NO_PRECIOUS_CONTRACTS",
-					"RESIDUAL_MATURITY_PRECIOUS_CONTRACTS", "PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS",
-					"TOTAL_CURRENT_PRECIOUS_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS", "CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS",
-					"APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS", "RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS",
-					"LINE_NO_DEBT_CONTRACTS", "RESIDUAL_MATURITY_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS",
-					"TOTAL_CURRENT_DEBT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "CREDIT_EQUIVALENT_EQUITY_CONTRACTS",
+					"APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
+					"LINE_NO_PRECIOUS_CONTRACTS", "RESIDUAL_MATURITY_PRECIOUS_CONTRACTS",
+					"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS",
+					"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS" };
+			applyChangesToEntity(21, 24, fields2, updatedEntity, modRecord);
+
+			String[] fields3 = { "LINE_NO_DEBT_CONTRACTS", "RESIDUAL_MATURITY_DEBT_CONTRACTS",
+					"PRINCIPAL_AMOUNT_DEBT_CONTRACTS", "TOTAL_CURRENT_DEBT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS",
 					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "CREDIT_EQUIVALENT_DEBT_CONTRACTS",
 					"APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
 					"LINE_NO_CREDIT_CONTRACTS", "RESIDUAL_MATURITY_CREDIT_CONTRACTS",
 					"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
-					"POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS",
+					"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
 					"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
-					"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS", "LINE_NO_DERIVATIVE_CONTRACTS",
-					"NETTED_EXPOSURES_DERIVATIVE_CONTRACTS", "PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS",
-					"POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS", "ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS",
-					"CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS", "APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
+					"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS" };
+			applyChangesToEntity(30, 33, fields3, updatedEntity, modRecord);
+
+			String[] fields4 = { "LINE_NO_DERIVATIVE_CONTRACTS", "NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
+					"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS", "POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS",
+					"ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+					"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
 					"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" };
+			applyChangesToEntity(43, 45, fields4, updatedEntity, modRecord);
 
-			// Rows that exist in the entity (R12, R13, R14, R15, R21, R22, R23, R24, R30,
-			// R31, R32, R33, R43, R44, R45)
-			String[] rowNumbers = { "12", "13", "14", "15", "21", "22", "23", "24", "30", "31", "32", "33", "43", "44",
-					"45" };
+		} catch (Exception e) {
+			throw new RuntimeException("Error while updating M_SRWA_12D fields", e);
+		}
 
-			for (String rowNum : rowNumbers) {
-				String prefix = "R" + rowNum + "_";
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_SRWA_12D Changes Length = " + (changes != null ? changes.length() : 0));
 
-				for (String fieldName : fieldNames) {
-					String getterName = "get" + prefix + fieldName;
-					String setterName = "set" + prefix + fieldName;
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_SRWA_12D_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_SRWA_12D Summary Screen", "BRRS_M_SRWA_12D_MOD_SUMMARYTABLE");
+		}
+	}
+
+	// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int startRow, int endRow, String[] fields,
+			M_SRWA_12D_Summary_Entity updatedEntity, M_SRWA_12D_Summary_Entity targetEntity) {
+		for (int i = startRow; i <= endRow; i++) {
+			String prefix = "R" + i + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					// Clean and convert string numbers to proper numeric format or null
+					if (value instanceof String) {
+						String valStr = ((String) value).trim();
+						if (valStr.isEmpty()) {
+							value = null;
+						} else if (getter.getReturnType() == BigDecimal.class) {
+							try {
+								value = new java.math.BigDecimal(valStr);
+							} catch (NumberFormatException e) {
+								value = null; // Fallback to null if invalid number format
+							}
+						}
+					}
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = M_SRWA_12D_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	// 2. Safe MOD table saver with strict cleaning and BigDecimal conversion
+	public void saveModSummaryEntity(M_SRWA_12D_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12D_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		MapSqlParameterSource params = new MapSqlParameterSource().addValue("reportDate", entity.getReport_date())
+				.addValue("entity_flg", entity.getEntity_flg()).addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg())
+				.addValue("report_version", entity.getReport_version())
+				.addValue("report_frequency", entity.getReport_frequency())
+				.addValue("report_code", entity.getReport_code())
+				.addValue("report_desc", entity.getReport_desc())
+				.addValue("report_resubdate", entity.getReportResubDate());
+
+		int[][] ranges = { { 12, 15 }, { 21, 24 }, { 30, 33 }, { 43, 45 } };
+		String[][] fieldGroups = {
+				{ "LINE_NO_EXCHANGE_CONTRACTS", "RESIDUAL_MATURITY_EXCHANGE_CONTRACTS",
+						"PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
+						"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS", "LINE_NO_INTEREST_CONTRACTS",
+						"RESIDUAL_MATURITY_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
+						"TOTAL_CURRENT_INTEREST_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
+						"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS" },
+				{ "LINE_NO_EQUITY_CONTRACTS", "RESIDUAL_MATURITY_EQUITY_CONTRACTS",
+						"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "CREDIT_EQUIVALENT_EQUITY_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
+						"LINE_NO_PRECIOUS_CONTRACTS", "RESIDUAL_MATURITY_PRECIOUS_CONTRACTS",
+						"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS",
+						"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS" },
+				{ "LINE_NO_DEBT_CONTRACTS", "RESIDUAL_MATURITY_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS",
+						"TOTAL_CURRENT_DEBT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "CREDIT_EQUIVALENT_DEBT_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
+						"LINE_NO_CREDIT_CONTRACTS", "RESIDUAL_MATURITY_CREDIT_CONTRACTS",
+						"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
+						"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS" },
+				{ "LINE_NO_DERIVATIVE_CONTRACTS", "NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
+						"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS", "POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS",
+						"ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" } };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg, "
+						+ "REPORT_VERSION = :report_version, REPORT_FREQUENCY = :report_frequency, "
+						+ "REPORT_CODE = :report_code, REPORT_DESC = :report_desc, REPORT_RESUBDATE = :report_resubdate");
+		List<String> insertColumns = new ArrayList<>(Arrays.asList(
+				"REPORT_DATE", "ENTITY_FLG", "MODIFY_FLG", "DEL_FLG",
+				"REPORT_VERSION", "REPORT_FREQUENCY", "REPORT_CODE", "REPORT_DESC", "REPORT_RESUBDATE"));
+		List<String> insertValues = new ArrayList<>(Arrays.asList(
+				":reportDate", ":entity_flg", ":modify_flg", ":del_flg",
+				":report_version", ":report_frequency", ":report_code", ":report_desc", ":report_resubdate"));
+
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
+
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String paramName = "r" + i + "_" + field.toLowerCase();
+					String columnName = prefix + field;
 
 					try {
-						// ===== SUMMARY UPDATE =====
-						Method getterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
-						Method setterSummary = M_SRWA_12D_Summary_Entity.class.getMethod(setterName,
-								getterSummary.getReturnType());
+						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(entity);
 
-						Object newValue = getterSummary.invoke(updatedEntity);
-						Object existingValue = getterSummary.invoke(existing);
-
-						// Normalize state differences
-						String currentValStr = (existingValue == null) ? "" : existingValue.toString().trim();
-						String newValStr = (newValue == null) ? "" : newValue.toString().trim();
-
-						if (currentValStr.equals(newValStr)) {
-							continue;
+						// Convert any String number safely to BigDecimal or null
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else if (getter.getReturnType() == BigDecimal.class) {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
 						}
 
-						setterSummary.invoke(existing, newValue);
+						params.addValue(paramName, value);
 
-						// ===== DETAIL UPDATE =====
-						Method getterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(getterName);
-						Method setterDetail = M_SRWA_12D_Detail_Entity.class.getMethod(setterName,
-								getterDetail.getReturnType());
-
-						setterDetail.invoke(existingDetail, newValue);
+						updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+						insertColumns.add(columnName);
+						insertValues.add(":" + paramName);
 
 					} catch (NoSuchMethodException e) {
-						// Skip if field doesn't exist
-						continue;
+						// Skip
 					} catch (Exception e) {
-						System.err.println("Error processing field: " + getterName);
-						e.printStackTrace();
+						throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
 					}
 				}
 			}
-
-		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
 		}
 
-		System.out.println("Saving Summary and Detail...");
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_SRWA_12D_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_SRWA_12D_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_SRWA_12D_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_SRWA_12D_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
 
-		// =====================================================
-		// 4️⃣ SAVE BOTH TABLES USING JDBC
-		// =====================================================
-		saveOrUpdateSrw12dSummary(existing);
-		saveOrUpdateSrw12dDetail(existingDetail);
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		List<M_SRWA_12D_Summary_Entity> modRecords = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SRWA_12D_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new M_SRWA_12D_Summary_EntityRowMapper(), reportDate);
 
-		// =====================================================
-		// 5️⃣ EVALUATE AND LOG AUDIT TRAIL
-		// =====================================================
-		String changes = auditService.getChanges(oldcopy, existing);
-		System.out.println("M_SRWA_12D Changes Length = " + changes.length());
-
-		if (changes != null && !changes.isEmpty()) {
-			auditService.compareEntitiesmanual(oldcopy, existing, reportDate.toString(), "M_SRWA_12D Summary Screen",
-					"BRRS_M_SRWA_12D_SUMMARY");
+		if (modRecords.isEmpty()) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
 		}
 
-		System.out.println("Update Completed Successfully");
+		M_SRWA_12D_Summary_Entity modRecord = modRecords.get(0);
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_SRWA_12D_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N', ENTITY_FLG = 'Y' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_SRWA_12D Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail tables upon approval
+	private void transferModValuesToLiveTables(M_SRWA_12D_Summary_Entity modRecord, Date reportDate) {
+		int[][] ranges = { { 12, 15 }, { 21, 24 }, { 30, 33 }, { 43, 45 } };
+		String[][] fieldGroups = {
+				{ "LINE_NO_EXCHANGE_CONTRACTS", "RESIDUAL_MATURITY_EXCHANGE_CONTRACTS",
+						"PRINCIPAL_AMOUNT_EXCHANGE_CONTRACTS", "TOTAL_CURRENT_EXCHANGE_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXCHANGE_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EXCHANGE_CONTRACTS",
+						"CREDIT_EQUIVALENT_EXCHANGE_CONTRACTS", "APPLICABLE_COUNTERPARTY_EXCHANGE_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_EXCHANGE_CONTRACTS", "LINE_NO_INTEREST_CONTRACTS",
+						"RESIDUAL_MATURITY_INTEREST_CONTRACTS", "PRINCIPAL_AMOUNT_INTEREST_CONTRACTS",
+						"TOTAL_CURRENT_INTEREST_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_INTEREST_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_INTEREST_CONTRACTS",
+						"CREDIT_EQUIVALENT_INTEREST_CONTRACTS", "APPLICABLE_COUNTERPARTY_INTEREST_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_INTEREST_CONTRACTS" },
+				{ "LINE_NO_EQUITY_CONTRACTS", "RESIDUAL_MATURITY_EQUITY_CONTRACTS",
+						"PRINCIPAL_AMOUNT_EQUITY_CONTRACTS", "TOTAL_CURRENT_EQUITY_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EQUITY_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_EQUITY_CONTRACTS", "CREDIT_EQUIVALENT_EQUITY_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_EQUITY_CONTRACTS", "RISK_WEIGHTED_ASSET_EQUITY_CONTRACTS",
+						"LINE_NO_PRECIOUS_CONTRACTS", "RESIDUAL_MATURITY_PRECIOUS_CONTRACTS",
+						"PRINCIPAL_AMOUNT_PRECIOUS_CONTRACTS", "TOTAL_CURRENT_PRECIOUS_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_PRECIOUS_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_PRECIOUS_CONTRACTS",
+						"CREDIT_EQUIVALENT_PRECIOUS_CONTRACTS", "APPLICABLE_COUNTERPARTY_PRECIOUS_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_PRECIOUS_CONTRACTS" },
+				{ "LINE_NO_DEBT_CONTRACTS", "RESIDUAL_MATURITY_DEBT_CONTRACTS", "PRINCIPAL_AMOUNT_DEBT_CONTRACTS",
+						"TOTAL_CURRENT_DEBT_CONTRACTS", "POTENTIAL_FUTURE_CREDIT_DEBT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_DEBT_CONTRACTS", "CREDIT_EQUIVALENT_DEBT_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_DEBT_CONTRACTS", "RISK_WEIGHTED_ASSET_DEBT_CONTRACTS",
+						"LINE_NO_CREDIT_CONTRACTS", "RESIDUAL_MATURITY_CREDIT_CONTRACTS",
+						"PRINCIPAL_AMOUNT_CREDIT_CONTRACTS", "TOTAL_CURRENT_CREDIT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_CREDIT_CONTRACTS",
+						"POTENTIAL_FUTURE_CREDIT_EXPOSURE_CREDIT_CONTRACTS",
+						"CREDIT_EQUIVALENT_CREDIT_CONTRACTS", "APPLICABLE_COUNTERPARTY_CREDIT_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_CREDIT_CONTRACTS" },
+				{ "LINE_NO_DERIVATIVE_CONTRACTS", "NETTED_EXPOSURES_DERIVATIVE_CONTRACTS",
+						"PRINCIPAL_AMOUNT_DERIVATIVE_CONTRACTS", "POSITIVE_NET_REPLACEMENT_DERIVATIVE_CONTRACTS",
+						"ADDON_FOR_NETTED_DERIVATIVE_CONTRACTS", "CREDIT_EQUIVALENT_DERIVATIVE_CONTRACTS",
+						"APPLICABLE_COUNTERPARTY_DERIVATIVE_CONTRACTS",
+						"RISK_WEIGHTED_ASSET_DERIVATIVE_CONTRACTS" } };
+
+		for (int idx = 0; idx < ranges.length; idx++) {
+			int start = ranges[idx][0];
+			int end = ranges[idx][1];
+			String[] fields = fieldGroups[idx];
+
+			for (int i = start; i <= end; i++) {
+				String prefix = "R" + i + "_";
+				for (String field : fields) {
+					String getterName = "get" + prefix + field;
+					String columnName = prefix + field;
+
+					try {
+						Method getter = M_SRWA_12D_Summary_Entity.class.getMethod(getterName);
+						Object value = getter.invoke(modRecord);
+
+						if (value == null) {
+							continue;
+						}
+
+						// Update Live Summary Table
+						String summarySql = "UPDATE BRRS_M_SRWA_12D_SUMMARYTABLE SET " + columnName
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(summarySql, value, reportDate);
+
+						// Update Live Detail Table
+						String detailSql = "UPDATE BRRS_M_SRWA_12D_DETAILTABLE SET " + columnName
+								+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+						jdbcTemplate.update(detailSql, value, reportDate);
+
+					} catch (NoSuchMethodException e) {
+						// Skip
+					} catch (Exception e) {
+						throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+					}
+				}
+			}
+		}
+
+		// Update flags in Live Summary Table and Live Detail Table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_SRWA_12D_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_SRWA_12D_DETAILTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
 	}
 
 	// =============================================

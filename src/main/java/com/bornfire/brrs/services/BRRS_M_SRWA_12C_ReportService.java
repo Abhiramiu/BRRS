@@ -54,8 +54,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -101,6 +104,22 @@ public class BRRS_M_SRWA_12C_ReportService {
 	public List<M_SRWA_12C_Summary_Entity> getSummaryDataByDate(Date rpt_code) {
 		String sql = "SELECT * FROM BRRS_M_SRWA_12C_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
 		return jdbcTemplate.query(sql, new Object[] { rpt_code }, new M_SRWA_12C_Summary_EntityRowMapper());
+	}
+
+	// Fetch existing live summary record
+	public M_SRWA_12C_Summary_Entity findByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12C_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_SRWA_12C_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_SRWA_12C_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
+	}
+
+	// Fetch existing mod record if any pending modifications exist
+	public M_SRWA_12C_Summary_Entity findModRecordByReportDate(Date reportDate) {
+		String selectSql = "SELECT * FROM BRRS_M_SRWA_12C_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+		List<M_SRWA_12C_Summary_Entity> list = jdbcTemplate.query(selectSql,
+				new BeanPropertyRowMapper<>(M_SRWA_12C_Summary_Entity.class), reportDate);
+		return list.isEmpty() ? null : list.get(0);
 	}
 
 // ✅ Fetch records with version for a specific date
@@ -353,7 +372,7 @@ public class BRRS_M_SRWA_12C_ReportService {
 // M_SRWA_12C_Summary_Entity - ROW MAPPER
 // ========================================
 
-	public class M_SRWA_12C_Summary_EntityRowMapper implements RowMapper<M_SRWA_12C_Summary_Entity> {
+	public static class M_SRWA_12C_Summary_EntityRowMapper implements RowMapper<M_SRWA_12C_Summary_Entity> {
 		@Override
 		public M_SRWA_12C_Summary_Entity mapRow(ResultSet rs, int rowNum) throws SQLException {
 			M_SRWA_12C_Summary_Entity obj = new M_SRWA_12C_Summary_Entity();
@@ -523,7 +542,9 @@ public class BRRS_M_SRWA_12C_ReportService {
 		}
 	}
 
-	public class M_SRWA_12C_Summary_Entity {
+	public static class M_SRWA_12C_Summary_Entity {
+
+
 
 		// =========================
 		// COMMON FIELDS
@@ -6478,100 +6499,308 @@ public class BRRS_M_SRWA_12C_ReportService {
 	// UPDATE REPORT METHOD
 	// ========================================
 
+	@Transactional
 	public void updateReport(M_SRWA_12C_Summary_Entity updatedEntity) {
-		System.out.println("Came to services");
+		System.out.println("Came to M_SRWA_12C Update");
 		System.out.println("Report Date: " + updatedEntity.getReport_date());
 
-		Date reportDate = updatedEntity.getReport_date();
-
-		// ✅ Fetch existing summary using JDBC method
-		List<M_SRWA_12C_Summary_Entity> existingList = getSummaryDataByDate(reportDate);
-
-		// ✅ Fetch existing detail using JDBC method
-		List<M_SRWA_12C_Detail_Entity> existingDetailList = getDetailDataByDate(reportDate);
-		M_SRWA_12C_Detail_Entity existingDetail;
-
-		if (!existingDetailList.isEmpty()) {
-			existingDetail = existingDetailList.get(0);
-		} else {
-			existingDetail = new M_SRWA_12C_Detail_Entity();
-			existingDetail.setReport_date(reportDate);
+		// 1. Fetch live summary record as baseline reference
+		M_SRWA_12C_Summary_Entity liveSummary = findByReportDate(updatedEntity.getReport_date());
+		if (liveSummary == null) {
+			throw new RuntimeException(
+					"Record not found in live summary table for REPORT_DATE : " + updatedEntity.getReport_date());
 		}
 
-		M_SRWA_12C_Summary_Entity existing;
-
-		if (!existingList.isEmpty()) {
-			existing = existingList.get(0);
-			System.out.println(" Existing record found for date: " + reportDate);
-		} else {
-			existing = new M_SRWA_12C_Summary_Entity();
-			existing.setReport_date(reportDate);
-			System.out.println("⚠️ No record found — creating new entry for date: " + reportDate);
+		// 2. Check if a mod record already exists. If not, copy from live summary baseline.
+		M_SRWA_12C_Summary_Entity modRecord = findModRecordByReportDate(updatedEntity.getReport_date());
+		if (modRecord == null) {
+			modRecord = new M_SRWA_12C_Summary_Entity();
+			BeanUtils.copyProperties(liveSummary, modRecord);
 		}
+
+		// 3. Keep old copy for audit comparison
+		M_SRWA_12C_Summary_Entity oldcopy = new M_SRWA_12C_Summary_Entity();
+		BeanUtils.copyProperties(modRecord, oldcopy);
 
 		try {
-			// -------------------------------
-			// ✅ COLUMN C
-			// -------------------------------
+			// Apply updates ONLY to the modRecord object (Live tables are untouched!)
 			int[] cRows = { 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
-			for (int row : cRows) {
-				String prefix = "R" + row + "_";
-				String[] fields = { "NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" };
+			String[] fields1 = { "NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" };
+			applyChangesToEntity(cRows, fields1, updatedEntity, modRecord);
 
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SRWA_12C_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12C_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue; // Skip missing field
-					}
-				}
-			}
-
-			// -------------------------------
-			// ✅ COLUMNS D, E, F, G
-			// -------------------------------
 			int[] commonRows = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
-
-			for (int row : commonRows) {
-				String prefix = "R" + row + "_";
-
-				String[] fields = { "NUMBER_OF_FAILED_TRADES", "POSITIVE_CURRENT_EXPOSURE", "RISK_MULTIPLIER", "RWA" };
-
-				for (String field : fields) {
-					String getterName = "get" + prefix + field;
-					String setterName = "set" + prefix + field;
-
-					try {
-						Method getter = M_SRWA_12C_Summary_Entity.class.getMethod(getterName);
-						Method setter = M_SRWA_12C_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
-						Method detailSetter = M_SRWA_12C_Detail_Entity.class.getMethod(setterName,
-								getter.getReturnType());
-
-						Object newValue = getter.invoke(updatedEntity);
-						setter.invoke(existing, newValue);
-						detailSetter.invoke(existingDetail, newValue);
-
-					} catch (NoSuchMethodException e) {
-						continue;
-					}
-				}
-			}
+			String[] fields2 = { "NUMBER_OF_FAILED_TRADES", "POSITIVE_CURRENT_EXPOSURE", "RISK_MULTIPLIER", "RWA" };
+			applyChangesToEntity(commonRows, fields2, updatedEntity, modRecord);
 
 		} catch (Exception e) {
-			throw new RuntimeException("Error while updating report fields", e);
+			throw new RuntimeException("Error while updating M_SRWA_12C fields", e);
 		}
 
-		// ✅ Save using JDBC methods
-		saveOrUpdateSummary(existing);
-		saveOrUpdateDetail(existingDetail);
+		// 4. Evaluate audit changes against the mod baseline
+		String changes = auditService.getChanges(oldcopy, modRecord);
+		System.out.println("M_SRWA_12C Changes Length = " + (changes != null ? changes.length() : 0));
+
+		// 5. Set Maker-Checker Flags
+		modRecord.setEntity_flg("Y");
+		modRecord.setModify_flg("Y");
+		modRecord.setDel_flg("N");
+
+		// 6. Save/Update into MOD Summary Table ONLY (Live tables remain intact)
+		saveModSummaryEntity(modRecord);
+		System.out.println("✔ Record saved into BRRS_M_SRWA_12C_MOD_SUMMARYTABLE for Checker Approval");
+
+		// 7. Log Audit Trail if changes exist
+		if (changes != null && !changes.isEmpty()) {
+			auditService.compareEntitiesmanual(oldcopy, modRecord, updatedEntity.getReport_date().toString(),
+					"M_SRWA_12C Summary Screen", "BRRS_M_SRWA_12C_MOD_SUMMARYTABLE");
+		}
+	}
+
+	// 1. Safe entity updater with strict number parsing / cleaning
+	private void applyChangesToEntity(int[] rows, String[] fields, M_SRWA_12C_Summary_Entity updatedEntity,
+			M_SRWA_12C_Summary_Entity targetEntity) {
+		for (int row : rows) {
+			String prefix = "R" + row + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String setterName = "set" + prefix + field;
+
+				try {
+					Method getter = M_SRWA_12C_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(updatedEntity);
+
+					if (getter.getReturnType() == BigDecimal.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
+					} else if (getter.getReturnType() == String.class) {
+						if (value != null) {
+							value = value.toString();
+						}
+					}
+
+					if (value == null) {
+						continue;
+					}
+
+					Method setter = M_SRWA_12C_Summary_Entity.class.getMethod(setterName, getter.getReturnType());
+					setter.invoke(targetEntity, value);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully if method doesn't exist (e.g., R16, 27, 28 don't have RISK_MULTIPLIER)
+				} catch (Exception e) {
+					throw new RuntimeException("Error applying field: " + getterName, e);
+				}
+			}
+		}
+	}
+
+	// 2. Safe MOD table saver with strict cleaning and BigDecimal conversion
+	public void saveModSummaryEntity(M_SRWA_12C_Summary_Entity entity) {
+		NamedParameterJdbcTemplate namedParamJdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
+
+		String checkSql = "SELECT COUNT(*) FROM BRRS_M_SRWA_12C_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+		MapSqlParameterSource checkParams = new MapSqlParameterSource("reportDate", entity.getReport_date());
+		Integer count = namedParamJdbc.queryForObject(checkSql, checkParams, Integer.class);
+
+		if (entity.getReport_version() == null) {
+			entity.setReport_version(new BigDecimal("1"));
+		}
+		if (entity.getReport_code() == null) {
+			entity.setReport_code("M_SRWA_12C");
+		}
+		if (entity.getReport_desc() == null) {
+			entity.setReport_desc("Monthly Schedule M- SRWA 12c (Failed Trades)");
+		}
+		if (entity.getReport_frequency() == null) {
+			entity.setReport_frequency("Monthly");
+		}
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("reportDate", entity.getReport_date())
+				.addValue("reportVersion", entity.getReport_version())
+				.addValue("reportFrequency", entity.getReport_frequency())
+				.addValue("reportCode", entity.getReport_code())
+				.addValue("reportDesc", entity.getReport_desc())
+				.addValue("entity_flg", entity.getEntity_flg())
+				.addValue("modify_flg", entity.getModify_flg())
+				.addValue("del_flg", entity.getDel_flg());
+
+		int[] cRows = { 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
+		String[] fields1 = { "NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" };
+
+		int[] commonRows = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
+		String[] fields2 = { "NUMBER_OF_FAILED_TRADES", "POSITIVE_CURRENT_EXPOSURE", "RISK_MULTIPLIER", "RWA" };
+
+		StringBuilder updateSetSql = new StringBuilder(
+				"MODIFY_FLG = :modify_flg, ENTITY_FLG = :entity_flg, DEL_FLG = :del_flg, "
+				+ "REPORT_VERSION = :reportVersion, REPORT_FREQUENCY = :reportFrequency, "
+				+ "REPORT_CODE = :reportCode, REPORT_DESC = :reportDesc");
+
+		List<String> insertColumns = new ArrayList<>();
+		List<String> insertValues = new ArrayList<>();
+
+		insertColumns.add("REPORT_DATE");
+		insertValues.add(":reportDate");
+		insertColumns.add("REPORT_VERSION");
+		insertValues.add(":reportVersion");
+		insertColumns.add("REPORT_FREQUENCY");
+		insertValues.add(":reportFrequency");
+		insertColumns.add("REPORT_CODE");
+		insertValues.add(":reportCode");
+		insertColumns.add("REPORT_DESC");
+		insertValues.add(":reportDesc");
+		insertColumns.add("ENTITY_FLG");
+		insertValues.add(":entity_flg");
+		insertColumns.add("MODIFY_FLG");
+		insertValues.add(":modify_flg");
+		insertColumns.add("DEL_FLG");
+		insertValues.add(":del_flg");
+
+		appendFieldsToModSql(cRows, fields1, entity, params, updateSetSql, insertColumns, insertValues);
+		appendFieldsToModSql(commonRows, fields2, entity, params, updateSetSql, insertColumns, insertValues);
+
+		if (count != null && count > 0) {
+			String updateSql = "UPDATE BRRS_M_SRWA_12C_MOD_SUMMARYTABLE SET " + updateSetSql.toString()
+					+ " WHERE TRUNC(REPORT_DATE) = TRUNC(:reportDate)";
+			namedParamJdbc.update(updateSql, params);
+			System.out.println("✔ BRRS_M_SRWA_12C_MOD_SUMMARYTABLE updated successfully.");
+		} else {
+			String insertSql = "INSERT INTO BRRS_M_SRWA_12C_MOD_SUMMARYTABLE (" + String.join(", ", insertColumns)
+					+ ") VALUES (" + String.join(", ", insertValues) + ")";
+			namedParamJdbc.update(insertSql, params);
+			System.out.println("✔ BRRS_M_SRWA_12C_MOD_SUMMARYTABLE inserted successfully.");
+		}
+	}
+
+	private void appendFieldsToModSql(int[] rows, String[] fields, M_SRWA_12C_Summary_Entity entity,
+			MapSqlParameterSource params, StringBuilder updateSetSql, List<String> insertColumns,
+			List<String> insertValues) {
+		for (int row : rows) {
+			String prefix = "R" + row + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String paramName = "r" + row + "_" + field.toLowerCase();
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_SRWA_12C_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(entity);
+
+					if (getter.getReturnType() == BigDecimal.class) {
+						if (value instanceof String) {
+							String valStr = ((String) value).trim();
+							if (valStr.isEmpty()) {
+								value = null;
+							} else {
+								try {
+									value = new java.math.BigDecimal(valStr);
+								} catch (NumberFormatException e) {
+									value = null;
+								}
+							}
+						}
+					} else if (getter.getReturnType() == String.class) {
+						if (value != null) {
+							value = value.toString();
+						}
+					}
+
+					params.addValue(paramName, value);
+					updateSetSql.append(", ").append(columnName).append(" = :").append(paramName);
+					insertColumns.add(columnName);
+					insertValues.add(":" + paramName);
+
+				} catch (NoSuchMethodException e) {
+					// Skip gracefully
+				} catch (Exception e) {
+					throw new RuntimeException("Error mapping column for MOD table: " + columnName, e);
+				}
+			}
+		}
+	}
+
+	@Transactional
+	public void approveReport(Date reportDate) {
+		// 1. Fetch pending modification record from MOD table
+		List<M_SRWA_12C_Summary_Entity> list = jdbcTemplate.query(
+				"SELECT * FROM BRRS_M_SRWA_12C_MOD_SUMMARYTABLE WHERE TRUNC(REPORT_DATE) = TRUNC(?) AND MODIFY_FLG = 'Y'",
+				new BeanPropertyRowMapper<>(M_SRWA_12C_Summary_Entity.class), reportDate);
+
+		if (list.isEmpty()) {
+			throw new RuntimeException("No pending modification found for approval on date: " + reportDate);
+		}
+		M_SRWA_12C_Summary_Entity modRecord = list.get(0);
+
+		// 2. TRANSFER MOD VALUES TO LIVE SUMMARY AND DETAIL TABLES (Happens ONLY on approval)
+		transferModValuesToLiveTables(modRecord, reportDate);
+
+		// 3. Mark modified flag as 'N' (Approved) in the MOD table
+		jdbcTemplate.update(
+				"UPDATE BRRS_M_SRWA_12C_MOD_SUMMARYTABLE SET MODIFY_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)",
+				reportDate);
+
+		System.out.println(
+				"✔ M_SRWA_12C Checker Approved Successfully: MOD values successfully transferred to Summary & Detail live tables.");
+	}
+
+	// Helper to push all modified fields from MOD table to Live Summary & Detail tables upon approval
+	private void transferModValuesToLiveTables(M_SRWA_12C_Summary_Entity modRecord, Date reportDate) {
+		int[] cRows = { 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
+		String[] fields1 = { "NUMBER_OF_WORKING_DAYS_AFTER_THE_AGREED_SETTLEMENT_DATE" };
+
+		int[] commonRows = { 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26, 27, 28 };
+		String[] fields2 = { "NUMBER_OF_FAILED_TRADES", "POSITIVE_CURRENT_EXPOSURE", "RISK_MULTIPLIER", "RWA" };
+
+		transferFieldGroupToLive(cRows, fields1, modRecord, reportDate);
+		transferFieldGroupToLive(commonRows, fields2, modRecord, reportDate);
+
+		// Update status flags on Live Tables
+		jdbcTemplate.update("UPDATE BRRS_M_SRWA_12C_SUMMARYTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+		jdbcTemplate.update("UPDATE BRRS_M_SRWA_12C_DETAILTABLE SET ENTITY_FLG = 'Y', MODIFY_FLG = 'N', DEL_FLG = 'N' WHERE TRUNC(REPORT_DATE) = TRUNC(?)", reportDate);
+	}
+
+	private void transferFieldGroupToLive(int[] rows, String[] fields, M_SRWA_12C_Summary_Entity modRecord, Date reportDate) {
+		for (int row : rows) {
+			String prefix = "R" + row + "_";
+			for (String field : fields) {
+				String getterName = "get" + prefix + field;
+				String columnName = prefix + field;
+
+				try {
+					Method getter = M_SRWA_12C_Summary_Entity.class.getMethod(getterName);
+					Object value = getter.invoke(modRecord);
+
+					if (value == null) {
+						continue;
+					}
+
+					// Update Live Summary Table
+					String summarySql = "UPDATE BRRS_M_SRWA_12C_SUMMARYTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(summarySql, value, reportDate);
+
+					// Update Live Detail Table
+					String detailSql = "UPDATE BRRS_M_SRWA_12C_DETAILTABLE SET " + columnName
+							+ " = ? WHERE TRUNC(REPORT_DATE) = TRUNC(?)";
+					jdbcTemplate.update(detailSql, value, reportDate);
+
+				} catch (NoSuchMethodException e) {
+					// Skip
+				} catch (Exception e) {
+					throw new RuntimeException("Error transferring column to live tables: " + columnName, e);
+				}
+			}
+		}
 	}
 
 	// ============================

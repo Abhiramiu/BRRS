@@ -865,8 +865,9 @@ public class BRRS_ReportsController {
 	) {
 		try {
 			System.out.println("Came to single controller");
-			// set date into all 4 entities
-			request1.setReport_date(asondate);
+			if (asondate != null) {
+				request1.setReport_date(asondate);
+			}
 
 			// call services
 			SRWA12DreportService.updateReport(request1);
@@ -935,8 +936,9 @@ public class BRRS_ReportsController {
 		try {
 			System.out.println("came to single controller");
 
-			// ✅ set the asondate into entity
-			request.setReport_date(asondate);
+			if (asondate != null) {
+				request.setReport_date(asondate);
+			}
 
 			// call services
 			BRRS_M_SRWA_12C_reportservice.updateReport(request);
